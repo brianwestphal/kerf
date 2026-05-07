@@ -156,7 +156,7 @@ jobs:
         with:
           node-version: '${{ env.NODE_VERSION }}'
           cache: npm
-          registry-url: 'https://registry.npmjs.org'
+          registry-url: 'https://registry.npmjs.org/'
       - run: npm install -g npm@latest   # trusted publishing OIDC needs npm ≥ 11.5.1
       - run: npm ci
       - name: Bump package.json to beta version (ephemeral, not committed)
