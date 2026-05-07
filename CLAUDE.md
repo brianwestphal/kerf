@@ -11,7 +11,7 @@ The name *kerf* is a woodworking term — the narrow strip a saw blade removes. 
 - **Runtime**: Browser (modern, ES2022+). Node 20+ for build/test.
 - **Language**: TypeScript (strict mode, ESM-only).
 - **Build**: tsup (esbuild + tsc-emit). Outputs ESM + types.
-- **Tests**: vitest with `happy-dom` for DOM testing.
+- **Tests**: vitest with `happy-dom` as the default environment. `tests/unit/toElement.test.ts` overrides to `jsdom` (via `@vitest-environment jsdom`) because happy-dom's `DOMParser('image/svg+xml')` returns a document with `null` `documentElement` for SVG input — jsdom gets it right, and so do real browsers. Both `jsdom` and `@types/jsdom` are devDeps for that one file; do not remove them.
 - **Lint**: eslint flat config + `simple-import-sort` + typescript-eslint.
 
 ## Architecture
@@ -26,6 +26,7 @@ The framework is a small set of independent modules that compose. Each one earns
 - `src/store.ts` — `defineStore({ initial, actions })` + global registry + `resetAllStores()`.
 - `src/mount.ts` — `mount(el, render)`. Wraps `effect()` + the segment-aware diff. Bulk-renders on first paint, then on subsequent renders runs `diff()` over the static surrounds (skipping any list parents) and dispatches each list to its native keyed reconciler. Conventions for diff keys, `data-morph-skip`, focus/selection preservation.
 - `src/each.ts` — `each(items, render, key?)`. Keyed list iteration. Returns a structured list segment (not a flat HTML string) so `mount()` can run a native reconciler per list — no parse-the-whole-table round trip on partial updates. Per-item memoisation by object identity (+ optional `key`) skips the JSX work for unchanged rows.
+- `src/list-reconcile.ts` — keyed list reconciler used by `mount()`. Classify (stable/replaced/new) → bulk-parse fresh row HTML in one `innerHTML` → remove orphans/replaced → LIS pass to compute the minimum `insertBefore` set → reverse-pass move. Internal — not part of the public API.
 - `src/segment.ts` — `Segment` types (`static` / `list` / `mixed`) + flatten helpers. The JSX runtime emits these from `_jsx`; `mount()` consumes them.
 - `src/diff.ts` — kerf's general-purpose DOM reconciler. Replaces the prior `morphdom` dependency. Specialised: knows about `data-morph-skip`, the focused-input/contenteditable rules, the `id`/`data-key` matching scheme, and a `listParents` set whose children are owned by the list reconciler. Algorithm derived from [morphdom](https://github.com/patrick-steele-idem/morphdom) (MIT, attribution in `LICENSE`).
 - `src/delegate.ts` — `delegate()` (Tier 1 bubble) + `delegateCapture()` (Tier 2 capture).
@@ -33,6 +34,7 @@ The framework is a small set of independent modules that compose. Each one earns
 - `src/testing.ts` — `kerfjs/testing` subpath. Re-exports `clearStoreRegistry` for unit-test isolation.
 - `src/utils/escapeHtml.ts` — HTML / attribute escaping helpers used by the JSX runtime.
 - `src/utils/jsx-attr-aliases.ts` — `ATTR_ALIASES` table mapping camelCase JSX attributes to their HTML / SVG equivalents (extracted from `jsx-runtime.ts` to keep it under the 200-LOC guideline).
+- `bench/` — local performance harness against [`krausest/js-framework-benchmark`](https://github.com/krausest/js-framework-benchmark). `bench/kerfjs-impl/` is the framework entry (PR-ready for upstream); `bench/setup.sh`, `run.sh`, `results.sh` orchestrate the benchmark. CHANGELOG perf numbers come from this harness.
 
 ### Public API surface
 
@@ -85,7 +87,10 @@ npm run test:dist         # build, then targeted dist regression suite (tests/di
 npm run test:dist:full    # build, then full unit + integration suite remapped onto dist/
 npm run typecheck         # tsc --noEmit
 npm run lint              # eslint
+npm run check             # full pre-push gate: lint + typecheck + test + build + both dist:* suites
 ```
+
+`npm run check` is what the husky pre-commit hook runs — the canonical "is everything green" command.
 
 Coverage thresholds (`vitest.config.ts`): **100% lines / functions / branches / statements** on `src/`. Don't add code without tests; CI fails on any uncovered line.
 

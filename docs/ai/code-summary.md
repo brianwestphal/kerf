@@ -15,6 +15,7 @@ kerf/
 │   ├── diff.ts                   ← native general-purpose DOM reconciler (replaces morphdom)
 │   ├── segment.ts                ← Segment types (static/list/mixed) + flatten helpers
 │   ├── each.ts                   ← each() — keyed list iteration with per-item memo
+│   ├── list-reconcile.ts         ← keyed list reconciler (classify / bulk-parse / LIS / move)
 │   ├── delegate.ts               ← delegate + delegateCapture
 │   ├── toElement.ts              ← SVG-aware JSX-to-DOM
 │   └── utils/
@@ -27,14 +28,23 @@ kerf/
 │   │   ├── store.test.ts
 │   │   ├── mount.test.ts
 │   │   ├── delegate.test.ts
+│   │   ├── each.test.ts
+│   │   ├── diff.internal.test.ts
+│   │   ├── segment.internal.test.ts
 │   │   └── toElement.test.ts
 │   ├── integration/
 │   │   └── full-pipeline.test.ts ← end-to-end cart UI exercising every primitive
 │   └── dist/                     ← run via `npm run test:dist`, against the built bundles
+│       ├── barrel-completeness.test.ts    ← KF-24 — pins the public-API list
 │       ├── safe-html-cross-bundle.test.ts ← KF-14 regression
 │       └── store-registry-shared.test.ts  ← KF-15 regression
 ├── examples/
 │   └── reactivity-demo/          ← 7-section live demo (port of Hot Sheet's /_demo/reactivity)
+├── bench/
+│   ├── kerfjs-impl/              ← PR-ready entry for krausest/js-framework-benchmark
+│   ├── setup.sh                  ← clones the upstream harness into .bench-cache/
+│   ├── run.sh                    ← runs the benchmark against kerfjs + reference frameworks
+│   └── results.sh                ← aggregates results into the viewer (CHANGELOG perf numbers come from here)
 ├── docs/
 │   ├── 1-overview.md
 │   ├── 2-reactivity.md
@@ -99,7 +109,7 @@ The JSX runtime is a separate subpath export at `kerfjs/jsx-runtime`. It's refer
 
 `npm run build` → `tsup` → `dist/`:
 
-- `dist/index.js` (ESM bundle, ~5 KB min+gz including external deps' contribution)
+- `dist/index.js` (ESM bundle, ~6.6 KB min+gz including `@preact/signals-core`)
 - `dist/index.d.ts` (types)
 - `dist/jsx-runtime.js`
 - `dist/jsx-runtime.d.ts`
@@ -125,6 +135,7 @@ Runtime dep (`@preact/signals-core`) is external — consumers' bundlers pick it
 | Test coverage thresholds | `vitest.config.ts` |
 | Release flow / version bumping | `scripts/release.sh` |
 | GitHub Pages live-demo deploy | `.github/workflows/pages.yml` + `examples/reactivity-demo/vite.config.ts` (`base: '/kerf/'`) + `docs/9-live-demo.md` |
+| Benchmark harness / perf numbers | `bench/` (`bench/README.md` + `setup.sh` / `run.sh` / `results.sh`); CHANGELOG perf entries come from runs here |
 
 ## Update triggers
 

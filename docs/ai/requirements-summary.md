@@ -22,7 +22,7 @@ Status markers:
 | §8 | API reference | Shipped |
 | §9 | Live demo (GitHub Pages deploy of `examples/reactivity-demo`) | Shipped |
 
-Everything in the v0.1 design is shipped. No partial / design-only / deferred entries yet — those will accumulate as the project evolves.
+Everything in the v0.1–v0.3 design is shipped (each / native diff / list reconciler / `isSafeHtml` / `Fragment` barrel re-export all landed in 0.2–0.3). No partial / design-only / deferred entries yet — those will accumulate as the project evolves.
 
 ## Per-doc summary
 
@@ -40,7 +40,7 @@ Documents `signal()`, `computed()`, `effect()`, `batch()`. Notes that signals ar
 
 ### §4 Render
 
-`mount(rootEl, render)` wraps `effect()` + kerf's native segment-aware diff. Static surrounds reconcile through `src/diff.ts`; lists from `each(...)` go through a keyed reconciler that operates on live children directly (O(changes), not O(rows)). Diff keys: `id` then `data-key`. `data-morph-skip` for library-owned subtrees. Focus + selection preservation for active text-entry inputs and contenteditable. Multiple `mount()` calls compose; each tracks its own signals. `SafeHtml.toString()` is server-safe.
+`mount(rootEl, render)` wraps `effect()` + kerf's native segment-aware diff. Static surrounds reconcile through `src/diff.ts`; lists from `each(...)` go through a keyed reconciler that operates on live children directly (O(changes), not O(rows)). Diff keys: `id` then `data-key`. `data-morph-skip` for library-owned subtrees. Focus + selection preservation for active text-entry inputs; **focused `[contenteditable]` short-circuits the entire subtree on the morph (same mechanism as `data-morph-skip`)** — attribute updates deferred until the next render after blur. Multiple `mount()` calls compose; each tracks its own signals. `SafeHtml.toString()` is server-safe.
 
 ### §5 Event delegation
 

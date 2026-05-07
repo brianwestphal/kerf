@@ -1,7 +1,7 @@
 /**
  * HTML / attribute escaping for the JSX runtime. Identical to the helpers
  * used in any reasonable HTML emitter — included here so kerf has no extra
- * runtime dependencies beyond `@preact/signals-core` and `morphdom`.
+ * runtime dependencies beyond `@preact/signals-core`.
  */
 
 export function escapeHtml(str: string): string {

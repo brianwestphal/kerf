@@ -1,6 +1,6 @@
 # kerf
 
-> A tiny (~5 KB) reactive UI framework — fine-grained signals + DOM morphing + JSX. No virtual DOM, no compiler. Apply the smallest possible cut to update your DOM.
+> A tiny (~6.6 KB) reactive UI framework — fine-grained signals + DOM morphing + JSX. No virtual DOM, no compiler. Apply the smallest possible cut to update your DOM.
 
 kerf renders JSX to a structured `SafeHtml` (string for static content; tagged "list"/"mixed" segments where `each(...)` was used) and reconciles it against the live tree with a custom segment-aware diff. Static surrounds go through a general-purpose tree-diff; list contents go through a keyed reconciler that operates directly on live children — partial-update on huge lists is O(changes), not O(rows). Reactivity is provided by [@preact/signals-core](https://github.com/preactjs/signals). It pairs well with server-rendered HTML, embedded widgets, and any UI where preserving focus / selection across re-renders matters. Public API is one import: `signal`, `computed`, `effect`, `batch`, `defineStore`, `resetAllStores`, `mount`, `each`, `delegate`, `delegateCapture`, `toElement`, `SafeHtml`, `isSafeHtml`, `raw`, `Fragment`.
 

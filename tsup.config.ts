@@ -19,10 +19,10 @@ export default defineConfig({
   dts: true,
   minify: false,
   treeshake: true,
-  // morphdom + @preact/signals-core stay external — consumers' bundlers pick
-  // them up from node_modules. Bundling them would inflate kerf's published
-  // size and break dedup if the consumer also depends on them directly.
-  external: ['morphdom', '@preact/signals-core'],
+  // @preact/signals-core stays external — consumers' bundlers pick it up
+  // from node_modules. Bundling it would inflate kerf's published size and
+  // break dedup if the consumer also depends on it directly.
+  external: ['@preact/signals-core'],
   esbuildOptions(options) {
     options.jsx = 'automatic';
     options.jsxImportSource = '#kerf-self';

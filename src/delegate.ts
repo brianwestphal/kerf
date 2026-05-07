@@ -1,6 +1,6 @@
 /**
  * Tiny event-delegation helpers. Replace per-element `addEventListener` calls
- * (which don't survive morph re-renders for nodes morphdom creates) with one
+ * (which don't survive morph re-renders for nodes the diff creates) with one
  * listener at the morph-root that dispatches via `closest()`.
  *
  * Three-tier listener model:
@@ -73,7 +73,7 @@ export function delegate(
 /**
  * Capture-phase delegation — for non-bubbling events (`focus`, `blur`,
  * `scroll`, `load`, `error`). Reaches descendants of `rootEl` that match
- * `selector` regardless of how many times morphdom has rebuilt them.
+ * `selector` regardless of how many times the diff has rebuilt them.
  *
  * Usage (pseudo-code — see examples for live ones):
  *   delegateCapture(rootEl, 'focus', 'input, textarea', handlerFn);

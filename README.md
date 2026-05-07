@@ -127,7 +127,7 @@ npm run example:reactivity-demo
 
 ## Status
 
-v0.1.x — early. API may evolve. See [CHANGELOG.md](./CHANGELOG.md) for what's shipped.
+v0.3.x — early. API may evolve. See [CHANGELOG.md](./CHANGELOG.md) for what's shipped.
 
 ## License
 
