@@ -46,8 +46,7 @@ kerf/
 ├── .github/workflows/
 │   ├── ci.yml                    ← test + lint + typecheck on push/PR
 │   ├── pages.yml                 ← build + deploy reactivity-demo to GitHub Pages on push to main
-│   ├── release.yml               ← publish on v*.*.*
-│   └── release-beta.yml          ← publish on v*-beta.*
+│   └── release.yml               ← publish on v*.*.* (stable) and v*-beta.* (beta) — single workflow because npm allows only one trusted publisher per package
 ├── package.json
 ├── tsconfig.json
 ├── tsup.config.ts

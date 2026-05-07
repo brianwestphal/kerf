@@ -1,11 +1,17 @@
 name: Release
 
-# Triggered by `v{X}.{Y}.{Z}` tags created via `npm run release` →
-# `bash scripts/release.sh`. Publishes to npm under the `latest` dist-tag and
-# creates a GitHub Release flagged as the latest stable.
+# Triggered by either tag pattern:
+#   v{X}.{Y}.{Z}             — stable. Created by `npm run release`.
+#                              Publishes to npm under `latest`. GitHub Release
+#                              flagged as the latest stable.
+#   v{X}.{Y}.{Z}-beta.{N}    — beta. Created by `npm run release:beta`.
+#                              Publishes to npm under `beta`. GitHub Release
+#                              flagged `prerelease: true`.
 #
-# Beta tags (`v*-beta.*`) are handled by `release-beta.yml` instead. The two
-# tag patterns don't overlap.
+# A single workflow handles both flows because npm allows only one trusted
+# publisher connection per package — both stable and beta publishes must run
+# from the same workflow filename. The `detect` job sets `is_beta` and every
+# downstream job/step branches on it.
 
 permissions:
   contents: write
@@ -15,9 +21,10 @@ on:
   push:
     tags:
       - 'v[0-9]+.[0-9]+.[0-9]+'
+      - 'v[0-9]+.[0-9]+.[0-9]+-beta.[0-9]+'
 
 concurrency:
-  group: release-stable
+  group: release-${{ github.ref_name }}
   cancel-in-progress: false
 
 env:
@@ -63,24 +70,38 @@ jobs:
       - run: npm run build
       - run: npm pack --dry-run
 
-  # ─── Phase 2: GitHub Release ────────────────────────────────────────
+  # ─── Detect: is this a stable tag or a beta tag? ────────────────────
 
-  create-release:
-    needs: [test, lint, typecheck, npm-dry-run]
+  detect:
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.extract.outputs.version }}
+      is_beta: ${{ steps.extract.outputs.is_beta }}
     steps:
-      - uses: actions/checkout@v4
       - id: extract
         run: |
+          # GITHUB_REF_NAME = "v0.2.0" or "v0.2.0-beta.1" → strip leading "v"
           VERSION="${GITHUB_REF_NAME#v}"
+          if [[ "$VERSION" == *-beta.* ]]; then
+            IS_BETA=true
+          else
+            IS_BETA=false
+          fi
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-          echo "Releasing v$VERSION"
-      - name: Extract release notes from CHANGELOG
-        id: notes
+          echo "is_beta=$IS_BETA" >> "$GITHUB_OUTPUT"
+          echo "Releasing v$VERSION (beta: $IS_BETA)"
+
+  # ─── Phase 2: GitHub Release ────────────────────────────────────────
+
+  create-release:
+    needs: [test, lint, typecheck, npm-dry-run, detect]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Extract release notes from CHANGELOG (stable)
+        if: needs.detect.outputs.is_beta == 'false'
         run: |
-          VERSION="${{ steps.extract.outputs.version }}"
+          VERSION="${{ needs.detect.outputs.version }}"
           # Pull the section between "## [VERSION]" and the next "## [" header.
           awk -v v="$VERSION" '
             $0 ~ "^## \\[" v "\\]" { f=1; next }
@@ -90,18 +111,43 @@ jobs:
           if [ ! -s release-notes.md ]; then
             echo "Release v$VERSION" > release-notes.md
           fi
-      - uses: softprops/action-gh-release@v2
+      - name: Compose release body (beta)
+        if: needs.detect.outputs.is_beta == 'true'
+        run: |
+          {
+            echo "**Beta / pre-release** — install with \`npm install kerfjs@beta\`."
+            echo
+            echo "GitHub's \`releases/latest\` ignores prereleases, so this beta does not affect anyone tracking the stable channel."
+            echo
+            echo "---"
+            echo
+            echo "Full annotated tag message follows:"
+            echo
+            git tag -l --format='%(contents)' "$GITHUB_REF_NAME"
+          } > release-notes.md
+      - name: Create GitHub Release (stable)
+        if: needs.detect.outputs.is_beta == 'false'
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.ref_name }}
-          name: v${{ steps.extract.outputs.version }}
+          name: v${{ needs.detect.outputs.version }}
           body_path: release-notes.md
           prerelease: false
           make_latest: 'true'
+      - name: Create GitHub Release (beta)
+        if: needs.detect.outputs.is_beta == 'true'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: v${{ needs.detect.outputs.version }}
+          body_path: release-notes.md
+          prerelease: true
+          make_latest: 'false'  # defence-in-depth
 
   # ─── Phase 3: npm publish ───────────────────────────────────────────
 
   npm-publish:
-    needs: [create-release]
+    needs: [create-release, detect]
     runs-on: ubuntu-latest
     environment: npm-publish
     steps:
@@ -112,5 +158,15 @@ jobs:
           cache: npm
           registry-url: 'https://registry.npmjs.org'
       - run: npm ci
+      - name: Bump package.json to beta version (ephemeral, not committed)
+        if: needs.detect.outputs.is_beta == 'true'
+        run: |
+          VERSION="${{ needs.detect.outputs.version }}"
+          npm version "$VERSION" --no-git-tag-version --allow-same-version
       - run: npm run build
-      - run: npm publish --provenance --access public
+      - name: Publish to npm@latest (stable)
+        if: needs.detect.outputs.is_beta == 'false'
+        run: npm publish --provenance --access public
+      - name: Publish to npm@beta (beta)
+        if: needs.detect.outputs.is_beta == 'true'
+        run: npm publish --tag beta --provenance --access public
