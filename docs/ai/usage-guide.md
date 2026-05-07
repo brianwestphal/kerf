@@ -47,7 +47,7 @@ Vite / esbuild need no extra config. The `jsx-runtime` and `jsx-dev-runtime` sub
 import {
   signal, computed, effect, batch,    // reactivity
   defineStore, resetAllStores,        // stores
-  mount,                              // render
+  mount, each,                        // render + keyed list memoisation
   delegate, delegateCapture,          // events
   toElement,                          // direct JSX → DOM Element
   SafeHtml, isSafeHtml, raw, Fragment, // JSX value type + cross-bundle guard + escape hatch + JSX <>...</> tag
@@ -63,6 +63,7 @@ import {
 | `defineStore({initial, actions})` | `{state, actions, reset}` | named multi-consumer state |
 | `resetAllStores()` | `void` | reset every registered store (test cleanup) |
 | `mount(el, render)` | `() => void` disposer | bind reactive render to a DOM element |
+| `each(items, render, key?)` | `SafeHtml` | iterate a keyed list; cache per-item HTML by identity (+ optional `key`) so unchanged rows skip re-render |
 | `delegate(root, type, sel, h)` | `() => void` disposer | bubble-phase delegation |
 | `delegateCapture(root, type, sel, h)` | `() => void` disposer | capture-phase (focus, blur, scroll, etc.) |
 | `toElement(jsx)` | `Element` | parse JSX/HTML string into one DOM node (SVG-aware) |

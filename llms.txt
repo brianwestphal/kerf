@@ -2,7 +2,7 @@
 
 > A tiny (~5 KB) reactive UI framework — fine-grained signals + DOM morphing + JSX. No virtual DOM, no compiler. Apply the smallest possible cut to update your DOM.
 
-kerf renders JSX to HTML strings, lets [morphdom](https://github.com/patrick-steele-idem/morphdom) diff them against the live tree, and uses [@preact/signals-core](https://github.com/preactjs/signals) for fine-grained reactivity. It pairs well with server-rendered HTML, embedded widgets, and any UI where preserving focus / selection across re-renders matters. Public API is one import: `signal`, `computed`, `effect`, `batch`, `defineStore`, `resetAllStores`, `mount`, `delegate`, `delegateCapture`, `toElement`, `SafeHtml`, `isSafeHtml`, `raw`, `Fragment`.
+kerf renders JSX to HTML strings, lets [morphdom](https://github.com/patrick-steele-idem/morphdom) diff them against the live tree, and uses [@preact/signals-core](https://github.com/preactjs/signals) for fine-grained reactivity. It pairs well with server-rendered HTML, embedded widgets, and any UI where preserving focus / selection across re-renders matters. Public API is one import: `signal`, `computed`, `effect`, `batch`, `defineStore`, `resetAllStores`, `mount`, `each`, `delegate`, `delegateCapture`, `toElement`, `SafeHtml`, `isSafeHtml`, `raw`, `Fragment`.
 
 ## For AI assistants
 

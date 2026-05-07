@@ -1,4 +1,4 @@
-import { delegate, mount, signal } from 'kerfjs';
+import { delegate, each, mount, signal } from 'kerfjs';
 
 interface Row {
   id: number;
@@ -75,14 +75,18 @@ mount(root, () => {
       </div>
       <table className="table table-hover table-striped test-data">
         <tbody id="tbody">
-          {rows.value.map((row) => (
-            <tr data-key={row.id} className={row.id === sel ? 'danger' : ''}>
-              <td className="col-md-1">{String(row.id)}</td>
-              <td className="col-md-4"><a className="lbl" data-id={String(row.id)}>{row.label}</a></td>
-              <td className="col-md-1"><a className="remove" data-id={String(row.id)}><span className="glyphicon glyphicon-remove" aria-hidden="true"></span></a></td>
-              <td className="col-md-6"></td>
-            </tr>
-          ))}
+          {each(
+            rows.value,
+            (row) => (
+              <tr data-key={row.id} className={row.id === sel ? 'danger' : ''}>
+                <td className="col-md-1">{String(row.id)}</td>
+                <td className="col-md-4"><a className="lbl" data-id={String(row.id)}>{row.label}</a></td>
+                <td className="col-md-1"><a className="remove" data-id={String(row.id)}><span className="glyphicon glyphicon-remove" aria-hidden="true"></span></a></td>
+                <td className="col-md-6"></td>
+              </tr>
+            ),
+            (row) => row.id === sel ? 1 : 0,
+          )}
         </tbody>
       </table>
       <span className="preloadicon glyphicon glyphicon-remove" aria-hidden="true"></span>

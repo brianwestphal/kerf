@@ -12,6 +12,7 @@ kerf/
 │   ├── reactive.ts               ← signal/computed/effect/batch (re-export)
 │   ├── store.ts                  ← defineStore + resetAllStores + REGISTRY
 │   ├── mount.ts                  ← mount() — morphdom-driven render bound to effect()
+│   ├── each.ts                   ← each() — keyed list iteration with per-item memo
 │   ├── delegate.ts               ← delegate + delegateCapture
 │   ├── toElement.ts              ← SVG-aware JSX-to-DOM
 │   └── utils/
@@ -81,6 +82,7 @@ Every export reachable via `import { ... } from 'kerfjs'`:
 | `resetAllStores` | `store.ts` | Reset every registered store |
 | `Store<TState, TActions>` | `store.ts` | Type |
 | `mount` | `mount.ts` | Render JSX into a DOM element with morphdom diffs |
+| `each` | `each.ts` | Keyed list iteration; per-item HTML memo by object identity (+ optional key) |
 | `delegate` | `delegate.ts` | Tier 1 bubbling delegation |
 | `delegateCapture` | `delegate.ts` | Tier 2 capture-phase delegation |
 | `toElement` | `toElement.ts` | JSX → DOM (SVG-aware) |

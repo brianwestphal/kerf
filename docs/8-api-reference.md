@@ -83,6 +83,15 @@ morphdom is configured with:
   - Returns `false` if the live element is the focused `[contenteditable]` (entire subtree preserved on this morph; see §8.7 below and `docs/4-render.md` §4.4).
   - Otherwise preserves the focused text-entry's value + selection range, then proceeds.
 
+### `each<T>(items, render, key?): SafeHtml`
+
+```ts
+each(rows.value, (row) => <tr data-key={row.id}>{row.label}</tr>);
+each(rows.value, (row) => <tr…>…</tr>, (row) => row.id === selectedId ? 1 : 0);
+```
+
+Keyed list iteration with per-item memoisation. Skips re-running `render` for items whose object identity (and optional `key`) are unchanged since the previous call — those items reuse their cached HTML string. Items whose identity or key did change re-render normally. Items must be objects (cache is a `WeakMap`); wrap primitives if you need to iterate them. Use `key` when external state, not the item itself, drives what the row should render (e.g. a "currently selected" id flips a CSS class).
+
 ## 8.4 Event delegation
 
 ### `delegate(rootEl, type, selector, handler): () => void`

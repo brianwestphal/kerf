@@ -25,6 +25,7 @@ The framework is a small set of independent modules that compose. Each one earns
 - `src/reactive.ts` — re-export of `@preact/signals-core` (`signal`, `computed`, `effect`, `batch`). One-file abstraction layer so the underlying lib is swappable.
 - `src/store.ts` — `defineStore({ initial, actions })` + global registry + `resetAllStores()`.
 - `src/mount.ts` — `mount(el, render)`. Wraps `effect()` + `morphdom`. Conventions for diff keys, `data-morph-skip`, focus/selection preservation.
+- `src/each.ts` — `each(items, render, key?)`. Keyed list iteration with per-item memoisation; reuses cached HTML strings for items whose object identity (and optional `key`) didn't change.
 - `src/delegate.ts` — `delegate()` (Tier 1 bubble) + `delegateCapture()` (Tier 2 capture).
 - `src/toElement.ts` — SVG-aware JSX → DOM helper. Routes SVG content through `DOMParser('image/svg+xml')`.
 - `src/testing.ts` — `kerfjs/testing` subpath. Re-exports `clearStoreRegistry` for unit-test isolation.
@@ -39,7 +40,7 @@ Everything users import lives at the top level of `kerfjs`:
 import {
   signal, computed, effect, batch,
   defineStore, resetAllStores,
-  mount,
+  mount, each,
   delegate, delegateCapture,
   toElement,
   SafeHtml, isSafeHtml, raw, Fragment,

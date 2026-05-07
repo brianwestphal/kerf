@@ -41,6 +41,16 @@ Elements without a key are matched positionally by tag name. Pure-HTML diffs wor
 </ul>
 ```
 
+For large lists where most rows are unchanged across renders, swap `.map(...)` for the `each(items, render, key?)` helper. It memoises each row's HTML keyed by item identity (and an optional `key` that captures external state, like a "selected id"), so unchanged rows skip the JSX evaluation + string-build entirely. Items must be objects (the cache is a `WeakMap`); the immutable-update style elsewhere in this codebase makes the cache work automatically — replace a row with a fresh object and it re-renders, leave its reference alone and it doesn't.
+
+```tsx
+import { each } from 'kerfjs';
+
+<ul>
+  {each(rows.value, (r) => <li data-key={r.id}>{r.label}</li>)}
+</ul>
+```
+
 ## 4.3 `data-morph-skip`
 
 Apply this attribute to any element whose subtree you DON'T want morphdom to touch:
