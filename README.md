@@ -53,7 +53,7 @@ Configure JSX:
 ## Quick tour
 
 ```ts
-import { signal, computed, effect, defineStore, mount, delegate } from 'kerfjs';
+import { signal, computed, effect, defineStore, mount, each, delegate } from 'kerfjs';
 
 // 1. A signal — single piece of reactive state.
 const count = signal(0);
@@ -77,12 +77,16 @@ mount(root, () => (
   <div>
     <h1>Cart ({cart.state.value.items.length})</h1>
     <ul>
-      {cart.state.value.items.map((item) => (
-        <li data-key={item.id}>
-          {item.name}
-          <button data-action="remove" data-id={item.id}>×</button>
-        </li>
-      ))}
+      {each(
+        cart.state.value.items,
+        (item) => (
+          <li>
+            {item.name}
+            <button data-action="remove" data-id={item.id}>×</button>
+          </li>
+        ),
+        (item) => item.id,
+      )}
     </ul>
     <p>Doubled count: {doubled.value}</p>
   </div>
