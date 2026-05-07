@@ -60,6 +60,7 @@
     "test:watch": "vitest",
     "test:unit": "vitest run tests/unit --coverage",
     "test:integration": "vitest run tests/integration --coverage",
+    "test:dist": "npm run build && vitest run --config vitest.config.dist.ts",
     "lint": "eslint src tests",
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf dist coverage node_modules/.cache",

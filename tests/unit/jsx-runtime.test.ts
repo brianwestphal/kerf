@@ -5,13 +5,62 @@
 
 import { describe, expect, it } from 'vitest';
 
-import { Fragment, jsx, raw, SafeHtml } from '../../src/jsx-runtime.js';
+import { Fragment, isSafeHtml, jsx, raw, SafeHtml } from '../../src/jsx-runtime.js';
 
 describe('SafeHtml', () => {
   it('wraps a string and exposes it via toString()', () => {
     const sh = new SafeHtml('<p>hi</p>');
     expect(sh.toString()).toBe('<p>hi</p>');
     expect(String(sh)).toBe('<p>hi</p>');
+  });
+});
+
+describe('isSafeHtml() — cross-bundle brand', () => {
+  // Regression for KF-14: when a consumer's bundler loads two copies of
+  // kerf (e.g. the barrel + the JSX-runtime entry) the per-realm `SafeHtml`
+  // classes are no longer === each other. `instanceof` would fail; the brand
+  // symbol (`Symbol.for('kerfjs.SafeHtml')`) makes `isSafeHtml()` work anyway.
+
+  it('recognises real SafeHtml instances', () => {
+    expect(isSafeHtml(new SafeHtml('<p>x</p>'))).toBe(true);
+    expect(isSafeHtml(raw('<p>x</p>'))).toBe(true);
+  });
+
+  it('returns false for non-SafeHtml values', () => {
+    expect(isSafeHtml(null)).toBe(false);
+    expect(isSafeHtml(undefined)).toBe(false);
+    expect(isSafeHtml('hi')).toBe(false);
+    expect(isSafeHtml(42)).toBe(false);
+    expect(isSafeHtml({})).toBe(false);
+    expect(isSafeHtml({ __html: '<p>x</p>' })).toBe(false);
+  });
+
+  it('recognises an instance from a separate SafeHtml class that uses the same brand symbol', () => {
+    // Simulate what happens when a consumer's bundler ships two copies of
+    // jsx-runtime — each copy defines its own `SafeHtml` class. As long as
+    // both classes were built from the same kerf source, they share the
+    // global `Symbol.for('kerfjs.SafeHtml')` brand.
+    const BRAND = Symbol.for('kerfjs.SafeHtml');
+    class OtherSafeHtml {
+      readonly __html: string;
+      readonly [BRAND] = true as const;
+      constructor(html: string) { this.__html = html; }
+      toString(): string { return this.__html; }
+    }
+    const other = new OtherSafeHtml('<b>cross-bundle</b>');
+    expect(other instanceof SafeHtml).toBe(false); // sanity: distinct classes
+    expect(isSafeHtml(other)).toBe(true);
+
+    // And the runtime accepts it as a JSX child (this is the KF-14 fix).
+    const out = jsx('div', { children: other as unknown as SafeHtml });
+    expect(out.toString()).toBe('<div><b>cross-bundle</b></div>');
+  });
+
+  it('rejects an object that has __html but no brand', () => {
+    const fake = { __html: '<p>x</p>', toString() { return this.__html; } };
+    expect(isSafeHtml(fake)).toBe(false);
+    expect(() => jsx('div', { children: fake as unknown as SafeHtml }).toString())
+      .toThrow(/unsupported child of type object/);
   });
 });
 

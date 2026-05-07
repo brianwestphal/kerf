@@ -119,7 +119,13 @@ class SafeHtml {
 }
 ```
 
-The return type of every JSX expression. `instanceof SafeHtml` works. `.toString()` returns the underlying HTML.
+The return type of every JSX expression. `.toString()` returns the underlying HTML.
+
+`SafeHtml` instances carry a brand symbol — `Symbol.for('kerfjs.SafeHtml')` — so cross-bundle identification works even if a consumer's bundler ends up loading two copies of kerf (e.g. the barrel and the JSX-runtime entry resolved as independent modules). Prefer `isSafeHtml()` over `instanceof SafeHtml` when writing custom integrations.
+
+### `isSafeHtml(value: unknown): value is SafeHtml`
+
+Cross-bundle-safe type guard. Returns `true` for any object carrying the `Symbol.for('kerfjs.SafeHtml')` brand. Use this rather than `instanceof SafeHtml` if you're inspecting JSX values yourself — `instanceof` fails when two copies of kerf produce structurally-identical-but-class-distinct `SafeHtml` instances.
 
 ### `raw(html: string): SafeHtml`
 

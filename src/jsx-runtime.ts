@@ -17,14 +17,35 @@
 
 import { escapeAttr, escapeHtml } from './utils/escapeHtml.js';
 
+// Cross-realm/cross-bundle brand. Using `Symbol.for` (the global registry)
+// means two `SafeHtml` classes from different module copies still recognise
+// each other. Same approach React uses for `$$typeof: Symbol.for('react.element')`.
+// Without this, `instanceof SafeHtml` fails when the consumer's bundler ends
+// up loading two copies of kerf (separate barrel + jsx-runtime entries,
+// monorepo dedup misses, ESM/CJS interop, etc.).
+const SAFE_HTML_BRAND = Symbol.for('kerfjs.SafeHtml');
+
 export class SafeHtml {
   readonly __html: string;
+  // Branded so `isSafeHtml()` recognises instances from any copy of this module.
+  readonly [SAFE_HTML_BRAND] = true as const;
   constructor(html: string) {
     this.__html = html;
   }
   toString(): string {
     return this.__html;
   }
+}
+
+/**
+ * Type guard for `SafeHtml`. Prefer this over `instanceof SafeHtml` — it works
+ * across module copies (e.g. when the consumer's bundler loads kerf's barrel
+ * and JSX-runtime entries as independent modules).
+ */
+export function isSafeHtml(value: unknown): value is SafeHtml {
+  return typeof value === 'object'
+    && value !== null
+    && (value as Record<symbol, unknown>)[SAFE_HTML_BRAND] === true;
 }
 
 /** Inject a pre-escaped HTML string. Use sparingly — caller is responsible for escaping. */
@@ -47,7 +68,7 @@ const VOID_TAGS = new Set([
 
 function renderChildren(children: Children): string {
   if (children == null || typeof children === 'boolean') return '';
-  if (children instanceof SafeHtml) return children.__html;
+  if (isSafeHtml(children)) return children.__html;
   if (typeof children === 'string') return escapeHtml(children);
   if (typeof children === 'number') return String(children);
   if (Array.isArray(children)) return children.map(renderChildren).join('');
@@ -185,7 +206,7 @@ function renderAttr(key: string, value: unknown): string {
   if (value == null || value === false) return '';
   if (value === true) return ` ${name}`;
   let strValue: string;
-  if (value instanceof SafeHtml) {
+  if (isSafeHtml(value)) {
     strValue = value.__html;
   } else if (typeof value === 'number') {
     strValue = String(value);

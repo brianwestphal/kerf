@@ -15,7 +15,8 @@
 
 import morphdom from 'morphdom';
 
-import { SafeHtml } from './jsx-runtime.js';
+import type { SafeHtml } from './jsx-runtime.js';
+import { isSafeHtml } from './jsx-runtime.js';
 import { effect } from './reactive.js';
 
 /**
@@ -39,7 +40,7 @@ import { effect } from './reactive.js';
 export function mount(rootEl: HTMLElement, render: () => SafeHtml | string): () => void {
   return effect(() => {
     const next = render();
-    const html = next instanceof SafeHtml ? next.toString() : next;
+    const html = isSafeHtml(next) ? next.toString() : next;
 
     const template = rootEl.cloneNode(false) as HTMLElement;
     template.innerHTML = html;

@@ -50,7 +50,7 @@ import {
   mount,                              // render
   delegate, delegateCapture,          // events
   toElement,                          // direct JSX → DOM Element
-  SafeHtml, raw,                      // JSX value type + escape hatch
+  SafeHtml, isSafeHtml, raw,          // JSX value type + cross-bundle guard + escape hatch
 } from 'kerfjs';
 ```
 
@@ -67,6 +67,7 @@ import {
 | `delegateCapture(root, type, sel, h)` | `() => void` disposer | capture-phase (focus, blur, scroll, etc.) |
 | `toElement(jsx)` | `Element` | parse JSX/HTML string into one DOM node (SVG-aware) |
 | `raw(html)` | `SafeHtml` | inject pre-escaped HTML (icons, server fragments) |
+| `isSafeHtml(v)` | `boolean` (type guard) | cross-bundle-safe `SafeHtml` check; prefer over `instanceof` |
 
 ## The four patterns
 

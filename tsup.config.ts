@@ -6,7 +6,14 @@ export default defineConfig({
   outDir: 'dist',
   target: 'es2022',
   platform: 'neutral',
-  splitting: false,
+  // KF-15 / KF-14: with multiple entries (`index`, `jsx-runtime`, `testing`)
+  // and `splitting: false`, esbuild bundles each entry independently. Shared
+  // source modules (`store.ts`, `jsx-runtime.ts`) get duplicated — or, worse,
+  // tree-shaken into broken stubs (e.g. an empty `clearStoreRegistry` because
+  // `REGISTRY` was eliminated as unreferenced in the testing bundle).
+  // Splitting promotes shared code into a chunk that all entries import, so
+  // there's exactly one copy of every module-level value at runtime.
+  splitting: true,
   clean: true,
   sourcemap: true,
   dts: true,

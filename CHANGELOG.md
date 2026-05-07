@@ -16,6 +16,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Fixed
+
+- **`clearStoreRegistry` was a no-op in the published bundle (KF-15).** `dist/testing.js` shipped an empty function body. Root cause: `tsup` bundled each entry independently with `splitting: false`, so the testing entry tree-shook the module-level `REGISTRY` array out as unreferenced — leaving `REGISTRY.length = 0` as dead code. Same root cause as KF-14. Fixed by enabling `splitting: true` in `tsup.config.ts`: shared modules now live in chunk files that all entries import, so `defineStore`'s registry and `clearStoreRegistry`'s reference are the same array. Side benefit: the duplicate `SafeHtml` class definition is gone too — there's now exactly one copy across the whole dist. Build output now includes `dist/chunk-*.js` files (covered by the existing `"files": ["dist"]` in `package.json`). New regression test in `tests/dist/store-registry-shared.test.ts` exercises the cross-entry registry from the built bundles.
+- **`SafeHtml` cross-bundle identity (KF-14).** When a consumer's bundler ended up loading two copies of kerf — for example, the barrel (`kerfjs`) and the JSX-runtime entry (`kerfjs/jsx-runtime`) resolving as separate modules — `instanceof SafeHtml` failed inside the JSX runtime because the two `SafeHtml` classes were structurally identical but referentially distinct. The renderer would then throw `JSX: unsupported child of type object (SafeHtml)` on perfectly valid JSX. `SafeHtml` instances now carry a `Symbol.for('kerfjs.SafeHtml')` brand and the runtime checks for the brand instead of using `instanceof`. New unit tests simulate the duplicate-class scenario, and a new `npm run test:dist` job exercises the actual built bundles in CI.
+
+### Added
+
+- **`isSafeHtml(value)` type guard** exported from `kerfjs`. Use this rather than `instanceof SafeHtml` when inspecting JSX values from your own code — it works across module copies.
+
 ### Changed
 
 - **Package renamed from `kerf` to `kerfjs`** on the npm registry. The `kerf` name was rejected by npm's typo-squatting heuristic ("too similar to `keyv`"). The brand is still *kerf* — only the npm identifier changed. Update imports to `from 'kerfjs'`, `tsconfig.json` to `"jsxImportSource": "kerfjs"`, and the install command to `npm install kerfjs`. The GitHub repo and Pages URL (`brianwestphal.github.io/kerf/`) are unchanged.

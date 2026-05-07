@@ -78,6 +78,7 @@ Every export reachable via `import { ... } from 'kerfjs'`:
 | `delegateCapture` | `delegate.ts` | Tier 2 capture-phase delegation |
 | `toElement` | `toElement.ts` | JSX → DOM (SVG-aware) |
 | `SafeHtml` | `jsx-runtime.ts` | The JSX result type |
+| `isSafeHtml` | `jsx-runtime.ts` | Cross-bundle type guard for `SafeHtml` (preferred over `instanceof`) |
 | `raw` | `jsx-runtime.ts` | Wrap a pre-escaped HTML string |
 
 The JSX runtime is a separate subpath export at `kerfjs/jsx-runtime`. It's referenced by tsconfig (`"jsxImportSource": "kerfjs"`); users do not import from it directly.
@@ -90,7 +91,12 @@ The JSX runtime is a separate subpath export at `kerfjs/jsx-runtime`. It's refer
 - `dist/index.d.ts` (types)
 - `dist/jsx-runtime.js`
 - `dist/jsx-runtime.d.ts`
-- Source maps for both
+- `dist/testing.js` (`kerfjs/testing` subpath)
+- `dist/testing.d.ts`
+- `dist/chunk-*.js` — shared chunks emitted by tsup's code splitting. Both entries import their shared modules (`SafeHtml`, the store registry, etc.) from these chunks so each module-level value exists exactly once at runtime. Do not import directly; consumers always go through the named entry points.
+- Source maps for everything
+
+`tsup.config.ts` runs with `splitting: true` (KF-14 / KF-15) — without it, esbuild bundles each entry independently, which both duplicates shared classes (breaking `instanceof` checks across entries) and tree-shakes shared module-level state into broken stubs.
 
 Runtime deps (`@preact/signals-core`, `morphdom`) are external — consumers' bundlers pick them up from their own `node_modules`.
 
