@@ -8,7 +8,7 @@
  * with the same logical row.
  */
 
-import { delegate, mount, signal } from 'kerf';
+import { delegate, mount, signal } from 'kerfjs';
 
 interface Row { id: string; label: string }
 

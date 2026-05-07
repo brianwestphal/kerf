@@ -7,7 +7,7 @@
  * preservation observable while you're interacting with the page.
  */
 
-import { delegate, mount, signal } from 'kerf';
+import { delegate, mount, signal } from 'kerfjs';
 
 export function mountFocusSurvival(root: HTMLElement): void {
   const name = signal('');

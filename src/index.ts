@@ -2,8 +2,8 @@
  * kerf — public entry point.
  *
  * Re-exports everything users need from a single import path. The JSX
- * runtime lives at `kerf/jsx-runtime` (subpath export); users configure it
- * via tsconfig.json's `"jsxImportSource": "kerf"`.
+ * runtime lives at `kerfjs/jsx-runtime` (subpath export); users configure it
+ * via tsconfig.json's `"jsxImportSource": "kerfjs"`.
  */
 
 export { delegate, delegateCapture } from './delegate.js';

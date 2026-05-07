@@ -9,7 +9,7 @@ A store is a thin convention layered on top of [§2 signals](2-reactivity.md). I
 The factory:
 
 ```ts
-import { defineStore } from 'kerf';
+import { defineStore } from 'kerfjs';
 
 const counter = defineStore({
   initial: () => ({ count: 0 }),
@@ -52,7 +52,7 @@ counter.reset();               // back to { count: 0 }
 Per-store reset is useful in tests. There's also a global hook:
 
 ```ts
-import { resetAllStores } from 'kerf';
+import { resetAllStores } from 'kerfjs';
 
 resetAllStores();              // resets EVERY store created via defineStore()
 ```
@@ -87,7 +87,7 @@ const cart = defineStore({
 If you want the writes inside `checkout()` to be a single notification to subscribers, wrap them in `batch()`:
 
 ```ts
-import { batch } from 'kerf';
+import { batch } from 'kerfjs';
 
 actions: (set, get) => ({
   pay() {
@@ -106,7 +106,7 @@ actions: (set, get) => ({
 A store doesn't need a `derived` field built into it; derive via `computed()` next to the store:
 
 ```ts
-import { computed } from 'kerf';
+import { computed } from 'kerfjs';
 
 export const cartTotal = computed(() =>
   cart.state.value.items.reduce((sum, i) => sum + i.price, 0),
@@ -118,7 +118,7 @@ export const cartTotal = computed(() =>
 ## 3.7 The `Store<TState, TActions>` type
 
 ```ts
-import type { Store } from 'kerf';
+import type { Store } from 'kerfjs';
 
 function makeWidget(store: Store<{ open: boolean }, { toggle(): void }>) {
   // ...

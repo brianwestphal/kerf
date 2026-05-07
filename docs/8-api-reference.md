@@ -1,6 +1,6 @@
 # 8. API reference
 
-Everything kerf exports, organised by module. Imported via `import { … } from 'kerf'` unless noted.
+Everything kerf exports, organised by module. Imported via `import { … } from 'kerfjs'` unless noted.
 
 ## 8.1 Reactivity
 
@@ -59,12 +59,12 @@ interface Store<TState, TActions> {
 }
 ```
 
-### `clearStoreRegistry(): void` — `kerf/testing` subpath
+### `clearStoreRegistry(): void` — `kerfjs/testing` subpath
 
-Empties the global store registry. Used by unit tests to isolate cases. Imported via the `kerf/testing` subpath, **not** the main `kerf` entry, so production builds don't pull it in:
+Empties the global store registry. Used by unit tests to isolate cases. Imported via the `kerfjs/testing` subpath, **not** the main `kerfjs` entry, so production builds don't pull it in:
 
 ```ts
-import { clearStoreRegistry } from 'kerf/testing';
+import { clearStoreRegistry } from 'kerfjs/testing';
 ```
 
 ## 8.3 Render
@@ -98,13 +98,13 @@ Same shape, but installs the listener with `capture: true`. Use for non-bubbling
 
 ## 8.5 JSX runtime
 
-### `import 'kerf/jsx-runtime'` — TypeScript / esbuild config
+### `import 'kerfjs/jsx-runtime'` — TypeScript / esbuild config
 
 ```jsonc
 {
   "compilerOptions": {
     "jsx": "react-jsx",
-    "jsxImportSource": "kerf"
+    "jsxImportSource": "kerfjs"
   }
 }
 ```

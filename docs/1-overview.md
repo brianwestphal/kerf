@@ -9,7 +9,7 @@ A tiny reactive UI framework. Roughly 5 KB minified + gzipped including its two 
 - **Render** — `mount(rootEl, () => jsx)`. JSX renders to an HTML string; morphdom diffs it against the live DOM and applies the minimum mutations.
 - **Event delegation** — `delegate()` (Tier 1, bubble) and `delegateCapture()` (Tier 2, capture) replace per-element listeners with one root-level listener per event type.
 
-Plus a JSX runtime (`kerf/jsx-runtime`) and an SVG-aware `toElement()` for direct JSX-to-DOM conversion.
+Plus a JSX runtime (`kerfjs/jsx-runtime`) and an SVG-aware `toElement()` for direct JSX-to-DOM conversion.
 
 ## 1.2 What kerf is NOT
 

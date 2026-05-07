@@ -5,7 +5,7 @@ kerf's reactivity primitive is `@preact/signals-core` re-exported through `src/r
 ## 2.1 `signal(initialValue)`
 
 ```ts
-import { signal } from 'kerf';
+import { signal } from 'kerfjs';
 
 const count = signal(0);
 count.value;        // → 0   (read)
@@ -17,7 +17,7 @@ A signal is a single piece of reactive state. Reads via `.value` are tracked whe
 ## 2.2 `computed(fn)`
 
 ```ts
-import { computed, signal } from 'kerf';
+import { computed, signal } from 'kerfjs';
 
 const a = signal(1);
 const b = signal(2);
@@ -35,7 +35,7 @@ A `computed` is a derived signal. Its body is re-run whenever any signal it read
 ## 2.3 `effect(fn)`
 
 ```ts
-import { effect, signal } from 'kerf';
+import { effect, signal } from 'kerfjs';
 
 const count = signal(0);
 const dispose = effect(() => {
@@ -58,7 +58,7 @@ An `effect()` runs its body synchronously once on creation, then re-runs it when
 ## 2.4 `batch(fn)`
 
 ```ts
-import { batch, effect, signal } from 'kerf';
+import { batch, effect, signal } from 'kerfjs';
 
 const a = signal(1);
 const b = signal(2);
@@ -77,7 +77,7 @@ Coalesces multiple writes inside `fn` into a single re-run of any subscribed eff
 ## 2.5 The `Signal<T>` and `ReadonlySignal<T>` types
 
 ```ts
-import type { ReadonlySignal, Signal } from 'kerf';
+import type { ReadonlySignal, Signal } from 'kerfjs';
 
 function reset(s: Signal<number>) {
   s.value = 0;       // OK — Signal allows writes

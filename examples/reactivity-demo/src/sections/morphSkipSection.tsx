@@ -7,7 +7,7 @@
  * morphdom never touches what's inside.
  */
 
-import { delegate, mount, signal } from 'kerf';
+import { delegate, mount, signal } from 'kerfjs';
 
 export function mountMorphSkip(root: HTMLElement): void {
   const tick = signal(0);

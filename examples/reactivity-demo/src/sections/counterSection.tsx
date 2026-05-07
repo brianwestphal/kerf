@@ -3,7 +3,7 @@
  * The simplest possible "reactive primitive in action" example.
  */
 
-import { delegate, mount, signal } from 'kerf';
+import { delegate, mount, signal } from 'kerfjs';
 
 export function mountCounter(root: HTMLElement): void {
   const count = signal(0);

@@ -51,7 +51,7 @@ Three-tier model:
 
 ### §6 JSX runtime
 
-JSX renders to `SafeHtml` strings via `kerf/jsx-runtime`. Configured via `tsconfig` `"jsxImportSource": "kerf"`. Attribute aliases for HTML + SVG camelCase → kebab-case. Boolean attribute semantics. Children: strings escaped, `SafeHtml` injected raw, DOM nodes throw, arrays joined. `raw(html)` wraps pre-escaped strings.
+JSX renders to `SafeHtml` strings via `kerfjs/jsx-runtime`. Configured via `tsconfig` `"jsxImportSource": "kerfjs"`. Attribute aliases for HTML + SVG camelCase → kebab-case. Boolean attribute semantics. Children: strings escaped, `SafeHtml` injected raw, DOM nodes throw, arrays joined. `raw(html)` wraps pre-escaped strings.
 
 ### §7 SVG
 

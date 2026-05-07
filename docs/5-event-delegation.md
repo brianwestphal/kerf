@@ -15,7 +15,7 @@ Almost every event you care about falls into one of three tiers.
 Use `delegate()`. Walk-up dispatch via `closest(selector)`.
 
 ```ts
-import { delegate } from 'kerf';
+import { delegate } from 'kerfjs';
 
 delegate(rootEl, 'click', '[data-action="add"]', (e, btn) => {
   // `btn` is the matched element (the button), not the original target
@@ -30,7 +30,7 @@ delegate(rootEl, 'click', '[data-action="add"]', (e, btn) => {
 Use `delegateCapture()`. Same shape as `delegate()`, but the listener is installed with `capture: true`:
 
 ```ts
-import { delegateCapture } from 'kerf';
+import { delegateCapture } from 'kerfjs';
 
 delegateCapture(rootEl, 'focus', 'input, textarea', (e, target) => {
   highlight(target as HTMLElement);

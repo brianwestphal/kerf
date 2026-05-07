@@ -3,7 +3,7 @@
 `mount(rootEl, render)` is the single rendering primitive.
 
 ```ts
-import { mount, signal } from 'kerf';
+import { mount, signal } from 'kerfjs';
 
 const count = signal(0);
 

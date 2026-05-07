@@ -10,7 +10,7 @@
  * orphan fragment doesn't paint standalone.
  */
 
-import { delegate, mount, signal } from 'kerf';
+import { delegate, mount, signal } from 'kerfjs';
 
 export function mountSvgRender(root: HTMLElement): void {
   const angle = signal(45);

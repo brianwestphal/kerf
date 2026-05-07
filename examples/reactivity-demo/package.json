@@ -9,7 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "kerf": "file:../.."
+    "kerfjs": "file:../.."
   },
   "devDependencies": {
     "typescript": "^5.7.0",

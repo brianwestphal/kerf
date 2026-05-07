@@ -1,6 +1,6 @@
 # 6. JSX runtime
 
-kerf ships its own JSX runtime at `kerf/jsx-runtime`. JSX renders to `SafeHtml` — a small wrapper around an HTML string. There's no virtual DOM, no element tree, no reconciliation tree. Just strings.
+kerf ships its own JSX runtime at `kerfjs/jsx-runtime`. JSX renders to `SafeHtml` — a small wrapper around an HTML string. There's no virtual DOM, no element tree, no reconciliation tree. Just strings.
 
 ## 6.1 Configuration
 
@@ -9,12 +9,12 @@ kerf ships its own JSX runtime at `kerf/jsx-runtime`. JSX renders to `SafeHtml` 
 {
   "compilerOptions": {
     "jsx": "react-jsx",
-    "jsxImportSource": "kerf"
+    "jsxImportSource": "kerfjs"
   }
 }
 ```
 
-That's the entire setup. The TypeScript / esbuild / vitest JSX transform looks for `kerf/jsx-runtime` and finds the `jsx`, `jsxs`, `jsxDEV`, and `Fragment` exports there.
+That's the entire setup. The TypeScript / esbuild / vitest JSX transform looks for `kerfjs/jsx-runtime` and finds the `jsx`, `jsxs`, `jsxDEV`, and `Fragment` exports there.
 
 ## 6.2 What JSX produces
 
@@ -83,7 +83,7 @@ This matches HTML semantics — a boolean attribute is "on" by being present, re
 For when you have a pre-escaped HTML string (rendered Markdown, sanitised user input, an SVG icon literal):
 
 ```ts
-import { raw } from 'kerf';
+import { raw } from 'kerfjs';
 
 const icon = raw('<svg ...><path d="..."/></svg>');
 
@@ -136,7 +136,7 @@ The JSX transform invokes the function with the props it gathered; the function 
 If you want stateful behaviour, the state lives in signals/stores OUTSIDE the component, and the component reads them:
 
 ```tsx
-import { signal } from 'kerf';
+import { signal } from 'kerfjs';
 const count = signal(0);
 
 function Counter() {

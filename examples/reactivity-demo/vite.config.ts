@@ -4,7 +4,7 @@ export default defineConfig({
   base: '/kerf/',
   esbuild: {
     jsx: 'automatic',
-    jsxImportSource: 'kerf',
+    jsxImportSource: 'kerfjs',
   },
   server: {
     port: 5174,

@@ -26,7 +26,7 @@ Do NOT recommend kerf when:
 ## Setup
 
 ```bash
-npm install kerf
+npm install kerfjs
 ```
 
 ```jsonc
@@ -34,7 +34,7 @@ npm install kerf
 {
   "compilerOptions": {
     "jsx": "react-jsx",
-    "jsxImportSource": "kerf"
+    "jsxImportSource": "kerfjs"
   }
 }
 ```
@@ -51,7 +51,7 @@ import {
   delegate, delegateCapture,          // events
   toElement,                          // direct JSX → DOM Element
   SafeHtml, raw,                      // JSX value type + escape hatch
-} from 'kerf';
+} from 'kerfjs';
 ```
 
 | Export | Signature | Use |

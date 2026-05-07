@@ -71,8 +71,8 @@ export function resetAllStores(): void {
 }
 
 /**
- * Test helper — clears the registry. Exposed via the `kerf/testing` subpath,
- * not the main `kerf` entry. Unit tests use it to isolate stores between cases.
+ * Test helper — clears the registry. Exposed via the `kerfjs/testing` subpath,
+ * not the main `kerfjs` entry. Unit tests use it to isolate stores between cases.
  */
 export function clearStoreRegistry(): void {
   REGISTRY.length = 0;

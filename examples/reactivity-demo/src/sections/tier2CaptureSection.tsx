@@ -8,7 +8,7 @@
  * a re-render.
  */
 
-import { delegate, delegateCapture, mount, signal } from 'kerf';
+import { delegate, delegateCapture, mount, signal } from 'kerfjs';
 
 export function mountTier2Capture(root: HTMLElement): void {
   const focused = signal<string | null>(null);

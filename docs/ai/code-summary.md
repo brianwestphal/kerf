@@ -61,7 +61,7 @@ kerf/
 
 ## Public exports
 
-Every export reachable via `import { ... } from 'kerf'`:
+Every export reachable via `import { ... } from 'kerfjs'`:
 
 | Export | From | Purpose |
 | --- | --- | --- |
@@ -81,7 +81,7 @@ Every export reachable via `import { ... } from 'kerf'`:
 | `SafeHtml` | `jsx-runtime.ts` | The JSX result type |
 | `raw` | `jsx-runtime.ts` | Wrap a pre-escaped HTML string |
 
-The JSX runtime is a separate subpath export at `kerf/jsx-runtime`. It's referenced by tsconfig (`"jsxImportSource": "kerf"`); users do not import from it directly.
+The JSX runtime is a separate subpath export at `kerfjs/jsx-runtime`. It's referenced by tsconfig (`"jsxImportSource": "kerfjs"`); users do not import from it directly.
 
 ## Build outputs
 

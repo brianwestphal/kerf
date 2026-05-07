@@ -7,7 +7,7 @@ A tiny reactive UI framework. Apply the smallest possible cut to update your DOM
 **[Live demo →](https://brianwestphal.github.io/kerf/)** — seven sections exercising every primitive, no install required.
 
 ```ts
-import { signal, mount } from 'kerf';
+import { signal, mount } from 'kerfjs';
 
 const count = signal(0);
 
@@ -35,7 +35,7 @@ The whole runtime is roughly 5 KB minified + gzipped, including `signals-core` a
 ## Install
 
 ```bash
-npm install kerf
+npm install kerfjs
 ```
 
 Configure JSX:
@@ -45,7 +45,7 @@ Configure JSX:
 {
   "compilerOptions": {
     "jsx": "react-jsx",
-    "jsxImportSource": "kerf"
+    "jsxImportSource": "kerfjs"
   }
 }
 ```
@@ -53,7 +53,7 @@ Configure JSX:
 ## Quick tour
 
 ```ts
-import { signal, computed, effect, defineStore, mount, delegate } from 'kerf';
+import { signal, computed, effect, defineStore, mount, delegate } from 'kerfjs';
 
 // 1. A signal — single piece of reactive state.
 const count = signal(0);

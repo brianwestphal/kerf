@@ -9,7 +9,7 @@
  * Configure in your `tsconfig.json`:
  *
  *     "jsx": "react-jsx",
- *     "jsxImportSource": "kerf"
+ *     "jsxImportSource": "kerfjs"
  *
  * Then write JSX as you normally would — kerf provides the `jsx` /
  * `jsxs` / `jsxDEV` / `Fragment` exports the JSX transform looks for.

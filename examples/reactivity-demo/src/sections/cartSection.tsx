@@ -9,7 +9,7 @@
  * `defineStore()`.
  */
 
-import { computed, defineStore, delegate, mount, resetAllStores } from 'kerf';
+import { computed, defineStore, delegate, mount, resetAllStores } from 'kerfjs';
 
 interface CartItem { id: string; name: string; price: number }
 interface CartState { items: CartItem[] }

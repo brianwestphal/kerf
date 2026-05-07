@@ -37,7 +37,7 @@ You hit this when:
 `toElement(jsx)` from kerf detects SVG content and routes through `DOMParser` with the `image/svg+xml` MIME, which guarantees correct namespacing for all descendants:
 
 ```ts
-import { toElement } from 'kerf';
+import { toElement } from 'kerfjs';
 
 const path = toElement('<path d="M 0 0 L 10 10" />');
 //   ↑ now an SVGPathElement, namespaced correctly.

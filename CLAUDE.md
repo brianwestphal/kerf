@@ -21,7 +21,7 @@ The framework is a small set of independent modules that compose. Each one earns
 ### Source layout
 
 - `src/index.ts` — public entry point. Re-exports everything users need.
-- `src/jsx-runtime.ts` — JSX → `SafeHtml` (HTML strings) + `SafeHtml.toString()`. Configured via `tsconfig.json` `"jsxImportSource": "kerf"` in user code.
+- `src/jsx-runtime.ts` — JSX → `SafeHtml` (HTML strings) + `SafeHtml.toString()`. Configured via `tsconfig.json` `"jsxImportSource": "kerfjs"` in user code.
 - `src/reactive.ts` — re-export of `@preact/signals-core` (`signal`, `computed`, `effect`, `batch`). One-file abstraction layer so the underlying lib is swappable.
 - `src/store.ts` — `defineStore({ initial, actions })` + global registry + `resetAllStores()`.
 - `src/mount.ts` — `mount(el, render)`. Wraps `effect()` + `morphdom`. Conventions for diff keys, `data-morph-skip`, focus/selection preservation.
@@ -31,7 +31,7 @@ The framework is a small set of independent modules that compose. Each one earns
 
 ### Public API surface
 
-Everything users import lives at the top level of `kerf`:
+Everything users import lives at the top level of `kerfjs`:
 
 ```ts
 import {
@@ -41,10 +41,10 @@ import {
   delegate, delegateCapture,
   toElement,
   SafeHtml, raw,
-} from 'kerf';
+} from 'kerfjs';
 ```
 
-The JSX runtime sits at `kerf/jsx-runtime` (subpath export). Users configure it via `tsconfig.json`'s `"jsxImportSource": "kerf"`.
+The JSX runtime sits at `kerfjs/jsx-runtime` (subpath export). Users configure it via `tsconfig.json`'s `"jsxImportSource": "kerfjs"`.
 
 ### Design rules
 
