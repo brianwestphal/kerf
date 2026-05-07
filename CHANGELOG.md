@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Added
+
+- Live demo published to GitHub Pages at <https://brianwestphal.github.io/kerf/>. Builds `examples/reactivity-demo/` on every push to `main` via `.github/workflows/pages.yml`. New `docs/9-live-demo.md` covers the deploy, and `examples/reactivity-demo/vite.config.ts` now sets `base: '/kerf/'` for the subpath. New `npm run example:reactivity-demo:build` script.
+
 ## [0.1.0] - 2026-05-07
 
 ### Added

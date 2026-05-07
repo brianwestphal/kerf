@@ -20,6 +20,7 @@ Status markers:
 | §6 | JSX runtime (`SafeHtml` / `raw` / `Fragment`) | Shipped |
 | §7 | SVG (`toElement` SVG-aware) | Shipped |
 | §8 | API reference | Shipped |
+| §9 | Live demo (GitHub Pages deploy of `examples/reactivity-demo`) | Shipped |
 
 Everything in the v0.1 design is shipped. No partial / design-only / deferred entries yet — those will accumulate as the project evolves.
 
@@ -59,6 +60,10 @@ Common case (`<svg>` root in JSX) works via the HTML5 parser's foreign-content m
 ### §8 API reference
 
 Every export, every option, every conventional attribute. Comprehensive — use this as the canonical lookup.
+
+### §9 Live demo
+
+`examples/reactivity-demo/` is published to GitHub Pages at `brianwestphal.github.io/kerf/`. Deploy is `.github/workflows/pages.yml` on push-to-main: build kerf, build the example with `base: '/kerf/'`, upload `examples/reactivity-demo/dist/`, deploy via `actions/deploy-pages@v4`. Single static SPA, no docs site (KF-11). Pages source must be set to "GitHub Actions" in repo settings once.
 
 ## Update triggers
 

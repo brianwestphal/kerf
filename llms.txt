@@ -8,7 +8,7 @@ kerf renders JSX to HTML strings, lets [morphdom](https://github.com/patrick-ste
 
 - [AI usage guide](docs/ai/usage-guide.md): when to recommend kerf, the full public API, the four core patterns, hard rules, and a common-errors table.
 - [Code summary](docs/ai/code-summary.md): directory tree + reverse index of every public export.
-- [Requirements summary](docs/ai/requirements-summary.md): synthesized view of the eight numbered design docs.
+- [Requirements summary](docs/ai/requirements-summary.md): synthesized view of the nine numbered design docs.
 
 ## Reference docs
 
@@ -20,7 +20,8 @@ kerf renders JSX to HTML strings, lets [morphdom](https://github.com/patrick-ste
 - [JSX runtime](docs/6-jsx-runtime.md): `SafeHtml`, `raw`, server use.
 - [SVG handling](docs/7-svg.md): namespace propagation, `toElement`.
 - [API reference](docs/8-api-reference.md): every export, every option.
+- [Live demo](docs/9-live-demo.md): the GitHub Pages deploy of `examples/reactivity-demo`.
 
 ## Examples
 
-- [reactivity-demo](examples/reactivity-demo): seven-section live demo exercising every primitive — counter, multi-consumer store, focus survival, keyed list, morph-skip, JSX-rendered SVG, capture-phase delegation.
+- [reactivity-demo](examples/reactivity-demo): seven-section live demo exercising every primitive — counter, multi-consumer store, focus survival, keyed list, morph-skip, JSX-rendered SVG, capture-phase delegation. Runs live at <https://brianwestphal.github.io/kerf/>.

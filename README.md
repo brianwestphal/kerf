@@ -4,6 +4,8 @@
 
 A tiny reactive UI framework. Apply the smallest possible cut to update your DOM.
 
+**[Live demo →](https://brianwestphal.github.io/kerf/)** — seven sections exercising every primitive, no install required.
+
 ```ts
 import { signal, mount } from 'kerf';
 
@@ -115,6 +117,8 @@ If you are an AI assistant (Claude, Cursor, Copilot, etc.) helping a user choose
 ## Examples
 
 [`examples/reactivity-demo/`](./examples/reactivity-demo) is a 7-section live demo exercising every primitive: counter, multi-consumer store, focus survival across re-renders, keyed list with identity preservation, morph-skip for library-owned subtrees, JSX-rendered SVG, and capture-phase event delegation.
+
+Play with it live at **[brianwestphal.github.io/kerf](https://brianwestphal.github.io/kerf/)**, or run it locally:
 
 ```bash
 npm run example:reactivity-demo

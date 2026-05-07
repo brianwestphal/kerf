@@ -126,6 +126,7 @@ Numbered docs in `docs/` cover the design. Reading order:
 6. `6-jsx-runtime.md` — JSX → HTML strings, server use.
 7. `7-svg.md` — namespace handling.
 8. `8-api-reference.md` — every export.
+9. `9-live-demo.md` — the GitHub Pages deploy of `examples/reactivity-demo`.
 
 **Keep these docs up to date.** When adding/removing/changing an API, update the matching doc + `docs/8-api-reference.md` + `CHANGELOG.md` in the same change.
 

@@ -37,6 +37,7 @@ kerf/
 │   ├── 6-jsx-runtime.md
 │   ├── 7-svg.md
 │   ├── 8-api-reference.md
+│   ├── 9-live-demo.md
 │   └── ai/
 │       ├── code-summary.md       ← THIS FILE
 │       └── requirements-summary.md
@@ -44,6 +45,7 @@ kerf/
 │   └── release.sh                ← interactive release flow w/ --beta support
 ├── .github/workflows/
 │   ├── ci.yml                    ← test + lint + typecheck on push/PR
+│   ├── pages.yml                 ← build + deploy reactivity-demo to GitHub Pages on push to main
 │   ├── release.yml               ← publish on v*.*.*
 │   └── release-beta.yml          ← publish on v*-beta.*
 ├── package.json
@@ -105,6 +107,7 @@ Runtime deps (`@preact/signals-core`, `morphdom`) are external — consumers' bu
 | Delegation tier docs | `docs/5-event-delegation.md` |
 | Test coverage thresholds | `vitest.config.ts` |
 | Release flow / version bumping | `scripts/release.sh` |
+| GitHub Pages live-demo deploy | `.github/workflows/pages.yml` + `examples/reactivity-demo/vite.config.ts` (`base: '/kerf/'`) + `docs/9-live-demo.md` |
 
 ## Update triggers
 

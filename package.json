@@ -66,7 +66,8 @@
     "release": "bash scripts/release.sh",
     "release:beta": "bash scripts/release.sh --beta",
     "prepublishOnly": "npm run build",
-    "example:reactivity-demo": "cd examples/reactivity-demo && npm install && npm run dev"
+    "example:reactivity-demo": "cd examples/reactivity-demo && npm install && npm run dev",
+    "example:reactivity-demo:build": "cd examples/reactivity-demo && npm install && npm run build"
   },
   "dependencies": {
     "@preact/signals-core": "^1.14.1",
