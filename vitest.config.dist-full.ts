@@ -91,6 +91,11 @@ export default defineConfig({
     // `tests/integration/`), so the default is fine — but we explicitly
     // exclude `tests/dist/**` because those tests already target dist
     // directly and would double-up here.
-    exclude: ['**/node_modules/**', 'tests/dist/**'],
+    //
+    // `*.internal.test.ts` files exercise non-public modules (e.g.
+    // `src/segment.ts`, `src/diff.ts`) whose helpers aren't in the
+    // published barrel. dist-full mode can't honestly verify them
+    // (the dist surface doesn't expose them), so they're src-only.
+    exclude: ['**/node_modules/**', 'tests/dist/**', '**/*.internal.test.ts'],
   },
 });
