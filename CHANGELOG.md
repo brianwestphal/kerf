@@ -4,6 +4,13 @@ All notable changes to **kerf** are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.0] - 2026-05-07
+
+
+- Fix focused contenteditable losing focus/caret during morph
+- Fix `SafeHtml` identity mismatch across entry points caused by dist bundling
+- Fix `clearStoreRegistry` no-op in built output, restoring test isolation
+
 ## [0.1.2] - 2026-05-07
 
 
