@@ -112,6 +112,21 @@ function MyList() {
 
 Renders without a wrapper tag. Just concatenates its children's strings.
 
+`Fragment` is also re-exported from the main `kerfjs` barrel — handy when you want to write `<Fragment>...</Fragment>` explicitly (rather than the `<>...</>` shorthand) or when a tool you're integrating with expects to receive the symbol by name:
+
+```tsx
+import { Fragment } from 'kerfjs';
+
+function MyList() {
+  return (
+    <Fragment>
+      <li>one</li>
+      <li>two</li>
+    </Fragment>
+  );
+}
+```
+
 ## 6.8 Function components
 
 A function component is a function that takes props and returns `SafeHtml`:

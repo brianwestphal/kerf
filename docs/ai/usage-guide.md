@@ -50,7 +50,7 @@ import {
   mount,                              // render
   delegate, delegateCapture,          // events
   toElement,                          // direct JSX → DOM Element
-  SafeHtml, isSafeHtml, raw,          // JSX value type + cross-bundle guard + escape hatch
+  SafeHtml, isSafeHtml, raw, Fragment, // JSX value type + cross-bundle guard + escape hatch + JSX <>...</> tag
 } from 'kerfjs';
 ```
 
@@ -68,6 +68,7 @@ import {
 | `toElement(jsx)` | `Element` | parse JSX/HTML string into one DOM node (SVG-aware) |
 | `raw(html)` | `SafeHtml` | inject pre-escaped HTML (icons, server fragments) |
 | `isSafeHtml(v)` | `boolean` (type guard) | cross-bundle-safe `SafeHtml` check; prefer over `instanceof` |
+| `Fragment` | `(props) => SafeHtml` | JSX `<>...</>` tag; useful when composing `Fragment` manually |
 
 ## The four patterns
 

@@ -7,7 +7,7 @@
  */
 
 export { delegate, delegateCapture } from './delegate.js';
-export { isSafeHtml, raw, SafeHtml } from './jsx-runtime.js';
+export { Fragment, isSafeHtml, raw, SafeHtml } from './jsx-runtime.js';
 export { mount } from './mount.js';
 export {
   batch,

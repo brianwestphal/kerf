@@ -42,7 +42,7 @@ import {
   mount,
   delegate, delegateCapture,
   toElement,
-  SafeHtml, isSafeHtml, raw,
+  SafeHtml, isSafeHtml, raw, Fragment,
 } from 'kerfjs';
 ```
 
@@ -117,6 +117,7 @@ This project is managed via [Hot Sheet](https://github.com/brianwestphal/hotshee
 - Import paths use `.js` extension (TypeScript convention for ESM resolution).
 - No transitive deps beyond `@preact/signals-core` + `morphdom`.
 - Public API is documented in `docs/8-api-reference.md`.
+- **File naming**: kebab-case / lowercase by default (`jsx-runtime.ts`, `mount.ts`). camelCase is allowed when the filename matches the primary export (`toElement.ts` → `toElement`, `utils/escapeHtml.ts` → `escapeHtml`). The principle is "filename = primary export"; do not file tickets to rename files that already match this rule.
 
 ## Requirements Documentation
 

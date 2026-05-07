@@ -134,7 +134,7 @@ Wrap a pre-escaped HTML string. Useful for icons, rendered Markdown, server-incl
 
 ### `Fragment` (component)
 
-JSX `<>...</>` — concatenates children without a wrapper tag.
+JSX `<>...</>` — concatenates children without a wrapper tag. Available from both `kerfjs/jsx-runtime` (used by the JSX transform) and the main `kerfjs` barrel (when you need to compose `Fragment` manually, e.g. `jsx(Fragment, { children })`).
 
 ## 8.6 Direct JSX → DOM
 

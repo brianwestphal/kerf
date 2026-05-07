@@ -87,6 +87,7 @@ Every export reachable via `import { ... } from 'kerfjs'`:
 | `SafeHtml` | `jsx-runtime.ts` | The JSX result type |
 | `isSafeHtml` | `jsx-runtime.ts` | Cross-bundle type guard for `SafeHtml` (preferred over `instanceof`) |
 | `raw` | `jsx-runtime.ts` | Wrap a pre-escaped HTML string |
+| `Fragment` | `jsx-runtime.ts` | JSX `<>...</>` tag; also re-exported from the barrel for manual composition |
 
 The JSX runtime is a separate subpath export at `kerfjs/jsx-runtime`. It's referenced by tsconfig (`"jsxImportSource": "kerfjs"`); users do not import from it directly.
 
