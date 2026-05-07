@@ -6,13 +6,14 @@
  * Three-tier listener model:
  *
  *   - Tier 1 (bubbling events) — use `delegate()`.
- *     click, input, change, submit, keydown/keyup, pointer*, drag*, drop,
- *     contextmenu, wheel, copy/paste/cut.
+ *     click, input, change, submit, mousedown/up, keydown/up, pointerdown/up/move,
+ *     drag*, drop, contextmenu, wheel, copy/paste/cut, focusin/focusout.
  *
- *   - Tier 2 (non-bubbling events: focus / blur / scroll / load / error) —
- *     use `delegateCapture()`. The capture phase fires on the way down from
- *     the root to the target, so a root-level listener with `capture: true`
- *     reaches events that wouldn't bubble back up.
+ *   - Tier 2 (non-bubbling events) — use `delegateCapture()`.
+ *     focus, blur, scroll, load, error, mouseenter, mouseleave.
+ *     The capture phase fires on the way down from the root to the target,
+ *     so a root-level listener with `capture: true` reaches events that
+ *     wouldn't bubble back up.
  *
  *   - Tier 3 (per-element instances / library-owned subtrees) — mark the
  *     host element with `data-morph-skip` and manage the library's

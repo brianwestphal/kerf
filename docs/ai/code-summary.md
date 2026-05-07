@@ -15,7 +15,8 @@ kerf/
 │   ├── delegate.ts               ← delegate + delegateCapture
 │   ├── toElement.ts              ← SVG-aware JSX-to-DOM
 │   └── utils/
-│       └── escapeHtml.ts         ← used by jsx-runtime
+│       ├── escapeHtml.ts         ← used by jsx-runtime
+│       └── jsx-attr-aliases.ts   ← camelCase → HTML/SVG attribute name table (KF-21)
 ├── tests/
 │   ├── unit/
 │   │   ├── jsx-runtime.test.ts
@@ -110,7 +111,7 @@ Runtime deps (`@preact/signals-core`, `morphdom`) are external — consumers' bu
 | If you're touching... | look in |
 | --- | --- |
 | Adding a new public export | `src/index.ts` + the relevant module + `docs/8-api-reference.md` |
-| JSX attribute alias | `src/jsx-runtime.ts` (the `ATTR_ALIASES` map) |
+| JSX attribute alias | `src/utils/jsx-attr-aliases.ts` (the `ATTR_ALIASES` map) |
 | morphdom config / diff conventions | `src/mount.ts` (`onBeforeElUpdated`, `getNodeKey`) |
 | SVG namespace handling | `src/toElement.ts` (`SVG_FRAGMENT_TAGS`) |
 | Store reset semantics | `src/store.ts` (`REGISTRY`, `resetAllStores`) |

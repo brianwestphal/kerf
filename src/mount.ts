@@ -19,6 +19,14 @@ import type { SafeHtml } from './jsx-runtime.js';
 import { isSafeHtml } from './jsx-runtime.js';
 import { effect } from './reactive.js';
 
+// Distinct namespaces inside morphdom's flat string-keyed match space, so a
+// consumer with `id="foo"` and a sibling with `data-key="foo"` cannot collide.
+// The prefixes also can't collide with each other across consumer values
+// (e.g. `id="data-key:foo"` vs `data-key="foo"` would have produced the same
+// key under a single-prefix scheme; here they don't).
+const ID_KEY_PREFIX = 'id:';
+const DATA_KEY_PREFIX = 'data-key:';
+
 /**
  * Bind `render()` to the children of `rootEl`. Re-runs whenever any signal
  * read inside `render()` changes. Returns a disposer that tears down the
@@ -33,9 +41,14 @@ import { effect } from './reactive.js';
  *   inside on subsequent renders. Used for library-owned subtrees (xterm-
  *   style widgets, charts, third-party editors) where the library's own
  *   lifecycle manages the children.
- * - Focused text-entry inputs (`<input>` of typing kinds, `<textarea>`,
- *   `[contenteditable]`) keep their current value + selection range across
- *   morphs while focused. The user never sees their cursor jump mid-keystroke.
+ * - Focused text-entry inputs (`<input>` of typing kinds, `<textarea>`)
+ *   keep their current value + selection range across morphs while focused.
+ *   The user never sees their cursor jump mid-keystroke.
+ * - Focused `[contenteditable]` elements have their entire subtree
+ *   skipped (same mechanism as `data-morph-skip`). The user's in-progress
+ *   edit — typed content, caret position, multi-range selections, anything
+ *   else they did to the DOM — survives verbatim. The next render after
+ *   blur catches up.
  */
 export function mount(rootEl: HTMLElement, render: () => SafeHtml | string): () => void {
   return effect(() => {
@@ -50,15 +63,28 @@ export function mount(rootEl: HTMLElement, render: () => SafeHtml | string): () 
       getNodeKey: (node) => {
         if (node.nodeType !== 1) return undefined;
         const el = node as HTMLElement;
-        if (el.id !== '') return el.id;
-        if (el.dataset.key != null) return `key:${el.dataset.key}`;
+        if (el.id !== '') return `${ID_KEY_PREFIX}${el.id}`;
+        if (el.dataset.key != null) return `${DATA_KEY_PREFIX}${el.dataset.key}`;
         return undefined;
       },
       onBeforeElUpdated: (fromEl, toEl) => {
         if (fromEl.dataset.morphSkip != null) return false;
         if (fromEl.isEqualNode(toEl)) return false;
-        if (fromEl === document.activeElement && isTextEntry(fromEl)) {
-          preserveTextEntryState(fromEl, toEl);
+        if (fromEl === document.activeElement) {
+          // Focused contenteditable: skip the entire subtree so the user's
+          // in-progress edit (typed content + caret + multi-range selection)
+          // is not disturbed. A subsequent render — typically after blur or
+          // an explicit signal write — catches up. We read the attribute
+          // directly rather than the derived `isContentEditable` property
+          // because happy-dom (test environment) doesn't always populate
+          // the latter; the attribute is the spec's source of truth either
+          // way. Per the HTML spec, any value other than `"false"` (case-
+          // insensitive), including the empty string, means editable.
+          const ce = fromEl.getAttribute('contenteditable');
+          if (ce !== null && ce.toLowerCase() !== 'false') return false;
+          // Focused INPUT / TEXTAREA: copy live value + selection onto the
+          // morph target before letting morphdom proceed.
+          if (isTextInputOrTextarea(fromEl)) preserveTextEntryState(fromEl, toEl);
         }
         return true;
       },
@@ -66,14 +92,14 @@ export function mount(rootEl: HTMLElement, render: () => SafeHtml | string): () 
   });
 }
 
-function isTextEntry(el: Element): boolean {
+function isTextInputOrTextarea(el: Element): boolean {
   if (el.tagName === 'TEXTAREA') return true;
   if (el.tagName === 'INPUT') {
     const type = (el as HTMLInputElement).type;
     return type === 'text' || type === 'search' || type === 'url' || type === 'email'
       || type === 'tel' || type === 'password' || type === '';
   }
-  return (el as HTMLElement).isContentEditable;
+  return false;
 }
 
 function preserveTextEntryState(fromEl: HTMLElement, toEl: HTMLElement): void {

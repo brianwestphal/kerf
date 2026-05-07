@@ -106,6 +106,7 @@ The numbered docs in [`docs/`](./docs/) cover the design and rationale:
 6. [JSX runtime](./docs/6-jsx-runtime.md) — `SafeHtml`, `raw`, server-rendering.
 7. [SVG handling](./docs/7-svg.md) — namespace propagation, `toElement`.
 8. [API reference](./docs/8-api-reference.md) — every export, every option.
+9. [Live demo](./docs/9-live-demo.md) — the GitHub Pages deploy of `examples/reactivity-demo`.
 
 ### For AI coding assistants
 

@@ -27,6 +27,7 @@ The framework is a small set of independent modules that compose. Each one earns
 - `src/mount.ts` — `mount(el, render)`. Wraps `effect()` + `morphdom`. Conventions for diff keys, `data-morph-skip`, focus/selection preservation.
 - `src/delegate.ts` — `delegate()` (Tier 1 bubble) + `delegateCapture()` (Tier 2 capture).
 - `src/toElement.ts` — SVG-aware JSX → DOM helper. Routes SVG content through `DOMParser('image/svg+xml')`.
+- `src/testing.ts` — `kerfjs/testing` subpath. Re-exports `clearStoreRegistry` for unit-test isolation.
 - `src/utils/escapeHtml.ts` — used by the JSX runtime.
 
 ### Public API surface
@@ -40,11 +41,11 @@ import {
   mount,
   delegate, delegateCapture,
   toElement,
-  SafeHtml, raw,
+  SafeHtml, isSafeHtml, raw,
 } from 'kerfjs';
 ```
 
-The JSX runtime sits at `kerfjs/jsx-runtime` (subpath export). Users configure it via `tsconfig.json`'s `"jsxImportSource": "kerfjs"`.
+The JSX runtime sits at `kerfjs/jsx-runtime` (subpath export). Users configure it via `tsconfig.json`'s `"jsxImportSource": "kerfjs"`. The `kerfjs/testing` subpath exposes `clearStoreRegistry` for test isolation.
 
 ### Design rules
 
@@ -63,24 +64,26 @@ The JSX runtime sits at `kerfjs/jsx-runtime` (subpath export). Users configure i
 ## Build
 
 ```bash
-npm run build       # tsup → dist/index.js, dist/jsx-runtime.js, .d.ts files
+npm run build       # tsup → dist/{index,jsx-runtime,testing}.js + dist/chunk-*.js + .d.ts
 npm run dev         # tsup --watch
 ```
+
+`tsup.config.ts` runs with `splitting: true` so shared modules (`SafeHtml`, the store `REGISTRY`) live in a single chunk imported by every entry. See `docs/ai/code-summary.md` for the rationale (KF-14 / KF-15).
 
 ## Testing
 
 ```bash
-npm test              # vitest with coverage
-npm run test:watch    # vitest watch mode
-npm run test:unit     # tests/unit only
-npm run test:integration   # tests/integration only
-npm run typecheck     # tsc --noEmit
-npm run lint          # eslint
+npm test                  # vitest vs src/, with coverage
+npm run test:watch        # vitest watch mode
+npm run test:unit         # tests/unit only
+npm run test:integration  # tests/integration only
+npm run test:dist         # build, then targeted dist regression suite (tests/dist) vs dist/
+npm run test:dist:full    # build, then full unit + integration suite remapped onto dist/
+npm run typecheck         # tsc --noEmit
+npm run lint              # eslint
 ```
 
-Coverage thresholds (`vitest.config.ts`):
-- 80% lines / functions / statements
-- 75% branches
+Coverage thresholds (`vitest.config.ts`): **100% lines / functions / branches / statements** on `src/`. Don't add code without tests; CI fails on any uncovered line.
 
 ### Testing Philosophy
 

@@ -23,6 +23,8 @@ const SVG_FRAGMENT_TAGS = new Set([
   'foreignObject',
 ]);
 
+const EXCERPT_MAX_LEN = 100;
+
 function leadingTag(html: string): string | null {
   const match = /^\s*<([a-zA-Z][a-zA-Z0-9]*)\b/.exec(html);
   return match !== null ? match[1] : null;
@@ -30,7 +32,16 @@ function leadingTag(html: string): string | null {
 
 function excerpt(html: string): string {
   const trimmed = html.trim();
-  return trimmed.length > 100 ? `${trimmed.slice(0, 100)}…` : trimmed;
+  return trimmed.length > EXCERPT_MAX_LEN ? `${trimmed.slice(0, EXCERPT_MAX_LEN)}…` : trimmed;
+}
+
+function parseSvgOrThrow(html: string, label: string, originalHtml: string): Document {
+  const doc = new DOMParser().parseFromString(html, 'image/svg+xml');
+  const err = doc.querySelector('parsererror');
+  if (err !== null) {
+    throw new Error(`toElement: ${label} parse error — ${err.textContent}\n  input: ${excerpt(originalHtml)}`);
+  }
+  return doc;
 }
 
 export function toElement(jsx: SafeHtml | string): Element {
@@ -39,22 +50,13 @@ export function toElement(jsx: SafeHtml | string): Element {
 
   if (tag === 'svg') {
     // SVG root — parse as XML to guarantee namespace propagation.
-    const doc = new DOMParser().parseFromString(html, 'image/svg+xml');
-    const err = doc.querySelector('parsererror');
-    if (err !== null) {
-      throw new Error(`toElement: SVG parse error — ${err.textContent}\n  input: ${excerpt(html)}`);
-    }
-    return doc.documentElement;
+    return parseSvgOrThrow(html, 'SVG', html).documentElement;
   }
 
   if (tag !== null && SVG_FRAGMENT_TAGS.has(tag)) {
     // SVG fragment without an <svg> wrapper — wrap, parse, unwrap.
     const wrapped = `<svg xmlns="${SVG_NS}">${html}</svg>`;
-    const doc = new DOMParser().parseFromString(wrapped, 'image/svg+xml');
-    const err = doc.querySelector('parsererror');
-    if (err !== null) {
-      throw new Error(`toElement: SVG fragment parse error — ${err.textContent}\n  input: ${excerpt(html)}`);
-    }
+    const doc = parseSvgOrThrow(wrapped, 'SVG fragment', html);
     const first = doc.documentElement.firstElementChild;
     /* c8 ignore next 2 — defensive: a successful XML parse of a wrapped svg always yields ≥1 child. */
     if (first === null) throw new Error(`toElement: SVG fragment produced no element\n  input: ${excerpt(html)}`);

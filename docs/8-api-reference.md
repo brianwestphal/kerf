@@ -151,8 +151,9 @@ Throws if the input produces zero elements OR if `DOMParser` returns a `parserer
 | `data-key="..."` | Used as a diff key. Lower priority than `id`. |
 | `data-morph-skip` (any value, even empty) | Subtree preserved as-is on every re-render. |
 
-| Element kind that gets focus + selection preserved when active |
-| --- |
-| `<input type="text" \| "search" \| "url" \| "email" \| "tel" \| "password" \| "">` |
-| `<textarea>` |
-| `[contenteditable]` |
+| Element kind | Behaviour when focused during a morph |
+| --- | --- |
+| `<input type="text" \| "search" \| "url" \| "email" \| "tel" \| "password" \| "">` | Live `.value` + `selectionStart`/`selectionEnd` copied to the morph target; morph proceeds (attribute updates apply). |
+| `<textarea>` | Same as text-entry inputs. |
+| `[contenteditable]` | Entire subtree skipped on this morph (same mechanism as `data-morph-skip`). User's edit + caret + multi-range selection preserved verbatim; attribute updates deferred until the next render after blur. See `docs/4-render.md` §4.4. |
+| Anything else (`<button>`, `<a>`, `<div tabindex>`, non-text inputs…) | Morph proceeds normally — no special handling. |

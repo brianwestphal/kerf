@@ -193,24 +193,47 @@ describe('mount() — focus and selection preservation', () => {
     expect(after.selectionEnd).toBe(8);
   });
 
-  it('keeps a focused contenteditable element alive across re-render', () => {
+  it('skips the morph entirely while a contenteditable is focused — user edit + element identity survive (KF-19)', () => {
+    // Option A from KF-19: short-circuit `onBeforeElUpdated` when fromEl is
+    // the focused contenteditable. The whole subtree (typed content, caret,
+    // any DOM the user produced) is preserved verbatim. Attribute updates
+    // are deferred until the next render after blur — that's the trade-off
+    // and the desired behaviour for in-progress edits.
+
     const cls = signal('a');
     mount(root, () => jsx('div', {
       children: [
         jsx('span', { children: cls.value }),
-        jsx('div', { id: 'ce', contentEditable: 'true', className: cls.value, children: 'edit me' }),
+        jsx('div', { id: 'ce', contentEditable: 'true', className: cls.value, children: 'placeholder' }),
       ],
     }));
 
-    const ce = root.querySelector<HTMLElement>('#ce')!;
+    const ce = root.querySelector<HTMLDivElement>('#ce')!;
     ce.focus();
     expect(document.activeElement).toBe(ce);
 
+    // Simulate the user typing into the contenteditable.
+    ce.textContent = 'user typed this';
+    expect(ce.textContent).toBe('user typed this');
+
+    // Trigger an unrelated re-render. Without the short-circuit, morphdom
+    // would replace the user's edit with the JSX 'placeholder' content and
+    // update className to 'b'.
     cls.value = 'b';
 
-    const after = root.querySelector<HTMLElement>('#ce')!;
-    expect(after).toBe(ce);
-    expect(after.className).toBe('b');
+    const after = root.querySelector<HTMLDivElement>('#ce')!;
+    expect(after).toBe(ce);                       // identity preserved
+    expect(after.textContent).toBe('user typed this'); // edit preserved
+    expect(after.className).toBe('a');            // attribute update deferred (the trade-off)
+
+    // Sanity: the unrelated <span> outside the focused subtree DID update.
+    const span = root.querySelector('span')!;
+    expect(span.textContent).toBe('b');
+
+    // After blur, the next render catches up.
+    ce.blur();
+    cls.value = 'c';
+    expect(after.className).toBe('c');
   });
 
   it('does not crash when setSelectionRange throws (e.g. an input type that rejects it)', () => {
@@ -228,6 +251,19 @@ describe('mount() — focus and selection preservation', () => {
     expect(root.querySelector<HTMLInputElement>('#q')!.value).toBe('abc');
 
     spy.mockRestore();
+  });
+
+  it('does not intercept morph for focused non-text elements (e.g. a button)', () => {
+    // Focused but not INPUT/TEXTAREA and not contenteditable — morphdom
+    // proceeds normally. No special preservation, no short-circuit.
+    const cls = signal('a');
+    mount(root, () => jsx('button', { id: 'b', className: cls.value, children: cls.value }));
+    const btn = root.querySelector<HTMLButtonElement>('#b')!;
+    btn.focus();
+    expect(document.activeElement).toBe(btn);
+    cls.value = 'b';
+    expect(btn.className).toBe('b');
+    expect(btn.textContent).toBe('b');
   });
 
   it('does NOT preserve selection logic for focused non-text-entry inputs (e.g. checkbox)', () => {

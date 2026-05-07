@@ -63,14 +63,28 @@ On subsequent re-renders, morphdom calls `onBeforeElUpdated` on the host, sees `
 
 ## 4.4 Focus + selection preservation
 
-When morphdom updates an `<input>` / `<textarea>` / `[contenteditable]` that is the active element AND a text-entry kind, kerf:
+When morphdom is about to update an element that is currently the active element, kerf preserves the user's in-progress edit. The mechanism differs by element kind:
 
-- Copies the live `.value` and `selectionStart` / `selectionEnd` into the morph target.
+### `<input>` (text-entry types) and `<textarea>`
+
+For `input[type=text|search|url|email|tel|password|""]` and `<textarea>`, kerf:
+
+- Copies the live `.value` and `selectionStart` / `selectionEnd` onto the morph target.
 - Lets morphdom proceed with the update.
 
-The result: a user typing into a search box doesn't lose their cursor position when an unrelated piece of state on the page triggers a re-render.
+The result: attribute updates from the surrounding render still apply (className, disabled, etc.), but the user's typed value and cursor position survive. They never see their cursor jump mid-keystroke.
 
-The text-entry kinds covered are: `input[type=text|search|url|email|tel|password|""]`, `textarea`, `[contenteditable]`. Other input types (range, color, file, date) don't have meaningful selection state, so they aren't touched specially.
+Other input types (range, color, file, date, checkbox, radio…) don't have meaningful text-selection state, so they aren't touched specially — morphdom proceeds normally.
+
+### `[contenteditable]`
+
+For a focused contenteditable, kerf takes the heavier-handed approach: **the entire subtree is skipped on this morph**, the same way `data-morph-skip` works. The user's typed content, caret position, and any multi-range selection survive verbatim — including any custom DOM they produced (`<b>`, `<a>`, line breaks, etc.). The trade-off is that *any* update to the contenteditable's attributes or children is also deferred until the next render after the user blurs.
+
+This is the behaviour you almost always want for in-progress rich-text editing: don't disturb the editor mid-edit. If you want kerf to drive a contenteditable's content despite the user being focused, that's outside the framework — manage it imperatively or move that state outside the contenteditable.
+
+### Non-text focused elements
+
+For anything else with focus (a `<button>`, `<a>`, `<div tabindex>`), morphdom proceeds normally. There's no special handling — none of those elements have user-visible state that a re-render would clobber.
 
 ## 4.5 Multiple `mount()` calls
 
