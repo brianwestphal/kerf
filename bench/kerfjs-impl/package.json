@@ -1,0 +1,24 @@
+{
+  "name": "js-framework-benchmark-kerfjs",
+  "version": "1.0.0",
+  "description": "kerfjs entry for js-framework-benchmark",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "build-prod": "vite build"
+  },
+  "dependencies": {
+    "kerfjs": "^0.2.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0",
+    "vite": "^6.0.0"
+  },
+  "js-framework-benchmark": {
+    "frameworkVersionFromPackage": "kerfjs",
+    "frameworkHomeURL": "https://github.com/brianwestphal/kerf",
+    "customURL": "/dist",
+    "language": "JavaScript",
+    "issues": []
+  }
+}

@@ -20,3 +20,6 @@ coverage/
 
 # npm pack artifacts
 *.tgz
+
+# Local benchmark cache (cloned upstream + generated artifacts)
+bench/.bench-cache/
