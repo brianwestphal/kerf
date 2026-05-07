@@ -1,0 +1,393 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1180 1500" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">
+
+  <!-- ==========================================================
+       legend / palette
+       red    #c62828 / #fde0e0   = changed / cache miss / patch
+       green  #2e7d32 / #d4edda   = unchanged / cache hit / skip
+       blue   #1971c2 / #e7f5ff   = data / structural
+       amber  #b88500 / #fff3cd   = operation / transform
+       gray   #495057 / #f1f3f5   = neutral text / boxes
+       ========================================================== -->
+
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#868e96"/>
+    </marker>
+    <marker id="arrow-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#c62828"/>
+    </marker>
+    <marker id="arrow-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#2e7d32"/>
+    </marker>
+  </defs>
+
+  <!-- ============== TITLE ============== -->
+  <rect x="0" y="0" width="1180" height="64" fill="#212529"/>
+  <text x="590" y="28" text-anchor="middle" font-size="18" font-weight="600" fill="#ffffff">kerf partial-update flow — 5 rows, 2 change</text>
+  <text x="590" y="50" text-anchor="middle" font-size="12" fill="#adb5bd">what gets compared, transformed, and modified when a "update every Nth row"-style click fires</text>
+
+  <!-- ============== STAGE 1: initial state ============== -->
+  <g transform="translate(0, 88)">
+    <text x="40" y="14" font-size="13" font-weight="600" fill="#212529">①  initial state</text>
+    <text x="40" y="32" font-size="11" fill="#6c757d">array refs <tspan font-family="monospace">r1..r5</tspan> point at row objects. live DOM mirrors them. each()'s WeakMap cache is warm from the previous render.</text>
+
+    <!-- signal label -->
+    <text x="40" y="62" font-size="11" font-family="monospace" fill="#495057">rows.value</text>
+    <line x1="100" y1="58" x2="120" y2="58" stroke="#adb5bd" stroke-width="1" marker-end="url(#arrow)"/>
+
+    <!-- 5 row data boxes -->
+    <g font-family="monospace">
+      <!-- r1 -->
+      <g transform="translate(135, 42)">
+        <rect width="180" height="42" rx="5" fill="#e7f5ff" stroke="#1971c2" stroke-width="1"/>
+        <text x="10" y="16" font-size="10" fill="#1864ab">@r1 · {id:1}</text>
+        <text x="10" y="32" font-size="12" fill="#212529">"alpha"</text>
+      </g>
+      <!-- r2 -->
+      <g transform="translate(325, 42)">
+        <rect width="180" height="42" rx="5" fill="#e7f5ff" stroke="#1971c2" stroke-width="1"/>
+        <text x="10" y="16" font-size="10" fill="#1864ab">@r2 · {id:2}</text>
+        <text x="10" y="32" font-size="12" fill="#212529">"beta"</text>
+      </g>
+      <!-- r3 -->
+      <g transform="translate(515, 42)">
+        <rect width="180" height="42" rx="5" fill="#e7f5ff" stroke="#1971c2" stroke-width="1"/>
+        <text x="10" y="16" font-size="10" fill="#1864ab">@r3 · {id:3}</text>
+        <text x="10" y="32" font-size="12" fill="#212529">"gamma"</text>
+      </g>
+      <!-- r4 -->
+      <g transform="translate(705, 42)">
+        <rect width="180" height="42" rx="5" fill="#e7f5ff" stroke="#1971c2" stroke-width="1"/>
+        <text x="10" y="16" font-size="10" fill="#1864ab">@r4 · {id:4}</text>
+        <text x="10" y="32" font-size="12" fill="#212529">"delta"</text>
+      </g>
+      <!-- r5 -->
+      <g transform="translate(895, 42)">
+        <rect width="180" height="42" rx="5" fill="#e7f5ff" stroke="#1971c2" stroke-width="1"/>
+        <text x="10" y="16" font-size="10" fill="#1864ab">@r5 · {id:5}</text>
+        <text x="10" y="32" font-size="12" fill="#212529">"epsilon"</text>
+      </g>
+    </g>
+
+    <!-- live DOM strip -->
+    <text x="40" y="116" font-size="11" font-family="monospace" fill="#495057">live DOM</text>
+    <rect x="135" y="98" width="940" height="32" rx="4" fill="#f8f9fa" stroke="#adb5bd" stroke-dasharray="3,3"/>
+    <text x="145" y="118" font-size="11" font-family="monospace" fill="#495057">&lt;tr data-key="1"&gt;…alpha…&lt;/tr&gt;  &lt;tr data-key="2"&gt;…beta…&lt;/tr&gt;  &lt;tr data-key="3"&gt;…gamma…&lt;/tr&gt;  &lt;tr data-key="4"&gt;…delta…&lt;/tr&gt;  &lt;tr data-key="5"&gt;…epsilon…&lt;/tr&gt;</text>
+  </g>
+
+  <!-- step arrow + caption -->
+  <line x1="590" y1="232" x2="590" y2="266" stroke="#868e96" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="600" y="252" font-size="11" fill="#495057">user clicks <tspan font-family="monospace">#update</tspan>. handler runs.</text>
+
+  <!-- ============== STAGE 2: handler creates new array ============== -->
+  <g transform="translate(0, 280)">
+    <text x="40" y="14" font-size="13" font-weight="600" fill="#212529">②  handler builds a new array; only changed rows get fresh objects</text>
+    <text x="40" y="32" font-size="11" fill="#6c757d">immutable-update style. <tspan font-family="monospace">r1</tspan> and <tspan font-family="monospace">r3</tspan> are replaced with new objects (<tspan font-family="monospace">r6</tspan>/<tspan font-family="monospace">r7</tspan>); <tspan font-family="monospace">r2</tspan>/<tspan font-family="monospace">r4</tspan>/<tspan font-family="monospace">r5</tspan> keep their references. signal write triggers <tspan font-family="monospace">mount()</tspan>'s effect.</text>
+
+    <text x="40" y="62" font-size="11" font-family="monospace" fill="#495057">rows.value</text>
+    <line x1="100" y1="58" x2="120" y2="58" stroke="#adb5bd" stroke-width="1" marker-end="url(#arrow)"/>
+
+    <g font-family="monospace">
+      <!-- r6 (NEW) -->
+      <g transform="translate(135, 42)">
+        <rect width="180" height="42" rx="5" fill="#fde0e0" stroke="#c62828" stroke-width="1.5"/>
+        <text x="10" y="16" font-size="10" font-weight="700" fill="#b71c1c">@r6  NEW · {id:1}</text>
+        <text x="10" y="32" font-size="12" fill="#212529">"alpha !!!"</text>
+      </g>
+      <!-- r2 -->
+      <g transform="translate(325, 42)">
+        <rect width="180" height="42" rx="5" fill="#d4edda" stroke="#2e7d32" stroke-width="1.5"/>
+        <text x="10" y="16" font-size="10" fill="#1b5e20">@r2  same · {id:2}</text>
+        <text x="10" y="32" font-size="12" fill="#212529">"beta"</text>
+      </g>
+      <!-- r7 (NEW) -->
+      <g transform="translate(515, 42)">
+        <rect width="180" height="42" rx="5" fill="#fde0e0" stroke="#c62828" stroke-width="1.5"/>
+        <text x="10" y="16" font-size="10" font-weight="700" fill="#b71c1c">@r7  NEW · {id:3}</text>
+        <text x="10" y="32" font-size="12" fill="#212529">"gamma !!!"</text>
+      </g>
+      <!-- r4 -->
+      <g transform="translate(705, 42)">
+        <rect width="180" height="42" rx="5" fill="#d4edda" stroke="#2e7d32" stroke-width="1.5"/>
+        <text x="10" y="16" font-size="10" fill="#1b5e20">@r4  same · {id:4}</text>
+        <text x="10" y="32" font-size="12" fill="#212529">"delta"</text>
+      </g>
+      <!-- r5 -->
+      <g transform="translate(895, 42)">
+        <rect width="180" height="42" rx="5" fill="#d4edda" stroke="#2e7d32" stroke-width="1.5"/>
+        <text x="10" y="16" font-size="10" fill="#1b5e20">@r5  same · {id:5}</text>
+        <text x="10" y="32" font-size="12" fill="#212529">"epsilon"</text>
+      </g>
+    </g>
+
+    <!-- handler code -->
+    <rect x="135" y="100" width="940" height="36" rx="4" fill="#fff3cd" stroke="#b88500"/>
+    <text x="145" y="123" font-size="11" font-family="monospace" fill="#5c4400">const next = rows.value.slice();  for (let i=0; i&lt;next.length; i+=2) next[i] = { ...next[i], label: next[i].label + ' !!!' };  rows.value = next;</text>
+  </g>
+
+  <line x1="590" y1="438" x2="590" y2="472" stroke="#868e96" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="600" y="458" font-size="11" fill="#495057">render() runs; calls <tspan font-family="monospace">each(rows.value, …)</tspan></text>
+
+  <!-- ============== STAGE 3: each() cache lookups ============== -->
+  <g transform="translate(0, 486)">
+    <text x="40" y="14" font-size="13" font-weight="600" fill="#212529">③  each() walks the array and consults its WeakMap cache by item identity</text>
+    <text x="40" y="32" font-size="11" fill="#6c757d">cache hits return the previous render's HTML string verbatim. cache misses re-run <tspan font-family="monospace">render(item)</tspan> and store the result.</text>
+
+    <!-- 5 cache lookups (vertical mini-flows under each row position) -->
+    <g font-family="monospace">
+      <!-- col 1: r6 MISS -->
+      <g transform="translate(135, 50)">
+        <rect width="180" height="22" rx="3" fill="#fde0e0" stroke="#c62828"/>
+        <text x="90" y="15" text-anchor="middle" font-size="10.5" fill="#b71c1c">@r6 → MISS</text>
+        <line x1="90" y1="22" x2="90" y2="38" stroke="#c62828" stroke-width="1" marker-end="url(#arrow-red)"/>
+        <text x="90" y="52" text-anchor="middle" font-size="10" fill="#5c4400">render() runs</text>
+        <line x1="90" y1="56" x2="90" y2="72" stroke="#c62828" stroke-width="1" marker-end="url(#arrow-red)"/>
+        <rect y="78" width="180" height="60" rx="3" fill="#fde0e0" stroke="#c62828"/>
+        <text x="8" y="92" font-size="9.5" fill="#b71c1c">FRESH HTML</text>
+        <text x="8" y="106" font-size="9" fill="#212529">&lt;tr data-key="1"&gt;</text>
+        <text x="8" y="118" font-size="9" fill="#212529">&#160;&#160;…alpha !!!…</text>
+        <text x="8" y="130" font-size="9" fill="#212529">&lt;/tr&gt;</text>
+      </g>
+
+      <!-- col 2: r2 HIT -->
+      <g transform="translate(325, 50)">
+        <rect width="180" height="22" rx="3" fill="#d4edda" stroke="#2e7d32"/>
+        <text x="90" y="15" text-anchor="middle" font-size="10.5" fill="#1b5e20">@r2 → HIT</text>
+        <line x1="90" y1="22" x2="90" y2="38" stroke="#2e7d32" stroke-width="1" marker-end="url(#arrow-green)"/>
+        <text x="90" y="52" text-anchor="middle" font-size="10" fill="#1b5e20">return cached</text>
+        <line x1="90" y1="56" x2="90" y2="72" stroke="#2e7d32" stroke-width="1" marker-end="url(#arrow-green)"/>
+        <rect y="78" width="180" height="60" rx="3" fill="#d4edda" stroke="#2e7d32"/>
+        <text x="8" y="92" font-size="9.5" fill="#1b5e20">CACHED HTML</text>
+        <text x="8" y="106" font-size="9" fill="#212529">&lt;tr data-key="2"&gt;</text>
+        <text x="8" y="118" font-size="9" fill="#212529">&#160;&#160;…beta…</text>
+        <text x="8" y="130" font-size="9" fill="#212529">&lt;/tr&gt;</text>
+      </g>
+
+      <!-- col 3: r7 MISS -->
+      <g transform="translate(515, 50)">
+        <rect width="180" height="22" rx="3" fill="#fde0e0" stroke="#c62828"/>
+        <text x="90" y="15" text-anchor="middle" font-size="10.5" fill="#b71c1c">@r7 → MISS</text>
+        <line x1="90" y1="22" x2="90" y2="38" stroke="#c62828" stroke-width="1" marker-end="url(#arrow-red)"/>
+        <text x="90" y="52" text-anchor="middle" font-size="10" fill="#5c4400">render() runs</text>
+        <line x1="90" y1="56" x2="90" y2="72" stroke="#c62828" stroke-width="1" marker-end="url(#arrow-red)"/>
+        <rect y="78" width="180" height="60" rx="3" fill="#fde0e0" stroke="#c62828"/>
+        <text x="8" y="92" font-size="9.5" fill="#b71c1c">FRESH HTML</text>
+        <text x="8" y="106" font-size="9" fill="#212529">&lt;tr data-key="3"&gt;</text>
+        <text x="8" y="118" font-size="9" fill="#212529">&#160;&#160;…gamma !!!…</text>
+        <text x="8" y="130" font-size="9" fill="#212529">&lt;/tr&gt;</text>
+      </g>
+
+      <!-- col 4: r4 HIT -->
+      <g transform="translate(705, 50)">
+        <rect width="180" height="22" rx="3" fill="#d4edda" stroke="#2e7d32"/>
+        <text x="90" y="15" text-anchor="middle" font-size="10.5" fill="#1b5e20">@r4 → HIT</text>
+        <line x1="90" y1="22" x2="90" y2="38" stroke="#2e7d32" stroke-width="1" marker-end="url(#arrow-green)"/>
+        <text x="90" y="52" text-anchor="middle" font-size="10" fill="#1b5e20">return cached</text>
+        <line x1="90" y1="56" x2="90" y2="72" stroke="#2e7d32" stroke-width="1" marker-end="url(#arrow-green)"/>
+        <rect y="78" width="180" height="60" rx="3" fill="#d4edda" stroke="#2e7d32"/>
+        <text x="8" y="92" font-size="9.5" fill="#1b5e20">CACHED HTML</text>
+        <text x="8" y="106" font-size="9" fill="#212529">&lt;tr data-key="4"&gt;</text>
+        <text x="8" y="118" font-size="9" fill="#212529">&#160;&#160;…delta…</text>
+        <text x="8" y="130" font-size="9" fill="#212529">&lt;/tr&gt;</text>
+      </g>
+
+      <!-- col 5: r5 HIT -->
+      <g transform="translate(895, 50)">
+        <rect width="180" height="22" rx="3" fill="#d4edda" stroke="#2e7d32"/>
+        <text x="90" y="15" text-anchor="middle" font-size="10.5" fill="#1b5e20">@r5 → HIT</text>
+        <line x1="90" y1="22" x2="90" y2="38" stroke="#2e7d32" stroke-width="1" marker-end="url(#arrow-green)"/>
+        <text x="90" y="52" text-anchor="middle" font-size="10" fill="#1b5e20">return cached</text>
+        <line x1="90" y1="56" x2="90" y2="72" stroke="#2e7d32" stroke-width="1" marker-end="url(#arrow-green)"/>
+        <rect y="78" width="180" height="60" rx="3" fill="#d4edda" stroke="#2e7d32"/>
+        <text x="8" y="92" font-size="9.5" fill="#1b5e20">CACHED HTML</text>
+        <text x="8" y="106" font-size="9" fill="#212529">&lt;tr data-key="5"&gt;</text>
+        <text x="8" y="118" font-size="9" fill="#212529">&#160;&#160;…epsilon…</text>
+        <text x="8" y="130" font-size="9" fill="#212529">&lt;/tr&gt;</text>
+      </g>
+    </g>
+
+    <!-- WeakMap label -->
+    <text x="40" y="115" font-size="11" font-family="monospace" fill="#495057">ROW_CACHE</text>
+    <text x="40" y="129" font-size="10" fill="#6c757d">(WeakMap)</text>
+  </g>
+
+  <line x1="590" y1="690" x2="590" y2="724" stroke="#868e96" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="600" y="710" font-size="11" fill="#495057">concatenate all 5 chunks → one SafeHtml string</text>
+
+  <!-- ============== STAGE 4: concatenated SafeHtml output ============== -->
+  <g transform="translate(0, 736)">
+    <text x="40" y="14" font-size="13" font-weight="600" fill="#212529">④  the table's body becomes one HTML string — fresh + cached chunks concatenated in order</text>
+    <text x="40" y="32" font-size="11" fill="#6c757d">render() returns a single SafeHtml. each row is a contiguous slice of the string. nothing is structured per-row at this layer.</text>
+
+    <!-- striped bar showing concatenation -->
+    <g transform="translate(135, 46)">
+      <rect width="940" height="40" rx="4" fill="#ffffff" stroke="#495057"/>
+      <!-- row 1 segment (red) -->
+      <rect x="2" y="2" width="184" height="36" fill="#fde0e0" stroke="#c62828"/>
+      <text x="94" y="24" text-anchor="middle" font-size="10.5" font-family="monospace" fill="#b71c1c">&lt;tr key=1&gt; alpha !!! &lt;/tr&gt;</text>
+      <!-- row 2 segment (green) -->
+      <rect x="190" y="2" width="184" height="36" fill="#d4edda" stroke="#2e7d32"/>
+      <text x="282" y="24" text-anchor="middle" font-size="10.5" font-family="monospace" fill="#1b5e20">&lt;tr key=2&gt; beta &lt;/tr&gt;</text>
+      <!-- row 3 segment (red) -->
+      <rect x="378" y="2" width="184" height="36" fill="#fde0e0" stroke="#c62828"/>
+      <text x="470" y="24" text-anchor="middle" font-size="10.5" font-family="monospace" fill="#b71c1c">&lt;tr key=3&gt; gamma !!! &lt;/tr&gt;</text>
+      <!-- row 4 segment (green) -->
+      <rect x="566" y="2" width="184" height="36" fill="#d4edda" stroke="#2e7d32"/>
+      <text x="658" y="24" text-anchor="middle" font-size="10.5" font-family="monospace" fill="#1b5e20">&lt;tr key=4&gt; delta &lt;/tr&gt;</text>
+      <!-- row 5 segment (green) -->
+      <rect x="754" y="2" width="184" height="36" fill="#d4edda" stroke="#2e7d32"/>
+      <text x="846" y="24" text-anchor="middle" font-size="10.5" font-family="monospace" fill="#1b5e20">&lt;tr key=5&gt; epsilon &lt;/tr&gt;</text>
+    </g>
+  </g>
+
+  <line x1="590" y1="848" x2="590" y2="882" stroke="#868e96" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="600" y="868" font-size="11" fill="#495057">mount() does <tspan font-family="monospace">templateClone.innerHTML = …</tspan> — full re-parse</text>
+
+  <!-- ============== STAGE 5: innerHTML parse → detached DOM ============== -->
+  <g transform="translate(0, 894)">
+    <text x="40" y="14" font-size="13" font-weight="600" fill="#212529">⑤  innerHTML reparses the entire string into a detached DOM tree</text>
+    <text x="40" y="32" font-size="11" fill="#6c757d">the browser builds 5 fresh &lt;tr&gt; nodes (and all their children) regardless of whether their content matched. this cost is paid every render.</text>
+
+    <g font-family="monospace">
+      <!-- detached label -->
+      <text x="40" y="62" font-size="11" fill="#495057">detached</text>
+      <text x="40" y="76" font-size="11" fill="#495057">new tree</text>
+      <line x1="100" y1="68" x2="120" y2="68" stroke="#adb5bd" stroke-width="1" marker-end="url(#arrow)"/>
+
+      <!-- 5 detached tr boxes -->
+      <g transform="translate(135, 50)">
+        <rect width="180" height="42" rx="5" fill="#fff3cd" stroke="#b88500"/>
+        <text x="90" y="16" text-anchor="middle" font-size="10.5" fill="#5c4400">&lt;tr data-key="1"&gt;</text>
+        <text x="90" y="32" text-anchor="middle" font-size="11" fill="#212529">alpha !!!</text>
+      </g>
+      <g transform="translate(325, 50)">
+        <rect width="180" height="42" rx="5" fill="#fff3cd" stroke="#b88500"/>
+        <text x="90" y="16" text-anchor="middle" font-size="10.5" fill="#5c4400">&lt;tr data-key="2"&gt;</text>
+        <text x="90" y="32" text-anchor="middle" font-size="11" fill="#212529">beta</text>
+      </g>
+      <g transform="translate(515, 50)">
+        <rect width="180" height="42" rx="5" fill="#fff3cd" stroke="#b88500"/>
+        <text x="90" y="16" text-anchor="middle" font-size="10.5" fill="#5c4400">&lt;tr data-key="3"&gt;</text>
+        <text x="90" y="32" text-anchor="middle" font-size="11" fill="#212529">gamma !!!</text>
+      </g>
+      <g transform="translate(705, 50)">
+        <rect width="180" height="42" rx="5" fill="#fff3cd" stroke="#b88500"/>
+        <text x="90" y="16" text-anchor="middle" font-size="10.5" fill="#5c4400">&lt;tr data-key="4"&gt;</text>
+        <text x="90" y="32" text-anchor="middle" font-size="11" fill="#212529">delta</text>
+      </g>
+      <g transform="translate(895, 50)">
+        <rect width="180" height="42" rx="5" fill="#fff3cd" stroke="#b88500"/>
+        <text x="90" y="16" text-anchor="middle" font-size="10.5" fill="#5c4400">&lt;tr data-key="5"&gt;</text>
+        <text x="90" y="32" text-anchor="middle" font-size="11" fill="#212529">epsilon</text>
+      </g>
+    </g>
+  </g>
+
+  <line x1="590" y1="1000" x2="590" y2="1034" stroke="#868e96" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="600" y="1020" font-size="11" fill="#495057">morphdom walks both trees, matched by <tspan font-family="monospace">data-key</tspan></text>
+
+  <!-- ============== STAGE 6: morphdom diff ============== -->
+  <g transform="translate(0, 1050)">
+    <text x="40" y="14" font-size="13" font-weight="600" fill="#212529">⑥  morphdom pairs new ↔ live by data-key and decides per row: skip vs patch</text>
+    <text x="40" y="32" font-size="11" fill="#6c757d"><tspan font-family="monospace">isEqualNode</tspan> short-circuits unchanged rows. changed rows fall through to the actual DOM patch (text-node update, attribute set, etc.).</text>
+
+    <!-- Column headers -->
+    <text x="135" y="60" font-size="11" font-family="monospace" font-weight="600" fill="#495057">live DOM (old)</text>
+    <text x="585" y="60" text-anchor="middle" font-size="11" font-weight="600" fill="#495057">comparison</text>
+    <text x="895" y="60" font-size="11" font-family="monospace" font-weight="600" fill="#495057">new tree (just-parsed)</text>
+
+    <!-- Row pairs -->
+    <g font-family="monospace">
+      <!-- key=1: PATCH -->
+      <g transform="translate(0, 75)">
+        <rect x="135" y="0" width="280" height="32" rx="4" fill="#f8f9fa" stroke="#adb5bd"/>
+        <text x="145" y="20" font-size="11" fill="#212529">&lt;tr data-key="1"&gt; alpha &lt;/tr&gt;</text>
+        <line x1="425" y1="16" x2="765" y2="16" stroke="#c62828" stroke-width="2"/>
+        <rect x="495" y="2" width="180" height="28" rx="13" fill="#fde0e0" stroke="#c62828"/>
+        <text x="585" y="20" text-anchor="middle" font-size="11" fill="#b71c1c">≠ → PATCH text node</text>
+        <rect x="775" y="0" width="290" height="32" rx="4" fill="#fff3cd" stroke="#b88500"/>
+        <text x="785" y="20" font-size="11" fill="#212529">&lt;tr data-key="1"&gt; alpha !!! &lt;/tr&gt;</text>
+      </g>
+      <!-- key=2: SKIP -->
+      <g transform="translate(0, 115)">
+        <rect x="135" y="0" width="280" height="32" rx="4" fill="#f8f9fa" stroke="#adb5bd"/>
+        <text x="145" y="20" font-size="11" fill="#212529">&lt;tr data-key="2"&gt; beta &lt;/tr&gt;</text>
+        <line x1="425" y1="16" x2="765" y2="16" stroke="#2e7d32" stroke-width="2"/>
+        <rect x="495" y="2" width="180" height="28" rx="13" fill="#d4edda" stroke="#2e7d32"/>
+        <text x="585" y="20" text-anchor="middle" font-size="11" fill="#1b5e20">isEqualNode → SKIP</text>
+        <rect x="775" y="0" width="290" height="32" rx="4" fill="#fff3cd" stroke="#b88500"/>
+        <text x="785" y="20" font-size="11" fill="#212529">&lt;tr data-key="2"&gt; beta &lt;/tr&gt;</text>
+      </g>
+      <!-- key=3: PATCH -->
+      <g transform="translate(0, 155)">
+        <rect x="135" y="0" width="280" height="32" rx="4" fill="#f8f9fa" stroke="#adb5bd"/>
+        <text x="145" y="20" font-size="11" fill="#212529">&lt;tr data-key="3"&gt; gamma &lt;/tr&gt;</text>
+        <line x1="425" y1="16" x2="765" y2="16" stroke="#c62828" stroke-width="2"/>
+        <rect x="495" y="2" width="180" height="28" rx="13" fill="#fde0e0" stroke="#c62828"/>
+        <text x="585" y="20" text-anchor="middle" font-size="11" fill="#b71c1c">≠ → PATCH text node</text>
+        <rect x="775" y="0" width="290" height="32" rx="4" fill="#fff3cd" stroke="#b88500"/>
+        <text x="785" y="20" font-size="11" fill="#212529">&lt;tr data-key="3"&gt; gamma !!! &lt;/tr&gt;</text>
+      </g>
+      <!-- key=4: SKIP -->
+      <g transform="translate(0, 195)">
+        <rect x="135" y="0" width="280" height="32" rx="4" fill="#f8f9fa" stroke="#adb5bd"/>
+        <text x="145" y="20" font-size="11" fill="#212529">&lt;tr data-key="4"&gt; delta &lt;/tr&gt;</text>
+        <line x1="425" y1="16" x2="765" y2="16" stroke="#2e7d32" stroke-width="2"/>
+        <rect x="495" y="2" width="180" height="28" rx="13" fill="#d4edda" stroke="#2e7d32"/>
+        <text x="585" y="20" text-anchor="middle" font-size="11" fill="#1b5e20">isEqualNode → SKIP</text>
+        <rect x="775" y="0" width="290" height="32" rx="4" fill="#fff3cd" stroke="#b88500"/>
+        <text x="785" y="20" font-size="11" fill="#212529">&lt;tr data-key="4"&gt; delta &lt;/tr&gt;</text>
+      </g>
+      <!-- key=5: SKIP -->
+      <g transform="translate(0, 235)">
+        <rect x="135" y="0" width="280" height="32" rx="4" fill="#f8f9fa" stroke="#adb5bd"/>
+        <text x="145" y="20" font-size="11" fill="#212529">&lt;tr data-key="5"&gt; epsilon &lt;/tr&gt;</text>
+        <line x1="425" y1="16" x2="765" y2="16" stroke="#2e7d32" stroke-width="2"/>
+        <rect x="495" y="2" width="180" height="28" rx="13" fill="#d4edda" stroke="#2e7d32"/>
+        <text x="585" y="20" text-anchor="middle" font-size="11" fill="#1b5e20">isEqualNode → SKIP</text>
+        <rect x="775" y="0" width="290" height="32" rx="4" fill="#fff3cd" stroke="#b88500"/>
+        <text x="785" y="20" font-size="11" fill="#212529">&lt;tr data-key="5"&gt; epsilon &lt;/tr&gt;</text>
+      </g>
+    </g>
+  </g>
+
+  <line x1="590" y1="1352" x2="590" y2="1386" stroke="#868e96" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="600" y="1372" font-size="11" fill="#495057">two text-node patches applied; live DOM matches new data</text>
+
+  <!-- ============== STAGE 7: final live DOM ============== -->
+  <g transform="translate(0, 1400)">
+    <text x="40" y="14" font-size="13" font-weight="600" fill="#212529">⑦  live DOM after the morph</text>
+    <text x="40" y="32" font-size="11" fill="#6c757d">two &lt;tr&gt; subtrees received text-node updates. the other three are physically the same nodes they were before — not even touched.</text>
+
+    <text x="40" y="62" font-size="11" font-family="monospace" fill="#495057">live DOM</text>
+    <line x1="100" y1="58" x2="120" y2="58" stroke="#adb5bd" stroke-width="1" marker-end="url(#arrow)"/>
+
+    <g font-family="monospace">
+      <g transform="translate(135, 42)">
+        <rect width="180" height="42" rx="5" fill="#fde0e0" stroke="#c62828"/>
+        <text x="90" y="16" text-anchor="middle" font-size="10.5" fill="#b71c1c">&lt;tr data-key="1"&gt; (patched)</text>
+        <text x="90" y="32" text-anchor="middle" font-size="11" fill="#212529">alpha !!!</text>
+      </g>
+      <g transform="translate(325, 42)">
+        <rect width="180" height="42" rx="5" fill="#d4edda" stroke="#2e7d32"/>
+        <text x="90" y="16" text-anchor="middle" font-size="10.5" fill="#1b5e20">&lt;tr data-key="2"&gt; (untouched)</text>
+        <text x="90" y="32" text-anchor="middle" font-size="11" fill="#212529">beta</text>
+      </g>
+      <g transform="translate(515, 42)">
+        <rect width="180" height="42" rx="5" fill="#fde0e0" stroke="#c62828"/>
+        <text x="90" y="16" text-anchor="middle" font-size="10.5" fill="#b71c1c">&lt;tr data-key="3"&gt; (patched)</text>
+        <text x="90" y="32" text-anchor="middle" font-size="11" fill="#212529">gamma !!!</text>
+      </g>
+      <g transform="translate(705, 42)">
+        <rect width="180" height="42" rx="5" fill="#d4edda" stroke="#2e7d32"/>
+        <text x="90" y="16" text-anchor="middle" font-size="10.5" fill="#1b5e20">&lt;tr data-key="4"&gt; (untouched)</text>
+        <text x="90" y="32" text-anchor="middle" font-size="11" fill="#212529">delta</text>
+      </g>
+      <g transform="translate(895, 42)">
+        <rect width="180" height="42" rx="5" fill="#d4edda" stroke="#2e7d32"/>
+        <text x="90" y="16" text-anchor="middle" font-size="10.5" fill="#1b5e20">&lt;tr data-key="5"&gt; (untouched)</text>
+        <text x="90" y="32" text-anchor="middle" font-size="11" fill="#212529">epsilon</text>
+      </g>
+    </g>
+  </g>
+</svg>

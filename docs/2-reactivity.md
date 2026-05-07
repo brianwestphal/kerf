@@ -53,7 +53,7 @@ count.value = 2;
 
 An `effect()` runs its body synchronously once on creation, then re-runs it whenever any signal read during the last run changes. Returns a disposer that tears the effect down.
 
-`mount()` is built on `effect()` — same semantics, with a morphdom-driven render as the side effect.
+`mount()` is built on `effect()` — same semantics, with kerf's segment-aware diff as the side effect.
 
 ## 2.4 `batch(fn)`
 

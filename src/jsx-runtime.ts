@@ -1,10 +1,18 @@
 /**
  * kerf JSX runtime.
  *
- * JSX renders to `SafeHtml` — a wrapped HTML string. `SafeHtml.toString()`
- * is what the consumer eventually feeds into `mount()` (which morphs the
- * live DOM toward the new tree) or into `toElement()` (which parses it
- * to a single DOM node).
+ * JSX renders to `SafeHtml`, which wraps both:
+ *   - `__html`: the flattened HTML string (what `toString()` returns; what
+ *     legacy/SSR consumers care about)
+ *   - `__segment`: a structured representation that distinguishes "static
+ *     html", "keyed list", and "mixed" content.
+ *
+ * Most renders are pure-static and the segment is just `{kind:'static',html}`.
+ * When the tree contains a list (via `each()`) or a parent whose children
+ * include a non-static segment, the runtime threads that structure up so
+ * `mount()` can dispatch on it — running its native keyed reconciler for
+ * the list parts and leaving the static surrounds to the general-purpose
+ * diff.
  *
  * Configure in your `tsconfig.json`:
  *
@@ -15,6 +23,13 @@
  * `jsxs` / `jsxDEV` / `Fragment` exports the JSX transform looks for.
  */
 
+import {
+  flatten,
+  type ListSegment,
+  mergeChildSegments,
+  type Segment,
+  wrapWithTags,
+} from './segment.js';
 import { escapeAttr, escapeHtml } from './utils/escapeHtml.js';
 import { ATTR_ALIASES } from './utils/jsx-attr-aliases.js';
 
@@ -28,10 +43,17 @@ const SAFE_HTML_BRAND = Symbol.for('kerfjs.SafeHtml');
 
 export class SafeHtml {
   readonly __html: string;
+  readonly __segment: Segment;
   // Branded so `isSafeHtml()` recognises instances from any copy of this module.
   readonly [SAFE_HTML_BRAND] = true as const;
-  constructor(html: string) {
-    this.__html = html;
+  constructor(input: string | Segment) {
+    if (typeof input === 'string') {
+      this.__segment = { kind: 'static', html: input };
+      this.__html = input;
+    } else {
+      this.__segment = input;
+      this.__html = flatten(input, false);
+    }
   }
   toString(): string {
     return this.__html;
@@ -54,6 +76,14 @@ export function raw(html: string): SafeHtml {
   return new SafeHtml(html);
 }
 
+/**
+ * Internal: build a `SafeHtml` representing a list segment. Used by
+ * `each()` so the JSX runtime is the sole owner of `SafeHtml` construction.
+ */
+export function listSafeHtml(id: string, items: ListSegment['items']): SafeHtml {
+  return new SafeHtml({ kind: 'list', id, items });
+}
+
 type Child = SafeHtml | string | number | boolean | null | undefined;
 type Children = Child | Children[];
 
@@ -67,17 +97,25 @@ const VOID_TAGS = new Set([
   'link', 'meta', 'source', 'track', 'wbr',
 ]);
 
-function renderChildren(children: Children): string {
-  if (children == null || typeof children === 'boolean') return '';
-  if (isSafeHtml(children)) return children.__html;
-  if (typeof children === 'string') return escapeHtml(children);
-  if (typeof children === 'number') return String(children);
-  if (Array.isArray(children)) return children.map(renderChildren).join('');
+/**
+ * Convert a single JSX child into a Segment. Handles SafeHtml passthrough,
+ * primitive coercion + escaping, arrays (recursive), and the nullish/false
+ * skip cases.
+ */
+function toSegment(child: Children): Segment {
+  if (child == null || typeof child === 'boolean') return { kind: 'static', html: '' };
+  if (isSafeHtml(child)) {
+    // Cross-bundle SafeHtml shims (KF-14 case) may have only `__html`.
+    return child.__segment ?? { kind: 'static', html: child.__html };
+  }
+  if (typeof child === 'string') return { kind: 'static', html: escapeHtml(child) };
+  if (typeof child === 'number') return { kind: 'static', html: String(child) };
+  if (Array.isArray(child)) return mergeChildSegments(child.map(toSegment));
   // Catch the common mistake of passing a DOM element (e.g. the result of
   // toElement(...)) as a JSX child. The runtime renders to HTML strings, so
   // DOM nodes can't be composed — they'd silently serialize to "" and their
   // event listeners would be lost. Throw loudly so this can't sneak in.
-  const maybeNode = children as unknown;
+  const maybeNode = child as unknown;
   if (typeof maybeNode === 'object' && maybeNode !== null
       && ('nodeType' in maybeNode || 'outerHTML' in maybeNode)) {
     throw new Error(
@@ -86,7 +124,7 @@ function renderChildren(children: Children): string {
     );
   }
   throw new Error(
-    `JSX: unsupported child of type ${describeValue(children)}. `
+    `JSX: unsupported child of type ${describeValue(child)}. `
     + 'Children must be SafeHtml, string, number, boolean, null, undefined, or an array of those. '
     + 'Common mistakes: passing a Signal/Store object directly (use signal.value or store.state.value), '
     + 'passing a function (call it first), or passing a Promise (await it before render).',
@@ -133,8 +171,10 @@ export function jsx(tag: string | ((props: Props) => SafeHtml), props: Props): S
 
   if (VOID_TAGS.has(tag)) return new SafeHtml(`<${tag}${attrStr}>`);
 
-  const childStr = children != null ? renderChildren(children) : '';
-  return new SafeHtml(`<${tag}${attrStr}>${childStr}</${tag}>`);
+  const childSegment: Segment = children != null
+    ? toSegment(children)
+    : { kind: 'static', html: '' };
+  return new SafeHtml(wrapWithTags(childSegment, `<${tag}${attrStr}>`, `</${tag}>`));
 }
 
 export { jsx as jsxs };
@@ -144,7 +184,7 @@ export { jsx as jsxs };
 export { jsx as jsxDEV };
 
 export function Fragment({ children }: { children?: Children }): SafeHtml {
-  return new SafeHtml(children != null ? renderChildren(children) : '');
+  return new SafeHtml(children != null ? toSegment(children) : { kind: 'static', html: '' });
 }
 
 // eslint-disable-next-line @typescript-eslint/no-namespace

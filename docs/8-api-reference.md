@@ -71,17 +71,20 @@ import { clearStoreRegistry } from 'kerfjs/testing';
 
 ### `mount(rootEl: HTMLElement, render: () => SafeHtml | string): () => void`
 
-Bind `render()` to `rootEl`'s children. Wraps `effect()` with a morphdom diff. Returns a disposer.
+Bind `render()` to `rootEl`'s children. Wraps `effect()` with kerf's segment-aware diff. Returns a disposer.
 
-morphdom is configured with:
+The diff:
 
-- `childrenOnly: true` — `rootEl` itself is preserved; only its subtree is diffed.
-- `getNodeKey` — matches by `id`, then `data-key`. Position otherwise.
-- `onBeforeElUpdated`:
-  - Returns `false` if the live element has `data-morph-skip` (subtree preserved as-is).
-  - Returns `false` if `fromEl.isEqualNode(toEl)` (no work needed).
-  - Returns `false` if the live element is the focused `[contenteditable]` (entire subtree preserved on this morph; see §8.7 below and `docs/4-render.md` §4.4).
-  - Otherwise preserves the focused text-entry's value + selection range, then proceeds.
+- Only ever touches `rootEl`'s subtree; `rootEl` itself is preserved.
+- Matches elements by `id`, then `data-key`. Position otherwise.
+- Short-circuits on the live element when:
+  - It has `data-morph-skip` (subtree preserved as-is).
+  - It's a list parent owned by `each(...)` (children-only short-circuit; `each`'s reconciler owns those rows). Attribute morphing on the parent itself still happens.
+  - `fromEl.isEqualNode(toEl)` (no work needed).
+  - It's the focused `[contenteditable]` (entire subtree preserved on this morph; see §8.7 below and `docs/4-render.md` §4.4).
+- Otherwise preserves the focused text-entry's value + selection range, then proceeds.
+
+Lists rendered with `each(...)` go through a separate keyed reconciler that operates directly on the live parent's children — O(changes), not O(rows). See `each` below.
 
 ### `each<T>(items, render, key?): SafeHtml`
 
@@ -90,7 +93,7 @@ each(rows.value, (row) => <tr data-key={row.id}>{row.label}</tr>);
 each(rows.value, (row) => <tr…>…</tr>, (row) => row.id === selectedId ? 1 : 0);
 ```
 
-Keyed list iteration with per-item memoisation. Skips re-running `render` for items whose object identity (and optional `key`) are unchanged since the previous call — those items reuse their cached HTML string. Items whose identity or key did change re-render normally. Items must be objects (cache is a `WeakMap`); wrap primitives if you need to iterate them. Use `key` when external state, not the item itself, drives what the row should render (e.g. a "currently selected" id flips a CSS class).
+Keyed list iteration with per-item memoisation, routed through `mount()`'s native list reconciler. Skips re-running `render` for items whose object identity (and optional `key`) are unchanged since the previous call — those items keep their existing live DOM nodes verbatim. Items whose identity or key did change get a fresh node (all fresh-node HTML for a render is bulk-parsed in one `innerHTML` call); items that disappeared are removed. Reorders use a longest-increasing-subsequence pass so the number of `insertBefore` calls is the minimum possible. Items must be objects (cache is a `WeakMap`); wrap primitives if you need to iterate them. Each item's render output must produce exactly one top-level element. Use `key` when external state, not the item itself, drives what the row should render (e.g. a "currently selected" id flips a CSS class).
 
 ## 8.4 Event delegation
 

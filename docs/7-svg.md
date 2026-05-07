@@ -11,7 +11,7 @@ mount(rootEl, () => (
 ));
 ```
 
-The above renders correctly. morphdom diffs SVG attributes (`d`, `r`, `fill`, `transform`, …) just like any other attributes.
+The above renders correctly. The diff updates SVG attributes (`d`, `r`, `fill`, `transform`, …) just like any other attributes.
 
 ## 7.1 The orphan-fragment edge case
 

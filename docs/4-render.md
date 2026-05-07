@@ -18,14 +18,16 @@ const dispose = mount(document.getElementById('app')!, () => (
 ## 4.1 What `mount` does
 
 1. Wraps `effect()` so the render fn re-runs whenever any signal it reads changes.
-2. On each run, evaluates `render()` to a `SafeHtml`, takes its `.toString()`.
-3. Builds a shallow clone of `rootEl` and sets its `innerHTML` to the new string.
-4. Calls `morphdom(rootEl, template, { childrenOnly: true, ... })` to apply the minimum DOM mutations.
+2. Evaluates `render()` to a `SafeHtml`. The wrapped `Segment` is either a single static-html node (most renders), or a tree containing `list` segments (anywhere `each(...)` was used) and `mixed` segments wrapping their parents.
+3. **First render:** sets `rootEl.innerHTML` to the flattened HTML (with sentinel comments around each list), then walks those comments to bind every list to its live parent. Bulk parse, single pass.
+4. **Subsequent renders:** builds a marker-only template (lists become `<!--kf-list:N-->` placeholders, *no row HTML*), runs kerf's native diff (`src/diff.ts`) over the static surrounds, then dispatches each list segment to a keyed reconciler that operates directly on the live parent's children. Cache-hit rows are reused verbatim; replaced/new rows are batched into one parse and `insertBefore`'d into place. A longest-increasing-subsequence pass keeps reorder mutations to the minimum.
 5. Returns a disposer that tears down the effect.
+
+The structural payoff: a thousand-row list where 100 rows changed runs ~100 cache misses, one bulk parse for those 100 rows, ~100 `insertBefore` calls, and zero work for the 900 unchanged rows. The static surrounds (which are usually small) go through the general-purpose diff.
 
 ## 4.2 Diff keys
 
-morphdom matches elements across the diff by:
+`diff()` matches elements across the reconciliation by:
 
 - **`id`** — wins over any other key. Useful for singletons.
 - **`data-key`** — generic per-row key for list items.
@@ -41,7 +43,7 @@ Elements without a key are matched positionally by tag name. Pure-HTML diffs wor
 </ul>
 ```
 
-For large lists where most rows are unchanged across renders, swap `.map(...)` for the `each(items, render, key?)` helper. It memoises each row's HTML keyed by item identity (and an optional `key` that captures external state, like a "selected id"), so unchanged rows skip the JSX evaluation + string-build entirely. Items must be objects (the cache is a `WeakMap`); the immutable-update style elsewhere in this codebase makes the cache work automatically — replace a row with a fresh object and it re-renders, leave its reference alone and it doesn't.
+For large lists, swap `.map(...)` for the `each(items, render, key?)` helper. It returns a structured list segment that `mount()` recognises and routes to the keyed reconciler — bypassing the parse-the-whole-table step entirely. Each row is memoised by item identity (with an optional `key` that captures external state like a "selected id"), so unchanged rows skip JSX evaluation, string-building, *and* the morph walk. Items must be objects (the cache is a `WeakMap`); the immutable-update style elsewhere in this codebase makes the cache work automatically — replace a row with a fresh object and it re-renders, leave its reference alone and it doesn't.
 
 ```tsx
 import { each } from 'kerfjs';
@@ -53,7 +55,7 @@ import { each } from 'kerfjs';
 
 ## 4.3 `data-morph-skip`
 
-Apply this attribute to any element whose subtree you DON'T want morphdom to touch:
+Apply this attribute to any element whose subtree you DON'T want kerf to touch:
 
 ```tsx
 <div id="chart-mount" data-morph-skip />
@@ -65,7 +67,7 @@ After the first render, mount your library widget into `#chart-mount` directly:
 const chart = new ThirdPartyChart(document.getElementById('chart-mount')!);
 ```
 
-On subsequent re-renders, morphdom calls `onBeforeElUpdated` on the host, sees `data-morph-skip`, and returns `false` — so the entire subtree (the chart's internal DOM) is preserved. Use this for:
+On subsequent re-renders, the diff sees `data-morph-skip` on the host and short-circuits — so the entire subtree (the chart's internal DOM) is preserved. Use this for:
 
 - xterm.js / Monaco-style editors.
 - D3 / Plotly / Chart.js mounted regions.
@@ -73,18 +75,18 @@ On subsequent re-renders, morphdom calls `onBeforeElUpdated` on the host, sees `
 
 ## 4.4 Focus + selection preservation
 
-When morphdom is about to update an element that is currently the active element, kerf preserves the user's in-progress edit. The mechanism differs by element kind:
+When the diff is about to update an element that is currently the active element, kerf preserves the user's in-progress edit. The mechanism differs by element kind:
 
 ### `<input>` (text-entry types) and `<textarea>`
 
 For `input[type=text|search|url|email|tel|password|""]` and `<textarea>`, kerf:
 
 - Copies the live `.value` and `selectionStart` / `selectionEnd` onto the morph target.
-- Lets morphdom proceed with the update.
+- Lets the diff proceed with the update.
 
 The result: attribute updates from the surrounding render still apply (className, disabled, etc.), but the user's typed value and cursor position survive. They never see their cursor jump mid-keystroke.
 
-Other input types (range, color, file, date, checkbox, radio…) don't have meaningful text-selection state, so they aren't touched specially — morphdom proceeds normally.
+Other input types (range, color, file, date, checkbox, radio…) don't have meaningful text-selection state, so they aren't touched specially — the diff proceeds normally.
 
 ### `[contenteditable]`
 
@@ -94,7 +96,7 @@ This is the behaviour you almost always want for in-progress rich-text editing: 
 
 ### Non-text focused elements
 
-For anything else with focus (a `<button>`, `<a>`, `<div tabindex>`), morphdom proceeds normally. There's no special handling — none of those elements have user-visible state that a re-render would clobber.
+For anything else with focus (a `<button>`, `<a>`, `<div tabindex>`), the diff proceeds normally. There's no special handling — none of those elements have user-visible state that a re-render would clobber.
 
 ## 4.5 Multiple `mount()` calls
 
@@ -110,7 +112,7 @@ Each region re-renders only when its own dependencies change. Adding an item to 
 
 ## 4.6 Server-rendering
 
-`SafeHtml.toString()` is server-safe. You can build the same JSX server-side, write the resulting string into your HTML response, and then call `mount()` on the same element on the client. morphdom will diff against whatever the server emitted; if the server output and client output match (which they should, given the same store state), no mutations are applied — but signal subscriptions are now wired up for future updates.
+`SafeHtml.toString()` is server-safe. You can build the same JSX server-side, write the resulting string into your HTML response, and then call `mount()` on the same element on the client. The first-render path bulk-renders into the existing DOM via `innerHTML`; if the server output and client output match (which they should, given the same store state), the resulting tree is identical — and signal subscriptions are now wired up for future updates.
 
 This isn't a full SSR story (no streaming, no hydration mismatch detection), but it's enough for "render once on the server, hydrate interactivity on the client" workflows.
 
@@ -130,4 +132,4 @@ After dispose, signal mutations no longer trigger re-renders for this mount. The
 
 - It doesn't manage component lifecycle. There's no `onMount` / `onUnmount` / `onUpdate` hook. Use `effect()` directly if you need a side effect tied to a signal.
 - It doesn't batch updates across animation frames. If a signal mutates 100 times in 16ms, the render fn runs 100 times. Use `batch()` if you have a multi-write action that should fire once.
-- It doesn't dedupe identical renders. If your render fn returns the same HTML string on consecutive runs, morphdom still does the diff (and finds nothing to change). The cost is the diff walk; it's cheap for small trees.
+- It doesn't dedupe identical renders. If your render fn returns the same HTML on consecutive runs, the diff still walks the tree (and short-circuits per element via `isEqualNode`). The cost is the walk; it's cheap for small trees, and lists go through the keyed reconciler which is even cheaper.

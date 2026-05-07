@@ -11,7 +11,9 @@ kerf/
 │   ├── jsx-runtime.ts            ← JSX → SafeHtml string emitter
 │   ├── reactive.ts               ← signal/computed/effect/batch (re-export)
 │   ├── store.ts                  ← defineStore + resetAllStores + REGISTRY
-│   ├── mount.ts                  ← mount() — morphdom-driven render bound to effect()
+│   ├── mount.ts                  ← mount() — segment-aware render bound to effect()
+│   ├── diff.ts                   ← native general-purpose DOM reconciler (replaces morphdom)
+│   ├── segment.ts                ← Segment types (static/list/mixed) + flatten helpers
 │   ├── each.ts                   ← each() — keyed list iteration with per-item memo
 │   ├── delegate.ts               ← delegate + delegateCapture
 │   ├── toElement.ts              ← SVG-aware JSX-to-DOM
@@ -81,7 +83,7 @@ Every export reachable via `import { ... } from 'kerfjs'`:
 | `defineStore` | `store.ts` | Composable store factory |
 | `resetAllStores` | `store.ts` | Reset every registered store |
 | `Store<TState, TActions>` | `store.ts` | Type |
-| `mount` | `mount.ts` | Render JSX into a DOM element with morphdom diffs |
+| `mount` | `mount.ts` | Render JSX into a DOM element via kerf's segment-aware diff |
 | `each` | `each.ts` | Keyed list iteration; per-item HTML memo by object identity (+ optional key) |
 | `delegate` | `delegate.ts` | Tier 1 bubbling delegation |
 | `delegateCapture` | `delegate.ts` | Tier 2 capture-phase delegation |
@@ -108,7 +110,7 @@ The JSX runtime is a separate subpath export at `kerfjs/jsx-runtime`. It's refer
 
 `tsup.config.ts` runs with `splitting: true` (KF-14 / KF-15) — without it, esbuild bundles each entry independently, which both duplicates shared classes (breaking `instanceof` checks across entries) and tree-shakes shared module-level state into broken stubs.
 
-Runtime deps (`@preact/signals-core`, `morphdom`) are external — consumers' bundlers pick them up from their own `node_modules`.
+Runtime dep (`@preact/signals-core`) is external — consumers' bundlers pick it up from their own `node_modules`.
 
 ## Where to look for X
 
@@ -116,7 +118,7 @@ Runtime deps (`@preact/signals-core`, `morphdom`) are external — consumers' bu
 | --- | --- |
 | Adding a new public export | `src/index.ts` + the relevant module + `docs/8-api-reference.md` |
 | JSX attribute alias | `src/utils/jsx-attr-aliases.ts` (the `ATTR_ALIASES` map) |
-| morphdom config / diff conventions | `src/mount.ts` (`onBeforeElUpdated`, `getNodeKey`) |
+| diff conventions | `src/diff.ts` (key matching, `data-morph-skip`, focus preservation), `src/mount.ts` (segment dispatch) |
 | SVG namespace handling | `src/toElement.ts` (`SVG_FRAGMENT_TAGS`) |
 | Store reset semantics | `src/store.ts` (`REGISTRY`, `resetAllStores`) |
 | Delegation tier docs | `docs/5-event-delegation.md` |

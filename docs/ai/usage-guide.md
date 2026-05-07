@@ -111,7 +111,7 @@ delegate(rootEl, 'click', '[data-action="inc"]', () => { count.value += 1; });
 ## Hard rules (every AI gets these wrong at least once)
 
 1. **JSX renders to HTML strings, not DOM nodes.** Don't pass DOM nodes as JSX children — the runtime throws. If you need an element ref, build the JSX, then `querySelector` after `toElement()` or after `mount()` runs.
-2. **Diff keys are `id` first, then `data-key`.** Lists must set `data-key={item.id}` per item. Otherwise morphdom matches by position and you lose identity, focus, and cursor position on insert/delete.
+2. **Diff keys are `id` first, then `data-key`.** Lists must set `data-key={item.id}` per item. Otherwise the diff matches by position and you lose identity, focus, and cursor position on insert/delete.
 3. **`data-morph-skip` is your escape hatch.** Any element with this attribute (any value, even empty) and its entire subtree are preserved verbatim across re-renders. Use it for third-party widgets.
 4. **Never call `addEventListener` on a node inside a `mount()`-managed tree** unless that node lives under `data-morph-skip`. A morph re-render may discard the node. Use `delegate` / `delegateCapture` instead.
 5. **One `mount()` per root.** Don't nest `mount()` calls. Compose with plain functions that return JSX.
@@ -130,7 +130,7 @@ delegate(rootEl, 'click', '[data-action="inc"]', () => { count.value += 1; });
 | Click handler stops firing after re-render | `el.addEventListener` was used instead of `delegate` | Replace with `delegate(rootEl, 'click', '[data-action="..."]', ...)` |
 | Render fn never re-runs | Signal was read outside the render fn (cached into a local) | Read `signal.value` inside the render fn |
 | SVG renders as broken / namespaceless markup | Used `innerHTML` directly instead of going through kerf | Use `mount` (HTML path) or `toElement` (SVG-aware) |
-| Library widget destroyed on every render | Library-owned subtree is reachable by morphdom | Wrap host in `data-morph-skip`; mount the library imperatively |
+| Library widget destroyed on every render | Library-owned subtree is reachable by the diff | Wrap host in `data-morph-skip`; mount the library imperatively |
 
 ## Server / SSR
 
@@ -153,9 +153,9 @@ const html = (<div>Hello</div>).toString(); // "<div>Hello</div>"
                            ▼
    ┌──────────────────────────────────────────┐
    │ effect() re-runs the render fn           │
-   │   → SafeHtml string                      │
-   │   → template.innerHTML                   │
-   │   → morphdom.diff(live, template)        │
+   │   → SafeHtml (segment tree)              │
+   │   → diff() reconciles static surrounds   │
+   │   → each() reconciler patches each list  │
    │   → minimum DOM mutations applied        │
    └──────────────────────────────────────────┘
 ```
@@ -163,6 +163,6 @@ const html = (<div>Hello</div>).toString(); // "<div>Hello</div>"
 ## Where to look next
 
 - [`docs/8-api-reference.md`](../8-api-reference.md) — every option, every edge case.
-- [`docs/4-render.md`](../4-render.md) — exact morphdom config, focus-preservation rules.
+- [`docs/4-render.md`](../4-render.md) — segment-aware diff, list reconciler, focus-preservation rules.
 - [`docs/5-event-delegation.md`](../5-event-delegation.md) — tier model deep dive.
 - [`examples/reactivity-demo`](../../examples/reactivity-demo) — runnable examples of every primitive.

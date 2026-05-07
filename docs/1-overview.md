@@ -2,11 +2,11 @@
 
 ## 1.1 What kerf is
 
-A tiny reactive UI framework. Roughly 5 KB minified + gzipped including its two runtime dependencies (`@preact/signals-core`, `morphdom`). Four primitives:
+A tiny reactive UI framework. Roughly 6.6 KB minified + gzipped including its sole runtime dependency (`@preact/signals-core`). Four primitives:
 
 - **Signals** — fine-grained reactive values. `signal()`, `computed()`, `effect()`, `batch()`.
 - **Stores** — composable testable units of state. `defineStore()`, `resetAllStores()`.
-- **Render** — `mount(rootEl, () => jsx)`. JSX renders to an HTML string; morphdom diffs it against the live DOM and applies the minimum mutations.
+- **Render** — `mount(rootEl, () => jsx)`. JSX renders to a structured `SafeHtml`; kerf's segment-aware diff reconciles static surrounds while a keyed list reconciler owns rows from `each(...)`. The split keeps partial-update / select-row / swap-rows costs at O(changes), not O(rows).
 - **Event delegation** — `delegate()` (Tier 1, bubble) and `delegateCapture()` (Tier 2, capture) replace per-element listeners with one root-level listener per event type.
 
 Plus a JSX runtime (`kerfjs/jsx-runtime`) and an SVG-aware `toElement()` for direct JSX-to-DOM conversion.
@@ -39,7 +39,7 @@ The runtime answers two questions:
 
 1. **WHEN do we re-render?** Answered by signals: an `effect()` re-runs whenever any signal it read during its last run changes. `mount()` wraps `effect()` so that re-renders happen automatically when the JSX you return depends on a signal that changes.
 
-2. **HOW do we re-render?** Answered by morphdom: render JSX to an HTML string, parse it into a template, then diff the template against the live tree and apply the minimum mutations. Element identity is preserved wherever the diff matches by key (`id`, `data-key`) or position.
+2. **HOW do we re-render?** Answered by kerf's diff: render JSX to a `SafeHtml` (which is a string for static content and a structured tree where lists or list-containing parents appear), then walk the live DOM in lock-step. Static surrounds go through a general-purpose tree-diff (`src/diff.ts`); list contents go through a keyed reconciler (`each(...)`'s side of `mount`) that operates directly on live children — no parse-the-whole-list step. Element identity is preserved wherever the diff matches by key (`id`, `data-key`) or position.
 
 Everything else is detail.
 
@@ -66,9 +66,9 @@ Everything else is detail.
                       ▼
    ┌─────────────────────────────────────────┐
    │ effect() fires the render fn             │
-   │   → SafeHtml string                      │
-   │   → template.innerHTML                   │
-   │   → morphdom.diff(live, template)        │
+   │   → SafeHtml (segment tree)              │
+   │   → diff(live, template, listParents)    │
+   │   → each() reconciler patches each list  │
    │   → minimal DOM mutations applied        │
    └─────────────────────────────────────────┘
 ```
@@ -77,7 +77,7 @@ Everything else is detail.
 
 - [§2 Reactivity](2-reactivity.md) — signals primitive.
 - [§3 Stores](3-stores.md) — composable testable stores.
-- [§4 Render](4-render.md) — mount and morphdom.
+- [§4 Render](4-render.md) — mount, segments, the native diff, and the list reconciler.
 - [§5 Event delegation](5-event-delegation.md) — Tier 1 / Tier 2 / Tier 3.
 - [§6 JSX runtime](6-jsx-runtime.md) — JSX → HTML strings, server-side use.
 - [§7 SVG](7-svg.md) — namespace handling and the `toElement()` escape hatch.

@@ -15,7 +15,7 @@ Status markers:
 | §1 | Overview / philosophy | Shipped |
 | §2 | Reactivity (`signal` / `computed` / `effect` / `batch`) | Shipped |
 | §3 | Stores (`defineStore` / `resetAllStores`) | Shipped |
-| §4 | Render (`mount` + morphdom) | Shipped |
+| §4 | Render (`mount` + native diff + list reconciler) | Shipped |
 | §5 | Event delegation (Tier 1 / 2 / 3) | Shipped |
 | §6 | JSX runtime (`SafeHtml` / `raw` / `Fragment`) | Shipped |
 | §7 | SVG (`toElement` SVG-aware) | Shipped |
@@ -28,7 +28,7 @@ Everything in the v0.1 design is shipped. No partial / design-only / deferred en
 
 ### §1 Overview
 
-States kerf's positioning: tiny reactive UI framework, ~5 KB, no virtual DOM, no compiler, no component lifecycle. Four primitives (signals / stores / render / delegation) plus a JSX runtime and an SVG-aware `toElement`. Rules out: routing, full SSR, styling opinions, ecosystem.
+States kerf's positioning: tiny reactive UI framework, ~6.6 KB, no virtual DOM, no compiler, no component lifecycle, no third-party DOM-diff dependency. Four primitives (signals / stores / render / delegation) plus a JSX runtime and an SVG-aware `toElement`. Rules out: routing, full SSR, styling opinions, ecosystem.
 
 ### §2 Reactivity
 
@@ -40,7 +40,7 @@ Documents `signal()`, `computed()`, `effect()`, `batch()`. Notes that signals ar
 
 ### §4 Render
 
-`mount(rootEl, render)` wraps `effect()` + morphdom. Diff keys: `id` then `data-key`. `data-morph-skip` for library-owned subtrees. Focus + selection preservation for active text-entry inputs. Multiple `mount()` calls compose; each tracks its own signals. `SafeHtml.toString()` is server-safe.
+`mount(rootEl, render)` wraps `effect()` + kerf's native segment-aware diff. Static surrounds reconcile through `src/diff.ts`; lists from `each(...)` go through a keyed reconciler that operates on live children directly (O(changes), not O(rows)). Diff keys: `id` then `data-key`. `data-morph-skip` for library-owned subtrees. Focus + selection preservation for active text-entry inputs and contenteditable. Multiple `mount()` calls compose; each tracks its own signals. `SafeHtml.toString()` is server-safe.
 
 ### §5 Event delegation
 

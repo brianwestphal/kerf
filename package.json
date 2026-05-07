@@ -72,8 +72,7 @@
     "example:reactivity-demo:build": "cd examples/reactivity-demo && npm install && npm run build"
   },
   "dependencies": {
-    "@preact/signals-core": "^1.14.1",
-    "morphdom": "^2.7.8"
+    "@preact/signals-core": "^1.14.1"
   },
   "devDependencies": {
     "@types/jsdom": "^28.0.1",

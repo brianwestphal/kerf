@@ -19,7 +19,7 @@ mount(document.getElementById('app')!, () => (
 ));
 ```
 
-That's it. There's no virtual DOM, no compiler, no template language. Your JSX renders to HTML strings, [`morphdom`](https://github.com/patrick-steele-idem/morphdom) applies the minimum DOM mutations to make the live tree match, and signals re-run the render only when something they read actually changed.
+That's it. There's no virtual DOM, no compiler, no template language. Your JSX renders to HTML strings (with structured "list" segments where you use `each(...)`), kerf's native diff applies the minimum DOM mutations to make the live tree match, and signals re-run the render only when something they read actually changed.
 
 ## Why
 
@@ -27,10 +27,10 @@ Most reactive UI frameworks come with a lot of machinery: virtual DOMs, schedule
 
 - **Signals** ([`@preact/signals-core`](https://github.com/preactjs/signals)) for fine-grained reactivity.
 - **Stores** built on signals — composable, testable units of state.
-- **Render** — a `mount(el, () => jsx)` helper that diffs the new HTML against the live DOM via morphdom. Preserves focus, selection, in-flight pointer interactions, and event listeners on identity-preserved nodes.
+- **Render** — a `mount(el, () => jsx)` helper that diffs the new HTML against the live DOM with kerf's native, segment-aware reconciler. Preserves focus, selection, in-flight pointer interactions, and event listeners on identity-preserved nodes. Lists rendered with `each(...)` go through a keyed reconciler that does O(changes) work, not O(rows).
 - **Event delegation** — small `delegate` / `delegateCapture` helpers that survive every re-render because they live on the morph root, not on individual nodes.
 
-The whole runtime is roughly 5 KB minified + gzipped, including `signals-core` and `morphdom`.
+The whole runtime is roughly 6.6 KB minified + gzipped, including `signals-core`.
 
 ## Install
 
@@ -101,7 +101,7 @@ The numbered docs in [`docs/`](./docs/) cover the design and rationale:
 1. [Overview](./docs/1-overview.md) — what kerf is, what it isn't, when to use it.
 2. [Reactivity](./docs/2-reactivity.md) — `signal`, `computed`, `effect`, `batch`.
 3. [Stores](./docs/3-stores.md) — `defineStore`, `resetAllStores`.
-4. [Render](./docs/4-render.md) — `mount` and the morphdom diff.
+4. [Render](./docs/4-render.md) — `mount`, segments, the native diff, and the list reconciler.
 5. [Event delegation](./docs/5-event-delegation.md) — Tier 1 / Tier 2 / Tier 3 patterns.
 6. [JSX runtime](./docs/6-jsx-runtime.md) — `SafeHtml`, `raw`, server-rendering.
 7. [SVG handling](./docs/7-svg.md) — namespace propagation, `toElement`.

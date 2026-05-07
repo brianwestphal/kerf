@@ -1,6 +1,6 @@
 # 5. Event delegation
 
-Per-element `addEventListener` calls don't survive morph re-renders for nodes morphdom inserts or rebuilds. The fix is delegation: bind one listener at the morph root and dispatch via `closest()`.
+Per-element `addEventListener` calls don't survive morph re-renders for nodes the diff inserts or rebuilds. The fix is delegation: bind one listener at the morph root and dispatch via `closest()`.
 
 kerf ships two helpers — `delegate()` for bubbling events, `delegateCapture()` for non-bubbling — and one convention: `data-morph-skip` for subtrees neither helper should reach into.
 
@@ -41,7 +41,7 @@ delegateCapture(rootEl, 'focus', 'input, textarea', (e, target) => {
 
 ### Tier 3 — per-element instances / library-owned subtrees
 
-xterm.js terminals, Monaco editors, D3/Plotly charts, embedded YouTube iframes, anything that owns its own children and would be corrupted if morphdom recursed inside.
+xterm.js terminals, Monaco editors, D3/Plotly charts, embedded YouTube iframes, anything that owns its own children and would be corrupted if the diff recursed inside.
 
 There's no helper. The pattern:
 
@@ -83,6 +83,6 @@ If you don't dispose, the listener stays bound for the lifetime of the rootEl �
 
 ## 5.4 What you should NOT do
 
-- **Don't `addEventListener` on individual rendered elements** unless they're inside a `data-morph-skip` subtree. Listeners attached to nodes morphdom rebuilds will silently disappear on the next re-render.
+- **Don't `addEventListener` on individual rendered elements** unless they're inside a `data-morph-skip` subtree. Listeners attached to nodes the diff rebuilds will silently disappear on the next re-render.
 - **Don't rely on `mouseenter` / `mouseleave` bubbling** — they don't. Use `delegateCapture` or switch to `mouseover`/`mouseout` (which bubble) and check inside the handler.
 - **Don't try to compute "is this fresh DOM or preserved DOM" in a delegated handler** — the handler doesn't care. It just sees an event and a target.

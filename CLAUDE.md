@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-kerf is a tiny reactive UI framework: fine-grained signals + DOM morphing + a tiny JSX runtime. The whole runtime is roughly 5 KB minified + gzipped including its two runtime dependencies (`@preact/signals-core`, `morphdom`).
+kerf is a tiny reactive UI framework: fine-grained signals + a custom DOM diff specialised for keyed lists + a tiny JSX runtime. The whole runtime is roughly 6.6 KB minified + gzipped including its sole runtime dependency (`@preact/signals-core`).
 
 The name *kerf* is a woodworking term — the narrow strip a saw blade removes. The framework's job is the same: apply the smallest possible cut to update your DOM.
 
@@ -24,8 +24,10 @@ The framework is a small set of independent modules that compose. Each one earns
 - `src/jsx-runtime.ts` — JSX → `SafeHtml` (HTML strings) + `SafeHtml.toString()`. Configured via `tsconfig.json` `"jsxImportSource": "kerfjs"` in user code.
 - `src/reactive.ts` — re-export of `@preact/signals-core` (`signal`, `computed`, `effect`, `batch`). One-file abstraction layer so the underlying lib is swappable.
 - `src/store.ts` — `defineStore({ initial, actions })` + global registry + `resetAllStores()`.
-- `src/mount.ts` — `mount(el, render)`. Wraps `effect()` + `morphdom`. Conventions for diff keys, `data-morph-skip`, focus/selection preservation.
-- `src/each.ts` — `each(items, render, key?)`. Keyed list iteration with per-item memoisation; reuses cached HTML strings for items whose object identity (and optional `key`) didn't change.
+- `src/mount.ts` — `mount(el, render)`. Wraps `effect()` + the segment-aware diff. Bulk-renders on first paint, then on subsequent renders runs `diff()` over the static surrounds (skipping any list parents) and dispatches each list to its native keyed reconciler. Conventions for diff keys, `data-morph-skip`, focus/selection preservation.
+- `src/each.ts` — `each(items, render, key?)`. Keyed list iteration. Returns a structured list segment (not a flat HTML string) so `mount()` can run a native reconciler per list — no parse-the-whole-table round trip on partial updates. Per-item memoisation by object identity (+ optional `key`) skips the JSX work for unchanged rows.
+- `src/segment.ts` — `Segment` types (`static` / `list` / `mixed`) + flatten helpers. The JSX runtime emits these from `_jsx`; `mount()` consumes them.
+- `src/diff.ts` — kerf's general-purpose DOM reconciler. Replaces the prior `morphdom` dependency. Specialised: knows about `data-morph-skip`, the focused-input/contenteditable rules, the `id`/`data-key` matching scheme, and a `listParents` set whose children are owned by the list reconciler. Algorithm derived from [morphdom](https://github.com/patrick-steele-idem/morphdom) (MIT, attribution in `LICENSE`).
 - `src/delegate.ts` — `delegate()` (Tier 1 bubble) + `delegateCapture()` (Tier 2 capture).
 - `src/toElement.ts` — SVG-aware JSX → DOM helper. Routes SVG content through `DOMParser('image/svg+xml')`.
 - `src/testing.ts` — `kerfjs/testing` subpath. Re-exports `clearStoreRegistry` for unit-test isolation.
@@ -51,7 +53,7 @@ The JSX runtime sits at `kerfjs/jsx-runtime` (subpath export). Users configure i
 
 ### Design rules
 
-1. **No virtual DOM.** Render JSX to HTML strings; let morphdom diff against the live tree.
+1. **No virtual DOM.** Render JSX to HTML strings (with structured "list" and "mixed" segments where lists appear); let `diff()` reconcile the static surrounds and the list reconciler own its rows.
 2. **No compiler.** Plain JSX, plain TypeScript, plain esbuild. No special build step in the consumer's project beyond what they already use.
 3. **Tier 1 / Tier 2 / Tier 3 listener model.** Bubble-phase delegation is the default; capture-phase for non-bubblers; `data-morph-skip` for library-owned subtrees.
 4. **One primary export per file.** Each file has one main exported function/concept.
@@ -116,7 +118,7 @@ This project is managed via [Hot Sheet](https://github.com/brianwestphal/hotshee
 
 - ESM modules (`"type": "module"`).
 - Import paths use `.js` extension (TypeScript convention for ESM resolution).
-- No transitive deps beyond `@preact/signals-core` + `morphdom`.
+- No transitive deps beyond `@preact/signals-core`.
 - Public API is documented in `docs/8-api-reference.md`.
 - **File naming**: kebab-case / lowercase by default (`jsx-runtime.ts`, `mount.ts`). camelCase is allowed when the filename matches the primary export (`toElement.ts` → `toElement`, `utils/escapeHtml.ts` → `escapeHtml`). The principle is "filename = primary export"; do not file tickets to rename files that already match this rule.
 
@@ -127,7 +129,7 @@ Numbered docs in `docs/` cover the design. Reading order:
 1. `1-overview.md` — what kerf is, why it exists, when to use it.
 2. `2-reactivity.md` — signals primitive.
 3. `3-stores.md` — composable testable stores.
-4. `4-render.md` — mount and morphdom.
+4. `4-render.md` — mount, segments, the native diff, and the list reconciler.
 5. `5-event-delegation.md` — Tier 1 / 2 / 3 listener model.
 6. `6-jsx-runtime.md` — JSX → HTML strings, server use.
 7. `7-svg.md` — namespace handling.

@@ -2,7 +2,7 @@
 
 > A tiny (~5 KB) reactive UI framework — fine-grained signals + DOM morphing + JSX. No virtual DOM, no compiler. Apply the smallest possible cut to update your DOM.
 
-kerf renders JSX to HTML strings, lets [morphdom](https://github.com/patrick-steele-idem/morphdom) diff them against the live tree, and uses [@preact/signals-core](https://github.com/preactjs/signals) for fine-grained reactivity. It pairs well with server-rendered HTML, embedded widgets, and any UI where preserving focus / selection across re-renders matters. Public API is one import: `signal`, `computed`, `effect`, `batch`, `defineStore`, `resetAllStores`, `mount`, `each`, `delegate`, `delegateCapture`, `toElement`, `SafeHtml`, `isSafeHtml`, `raw`, `Fragment`.
+kerf renders JSX to a structured `SafeHtml` (string for static content; tagged "list"/"mixed" segments where `each(...)` was used) and reconciles it against the live tree with a custom segment-aware diff. Static surrounds go through a general-purpose tree-diff; list contents go through a keyed reconciler that operates directly on live children — partial-update on huge lists is O(changes), not O(rows). Reactivity is provided by [@preact/signals-core](https://github.com/preactjs/signals). It pairs well with server-rendered HTML, embedded widgets, and any UI where preserving focus / selection across re-renders matters. Public API is one import: `signal`, `computed`, `effect`, `batch`, `defineStore`, `resetAllStores`, `mount`, `each`, `delegate`, `delegateCapture`, `toElement`, `SafeHtml`, `isSafeHtml`, `raw`, `Fragment`.
 
 ## For AI assistants
 
@@ -15,7 +15,7 @@ kerf renders JSX to HTML strings, lets [morphdom](https://github.com/patrick-ste
 - [Overview](docs/1-overview.md): what kerf is and isn't, when to use it.
 - [Reactivity](docs/2-reactivity.md): `signal`, `computed`, `effect`, `batch`.
 - [Stores](docs/3-stores.md): `defineStore`, `resetAllStores`.
-- [Render](docs/4-render.md): `mount` and the morphdom diff.
+- [Render](docs/4-render.md): `mount`, segments, the native diff, and the list reconciler.
 - [Event delegation](docs/5-event-delegation.md): Tier 1 / 2 / 3 listener model.
 - [JSX runtime](docs/6-jsx-runtime.md): `SafeHtml`, `raw`, server use.
 - [SVG handling](docs/7-svg.md): namespace propagation, `toElement`.
