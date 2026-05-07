@@ -5,14 +5,15 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { effect } from '../../src/reactive.js';
-import { _clearStoreRegistryForTesting, defineStore, resetAllStores } from '../../src/store.js';
+import { defineStore, resetAllStores } from '../../src/store.js';
+import { clearStoreRegistry } from '../../src/testing.js';
 
 beforeEach(() => {
-  _clearStoreRegistryForTesting();
+  clearStoreRegistry();
 });
 
 afterEach(() => {
-  _clearStoreRegistryForTesting();
+  clearStoreRegistry();
 });
 
 describe('defineStore()', () => {

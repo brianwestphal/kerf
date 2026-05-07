@@ -63,7 +63,21 @@ function renderChildren(children: Children): string {
       + 'Build the tree in one JSX expression and use querySelector after toElement() to get element refs.',
     );
   }
-  return '';
+  throw new Error(
+    `JSX: unsupported child of type ${describeValue(children)}. `
+    + 'Children must be SafeHtml, string, number, boolean, null, undefined, or an array of those. '
+    + 'Common mistakes: passing a Signal/Store object directly (use signal.value or store.state.value), '
+    + 'passing a function (call it first), or passing a Promise (await it before render).',
+  );
+}
+
+function describeValue(v: unknown): string {
+  if (Array.isArray(v)) return 'array';
+  if (typeof v === 'object' && v !== null) {
+    const ctor = (v as { constructor?: { name?: string } }).constructor?.name;
+    return ctor && ctor !== 'Object' ? `object (${ctor})` : 'object';
+  }
+  return typeof v;
 }
 
 const ATTR_ALIASES: Record<string, string> = {
@@ -178,7 +192,11 @@ function renderAttr(key: string, value: unknown): string {
   } else if (typeof value === 'string') {
     strValue = escapeAttr(value);
   } else {
-    strValue = '';
+    throw new Error(
+      `JSX: unsupported value for attribute "${key}" — got ${describeValue(value)}. `
+      + 'Attribute values must be string, number, boolean, null, undefined, or SafeHtml. '
+      + 'Did you mean to read .value off a Signal, or stringify the object first?',
+    );
   }
   return ` ${name}="${strValue}"`;
 }

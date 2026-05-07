@@ -59,9 +59,13 @@ interface Store<TState, TActions> {
 }
 ```
 
-### `_clearStoreRegistryForTesting(): void`
+### `clearStoreRegistry(): void` — `kerf/testing` subpath
 
-Internal — empties the registry. Use only in tests; do not call from production code.
+Empties the global store registry. Used by unit tests to isolate cases. Imported via the `kerf/testing` subpath, **not** the main `kerf` entry, so production builds don't pull it in:
+
+```ts
+import { clearStoreRegistry } from 'kerf/testing';
+```
 
 ## 8.3 Render
 

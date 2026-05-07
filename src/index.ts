@@ -18,7 +18,6 @@ export {
   signal,
 } from './reactive.js';
 export {
-  _clearStoreRegistryForTesting,
   defineStore,
   resetAllStores,
   type Store,

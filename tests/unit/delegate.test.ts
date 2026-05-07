@@ -116,3 +116,54 @@ describe('delegateCapture() — Tier 2 capture-phase', () => {
     expect(handler).not.toHaveBeenCalled();
   });
 });
+
+describe('non-Element event targets', () => {
+  it('delegate ignores events whose target is not an Element', () => {
+    const handler = vi.fn();
+    let captured: ((e: Event) => void) | null = null;
+    const orig = root.addEventListener.bind(root);
+    vi.spyOn(root, 'addEventListener').mockImplementation((type, fn, opts) => {
+      captured = fn as (e: Event) => void;
+      return orig(type, fn, opts);
+    });
+    delegate(root, 'click', '*', handler);
+
+    const fakeEvent = { target: null } as unknown as Event;
+    captured!(fakeEvent);
+    expect(handler).not.toHaveBeenCalled();
+  });
+
+  it('delegateCapture ignores events whose target is not an Element', () => {
+    const handler = vi.fn();
+    let captured: ((e: Event) => void) | null = null;
+    const orig = root.addEventListener.bind(root);
+    vi.spyOn(root, 'addEventListener').mockImplementation((type, fn, opts) => {
+      captured = fn as (e: Event) => void;
+      return orig(type, fn, opts);
+    });
+    delegateCapture(root, 'focus', '*', handler);
+
+    const fakeEvent = { target: null } as unknown as Event;
+    captured!(fakeEvent);
+    expect(handler).not.toHaveBeenCalled();
+  });
+});
+
+describe('selector validation', () => {
+  it('delegate throws immediately on an invalid selector', () => {
+    expect(() => delegate(root, 'click', '[[bad', () => {}))
+      .toThrow(/delegate: invalid selector "\[\[bad"/);
+  });
+
+  it('delegateCapture throws immediately on an invalid selector', () => {
+    expect(() => delegateCapture(root, 'focus', '[unclosed', () => {}))
+      .toThrow(/delegateCapture: invalid selector "\[unclosed"/);
+  });
+
+  it('does NOT install a listener when the selector is invalid', () => {
+    const addSpy = vi.spyOn(root, 'addEventListener');
+    expect(() => delegate(root, 'click', '[broken', () => {})).toThrow();
+    expect(addSpy).not.toHaveBeenCalled();
+    addSpy.mockRestore();
+  });
+});

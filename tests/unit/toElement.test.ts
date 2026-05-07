@@ -41,6 +41,19 @@ describe('toElement() — HTML', () => {
   it('throws when given empty string', () => {
     expect(() => toElement('')).toThrow(/produced no element/);
   });
+
+  it('error message includes a truncated excerpt of the input HTML', () => {
+    const long = '<!-- ' + 'x'.repeat(200) + ' -->';
+    try {
+      toElement(long);
+      expect.fail('expected toElement to throw');
+    } catch (err) {
+      const msg = (err as Error).message;
+      expect(msg).toContain('input:');
+      expect(msg).toContain('…');
+      expect(msg.length).toBeLessThan(long.length + 100);
+    }
+  });
 });
 
 describe('toElement() — SVG', () => {
@@ -70,5 +83,13 @@ describe('toElement() — SVG', () => {
     const el = toElement('<button>click</button>');
     expect(el.tagName).toBe('BUTTON');
     expect(el.namespaceURI).toBe('http://www.w3.org/1999/xhtml');
+  });
+
+  it('throws with input excerpt on a malformed root <svg>', () => {
+    expect(() => toElement('<svg><unclosed</svg>')).toThrow(/SVG parse error.*input:/s);
+  });
+
+  it('throws with input excerpt on a malformed SVG fragment', () => {
+    expect(() => toElement('<g><circle cx=</g>')).toThrow(/SVG fragment parse error.*input:/s);
   });
 });

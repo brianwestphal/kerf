@@ -24,7 +24,7 @@ The framework is a small set of independent modules that compose. Each one earns
 - `src/jsx-runtime.ts` — JSX → `SafeHtml` (HTML strings) + `SafeHtml.toString()`. Configured via `tsconfig.json` `"jsxImportSource": "kerf"` in user code.
 - `src/reactive.ts` — re-export of `@preact/signals-core` (`signal`, `computed`, `effect`, `batch`). One-file abstraction layer so the underlying lib is swappable.
 - `src/store.ts` — `defineStore({ initial, actions })` + global registry + `resetAllStores()`.
-- `src/morphBind.ts` — `mount(el, render)`. Wraps `effect()` + `morphdom`. Conventions for diff keys, `data-morph-skip`, focus/selection preservation.
+- `src/mount.ts` — `mount(el, render)`. Wraps `effect()` + `morphdom`. Conventions for diff keys, `data-morph-skip`, focus/selection preservation.
 - `src/delegate.ts` — `delegate()` (Tier 1 bubble) + `delegateCapture()` (Tier 2 capture).
 - `src/toElement.ts` — SVG-aware JSX → DOM helper. Routes SVG content through `DOMParser('image/svg+xml')`.
 - `src/utils/escapeHtml.ts` — used by the JSX runtime.

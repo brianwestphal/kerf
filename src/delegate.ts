@@ -22,6 +22,22 @@
 type Handler = (event: Event, target: Element) => void;
 
 /**
+ * Validate a CSS selector at registration time, so a typo throws immediately
+ * with the bad selector quoted instead of producing a cryptic DOMException
+ * the first time a matching event fires.
+ */
+function assertValidSelector(selector: string, fn: string): void {
+  try {
+    document.createElement('div').matches(selector);
+  } catch {
+    throw new Error(
+      `${fn}: invalid selector "${selector}". `
+      + 'Pass a valid CSS selector (e.g. \'[data-action="add"]\', \'.btn\', \'input\').',
+    );
+  }
+}
+
+/**
  * Bubble-phase delegation. Installs ONE listener on `rootEl` for the given
  * event type. When the event fires, walks up from `event.target` to the root
  * looking for an element matching `selector`; if found, fires `handler` with
@@ -38,6 +54,7 @@ export function delegate(
   selector: string,
   handler: Handler,
 ): () => void {
+  assertValidSelector(selector, 'delegate');
   const listener = (event: Event): void => {
     const target = event.target;
     if (!(target instanceof Element)) return;
@@ -66,6 +83,7 @@ export function delegateCapture(
   selector: string,
   handler: Handler,
 ): () => void {
+  assertValidSelector(selector, 'delegateCapture');
   const listener = (event: Event): void => {
     const target = event.target;
     if (!(target instanceof Element)) return;

@@ -85,6 +85,44 @@ describe('jsx()', () => {
     expect(() => jsx('div', { children: fakeNode as never }).toString()).toThrow(/DOM elements cannot be passed as children/);
   });
 
+  it('throws on a plain object child (e.g. forgot store.state.value)', () => {
+    expect(() => jsx('div', { children: { foo: 'bar' } as never }).toString())
+      .toThrow(/unsupported child of type object/);
+  });
+
+  it('throws on a function child', () => {
+    expect(() => jsx('div', { children: (() => 'x') as never }).toString())
+      .toThrow(/unsupported child of type function/);
+  });
+
+  it('throws on a Promise child and names the constructor', () => {
+    const p = Promise.resolve('x');
+    expect(() => jsx('div', { children: p as never }).toString())
+      .toThrow(/object \(Promise\)/);
+    p.catch(() => {});
+  });
+
+  it('throws on an unsupported attribute value type', () => {
+    expect(() => jsx('div', { foo: { x: 1 } } as never).toString())
+      .toThrow(/unsupported value for attribute "foo"/);
+  });
+
+  it('attribute-error message names the constructor for class instances', () => {
+    class MySignal { value = 1 }
+    expect(() => jsx('div', { foo: new MySignal() } as never).toString())
+      .toThrow(/object \(MySignal\)/);
+  });
+
+  it('accepts a SafeHtml as an attribute value (raw injection for pre-escaped data)', () => {
+    const out = jsx('div', { 'data-html': raw('a&amp;b') });
+    expect(out.toString()).toBe('<div data-html="a&amp;b"></div>');
+  });
+
+  it('attribute-error message names "array" when an array is passed', () => {
+    expect(() => jsx('div', { foo: [1, 2, 3] } as never).toString())
+      .toThrow(/got array/);
+  });
+
   it('invokes function components with their props', () => {
     interface GreetingProps { name: string }
     const Greeting = ({ name }: GreetingProps) => jsx('p', { children: `hi, ${name}` });

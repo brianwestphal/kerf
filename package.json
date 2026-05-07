@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "description": "Tiny reactive UI framework — fine-grained signals + DOM morphing + JSX. Apply the smallest possible cut to update your DOM.",
   "type": "module",
+  "sideEffects": false,
   "license": "MIT",
   "author": "Brian Westphal <brian.westphal@bleugris.com>",
   "homepage": "https://github.com/brianwestphal/kerf",
@@ -40,6 +41,10 @@
     "./jsx-dev-runtime": {
       "types": "./dist/jsx-runtime.d.ts",
       "import": "./dist/jsx-runtime.js"
+    },
+    "./testing": {
+      "types": "./dist/testing.d.ts",
+      "import": "./dist/testing.js"
     }
   },
   "files": [

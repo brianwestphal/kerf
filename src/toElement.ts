@@ -28,6 +28,11 @@ function leadingTag(html: string): string | null {
   return match !== null ? match[1] : null;
 }
 
+function excerpt(html: string): string {
+  const trimmed = html.trim();
+  return trimmed.length > 100 ? `${trimmed.slice(0, 100)}…` : trimmed;
+}
+
 export function toElement(jsx: SafeHtml | string): Element {
   const html = typeof jsx === 'string' ? jsx : jsx.toString();
   const tag = leadingTag(html);
@@ -36,7 +41,9 @@ export function toElement(jsx: SafeHtml | string): Element {
     // SVG root — parse as XML to guarantee namespace propagation.
     const doc = new DOMParser().parseFromString(html, 'image/svg+xml');
     const err = doc.querySelector('parsererror');
-    if (err !== null) throw new Error(`toElement: SVG parse error — ${err.textContent}`);
+    if (err !== null) {
+      throw new Error(`toElement: SVG parse error — ${err.textContent}\n  input: ${excerpt(html)}`);
+    }
     return doc.documentElement;
   }
 
@@ -45,9 +52,12 @@ export function toElement(jsx: SafeHtml | string): Element {
     const wrapped = `<svg xmlns="${SVG_NS}">${html}</svg>`;
     const doc = new DOMParser().parseFromString(wrapped, 'image/svg+xml');
     const err = doc.querySelector('parsererror');
-    if (err !== null) throw new Error(`toElement: SVG fragment parse error — ${err.textContent}`);
+    if (err !== null) {
+      throw new Error(`toElement: SVG fragment parse error — ${err.textContent}\n  input: ${excerpt(html)}`);
+    }
     const first = doc.documentElement.firstElementChild;
-    if (first === null) throw new Error('toElement: SVG fragment produced no element');
+    /* c8 ignore next 2 — defensive: a successful XML parse of a wrapped svg always yields ≥1 child. */
+    if (first === null) throw new Error(`toElement: SVG fragment produced no element\n  input: ${excerpt(html)}`);
     return first;
   }
 
@@ -55,6 +65,6 @@ export function toElement(jsx: SafeHtml | string): Element {
   const t = document.createElement('template');
   t.innerHTML = html;
   const child = t.content.firstElementChild;
-  if (child === null) throw new Error('toElement: produced no element');
+  if (child === null) throw new Error(`toElement: produced no element\n  input: ${excerpt(html)}`);
   return child;
 }

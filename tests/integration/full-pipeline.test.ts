@@ -14,7 +14,8 @@ import { delegate } from '../../src/delegate.js';
 import { jsx } from '../../src/jsx-runtime.js';
 import { mount } from '../../src/mount.js';
 import { computed } from '../../src/reactive.js';
-import { _clearStoreRegistryForTesting, defineStore, resetAllStores } from '../../src/store.js';
+import { defineStore, resetAllStores } from '../../src/store.js';
+import { clearStoreRegistry } from '../../src/testing.js';
 
 interface CartItem { id: string; name: string; price: number }
 
@@ -41,7 +42,7 @@ let listEl: HTMLElement;
 let footerEl: HTMLElement;
 
 beforeEach(() => {
-  _clearStoreRegistryForTesting();
+  clearStoreRegistry();
 
   root = document.createElement('div');
   badgeEl = document.createElement('span');
@@ -57,7 +58,7 @@ beforeEach(() => {
 
 afterEach(() => {
   document.body.innerHTML = '';
-  _clearStoreRegistryForTesting();
+  clearStoreRegistry();
 });
 
 describe('end-to-end cart', () => {

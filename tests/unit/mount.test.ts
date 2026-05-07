@@ -4,9 +4,9 @@
  * keyed list reorders, and the data-morph-skip escape hatch.
  */
 
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { jsx } from '../../src/jsx-runtime.js';
+import { jsx, raw } from '../../src/jsx-runtime.js';
 import { mount } from '../../src/mount.js';
 import { signal } from '../../src/reactive.js';
 
@@ -136,5 +136,173 @@ describe('mount()', () => {
     dispose();
     count.value = 1;
     expect(renders).toBe(1); // disposed
+  });
+
+  it('accepts a string return type from the render fn', () => {
+    mount(root, () => '<p>plain</p>');
+    expect(root.innerHTML).toBe('<p>plain</p>');
+  });
+});
+
+describe('mount() — focus and selection preservation', () => {
+  it('preserves cursor position in a focused text input across an attribute-changing re-render', () => {
+    const cls = signal('a');
+    mount(root, () => jsx('div', {
+      children: [
+        jsx('span', { children: `cls:${cls.value}` }),
+        jsx('input', { id: 'q', type: 'text', className: cls.value }),
+      ],
+    }));
+
+    const input = root.querySelector<HTMLInputElement>('#q')!;
+    input.value = 'hello world';
+    input.focus();
+    input.setSelectionRange(6, 6);
+    expect(document.activeElement).toBe(input);
+
+    cls.value = 'b';
+
+    const after = root.querySelector<HTMLInputElement>('#q')!;
+    expect(after).toBe(input);
+    expect(after.value).toBe('hello world');
+    expect(after.selectionStart).toBe(6);
+    expect(after.selectionEnd).toBe(6);
+    expect(after.className).toBe('b');
+  });
+
+  it('preserves selection range in a focused textarea across re-render', () => {
+    const cls = signal('a');
+    mount(root, () => jsx('div', {
+      children: [
+        jsx('span', { children: cls.value }),
+        jsx('textarea', { id: 't', className: cls.value }),
+      ],
+    }));
+
+    const ta = root.querySelector<HTMLTextAreaElement>('#t')!;
+    ta.value = 'multi\nline\ntext';
+    ta.focus();
+    ta.setSelectionRange(2, 8);
+
+    cls.value = 'b';
+
+    const after = root.querySelector<HTMLTextAreaElement>('#t')!;
+    expect(after).toBe(ta);
+    expect(after.value).toBe('multi\nline\ntext');
+    expect(after.selectionStart).toBe(2);
+    expect(after.selectionEnd).toBe(8);
+  });
+
+  it('keeps a focused contenteditable element alive across re-render', () => {
+    const cls = signal('a');
+    mount(root, () => jsx('div', {
+      children: [
+        jsx('span', { children: cls.value }),
+        jsx('div', { id: 'ce', contentEditable: 'true', className: cls.value, children: 'edit me' }),
+      ],
+    }));
+
+    const ce = root.querySelector<HTMLElement>('#ce')!;
+    ce.focus();
+    expect(document.activeElement).toBe(ce);
+
+    cls.value = 'b';
+
+    const after = root.querySelector<HTMLElement>('#ce')!;
+    expect(after).toBe(ce);
+    expect(after.className).toBe('b');
+  });
+
+  it('does not crash when setSelectionRange throws (e.g. an input type that rejects it)', () => {
+    const spy = vi.spyOn(HTMLInputElement.prototype, 'setSelectionRange').mockImplementation(() => {
+      throw new Error('selection unsupported on this input type');
+    });
+
+    const cls = signal('a');
+    mount(root, () => jsx('input', { id: 'q', type: 'text', className: cls.value }));
+    const input = root.querySelector<HTMLInputElement>('#q')!;
+    input.value = 'abc';
+    input.focus();
+
+    expect(() => { cls.value = 'b'; }).not.toThrow();
+    expect(root.querySelector<HTMLInputElement>('#q')!.value).toBe('abc');
+
+    spy.mockRestore();
+  });
+
+  it('does NOT preserve selection logic for focused non-text-entry inputs (e.g. checkbox)', () => {
+    const setSel = vi.spyOn(HTMLInputElement.prototype, 'setSelectionRange');
+    const cls = signal('a');
+    mount(root, () => jsx('input', { id: 'cb', type: 'checkbox', className: cls.value }));
+
+    const cb = root.querySelector<HTMLInputElement>('#cb')!;
+    cb.focus();
+    cls.value = 'b';
+
+    expect(setSel).not.toHaveBeenCalled();
+    setSel.mockRestore();
+  });
+
+  it('isEqualNode short-circuit: skips work when fromEl matches toEl exactly', () => {
+    let renders = 0;
+    const tick = signal(0);
+    mount(root, () => {
+      renders += 1;
+      return jsx('div', {
+        children: [
+          jsx('span', { id: 'static', children: 'unchanging' }),
+          jsx('span', { children: `tick:${tick.value}` }),
+        ],
+      });
+    });
+
+    const staticEl = root.querySelector('#static')!;
+    tick.value = 1;
+    tick.value = 2;
+    tick.value = 3;
+
+    expect(renders).toBe(4);
+    expect(root.querySelector('#static')).toBe(staticEl);
+    expect(staticEl.textContent).toBe('unchanging');
+  });
+
+  it('focus is preserved on an input even when no other attributes change (isEqualNode short-circuits)', () => {
+    const tick = signal(0);
+    mount(root, () => jsx('div', {
+      children: [
+        jsx('span', { children: `tick:${tick.value}` }),
+        jsx('input', { id: 'q', type: 'text' }),
+      ],
+    }));
+
+    const input = root.querySelector<HTMLInputElement>('#q')!;
+    input.value = 'x';
+    input.focus();
+    tick.value = 1;
+
+    const after = root.querySelector<HTMLInputElement>('#q')!;
+    expect(after).toBe(input);
+    expect(after.value).toBe('x');
+  });
+
+  it('a non-focused input does not get its value clobbered by morph', () => {
+    const cls = signal('a');
+    mount(root, () => jsx('input', { id: 'q', type: 'text', className: cls.value }));
+
+    const input = root.querySelector<HTMLInputElement>('#q')!;
+    input.value = 'set imperatively';
+    // Note: NOT focused.
+
+    cls.value = 'b';
+
+    const after = root.querySelector<HTMLInputElement>('#q')!;
+    expect(after).toBe(input);
+    expect(after.className).toBe('b');
+  });
+
+  it('raw() injects HTML through mount without escaping', () => {
+    const html = signal(raw('<em>bold</em>'));
+    mount(root, () => jsx('div', { children: html.value }));
+    expect(root.innerHTML).toBe('<div><em>bold</em></div>');
   });
 });
