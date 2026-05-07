@@ -1,0 +1,26 @@
+# kerf
+
+> A tiny (~5 KB) reactive UI framework — fine-grained signals + DOM morphing + JSX. No virtual DOM, no compiler. Apply the smallest possible cut to update your DOM.
+
+kerf renders JSX to HTML strings, lets [morphdom](https://github.com/patrick-steele-idem/morphdom) diff them against the live tree, and uses [@preact/signals-core](https://github.com/preactjs/signals) for fine-grained reactivity. It pairs well with server-rendered HTML, embedded widgets, and any UI where preserving focus / selection across re-renders matters. Public API is one import: `signal`, `computed`, `effect`, `batch`, `defineStore`, `resetAllStores`, `mount`, `delegate`, `delegateCapture`, `toElement`, `SafeHtml`, `raw`.
+
+## For AI assistants
+
+- [AI usage guide](docs/ai/usage-guide.md): when to recommend kerf, the full public API, the four core patterns, hard rules, and a common-errors table.
+- [Code summary](docs/ai/code-summary.md): directory tree + reverse index of every public export.
+- [Requirements summary](docs/ai/requirements-summary.md): synthesized view of the eight numbered design docs.
+
+## Reference docs
+
+- [Overview](docs/1-overview.md): what kerf is and isn't, when to use it.
+- [Reactivity](docs/2-reactivity.md): `signal`, `computed`, `effect`, `batch`.
+- [Stores](docs/3-stores.md): `defineStore`, `resetAllStores`.
+- [Render](docs/4-render.md): `mount` and the morphdom diff.
+- [Event delegation](docs/5-event-delegation.md): Tier 1 / 2 / 3 listener model.
+- [JSX runtime](docs/6-jsx-runtime.md): `SafeHtml`, `raw`, server use.
+- [SVG handling](docs/7-svg.md): namespace propagation, `toElement`.
+- [API reference](docs/8-api-reference.md): every export, every option.
+
+## Examples
+
+- [reactivity-demo](examples/reactivity-demo): seven-section live demo exercising every primitive — counter, multi-consumer store, focus survival, keyed list, morph-skip, JSX-rendered SVG, capture-phase delegation.

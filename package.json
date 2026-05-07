@@ -1,0 +1,84 @@
+{
+  "name": "kerf",
+  "version": "0.1.0",
+  "description": "Tiny reactive UI framework — fine-grained signals + DOM morphing + JSX. Apply the smallest possible cut to update your DOM.",
+  "type": "module",
+  "license": "MIT",
+  "author": "Brian Westphal <brian.westphal@bleugris.com>",
+  "homepage": "https://github.com/brianwestphal/kerf",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/brianwestphal/kerf"
+  },
+  "bugs": {
+    "url": "https://github.com/brianwestphal/kerf/issues"
+  },
+  "keywords": [
+    "reactive",
+    "signals",
+    "morphdom",
+    "jsx",
+    "dom",
+    "ui-framework",
+    "tiny",
+    "fine-grained-reactivity"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./jsx-runtime": {
+      "types": "./dist/jsx-runtime.d.ts",
+      "import": "./dist/jsx-runtime.js"
+    },
+    "./jsx-dev-runtime": {
+      "types": "./dist/jsx-runtime.d.ts",
+      "import": "./dist/jsx-runtime.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest run --coverage",
+    "test:watch": "vitest",
+    "test:unit": "vitest run tests/unit --coverage",
+    "test:integration": "vitest run tests/integration --coverage",
+    "lint": "eslint src tests",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist coverage node_modules/.cache",
+    "release": "bash scripts/release.sh",
+    "release:beta": "bash scripts/release.sh --beta",
+    "prepublishOnly": "npm run build",
+    "example:reactivity-demo": "cd examples/reactivity-demo && npm install && npm run dev"
+  },
+  "dependencies": {
+    "@preact/signals-core": "^1.14.1",
+    "morphdom": "^2.7.8"
+  },
+  "devDependencies": {
+    "@types/jsdom": "^28.0.1",
+    "@types/node": "^22.10.0",
+    "@typescript-eslint/eslint-plugin": "^8.18.0",
+    "@typescript-eslint/parser": "^8.18.0",
+    "@vitest/coverage-v8": "^3.0.0",
+    "eslint": "^9.16.0",
+    "eslint-plugin-simple-import-sort": "^12.1.1",
+    "happy-dom": "^15.11.0",
+    "jsdom": "^29.1.1",
+    "tsup": "^8.3.0",
+    "typescript": "^5.7.0",
+    "vitest": "^3.0.0"
+  }
+}

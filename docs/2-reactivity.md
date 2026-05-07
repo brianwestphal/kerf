@@ -1,0 +1,110 @@
+# 2. Reactivity
+
+kerf's reactivity primitive is `@preact/signals-core` re-exported through `src/reactive.ts`. The whole API is four functions and two types.
+
+## 2.1 `signal(initialValue)`
+
+```ts
+import { signal } from 'kerf';
+
+const count = signal(0);
+count.value;        // → 0   (read)
+count.value = 7;    // (write — notifies subscribers)
+```
+
+A signal is a single piece of reactive state. Reads via `.value` are tracked when they happen inside an `effect()` or `computed()`. Writes via `.value = …` trigger every effect that read this signal during its previous run.
+
+## 2.2 `computed(fn)`
+
+```ts
+import { computed, signal } from 'kerf';
+
+const a = signal(1);
+const b = signal(2);
+const sum = computed(() => a.value + b.value);
+
+sum.value;          // → 3
+a.value = 10;
+sum.value;          // → 12
+```
+
+A `computed` is a derived signal. Its body is re-run whenever any signal it reads changes. The result is cached until a dependency mutates.
+
+`computed` is read via `.value`, just like `signal`. From a consumer's perspective, you can't tell whether a value is a raw signal or a computed — which is the point.
+
+## 2.3 `effect(fn)`
+
+```ts
+import { effect, signal } from 'kerf';
+
+const count = signal(0);
+const dispose = effect(() => {
+  console.log('count is', count.value);
+});
+// → "count is 0" (synchronous initial run)
+
+count.value = 1;
+// → "count is 1"
+
+dispose();
+count.value = 2;
+// (nothing logged — effect is disposed)
+```
+
+An `effect()` runs its body synchronously once on creation, then re-runs it whenever any signal read during the last run changes. Returns a disposer that tears the effect down.
+
+`mount()` is built on `effect()` — same semantics, with a morphdom-driven render as the side effect.
+
+## 2.4 `batch(fn)`
+
+```ts
+import { batch, effect, signal } from 'kerf';
+
+const a = signal(1);
+const b = signal(2);
+effect(() => console.log(a.value + b.value));
+// → "3"
+
+batch(() => {
+  a.value = 10;
+  b.value = 20;
+});
+// → "30"  (one log, not two)
+```
+
+Coalesces multiple writes inside `fn` into a single re-run of any subscribed effect / computed. Useful when an action mutates several signals atomically and you don't want consumers to see intermediate states.
+
+## 2.5 The `Signal<T>` and `ReadonlySignal<T>` types
+
+```ts
+import type { ReadonlySignal, Signal } from 'kerf';
+
+function reset(s: Signal<number>) {
+  s.value = 0;       // OK — Signal allows writes
+}
+
+function display(s: ReadonlySignal<number>) {
+  return s.value;    // OK — read-only
+  // s.value = 0;    // type error — ReadonlySignal forbids writes
+}
+```
+
+`computed()` returns `ReadonlySignal<T>`. `signal()` returns `Signal<T>`. Stores expose `state: ReadonlySignal<TState>` so consumers can't bypass the action layer.
+
+## 2.6 What signals are NOT
+
+- They are not deep-reactive. Mutating an array or object inside `signal.value` does NOT trigger subscribers. Always assign a new value:
+  ```ts
+  // wrong — silently doesn't notify
+  count.value.push(1);
+
+  // right
+  count.value = [...count.value, 1];
+  ```
+- They don't track property accesses on plain objects — just `.value` on signal/computed instances.
+- They are not async. There's no scheduling, no concurrent mode. Effects run synchronously when their dependencies write.
+
+## 2.7 When to use raw signals vs. stores
+
+- **One consumer reads it = signal.** Local UI state (this dialog's open/closed, this counter's value, this slider's position) belongs in a signal scoped to the component that owns it.
+- **Two+ consumers / multi-step mutations / cross-route lifetime = store.** See [§3 Stores](3-stores.md).

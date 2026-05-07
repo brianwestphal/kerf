@@ -1,0 +1,21 @@
+{
+  "mcpServers": {
+    "hotsheet-channel": {
+      "command": "npx",
+      "args": [
+        "tsx",
+        "/Users/westphal/Documents/hotsheet/src/channel.ts",
+        "--data-dir",
+        "/Users/westphal/Documents/kerf/.hotsheet"
+      ]
+    },
+    "glassbox-channel": {
+      "command": "/Applications/Glassbox.app/Contents/MacOS/glassbox-node",
+      "args": [
+        "/Applications/Glassbox.app/Contents/Resources/server/channel.js",
+        "--data-dir",
+        "/Users/westphal/Documents/kerf/.glassbox"
+      ]
+    }
+  }
+}

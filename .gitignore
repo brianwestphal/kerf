@@ -1,0 +1,21 @@
+node_modules/
+dist/
+coverage/
+*.log
+*.tsbuildinfo
+.DS_Store
+.claude/
+.glassbox/
+.hotsheet/
+
+# Editor
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/
+
+# Release-script state
+.release-state.json
+
+# npm pack artifacts
+*.tgz
