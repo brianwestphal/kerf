@@ -44,7 +44,8 @@ kerf/
 │   ├── 9-live-demo.md
 │   └── ai/
 │       ├── code-summary.md       ← THIS FILE
-│       └── requirements-summary.md
+│       ├── requirements-summary.md
+│       └── usage-guide.md        ← consumer-facing cheat sheet for AI assistants writing apps with kerf
 ├── scripts/
 │   └── release.sh                ← interactive release flow w/ --beta support
 ├── .github/workflows/

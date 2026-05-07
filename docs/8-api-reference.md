@@ -80,6 +80,7 @@ morphdom is configured with:
 - `onBeforeElUpdated`:
   - Returns `false` if the live element has `data-morph-skip` (subtree preserved as-is).
   - Returns `false` if `fromEl.isEqualNode(toEl)` (no work needed).
+  - Returns `false` if the live element is the focused `[contenteditable]` (entire subtree preserved on this morph; see §8.7 below and `docs/4-render.md` §4.4).
   - Otherwise preserves the focused text-entry's value + selection range, then proceeds.
 
 ## 8.4 Event delegation

@@ -28,7 +28,8 @@ The framework is a small set of independent modules that compose. Each one earns
 - `src/delegate.ts` — `delegate()` (Tier 1 bubble) + `delegateCapture()` (Tier 2 capture).
 - `src/toElement.ts` — SVG-aware JSX → DOM helper. Routes SVG content through `DOMParser('image/svg+xml')`.
 - `src/testing.ts` — `kerfjs/testing` subpath. Re-exports `clearStoreRegistry` for unit-test isolation.
-- `src/utils/escapeHtml.ts` — used by the JSX runtime.
+- `src/utils/escapeHtml.ts` — HTML / attribute escaping helpers used by the JSX runtime.
+- `src/utils/jsx-attr-aliases.ts` — `ATTR_ALIASES` table mapping camelCase JSX attributes to their HTML / SVG equivalents (extracted from `jsx-runtime.ts` to keep it under the 200-LOC guideline).
 
 ### Public API surface
 
