@@ -82,3 +82,22 @@ describe('batch()', () => {
     expect(log).toEqual(['1,2', '10,20']);
   });
 });
+
+describe('signals are NOT deep-reactive', () => {
+  // docs/2-reactivity.md §2.6 — "Wrong — silently doesn't notify:
+  // count.value.push(1). Always assign a new value." This is a soundness
+  // contract: deep reactivity is intentionally NOT provided. If the
+  // underlying signals impl ever changes to a Proxy-based deep observer,
+  // this test fails — and consumer code that relied on reassignment as the
+  // only "notify" event would break silently without it.
+  it('does NOT notify subscribers when an array inside .value is mutated in place', () => {
+    const list = signal<number[]>([]);
+    let runs = 0;
+    effect(() => { void list.value; runs += 1; });
+    expect(runs).toBe(1);
+    list.value.push(1); // in-place mutation — must not trigger
+    expect(runs).toBe(1);
+    list.value = [...list.value, 2]; // reassign — must trigger
+    expect(runs).toBe(2);
+  });
+});

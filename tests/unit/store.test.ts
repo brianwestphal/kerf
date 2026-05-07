@@ -4,7 +4,7 @@
 
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-import { effect } from '../../src/reactive.js';
+import { batch, effect } from '../../src/reactive.js';
 import { defineStore, resetAllStores } from '../../src/store.js';
 import { clearStoreRegistry } from '../../src/testing.js';
 
@@ -124,5 +124,30 @@ describe('resetAllStores()', () => {
 
   it('is a no-op when the registry is empty', () => {
     expect(() => { resetAllStores(); }).not.toThrow();
+  });
+});
+
+describe('batch() inside an action', () => {
+  // docs/3-stores.md §3.5 — wrapping multiple set() calls in batch() inside
+  // a multi-step action coalesces consumer notifications. Without this,
+  // mid-action UI flashes can sneak back in (subscribers re-run between
+  // the writes, briefly seeing the half-applied state). This test pins the
+  // performance contract that stores were designed to provide.
+  it('coalesces multiple set() calls into one effect re-run', () => {
+    const store = defineStore({
+      initial: () => ({ a: 0, b: 0 }),
+      actions: (set, get) => ({
+        bump: () => batch(() => {
+          set({ ...get(), a: get().a + 1 });
+          set({ ...get(), b: get().b + 1 });
+        }),
+      }),
+    });
+    let runs = 0;
+    effect(() => { void store.state.value; runs += 1; });
+    expect(runs).toBe(1);
+    store.actions.bump();
+    expect(runs).toBe(2); // not 3 — both writes coalesced
+    expect(store.state.value).toEqual({ a: 1, b: 1 });
   });
 });

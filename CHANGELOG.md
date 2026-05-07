@@ -24,6 +24,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Added
 
 - **`isSafeHtml(value)` type guard** exported from `kerfjs`. Use this rather than `instanceof SafeHtml` when inspecting JSX values from your own code — it works across module copies.
+- **End-to-end test coverage of the published bundle (KF-16).** New `npm run test:dist:full` re-runs the entire unit + integration suite against `dist/` instead of `src/` via a tiny vitest plugin that rewrites `../../src/<name>.js` imports to the equivalent dist entry point. Wired into the CI `build` job. Combined with the existing `test:dist` (focused dist regression suite), CI now proves the exact bytes we publish pass every test we have, not just the source they were built from.
+- **Four behavioural-guarantee tests (KF-17)** pinning documented contracts that previously had no test: signals are not deep-reactive (§2.6), `batch()` inside an action coalesces notifications (§3.5), `mount()` disposer leaves the rendered DOM in place (§4), and direct event listeners inside `data-morph-skip` subtrees survive parent re-renders (Tier 3, §5).
 
 ### Changed
 

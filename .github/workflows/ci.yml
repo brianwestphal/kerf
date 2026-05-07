@@ -50,4 +50,5 @@ jobs:
       - run: npm ci
       - run: npm run build
       - run: npx vitest run --config vitest.config.dist.ts
+      - run: npx vitest run --config vitest.config.dist-full.ts
       - run: npm pack --dry-run

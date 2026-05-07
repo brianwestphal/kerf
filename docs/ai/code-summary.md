@@ -24,8 +24,11 @@ kerf/
 │   │   ├── mount.test.ts
 │   │   ├── delegate.test.ts
 │   │   └── toElement.test.ts
-│   └── integration/
-│       └── full-pipeline.test.ts ← end-to-end cart UI exercising every primitive
+│   ├── integration/
+│   │   └── full-pipeline.test.ts ← end-to-end cart UI exercising every primitive
+│   └── dist/                     ← run via `npm run test:dist`, against the built bundles
+│       ├── safe-html-cross-bundle.test.ts ← KF-14 regression
+│       └── store-registry-shared.test.ts  ← KF-15 regression
 ├── examples/
 │   └── reactivity-demo/          ← 7-section live demo (port of Hot Sheet's /_demo/reactivity)
 ├── docs/
@@ -50,7 +53,9 @@ kerf/
 ├── package.json
 ├── tsconfig.json
 ├── tsup.config.ts
-├── vitest.config.ts
+├── vitest.config.ts            ← default suite: tests/unit + tests/integration vs `src/`
+├── vitest.config.dist.ts       ← targeted dist regressions: tests/dist vs `dist/`
+├── vitest.config.dist-full.ts  ← full unit + integration suite remapped onto `dist/` (KF-16)
 ├── eslint.config.js
 ├── CLAUDE.md                     ← project instructions for AI assistants
 ├── CHANGELOG.md
