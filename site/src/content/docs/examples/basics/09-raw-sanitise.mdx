@@ -1,0 +1,18 @@
+---
+title: 9 · raw() + sanitisation
+description: Markdown preview. raw() injects HTML, DOMPurify guarantees it's safe.
+---
+
+import { Code } from '@astrojs/starlight/components';
+import LiveExample from '../../../../components/examples/basics/09-raw-sanitise.astro';
+import source from '../../../../examples/basics/09-raw-sanitise/main.tsx?raw';
+
+`raw(html)` injects pre-escaped HTML into the JSX output, no further escaping. Use it for: pre-rendered Markdown, server fragments, SVG icon literals, sanitised user input. It's `new SafeHtml(html)` — the caller is responsible for ensuring the input is safe.
+
+**What to look at:** `marked` produces HTML, `DOMPurify` cleans it, `raw()` injects the cleaned string verbatim. Try typing `<script>alert(1)</script>` — the script tag is stripped by DOMPurify before it ever reaches the DOM.
+
+<LiveExample />
+
+<Code lang="tsx" code={source} title="src/main.tsx" />
+
+Install: `npm install marked dompurify`. Both are optional — kerf doesn't depend on either; this example reaches for them only because rendering Markdown safely is the canonical reason to use `raw()`.

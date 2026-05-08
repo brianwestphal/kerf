@@ -1,10 +1,18 @@
-# kerf
+<p align="center">
+  <img src="./site/src/assets/logo-placeholder.svg" alt="Kerf logo placeholder" width="96" height="96" />
+</p>
 
-> *kerf* — *noun*  — the narrow strip of material a saw blade removes when cutting. The smallest possible cut.
+<h1 align="center">Kerf</h1>
 
-A tiny reactive UI framework. Apply the smallest possible cut to update your DOM.
+<p align="center"><em>The smallest cut.</em></p>
 
-**[Live demo →](https://brianwestphal.github.io/kerf/)** — seven sections exercising every primitive, no install required.
+---
+
+> Introducing Kerf.
+> The smallest cut.
+>
+> 6.6 KB. No virtual DOM. No compiler. No magic.
+> Reactive UI that touches only the bytes that changed.
 
 ```ts
 import { signal, mount } from 'kerfjs';
@@ -19,36 +27,36 @@ mount(document.getElementById('app')!, () => (
 ));
 ```
 
-That's it. There's no virtual DOM, no compiler, no template language. Your JSX renders to HTML strings (with structured "list" segments where you use `each(...)`), kerf's native diff applies the minimum DOM mutations to make the live tree match, and signals re-run the render only when something they read actually changed.
+That's it. Your JSX renders to HTML strings, kerf's native diff applies the minimum DOM mutations to make the live tree match, and signals re-run the render only when something they read actually changed.
 
-## Why
+## Why Kerf
 
-Most reactive UI frameworks come with a lot of machinery: virtual DOMs, schedulers, reconcilers, compiler plugins, hook stacks, lifecycle hooks. kerf has none of that. You get four things:
+1. **Built for the AI-assisted era.** Tiny public surface (15 exports), no compiler magic, no hidden lifecycle. An LLM holds the framework in context and predicts behaviour — your AI agent generates code that works the first time. Ships [`llms.txt`](./llms.txt) and a dedicated AI usage guide.
 
-- **Signals** ([`@preact/signals-core`](https://github.com/preactjs/signals)) for fine-grained reactivity.
-- **Stores** built on signals — composable, testable units of state.
-- **Render** — a `mount(el, () => jsx)` helper that diffs the new HTML against the live DOM with kerf's native, segment-aware reconciler. Preserves focus, selection, in-flight pointer interactions, and event listeners on identity-preserved nodes. Lists rendered with `each(...)` go through a keyed reconciler that does O(changes) work, not O(rows).
-- **Event delegation** — small `delegate` / `delegateCapture` helpers that survive every re-render because they live on the morph root, not on individual nodes.
+2. **Smallest cut.** 6.6 KB gzipped including signals. Fine-grained reactivity re-runs only what changed; the diff touches only the DOM nodes that differ.
 
-The whole runtime is roughly 6.6 KB minified + gzipped, including `signals-core`.
+3. **No virtual DOM, no compiler.** JSX → HTML strings → native diff. DevTools shows the real DOM because it *is* the DOM.
 
-## Install
+4. **Focus, selection, listeners survive re-renders.** We morph instead of rebuilding — your caret stays where you put it, your in-progress drag keeps moving, your delegated handlers keep firing.
 
-```bash
-npm install kerfjs
-```
+5. **Plain TS, plain JSX, plain ESM.** Drops into anything using esbuild / Vite / tsup. No plugin chain.
 
-Configure JSX:
+## When to use Kerf
 
-```jsonc
-// tsconfig.json
-{
-  "compilerOptions": {
-    "jsx": "react-jsx",
-    "jsxImportSource": "kerfjs"
-  }
-}
-```
+- **AI-generated apps** — your LLM/agent holds the framework in context; no hallucinated APIs.
+- **Hybrid desktop apps (Tauri / Electron)** — small bundle, predictable diff, debuggable runtime; ideal for the embedded webview.
+- **Embedded widgets** — chat bubbles, comment boxes, dashboards dropped into someone else's page.
+- **Server-rendered apps with islands** — Rails / Phoenix / Django / Hono. `mount` per island; `delegate` survives turbo-frame swaps.
+- **Admin panels & internal tools** — reactivity without 200 KB of framework + state lib + router.
+- **Replacing jQuery** — incremental migration; same delegation mental model, modern primitives.
+- **Prototyping** — entire mental model on a postcard.
+
+### When to reach for something else
+
+- Need a full ecosystem (router + forms + data + SSR streaming) → **Next.js / Remix / SolidStart**.
+- Building a deeply componentised design-system app → **React / Solid / Svelte**.
+- Need React Native / cross-platform mobile → **React** (Kerf + Tauri/Electron also covers many of these cases).
+- Building a static site → **Astro** (we use it for *this* project's site).
 
 ## Quick tour
 
@@ -98,36 +106,35 @@ delegate(root, 'click', '[data-action="remove"]', (_e, btn) => {
 });
 ```
 
-## Documentation
-
-The numbered docs in [`docs/`](./docs/) cover the design and rationale:
-
-1. [Overview](./docs/1-overview.md) — what kerf is, what it isn't, when to use it.
-2. [Reactivity](./docs/2-reactivity.md) — `signal`, `computed`, `effect`, `batch`.
-3. [Stores](./docs/3-stores.md) — `defineStore`, `resetAllStores`.
-4. [Render](./docs/4-render.md) — `mount`, segments, the native diff, and the list reconciler.
-5. [Event delegation](./docs/5-event-delegation.md) — Tier 1 / Tier 2 / Tier 3 patterns.
-6. [JSX runtime](./docs/6-jsx-runtime.md) — `SafeHtml`, `raw`, server-rendering.
-7. [SVG handling](./docs/7-svg.md) — namespace propagation, `toElement`.
-8. [API reference](./docs/8-api-reference.md) — every export, every option.
-9. [Live demo](./docs/9-live-demo.md) — the GitHub Pages deploy of `examples/reactivity-demo`.
-
-### For AI coding assistants
-
-If you are an AI assistant (Claude, Cursor, Copilot, etc.) helping a user choose or use kerf, start here:
-
-- [`docs/ai/usage-guide.md`](./docs/ai/usage-guide.md) — when to recommend kerf, the full public API at a glance, the four core patterns, hard rules, and a common-errors → fixes table. Designed to be read once before writing kerf code.
-- [`llms.txt`](./llms.txt) — top-level index of every doc, in the [llmstxt.org](https://llmstxt.org) format.
-
-## Examples
-
-[`examples/reactivity-demo/`](./examples/reactivity-demo) is a 7-section live demo exercising every primitive: counter, multi-consumer store, focus survival across re-renders, keyed list with identity preservation, morph-skip for library-owned subtrees, JSX-rendered SVG, and capture-phase event delegation.
-
-Play with it live at **[brianwestphal.github.io/kerf](https://brianwestphal.github.io/kerf/)**, or run it locally:
+## Install
 
 ```bash
-npm run example:reactivity-demo
+npm install kerfjs
 ```
+
+```jsonc
+// tsconfig.json
+{
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "jsxImportSource": "kerfjs"
+  }
+}
+```
+
+## Links
+
+- **Site:** [brianwestphal.github.io/kerf](https://brianwestphal.github.io/kerf/)
+- **Docs:** [`docs/`](./docs/) — overview · reactivity · stores · render · events · jsx · svg · [API reference](./docs/8-api-reference.md)
+- **AI guide:** [`docs/ai/usage-guide.md`](./docs/ai/usage-guide.md) — read once before writing kerf code with an LLM
+- **Demo:** [live demo](https://brianwestphal.github.io/kerf/) — seven sections exercising every primitive
+- **Repo:** [github.com/brianwestphal/kerf](https://github.com/brianwestphal/kerf)
+
+## Why "kerf"?
+
+A *kerf* is the narrow strip of material a saw blade removes when cutting — the smallest possible cut. The framework's job is the same: apply the smallest possible mutation to update your DOM.
+
+(And yes, ~~kerformance~~ → *performance* jokes were written. They were also rejected.)
 
 ## Status
 

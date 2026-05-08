@@ -1,0 +1,18 @@
+---
+title: 8 · JSX SVG via toElement
+description: Slider drives an SVG circle — the easy case (SVG inside JSX) plus the toElement escape hatch.
+---
+
+import { Code } from '@astrojs/starlight/components';
+import LiveExample from '../../../../components/examples/basics/08-svg-toelement.astro';
+import source from '../../../../examples/basics/08-svg-toelement/main.tsx?raw';
+
+SVG inside JSX with `<svg>` as the JSX root works without ceremony — the HTML5 parser switches into "foreign content" mode for descendants, namespaces are correct.
+
+The hairy case is an SVG fragment **without** an `<svg>` wrapper. `template.innerHTML` produces an `HTMLUnknownElement`, not an `SVGPathElement`. `toElement()` is the escape hatch: it routes through `DOMParser('image/svg+xml')` and returns a properly namespaced node.
+
+**What to look at:** drag the slider — the circle's `cx` updates smoothly because kerf updates only the `cx` attribute, not the parent `<svg>` (the diff sees nothing else changed). The grey baseline tick was created via `toElement()` and prepended into the existing `<svg>`.
+
+<LiveExample />
+
+<Code lang="tsx" code={source} title="src/main.tsx" />

@@ -26,11 +26,15 @@ jobs:
         with: { node-version: '${{ env.NODE_VERSION }}', cache: npm }
       - run: npm ci
       - run: npm run build
-      - run: npm run example:reactivity-demo:build
+      # site:build's prebuild hook handles everything else:
+      #   - sync-docs (docs/*.md → Starlight pages)
+      #   - build-examples (5 complete apps → public/run/<name>/, reactivity-demo → public/demo/)
+      # Astro then copies public/ into dist/, producing one combined artifact.
+      - run: npm run site:build
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: examples/reactivity-demo/dist
+          path: site/dist
 
   deploy:
     needs: build

@@ -1,0 +1,18 @@
+---
+title: 5 · Keyed list with focus survival
+description: each() with reorder + an auto-tick that mutates the list while you type — focus, text, and caret survive every reshuffle.
+---
+
+import { Code } from '@astrojs/starlight/components';
+import LiveExample from '../../../../components/examples/basics/05-keyed-list.astro';
+import source from '../../../../examples/basics/05-keyed-list/main.tsx?raw';
+
+The list reconciler matches rows by `data-key` (or `id`), preserves the matched DOM node, and only inserts/removes/moves what changed. The user-visible payoff: an `<input>` inside a row keeps its focus, value, and caret position even when the list reorders around it.
+
+**What to look at:** click into one of the row inputs and start typing — the list reshuffles every 1.5 seconds in the background, but your focus and your text survive each pass. That's the morph identifying the same `data-key` and reusing the live node.
+
+Why a timer? Because *clicking* a Shuffle button would move focus to the button before reconciliation runs, and there's no longer a focused input to preserve. The expanded section in the demo has manual Insert / Shuffle now buttons so you can see that contrast.
+
+<LiveExample />
+
+<Code lang="tsx" code={source} title="src/main.tsx" />

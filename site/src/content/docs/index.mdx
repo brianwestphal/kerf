@@ -1,0 +1,101 @@
+---
+title: Kerf — the smallest cut
+description: Tiny reactive UI framework — fine-grained signals + DOM diff + JSX. 6.6 KB, no virtual DOM, no compiler.
+template: splash
+hero:
+  title: Introducing Kerf.
+  tagline: |
+    The smallest cut.
+
+    6.6 KB. No virtual DOM. No compiler. No magic.
+
+    Reactive UI that touches only the bytes that changed.
+  image:
+    file: ../../assets/logo-placeholder.svg
+  actions:
+    - text: Get started
+      link: /kerf/docs/overview/
+      icon: right-arrow
+      variant: primary
+    - text: View examples
+      link: /kerf/examples/basics/
+      icon: right-arrow
+    - text: View on GitHub
+      link: https://github.com/brianwestphal/kerf
+      icon: external
+      variant: minimal
+---
+
+import { Card, CardGrid, Code } from '@astrojs/starlight/components';
+
+## Where to go next
+
+<CardGrid>
+  <Card title="Read the docs" icon="open-book">
+    [Overview, render pipeline, events, JSX runtime →](/kerf/docs/overview/)
+  </Card>
+  <Card title="Browse examples" icon="puzzle">
+    [Nine basics + complete apps with source side-by-side →](/kerf/examples/basics/)
+  </Card>
+  <Card title="API reference" icon="seti:default">
+    [Every export — `signal`, `mount`, `each`, and the rest →](/kerf/api/)
+  </Card>
+  <Card title="Why Kerf" icon="approve-check">
+    [The framework's pillars and intended use cases →](/kerf/why-kerf/)
+  </Card>
+</CardGrid>
+
+## It works like this
+
+<Code lang="ts" code={`import { signal, mount } from 'kerfjs';
+
+const count = signal(0);
+
+mount(document.getElementById('app')!, () => (
+  <div>
+    <button data-action="inc">+</button>
+    <span>{count.value}</span>
+  </div>
+));`} />
+
+That's it. Your JSX renders to HTML strings, kerf's native diff applies the minimum DOM mutations to make the live tree match, and signals re-run the render only when something they read actually changed.
+
+## Why Kerf
+
+<CardGrid>
+  <Card title="Built for AI-assisted coding" icon="seti:html">
+    Tiny public surface (15 exports), no compiler magic, no hidden lifecycle. An LLM holds the framework in context and predicts behaviour — your AI agent generates code that works the first time.
+  </Card>
+  <Card title="Smallest cut" icon="approve-check">
+    6.6 KB gzipped including signals. Fine-grained reactivity re-runs only what changed; the diff touches only the DOM nodes that differ.
+  </Card>
+  <Card title="No virtual DOM, no compiler" icon="seti:javascript">
+    JSX → HTML strings → native diff. DevTools shows the real DOM because it *is* the DOM.
+  </Card>
+  <Card title="Focus, selection, listeners survive re-renders" icon="puzzle">
+    We morph instead of rebuilding. Caret stays put, drag keeps moving, delegated handlers keep firing.
+  </Card>
+  <Card title="Plain TS, plain JSX, plain ESM" icon="setting">
+    Drops into anything using esbuild / Vite / tsup. No plugin chain.
+  </Card>
+</CardGrid>
+
+[Read the full pillars →](/kerf/why-kerf/)
+
+## Reach for Kerf when…
+
+- **AI-generated apps** — your LLM holds the framework in context; no hallucinated APIs.
+- **Hybrid desktop apps (Tauri / Electron)** — small bundle, predictable diff, debuggable runtime.
+- **Embedded widgets** — chat bubbles, comment boxes, dashboards dropped into someone else's page.
+- **Server-rendered apps with islands** — Rails / Phoenix / Django / Hono. `mount` per island; `delegate` survives turbo-frame swaps.
+- **Admin panels & internal tools** — reactivity without 200 KB of framework + state lib + router.
+- **Replacing jQuery** — incremental migration; same delegation mental model, modern primitives.
+- **Prototyping** — entire mental model on a postcard.
+
+[Full use-cases grid →](/kerf/use-cases/) · [When to reach for something else →](/kerf/alternatives/)
+
+## Why "kerf"?
+
+A *kerf* is the narrow strip a saw blade removes when cutting — the smallest possible cut. The framework's job is the same: apply the smallest possible mutation to update your DOM.
+
+(And yes, ~~kerformance~~ → *performance* jokes were written. They were also rejected.)

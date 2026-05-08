@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>kerf · Live Markdown editor</title>
+    <style>
+      body { font-family: system-ui; margin: 0; padding: 0; height: 100vh; }
+      .editor { display: grid; grid-template-columns: 1fr 1fr; height: 100%; }
+      .pane { padding: 1.5rem; overflow: auto; }
+      .editor-pane { background: #1f2937; }
+      .editor-input { color: #f9fafb; font-family: ui-monospace, monospace; font-size: 0.9rem; line-height: 1.5; min-height: 100%; outline: none; white-space: pre-wrap; }
+      .preview { background: white; }
+      .preview h1, .preview h2, .preview h3 { margin-top: 0.5em; }
+      .preview code { background: #f3f4f6; padding: 0.1em 0.3em; border-radius: 3px; font-family: ui-monospace, monospace; }
+      .preview a { color: #2563eb; }
+      .preview ul { padding-left: 1.5rem; }
+    </style>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="./main.tsx"></script>
+  </body>
+</html>

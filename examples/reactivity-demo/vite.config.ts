@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite';
 
 export default defineConfig({
-  base: '/kerf/',
+  base: '/kerf/demo/',
   esbuild: {
     jsx: 'automatic',
     jsxImportSource: 'kerfjs',
