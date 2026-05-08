@@ -446,6 +446,190 @@ describe('mount() — focus and selection preservation', () => {
       expect(reordered[2]).toBe(original[1]);
     });
 
+    it('keeps focus on a moved row\'s descendant input across a reorder (KF-65)', () => {
+      const rows = signal<Row[]>(makeRows(3));
+      mount(root, () => jsx('ul', {
+        children: each(
+          rows.value,
+          (r) => jsx('li', {
+            'data-key': r.id,
+            children: jsx('input', { id: `inp-${r.id}`, type: 'text', value: r.label }),
+          }),
+          (r) => r.id,
+        ),
+      }));
+
+      const inp = root.querySelector<HTMLInputElement>('#inp-2')!;
+      inp.value = 'partial';
+      inp.focus();
+      try { inp.setSelectionRange(3, 3); } catch { /* happy-dom may no-op */ }
+      expect(document.activeElement).toBe(inp);
+
+      // Reverse: every row moves; the row owning the focused input ends up at
+      // a new index. Without explicit focus restoration the move blurs the
+      // input on engines whose insertBefore drops focus state.
+      rows.value = [rows.value[2], rows.value[1], rows.value[0]];
+
+      const after = root.querySelector<HTMLInputElement>('#inp-2')!;
+      expect(after).toBe(inp);
+      expect(after.value).toBe('partial');
+      expect(document.activeElement).toBe(after);
+    });
+
+    it('keeps focus when an unrelated new row is inserted at the top', () => {
+      const rows = signal<Row[]>(makeRows(2));
+      mount(root, () => jsx('ul', {
+        children: each(
+          rows.value,
+          (r) => jsx('li', {
+            'data-key': r.id,
+            children: jsx('input', { id: `inp-${r.id}`, type: 'text', value: r.label }),
+          }),
+          (r) => r.id,
+        ),
+      }));
+
+      const inp = root.querySelector<HTMLInputElement>('#inp-2')!;
+      inp.focus();
+      expect(document.activeElement).toBe(inp);
+
+      rows.value = [{ id: 99, label: 'new' }, ...rows.value];
+
+      const after = root.querySelector<HTMLInputElement>('#inp-2')!;
+      expect(after).toBe(inp);
+      expect(document.activeElement).toBe(after);
+    });
+
+    it('drops focus when the focused row itself is removed', () => {
+      // Sanity: when the row hosting the focused input disappears (orphan
+      // removal), there's no element to restore focus to. The reconciler
+      // should leave focus where the engine puts it (typically <body>) and
+      // not throw.
+      const rows = signal<Row[]>(makeRows(2));
+      mount(root, () => jsx('ul', {
+        children: each(
+          rows.value,
+          (r) => jsx('li', {
+            'data-key': r.id,
+            children: jsx('input', { id: `inp-${r.id}`, type: 'text', value: r.label }),
+          }),
+          (r) => r.id,
+        ),
+      }));
+
+      const inp = root.querySelector<HTMLInputElement>('#inp-2')!;
+      inp.focus();
+
+      rows.value = rows.value.filter((r) => r.id !== 2);
+      expect(root.querySelector('#inp-2')).toBe(null);
+      // No assertion on activeElement — it's the engine's call once the
+      // focused element is gone. The point is reconcile didn't throw.
+    });
+
+    it('keeps focus on a non-text element (button) inside a moved row — no selection branch', () => {
+      const rows = signal<Row[]>(makeRows(2));
+      mount(root, () => jsx('ul', {
+        children: each(
+          rows.value,
+          (r) => jsx('li', {
+            'data-key': r.id,
+            children: jsx('button', { id: `btn-${r.id}`, children: r.label }),
+          }),
+          (r) => r.id,
+        ),
+      }));
+
+      const btn = root.querySelector<HTMLButtonElement>('#btn-2')!;
+      btn.focus();
+      expect(document.activeElement).toBe(btn);
+
+      rows.value = [rows.value[1], rows.value[0]];
+
+      const after = root.querySelector<HTMLButtonElement>('#btn-2')!;
+      expect(after).toBe(btn);
+      expect(document.activeElement).toBe(after);
+    });
+
+    it('does not throw if selection APIs reject mid-restore (KF-65)', () => {
+      const setSel = vi.spyOn(HTMLInputElement.prototype, 'setSelectionRange').mockImplementation(() => {
+        throw new Error('selection unsupported');
+      });
+
+      const rows = signal<Row[]>(makeRows(2));
+      mount(root, () => jsx('ul', {
+        children: each(
+          rows.value,
+          (r) => jsx('li', {
+            'data-key': r.id,
+            children: jsx('input', { id: `inp-${r.id}`, type: 'text', value: r.label }),
+          }),
+          (r) => r.id,
+        ),
+      }));
+
+      const inp = root.querySelector<HTMLInputElement>('#inp-2')!;
+      inp.focus();
+
+      expect(() => {
+        rows.value = [rows.value[1], rows.value[0]];
+      }).not.toThrow();
+
+      setSel.mockRestore();
+    });
+
+    it('does not throw if selection capture rejects (e.g. type=number)', () => {
+      // selectionStart on a number input throws in some engines. The capture
+      // must swallow it and continue without selection state.
+      const getSel = vi.spyOn(HTMLInputElement.prototype, 'selectionStart', 'get').mockImplementation(() => {
+        throw new Error('selection unavailable');
+      });
+
+      const rows = signal<Row[]>(makeRows(2));
+      mount(root, () => jsx('ul', {
+        children: each(
+          rows.value,
+          (r) => jsx('li', {
+            'data-key': r.id,
+            children: jsx('input', { id: `inp-${r.id}`, type: 'text', value: r.label }),
+          }),
+          (r) => r.id,
+        ),
+      }));
+
+      const inp = root.querySelector<HTMLInputElement>('#inp-2')!;
+      inp.focus();
+
+      expect(() => {
+        rows.value = [rows.value[1], rows.value[0]];
+      }).not.toThrow();
+      expect(document.activeElement).toBe(inp);
+
+      getSel.mockRestore();
+    });
+
+    it('skips focus snapshot when the active element is outside the list parent', () => {
+      // External focus (an input outside the each() parent) must not be
+      // touched by the reconciler — captureFocus returns null and applyMoves
+      // proceeds without any focus mutation.
+      const external = document.createElement('input');
+      external.id = 'external';
+      external.type = 'text';
+      document.body.appendChild(external);
+
+      const rows = signal<Row[]>(makeRows(2));
+      mount(root, () => jsx('ul', {
+        children: each(rows.value, (r) => jsx('li', { 'data-key': r.id, children: r.label })),
+      }));
+
+      external.focus();
+      expect(document.activeElement).toBe(external);
+
+      rows.value = [rows.value[1], rows.value[0]];
+
+      expect(document.activeElement).toBe(external);
+      external.remove();
+    });
+
     it('removes nodes that disappeared from the array', () => {
       const rows = signal<Row[]>(makeRows(3));
       mount(root, () => jsx('ul', {

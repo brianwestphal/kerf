@@ -16,6 +16,20 @@ export default defineConfig({
       title: 'Kerf — the smallest cut',
       description:
         'Tiny reactive UI framework — fine-grained signals + DOM diff + JSX. 6.6 KB, no virtual DOM, no compiler.',
+      customCss: ['./src/styles/live-example.css'],
+      head: [
+        {
+          // KF-67: when the sidebar contains the current page deep enough that
+          // it would otherwise sit off-screen, scroll the sidebar pane (NOT
+          // the document) so the highlighted item is visible without the
+          // reader having to hunt for it. No-op when the active link is
+          // already in view, so short sidebars are unaffected. Re-runs after
+          // Astro view transitions so client-side navigation behaves the
+          // same as a hard load.
+          tag: 'script',
+          content: `(function(){function s(){var p=document.querySelector('.sidebar-pane');if(!p)return;var a=p.querySelector('[aria-current="page"]');if(!a)return;var pr=p.getBoundingClientRect();var ar=a.getBoundingClientRect();if(ar.top>=pr.top&&ar.bottom<=pr.bottom)return;var o=(ar.top-pr.top)+p.scrollTop-(p.clientHeight/2)+(ar.height/2);p.scrollTop=Math.max(0,o)}if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',s)}else{s()}document.addEventListener('astro:page-load',s)})();`,
+        },
+      ],
       logo: {
         src: './src/assets/logo-placeholder.svg',
         replacesTitle: false,

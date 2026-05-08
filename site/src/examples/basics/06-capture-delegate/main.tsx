@@ -6,16 +6,27 @@ const focused = signal<string | null>(null);
 const root = document.getElementById('app')!;
 
 mount(root, () => (
-  <form>
-    <button type="button" data-action="add" style="margin-bottom: 0.75rem;">Add field</button>
-    {fields.value.map((label, i) => (
-      <label data-key={`${label}-${i}`} style="display: block; margin-bottom: 0.5rem;">
-        {label}: <input data-field={label} placeholder={label} />
-      </label>
-    ))}
-    <p style="font-family: ui-monospace, monospace; font-size: 0.9rem;">
-      Focused: {focused.value ?? '(none)'}
-    </p>
+  <form class="kerf-stack" style="max-width: 24rem;" onsubmit="return false">
+    <div style="display: grid; grid-template-columns: 8rem 1fr; gap: 0.5rem 1rem; align-items: center;">
+      {fields.value.map((label, i) => (
+        <>
+          <label data-key={`l-${label}-${i}`} for={`field-${i}`}>{label}</label>
+          <input
+            data-key={`i-${label}-${i}`}
+            id={`field-${i}`}
+            data-field={label}
+            placeholder={label}
+          />
+        </>
+      ))}
+    </div>
+    <div class="kerf-toolbar">
+      <button type="button" data-action="add">Add field</button>
+    </div>
+    <div class="kerf-output kerf-mono" style="display: flex; justify-content: space-between;">
+      <span>Focused</span>
+      <strong>{focused.value ?? '(none)'}</strong>
+    </div>
   </form>
 ));
 

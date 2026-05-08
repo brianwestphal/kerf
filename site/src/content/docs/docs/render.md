@@ -102,6 +102,12 @@ This is the behaviour you almost always want for in-progress rich-text editing: 
 
 For anything else with focus (a `<button>`, `<a>`, `<div tabindex>`), the diff proceeds normally. There's no special handling — none of those elements have user-visible state that a re-render would clobber.
 
+### Across `each()` reorders
+
+When the keyed list reconciler moves a row whose descendant is the focused element, the row's DOM node is reused — the focused element stays connected to the document. Some engines (older Safari, happy-dom) drop focus state on `insertBefore` even when the element survives, so the reconciler snapshots the active element + its selection range before the move pass and re-applies them afterwards. Engines that already preserve focus see a no-op; engines that don't get a transparent fix.
+
+Replaced rows (cache miss — the row's HTML changed) are a different story: the old node is removed before the new one is inserted, so focus that lived inside it is genuinely gone. That matches the behaviour of any framework that re-renders a row.
+
 ## 4.5 Multiple `mount()` calls
 
 You can call `mount()` on different elements for different parts of the page. Each one gets its own `effect()` and tracks its own signals:

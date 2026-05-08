@@ -1,0 +1,238 @@
+/* Shared visual language for inline live demos in basics/* and complete/* example pages.
+ * Distinguishes the live, interactive surface from the static code block that
+ * follows it, and gives every demo a consistent button / input / spacing
+ * baseline so individual main.tsx files don't need to repeat presentation CSS.
+ *
+ * The wrapper is rendered as <div id="app" class="kerf-live-example"> inside
+ * a per-example .astro component. */
+
+/* ── wrapper ───────────────────────────────────────────────────────────── */
+
+.kerf-live-example {
+  position: relative;
+  margin: 1rem 0 1.5rem;
+  padding: 2.5rem 1.5rem 1.5rem;
+  border: 1px solid var(--sl-color-accent);
+  border-radius: 6px;
+  background: var(--sl-color-bg-sidebar);
+  color: var(--sl-color-text);
+  line-height: 1.5;
+}
+
+.kerf-live-example::before {
+  content: "Live preview";
+  position: absolute;
+  top: 0.5rem;
+  left: 1rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--sl-color-accent-high);
+  opacity: 0.9;
+}
+
+.kerf-live-example::after {
+  content: "";
+  position: absolute;
+  top: 0.75rem;
+  left: 7.5rem;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--sl-color-accent);
+  box-shadow: 0 0 0 0 var(--sl-color-accent);
+  animation: kerf-live-pulse 2s ease-out infinite;
+}
+
+@keyframes kerf-live-pulse {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--sl-color-accent) 60%, transparent);
+  }
+  70% {
+    box-shadow: 0 0 0 6px color-mix(in srgb, var(--sl-color-accent) 0%, transparent);
+  }
+  100% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--sl-color-accent) 0%, transparent);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kerf-live-example::after {
+    animation: none;
+  }
+}
+
+/* ── form controls ─────────────────────────────────────────────────────── */
+
+.kerf-live-example button:not([class]) {
+  appearance: none;
+  cursor: pointer;
+  /* Starlight's markdown content styles add `margin-bottom: 1.25rem` to
+   * buttons by default — that pushes a button's effective box well below
+   * its visual extent, breaking `align-items: center` inside flex rows
+   * (the button gets centered *with its margin*, so the button itself
+   * lands at the top of the row). Force margin: 0 so demo buttons live
+   * inside their visible bounds. */
+  margin: 0;
+  padding: 0.4rem 0.9rem;
+  border: 1px solid color-mix(in srgb, var(--sl-color-text) 22%, transparent);
+  border-radius: 6px;
+  background: var(--sl-color-bg);
+  color: var(--sl-color-text);
+  font: inherit;
+  font-size: 0.9rem;
+  line-height: 1.2;
+  transition:
+    background-color 0.12s,
+    border-color 0.12s,
+    box-shadow 0.12s;
+}
+
+/* Same fix for the styled link-buttons. */
+.kerf-live-example .kerf-link-button {
+  margin: 0;
+}
+
+.kerf-live-example button:not([class]):hover:not(:disabled) {
+  background: color-mix(in srgb, var(--sl-color-accent) 8%, var(--sl-color-bg));
+  border-color: var(--sl-color-accent);
+}
+
+.kerf-live-example button:not([class]):focus-visible {
+  outline: 2px solid var(--sl-color-accent);
+  outline-offset: 2px;
+}
+
+.kerf-live-example button:not([class]):disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.kerf-live-example input:not([type="range"]),
+.kerf-live-example textarea {
+  appearance: none;
+  /* Allow inputs to shrink inside narrow grid/flex tracks on mobile.
+   * Without this, the browser's intrinsic `size` width forces overflow on
+   * forms like basics/02 and basics/06 at viewports < 24rem. */
+  min-width: 0;
+  width: 100%;
+  padding: 0.4rem 0.6rem;
+  border: 1px solid color-mix(in srgb, var(--sl-color-text) 22%, transparent);
+  border-radius: 6px;
+  background: var(--sl-color-bg);
+  color: var(--sl-color-text);
+  font: inherit;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  transition:
+    border-color 0.12s,
+    box-shadow 0.12s;
+  box-sizing: border-box;
+}
+
+.kerf-live-example input:focus,
+.kerf-live-example textarea:focus {
+  outline: none;
+  border-color: var(--sl-color-accent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--sl-color-accent) 25%, transparent);
+}
+
+.kerf-live-example label {
+  font-size: 0.9rem;
+  color: color-mix(in srgb, var(--sl-color-text) 78%, transparent);
+}
+
+/* ── content rhythm ────────────────────────────────────────────────────── */
+
+.kerf-live-example p {
+  margin: 0;
+}
+
+.kerf-live-example ul {
+  margin: 0;
+}
+
+/* ── reusable utility classes (apply via class= when needed) ───────────── */
+
+.kerf-helper-text {
+  font-size: 0.85rem;
+  color: color-mix(in srgb, var(--sl-color-text) 65%, transparent);
+}
+
+.kerf-mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.9rem;
+}
+
+.kerf-section-label {
+  margin: 0 0 0.35rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: color-mix(in srgb, var(--sl-color-text) 60%, transparent);
+}
+
+.kerf-toolbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.kerf-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.kerf-link-button {
+  appearance: none;
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--sl-color-text-accent);
+  font: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.kerf-link-button:hover {
+  text-decoration: none;
+}
+
+/* Output panel — for showing computed values, log lines, etc. with a subtle
+ * inset surface that reads as "this is the result of the demo's reactivity". */
+.kerf-output {
+  padding: 0.75rem 1rem;
+  background: color-mix(in srgb, var(--sl-color-text) 4%, var(--sl-color-bg));
+  border: 1px solid color-mix(in srgb, var(--sl-color-text) 12%, transparent);
+  border-radius: 6px;
+}
+
+/* Two-column split editor used by the markdown / sanitised-HTML demo
+ * (basics/09). `minmax(0, 1fr)` lets each column shrink under wide rendered
+ * output so the article never overflows the live-preview frame. Stacks
+ * vertically on narrow viewports — at that size the side-by-side comparison
+ * is unreadable, so swap to a tall textarea above the rendered panel. */
+.kerf-split-md {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 1rem;
+  min-height: 14rem;
+}
+.kerf-split-md > * {
+  min-width: 0;
+}
+
+@media (max-width: 600px) {
+  .kerf-split-md {
+    grid-template-columns: 1fr;
+    min-height: 0;
+  }
+  .kerf-split-md textarea {
+    min-height: 9rem;
+    height: 9rem;
+  }
+}

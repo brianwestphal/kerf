@@ -9,22 +9,32 @@ function addLog(msg: string) {
 const root = document.getElementById('app')!;
 
 mount(root, () => (
-  <div>
-    <p style="margin: 0 0 0.5rem; font-size: 0.85rem; opacity: 0.8;">
+  <div class="kerf-stack">
+    <p class="kerf-helper-text">
       A pretend toolbar. Each click is logged below — nothing persists or leaves the page.
     </p>
-    <nav style="display: flex; gap: 0.5rem; margin-bottom: 0.75rem;">
-      <button data-action="save">Save</button>
-      <button data-action="copy">Copy</button>
-      <button data-action="delete">Delete</button>
-      <button data-action="clear-log">Clear log</button>
+    <nav class="kerf-toolbar">
+      <button type="button" data-action="save">Save</button>
+      <button type="button" data-action="copy">Copy</button>
+      <button type="button" data-action="delete">Delete</button>
     </nav>
-    <p style="margin: 0 0 0.25rem; font-size: 0.85rem; font-weight: 600;">Last 5 clicks</p>
-    <ul style="font-family: ui-monospace, monospace; font-size: 0.85rem; padding-left: 1rem; min-height: 6em; margin: 0;">
-      {log.value.slice(-5).map((line, i) => (
-        <li data-key={i}>{line}</li>
-      ))}
-    </ul>
+    <div>
+      <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 1rem;">
+        <p class="kerf-section-label">Last 5 clicks</p>
+        <button
+          class="kerf-link-button"
+          type="button"
+          data-action="clear-log"
+        >
+          Clear log
+        </button>
+      </div>
+      <ul class="kerf-output kerf-mono" style="list-style: none; padding-left: 1rem; min-height: 7em;">
+        {log.value.slice(-5).map((line, i) => (
+          <li data-key={i}>{line}</li>
+        ))}
+      </ul>
+    </div>
   </div>
 ));
 

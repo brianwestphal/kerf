@@ -14,23 +14,41 @@ const cart = defineStore({
   }),
 });
 
-const subtotal = computed(() => cart.state.value.items.reduce((s, it) => s + it.price, 0));
+const subtotal = computed(() =>
+  cart.state.value.items.reduce((s, it) => s + it.price, 0),
+);
+const fmt = (n: number) => `$${n}`;
 
 const root = document.getElementById('app')!;
 
 mount(root, () => (
-  <div>
-    <ul style="padding-left: 1.25rem; line-height: 1.8;">
+  <div class="kerf-stack" style="max-width: 24rem;">
+    <ul style="list-style: none; padding: 0; display: flex; flex-direction: column; gap: 0.4rem;">
       {cart.state.value.items.map((it) => (
-        <li data-key={it.id}>
-          {it.name} — ${it.price}
-          <button data-action="remove" data-id={it.id} style="margin-left: 0.5rem;">×</button>
+        <li
+          data-key={it.id}
+          style="display: flex; align-items: center; gap: 0.75rem;"
+        >
+          <span style="flex: 1;">{it.name}</span>
+          <span class="kerf-mono">{fmt(it.price)}</span>
+          <button data-action="remove" data-id={it.id} aria-label={`Remove ${it.name}`}>×</button>
         </li>
       ))}
     </ul>
-    <p><strong>Subtotal: ${subtotal.value}</strong></p>
-    <button data-action="clear">Clear cart</button>
-    <button data-action="reset" style="margin-left: 0.5rem;">Reset to initial</button>
+    <div class="kerf-output" style="display: flex; justify-content: space-between; align-items: center;">
+      <strong>Subtotal</strong>
+      <strong class="kerf-mono">{fmt(subtotal.value)}</strong>
+    </div>
+    <div class="kerf-toolbar">
+      <button data-action="clear">Clear cart</button>
+      <button
+        class="kerf-link-button"
+        data-action="reset"
+        style="margin-left: auto;"
+      >
+        Reset to initial
+      </button>
+    </div>
   </div>
 ));
 

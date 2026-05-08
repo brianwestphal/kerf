@@ -95,6 +95,8 @@ each(rows.value, (row) => <tr…>…</tr>, (row) => row.id === selectedId ? 1 : 
 
 Keyed list iteration with per-item memoisation, routed through `mount()`'s native list reconciler. Skips re-running `render` for items whose object identity (and optional `key`) are unchanged since the previous call — those items keep their existing live DOM nodes verbatim. Items whose identity or key did change get a fresh node (all fresh-node HTML for a render is bulk-parsed in one `innerHTML` call); items that disappeared are removed. Reorders use a longest-increasing-subsequence pass so the number of `insertBefore` calls is the minimum possible. Items must be objects (cache is a `WeakMap`); wrap primitives if you need to iterate them. Each item's render output must produce exactly one top-level element. Use `key` when external state, not the item itself, drives what the row should render (e.g. a "currently selected" id flips a CSS class).
 
+If a descendant of a moved row holds focus, the reconciler snapshots the active element + its selection range before the move pass and re-applies them afterwards — so focus and caret position survive a reorder even on engines that drop focus on `insertBefore` (older Safari, happy-dom). See `docs/4-render.md` §4.4.
+
 ## 8.4 Event delegation
 
 ### `delegate(rootEl, type, selector, handler): () => void`

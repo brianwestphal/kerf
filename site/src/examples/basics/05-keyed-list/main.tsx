@@ -31,34 +31,34 @@ if (ticking.value) startTicking();
 const root = document.getElementById('app')!;
 
 mount(root, () => (
-  <div>
-    <p style="margin: 0 0 0.5rem; font-size: 0.85rem; opacity: 0.85;">
-      Type into a row's input. The list reshuffles every 1.5s — your focus, your text, and your caret all survive.
+  <div class="kerf-stack" style="max-width: 26rem;">
+    <p class="kerf-helper-text">
+      Type into a row's input. The list reshuffles every 1.5 s — your focus, your text, and your caret all survive.
     </p>
-    <div style="display: flex; gap: 0.5rem; margin-bottom: 0.75rem;">
+    <div class="kerf-toolbar">
       <button data-action="toggle-tick">
         {ticking.value ? 'Pause auto-shuffle' : 'Resume auto-shuffle'}
       </button>
     </div>
-    <ul style="padding-left: 0; list-style: none;">
+    <ul style="list-style: none; padding: 0; display: flex; flex-direction: column; gap: 0.4rem;">
       {each(
         rows.value,
         (r) => (
-          <li data-key={r.id} style="display: flex; gap: 0.5rem; margin-bottom: 0.35rem;">
-            <input value={r.label} data-id={r.id} />
-            <button data-action="delete" data-id={r.id}>×</button>
+          <li data-key={r.id} style="display: flex; align-items: center; gap: 0.5rem;">
+            <input value={r.label} data-id={r.id} style="flex: 1;" />
+            <button data-action="delete" data-id={r.id} aria-label={`Delete ${r.label}`}>×</button>
           </li>
         ),
         (r) => r.id,
       )}
     </ul>
-    <details style="margin-top: 0.75rem; font-size: 0.85rem; opacity: 0.8;">
+    <details data-morph-skip class="kerf-helper-text">
       <summary style="cursor: pointer;">Manual triggers (these will steal focus when clicked)</summary>
-      <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+      <div class="kerf-toolbar" style="margin-top: 0.5rem;">
         <button data-action="insert">Insert at top</button>
         <button data-action="shuffle-now">Shuffle now</button>
       </div>
-      <p style="margin: 0.5rem 0 0;">
+      <p style="margin-top: 0.5rem;">
         Clicks transfer focus to the button itself, so by the time the list reconciles there's no focused input to preserve. The auto-shuffle above is what actually demos focus survival.
       </p>
     </details>

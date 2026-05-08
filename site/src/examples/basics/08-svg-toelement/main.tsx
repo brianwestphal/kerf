@@ -5,17 +5,28 @@ const x = signal(50);
 const root = document.getElementById('app')!;
 
 mount(root, () => (
-  <div>
+  <div class="kerf-stack" style="max-width: 24rem;">
+    <label for="kerf-slider" class="kerf-helper-text">Move the dot</label>
     <input
+      id="kerf-slider"
       type="range"
       min="0"
       max="100"
       value={String(x.value)}
       data-slider
-      style="width: 280px; margin-bottom: 0.5rem;"
+      style="width: 100%;"
     />
-    <p style="font-family: ui-monospace, monospace;">x = {x.value}</p>
-    <svg id="kerf-example-svg" viewBox="0 0 100 40" width="300" height="120" style="background: #1f2937;">
+    <p class="kerf-mono" style="display: flex; justify-content: space-between;">
+      <span>x</span>
+      <strong>{x.value}</strong>
+    </p>
+    <svg
+      id="kerf-example-svg"
+      viewBox="0 0 100 40"
+      width="100%"
+      height="120"
+      style="background: #1f2937; border-radius: 6px;"
+    >
       <circle cx={String(x.value)} cy="20" r="6" fill="#f59e0b" />
     </svg>
   </div>

@@ -71,6 +71,20 @@ bench/results.sh
 Aggregates raw results into the upstream viewer's table format and serves
 `http://localhost:8080/webdriver-ts-results/`.
 
+For a quick text dump that doesn't need a browser:
+
+```bash
+node bench/results-table.mjs            # fixed-width comparison table to stdout
+node bench/results-table.mjs --csv      # same data, comma-separated
+node bench/results-table.mjs --pin solid    # put `solid*` first instead of kerfjs
+```
+
+Reads the same per-framework JSONs in `webdriver-ts/results/` that the viewer
+uses. Each cell shows `mean ±stddev (Nx)`; `*` marks the row's fastest
+framework, `Nx` is the ratio to that fastest. The header line surfaces the
+mtime of the newest results file so you can tell at a glance how stale the
+data is.
+
 ## Caveats
 
 - **Absolute numbers aren't comparable across machines.** Only the

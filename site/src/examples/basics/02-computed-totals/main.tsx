@@ -15,18 +15,22 @@ const inputs = { bill, tipPct, partySize } as const;
 const root = document.getElementById('app')!;
 
 mount(root, () => (
-  <div>
-    <div style="display: grid; grid-template-columns: 8rem 1fr; gap: 0.4rem 1rem; max-width: 22rem; margin-bottom: 0.75rem;">
-      <label>Bill</label>
-      <input type="number" data-input="bill" value={String(bill.value)} step="0.01" />
-      <label>Tip %</label>
-      <input type="number" data-input="tipPct" value={String(tipPct.value)} step="1" />
-      <label>Party size</label>
-      <input type="number" data-input="partySize" value={String(partySize.value)} step="1" min="1" />
+  <div class="kerf-stack" style="max-width: 24rem;">
+    <div style="display: grid; grid-template-columns: 8rem 1fr; gap: 0.5rem 1rem; align-items: center;">
+      <label for="kerf-bill">Bill</label>
+      <input id="kerf-bill" type="number" data-input="bill" value={String(bill.value)} step="0.01" />
+      <label for="kerf-tip">Tip %</label>
+      <input id="kerf-tip" type="number" data-input="tipPct" value={String(tipPct.value)} step="1" />
+      <label for="kerf-party">Party size</label>
+      <input id="kerf-party" type="number" data-input="partySize" value={String(partySize.value)} step="1" min="1" />
     </div>
-    <p style="margin: 0;">Tip: <strong>{fmt(tip.value)}</strong></p>
-    <p style="margin: 0;">Total: <strong>{fmt(total.value)}</strong></p>
-    <p style="margin: 0 0 0.75rem;">Per person: <strong>{fmt(perPerson.value)}</strong></p>
+    <div class="kerf-output">
+      <div style="display: grid; grid-template-columns: 1fr auto; row-gap: 0.25rem; column-gap: 1.5rem;">
+        <span>Tip</span>          <strong class="kerf-mono">{fmt(tip.value)}</strong>
+        <span>Total</span>        <strong class="kerf-mono">{fmt(total.value)}</strong>
+        <span>Per person</span>   <strong class="kerf-mono">{fmt(perPerson.value)}</strong>
+      </div>
+    </div>
   </div>
 ));
 

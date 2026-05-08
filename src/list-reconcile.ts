@@ -185,6 +185,54 @@ function lis(arr: ReadonlyArray<number>): ReadonlySet<number> {
 }
 
 /**
+ * Snapshot focus + selection on a focused descendant of `liveParent` so we
+ * can restore it after the move pass — `insertBefore` of the focused node's
+ * ancestor blurs the focused element in some engines (happy-dom, older
+ * Safari, …) even though the element stays connected. The element survives
+ * the move; only the focus state is lost. Re-applying it after the moves is
+ * a no-op when the engine already preserved focus, and a fix when it didn't.
+ *
+ * Returns null when the active element is outside the list (the diff path
+ * handles those cases) or when there's no useful focus state to capture.
+ */
+interface FocusSnapshot {
+  el: HTMLElement;
+  selStart: number | null;
+  selEnd: number | null;
+}
+
+function captureFocus(liveParent: Element): FocusSnapshot | null {
+  const active = document.activeElement;
+  if (active === null || active === document.body) return null;
+  if (!liveParent.contains(active)) return null;
+  const el = active as HTMLElement;
+  let selStart: number | null = null;
+  let selEnd: number | null = null;
+  if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+    try {
+      selStart = (el as HTMLInputElement).selectionStart;
+      selEnd = (el as HTMLInputElement).selectionEnd;
+    } catch {
+      // Some input types (number, range, color, …) reject selection APIs.
+    }
+  }
+  return { el, selStart, selEnd };
+}
+
+function restoreFocus(snap: FocusSnapshot): void {
+  if (document.activeElement === snap.el) return;
+  if (!snap.el.isConnected) return;
+  snap.el.focus();
+  if (snap.selStart !== null && snap.selEnd !== null) {
+    try {
+      (snap.el as HTMLInputElement).setSelectionRange(snap.selStart, snap.selEnd);
+    } catch {
+      // Selection may have been clobbered by .focus(); not fatal.
+    }
+  }
+}
+
+/**
  * Reconcile `binding`'s live parent against `listSeg`. Mutates `binding.items`
  * to mirror the new segment when done.
  */
@@ -193,7 +241,9 @@ export function reconcileList(binding: ListBinding, listSeg: ListSegment): void 
   const { newRecord, prevIdx, replacedNodes, freshIndices, freshHtmls }
     = classifyItems(binding.items, listSeg);
   buildFreshNodes(newRecord, freshIndices, freshHtmls);
+  const focusSnap = captureFocus(liveParent);
   removeOldNodes(liveParent, replacedNodes);
   applyMoves(liveParent, newRecord, prevIdx, lis(prevIdx));
+  if (focusSnap !== null) restoreFocus(focusSnap);
   binding.items = newRecord;
 }
