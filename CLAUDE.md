@@ -8,7 +8,7 @@ The name *kerf* is a woodworking term — the narrow strip a saw blade removes. 
 
 ## Tech Stack
 
-- **Runtime**: Browser (modern, ES2022+). Node 20+ for build/test.
+- **Runtime**: Browser (modern, ES2022+). Node 22.12+ for build/test (Astro requirement).
 - **Language**: TypeScript (strict mode, ESM-only).
 - **Build**: tsup (esbuild + tsc-emit). Outputs ESM + types.
 - **Tests**: vitest with `happy-dom` as the default environment. `tests/unit/toElement.test.ts` overrides to `jsdom` (via `@vitest-environment jsdom`) because happy-dom's `DOMParser('image/svg+xml')` returns a document with `null` `documentElement` for SVG input — jsdom gets it right, and so do real browsers. Both `jsdom` and `@types/jsdom` are devDeps for that one file; do not remove them.
