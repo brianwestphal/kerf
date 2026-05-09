@@ -274,14 +274,24 @@ function reconcileGranular(
       continue;
     }
     if (patch.type === 'update') {
-      const html = renderFn(patch.item, patch.index);
-      const oldEntry = items[patch.index];
-      if (html !== oldEntry.html) {
-        const newNode = parseSingleRow(html);
-        liveParent.replaceChild(newNode, oldEntry.node);
-        items[patch.index] = { ref: patch.item, cacheKey: undefined, html, node: newNode };
+      // KF-94 fast path: detect a run of consecutive update patches (any
+      // indices — replaceChild operates on each row's existing live node
+      // independently, so contiguity isn't required) and bulk-parse all
+      // their HTML in a single `template.innerHTML` call. Saves the
+      // per-patch parse overhead on krausest's partial-update scenario
+      // (100 update patches at indices 0, 10, 20, … — non-contiguous, so
+      // KF-93's run detector doesn't kick in).
+      let runEnd = i + 1;
+      while (runEnd < patches.length && patches[runEnd].type === 'update') {
+        runEnd += 1;
       }
-      i += 1;
+      const runLen = runEnd - i;
+      if (runLen === 1) {
+        applySingleUpdate(liveParent, items, patch, renderFn);
+      } else {
+        applyBulkUpdate(liveParent, items, patches, i, runEnd, renderFn);
+      }
+      i = runEnd;
       continue;
     }
     if (patch.type === 'insert') {
@@ -343,6 +353,74 @@ function applySingleInsert(
   items.splice(patch.index, 0, {
     ref: patch.item, cacheKey: undefined, html, node: newNode,
   });
+}
+
+function applySingleUpdate(
+  liveParent: Element,
+  items: BoundItem[],
+  patch: { type: 'update'; index: number; item: object },
+  renderFn: NonNullable<ListSegment['renderFn']>,
+): void {
+  const html = renderFn(patch.item, patch.index);
+  const oldEntry = items[patch.index];
+  if (html === oldEntry.html) return;  // no-op (defensive: caller may emit redundant patches)
+  const newNode = parseSingleRow(html);
+  liveParent.replaceChild(newNode, oldEntry.node);
+  items[patch.index] = { ref: patch.item, cacheKey: undefined, html, node: newNode };
+}
+
+/**
+ * Bulk-parse a run of consecutive update patches (KF-94). Indices may be
+ * scattered (non-contiguous) — `replaceChild` operates on each row's
+ * existing live node independently. Renders all HTMLs first, filters out
+ * no-ops where the new HTML matches the old, then bulk-parses the
+ * remaining HTMLs in one `template.innerHTML` call. The replaceChild loop
+ * afterwards is unavoidable (one DOM op per row), but we save the
+ * per-patch parse cost.
+ */
+function applyBulkUpdate(
+  liveParent: Element,
+  items: BoundItem[],
+  patches: NonNullable<ListSegment['patches']>,
+  start: number,
+  end: number,
+  renderFn: NonNullable<ListSegment['renderFn']>,
+): void {
+  // Render everything first; collect the changes that produce different HTML.
+  interface Change { patchIdx: number; html: string }
+  const changes: Change[] = [];
+  for (let k = start; k < end; k++) {
+    const p = patches[k] as { type: 'update'; index: number; item: object };
+    const html = renderFn(p.item, p.index);
+    if (html !== items[p.index].html) {
+      changes.push({ patchIdx: k, html });
+    }
+  }
+  if (changes.length === 0) return;  // every update was a no-op
+
+  // Bulk-parse all real changes in one innerHTML call.
+  const tpl = document.createElement('template');
+  tpl.innerHTML = changes.map((c) => c.html).join('');
+  const newNodes = new Array<Element>(changes.length);
+  let child = tpl.content.firstElementChild;
+  for (let k = 0; k < newNodes.length; k++) {
+    if (child === null) {
+      throw new Error(
+        `each() granular reconcile: bulk-update run produced fewer top-level elements than patches (${k} of ${newNodes.length}). Each item's render must return exactly one element.`,
+      );
+    }
+    newNodes[k] = child;
+    child = child.nextElementSibling;
+  }
+
+  // Apply replaceChild for each real change.
+  for (let k = 0; k < changes.length; k++) {
+    const c = changes[k];
+    const p = patches[c.patchIdx] as { type: 'update'; index: number; item: object };
+    const oldEntry = items[p.index];
+    liveParent.replaceChild(newNodes[k], oldEntry.node);
+    items[p.index] = { ref: p.item, cacheKey: undefined, html: c.html, node: newNodes[k] };
+  }
 }
 
 /**

@@ -166,6 +166,109 @@ describe('arraySignal — each() granular integration via mount()', () => {
     expect(lis[0]).not.toBe(oldA);  // updated row gets a fresh node (replaceChild)
   });
 
+  it('KF-94 bulk-update: a run of consecutive updates at non-contiguous indices uses one parse', async () => {
+    // krausest "every 10th row" pattern: updates at indices 0, 10, 20 — non-
+    // contiguous, so KF-93's contiguous-run detector wouldn't fire. KF-94's
+    // detector (any consecutive update patches, regardless of index) should.
+    const initial = Array.from({ length: 5 }, (_, i) => ({ id: i, label: `row${i}` }));
+    const rows = arraySignal(initial);
+    renderRows(rows);
+    const oldRows = [...root.querySelectorAll('li')];
+
+    const tplProto = Object.getPrototypeOf(document.createElement('template'));
+    const origDescriptor = Object.getOwnPropertyDescriptor(tplProto, 'innerHTML')
+      ?? Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'innerHTML')!;
+    let parseCount = 0;
+    Object.defineProperty(tplProto, 'innerHTML', {
+      configurable: true,
+      get: origDescriptor.get,
+      set(value: string) {
+        parseCount += 1;
+        origDescriptor.set!.call(this, value);
+      },
+    });
+
+    try {
+      const { batch } = await import('../../src/index.js');
+      batch(() => {
+        rows.update(0, (r) => ({ ...r, label: 'A' }));
+        rows.update(2, (r) => ({ ...r, label: 'C' }));
+        rows.update(4, (r) => ({ ...r, label: 'E' }));
+      });
+    } finally {
+      Object.defineProperty(tplProto, 'innerHTML', origDescriptor);
+    }
+
+    const lis = root.querySelectorAll('li');
+    expect([...lis].map((li) => li.textContent)).toEqual(['A', 'row1', 'C', 'row3', 'E']);
+    expect(lis[1]).toBe(oldRows[1]);  // unchanged sibling preserved
+    expect(lis[3]).toBe(oldRows[3]);  // unchanged sibling preserved
+    expect(parseCount).toBe(1);  // bulk parse — one innerHTML write for 3 updates
+  });
+
+  it('KF-94 bulk-update: no-op updates are filtered before the bulk parse', async () => {
+    // If every update produces identical HTML, no DOM work happens — and
+    // the bulk-parse innerHTML setter is never called.
+    const rows = arraySignal([{ id: 1, label: 'a' }, { id: 2, label: 'b' }]);
+    renderRows(rows);
+    const oldA = root.querySelectorAll('li')[0];
+    const oldB = root.querySelectorAll('li')[1];
+
+    const tplProto = Object.getPrototypeOf(document.createElement('template'));
+    const origDescriptor = Object.getOwnPropertyDescriptor(tplProto, 'innerHTML')
+      ?? Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'innerHTML')!;
+    let parseCount = 0;
+    Object.defineProperty(tplProto, 'innerHTML', {
+      configurable: true,
+      get: origDescriptor.get,
+      set(value: string) { parseCount += 1; origDescriptor.set!.call(this, value); },
+    });
+
+    try {
+      const { batch } = await import('../../src/index.js');
+      batch(() => {
+        rows.update(0, (r) => ({ ...r }));  // identity → same HTML
+        rows.update(1, (r) => ({ ...r }));
+      });
+    } finally {
+      Object.defineProperty(tplProto, 'innerHTML', origDescriptor);
+    }
+
+    expect(root.querySelectorAll('li')[0]).toBe(oldA);
+    expect(root.querySelectorAll('li')[1]).toBe(oldB);
+    expect(parseCount).toBe(0);  // all no-ops → no parse at all
+  });
+
+  it('KF-94 bulk-update: partial no-ops still apply the real changes', async () => {
+    const rows = arraySignal([{ id: 1, label: 'a' }, { id: 2, label: 'b' }, { id: 3, label: 'c' }]);
+    renderRows(rows);
+    const { batch } = await import('../../src/index.js');
+    batch(() => {
+      rows.update(0, (r) => ({ ...r }));            // no-op
+      rows.update(1, (r) => ({ ...r, label: 'B' })); // real change
+      rows.update(2, (r) => ({ ...r }));            // no-op
+    });
+    expect([...root.querySelectorAll('li')].map((li) => li.textContent)).toEqual(['a', 'B', 'c']);
+  });
+
+  it('KF-94 bulk-update: throws when bulk-parsed HTML produces fewer elements than non-noop changes', async () => {
+    const rows = arraySignal([{ id: 1, label: 'a' }, { id: 2, label: 'b' }]);
+    let renderImpl = (r: { id: number; label: string }): string =>
+      `<li data-key="${r.id}">${r.label}</li>`;
+    mount(root, () => jsx('ul', {
+      children: each(rows, (r) => renderImpl(r as { id: number; label: string })),
+    }));
+    // Force the row that would otherwise change to render empty HTML.
+    renderImpl = (r) => r.id === 1 ? `<li data-key="${r.id}">X</li>` : '   ';
+    const { batch } = await import('../../src/index.js');
+    expect(() => {
+      batch(() => {
+        rows.update(0, (r) => ({ ...r, label: 'X' }));
+        rows.update(1, (r) => ({ ...r, label: 'Y' }));
+      });
+    }).toThrow(/bulk-update run produced fewer top-level elements/);
+  });
+
   it('insert patch adds a single row without re-rendering siblings', () => {
     const rows = arraySignal([{ id: 1, label: 'a' }, { id: 3, label: 'c' }]);
     renderRows(rows);
