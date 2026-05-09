@@ -197,6 +197,19 @@ function lis(arr: ReadonlyArray<number>): ReadonlySet<number> {
  * those engines and is a no-op on engines that already preserve focus.
  */
 export function reconcileList(binding: ListBinding, listSeg: ListSegment): void {
+  // KF-92 fast path: arraySignal-backed each() emits patches and a
+  // renderFn. The granular reconciler applies the patches directly without
+  // iterating the full snapshot. `each()` filters out `replace` patches
+  // upstream (those force the snapshot path), so the patches reaching here
+  // are guaranteed to be update/insert/remove/move only. The
+  // `binding.items.length > 0` guard handles the very-first-render case
+  // where no binding exists yet.
+  if (listSeg.patches !== undefined && listSeg.renderFn !== undefined
+      && binding.items.length > 0) {
+    reconcileGranular(binding, listSeg.patches, listSeg.renderFn);
+    return;
+  }
+
   const { liveParent } = binding;
   const { newRecord, prevIdx, replacedNodes, freshIndices, freshHtmls }
     = classifyItems(binding.items, listSeg);
@@ -232,4 +245,82 @@ function isInOrder(prevIdx: number[]): boolean {
     if (prevIdx[i] !== i) return false;
   }
   return true;
+}
+
+/**
+ * KF-92 granular reconciler. Applies an `arraySignal`'s patch events
+ * directly to the live DOM and to `binding.items`, without iterating the
+ * full snapshot or doing a classify pass. O(patches), not O(N).
+ *
+ * `replace` patches are filtered out at the `each()` level; they never
+ * reach this function. The TypeScript type allows them, but the runtime
+ * contract guarantees they're absent here.
+ */
+function reconcileGranular(
+  binding: ListBinding,
+  patches: NonNullable<ListSegment['patches']>,
+  renderFn: NonNullable<ListSegment['renderFn']>,
+): void {
+  const { liveParent } = binding;
+  const items = binding.items;
+
+  for (const patch of patches) {
+    /* c8 ignore next 3 — replace is filtered upstream by each(); this branch
+       is defensive type-completeness only. */
+    if (patch.type === 'replace') continue;
+    if (patch.type === 'update') {
+      const html = renderFn(patch.item, patch.index);
+      const oldEntry = items[patch.index];
+      if (html === oldEntry.html) continue;  // no-op (defensive: caller may emit redundant patches)
+      const newNode = parseSingleRow(html);
+      liveParent.replaceChild(newNode, oldEntry.node);
+      items[patch.index] = { ref: patch.item, cacheKey: undefined, html, node: newNode };
+      continue;
+    }
+    if (patch.type === 'insert') {
+      const html = renderFn(patch.item, patch.index);
+      const newNode = parseSingleRow(html);
+      const anchor = patch.index < items.length ? items[patch.index].node : null;
+      liveParent.insertBefore(newNode, anchor);
+      items.splice(patch.index, 0, {
+        ref: patch.item, cacheKey: undefined, html, node: newNode,
+      });
+      continue;
+    }
+    if (patch.type === 'remove') {
+      const entry = items[patch.index];
+      liveParent.removeChild(entry.node);
+      items.splice(patch.index, 1);
+      continue;
+    }
+    if (patch.type === 'move') {
+      const moved = items[patch.from];
+      // Compute the anchor BEFORE we splice, so the index references the
+      // pre-move state.
+      let anchorIdx = patch.to;
+      if (patch.from < patch.to) anchorIdx += 1;  // account for upcoming splice removal
+      const anchor = anchorIdx < items.length ? items[anchorIdx].node : null;
+      liveParent.insertBefore(moved.node, anchor);
+      items.splice(patch.from, 1);
+      items.splice(patch.to, 0, moved);
+      continue;
+    }
+  }
+}
+
+/**
+ * Parse a single row's HTML string into one Element. Used by the granular
+ * reconciler. Each row is expected to render exactly one top-level element
+ * (the same contract `each()` already enforces in the snapshot path).
+ */
+function parseSingleRow(html: string): Element {
+  const tpl = document.createElement('template');
+  tpl.innerHTML = html;
+  const el = tpl.content.firstElementChild;
+  if (el === null) {
+    throw new Error(
+      `each() granular reconcile: row render produced no top-level element. Each item's render must return exactly one element. Got HTML: ${html.slice(0, 120)}`,
+    );
+  }
+  return el;
 }

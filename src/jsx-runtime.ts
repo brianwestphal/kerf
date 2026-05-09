@@ -85,6 +85,22 @@ export function listSafeHtml(id: string, items: ListSegment['items']): SafeHtml 
   return new SafeHtml({ kind: 'list', id, items });
 }
 
+/**
+ * Internal: build a `SafeHtml` representing a granular list segment with
+ * patches (KF-92). The reconciler applies the patches to the existing
+ * binding directly, skipping the per-item iteration that the snapshot
+ * `listSafeHtml` requires. `items` is included for fall-through paths
+ * (toString during SSR, fall-back when the binding doesn't exist yet).
+ */
+export function granularListSafeHtml(
+  id: string,
+  items: ListSegment['items'],
+  patches: NonNullable<ListSegment['patches']>,
+  renderFn: NonNullable<ListSegment['renderFn']>,
+): SafeHtml {
+  return new SafeHtml({ kind: 'list', id, items, patches, renderFn });
+}
+
 type Child = SafeHtml | string | number | boolean | null | undefined;
 type Children = Child | Children[];
 

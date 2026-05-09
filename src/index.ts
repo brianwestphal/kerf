@@ -6,6 +6,7 @@
  * via tsconfig.json's `"jsxImportSource": "kerfjs"`.
  */
 
+export { type ArrayPatch, ArraySignal, arraySignal } from './array-signal.js';
 export { delegate, delegateCapture } from './delegate.js';
 export { each } from './each.js';
 export { Fragment, isSafeHtml, raw, SafeHtml } from './jsx-runtime.js';

@@ -48,6 +48,11 @@ const EXPECTED_EXPORTS: readonly ExpectedExport[] = [
 
   // Render
   { name: 'mount', kind: 'function' },
+  { name: 'each', kind: 'function' },
+
+  // KF-92 — granular collection signal for keyed lists
+  { name: 'arraySignal', kind: 'function' },
+  { name: 'ArraySignal', kind: 'class' },
 
   // Event delegation
   { name: 'delegate', kind: 'function' },

@@ -1,8 +1,27 @@
-import { delegate, each, mount, signal } from 'kerfjs';
+/**
+ * kerfjs entry for krausest js-framework-benchmark — keyed.
+ *
+ * KF-92 update: rows live in an `arraySignal`, and the selected-row state is
+ * stored on each row's `selected` flag rather than in a separate signal.
+ * This lets every interactive scenario produce granular patch events the
+ * keyed-list reconciler can apply in O(changes) instead of iterating all N
+ * items on every render:
+ *
+ *   - Append:   N inserts (no full re-render).
+ *   - Update:   N updates (touches only the changed rows).
+ *   - Select:   2 updates (deselect old + select new) — no closure re-run on
+ *               the surrounds, no full each() iteration.
+ *   - Swap:     1 move (1 insertBefore).
+ *   - Remove:   1 remove.
+ *   - Create:   first render, no granular wins available — same speed as before.
+ */
+
+import { arraySignal, batch, delegate, each, mount } from 'kerfjs';
 
 interface Row {
   id: number;
   label: string;
+  selected: boolean;
 }
 
 const ADJECTIVES = [
@@ -32,106 +51,134 @@ function buildData(count: number): Row[] {
     data[i] = {
       id: nextId++,
       label: `${pick(ADJECTIVES)} ${pick(COLOURS)} ${pick(NOUNS)}`,
+      selected: false,
     };
   }
   return data;
 }
 
-const rows = signal<Row[]>([]);
-const selected = signal<number>(-1);
+const rows = arraySignal<Row>([]);
+let selectedIndex = -1;  // index into rows for fast deselect (no array scan)
 
 const root = document.getElementById('main')!;
 
-mount(root, () => {
-  const sel = selected.value;
-  return (
-    <div className="container">
-      <div className="jumbotron">
-        <div className="row">
-          <div className="col-md-6"><h1>kerfjs-keyed</h1></div>
-          <div className="col-md-6">
-            <div className="row">
-              <div className="col-sm-6 smallpad">
-                <button type="button" className="btn btn-primary btn-block" id="run">Create 1,000 rows</button>
-              </div>
-              <div className="col-sm-6 smallpad">
-                <button type="button" className="btn btn-primary btn-block" id="runlots">Create 10,000 rows</button>
-              </div>
-              <div className="col-sm-6 smallpad">
-                <button type="button" className="btn btn-primary btn-block" id="add">Append 1,000 rows</button>
-              </div>
-              <div className="col-sm-6 smallpad">
-                <button type="button" className="btn btn-primary btn-block" id="update">Update every 10th row</button>
-              </div>
-              <div className="col-sm-6 smallpad">
-                <button type="button" className="btn btn-primary btn-block" id="clear">Clear</button>
-              </div>
-              <div className="col-sm-6 smallpad">
-                <button type="button" className="btn btn-primary btn-block" id="swaprows">Swap Rows</button>
-              </div>
+mount(root, () => (
+  <div className="container">
+    <div className="jumbotron">
+      <div className="row">
+        <div className="col-md-6"><h1>kerfjs-keyed</h1></div>
+        <div className="col-md-6">
+          <div className="row">
+            <div className="col-sm-6 smallpad">
+              <button type="button" className="btn btn-primary btn-block" id="run">Create 1,000 rows</button>
+            </div>
+            <div className="col-sm-6 smallpad">
+              <button type="button" className="btn btn-primary btn-block" id="runlots">Create 10,000 rows</button>
+            </div>
+            <div className="col-sm-6 smallpad">
+              <button type="button" className="btn btn-primary btn-block" id="add">Append 1,000 rows</button>
+            </div>
+            <div className="col-sm-6 smallpad">
+              <button type="button" className="btn btn-primary btn-block" id="update">Update every 10th row</button>
+            </div>
+            <div className="col-sm-6 smallpad">
+              <button type="button" className="btn btn-primary btn-block" id="clear">Clear</button>
+            </div>
+            <div className="col-sm-6 smallpad">
+              <button type="button" className="btn btn-primary btn-block" id="swaprows">Swap Rows</button>
             </div>
           </div>
         </div>
       </div>
-      <table className="table table-hover table-striped test-data">
-        <tbody id="tbody">
-          {each(
-            rows.value,
-            (row) => (
-              <tr data-key={row.id} className={row.id === sel ? 'danger' : ''}>
-                <td className="col-md-1">{String(row.id)}</td>
-                <td className="col-md-4"><a className="lbl" data-id={String(row.id)}>{row.label}</a></td>
-                <td className="col-md-1"><a className="remove" data-id={String(row.id)}><span className="glyphicon glyphicon-remove" aria-hidden="true"></span></a></td>
-                <td className="col-md-6"></td>
-              </tr>
-            ),
-            (row) => row.id === sel ? 1 : 0,
-          )}
-        </tbody>
-      </table>
-      <span className="preloadicon glyphicon glyphicon-remove" aria-hidden="true"></span>
     </div>
-  );
-});
+    <table className="table table-hover table-striped test-data">
+      <tbody id="tbody">
+        {each(rows, (row) => (
+          <tr data-key={row.id} className={row.selected ? 'danger' : ''}>
+            <td className="col-md-1">{String(row.id)}</td>
+            <td className="col-md-4"><a className="lbl" data-id={String(row.id)}>{row.label}</a></td>
+            <td className="col-md-1"><a className="remove" data-id={String(row.id)}><span className="glyphicon glyphicon-remove" aria-hidden="true"></span></a></td>
+            <td className="col-md-6"></td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+    <span className="preloadicon glyphicon glyphicon-remove" aria-hidden="true"></span>
+  </div>
+));
 
 delegate(root, 'click', '#run', () => {
-  rows.value = buildData(1000);
-  selected.value = -1;
+  selectedIndex = -1;
+  rows.replace(buildData(1000));
 });
 delegate(root, 'click', '#runlots', () => {
-  rows.value = buildData(10000);
-  selected.value = -1;
+  selectedIndex = -1;
+  rows.replace(buildData(10000));
 });
 delegate(root, 'click', '#add', () => {
-  rows.value = rows.value.concat(buildData(1000));
+  // Append 1k rows via individual insert events. Wrap in batch() so all
+  // 1k inserts coalesce into a single mount re-render that drains the
+  // whole patch queue in one granular reconcile pass.
+  batch(() => {
+    const additions = buildData(1000);
+    const startIndex = rows.value.length;
+    for (let i = 0; i < additions.length; i++) {
+      rows.insert(startIndex + i, additions[i]);
+    }
+  });
 });
 delegate(root, 'click', '#update', () => {
-  const next = rows.value.slice();
-  for (let i = 0; i < next.length; i += 10) {
-    next[i] = { id: next[i].id, label: next[i].label + ' !!!' };
-  }
-  rows.value = next;
+  // Update every 10th row via granular .update events, batched.
+  batch(() => {
+    const len = rows.value.length;
+    for (let i = 0; i < len; i += 10) {
+      rows.update(i, (r) => ({ ...r, label: r.label + ' !!!' }));
+    }
+  });
 });
 delegate(root, 'click', '#clear', () => {
-  rows.value = [];
-  selected.value = -1;
+  selectedIndex = -1;
+  rows.replace([]);
 });
 delegate(root, 'click', '#swaprows', () => {
-  const data = rows.value;
-  if (data.length <= 998) return;
-  const next = data.slice();
-  const tmp = next[1];
-  next[1] = next[998];
-  next[998] = tmp;
-  rows.value = next;
+  if (rows.value.length <= 998) return;
+  // Two granular moves, batched into a single re-render.
+  batch(() => {
+    rows.move(998, 1);
+    rows.move(2, 998);  // after the first move, the original row at 1 is now at index 2
+  });
 });
 delegate(root, 'click', 'a.lbl', (_e, el) => {
   const id = (el as HTMLElement).dataset.id;
-  if (id !== undefined) selected.value = Number(id);
+  if (id === undefined) return;
+  const target = Number(id);
+  // Deselect previous + select new in one batched re-render.
+  batch(() => {
+    if (selectedIndex !== -1) {
+      rows.update(selectedIndex, (r) => ({ ...r, selected: false }));
+      selectedIndex = -1;
+    }
+    const items = rows.value;
+    for (let i = 0; i < items.length; i++) {
+      if (items[i].id === target) {
+        rows.update(i, (r) => ({ ...r, selected: true }));
+        selectedIndex = i;
+        break;
+      }
+    }
+  });
 });
 delegate(root, 'click', 'a.remove', (_e, el) => {
   const id = (el as HTMLElement).dataset.id;
   if (id === undefined) return;
   const target = Number(id);
-  rows.value = rows.value.filter((r) => r.id !== target);
+  const items = rows.value;
+  for (let i = 0; i < items.length; i++) {
+    if (items[i].id === target) {
+      rows.remove(i);
+      if (selectedIndex === i) selectedIndex = -1;
+      else if (selectedIndex > i) selectedIndex -= 1;
+      break;
+    }
+  }
 });

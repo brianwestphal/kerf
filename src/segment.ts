@@ -45,7 +45,34 @@ export interface ListSegment {
   kind: 'list';
   id: string;
   items: ListItem[];
+  /**
+   * Optional granular patches (KF-92). When present, the list reconciler
+   * applies these directly to the existing binding instead of doing a
+   * full classify+reconcile pass. Emitted by `each()` when bound to an
+   * `arraySignal`. Mutually exclusive with the `items` snapshot in the
+   * sense that the snapshot is treated as informational/fall-back when
+   * patches are present.
+   */
+  patches?: ArrayPatchInternal[];
+  /**
+   * Render function captured at JSX-evaluation time. Used by the granular
+   * reconciler to render new HTML for `update` / `insert` patches without
+   * iterating the full items array. Only set when `patches` is set.
+   */
+  renderFn?: (item: object, index: number) => string;
 }
+
+/**
+ * Internal patch shape used inside list segments. Mirrors `ArrayPatch<T>`
+ * from `array-signal.ts` but typed against `object` so the segment layer
+ * doesn't need to be generic.
+ */
+export type ArrayPatchInternal =
+  | { type: 'update'; index: number; item: object }
+  | { type: 'insert'; index: number; item: object }
+  | { type: 'remove'; index: number }
+  | { type: 'move'; from: number; to: number }
+  | { type: 'replace'; items: readonly object[] };
 
 export interface MixedSegment {
   kind: 'mixed';
