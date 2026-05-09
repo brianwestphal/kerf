@@ -28,7 +28,11 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  NODE_VERSION: '22'
+  # Pinned to 22.21.0 — Node 22.22.2's setup-node toolcache ships a corrupt
+  # bundled npm (its `@npmcli/arborist` is missing `promise-retry`), which
+  # crashes any `npm install -g` before it can replace itself. Bumping back
+  # to a major-version range (`'22'`) is safe once 22.22.2 ages out.
+  NODE_VERSION: '22.21.0'
 
 jobs:
   # ─── Phase 1: validation (parallel) ─────────────────────────────────
@@ -157,13 +161,7 @@ jobs:
           node-version: '${{ env.NODE_VERSION }}'
           cache: npm
           registry-url: 'https://registry.npmjs.org/'
-      # The npm bundled with Node 22.22.2's setup-node toolcache is corrupt
-      # (its arborist is missing `promise-retry`), so `npm install -g npm@latest`
-      # blows up before it can replace itself. Corepack bypasses the broken
-      # bundle entirely — it's a separate Node-shipped binary that fetches and
-      # activates npm directly from the registry.
-      - run: corepack enable
-      - run: corepack prepare npm@latest --activate   # trusted publishing OIDC needs npm ≥ 11.5.1
+      - run: npm install -g npm@latest   # trusted publishing OIDC needs npm ≥ 11.5.1
       - run: npm ci
       - name: Bump package.json to beta version (ephemeral, not committed)
         if: needs.detect.outputs.is_beta == 'true'
