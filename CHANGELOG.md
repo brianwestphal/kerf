@@ -4,6 +4,17 @@ All notable changes to **kerf** are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.0] - 2026-05-09
+
+
+- `delegate()` now auto-promotes the seven well-known non-bubbling events (`focus`, `blur`, `scroll`, `load`, `error`, `mouseenter`, `mouseleave`) to capture phase, with `closest()`-style selector matching preserved
+- Fixed focus and caret position loss when reordering keyed `each()` rows on engines that drop focus on `insertBefore` (older Safari, happy-dom)
+- `mount()` now throws a descriptive error when the root element is null/undefined instead of a generic "Cannot set properties of null"
+- `each()` now throws a descriptive error naming the offending index when an item is a primitive (per-item cache requires objects)
+- Minimum Node version bumped to 22.12+
+- New Starlight-powered docs site at `/kerf/` with inline live examples and runnable complete apps; the reactivity demo moved to `/kerf/demo/`
+- New kerf brand identity: production logo, full favicon set (SVG + PNG + ICO + Apple touch icon), and PWA manifest
+
 ## [0.3.1] - 2026-05-08
 
 
