@@ -69,6 +69,12 @@ const LIST_MARKER_PREFIX = 'kf-list:';
  *   blur catches up.
  */
 export function mount(rootEl: HTMLElement, render: () => SafeHtml | string): () => void {
+  if (rootEl == null) {
+    throw new Error(
+      'mount: rootEl is null/undefined — pass the live element, e.g. mount(document.getElementById("app")!, render). '
+      + 'A common cause is a typo in the id or selector that returns null at runtime even though the TypeScript types say HTMLElement.',
+    );
+  }
   const bindings = new Map<string, ListBinding>();
   const counter = { value: 0 };
   let isFirst = true;

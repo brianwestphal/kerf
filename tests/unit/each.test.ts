@@ -72,4 +72,13 @@ describe('each', () => {
     each(items, render, key);
     expect(render).toHaveBeenCalledTimes(2);
   });
+
+  it('throws a descriptive error for primitive items', () => {
+    expect(() => each([1, 2, 3] as unknown as object[], (item) => `<li>${String(item)}</li>`))
+      .toThrow(/each\(\): items must be objects.*got number at index 0/s);
+    expect(() => each(['a'] as unknown as object[], () => '<li/>'))
+      .toThrow(/got string at index 0/);
+    expect(() => each([null] as unknown as object[], () => '<li/>'))
+      .toThrow(/got null at index 0/);
+  });
 });

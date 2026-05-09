@@ -127,7 +127,7 @@ npm install kerfjs
 - **Site:** [brianwestphal.github.io/kerf](https://brianwestphal.github.io/kerf/)
 - **Docs:** [`docs/`](./docs/) — overview · reactivity · stores · render · events · jsx · svg · [API reference](./docs/8-api-reference.md)
 - **AI guide:** [`docs/ai/usage-guide.md`](./docs/ai/usage-guide.md) — read once before writing kerf code with an LLM
-- **Demo:** [live demo](https://brianwestphal.github.io/kerf/) — seven sections exercising every primitive
+- **Demo:** [live demo](https://brianwestphal.github.io/kerf/demo/) — seven sections exercising every primitive
 - **Repo:** [github.com/brianwestphal/kerf](https://github.com/brianwestphal/kerf)
 
 ## Why "kerf"?

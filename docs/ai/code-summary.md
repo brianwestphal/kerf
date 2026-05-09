@@ -16,6 +16,7 @@ kerf/
 │   ├── segment.ts                ← Segment types (static/list/mixed) + flatten helpers
 │   ├── each.ts                   ← each() — keyed list iteration with per-item memo
 │   ├── list-reconcile.ts         ← keyed list reconciler (classify / bulk-parse / LIS / move)
+│   ├── list-reconcile-focus.ts   ← focus snapshot/restore around the move pass (engine-quirk fix)
 │   ├── delegate.ts               ← delegate + delegateCapture
 │   ├── toElement.ts              ← SVG-aware JSX-to-DOM
 │   └── utils/
@@ -45,6 +46,7 @@ kerf/
 │   ├── setup.sh                  ← clones the upstream harness into .bench-cache/
 │   ├── run.sh                    ← runs the benchmark against kerfjs + reference frameworks
 │   └── results.sh                ← aggregates results into the viewer (CHANGELOG perf numbers come from here)
+├── site/                         ← Astro + Starlight marketing/docs site, deployed to /kerf/ on GitHub Pages
 ├── docs/
 │   ├── 1-overview.md
 │   ├── 2-reactivity.md
@@ -75,6 +77,7 @@ kerf/
 ├── CLAUDE.md                     ← project instructions for AI assistants
 ├── CHANGELOG.md
 ├── LICENSE                       ← MIT
+├── llms.txt                      ← AI-discovery entry point indexing the docs
 └── README.md
 ```
 
@@ -134,7 +137,7 @@ Runtime dep (`@preact/signals-core`) is external — consumers' bundlers pick it
 | Delegation tier docs | `docs/5-event-delegation.md` |
 | Test coverage thresholds | `vitest.config.ts` |
 | Release flow / version bumping | `scripts/release.sh` |
-| GitHub Pages live-demo deploy | `.github/workflows/pages.yml` + `examples/reactivity-demo/vite.config.ts` (`base: '/kerf/'`) + `docs/9-live-demo.md` |
+| GitHub Pages live-demo deploy | `.github/workflows/pages.yml` + `examples/reactivity-demo/vite.config.ts` (`base: '/kerf/demo/'`) + `site/astro.config.mjs` (`base: '/kerf'`) + `docs/9-live-demo.md` |
 | Benchmark harness / perf numbers | `bench/` (`bench/README.md` + `setup.sh` / `run.sh` / `results.sh`); CHANGELOG perf entries come from runs here |
 
 ## Update triggers

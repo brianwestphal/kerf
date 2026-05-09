@@ -143,6 +143,16 @@ describe('mount()', () => {
     mount(root, () => '<p>plain</p>');
     expect(root.innerHTML).toBe('<p>plain</p>');
   });
+
+  it('throws a descriptive error when rootEl is null', () => {
+    expect(() => mount(null as unknown as HTMLElement, () => '<p>x</p>'))
+      .toThrow(/mount: rootEl is null\/undefined/);
+  });
+
+  it('throws a descriptive error when rootEl is undefined', () => {
+    expect(() => mount(undefined as unknown as HTMLElement, () => '<p>x</p>'))
+      .toThrow(/mount: rootEl is null\/undefined/);
+  });
 });
 
 describe('mount() — focus and selection preservation', () => {

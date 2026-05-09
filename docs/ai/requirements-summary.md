@@ -63,7 +63,7 @@ Every export, every option, every conventional attribute. Comprehensive — use 
 
 ### §9 Live demo
 
-`examples/reactivity-demo/` is published to GitHub Pages at `brianwestphal.github.io/kerf/`. Deploy is `.github/workflows/pages.yml` on push-to-main: build kerf, build the example with `base: '/kerf/'`, upload `examples/reactivity-demo/dist/`, deploy via `actions/deploy-pages@v4`. Single static SPA, no docs site (KF-11). Pages source must be set to "GitHub Actions" in repo settings once.
+A single GitHub Pages artifact bundles two independent builds: the Astro + Starlight marketing/docs site at `brianwestphal.github.io/kerf/` (built from `site/`) and the seven-section reactivity demo at `brianwestphal.github.io/kerf/demo/` (built from `examples/reactivity-demo/` with `base: '/kerf/demo/'`). Deploy is `.github/workflows/pages.yml` on push-to-main: `npm ci` → `npm run build` (kerf package) → `npm run site:build` (runs `sync-docs` + `build-examples` in `prebuild`, then `astro build`), upload `site/dist/`, deploy via `actions/deploy-pages@v4`. Pages source must be set to "GitHub Actions" in repo settings once.
 
 ## Update triggers
 

@@ -65,6 +65,12 @@ export function each<T extends object>(
   const segItems = new Array<{ ref: object; cacheKey: unknown; html: string }>(items.length);
   for (let i = 0; i < items.length; i++) {
     const item = items[i];
+    if (typeof item !== 'object' || item === null) {
+      throw new Error(
+        `each(): items must be objects (the per-item HTML cache is a WeakMap), got ${item === null ? 'null' : typeof item} at index ${i}. `
+        + 'Wrap primitives if you need to iterate them, e.g. items.map(v => ({ v })).',
+      );
+    }
     const k = key ? key(item, i) : undefined;
     const cached = ROW_CACHE.get(item);
     let html: string;
