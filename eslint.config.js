@@ -58,6 +58,25 @@ export default [
     },
   },
   {
+    // Playwright real-browser tests run in a Node test runner that drives a
+    // browser via `page.evaluate`. Both globals are available in their
+    // respective execution contexts; we silence undef + console-info here.
+    files: ['tests/browser/**/*.ts', 'tests/browser/**/*.tsx'],
+    languageOptions: {
+      globals: {
+        performance: 'readonly',
+        MutationObserver: 'readonly',
+        MutationRecord: 'readonly',
+        CompositionEvent: 'readonly',
+        HTMLInputElement: 'readonly',
+        HTMLTextAreaElement: 'readonly',
+      },
+    },
+    rules: {
+      'no-console': 'off',
+    },
+  },
+  {
     ignores: ['dist/**', 'coverage/**', 'node_modules/**', 'examples/**'],
   },
 ];

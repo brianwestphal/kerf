@@ -87,6 +87,7 @@ npm run test:unit         # tests/unit only
 npm run test:integration  # tests/integration only
 npm run test:dist         # build, then targeted dist regression suite (tests/dist) vs dist/
 npm run test:dist:full    # build, then full unit + integration suite remapped onto dist/
+npm run test:browser      # build, then Playwright across chromium/firefox/webkit (tests/browser/)
 npm run typecheck         # tsc --noEmit
 npm run lint              # eslint
 npm run check             # full pre-push gate: lint + typecheck + test + build + both dist:* suites
@@ -100,6 +101,7 @@ Coverage thresholds (`vitest.config.ts`): **100% lines / functions / branches / 
 
 - **Unit tests** (`tests/unit/`): Test each module in isolation with `happy-dom`. Mock external state (timers, network) but exercise real logic.
 - **Integration tests** (`tests/integration/`): Exercise the full pipeline — signals + stores + mount + delegate against a real DOM tree.
+- **Browser tests** (`tests/browser/`): Real-browser tests via Playwright (Chromium / Firefox / WebKit) for scenarios `happy-dom` can't model truthfully — SVG/MathML namespacing, IME composition, MutationObserver counts. Run with `npm run test:browser` (builds dist first; the fixture page imports from `dist/` via importmap). Browser binaries are downloaded once via `npx playwright install`.
 - **Coverage target**: Keep coverage above the thresholds. New code without tests fails CI.
 
 ## Code Quality Gates

@@ -36,6 +36,9 @@ kerf/
 │   │   └── toElement.test.ts
 │   ├── integration/
 │   │   └── full-pipeline.test.ts ← end-to-end cart UI exercising every primitive
+│   ├── browser/                  ← Playwright real-browser tests (chromium/firefox/webkit) — run via `npm run test:browser`
+│   │   ├── fixtures/index.html         ← importmap-based page that loads kerf from dist/
+│   │   └── svg-mathml.spec.ts          ← KF-83 — SVG/MathML namespacing across real browsers
 │   └── dist/                     ← run via `npm run test:dist`, against the built bundles
 │       ├── barrel-completeness.test.ts    ← KF-24 — pins the public-API list
 │       ├── safe-html-cross-bundle.test.ts ← KF-14 regression

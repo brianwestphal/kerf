@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>kerf real-browser test fixture</title>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="importmap">
+    {
+      "imports": {
+        "kerfjs": "/dist/index.js",
+        "kerfjs/jsx-runtime": "/dist/jsx-runtime.js",
+        "@preact/signals-core": "/node_modules/@preact/signals-core/dist/signals-core.mjs"
+      }
+    }
+  </script>
+  <script type="module">
+    import * as kerf from 'kerfjs';
+    import * as jsxRuntime from 'kerfjs/jsx-runtime';
+    // Expose for `page.evaluate` tests.
+    window.kerf = kerf;
+    window.jsxRuntime = jsxRuntime;
+    window.kerfReady = true;
+  </script>
+</body>
+</html>
