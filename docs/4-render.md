@@ -53,6 +53,35 @@ import { each } from 'kerfjs';
 </ul>
 ```
 
+### Granular reconcile via `arraySignal`
+
+Pass an `arraySignal` to `each()` and `mount()` runs an even faster path: instead of iterating the whole snapshot to classify changed/unchanged rows, the reconciler consumes the patch queue the `arraySignal` emitted (one `update`/`insert`/`remove`/`move` per mutation) and applies only those to the live DOM. Cost is O(patches), not O(N).
+
+```tsx
+import { each, mount } from 'kerfjs';
+import { arraySignal } from 'kerfjs/array-signal';
+
+const rows = arraySignal<{ id: number; label: string }>([]);
+
+mount(rootEl, () => (
+  <ul>{each(rows, (r) => <li data-key={r.id}>{r.label}</li>)}</ul>
+));
+
+rows.push({ id: 1, label: 'a' });           // 1 insert patch
+rows.update(0, (r) => ({ ...r, label: 'A' })); // 1 update patch
+```
+
+When patches are emitted contiguously (e.g. an append-1k loop, or a partial-update batch), the reconciler bulk-parses them in a single `template.innerHTML` call and applies one `insertBefore` per fragment.
+
+A few invariants the granular path holds:
+
+- **First render takes the snapshot path** even when patches were queued before mount — there's no binding yet to apply patches against, so the whole list is rendered fresh.
+- **`replace()` always falls back to snapshot** — wholesale resets are easier to reconcile that way and preserve focus better.
+- **A throwing render falls back to snapshot** — pre-rendering happens at JSX-eval time inside a try/catch (KF-99), so a single bad row doesn't desync the binding from the signal.
+- **Drift triggers a rebuild** — if a previous render threw mid-batch, the next render notices that `binding.length + patch_delta !== signal.length` and rebuilds via the snapshot path.
+
+See §2.6 for the full `arraySignal` API.
+
 ## 4.3 `data-morph-skip`
 
 Apply this attribute to any element whose subtree you DON'T want kerf to touch:

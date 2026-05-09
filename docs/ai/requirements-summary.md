@@ -34,6 +34,8 @@ States kerf's positioning: tiny reactive UI framework, ~6.6 KB, no virtual DOM, 
 
 Documents `signal()`, `computed()`, `effect()`, `batch()`. Notes that signals are NOT deep-reactive (mutating a value in-place doesn't notify). `Signal<T>` allows writes; `ReadonlySignal<T>` is what `computed()` returns. Closing rule: one consumer = signal, two+ = store.
 
+Also covers `arraySignal()` (KF-92) — a granular collection signal at the `kerfjs/array-signal` subpath (KF-95). Mutators (`update` / `insert` / `push` / `remove` / `move` / `replace`) emit typed patch events; when bound to `each(...)` inside a `mount()`, the keyed list reconciler applies just the patches against the live DOM in O(patches) instead of O(N). `arraySig.value` is a tracking read so `computed()` / `effect()` over it still works. Class detected via brand symbol (KF-95) so multiple bundle copies interoperate. Gotchas: only one `each()` callsite per render gets the granular benefit; `replace()` falls back to snapshot; throws fall back to snapshot (KF-99); pre-mount mutations route to snapshot for first render (KF-98).
+
 ### §3 Stores
 
 `defineStore({ initial, actions })` produces a `{ state, actions, reset }`. Three rules: read-only state, actions-only mutation, always-reset. Module-level registry powers `resetAllStores()`. Multi-step actions use `batch()` for atomic notification. Derived state via `computed()` next to the store.
@@ -41,6 +43,8 @@ Documents `signal()`, `computed()`, `effect()`, `batch()`. Notes that signals ar
 ### §4 Render
 
 `mount(rootEl, render)` wraps `effect()` + kerf's native segment-aware diff. Static surrounds reconcile through `src/diff.ts`; lists from `each(...)` go through a keyed reconciler that operates on live children directly (O(changes), not O(rows)). Diff keys: `id` then `data-key`. `data-morph-skip` for library-owned subtrees. Focus + selection preservation for active text-entry inputs; **focused `[contenteditable]` short-circuits the entire subtree on the morph (same mechanism as `data-morph-skip`)** — attribute updates deferred until the next render after blur. Multiple `mount()` calls compose; each tracks its own signals. `SafeHtml.toString()` is server-safe.
+
+When `each()` is bound to an `arraySignal`, the reconciler takes a granular path (KF-92): drains the patch queue, pre-renders insert/update HTML inside try/catch (KF-99), and applies patches directly — bulk-parsing contiguous insert runs (KF-93) and consecutive update runs (KF-94). Drift between the binding and the signal triggers a snapshot rebuild on the next render. First render of a list always takes the snapshot path (KF-98) — there's no binding yet to apply patches against.
 
 ### §5 Event delegation
 
@@ -52,6 +56,8 @@ Three-tier model:
 ### §6 JSX runtime
 
 JSX renders to `SafeHtml` strings via `kerfjs/jsx-runtime`. Configured via `tsconfig` `"jsxImportSource": "kerfjs"`. Attribute aliases for HTML + SVG camelCase → kebab-case. Boolean attribute semantics. Children: strings escaped, `SafeHtml` injected raw, DOM nodes throw, arrays joined. `raw(html)` wraps pre-escaped strings.
+
+Typed `IntrinsicElements` (KF-75) catches misspelled tags + attribute typos at compile time. Custom elements / web components extend the table via declaration merging into `kerfjs/jsx-runtime`'s JSX namespace (KF-100): `IntrinsicElements` is exposed as an `interface extends`, and `KerfCustomElement` / `KerfBaseAttrs` / `AttrLike` / `AttrValue` / `DataAriaAttrs` are re-exported from `kerfjs/jsx-runtime` for project-side composition.
 
 ### §7 SVG
 

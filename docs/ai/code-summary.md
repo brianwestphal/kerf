@@ -11,6 +11,7 @@ kerf/
 │   ├── jsx-runtime.ts            ← JSX → SafeHtml string emitter
 │   ├── jsx-types.ts              ← typed IntrinsicElements (KF-75) — per-tag attribute contracts, catches JSX typos at compile time
 │   ├── reactive.ts               ← signal/computed/effect/batch (re-export)
+│   ├── array-signal.ts           ← arraySignal (KF-92) — granular collection signal; lives at the kerfjs/array-signal subpath (KF-95) so non-users shed ~1 KB
 │   ├── store.ts                  ← defineStore + resetAllStores + REGISTRY
 │   ├── mount.ts                  ← mount() — segment-aware render bound to effect()
 │   ├── diff.ts                   ← native general-purpose DOM reconciler (replaces morphdom)
@@ -26,6 +27,8 @@ kerf/
 ├── tests/
 │   ├── unit/
 │   │   ├── jsx-runtime.test.ts
+│   │   ├── array-signal.test.ts
+│   │   ├── jsx-types.test.tsx
 │   │   ├── reactive.test.ts
 │   │   ├── store.test.ts
 │   │   ├── mount.test.ts
@@ -110,7 +113,25 @@ Every export reachable via `import { ... } from 'kerfjs'`:
 | `raw` | `jsx-runtime.ts` | Wrap a pre-escaped HTML string |
 | `Fragment` | `jsx-runtime.ts` | JSX `<>...</>` tag; also re-exported from the barrel for manual composition |
 
-The JSX runtime is a separate subpath export at `kerfjs/jsx-runtime`. It's referenced by tsconfig (`"jsxImportSource": "kerfjs"`); users do not import from it directly.
+Plus, on the `kerfjs/array-signal` subpath:
+
+| Export | From | Purpose |
+| --- | --- | --- |
+| `arraySignal` | `array-signal.ts` | Factory for `ArraySignal<T>` — granular collection signal emitting typed patches |
+| `ArraySignal<T>` | `array-signal.ts` | Class (and type) — `update`/`insert`/`push`/`remove`/`move`/`replace` mutators + `value` snapshot read |
+| `ArrayPatch<T>` | `array-signal.ts` | Type — patch event shape (`update`/`insert`/`remove`/`move`/`replace`) |
+
+The class is detected via `Symbol.for('kerfjs.ArraySignal')` (KF-95), not `instanceof`, so multiple bundle copies still interoperate. The `each()` runtime in the main barrel uses the brand to detect `arraySignal` arguments without importing the class.
+
+Plus, on the `kerfjs/jsx-runtime` subpath (re-exported types for declaration merging — KF-100):
+
+| Export | From | Purpose |
+| --- | --- | --- |
+| `KerfBaseAttrs` | `jsx-types.ts` | Shared attribute base for every typed element |
+| `KerfCustomElement` | `jsx-types.ts` | Loose attribute set for custom elements / web components |
+| `AttrLike<T>` / `AttrValue` / `DataAriaAttrs` | `jsx-types.ts` | Building blocks for project-specific intrinsic-element types |
+
+The JSX runtime is a separate subpath export at `kerfjs/jsx-runtime`. It's referenced by tsconfig (`"jsxImportSource": "kerfjs"`); users do not import from it directly *unless* they're declaration-merging custom-element types into `JSX.IntrinsicElements` (see `docs/8-api-reference.md` §8.5).
 
 ## Build outputs
 
@@ -120,6 +141,8 @@ The JSX runtime is a separate subpath export at `kerfjs/jsx-runtime`. It's refer
 - `dist/index.d.ts` (types)
 - `dist/jsx-runtime.js`
 - `dist/jsx-runtime.d.ts`
+- `dist/array-signal.js` (`kerfjs/array-signal` subpath, KF-95)
+- `dist/array-signal.d.ts`
 - `dist/testing.js` (`kerfjs/testing` subpath)
 - `dist/testing.d.ts`
 - `dist/chunk-*.js` — shared chunks emitted by tsup's code splitting. Both entries import their shared modules (`SafeHtml`, the store registry, etc.) from these chunks so each module-level value exists exactly once at runtime. Do not import directly; consumers always go through the named entry points.

@@ -187,3 +187,43 @@ The `mount()` that hosts `<Counter />` will re-render when `count` changes, whic
 ## 6.9 Server-side use
 
 `SafeHtml.toString()` works in any JS environment — Node, Deno, Bun, edge runtimes. There's no DOM dependency. Build your page server-side, write the string into the response, then call `mount()` on the same root in the browser to wire up reactivity.
+
+## 6.10 Typed JSX intrinsic elements
+
+The JSX transform looks at `JSX.IntrinsicElements` in `kerfjs/jsx-runtime` to type-check tags and attributes. The table covers the ~30 most common HTML elements and the SVG primitives that `toElement()` supports. Misspelled tags (`<diiv>`) and misspelled attribute names (`<input typo />`) fail to compile.
+
+### Adding custom elements / web components
+
+The framework uses **module augmentation**, not a global namespace. Open the `kerfjs/jsx-runtime` JSX namespace and add your tag:
+
+```ts
+import type { KerfCustomElement } from 'kerfjs/jsx-runtime';
+
+declare module 'kerfjs/jsx-runtime' {
+  namespace JSX {
+    interface IntrinsicElements {
+      'my-element': KerfCustomElement & {
+        foo?: string;
+        bar?: number;
+      };
+    }
+  }
+}
+
+// Now `<my-element foo="hi" bar={3} />` typechecks.
+```
+
+`KerfCustomElement` is a permissive base that extends `KerfBaseAttrs` and admits any extra attribute. Tighten it for your project by listing the attributes explicitly. The building-block types are all re-exported from `kerfjs/jsx-runtime`:
+
+| Type | Purpose |
+| --- | --- |
+| `KerfBaseAttrs` | Common attributes valid on every HTML element (`id`, `className`, `style`, `data-*`, `aria-*`, …) |
+| `KerfCustomElement` | `KerfBaseAttrs` plus an open index signature — for unknown / loose web components |
+| `AttrLike<T>` | An attribute value typed as `T` plus the runtime fall-throughs (`SafeHtml`, `null`, `undefined`) |
+| `AttrValue` | The most permissive single value: `string \| number \| boolean \| null \| undefined \| SafeHtml` |
+| `DataAriaAttrs` | `data-*` and `aria-*` index signatures, applied via `KerfBaseAttrs` |
+
+### What does NOT work
+
+- `declare global { namespace JSX { ... } }` — kerf's JSX namespace is module-scoped, not global. With `jsxImportSource: "kerfjs"`, TypeScript looks up `JSX` inside `kerfjs/jsx-runtime`, not the global scope. The merge above is the only working form.
+- Importing from `kerfjs/jsx-types` — that's an internal module and is intentionally not in `package.json#exports`.

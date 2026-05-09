@@ -32,6 +32,32 @@ interface Signal<T> { value: T }
 interface ReadonlySignal<T> { readonly value: T }
 ```
 
+### `arraySignal<T>(initial?: readonly T[]): ArraySignal<T>` — `kerfjs/array-signal` subpath
+
+```ts
+import { arraySignal } from 'kerfjs/array-signal';
+
+const rows = arraySignal<{ id: number; label: string }>([]);
+```
+
+Granular collection signal. Lives in its own subpath — `import { arraySignal } from 'kerfjs/array-signal'` — so apps that don't use it shed ~1 KB from the main barrel. Pair with `each(...)` inside a `mount()` for O(patches)-not-O(N) reconciles. See `docs/2-reactivity.md` §2.6 for the rationale and gotchas, and `docs/4-render.md` §4.2 (granular reconcile) for how the binding works.
+
+```ts
+class ArraySignal<T> {
+  readonly value: readonly T[];                            // tracking read
+  update(index: number, fn: (item: T) => T): void;        // → 1 update patch
+  insert(index: number, item: T): void;                   // → 1 insert patch
+  push(item: T): void;                                    // sugar for insert(length, item)
+  remove(index: number): T;                               // → 1 remove patch (returns removed item)
+  move(from: number, to: number): void;                   // → 1 move patch (no-op if from === to)
+  replace(items: readonly T[]): void;                     // → 1 replace patch (forces snapshot reconcile)
+}
+```
+
+All mutators throw a descriptive `Error` on out-of-bounds indices. Reads on `arraySig.value` register a tracking dependency just like `signal.value` — `computed(() => arraySig.value.filter(...))` and `effect(() => render(arraySig.value))` work the same way.
+
+The `ArraySignal<T>` class is detected via `Symbol.for('kerfjs.ArraySignal')`, not `instanceof`, so multiple bundle copies still interoperate.
+
 ## 8.2 Stores
 
 ### `defineStore<TState, TActions>(spec): Store<TState, TActions>`
@@ -152,6 +178,24 @@ Wrap a pre-escaped HTML string. Useful for icons, rendered Markdown, server-incl
 ### `Fragment` (component)
 
 JSX `<>...</>` — concatenates children without a wrapper tag. Available from both `kerfjs/jsx-runtime` (used by the JSX transform) and the main `kerfjs` barrel (when you need to compose `Fragment` manually, e.g. `jsx(Fragment, { children })`).
+
+### Custom-element typing via declaration merging
+
+Per-tag intrinsic-element interfaces live in `src/jsx-types.ts` and are aliased into the JSX namespace by `src/jsx-runtime.ts`. To add tags for custom elements / web components, declaration-merge into the `kerfjs/jsx-runtime` JSX namespace:
+
+```ts
+import type { KerfCustomElement } from 'kerfjs/jsx-runtime';
+
+declare module 'kerfjs/jsx-runtime' {
+  namespace JSX {
+    interface IntrinsicElements {
+      'my-element': KerfCustomElement & { foo?: string };
+    }
+  }
+}
+```
+
+`IntrinsicElements` is exported as an `interface` (not a `type` alias) precisely to make this pattern work — type aliases can't be merged. `KerfCustomElement`, `KerfBaseAttrs`, `AttrLike`, `AttrValue`, and `DataAriaAttrs` are all re-exported from `kerfjs/jsx-runtime` so apps can compose attribute types without reaching into the internal `kerfjs/jsx-types` path.
 
 ### Dangerous URL filter
 

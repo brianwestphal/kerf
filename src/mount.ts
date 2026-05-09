@@ -81,7 +81,11 @@ export function mount(rootEl: HTMLElement, render: () => SafeHtml | string): () 
   // the `caches` map persists across renders so unchanged items skip the
   // JSX work via cache hits even when the JSX render function is an inline
   // arrow that's a fresh function reference on every closure run (KF-87).
-  const renderCtx: RenderContext = { counter: 0, caches: new Map() };
+  const renderCtx: RenderContext = {
+    counter: 0,
+    caches: new Map(),
+    bindingCounts: new Map(),
+  };
   let isFirst = true;
   // KF-88: the static-surrounds HTML string from the previous render. If a
   // re-render produces the same string (the common case when a signal flips
@@ -138,6 +142,10 @@ export function mount(rootEl: HTMLElement, render: () => SafeHtml | string): () 
     for (const listSeg of collectLists(segment).values()) {
       const binding = bindings.get(listSeg.id) as ListBinding;
       reconcileList(binding, listSeg);
+      // KF-99: record the post-reconcile binding length so the next render's
+      // granular path can detect drift (a prior render that threw mid-batch
+      // leaves the binding shorter than the signal expects).
+      renderCtx.bindingCounts.set(listSeg.id, binding.items.length);
     }
   });
 }

@@ -31,7 +31,7 @@
  * top-level element — the list reconciler binds one live DOM node per item.
  */
 
-import type { ArrayPatch, ArraySignal } from './array-signal.js';
+import type { ArraySignal } from './array-signal.js';
 import type { SafeHtml } from './jsx-runtime.js';
 import { granularListSafeHtml, isSafeHtml, listSafeHtml } from './jsx-runtime.js';
 import type { ArrayPatchInternal } from './segment.js';
@@ -81,6 +81,15 @@ interface CacheEntry {
 export interface RenderContext {
   counter: number;
   caches: Map<string, WeakMap<object, CacheEntry>>;
+  /**
+   * Per-list-id record of the binding's `items.length` after the most recent
+   * successful reconcile. Maintained by `mount()` via `_setBindingCount`. The
+   * granular path consults this to detect drift between the live binding and
+   * the arraySignal — drift means a previous render threw mid-reconcile (or
+   * a granular path was bypassed externally), so the next render forces a
+   * snapshot rebuild rather than applying patches against a stale binding.
+   */
+  bindingCounts: Map<string, number>;
 }
 
 let context: RenderContext | null = null;
@@ -141,41 +150,82 @@ function eachGranular<T extends object>(
   // We're inside a mount context (caller-checked).
   const ctx = context as RenderContext;
   const id = String(ctx.counter++);
+  // KF-98: a tracked binding count means a prior render of this mount has
+  // successfully reconciled this list. On the very first render (no count
+  // recorded yet) the granular reconciler has no binding to apply patches
+  // to, so any pre-mount mutations would silently produce an empty list.
+  // Drain the queue (the snapshot already reflects those mutations) and
+  // take the snapshot path; the count will be recorded for the next render.
+  const previousBindingCount = ctx.bindingCounts.get(id);
   const patches = sig._consumePatches();
   const snapshot = sig.value as readonly T[];
 
-  // No patches → fall through to the snapshot path (typical first render
-  // OR a re-render triggered by a non-arraySignal signal change). Reuse
-  // eachSnapshot's caching via the same id we already allocated.
-  if (patches.length === 0) {
+  // First render of this list, no patches, or any 'replace' patch → snapshot.
+  // No patches: typical re-render triggered by a non-arraySignal signal change.
+  // 'replace': wholesale reset — granular can't help; the snapshot already
+  // reflects the post-replace state (and any subsequent granular ops).
+  if (previousBindingCount === undefined || patches.length === 0) {
     return eachSnapshotById(snapshot, render, key, id);
   }
-
-  // If any patch is 'replace', the array was wholesale reset — granular
-  // reconciliation can't help (the snapshot already reflects the post-replace
-  // state, including any subsequent granular ops). Fall back to snapshot.
+  // KF-99: detect drift between the live binding and the arraySignal. After
+  // a clean prior reconcile, `previousBindingCount + (#inserts - #removes)`
+  // must equal `snapshot.length`. If it doesn't, a previous render threw
+  // mid-reconcile and left the binding inconsistent with the signal — fall
+  // back to the snapshot path, which classifies fresh against `snapshot`
+  // and rebuilds the binding to match.
+  let netDelta = 0;
   for (const p of patches) {
-    if (p.type === 'replace') {
+    if (p.type === 'insert') netDelta += 1;
+    else if (p.type === 'remove') netDelta -= 1;
+    else if (p.type === 'replace') {
       return eachSnapshotById(snapshot, render, key, id);
     }
   }
+  // Defensive: triggered only when an external party drains `_consumePatches()`
+  // or mutates `_items` behind arraySignal's back, OR when a previous reconcile
+  // threw mid-DOM-op (rare; not naturally reachable in tests since apply* ops
+  // don't throw on well-formed row HTML).
+  /* c8 ignore next 3 */
+  if (previousBindingCount + netDelta !== snapshot.length) {
+    return eachSnapshotById(snapshot, render, key, id);
+  }
 
-  // Granular path: emit just the patches + the renderFn. Do NOT iterate
-  // the snapshot; the reconciler will compute the new state by applying
-  // patches to the existing binding.
+  // Granular path: pre-render every insert/update HTML at JSX-eval time so
+  // a throwing render is caught here and we can fall back to the snapshot
+  // path (KF-99). Without this, a throw mid-batch would leave patches drained
+  // (already done above), the signal mutated, and the live DOM unchanged —
+  // permanent divergence with no recovery.
   const renderFnInternal = (item: object, index: number): string => {
     const out = render(item as T, index);
     return isSafeHtml(out) ? out.toString() : out;
   };
+  const internalPatches = new Array<ArrayPatchInternal>(patches.length);
+  try {
+    for (let i = 0; i < patches.length; i++) {
+      const p = patches[i];
+      if (p.type === 'insert' || p.type === 'update') {
+        internalPatches[i] = {
+          type: p.type, index: p.index, item: p.item as object,
+          html: renderFnInternal(p.item as object, p.index),
+        };
+      } else {
+        internalPatches[i] = p as ArrayPatchInternal;
+      }
+    }
+  } catch {
+    // Pre-render threw. The snapshot already reflects every mutation
+    // (arraySignal mutates _items eagerly at the call site), but the snapshot
+    // path is going to throw on the same bad item too — leaving the binding
+    // out of sync with the signal. Clear the binding count so the NEXT
+    // render (after the user fixes the bad item) doesn't see the previous
+    // render's count and falsely conclude there's no drift; instead it'll
+    // take the snapshot path and rebuild from scratch.
+    ctx.bindingCounts.delete(id);
+    return eachSnapshotById(snapshot, render, key, id);
+  }
   // The `items` field is left empty for the granular case — the reconciler
-  // doesn't need it. We still include the snapshot length so toString-style
-  // fallbacks have something coherent (rare, but defensive).
-  return granularListSafeHtml(
-    id,
-    [],
-    patches as readonly ArrayPatch<T>[] as readonly ArrayPatchInternal[] as ArrayPatchInternal[],
-    renderFnInternal,
-  );
+  // doesn't need it; every insert/update patch carries pre-rendered HTML.
+  return granularListSafeHtml(id, [], internalPatches);
 }
 
 /** Like eachSnapshot but uses a pre-allocated id (caller already advanced the counter). */

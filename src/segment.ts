@@ -54,22 +54,19 @@ export interface ListSegment {
    * patches are present.
    */
   patches?: ArrayPatchInternal[];
-  /**
-   * Render function captured at JSX-evaluation time. Used by the granular
-   * reconciler to render new HTML for `update` / `insert` patches without
-   * iterating the full items array. Only set when `patches` is set.
-   */
-  renderFn?: (item: object, index: number) => string;
 }
 
 /**
  * Internal patch shape used inside list segments. Mirrors `ArrayPatch<T>`
  * from `array-signal.ts` but typed against `object` so the segment layer
- * doesn't need to be generic.
+ * doesn't need to be generic. `update` / `insert` patches carry the row's
+ * pre-rendered HTML — `each()` renders them at JSX-evaluation time inside a
+ * try/catch so a throwing render falls back to the snapshot path (KF-99)
+ * instead of leaving the signal and DOM divergent.
  */
 export type ArrayPatchInternal =
-  | { type: 'update'; index: number; item: object }
-  | { type: 'insert'; index: number; item: object }
+  | { type: 'update'; index: number; item: object; html: string }
+  | { type: 'insert'; index: number; item: object; html: string }
   | { type: 'remove'; index: number }
   | { type: 'move'; from: number; to: number }
   | { type: 'replace'; items: readonly object[] };

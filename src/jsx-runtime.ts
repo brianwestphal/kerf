@@ -91,14 +91,18 @@ export function listSafeHtml(id: string, items: ListSegment['items']): SafeHtml 
  * binding directly, skipping the per-item iteration that the snapshot
  * `listSafeHtml` requires. `items` is included for fall-through paths
  * (toString during SSR, fall-back when the binding doesn't exist yet).
+ *
+ * Patch HTML is rendered upstream (in `each()`) inside a try/catch — see
+ * KF-99 — so by the time we get here every `update` / `insert` patch
+ * already carries a `html` string, and the reconciler does no further
+ * row rendering.
  */
 export function granularListSafeHtml(
   id: string,
   items: ListSegment['items'],
   patches: NonNullable<ListSegment['patches']>,
-  renderFn: NonNullable<ListSegment['renderFn']>,
 ): SafeHtml {
-  return new SafeHtml({ kind: 'list', id, items, patches, renderFn });
+  return new SafeHtml({ kind: 'list', id, items, patches });
 }
 
 type Child = SafeHtml | string | number | boolean | null | undefined;
@@ -228,9 +232,34 @@ export namespace JSX {
   export interface ElementChildrenAttribute {
     children: unknown;
   }
-  // Per-tag attribute contracts live in `./jsx-types.ts`. Aliasing them
-  // through the JSX namespace lets the JSX transform see typed elements
-  // (typos on tag names + typed attribute lists fail to compile) while
-  // keeping the table itself out of this file.
-  export type IntrinsicElements = KerfIntrinsicElements;
+  // Per-tag attribute contracts live in `./jsx-types.ts`. Re-exposed as an
+  // **interface** (not a type alias) so consumers can declaration-merge
+  // custom-element tags (KF-100):
+  //
+  //     declare module 'kerfjs/jsx-runtime' {
+  //       namespace JSX {
+  //         interface IntrinsicElements {
+  //           'my-element': KerfCustomElement & { foo?: string };
+  //         }
+  //       }
+  //     }
+  //
+  // Type aliases can't be merged; interfaces can. Extending here keeps every
+  // tag from `KerfIntrinsicElements` available while leaving the door open
+  // for project-specific additions.
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
+  export interface IntrinsicElements extends KerfIntrinsicElements {}
 }
+
+/**
+ * Public re-exports of the JSX type primitives so consumers can compose
+ * attribute interfaces for custom elements without reaching into
+ * `kerfjs/jsx-types` (which is intentionally not in `package.json#exports`).
+ */
+export type {
+  AttrLike,
+  AttrValue,
+  DataAriaAttrs,
+  KerfBaseAttrs,
+  KerfCustomElement,
+} from './jsx-types.js';

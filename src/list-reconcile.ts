@@ -197,16 +197,15 @@ function lis(arr: ReadonlyArray<number>): ReadonlySet<number> {
  * those engines and is a no-op on engines that already preserve focus.
  */
 export function reconcileList(binding: ListBinding, listSeg: ListSegment): void {
-  // KF-92 fast path: arraySignal-backed each() emits patches and a
-  // renderFn. The granular reconciler applies the patches directly without
-  // iterating the full snapshot. `each()` filters out `replace` patches
-  // upstream (those force the snapshot path), so the patches reaching here
-  // are guaranteed to be update/insert/remove/move only. The
-  // `binding.items.length > 0` guard handles the very-first-render case
-  // where no binding exists yet.
-  if (listSeg.patches !== undefined && listSeg.renderFn !== undefined
-      && binding.items.length > 0) {
-    reconcileGranular(binding, listSeg.patches, listSeg.renderFn);
+  // KF-92 fast path: arraySignal-backed each() emits patches whose
+  // insert/update entries already carry pre-rendered HTML (KF-99). The
+  // granular reconciler applies the patches directly without iterating the
+  // full snapshot. `each()` filters out `replace` patches upstream (those
+  // force the snapshot path), so the patches reaching here are guaranteed
+  // to be update/insert/remove/move only. The `binding.items.length > 0`
+  // guard handles the very-first-render case where no binding exists yet.
+  if (listSeg.patches !== undefined && binding.items.length > 0) {
+    reconcileGranular(binding, listSeg.patches);
     return;
   }
 
@@ -259,7 +258,6 @@ function isInOrder(prevIdx: number[]): boolean {
 function reconcileGranular(
   binding: ListBinding,
   patches: NonNullable<ListSegment['patches']>,
-  renderFn: NonNullable<ListSegment['renderFn']>,
 ): void {
   const { liveParent } = binding;
   const items = binding.items;
@@ -287,9 +285,9 @@ function reconcileGranular(
       }
       const runLen = runEnd - i;
       if (runLen === 1) {
-        applySingleUpdate(liveParent, items, patch, renderFn);
+        applySingleUpdate(liveParent, items, patch);
       } else {
-        applyBulkUpdate(liveParent, items, patches, i, runEnd, renderFn);
+        applyBulkUpdate(liveParent, items, patches, i, runEnd);
       }
       i = runEnd;
       continue;
@@ -310,9 +308,9 @@ function reconcileGranular(
       }
       const runLen = runEnd - i;
       if (runLen === 1) {
-        applySingleInsert(liveParent, items, patch, renderFn);
+        applySingleInsert(liveParent, items, patch);
       } else {
-        applyBulkInsert(liveParent, items, patches, i, runEnd, renderFn);
+        applyBulkInsert(liveParent, items, patches, i, runEnd);
       }
       i = runEnd;
       continue;
@@ -343,10 +341,9 @@ function reconcileGranular(
 function applySingleInsert(
   liveParent: Element,
   items: BoundItem[],
-  patch: { type: 'insert'; index: number; item: object },
-  renderFn: NonNullable<ListSegment['renderFn']>,
+  patch: { type: 'insert'; index: number; item: object; html: string },
 ): void {
-  const html = renderFn(patch.item, patch.index);
+  const { html } = patch;
   const newNode = parseSingleRow(html);
   const anchor = patch.index < items.length ? items[patch.index].node : null;
   liveParent.insertBefore(newNode, anchor);
@@ -358,10 +355,9 @@ function applySingleInsert(
 function applySingleUpdate(
   liveParent: Element,
   items: BoundItem[],
-  patch: { type: 'update'; index: number; item: object },
-  renderFn: NonNullable<ListSegment['renderFn']>,
+  patch: { type: 'update'; index: number; item: object; html: string },
 ): void {
-  const html = renderFn(patch.item, patch.index);
+  const { html } = patch;
   const oldEntry = items[patch.index];
   if (html === oldEntry.html) return;  // no-op (defensive: caller may emit redundant patches)
   const newNode = parseSingleRow(html);
@@ -384,16 +380,15 @@ function applyBulkUpdate(
   patches: NonNullable<ListSegment['patches']>,
   start: number,
   end: number,
-  renderFn: NonNullable<ListSegment['renderFn']>,
 ): void {
-  // Render everything first; collect the changes that produce different HTML.
+  // Patches already carry pre-rendered HTML (KF-99). Filter out no-ops where
+  // the new HTML matches the existing entry's html.
   interface Change { patchIdx: number; html: string }
   const changes: Change[] = [];
   for (let k = start; k < end; k++) {
-    const p = patches[k] as { type: 'update'; index: number; item: object };
-    const html = renderFn(p.item, p.index);
-    if (html !== items[p.index].html) {
-      changes.push({ patchIdx: k, html });
+    const p = patches[k] as { type: 'update'; index: number; item: object; html: string };
+    if (p.html !== items[p.index].html) {
+      changes.push({ patchIdx: k, html: p.html });
     }
   }
   if (changes.length === 0) return;  // every update was a no-op
@@ -416,7 +411,7 @@ function applyBulkUpdate(
   // Apply replaceChild for each real change.
   for (let k = 0; k < changes.length; k++) {
     const c = changes[k];
-    const p = patches[c.patchIdx] as { type: 'update'; index: number; item: object };
+    const p = patches[c.patchIdx] as { type: 'update'; index: number; item: object; html: string };
     const oldEntry = items[p.index];
     liveParent.replaceChild(newNodes[k], oldEntry.node);
     items[p.index] = { ref: p.item, cacheKey: undefined, html: c.html, node: newNodes[k] };
@@ -436,13 +431,12 @@ function applyBulkInsert(
   patches: NonNullable<ListSegment['patches']>,
   start: number,
   end: number,
-  renderFn: NonNullable<ListSegment['renderFn']>,
 ): void {
   const startIdx = (patches[start] as { index: number }).index;
   const htmls = new Array<string>(end - start);
   for (let k = start; k < end; k++) {
-    const p = patches[k] as { type: 'insert'; index: number; item: object };
-    htmls[k - start] = renderFn(p.item, p.index);
+    const p = patches[k] as { type: 'insert'; index: number; item: object; html: string };
+    htmls[k - start] = p.html;
   }
   const tpl = document.createElement('template');
   tpl.innerHTML = htmls.join('');
@@ -463,7 +457,7 @@ function applyBulkInsert(
   // Splice all new entries into binding.items at the run's start index.
   const newEntries = new Array<BoundItem>(end - start);
   for (let k = 0; k < newEntries.length; k++) {
-    const p = patches[start + k] as { type: 'insert'; index: number; item: object };
+    const p = patches[start + k] as { type: 'insert'; index: number; item: object; html: string };
     newEntries[k] = {
       ref: p.item, cacheKey: undefined, html: htmls[k], node: newNodes[k],
     };

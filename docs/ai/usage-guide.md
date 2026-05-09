@@ -52,6 +52,9 @@ import {
   toElement,                          // direct JSX → DOM Element
   SafeHtml, isSafeHtml, raw, Fragment, // JSX value type + cross-bundle guard + escape hatch + JSX <>...</> tag
 } from 'kerfjs';
+
+// Optional, only when you need granular collection updates:
+import { arraySignal } from 'kerfjs/array-signal';
 ```
 
 | Export | Signature | Use |
@@ -70,6 +73,7 @@ import {
 | `raw(html)` | `SafeHtml` | inject pre-escaped HTML (icons, server fragments) |
 | `isSafeHtml(v)` | `boolean` (type guard) | cross-bundle-safe `SafeHtml` check; prefer over `instanceof` |
 | `Fragment` | `(props) => SafeHtml` | JSX `<>...</>` tag; useful when composing `Fragment` manually |
+| `arraySignal<T>(initial?)` *(subpath: `kerfjs/array-signal`)* | `ArraySignal<T>` (`.value` snapshot, `update`/`insert`/`push`/`remove`/`move`/`replace` mutators) | granular keyed-list signal — `each(arraySig, ...)` reconciles in O(patches) instead of O(N) |
 
 ## The four patterns
 
@@ -119,6 +123,8 @@ delegate(rootEl, 'click', '[data-action="inc"]', () => { count.value += 1; });
 7. **Signal reads must happen inside the render function** to be tracked. `const x = count.value; mount(el, () => <span>{x}</span>)` will NOT re-render. Move the read inside the render fn.
 8. **Store actions receive `(set, get)`, not `(state)`.** `set(next)` replaces state; mutating `get()` does nothing.
 9. **Use `data-action` (or similar) attributes, not inline `onClick`.** Inline handlers are not supported by the JSX → string runtime; delegate from the root instead.
+10. **`arraySignal` is opt-in for long keyed lists.** Use it when most updates are pointwise (single-row edits, append-to-end, selection flips). For short lists or filter/sort pipelines that rebuild the array on every input, plain `signal` + `each(items.value, ...)` is simpler and just as fast. Only one `each()` callsite per render gets the granular benefit; subsequent callsites bound to the same arraySignal fall through to the snapshot path.
+11. **Custom-element types: declaration-merge into `kerfjs/jsx-runtime`, not into a global JSX namespace.** Example: `declare module 'kerfjs/jsx-runtime' { namespace JSX { interface IntrinsicElements { 'my-tag': KerfCustomElement & { foo?: string } } } }`. Import the building-block types (`KerfCustomElement`, `KerfBaseAttrs`, `AttrLike`) from `kerfjs/jsx-runtime`.
 
 ## Common errors → fixes
 
@@ -131,6 +137,8 @@ delegate(rootEl, 'click', '[data-action="inc"]', () => { count.value += 1; });
 | Render fn never re-runs | Signal was read outside the render fn (cached into a local) | Read `signal.value` inside the render fn |
 | SVG renders as broken / namespaceless markup | Used `innerHTML` directly instead of going through kerf | Use `mount` (HTML path) or `toElement` (SVG-aware) |
 | Library widget destroyed on every render | Library-owned subtree is reachable by the diff | Wrap host in `data-morph-skip`; mount the library imperatively |
+| `<my-element>` fails to typecheck | The tag is not in `IntrinsicElements`; declaration merging targeted the wrong namespace | Use `declare module 'kerfjs/jsx-runtime' { namespace JSX { interface IntrinsicElements { ... } } }`. `declare global { namespace JSX … }` does NOT work because kerf's JSX is module-scoped (KF-100) |
+| `arraySignal` mutated before mount renders empty | First render of a list always takes the snapshot path; this is by design (KF-98) — but if you've drained patches via something other than `each()` first, the snapshot still reflects the truth so you'll get a correct render |
 
 ## Server / SSR
 

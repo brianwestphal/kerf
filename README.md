@@ -106,6 +106,26 @@ delegate(root, 'click', '[data-action="remove"]', (_e, btn) => {
 });
 ```
 
+### Long keyed lists: `arraySignal`
+
+For lists where most updates are pointwise (single-row edits, append-to-end, selection flips on individual rows), reach for `arraySignal` from the `kerfjs/array-signal` subpath. Mutators emit typed patches that `each()` applies in O(patches), not O(N):
+
+```ts
+import { arraySignal } from 'kerfjs/array-signal';
+
+const rows = arraySignal<{ id: number; label: string }>([]);
+
+mount(root, () => (
+  <ul>{each(rows, (r) => <li data-key={r.id}>{r.label}</li>)}</ul>
+));
+
+rows.push({ id: 1, label: 'a' });               // 1 insert patch
+rows.update(0, (r) => ({ ...r, label: 'A' }));  // 1 update patch
+rows.move(0, 1);                                // 1 move patch
+```
+
+The class lives in its own subpath so apps that don't need it shed ~1 KB. Reads on `rows.value` are tracking, so `computed(() => rows.value.filter(...))` works as expected. See [`docs/2-reactivity.md`](./docs/2-reactivity.md) §2.6.
+
 ## Install
 
 ```bash

@@ -3,22 +3,28 @@
  *
  * Replaces the previous `[elemName: string]: Record<string, unknown>`
  * catch-all that allowed any tag and any prop. Now: known tags get focused
- * attribute interfaces (typos fail to compile); unknown tags are still
- * permitted via the `KerfCustomElement` index entry so custom elements and
- * web components keep working without declaration merging.
+ * attribute interfaces (typos fail to compile); unknown tags require
+ * declaration merging to opt in.
  *
  * Coverage is intentionally focused, not exhaustive. The most common ~30
  * HTML elements + the SVG primitives that make up `toElement`'s fragment
  * set are typed in detail. Rare attributes can be added in follow-ups, or
- * extended on a per-project basis via declaration merging:
+ * extended on a per-project basis via declaration merging into the
+ * `kerfjs/jsx-runtime` JSX namespace (KF-100):
  *
- *     declare global {
+ *     import type { KerfBaseAttrs, KerfCustomElement } from 'kerfjs/jsx-runtime';
+ *
+ *     declare module 'kerfjs/jsx-runtime' {
  *       namespace JSX {
  *         interface IntrinsicElements {
- *           'my-element': KerfBaseAttrs & { foo?: string };
+ *           'my-element': KerfCustomElement & { foo?: string };
  *         }
  *       }
  *     }
+ *
+ * `IntrinsicElements` in `jsx-runtime` is an **interface** that extends the
+ * one defined here, which is what makes the merge above work — type aliases
+ * (the previous shape) couldn't be merged.
  *
  * Every attribute value is `AttrValue` — string / number / boolean / null /
  * undefined / `SafeHtml`. Event-handler props (`onClick` etc.) are
@@ -490,15 +496,21 @@ export interface SVGForeignObjectAttrs extends SVGCommonAttrs {
 
 /**
  * Loose attribute set for custom elements / web components. Use via
- * declaration merging if your project uses tags not enumerated below:
+ * declaration merging into the `kerfjs/jsx-runtime` JSX namespace if your
+ * project uses tags not enumerated below:
  *
- *     declare global {
+ *     import type { KerfCustomElement } from 'kerfjs/jsx-runtime';
+ *
+ *     declare module 'kerfjs/jsx-runtime' {
  *       namespace JSX {
  *         interface IntrinsicElements {
  *           'my-component': KerfCustomElement & { foo?: string };
  *         }
  *       }
  *     }
+ *
+ * `KerfCustomElement` is re-exported from `kerfjs/jsx-runtime` (KF-100) so
+ * apps don't need to reach into the internal `kerfjs/jsx-types` path.
  */
 export interface KerfCustomElement extends KerfBaseAttrs {
   [k: string]: AttrValue | unknown;
