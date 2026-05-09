@@ -264,33 +264,54 @@ function reconcileGranular(
   const { liveParent } = binding;
   const items = binding.items;
 
-  for (const patch of patches) {
-    /* c8 ignore next 3 — replace is filtered upstream by each(); this branch
+  let i = 0;
+  while (i < patches.length) {
+    const patch = patches[i];
+    /* c8 ignore next 5 — replace is filtered upstream by each(); this branch
        is defensive type-completeness only. */
-    if (patch.type === 'replace') continue;
+    if (patch.type === 'replace') {
+      i += 1;
+      continue;
+    }
     if (patch.type === 'update') {
       const html = renderFn(patch.item, patch.index);
       const oldEntry = items[patch.index];
-      if (html === oldEntry.html) continue;  // no-op (defensive: caller may emit redundant patches)
-      const newNode = parseSingleRow(html);
-      liveParent.replaceChild(newNode, oldEntry.node);
-      items[patch.index] = { ref: patch.item, cacheKey: undefined, html, node: newNode };
+      if (html !== oldEntry.html) {
+        const newNode = parseSingleRow(html);
+        liveParent.replaceChild(newNode, oldEntry.node);
+        items[patch.index] = { ref: patch.item, cacheKey: undefined, html, node: newNode };
+      }
+      i += 1;
       continue;
     }
     if (patch.type === 'insert') {
-      const html = renderFn(patch.item, patch.index);
-      const newNode = parseSingleRow(html);
-      const anchor = patch.index < items.length ? items[patch.index].node : null;
-      liveParent.insertBefore(newNode, anchor);
-      items.splice(patch.index, 0, {
-        ref: patch.item, cacheKey: undefined, html, node: newNode,
-      });
+      // KF-93 fast path: detect a contiguous run of inserts at adjacent
+      // indices (each next insert at the previous one's index + 1) and
+      // bulk-parse all their HTML in a single `template.innerHTML` call,
+      // followed by a single `insertBefore(fragment, anchor)`. Saves ~50 ms
+      // on append-1k vs the per-patch path (1k individual parses + 1k
+      // individual insertBefore).
+      let runEnd = i + 1;
+      while (runEnd < patches.length
+          && patches[runEnd].type === 'insert'
+          && (patches[runEnd] as { index: number }).index
+            === (patches[runEnd - 1] as { index: number }).index + 1) {
+        runEnd += 1;
+      }
+      const runLen = runEnd - i;
+      if (runLen === 1) {
+        applySingleInsert(liveParent, items, patch, renderFn);
+      } else {
+        applyBulkInsert(liveParent, items, patches, i, runEnd, renderFn);
+      }
+      i = runEnd;
       continue;
     }
     if (patch.type === 'remove') {
       const entry = items[patch.index];
       liveParent.removeChild(entry.node);
       items.splice(patch.index, 1);
+      i += 1;
       continue;
     }
     if (patch.type === 'move') {
@@ -303,9 +324,73 @@ function reconcileGranular(
       liveParent.insertBefore(moved.node, anchor);
       items.splice(patch.from, 1);
       items.splice(patch.to, 0, moved);
+      i += 1;
       continue;
     }
   }
+}
+
+function applySingleInsert(
+  liveParent: Element,
+  items: BoundItem[],
+  patch: { type: 'insert'; index: number; item: object },
+  renderFn: NonNullable<ListSegment['renderFn']>,
+): void {
+  const html = renderFn(patch.item, patch.index);
+  const newNode = parseSingleRow(html);
+  const anchor = patch.index < items.length ? items[patch.index].node : null;
+  liveParent.insertBefore(newNode, anchor);
+  items.splice(patch.index, 0, {
+    ref: patch.item, cacheKey: undefined, html, node: newNode,
+  });
+}
+
+/**
+ * Bulk-parse a contiguous run of insert patches (KF-93). The run starts at
+ * `start` (inclusive) and ends at `end` (exclusive); every patch in that
+ * range is type `insert` with index === previous.index + 1. We render each
+ * row's HTML, concatenate, parse the lot in one `template.innerHTML`, and
+ * insert the resulting fragment in a single DOM op.
+ */
+function applyBulkInsert(
+  liveParent: Element,
+  items: BoundItem[],
+  patches: NonNullable<ListSegment['patches']>,
+  start: number,
+  end: number,
+  renderFn: NonNullable<ListSegment['renderFn']>,
+): void {
+  const startIdx = (patches[start] as { index: number }).index;
+  const htmls = new Array<string>(end - start);
+  for (let k = start; k < end; k++) {
+    const p = patches[k] as { type: 'insert'; index: number; item: object };
+    htmls[k - start] = renderFn(p.item, p.index);
+  }
+  const tpl = document.createElement('template');
+  tpl.innerHTML = htmls.join('');
+  // Capture child refs BEFORE the fragment-insert empties tpl.content.
+  const newNodes = new Array<Element>(end - start);
+  let child = tpl.content.firstElementChild;
+  for (let k = 0; k < newNodes.length; k++) {
+    if (child === null) {
+      throw new Error(
+        `each() granular reconcile: bulk-insert run produced fewer top-level elements than insert patches (${k} of ${newNodes.length}). Each item's render must return exactly one element.`,
+      );
+    }
+    newNodes[k] = child;
+    child = child.nextElementSibling;
+  }
+  const anchor = startIdx < items.length ? items[startIdx].node : null;
+  liveParent.insertBefore(tpl.content, anchor);
+  // Splice all new entries into binding.items at the run's start index.
+  const newEntries = new Array<BoundItem>(end - start);
+  for (let k = 0; k < newEntries.length; k++) {
+    const p = patches[start + k] as { type: 'insert'; index: number; item: object };
+    newEntries[k] = {
+      ref: p.item, cacheKey: undefined, html: htmls[k], node: newNodes[k],
+    };
+  }
+  items.splice(startIdx, 0, ...newEntries);
 }
 
 /**

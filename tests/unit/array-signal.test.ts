@@ -202,6 +202,97 @@ describe('arraySignal — each() granular integration via mount()', () => {
     expect(lis[1]).toBe(oldC);
   });
 
+  it('KF-93 bulk-insert: contiguous run of inserts is parsed once and inserted as a fragment', async () => {
+    // Append-1k pattern: insert(N, x), insert(N+1, y), insert(N+2, z) — every
+    // patch at the previous one's index + 1. The reconciler should detect
+    // the run and bulk-parse instead of doing 3 individual parses.
+    const rows = arraySignal([{ id: 1, label: 'a' }, { id: 9, label: 'tail' }]);
+    renderRows(rows);
+    const oldHead = root.querySelector('li')!;
+    const oldTail = root.querySelectorAll('li')[1];
+
+    // Spy on template.innerHTML setter calls — bulk-parse should invoke it
+    // exactly ONCE for a 3-insert run, not 3 times.
+    const origDescriptor = Object.getOwnPropertyDescriptor(
+      Object.getPrototypeOf(document.createElement('template')),
+      'innerHTML',
+    ) ?? Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'innerHTML')!;
+    let templateInnerHTMLSetCount = 0;
+    const tplProto = Object.getPrototypeOf(document.createElement('template'));
+    Object.defineProperty(tplProto, 'innerHTML', {
+      configurable: true,
+      get: origDescriptor.get,
+      set(value: string) {
+        templateInnerHTMLSetCount += 1;
+        origDescriptor.set!.call(this, value);
+      },
+    });
+
+    try {
+      const { batch } = await import('../../src/index.js');
+      batch(() => {
+        rows.insert(1, { id: 2, label: 'b' });
+        rows.insert(2, { id: 3, label: 'c' });
+        rows.insert(3, { id: 4, label: 'd' });
+      });
+    } finally {
+      Object.defineProperty(tplProto, 'innerHTML', origDescriptor);
+    }
+
+    const lis = root.querySelectorAll('li');
+    expect([...lis].map((li) => li.textContent)).toEqual(['a', 'b', 'c', 'd', 'tail']);
+    expect(lis[0]).toBe(oldHead);
+    expect(lis[4]).toBe(oldTail);
+    expect(templateInnerHTMLSetCount).toBe(1);  // bulk parse
+  });
+
+  it('KF-93 bulk-insert: append-at-end run inserts before nothing (anchor null) without crashing', async () => {
+    const rows = arraySignal([{ id: 1, label: 'a' }]);
+    renderRows(rows);
+    const { batch } = await import('../../src/index.js');
+    batch(() => {
+      rows.push({ id: 2, label: 'b' });
+      rows.push({ id: 3, label: 'c' });
+      rows.push({ id: 4, label: 'd' });
+    });
+    expect([...root.querySelectorAll('li')].map((li) => li.textContent))
+      .toEqual(['a', 'b', 'c', 'd']);
+  });
+
+  it('KF-93 bulk-insert: non-contiguous inserts fall back to per-patch (run-detector requires +1 stride)', async () => {
+    const rows = arraySignal([{ id: 1, label: 'a' }, { id: 2, label: 'b' }]);
+    renderRows(rows);
+    const { batch } = await import('../../src/index.js');
+    batch(() => {
+      rows.insert(0, { id: 0, label: 'before' });   // index 0
+      rows.insert(3, { id: 99, label: 'after' });   // not contiguous with the prior 0
+    });
+    expect([...root.querySelectorAll('li')].map((li) => li.textContent))
+      .toEqual(['before', 'a', 'b', 'after']);
+  });
+
+  it('KF-93 bulk-insert: throws if the bulk-parsed HTML produced fewer elements than patches', async () => {
+    // Each row's render must produce exactly one top-level element. If one
+    // row in a bulk run produces empty HTML, the children-count mismatch
+    // surfaces as a descriptive error.
+    const rows = arraySignal([{ id: 1, label: 'a' }]);
+    let renderImpl = (r: { id: number; label: string }): string =>
+      `<li data-key="${r.id}">${r.label}</li>`;
+    mount(root, () => jsx('ul', {
+      children: each(rows, (r) => renderImpl(r as { id: number; label: string })),
+    }));
+    // Swap the render impl for the next batch so two of three rows produce empty HTML.
+    renderImpl = (r) => r.id === 3 ? `<li>${r.label}</li>` : '   ';
+    const { batch } = await import('../../src/index.js');
+    expect(() => {
+      batch(() => {
+        rows.insert(1, { id: 2, label: 'b' });
+        rows.insert(2, { id: 3, label: 'c' });
+        rows.insert(3, { id: 4, label: 'd' });
+      });
+    }).toThrow(/bulk-insert run produced fewer top-level elements/);
+  });
+
   it('move patch reorders a single row via insertBefore (preserves node identity)', () => {
     const rows = arraySignal([{ id: 1, label: 'a' }, { id: 2, label: 'b' }, { id: 3, label: 'c' }]);
     renderRows(rows);
