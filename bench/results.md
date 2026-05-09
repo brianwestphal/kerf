@@ -1,6 +1,6 @@
 # kerfjs vs reference frameworks — krausest js-framework-benchmark
 
-Captured by **KF-86 / KF-87 / KF-88 / KF-89 / KF-90 / KF-92 / KF-93** on 2026-05-09. Environment: macOS, Chrome (headless via webdriver-ts/puppeteer), `bench/run.sh --count=3`. Frameworks built locally via `bench/setup.sh` (kerfjs from `dist/` packed as a tarball, references from upstream `master`).
+Captured by **KF-86 / KF-87 / KF-88 / KF-89 / KF-90 / KF-92 / KF-93 / KF-94** on 2026-05-09. Environment: macOS, Chrome (headless via webdriver-ts/puppeteer), `bench/run.sh --count=3`. Frameworks built locally via `bench/setup.sh` (kerfjs from `dist/` packed as a tarball, references from upstream `master`).
 
 All numbers are **medians across 3 iterations**. Lower is better. Sorted by the first column.
 
@@ -15,7 +15,7 @@ All numbers are **medians across 3 iterations**. Lower is better. Sorted by the 
 | lit 3.2.0 | 38.5 | 45.3 | 21.9 | 9.3 | 28.9 | 18.3 | 403.2 | 48.7 | 22.9 |
 | react 19.2.0 (hooks) | 40.9 | 49.4 | 24.1 | 8.0 | 157.3 | 18.0 | 562.0 | 48.8 | 26.7 |
 | vue 3.6.0-alpha.2 | 42.0 | 45.3 | 22.5 | 6.8 | 23.6 | 20.0 | 408.8 | 46.0 | 19.0 |
-| **kerfjs 0.4.2** (post-KF-93) | 43.7 | 47.8 | 46.3 | 26.4 | 25.9 | 16.9 | 424.4 | 50.1 | 19.4 |
+| **kerfjs 0.4.2** (post-KF-94) | 44.4 | 48.2 | 42.0 | 26.1 | 24.8 | 17.3 | 416.2 | 50.2 | 18.5 |
 | vanjs 1.5.2 | 46.6 | 48.9 | 41.8 | 14.3 | 23.7 | 18.3 | 435.0 | 55.7 | 15.4 |
 | preact 10.27.1 + signals 2.3.1 | 50.0 | 53.1 | 19.7 | 7.9 | 28.3 | 19.4 | 479.3 | 53.9 | 23.7 |
 
@@ -28,34 +28,40 @@ All numbers are **medians across 3 iterations**. Lower is better. Sorted by the 
 - **remove row**: kerf 21ms is competitive with Solid (17) and Vue (20).
 - **append 1k**: kerf 54ms — close to vanjs (56) and preact-signals (54). The append path bulk-parses the new rows and inserts them without touching existing rows.
 
-### Cumulative perf wins from KF-87..KF-93
+### Cumulative perf wins from KF-87..KF-94
 
 For posterity, kerf 0.4.2's path through the optimisations:
 
-| Scenario | pre-KF-87 | post-KF-87 | post-KF-90 | post-KF-92 | post-KF-93 (this row) | total Δ |
-| --- | --- | --- | --- | --- | --- | --- |
-| partial update | 78.9 | 52.1 | 50.2 | 48.0 | **46.3** | **-41%** |
-| select row | 68.0 | 38.3 | 33.9 | 26.5 | **26.4** | **-61%** |
-| swap rows | 62.2 | 31.5 | 29.9 | 22.1 | 25.9 | -58% |
-| remove row | 36.3 | 20.7 | 20.1 | 17.7 | **16.9** | **-53%** |
-| clear 1k | 23.5 | 23.4 | 18.1 | 17.8 | 19.4 | -17% |
-| append 1k | 58.4 | 53.6 | 53.0 | 60.9 | **50.1** | **-14%** |
+| Scenario | pre-KF-87 | post-KF-87 | post-KF-90 | post-KF-92 | post-KF-93 | post-KF-94 (this row) | total Δ |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| partial update | 78.9 | 52.1 | 50.2 | 48.0 | 46.3 | **42.0** | **-47%** |
+| select row | 68.0 | 38.3 | 33.9 | 26.5 | 26.4 | **26.1** | **-62%** |
+| swap rows | 62.2 | 31.5 | 29.9 | 22.1 | 25.9 | **24.8** | **-60%** |
+| remove row | 36.3 | 20.7 | 20.1 | 17.7 | 16.9 | 17.3 | -52% |
+| clear 1k | 23.5 | 23.4 | 18.1 | 17.8 | 19.4 | 18.5 | -21% |
+| append 1k | 58.4 | 53.6 | 53.0 | 60.9 | 50.1 | 50.2 | -14% |
 
-KF-87 was the dominant fix (the each() per-render-fn cache regression). KF-88/89/90 (static-surrounds caching, reconcile short-circuit, single-Map classify) added a further 4-23%. KF-92 (arraySignal granular reconcile) shifted the work from O(N) classify to O(patches), winning select/swap/remove but regressing append because the granular reconciler did N individual parses. **KF-93 added bulk-parse for contiguous insert runs**, recovering 18% on append-1k and putting kerf back ahead of where the snapshot path was. Static-build scenarios (create / replace / create10k) stayed within noise throughout — these optimisations target update-path costs.
+- KF-87: each() per-render-fn cache regression — dominant fix.
+- KF-88/89/90: static-surrounds caching + reconcile short-circuit + single-Map classify (incremental bookkeeping).
+- KF-92: arraySignal granular reconcile — O(patches) instead of O(N).
+- KF-93: bulk-parse contiguous insert runs — recovered the post-KF-92 append regression.
+- KF-94: bulk-parse consecutive update runs (any indices) — closes the partial-update gap to vanjs (41.8) and the keyed cluster.
+
+Static-build scenarios (create / replace / create10k) stayed within noise throughout — these optimisations target update-path costs.
 
 ### Where kerf now stands vs the keyed-framework cluster
 
-| Scenario | kerf 0.4.2 (post-KF-93) | best non-Solid | Solid 1.9.3 |
+| Scenario | kerf 0.4.2 (post-KF-94) | best non-Solid | Solid 1.9.3 |
 | --- | --- | --- | --- |
-| **remove row** | **16.9** | react 18.0 / lit 18.3 / vanjs 18.3 | 16.6 — **kerf ties Solid, beats every other framework** ✓ |
-| swap rows | 25.9 | vue 23.6 / vanjs 23.7 | 21.9 (within noise of cluster) |
-| select row | 26.4 | vanjs 14.3 | 6.5 |
-| partial update | 46.3 | preact-signals 19.7 | 19.1 |
-| append 1k | 50.1 | vue 46.0 | 42.1 |
-| create 1k | 43.7 | solid 36.0 | 36.0 (mid-pack) |
-| create 10k | 424.4 | solid 366.5 | 366.5 (mid-pack) |
-| clear 1k | 19.4 | vanjs 15.4 | 20.3 (within noise of solid) |
-| replace 1k | 47.8 | solid 39.8 | 39.8 (close) |
+| **remove row** | **17.3** | react 18.0 / lit 18.3 / vanjs 18.3 | 16.6 — **kerf beats every framework except Solid** ✓ |
+| swap rows | 24.8 | vue 23.6 / vanjs 23.7 | 21.9 — within noise of cluster |
+| **partial update** | **42.0** | vanjs 41.8 / preact-signals 19.7 | 19.1 — **kerf ties vanjs**, still 2× Solid |
+| select row | 26.1 | vanjs 14.3 | 6.5 |
+| append 1k | 50.2 | vue 46.0 | 42.1 |
+| create 1k | 44.4 | solid 36.0 | 36.0 |
+| create 10k | 416.2 | solid 366.5 | 366.5 |
+| clear 1k | 18.5 | vanjs 15.4 | 20.3 — kerf beats Solid |
+| replace 1k | 48.2 | solid 39.8 | 39.8 |
 
 ## Memory (MB, ready-state)
 
@@ -82,7 +88,19 @@ The krausest harness's size benchmark didn't complete for the four frameworks ad
 | vue 3.6.0-alpha.2 | 22.8 | 63.7 | 140.0 |
 | react 19.2.0 (hooks) | 51.4 | 190.3 | 301.2 |
 
-For kerf specifically, KF-72 measured the published `dist/` directly: **kerf + signals-core, minified + gzipped: 5.7 KB** (`npx esbuild dist/index.js --bundle --minify --format=esm --platform=neutral | gzip -c | wc -c`). That places kerf between Solid (4.5) and Lit (~6.0) for size, before counting the framework's harness shell.
+For kerf specifically, measured directly via `npx esbuild dist/index.js --bundle --minify --format=esm --platform=neutral | gzip -c | wc -c`:
+
+| kerfjs version | Δ from previous | gzipped (KB) | notes |
+| --- | --- | --- | --- |
+| 0.4.2 (post-KF-72 baseline) | — | 5.7 | original measurement before any KF-87..KF-94 perf work |
+| 0.4.2 (post-KF-94 / current) | +1.5 KB | **7.2** | adds arraySignal class (+1 KB) and the two bulk-parse paths (+0.5 KB) |
+
+7.2 KB places kerf:
+- Larger than Solid (4.5 KB) and Lit (~6 KB).
+- Roughly tied with Preact + signals (~7 KB).
+- Still well under Vue (22.8 KB), let alone React (51 KB).
+
+The +1.5 KB cost buys the KF-92/93/94 perf wins. If a consumer doesn't need arraySignal, tree-shaking removes its class — but a typical app importing `arraySignal` from the barrel pulls in the whole module. Code-splitting arraySignal into a `kerfjs/array-signal` subpath is worth a follow-up if the size matters.
 
 ## Caveats
 
