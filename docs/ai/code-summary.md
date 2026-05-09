@@ -9,6 +9,7 @@ kerf/
 ├── src/
 │   ├── index.ts                  ← public entry — re-exports everything users import
 │   ├── jsx-runtime.ts            ← JSX → SafeHtml string emitter
+│   ├── jsx-types.ts              ← typed IntrinsicElements (KF-75) — per-tag attribute contracts, catches JSX typos at compile time
 │   ├── reactive.ts               ← signal/computed/effect/batch (re-export)
 │   ├── store.ts                  ← defineStore + resetAllStores + REGISTRY
 │   ├── mount.ts                  ← mount() — segment-aware render bound to effect()

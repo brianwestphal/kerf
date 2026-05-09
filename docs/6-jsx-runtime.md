@@ -59,6 +59,29 @@ Anything not in the alias table is passed through verbatim. So `data-action`, `a
 
 This matches HTML semantics — a boolean attribute is "on" by being present, regardless of its value.
 
+### 6.4.1 Dangerous URL filter
+
+Plain-string values written to URL-bearing attributes are screened against a small allow-list. If a value starts with `javascript:`, `vbscript:`, or `data:text/html` (case-insensitive, leading whitespace tolerated), kerf **drops the attribute entirely** and `console.warn`s. The screen runs only on these attribute names: `href`, `src`, `xlink:href`, `formaction`, `action`.
+
+```tsx
+<a href={userInput}>click</a>
+// userInput === 'javascript:alert(1)'  →  rendered as <a>click</a>, warning logged
+// userInput === 'https://example.com'  →  rendered as <a href="https://example.com">click</a>
+```
+
+The screen exists so a stored-XSS payload reaching a `href={...}` interpolation cannot turn into a clickable script vector. It is **not** a general sanitiser — `javascript:`/`vbscript:` URLs at non-URL attributes (`data-action`, custom attributes, etc.) pass through unchanged because they aren't an attack surface there.
+
+`SafeHtml` (i.e. `raw()`) values bypass the screen — that's the documented escape hatch:
+
+```tsx
+import { raw } from 'kerfjs';
+
+// Bookmarklet builder, sanitised-upstream input, etc.
+<a href={raw('javascript:doStuff()')}>bookmarklet</a>
+```
+
+If you find yourself reaching for `raw()` on URLs that came from users, route them through a real sanitiser (DOMPurify, Linkify, etc.) first; `raw()` is "I take responsibility for this string", not "skip the safety net."
+
 ## 6.5 Children
 
 ```tsx

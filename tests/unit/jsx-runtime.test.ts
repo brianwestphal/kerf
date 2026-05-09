@@ -3,7 +3,7 @@
  * pipeline produces correctly-escaped, alias-translated, void-tag-aware HTML.
  */
 
-import { describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { Fragment, isSafeHtml, jsx, raw, SafeHtml } from '../../src/jsx-runtime.js';
 
@@ -177,6 +177,83 @@ describe('jsx()', () => {
     const Greeting = ({ name }: GreetingProps) => jsx('p', { children: `hi, ${name}` });
     const out = jsx(Greeting as never, { name: 'world' });
     expect(out.toString()).toBe('<p>hi, world</p>');
+  });
+});
+
+
+describe('jsx — dangerous URL attribute filter', () => {
+  let warnSpy: ReturnType<typeof vi.spyOn>;
+
+  beforeEach(() => {
+    warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    warnSpy.mockRestore();
+  });
+
+  it('drops javascript: in href and warns', () => {
+    const out = jsx('a', { href: 'javascript:alert(1)', children: 'click' });
+    expect(out.toString()).toBe('<a>click</a>');
+    expect(warnSpy).toHaveBeenCalledOnce();
+    expect(warnSpy.mock.calls[0][0]).toMatch(/dropped dangerous URL value for href/);
+  });
+
+  it('drops javascript: in src on img', () => {
+    const out = jsx('img', { src: 'javascript:alert(1)' });
+    expect(out.toString()).toBe('<img>');
+  });
+
+  it('drops javascript: in formaction on button', () => {
+    const out = jsx('button', { formaction: 'javascript:alert(1)', children: 'go' });
+    expect(out.toString()).toBe('<button>go</button>');
+  });
+
+  it('drops javascript: in action on form', () => {
+    const out = jsx('form', { action: 'javascript:alert(1)', children: 'x' });
+    expect(out.toString()).toBe('<form>x</form>');
+  });
+
+  it('drops javascript: in xlink:href via the xlinkHref alias', () => {
+    const out = jsx('use', { xlinkHref: 'javascript:alert(1)' });
+    expect(out.toString()).toBe('<use></use>');
+  });
+
+  it('drops vbscript: URLs', () => {
+    const out = jsx('a', { href: 'vbscript:msgbox(1)', children: 'x' });
+    expect(out.toString()).toBe('<a>x</a>');
+  });
+
+  it('drops mixed-case JAVASCRIPT: with leading whitespace', () => {
+    const out = jsx('a', { href: '   JaVaScRiPt:alert(1)', children: 'x' });
+    expect(out.toString()).toBe('<a>x</a>');
+  });
+
+  it('drops data:text/html URLs', () => {
+    const out = jsx('a', { href: 'data:text/html,<script>alert(1)</script>', children: 'x' });
+    expect(out.toString()).toBe('<a>x</a>');
+  });
+
+  it('preserves safe https URLs', () => {
+    const out = jsx('a', { href: 'https://example.com/x?y=1', children: 'ok' });
+    expect(out.toString()).toBe('<a href="https://example.com/x?y=1">ok</a>');
+    expect(warnSpy).not.toHaveBeenCalled();
+  });
+
+  it('preserves safe data: image URLs', () => {
+    const out = jsx('img', { src: 'data:image/png;base64,iVBORw0K' });
+    expect(out.toString()).toBe('<img src="data:image/png;base64,iVBORw0K">');
+  });
+
+  it('preserves dangerous protocols on non-URL attributes (e.g. data-action)', () => {
+    const out = jsx('div', { 'data-action': 'javascript:alert(1)' });
+    expect(out.toString()).toBe('<div data-action="javascript:alert(1)"></div>');
+  });
+
+  it('lets raw() pass through as the documented opt-out', () => {
+    const out = jsx('a', { href: raw('javascript:alert(1)'), children: 'bookmarklet' });
+    expect(out.toString()).toBe('<a href="javascript:alert(1)">bookmarklet</a>');
+    expect(warnSpy).not.toHaveBeenCalled();
   });
 });
 

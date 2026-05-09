@@ -153,6 +153,10 @@ Wrap a pre-escaped HTML string. Useful for icons, rendered Markdown, server-incl
 
 JSX `<>...</>` — concatenates children without a wrapper tag. Available from both `kerfjs/jsx-runtime` (used by the JSX transform) and the main `kerfjs` barrel (when you need to compose `Fragment` manually, e.g. `jsx(Fragment, { children })`).
 
+### Dangerous URL filter
+
+Plain-string values passed to `href`, `src`, `xlink:href`, `formaction`, or `action` are screened against `/^\s*(?:(?:java|vb)script:|data:text\/html[;,])/i`. Matching values cause the attribute to be **dropped entirely** and a `console.warn` to be emitted. The screen is bypassed for `SafeHtml` (i.e. `raw(...)`) values — that's the documented opt-out for legitimate cases (bookmarklet builders, sanitised-upstream URLs). Non-URL attributes are not screened. See `docs/6-jsx-runtime.md` §6.4.1 for the full rationale and examples.
+
 ## 8.6 Direct JSX → DOM
 
 ### `toElement(jsx: SafeHtml | string): Element`

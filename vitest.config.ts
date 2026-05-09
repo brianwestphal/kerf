@@ -8,6 +8,10 @@ export default defineConfig({
   resolve: {
     alias: {
       '#kerf-self/jsx-runtime': new URL('./src/jsx-runtime.ts', import.meta.url).pathname,
+      // The JSX transform emits `jsxDEV` calls in dev mode; pointing this
+      // alias at the same module exposes the `jsxDEV` re-export, so .tsx
+      // tests can use plain JSX syntax without a separate dev runtime.
+      '#kerf-self/jsx-dev-runtime': new URL('./src/jsx-runtime.ts', import.meta.url).pathname,
     },
   },
   test: {

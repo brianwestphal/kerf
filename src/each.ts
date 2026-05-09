@@ -39,7 +39,20 @@ interface CacheEntry {
   html: string;
 }
 
-const ROW_CACHE = new WeakMap<object, CacheEntry>();
+/**
+ * Per-`render`-function row cache. Two `each()` call-sites that share the
+ * same items but use different render functions need separate caches —
+ * otherwise the second caller's cache lookup hits the first caller's HTML
+ * (silent stale-render bug — KF-73).
+ *
+ * Indexing by the render function itself is the natural identity: same
+ * render fn + same item + same key = same HTML by construction; different
+ * render fn = different HTML by construction. Both keys are object keys
+ * (`Function` extends `object`), so `WeakMap` of `WeakMap` works and GC
+ * reclaims everything when the render fn becomes unreachable.
+ */
+type RenderFn = (item: never, index: number) => SafeHtml | string;
+const RENDER_CACHES = new WeakMap<RenderFn, WeakMap<object, CacheEntry>>();
 
 /**
  * Per-mount counter for assigning stable list ids across renders. `mount()`
@@ -62,7 +75,13 @@ export function each<T extends object>(
   key?: (item: T, index: number) => unknown,
 ): SafeHtml {
   const id = listCounter !== null ? String(listCounter.value++) : 'orphan';
+  let cache = RENDER_CACHES.get(render as RenderFn);
+  if (cache === undefined) {
+    cache = new WeakMap<object, CacheEntry>();
+    RENDER_CACHES.set(render as RenderFn, cache);
+  }
   const segItems = new Array<{ ref: object; cacheKey: unknown; html: string }>(items.length);
+  const seen = new Set<object>();
   for (let i = 0; i < items.length; i++) {
     const item = items[i];
     if (typeof item !== 'object' || item === null) {
@@ -71,15 +90,23 @@ export function each<T extends object>(
         + 'Wrap primitives if you need to iterate them, e.g. items.map(v => ({ v })).',
       );
     }
+    if (seen.has(item)) {
+      throw new Error(
+        `each(): the same object reference appears at multiple indices in items (first seen earlier, again at index ${i}). `
+        + 'The per-item HTML cache is keyed on object identity, so duplicate references break the keyed reconciler and can leak DOM nodes on re-render. '
+        + 'Use a fresh object per row (e.g. items.map(o => ({ ...o })) before passing to each()).',
+      );
+    }
+    seen.add(item);
     const k = key ? key(item, i) : undefined;
-    const cached = ROW_CACHE.get(item);
+    const cached = cache.get(item);
     let html: string;
     if (cached !== undefined && cached.key === k) {
       html = cached.html;
     } else {
       const out = render(item, i);
       html = isSafeHtml(out) ? out.toString() : out;
-      ROW_CACHE.set(item, { key: k, html });
+      cache.set(item, { key: k, html });
     }
     segItems[i] = { ref: item, cacheKey: k, html };
   }

@@ -138,7 +138,7 @@ A *kerf* is the narrow strip of material a saw blade removes when cutting — th
 
 ## Status
 
-v0.3.x — early. API may evolve. See [CHANGELOG.md](./CHANGELOG.md) for what's shipped.
+Pre-1.0 — API may evolve. See [CHANGELOG.md](./CHANGELOG.md) for the current version and what's shipped.
 
 ## License
 

@@ -81,4 +81,34 @@ describe('each', () => {
     expect(() => each([null] as unknown as object[], () => '<li/>'))
       .toThrow(/got null at index 0/);
   });
+
+  it('throws when the same object reference appears at multiple indices', () => {
+    const obj = { id: 7 };
+    expect(() => each([obj, obj], (it) => `<li>${it.id}</li>`))
+      .toThrow(/same object reference appears at multiple indices.*again at index 1/s);
+  });
+
+  it('throws when a duplicate reference appears mid-list', () => {
+    const a = { id: 1 };
+    const b = { id: 2 };
+    expect(() => each([a, b, a], (it) => `<li>${it.id}</li>`))
+      .toThrow(/again at index 2/);
+  });
+
+  it('does NOT collide across two each() calls with different render fns over the same items (KF-73)', () => {
+    const items = [{ id: 1 }, { id: 2 }];
+    const a = each(items, (it) => `<li class="A">${it.id}</li>`);
+    const b = each(items, (it) => `<li class="B">${it.id}</li>`);
+    expect(a.toString()).toBe('<li class="A">1</li><li class="A">2</li>');
+    expect(b.toString()).toBe('<li class="B">1</li><li class="B">2</li>');
+  });
+
+  it('still shares the cache when two each() calls reuse the SAME render fn over the same items', () => {
+    const items = [{ id: 1 }, { id: 2 }];
+    const render = vi.fn((it: { id: number }) => `<li>${it.id}</li>`);
+    each(items, render);
+    expect(render).toHaveBeenCalledTimes(2);
+    each(items, render); // same render fn → cache HIT
+    expect(render).toHaveBeenCalledTimes(2);
+  });
 });

@@ -21,7 +21,8 @@ The framework is a small set of independent modules that compose. Each one earns
 ### Source layout
 
 - `src/index.ts` — public entry point. Re-exports everything users need.
-- `src/jsx-runtime.ts` — JSX → `SafeHtml` (HTML strings) + `SafeHtml.toString()`. Configured via `tsconfig.json` `"jsxImportSource": "kerfjs"` in user code.
+- `src/jsx-runtime.ts` — JSX → `SafeHtml` (HTML strings) + `SafeHtml.toString()`. Configured via `tsconfig.json` `"jsxImportSource": "kerfjs"` in user code. Imports the typed intrinsic-element table from `src/jsx-types.ts`.
+- `src/jsx-types.ts` — typed JSX intrinsic-element interfaces (`KerfBaseAttrs`, per-element attribute types, the `IntrinsicElements` mapping). Catches typos on tag names + attribute names at compile time. Custom elements / web components extend this via `declare global { namespace JSX { interface IntrinsicElements { 'my-tag': KerfCustomElement & {...} } } }`.
 - `src/reactive.ts` — re-export of `@preact/signals-core` (`signal`, `computed`, `effect`, `batch`). One-file abstraction layer so the underlying lib is swappable.
 - `src/store.ts` — `defineStore({ initial, actions })` + global registry + `resetAllStores()`.
 - `src/mount.ts` — `mount(el, render)`. Wraps `effect()` + the segment-aware diff. Bulk-renders on first paint, then on subsequent renders runs `diff()` over the static surrounds (skipping any list parents) and dispatches each list to its native keyed reconciler. Conventions for diff keys, `data-morph-skip`, focus/selection preservation.
@@ -60,7 +61,7 @@ The JSX runtime sits at `kerfjs/jsx-runtime` (subpath export). Users configure i
 2. **No compiler.** Plain JSX, plain TypeScript, plain esbuild. No special build step in the consumer's project beyond what they already use.
 3. **Tier 1 / Tier 2 / Tier 3 listener model.** `delegate()` covers bubbling events and auto-promotes the well-known non-bubblers (focus, blur, scroll, load, error, mouseenter, mouseleave) to capture phase under the hood; `delegateCapture()` is the explicit-capture escape hatch with `matches()`-style direct matching; `data-morph-skip` for library-owned subtrees.
 4. **One primary export per file.** Each file has one main exported function/concept.
-5. **Module-level mutable state is restricted to three documented places.** (a) `store.ts:REGISTRY` — exists only to make `resetAllStores()` work. (b) `each.ts:listCounter` — per-render id counter set by `mount()` at the start of each effect run via `_setListCounter`, so the n-th `each()` call gets a stable list id across renders. (c) `each.ts:ROW_CACHE` — `WeakMap` memoiser that makes per-item HTML caching survive across renders (the keys are the row objects themselves, so it self-cleans). Everything else flows through arguments.
+5. **Module-level mutable state is restricted to three documented places.** (a) `store.ts:REGISTRY` — exists only to make `resetAllStores()` work. (b) `each.ts:listCounter` — per-render id counter set by `mount()` at the start of each effect run via `_setListCounter`, so the n-th `each()` call gets a stable list id across renders. (c) `each.ts:RENDER_CACHES` — `WeakMap<RenderFn, WeakMap<item, {key, html}>>` that makes per-item HTML caching survive across renders, scoped by the render function's identity (so two `each()` callsites with different render fns over the same items don't collide — KF-73). Both keys are object/function keys, so GC reclaims everything when either becomes unreachable. Everything else flows through arguments.
 
 ### What kerf is NOT
 
@@ -119,6 +120,14 @@ This project is managed via [Hot Sheet](https://github.com/brianwestphal/hotshee
 - Run `hotsheet` from the project root to launch the local UI.
 - Worklists are auto-synced to `.hotsheet/worklist.md` and `.hotsheet/open-tickets.md`.
 - Skill files live in `.claude/skills/kerf/` and reference the worklist for AI-driven work.
+
+### Concerns → tickets, not ad-hoc fixes
+
+When a review, hygiene scan, audit, or any in-flight investigation surfaces a concern that isn't part of the current ticket's scope, **always file a follow-up Hot Sheet ticket immediately rather than acting on it directly.** This applies to bugs, refactors, doc drift, design questions, and anything else that "I noticed while working on X." The current ticket stays focused on what was asked; everything else gets its own ticket so it can be prioritised, scheduled, and reviewed alongside the rest of the queue.
+
+The only edits to make in-flight under another ticket are ones explicitly within that ticket's scope (e.g., the doc-summary fixes that the `/check-requirements-against-code` skill is itself defined to perform). Anything else — even a one-line README fix — gets a ticket.
+
+Use the `hs-bug` / `hs-task` / `hs-issue` / `hs-feature` / `hs-investigation` / `hs-requirement-change` skills (or POST to the Hot Sheet API directly) to file. Reference the surfacing context in the ticket title so the link back is obvious (e.g. "Surfaced by /check-code-hygiene on YYYY-MM-DD").
 
 ## Conventions
 
