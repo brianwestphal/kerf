@@ -29,7 +29,7 @@ The framework is a small set of independent modules that compose. Each one earns
 - `src/list-reconcile.ts` — keyed list reconciler used by `mount()`. Classify (stable/replaced/new) → bulk-parse fresh row HTML in one `innerHTML` → remove orphans/replaced → LIS pass to compute the minimum `insertBefore` set → reverse-pass move. Internal — not part of the public API.
 - `src/segment.ts` — `Segment` types (`static` / `list` / `mixed`) + flatten helpers. The JSX runtime emits these from `_jsx`; `mount()` consumes them.
 - `src/diff.ts` — kerf's general-purpose DOM reconciler. Replaces the prior `morphdom` dependency. Specialised: knows about `data-morph-skip`, the focused-input/contenteditable rules, the `id`/`data-key` matching scheme, and a `listParents` set whose children are owned by the list reconciler. Algorithm derived from [morphdom](https://github.com/patrick-steele-idem/morphdom) (MIT, attribution in `LICENSE`).
-- `src/delegate.ts` — `delegate()` (Tier 1 bubble) + `delegateCapture()` (Tier 2 capture).
+- `src/delegate.ts` — `delegate()` (Tier 1; auto-promotes known non-bubblers to capture) + `delegateCapture()` (Tier 2 explicit-capture escape hatch).
 - `src/toElement.ts` — SVG-aware JSX → DOM helper. Routes SVG content through `DOMParser('image/svg+xml')`.
 - `src/testing.ts` — `kerfjs/testing` subpath. Re-exports `clearStoreRegistry` for unit-test isolation.
 - `src/utils/escapeHtml.ts` — HTML / attribute escaping helpers used by the JSX runtime.
@@ -57,7 +57,7 @@ The JSX runtime sits at `kerfjs/jsx-runtime` (subpath export). Users configure i
 
 1. **No virtual DOM.** Render JSX to HTML strings (with structured "list" and "mixed" segments where lists appear); let `diff()` reconcile the static surrounds and the list reconciler own its rows.
 2. **No compiler.** Plain JSX, plain TypeScript, plain esbuild. No special build step in the consumer's project beyond what they already use.
-3. **Tier 1 / Tier 2 / Tier 3 listener model.** Bubble-phase delegation is the default; capture-phase for non-bubblers; `data-morph-skip` for library-owned subtrees.
+3. **Tier 1 / Tier 2 / Tier 3 listener model.** `delegate()` covers bubbling events and auto-promotes the well-known non-bubblers (focus, blur, scroll, load, error, mouseenter, mouseleave) to capture phase under the hood; `delegateCapture()` is the explicit-capture escape hatch with `matches()`-style direct matching; `data-morph-skip` for library-owned subtrees.
 4. **One primary export per file.** Each file has one main exported function/concept.
 5. **No external state besides the global store registry.** That registry exists only to make `resetAllStores()` work; everything else flows through arguments.
 

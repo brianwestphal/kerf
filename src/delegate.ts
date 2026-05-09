@@ -9,11 +9,19 @@
  *     click, input, change, submit, mousedown/up, keydown/up, pointerdown/up/move,
  *     drag*, drop, contextmenu, wheel, copy/paste/cut, focusin/focusout.
  *
- *   - Tier 2 (non-bubbling events) — use `delegateCapture()`.
- *     focus, blur, scroll, load, error, mouseenter, mouseleave.
- *     The capture phase fires on the way down from the root to the target,
- *     so a root-level listener with `capture: true` reaches events that
- *     wouldn't bubble back up.
+ *     `delegate()` also auto-promotes the well-known non-bubbling event
+ *     types (`focus`, `blur`, `scroll`, `load`, `error`, `mouseenter`,
+ *     `mouseleave`) to the capture phase under the hood, so the call site
+ *     looks identical for "interactive thing happens on a descendant"
+ *     regardless of whether that event bubbles. Selector matching stays
+ *     `closest()`-style — the same as for bubbling events — so a wrapper
+ *     selector like `'.field-row'` still matches when the event fires on
+ *     a descendant `<input>`.
+ *
+ *   - Tier 2 (explicit capture) — use `delegateCapture()`.
+ *     The escape hatch for cases the auto-promotion list doesn't cover, or
+ *     when you want capture-phase semantics and direct `matches()`-style
+ *     selector matching (no walk-up).
  *
  *   - Tier 3 (per-element instances / library-owned subtrees) — mark the
  *     host element with `data-morph-skip` and manage the library's
@@ -21,6 +29,26 @@
  */
 
 type Handler = (event: Event, target: Element) => void;
+
+/**
+ * Event types that don't bubble and so wouldn't reach a root-level
+ * bubble-phase listener. `delegate()` flips to capture for these; the
+ * caller doesn't need to know or care.
+ *
+ * Membership is conservative — it covers the cases that "should obviously
+ * work" with delegate() but otherwise don't. For exotic non-bubbling events
+ * (custom events, less-common DOM events) the explicit `delegateCapture()`
+ * remains the escape hatch.
+ */
+const NON_BUBBLING = new Set<string>([
+  'focus',
+  'blur',
+  'scroll',
+  'load',
+  'error',
+  'mouseenter',
+  'mouseleave',
+]);
 
 /**
  * Validate a CSS selector at registration time, so a typo throws immediately
@@ -39,15 +67,18 @@ function assertValidSelector(selector: string, fn: string): void {
 }
 
 /**
- * Bubble-phase delegation. Installs ONE listener on `rootEl` for the given
- * event type. When the event fires, walks up from `event.target` to the root
- * looking for an element matching `selector`; if found, fires `handler` with
- * the matched element as the second arg.
+ * Delegation that "just works" for both bubbling and the common non-bubbling
+ * events. Installs ONE listener on `rootEl`; for known non-bubblers (see
+ * `NON_BUBBLING` above) the listener is registered on the capture phase so
+ * it actually reaches the target, otherwise on the bubble phase. Either way,
+ * matching walks up from `event.target` via `closest(selector)` and fires
+ * `handler(event, matched)` if the match is inside `rootEl`.
  *
  * Returns a disposer that removes the listener.
  *
  * Usage (pseudo-code — see examples for live ones):
  *   delegate(rootEl, 'click', '[data-action="add"]', handlerFn);
+ *   delegate(rootEl, 'focus', 'input',                handlerFn); // auto-capture
  */
 export function delegate(
   rootEl: HTMLElement,
@@ -64,9 +95,10 @@ export function delegate(
       handler(event, matched);
     }
   };
-  rootEl.addEventListener(type, listener);
+  const capture = NON_BUBBLING.has(type);
+  rootEl.addEventListener(type, listener, capture);
   return () => {
-    rootEl.removeEventListener(type, listener);
+    rootEl.removeEventListener(type, listener, capture);
   };
 }
 

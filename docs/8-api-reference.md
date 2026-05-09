@@ -103,13 +103,16 @@ If a descendant of a moved row holds focus, the reconciler snapshots the active 
 
 ```ts
 delegate(rootEl, 'click', '[data-action="add"]', (event, matched) => { ... });
+delegate(rootEl, 'focus', '.field-row',          (event, row)     => { ... });
 ```
 
-Bubble-phase delegation. Walks up from `event.target` via `closest(selector)`; if the match is inside `rootEl`, fires `handler(event, matched)`. Returns a disposer.
+One root listener with `closest(selector)`-style walk-up matching; fires `handler(event, matched)` if the match is inside `rootEl`. Returns a disposer.
+
+Auto-promotes the well-known non-bubbling event types (`focus`, `blur`, `scroll`, `load`, `error`, `mouseenter`, `mouseleave`) to capture phase under the hood, so the call site looks identical regardless of whether the event bubbles. Selector matching stays `closest()`-style for every event type — wrapper selectors still match when the event lands on a descendant.
 
 ### `delegateCapture(rootEl, type, selector, handler): () => void`
 
-Same shape, but installs the listener with `capture: true`. Use for non-bubbling events (`focus`, `blur`, `scroll`, `load`, `error`). Match is via `target.matches(selector)` (no walk-up).
+Same shape, but installs on the capture phase and matches via `target.matches(selector)` (direct match, no walk-up). The escape hatch — use it for custom non-bubbling events that aren't in `delegate()`'s auto-promotion list, or when you want capture-phase semantics with strict element-match behaviour.
 
 ## 8.5 JSX runtime
 

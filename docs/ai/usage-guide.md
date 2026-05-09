@@ -64,8 +64,8 @@ import {
 | `resetAllStores()` | `void` | reset every registered store (test cleanup) |
 | `mount(el, render)` | `() => void` disposer | bind reactive render to a DOM element |
 | `each(items, render, key?)` | `SafeHtml` | iterate a keyed list; cache per-item HTML by identity (+ optional `key`) so unchanged rows skip re-render |
-| `delegate(root, type, sel, h)` | `() => void` disposer | bubble-phase delegation |
-| `delegateCapture(root, type, sel, h)` | `() => void` disposer | capture-phase (focus, blur, scroll, etc.) |
+| `delegate(root, type, sel, h)` | `() => void` disposer | event delegation; auto-promotes `focus`/`blur`/`scroll`/`load`/`error`/`mouseenter`/`mouseleave` to capture phase. `closest()`-style matching for every event type. |
+| `delegateCapture(root, type, sel, h)` | `() => void` disposer | explicit-capture escape hatch. `target.matches()`-style direct matching. |
 | `toElement(jsx)` | `Element` | parse JSX/HTML string into one DOM node (SVG-aware) |
 | `raw(html)` | `SafeHtml` | inject pre-escaped HTML (icons, server fragments) |
 | `isSafeHtml(v)` | `boolean` (type guard) | cross-bundle-safe `SafeHtml` check; prefer over `instanceof` |
@@ -104,8 +104,8 @@ delegate(rootEl, 'click', '[data-action="inc"]', () => { count.value += 1; });
 
 | Tier | Events | Helper | Match |
 | --- | --- | --- | --- |
-| 1 (bubble) | click, input, change, submit, keydown/up, pointerdown/up/move, focusin/focusout, drag*, drop, wheel, contextmenu, copy/paste/cut | `delegate` | `closest(selector)` (walks up from target) |
-| 2 (capture) | focus, blur, scroll, load, error, mouseenter, mouseleave | `delegateCapture` | `target.matches(selector)` |
+| 1 (`delegate`) | click, input, change, submit, keydown/up, pointerdown/up/move, focusin/focusout, drag*, drop, wheel, contextmenu, copy/paste/cut, **plus** focus, blur, scroll, load, error, mouseenter, mouseleave (auto-promoted to capture under the hood) | `delegate` | `closest(selector)` (walks up from target) |
+| 2 (`delegateCapture`) | custom non-bubbling events not covered by Tier 1's auto-promotion list, or any event you want strict element-match for | `delegateCapture` | `target.matches(selector)` (no walk-up) |
 | 3 (skip) | library-owned subtrees (Monaco, charts, terminals, iframes) | mark host with `data-morph-skip`, mount lib imperatively, add listeners directly to the lib | n/a |
 
 ## Hard rules (every AI gets these wrong at least once)

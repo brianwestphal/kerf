@@ -95,8 +95,8 @@ Every export reachable via `import { ... } from 'kerfjs'`:
 | `Store<TState, TActions>` | `store.ts` | Type |
 | `mount` | `mount.ts` | Render JSX into a DOM element via kerf's segment-aware diff |
 | `each` | `each.ts` | Keyed list iteration; per-item HTML memo by object identity (+ optional key) |
-| `delegate` | `delegate.ts` | Tier 1 bubbling delegation |
-| `delegateCapture` | `delegate.ts` | Tier 2 capture-phase delegation |
+| `delegate` | `delegate.ts` | Event delegation; auto-promotes known non-bubblers (focus/blur/scroll/load/error/mouseenter/mouseleave) to capture, keeps `closest()` matching |
+| `delegateCapture` | `delegate.ts` | Explicit-capture escape hatch; `target.matches()`-style direct matching |
 | `toElement` | `toElement.ts` | JSX → DOM (SVG-aware) |
 | `SafeHtml` | `jsx-runtime.ts` | The JSX result type |
 | `isSafeHtml` | `jsx-runtime.ts` | Cross-bundle type guard for `SafeHtml` (preferred over `instanceof`) |
