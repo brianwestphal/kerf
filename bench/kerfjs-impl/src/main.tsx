@@ -16,7 +16,8 @@
  *   - Create:   first render, no granular wins available — same speed as before.
  */
 
-import { arraySignal, batch, delegate, each, mount } from 'kerfjs';
+import { arraySignal } from 'kerfjs/array-signal';
+import { batch, delegate, each, mount } from 'kerfjs';
 
 interface Row {
   id: number;

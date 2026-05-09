@@ -44,6 +44,10 @@
     "./testing": {
       "types": "./dist/testing.d.ts",
       "import": "./dist/testing.js"
+    },
+    "./array-signal": {
+      "types": "./dist/array-signal.d.ts",
+      "import": "./dist/array-signal.js"
     }
   },
   "files": [

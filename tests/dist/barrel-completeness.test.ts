@@ -27,6 +27,7 @@ const HERE = dirname(fileURLToPath(import.meta.url));
 const DIST_INDEX = resolve(HERE, '../../dist/index.js');
 const DIST_JSX = resolve(HERE, '../../dist/jsx-runtime.js');
 const DIST_TESTING = resolve(HERE, '../../dist/testing.js');
+const DIST_ARRAY_SIGNAL = resolve(HERE, '../../dist/array-signal.js');
 
 interface ExpectedExport {
   name: string;
@@ -50,10 +51,6 @@ const EXPECTED_EXPORTS: readonly ExpectedExport[] = [
   { name: 'mount', kind: 'function' },
   { name: 'each', kind: 'function' },
 
-  // KF-92 — granular collection signal for keyed lists
-  { name: 'arraySignal', kind: 'function' },
-  { name: 'ArraySignal', kind: 'class' },
-
   // Event delegation
   { name: 'delegate', kind: 'function' },
   { name: 'delegateCapture', kind: 'function' },
@@ -69,9 +66,10 @@ const EXPECTED_EXPORTS: readonly ExpectedExport[] = [
 ] as const;
 
 function requireDist(): void {
-  if (!existsSync(DIST_INDEX) || !existsSync(DIST_JSX) || !existsSync(DIST_TESTING)) {
+  if (!existsSync(DIST_INDEX) || !existsSync(DIST_JSX) || !existsSync(DIST_TESTING)
+      || !existsSync(DIST_ARRAY_SIGNAL)) {
     throw new Error(
-      `dist/ is missing — run 'npm run build' first. Expected: ${DIST_INDEX}, ${DIST_JSX}, ${DIST_TESTING}`,
+      `dist/ is missing — run 'npm run build' first. Expected: ${DIST_INDEX}, ${DIST_JSX}, ${DIST_TESTING}, ${DIST_ARRAY_SIGNAL}`,
     );
   }
 }
@@ -136,6 +134,58 @@ describe('dist/ — barrel completeness (KF-24)', () => {
     const testingMod = await import(DIST_TESTING) as Record<string, unknown>;
     expect(indexMod.clearStoreRegistry).toBeUndefined();
     expect(typeof testingMod.clearStoreRegistry).toBe('function');
+  });
+
+  it('arraySignal / ArraySignal / ArrayPatch are reachable via kerfjs/array-signal only (KF-95)', async () => {
+    requireDist();
+    const indexMod = await import(DIST_INDEX) as Record<string, unknown>;
+    const arrayMod = await import(DIST_ARRAY_SIGNAL) as Record<string, unknown>;
+    // Main barrel must NOT expose them — that's the point of the subpath split.
+    expect(indexMod.arraySignal).toBeUndefined();
+    expect(indexMod.ArraySignal).toBeUndefined();
+    // Subpath does expose them.
+    expect(typeof arrayMod.arraySignal).toBe('function');
+    expect(typeof arrayMod.ArraySignal).toBe('function');
+  });
+
+  it('each() detects arraySignal-from-subpath via the brand symbol, no shared class identity required', async () => {
+    requireDist();
+    const { each, mount } = await import(DIST_INDEX) as {
+      each: <T extends object>(items: unknown, render: (item: T) => unknown) => unknown;
+      mount: (root: HTMLElement, render: () => unknown) => () => void;
+    };
+    const { arraySignal } = await import(DIST_ARRAY_SIGNAL) as {
+      arraySignal: <T>(initial?: readonly T[]) => {
+        update(i: number, fn: (item: T) => T): void;
+        push(item: T): void;
+        value: readonly T[];
+      };
+    };
+    const { jsx } = await import(DIST_JSX) as {
+      jsx: (tag: unknown, props: Record<string, unknown>) => { toString(): string };
+    };
+
+    // Live render to confirm each() picks up the brand-stamped class
+    // even though the main barrel doesn't import the class at runtime.
+    const root = document.createElement('div');
+    document.body.appendChild(root);
+    try {
+      const rows = arraySignal<{ id: number; label: string }>([
+        { id: 1, label: 'a' },
+        { id: 2, label: 'b' },
+      ]);
+      mount(root, () => jsx('ul', {
+        children: each(rows, (r: { id: number; label: string }) =>
+          jsx('li', { 'data-key': String(r.id), children: r.label })),
+      }));
+      // First render via snapshot path (no patches yet).
+      expect(root.querySelectorAll('li').length).toBe(2);
+      // Granular path: update fires a brand-detected ArraySignal.
+      rows.update(0, (r) => ({ ...r, label: 'A' }));
+      expect(root.querySelectorAll('li')[0].textContent).toBe('A');
+    } finally {
+      document.body.innerHTML = '';
+    }
   });
 
   it('jsx / jsxs / jsxDEV are reachable via kerfjs/jsx-runtime (the JSX transform contract)', async () => {

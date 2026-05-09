@@ -6,7 +6,8 @@
 
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-import { ArraySignal, arraySignal, each, mount, signal } from '../../src/index.js';
+import { ArraySignal, arraySignal } from '../../src/array-signal.js';
+import { each, mount, signal } from '../../src/index.js';
 import { jsx } from '../../src/jsx-runtime.js';
 
 describe('arraySignal — standalone API', () => {

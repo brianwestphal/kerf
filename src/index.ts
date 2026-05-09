@@ -6,7 +6,8 @@
  * via tsconfig.json's `"jsxImportSource": "kerfjs"`.
  */
 
-export { type ArrayPatch, ArraySignal, arraySignal } from './array-signal.js';
+// arraySignal moved to its own subpath in KF-95 — `import { arraySignal } from 'kerfjs/array-signal'`.
+// Apps that don't use granular collection signals shed ~1 KB from the main barrel as a result.
 export { delegate, delegateCapture } from './delegate.js';
 export { each } from './each.js';
 export { Fragment, isSafeHtml, raw, SafeHtml } from './jsx-runtime.js';

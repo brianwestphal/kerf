@@ -31,10 +31,26 @@
  * top-level element — the list reconciler binds one live DOM node per item.
  */
 
-import { type ArrayPatch, ArraySignal } from './array-signal.js';
+import type { ArrayPatch, ArraySignal } from './array-signal.js';
 import type { SafeHtml } from './jsx-runtime.js';
 import { granularListSafeHtml, isSafeHtml, listSafeHtml } from './jsx-runtime.js';
 import type { ArrayPatchInternal } from './segment.js';
+
+/**
+ * Cross-bundle brand check for `ArraySignal` instances (KF-95). The
+ * `arraySignal` factory + class live in their own subpath
+ * (`kerfjs/array-signal`); this module knows nothing about that
+ * subpath at runtime — it identifies instances by the brand symbol
+ * stamped on them. Apps that never import `arraySignal` shed the
+ * ~1 KB of class code without breaking the structural contract here.
+ */
+const ARRAY_SIGNAL_BRAND = Symbol.for('kerfjs.ArraySignal');
+
+function isArraySignal<T extends object>(value: unknown): value is ArraySignal<T> {
+  return typeof value === 'object'
+    && value !== null
+    && (value as Record<symbol, unknown>)[ARRAY_SIGNAL_BRAND] === true;
+}
 
 interface CacheEntry {
   key: unknown;
@@ -81,11 +97,13 @@ export function each<T extends object>(
   // KF-92 fast path: when items is an ArraySignal AND we're inside a mount
   // render context AND patches have queued since the last drain, emit a
   // granular list segment that the list reconciler applies in O(patches)
-  // instead of O(N).
-  if (items instanceof ArraySignal && context !== null) {
+  // instead of O(N). Detection via the brand symbol (KF-95) — the
+  // `arraySignal` class lives in the `kerfjs/array-signal` subpath and is
+  // not imported here at runtime.
+  if (isArraySignal<T>(items) && context !== null) {
     return eachGranular(items, render, key);
   }
-  const snapshotItems: readonly T[] = items instanceof ArraySignal
+  const snapshotItems: readonly T[] = isArraySignal<T>(items)
     ? items.value as readonly T[]
     : items;
   return eachSnapshot(snapshotItems, render, key);

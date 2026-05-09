@@ -31,10 +31,25 @@ export type ArrayPatch<T> =
   | { type: 'move'; from: number; to: number }
   | { type: 'replace'; items: readonly T[] };
 
+/**
+ * Cross-bundle brand for `ArraySignal` instances. `each()` and the
+ * granular reconciler check for this brand instead of `instanceof
+ * ArraySignal`, so the main `kerfjs` barrel can detect arraySignal
+ * inputs without importing the class at runtime — the class lives
+ * only in the `kerfjs/array-signal` subpath, so apps that don't need
+ * granular collections shed ~1 KB.
+ *
+ * Same `Symbol.for(...)`-based pattern as `SafeHtml` (KF-14): cross-
+ * bundle-safe, zero-cost runtime check.
+ */
+export const ARRAY_SIGNAL_BRAND = Symbol.for('kerfjs.ArraySignal');
+
 export class ArraySignal<T> {
   private _items: T[];
   private _version: Signal<number>;
   private _patches: ArrayPatch<T>[];
+  // Branded so `isArraySignal()` recognises instances from any copy of this module.
+  readonly [ARRAY_SIGNAL_BRAND] = true as const;
 
   constructor(initial: readonly T[] = []) {
     this._items = [...initial];
