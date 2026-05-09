@@ -7,6 +7,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ## [0.4.0] - 2026-05-09
 
 
+- Auto-promote known non-bubbling events (focus, blur, scroll, etc.) to capture phase in `delegate()`
+
+## [0.4.0] - 2026-05-09
+
+
 - `delegate()` now auto-promotes the seven well-known non-bubbling events (`focus`, `blur`, `scroll`, `load`, `error`, `mouseenter`, `mouseleave`) to capture phase, with `closest()`-style selector matching preserved
 - Fixed focus and caret position loss when reordering keyed `each()` rows on engines that drop focus on `insertBefore` (older Safari, happy-dom)
 - `mount()` now throws a descriptive error when the root element is null/undefined instead of a generic "Cannot set properties of null"
