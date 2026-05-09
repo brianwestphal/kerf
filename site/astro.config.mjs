@@ -29,9 +29,21 @@ export default defineConfig({
           tag: 'script',
           content: `(function(){function s(){var p=document.querySelector('.sidebar-pane');if(!p)return;var a=p.querySelector('[aria-current="page"]');if(!a)return;var pr=p.getBoundingClientRect();var ar=a.getBoundingClientRect();if(ar.top>=pr.top&&ar.bottom<=pr.bottom)return;var o=(ar.top-pr.top)+p.scrollTop-(p.clientHeight/2)+(ar.height/2);p.scrollTop=Math.max(0,o)}if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',s)}else{s()}document.addEventListener('astro:page-load',s)})();`,
         },
+        // Favicon set + PWA manifest. The SVG path is owned by Starlight's
+        // `favicon` option below; the head additions cover the legacy ICO,
+        // PNG fallbacks, Apple touch icon, Safari pinned-tab mask, manifest,
+        // and the Android theme-color meta. All assets are emitted by
+        // `scripts/build-icons.mjs` from the SVGs in `src/assets/`.
+        { tag: 'link', attrs: { rel: 'icon',             type: 'image/png',     sizes: '32x32', href: '/kerf/favicon-32.png' } },
+        { tag: 'link', attrs: { rel: 'icon',             type: 'image/png',     sizes: '16x16', href: '/kerf/favicon-16.png' } },
+        { tag: 'link', attrs: { rel: 'icon',             type: 'image/x-icon',                  href: '/kerf/favicon.ico' } },
+        { tag: 'link', attrs: { rel: 'apple-touch-icon', sizes: '180x180',                       href: '/kerf/apple-touch-icon.png' } },
+        { tag: 'link', attrs: { rel: 'mask-icon',                                                href: '/kerf/mask-icon.svg', color: '#ef4370' } },
+        { tag: 'link', attrs: { rel: 'manifest',                                                 href: '/kerf/site.webmanifest' } },
+        { tag: 'meta', attrs: { name: 'theme-color',                                             content: '#ef4370' } },
       ],
       logo: {
-        src: './src/assets/logo-placeholder.svg',
+        src: './src/assets/logo.svg',
         replacesTitle: false,
       },
       favicon: '/favicon.svg',
