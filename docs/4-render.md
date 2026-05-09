@@ -104,6 +104,37 @@ When the keyed list reconciler moves a row whose descendant is the focused eleme
 
 Replaced rows (cache miss — the row's HTML changed) are a different story: the old node is removed before the new one is inserted, so focus that lived inside it is genuinely gone. That matches the behaviour of any framework that re-renders a row.
 
+## 4.4.1 User-agent-owned state attributes
+
+A handful of HTML elements have boolean attributes that the *user agent* sets in response to user interaction — `<details open>` and `<dialog open>` are the canonical pair. When a user expands a `<details>`, the browser adds `open=""` to the element. If kerf's morph treated that attribute like any other developer-authored attribute, the next re-render would see the live `open=""` against a template without it and remove it — collapsing the user's expansion.
+
+To keep uncontrolled `<details>` and `<dialog>` working naturally, the morph **never removes `open` from these elements**. The attribute is treated as user-agent-owned: the diff doesn't know whether the developer or the browser put it there, so the safe default is to leave it alone.
+
+### Trade-off
+
+Controlled-style usage where a signal flips `open` from `true` → `false` does NOT auto-collapse the element:
+
+```tsx
+// Open the panel from JSX — works.
+<details open={isOpen.value}>...</details>
+//   isOpen.value === true  → open attribute set on the live element.
+//   isOpen.value === false → open attribute is NOT removed (it survives like a user-set one).
+```
+
+If you need controlled behaviour, drive `open` imperatively from a signal subscription:
+
+```tsx
+import { effect } from 'kerfjs';
+
+mount(rootEl, () => <details id="panel">...</details>);
+effect(() => {
+  const det = document.getElementById('panel') as HTMLDetailsElement;
+  if (det) det.open = isOpen.value;
+});
+```
+
+Or design around the element's native semantics: render `<details>` once, listen for the `toggle` event, and push the open state into a signal — that way the user's interaction and your state stay in sync without the framework arbitrating.
+
 ## 4.5 Multiple `mount()` calls
 
 You can call `mount()` on different elements for different parts of the page. Each one gets its own `effect()` and tracks its own signals:

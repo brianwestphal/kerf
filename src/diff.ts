@@ -165,6 +165,24 @@ function morphElement(
   diffChildren(fromEl, toEl, listParents);
 }
 
+/**
+ * Attributes the user agent toggles in response to user interaction.
+ * `<details>` and `<dialog>` add/remove `open=""` themselves when the user
+ * expands or closes the element. If the developer's JSX never mentions
+ * `open`, treating that attribute as user-agent-owned and leaving it alone
+ * during the morph keeps the user-driven state intact across re-renders.
+ *
+ * Trade-off (KF-84): controlled-style `<details open={signal.value}>` where
+ * the signal flips false won't auto-collapse the element, because the
+ * morph's remove pass no longer reaches `open`. Apps that need controlled
+ * behaviour should drive `open` imperatively (e.g. `el.removeAttribute('open')`
+ * inside an action) or wrap with a state-toggle pattern. The uncontrolled
+ * case is the common one and the one that was silently broken before.
+ */
+function isUserAgentOwnedAttr(tagName: string, name: string): boolean {
+  return name === 'open' && (tagName === 'DETAILS' || tagName === 'DIALOG');
+}
+
 function morphAttributes(fromEl: Element, toEl: Element): void {
   // Set/update every attribute on toEl.
   const toAttrs = toEl.attributes;
@@ -183,13 +201,14 @@ function morphAttributes(fromEl: Element, toEl: Element): void {
   }
   // Remove attributes that are no longer present on toEl.
   const fromAttrs = fromEl.attributes;
+  const fromTag = fromEl.tagName;
   for (let i = fromAttrs.length - 1; i >= 0; i--) {
     const attr = fromAttrs[i];
     const ns = attr.namespaceURI;
     const name = attr.localName;
     if (ns !== null) {
       if (!toEl.hasAttributeNS(ns, name)) fromEl.removeAttributeNS(ns, name);
-    } else if (!toEl.hasAttribute(name)) {
+    } else if (!toEl.hasAttribute(name) && !isUserAgentOwnedAttr(fromTag, name)) {
       fromEl.removeAttribute(name);
     }
   }

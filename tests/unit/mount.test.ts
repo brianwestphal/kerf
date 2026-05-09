@@ -153,6 +153,72 @@ describe('mount()', () => {
     expect(() => mount(undefined as unknown as HTMLElement, () => '<p>x</p>'))
       .toThrow(/mount: rootEl is null\/undefined/);
   });
+
+  it('preserves user-set <details open> across re-renders (KF-84)', () => {
+    const tick = signal(0);
+    mount(root, () => {
+      void tick.value;
+      return jsx('details', { children: jsx('summary', { children: 'click' }) });
+    });
+    const det = root.querySelector('details') as HTMLDetailsElement;
+    expect(det.hasAttribute('open')).toBe(false);
+    det.setAttribute('open', '');
+    expect(det.hasAttribute('open')).toBe(true);
+    tick.value = 1;
+    expect(det.hasAttribute('open')).toBe(true);
+  });
+
+  it('preserves user-set <dialog open> across re-renders (KF-84)', () => {
+    const tick = signal(0);
+    mount(root, () => {
+      void tick.value;
+      return jsx('dialog', { children: 'hello' });
+    });
+    const dlg = root.querySelector('dialog') as HTMLDialogElement;
+    dlg.setAttribute('open', '');
+    expect(dlg.hasAttribute('open')).toBe(true);
+    tick.value = 1;
+    expect(dlg.hasAttribute('open')).toBe(true);
+  });
+
+  it('still removes non-state attributes that the template no longer has', () => {
+    // Control: confirm the user-agent-owned exception is narrow — arbitrary
+    // attributes set imperatively on the live element are still wiped on the
+    // next morph (consistent with the `make live match template` contract).
+    const tick = signal(0);
+    mount(root, () => {
+      void tick.value;
+      return jsx('div', { children: 'x' });
+    });
+    const div = root.querySelector('div')!;
+    div.setAttribute('data-imperative', 'set');
+    expect(div.getAttribute('data-imperative')).toBe('set');
+    tick.value = 1;
+    expect(div.getAttribute('data-imperative')).toBe(null);
+  });
+
+  it('still removes <details open> when the developer explicitly toggles it via the template (controlled mode)', () => {
+    // Trade-off documented in src/diff.ts: with the user-agent-owned rule,
+    // a controlled `<details open={isOpen.value}>` flipping from true → false
+    // does NOT auto-collapse. We pin this so any future fix that restores
+    // controlled-mode semantics fails this test loudly and prompts a doc
+    // update.
+    const isOpen = signal(true);
+    mount(root, () =>
+      jsx('details', {
+        ...(isOpen.value ? { open: true } : {}),
+        children: jsx('summary', { children: 'x' }),
+      }),
+    );
+    const det = root.querySelector('details') as HTMLDetailsElement;
+    expect(det.hasAttribute('open')).toBe(true);
+    isOpen.value = false;
+    // Documented limitation: the morph's remove pass skips `open` on
+    // <details>/<dialog>, so even an explicit "remove via template" doesn't
+    // take effect. Apps that need controlled behaviour drive `open`
+    // imperatively (e.g. `el.removeAttribute('open')`).
+    expect(det.hasAttribute('open')).toBe(true);
+  });
 });
 
 describe('mount() — focus and selection preservation', () => {
