@@ -40,33 +40,35 @@ interface CacheEntry {
 }
 
 /**
- * Per-`render`-function row cache. Two `each()` call-sites that share the
- * same items but use different render functions need separate caches —
- * otherwise the second caller's cache lookup hits the first caller's HTML
- * (silent stale-render bug — KF-73).
+ * Per-render context passed in by `mount()` for the duration of one render
+ * pass. Carries (a) a counter that assigns a stable list id to the n-th
+ * `each()` call across renders within a mount, and (b) a per-mount cache map
+ * keyed on those list ids.
  *
- * Indexing by the render function itself is the natural identity: same
- * render fn + same item + same key = same HTML by construction; different
- * render fn = different HTML by construction. Both keys are object keys
- * (`Function` extends `object`), so `WeakMap` of `WeakMap` works and GC
- * reclaims everything when the render fn becomes unreachable.
- */
-type RenderFn = (item: never, index: number) => SafeHtml | string;
-const RENDER_CACHES = new WeakMap<RenderFn, WeakMap<object, CacheEntry>>();
-
-/**
- * Per-mount counter for assigning stable list ids across renders. `mount()`
- * sets this at the start of each render so that the n-th `each()` call
- * produces id "n" every render — the binding to the live parent persists.
+ * Why per-(mount, listId) keying for the cache:
+ * - Same `each()` callsite across renders within a mount → same id → same
+ *   cache → cache hits work, even when the JSX render fn is an inline arrow
+ *   that's a fresh function reference on every closure run (the typical
+ *   pattern; KF-87 fixed the regression where this broke).
+ * - Different `each()` callsites within the same mount → different ids →
+ *   separate caches → no cross-callsite collision (the case KF-73 fixed,
+ *   preserved here).
+ * - Different mounts → different `RenderContext` instances (the cache map
+ *   lives on `mount()`'s closure) → separate caches.
  *
- * Outside a mount() render, calls to `each()` still work but get the
- * sentinel id "orphan"; their output flattens correctly via `toString()`
- * but the structural fast-path doesn't apply (no `mount()` is watching).
+ * Outside a `mount()` render (e.g. `each(...).toString()` for SSR string
+ * production) `context` is null and items are rendered every call —
+ * caching is a `mount()` feature, not a global one.
  */
-let listCounter: { value: number } | null = null;
+export interface RenderContext {
+  counter: number;
+  caches: Map<string, WeakMap<object, CacheEntry>>;
+}
 
-export function _setListCounter(c: { value: number } | null): void {
-  listCounter = c;
+let context: RenderContext | null = null;
+
+export function _setRenderContext(c: RenderContext | null): void {
+  context = c;
 }
 
 export function each<T extends object>(
@@ -74,12 +76,21 @@ export function each<T extends object>(
   render: (item: T, index: number) => SafeHtml | string,
   key?: (item: T, index: number) => unknown,
 ): SafeHtml {
-  const id = listCounter !== null ? String(listCounter.value++) : 'orphan';
-  let cache = RENDER_CACHES.get(render as RenderFn);
-  if (cache === undefined) {
-    cache = new WeakMap<object, CacheEntry>();
-    RENDER_CACHES.set(render as RenderFn, cache);
+  let id: string;
+  let cache: WeakMap<object, CacheEntry> | null;
+  if (context !== null) {
+    id = String(context.counter++);
+    let c = context.caches.get(id);
+    if (c === undefined) {
+      c = new WeakMap<object, CacheEntry>();
+      context.caches.set(id, c);
+    }
+    cache = c;
+  } else {
+    id = 'orphan';
+    cache = null;
   }
+
   const segItems = new Array<{ ref: object; cacheKey: unknown; html: string }>(items.length);
   const seen = new Set<object>();
   for (let i = 0; i < items.length; i++) {
@@ -99,14 +110,19 @@ export function each<T extends object>(
     }
     seen.add(item);
     const k = key ? key(item, i) : undefined;
-    const cached = cache.get(item);
     let html: string;
-    if (cached !== undefined && cached.key === k) {
-      html = cached.html;
+    if (cache !== null) {
+      const cached = cache.get(item);
+      if (cached !== undefined && cached.key === k) {
+        html = cached.html;
+      } else {
+        const out = render(item, i);
+        html = isSafeHtml(out) ? out.toString() : out;
+        cache.set(item, { key: k, html });
+      }
     } else {
       const out = render(item, i);
       html = isSafeHtml(out) ? out.toString() : out;
-      cache.set(item, { key: k, html });
     }
     segItems[i] = { ref: item, cacheKey: k, html };
   }

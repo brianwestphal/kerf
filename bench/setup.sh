@@ -25,11 +25,15 @@ UPSTREAM_DIR="${CACHE_DIR}/js-framework-benchmark"
 UPSTREAM_REPO="https://github.com/krausest/js-framework-benchmark.git"
 
 # Frameworks (besides kerfjs) to build for comparison. Edit as you like.
+# KF-82 / KF-86 added preact-signals, lit, and vanjs to the reference set.
 REFERENCE_FRAMEWORKS=(
   "non-keyed/vanillajs"
   "keyed/solid"
   "keyed/react-hooks"
   "keyed/vue"
+  "keyed/preact-signals"
+  "keyed/lit"
+  "keyed/vanjs"
 )
 
 echo "==> Building kerfjs and packing tarball"

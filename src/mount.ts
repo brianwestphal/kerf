@@ -26,7 +26,7 @@
  */
 
 import { diff } from './diff.js';
-import { _setListCounter } from './each.js';
+import { _setRenderContext, type RenderContext } from './each.js';
 import type { SafeHtml } from './jsx-runtime.js';
 import { isSafeHtml } from './jsx-runtime.js';
 import {
@@ -76,17 +76,29 @@ export function mount(rootEl: HTMLElement, render: () => SafeHtml | string): () 
     );
   }
   const bindings = new Map<string, ListBinding>();
-  const counter = { value: 0 };
+  // Per-mount render context: the list-id counter is reset at the start of
+  // each render (so the n-th `each()` call gets the same id every render);
+  // the `caches` map persists across renders so unchanged items skip the
+  // JSX work via cache hits even when the JSX render function is an inline
+  // arrow that's a fresh function reference on every closure run (KF-87).
+  const renderCtx: RenderContext = { counter: 0, caches: new Map() };
   let isFirst = true;
+  // KF-88: the static-surrounds HTML string from the previous render. If a
+  // re-render produces the same string (the common case when a signal flips
+  // a class on one row but the page chrome is unchanged), we skip the
+  // template clone, the innerHTML re-parse, and the diff() walk entirely
+  // and go straight to the per-list reconcilers. Saves ~8 ms per update-
+  // path render against the krausest harness.
+  let prevStaticHtml = '';
 
   return effect(() => {
-    counter.value = 0;
-    _setListCounter(counter);
+    renderCtx.counter = 0;
+    _setRenderContext(renderCtx);
     let result: SafeHtml | string;
     try {
       result = render();
     } finally {
-      _setListCounter(null);
+      _setRenderContext(null);
     }
 
     const segment: Segment = isSafeHtml(result)
@@ -99,19 +111,28 @@ export function mount(rootEl: HTMLElement, render: () => SafeHtml | string): () 
       // first-render reconcile is a no-op (every item is a cache hit).
       rootEl.innerHTML = flatten(segment, true);
       bindListsFromMarkers(rootEl, segment, bindings);
+      prevStaticHtml = flattenWithoutListItems(segment);
       isFirst = false;
     } else {
-      // Static-surrounds-only render: lists become marker-only in the
-      // template. `diff()` skips bound list parents' children entirely
-      // (so existing rows stay) and inserts the marker for any list that
-      // didn't exist before. The marker walk afterwards binds those new
-      // lists; the per-list reconcile below patches every list's items.
-      const template = rootEl.cloneNode(false) as HTMLElement;
-      template.innerHTML = flattenWithoutListItems(segment);
-      const listParents = new Set<Element>();
-      for (const b of bindings.values()) listParents.add(b.liveParent);
-      diff(rootEl, template, listParents);
-      bindListsFromMarkers(rootEl, segment, bindings);
+      const currentStaticHtml = flattenWithoutListItems(segment);
+      if (currentStaticHtml === prevStaticHtml) {
+        // KF-88 fast path: static surrounds didn't change byte-for-byte. The
+        // diff would do no work and bindListsFromMarkers has nothing to
+        // discover (every list id already bound). Skip both.
+      } else {
+        // Static surrounds changed (a signal-driven attribute flip outside
+        // any `each()`, a conditional sub-tree appearing or disappearing,
+        // a list newly added at this position, etc.). Build the template
+        // and run diff() over the surrounds, then re-bind any lists that
+        // appeared.
+        const template = rootEl.cloneNode(false) as HTMLElement;
+        template.innerHTML = currentStaticHtml;
+        const listParents = new Set<Element>();
+        for (const b of bindings.values()) listParents.add(b.liveParent);
+        diff(rootEl, template, listParents);
+        bindListsFromMarkers(rootEl, segment, bindings);
+        prevStaticHtml = currentStaticHtml;
+      }
     }
 
     for (const listSeg of collectLists(segment).values()) {

@@ -30,6 +30,9 @@ DEFAULT_FRAMEWORKS=(
   "keyed/solid"
   "keyed/react-hooks"
   "keyed/vue"
+  "keyed/preact-signals"
+  "keyed/lit"
+  "keyed/vanjs"
 )
 
 # Split args into "framework selectors" (no leading dash) and "passthrough flags".
@@ -59,8 +62,11 @@ for _ in {1..30}; do
 done
 
 echo "==> Running benchmarks: ${FRAMEWORKS[*]}"
+# Passthrough flags must come BEFORE --framework, since --framework takes a
+# variadic list and any flag landing after it would be parsed as a framework
+# name instead.
 (cd "${UPSTREAM_DIR}/webdriver-ts" \
-  && npm run bench -- --headless --framework "${FRAMEWORKS[@]}" ${PASSTHROUGH[@]+"${PASSTHROUGH[@]}"})
+  && npm run bench -- --headless ${PASSTHROUGH[@]+"${PASSTHROUGH[@]}"} --framework "${FRAMEWORKS[@]}")
 
 echo
 echo "==> Done. Raw results: ${UPSTREAM_DIR}/webdriver-ts/results/"

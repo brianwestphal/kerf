@@ -155,36 +155,80 @@ describe('mount()', () => {
   });
 
   it('preserves user-set <details open> across re-renders (KF-84)', () => {
-    const tick = signal(0);
-    mount(root, () => {
-      void tick.value;
-      return jsx('details', { children: jsx('summary', { children: 'click' }) });
-    });
+    // Force the template to actually change between renders (KF-88's fast
+    // path skips the diff when surrounds are byte-identical, which would
+    // bypass the user-agent-owned-attr handling entirely). The class flip
+    // makes the morphAttributes path run.
+    const cls = signal('a');
+    mount(root, () =>
+      jsx('details', {
+        className: cls.value,
+        children: jsx('summary', { children: 'click' }),
+      }),
+    );
     const det = root.querySelector('details') as HTMLDetailsElement;
     expect(det.hasAttribute('open')).toBe(false);
     det.setAttribute('open', '');
     expect(det.hasAttribute('open')).toBe(true);
-    tick.value = 1;
+    cls.value = 'b';
     expect(det.hasAttribute('open')).toBe(true);
+    expect(det.getAttribute('class')).toBe('b');  // confirms diff did run
   });
 
   it('preserves user-set <dialog open> across re-renders (KF-84)', () => {
-    const tick = signal(0);
-    mount(root, () => {
-      void tick.value;
-      return jsx('dialog', { children: 'hello' });
-    });
+    const cls = signal('a');
+    mount(root, () => jsx('dialog', { className: cls.value, children: 'hello' }));
     const dlg = root.querySelector('dialog') as HTMLDialogElement;
     dlg.setAttribute('open', '');
     expect(dlg.hasAttribute('open')).toBe(true);
-    tick.value = 1;
+    cls.value = 'b';
     expect(dlg.hasAttribute('open')).toBe(true);
+    expect(dlg.getAttribute('class')).toBe('b');
   });
 
-  it('still removes non-state attributes that the template no longer has', () => {
-    // Control: confirm the user-agent-owned exception is narrow — arbitrary
-    // attributes set imperatively on the live element are still wiped on the
-    // next morph (consistent with the `make live match template` contract).
+  it('still removes non-state attributes when the template DOES change (control for KF-84)', () => {
+    // Control for KF-84: confirm the user-agent-owned exception is narrow.
+    // The template needs to actually change for the diff to run (KF-88's
+    // static-surrounds cache short-circuits when the rendered HTML is
+    // byte-identical). Flip a class on the div to force a real diff, then
+    // assert imperative attrs are wiped while `<details>` `open` would have
+    // survived.
+    const cls = signal('a');
+    mount(root, () => jsx('div', { className: cls.value, children: 'x' }));
+    const div = root.querySelector('div')!;
+    div.setAttribute('data-imperative', 'set');
+    expect(div.getAttribute('data-imperative')).toBe('set');
+    cls.value = 'b';  // forces the template to change → diff runs → wipe
+    expect(div.getAttribute('data-imperative')).toBe(null);
+  });
+
+  it('threads existing list bindings into the diff as listParents when the template changes (KF-88 coverage)', () => {
+    // Mount has an each() list. Flipping a class on the parent forces the
+    // KF-88 slow path; the diff needs the list parent in `listParents` so
+    // it doesn't recurse into the list's children.
+    interface Row { id: string; label: string }
+    const rows = signal<Row[]>([{ id: 'a', label: 'A' }, { id: 'b', label: 'B' }]);
+    const cls = signal('one');
+    mount(root, () =>
+      jsx('section', {
+        className: cls.value,
+        children: jsx('ul', {
+          children: each(rows.value, (r) => jsx('li', { 'data-key': r.id, children: r.label })),
+        }),
+      }),
+    );
+    const ul = root.querySelector('ul')!;
+    expect(ul.children.length).toBe(2);
+    cls.value = 'two';  // template changes → diff runs → listParents path is taken
+    expect(root.querySelector('section')!.getAttribute('class')).toBe('two');
+    expect(root.querySelector('ul')!.children.length).toBe(2);  // list children preserved
+  });
+
+  it('preserves imperative attribute mutations when the template is byte-identical (KF-88 fast path)', () => {
+    // KF-88: when the rendered HTML is unchanged, mount() skips the diff
+    // entirely. Imperative DOM mutations on stable surrounds survive — a
+    // useful property for third-party libraries that update `data-state`
+    // attrs on static host elements.
     const tick = signal(0);
     mount(root, () => {
       void tick.value;
@@ -192,9 +236,9 @@ describe('mount()', () => {
     });
     const div = root.querySelector('div')!;
     div.setAttribute('data-imperative', 'set');
-    expect(div.getAttribute('data-imperative')).toBe('set');
     tick.value = 1;
-    expect(div.getAttribute('data-imperative')).toBe(null);
+    // Template is unchanged → no diff → imperative attr survives.
+    expect(div.getAttribute('data-imperative')).toBe('set');
   });
 
   it('still removes <details open> when the developer explicitly toggles it via the template (controlled mode)', () => {
