@@ -52,3 +52,25 @@ jobs:
       - run: npx vitest run --config vitest.config.dist.ts
       - run: npx vitest run --config vitest.config.dist-full.ts
       - run: npm pack --dry-run
+
+  # KF-118: browser tests run on every push/PR alongside the unit suites.
+  # The happy-dom unit tests can't model SVG/MathML namespacing, IME
+  # composition, or real mutation counts — Playwright covers those cases
+  # against chromium / firefox / webkit. The browser-binary download is
+  # cached against package-lock.json so warm runs reuse it.
+  browser:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '${{ env.NODE_VERSION }}', cache: npm }
+      - run: npm ci
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            playwright-${{ runner.os }}-
+      - run: npx playwright install --with-deps chromium firefox webkit
+      - run: npm run test:browser

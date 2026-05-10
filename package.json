@@ -69,6 +69,7 @@
     "lint": "eslint src tests",
     "typecheck": "tsc --noEmit",
     "check": "npm run lint && npm run typecheck && node scripts/check-doc-test-inventory.mjs && npm test && npm run build && vitest run --config vitest.config.dist.ts && vitest run --config vitest.config.dist-full.ts",
+    "check:full": "npm run check && playwright test",
     "check:docs:test-inventory": "node scripts/check-doc-test-inventory.mjs",
     "clean": "rm -rf dist coverage node_modules/.cache",
     "prepare": "husky",

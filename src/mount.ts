@@ -121,9 +121,20 @@ export function mount(rootEl: HTMLElement, render: () => SafeHtml | string): () 
     } else {
       const currentStaticHtml = flattenWithoutListItems(segment);
       if (currentStaticHtml === prevStaticHtml) {
-        // KF-88 fast path: static surrounds didn't change byte-for-byte. The
-        // diff would do no work and bindListsFromMarkers has nothing to
-        // discover (every list id already bound). Skip both.
+        // KF-88 fast path: static surrounds didn't change byte-for-byte.
+        // bindListsFromMarkers has nothing to discover (every list id is
+        // already bound) and the diff would short-circuit on isEqualNode for
+        // every element it visited — but the visit itself isn't free. Skip
+        // both to save ~8 ms per partial-update / select-row / swap-rows
+        // render in the krausest harness.
+        //
+        // Trade-off (KF-117, documented in docs/4-render.md §4.4.2): any
+        // attribute or child set imperatively on a kerf-managed element
+        // (e.g. `el.setAttribute(...)`) survives across no-op re-renders
+        // because the diff doesn't run to wipe it. When the surrounds DO
+        // change, the diff runs and `morphAttributes` removes anything the
+        // JSX didn't authorise. This matches the framework's "smallest cut"
+        // model: don't touch what JSX didn't change.
       } else {
         // Static surrounds changed (a signal-driven attribute flip outside
         // any `each()`, a conditional sub-tree appearing or disappearing,

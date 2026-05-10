@@ -81,8 +81,12 @@ test('<dialog open> survives a morph (KF-84)', async ({ page }) => {
   expect(result.open).toBe(true);
 });
 
-test('control: arbitrary imperative attribute on a non-stateful element is still wiped on morph', async ({ page }) => {
-  // Confirms the user-agent-owned exception is narrow.
+test('imperative attribute survives a no-op re-render (KF-88 fast path)', async ({ page }) => {
+  // KF-88: when the static surrounds don't change byte-for-byte between
+  // renders, `mount()` skips the diff entirely. Imperative DOM mutations on
+  // kerf-managed elements therefore survive across no-op re-renders — the
+  // framework's "smallest cut" model means it doesn't touch what JSX didn't
+  // change. Documented in docs/4-render.md §4.4.2 (KF-117).
   const result = await page.evaluate(() => {
     const { mount, signal } = (window as any).kerf;
     const { jsx } = (window as any).jsxRuntime;
@@ -94,8 +98,28 @@ test('control: arbitrary imperative attribute on a non-stateful element is still
     });
     const div = root.querySelector('div')!;
     div.setAttribute('data-foo', 'imperative');
-    tick.value = 1;
+    tick.value = 1;  // re-renders the same JSX → KF-88 fast path skips the diff
     return { value: div.getAttribute('data-foo') };
   });
+  expect(result.value).toBe('imperative');
+});
+
+test('imperative attribute IS wiped when the surrounds change between renders', async ({ page }) => {
+  // The complementary half of the contract: when the JSX-described
+  // surrounds change (a different child, a flipped class, etc.), the diff
+  // runs and `morphAttributes` wipes any imperative mutation the framework
+  // didn't ask for.
+  const result = await page.evaluate(() => {
+    const { mount, signal } = (window as any).kerf;
+    const { jsx } = (window as any).jsxRuntime;
+    const root = document.getElementById('root')!;
+    const label = signal('first');
+    mount(root, () => jsx('div', { children: label.value }));
+    const div = root.querySelector('div')!;
+    div.setAttribute('data-foo', 'imperative');
+    label.value = 'second';  // changes static surrounds → diff runs → attr wiped
+    return { value: div.getAttribute('data-foo'), text: div.textContent };
+  });
   expect(result.value).toBe(null);
+  expect(result.text).toBe('second');
 });

@@ -100,10 +100,11 @@ npm run test:browser      # build, then Playwright across chromium/firefox/webki
 npm run typecheck         # tsc --noEmit
 npm run lint              # eslint
 npm run check:docs:test-inventory  # KF-109: ensures docs/ai/code-summary.md mentions every test file in tests/
-npm run check             # full pre-push gate: lint + typecheck + doc inventory + test + build + both dist:* suites
+npm run check             # local pre-commit gate: lint + typecheck + doc inventory + test + build + both dist:* suites
+npm run check:full        # KF-118: pre-push gate — `check` plus the Playwright browser suite (chromium/firefox/webkit)
 ```
 
-`npm run check` is what the husky pre-commit hook runs — the canonical "is everything green" command.
+`npm run check` is what the husky pre-commit hook runs — the canonical "is everything green" command for fast local turnaround. `npm run check:full` is the heavier opt-in gate: run it before `git push` to also exercise the Playwright tests (SVG/MathML namespacing, IME composition, mutation counts, stateful attributes — anything the happy-dom unit tests can't model truthfully). CI runs both on every push/PR (see `.github/workflows/ci.yml`); locally the split keeps the inner loop fast and lets you opt into the full gate when you want push-day confidence.
 
 Coverage thresholds (`vitest.config.ts`): **100% lines / functions / statements, 99% branches** on `src/`. The branches threshold was lowered from 100% to 99% in KF-103 to accommodate a small number of documented-unreachable defensive returns (annotated with `c8 ignore`) whose loop-completion branches v8 tracks but cannot be exercised by construction. The lines / statements / functions thresholds at 100% still catch any actual unexercised code.
 

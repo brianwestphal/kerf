@@ -164,6 +164,48 @@ effect(() => {
 
 Or design around the element's native semantics: render `<details>` once, listen for the `toggle` event, and push the open state into a signal — that way the user's interaction and your state stay in sync without the framework arbitrating.
 
+## 4.4.2 Imperative DOM mutations and the no-op-render fast path (KF-117)
+
+`mount()` re-runs your render function whenever a signal it read changes. On each re-run kerf compares the new "static surrounds" HTML (everything outside `each()` lists) against the previous render's. **If they're byte-for-byte identical, the diff is skipped entirely** — the cost-saving optimisation that lets a list signal flip a class without paying for a parent walk.
+
+The implication for imperative DOM mutations: any attribute, text node, or child you set on a kerf-managed element via `el.setAttribute(...)`, `el.appendChild(...)`, or similar **survives across no-op re-renders**. The framework's "smallest cut" model says: if JSX didn't ask for the change, don't touch what's there.
+
+```tsx
+const tick = signal(0);
+mount(rootEl, () => {
+  void tick.value;                           // re-renders on every tick
+  return <div className="card">hello</div>;  // …producing the same HTML
+});
+
+const div = rootEl.querySelector('div')!;
+div.setAttribute('data-instrumented', 'true');  // imperative mutation
+
+tick.value = 1;
+// div.getAttribute('data-instrumented') === 'true'
+// — no diff ran, the attribute survived.
+```
+
+The complementary half: **when the surrounds DO change**, the diff runs and `morphAttributes` removes anything the JSX didn't authorise:
+
+```tsx
+const label = signal('first');
+mount(rootEl, () => <div className="card">{label.value}</div>);
+const div = rootEl.querySelector('div')!;
+div.setAttribute('data-instrumented', 'true');
+
+label.value = 'second';   // surrounds changed → diff runs → attribute wiped.
+```
+
+### Practical guidance
+
+- For library-owned subtrees (charts, terminals, editors), use `data-morph-skip` to opt out of diffing entirely. The fast path's behaviour above is brittle as a long-term plan because *any* change to the JSX surrounds will wipe your imperative mutations on the next render.
+- For attribute reflection (e.g. an MutationObserver-driven highlight), prefer driving the attribute through a signal so the JSX is the source of truth. The fast path then becomes irrelevant.
+- For one-off attribute pokes (analytics IDs, ARIA mirrors), the fast path means the poke usually sticks — but you should expect it to disappear the moment the surrounding render changes shape. Design for that.
+
+### Why kept this way
+
+The alternative — running the diff on every render even when nothing changed — costs ~8 ms per update on partial-update / select-row / swap-rows in the krausest harness (the scenarios where the list changes but surrounds don't). The "smallest cut" promise is the framework's headline. KF-117 surfaced this trade-off; we kept the fast path and documented it here.
+
 ## 4.5 Multiple `mount()` calls
 
 You can call `mount()` on different elements for different parts of the page. Each one gets its own `effect()` and tracks its own signals:
