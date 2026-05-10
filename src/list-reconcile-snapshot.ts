@@ -23,7 +23,7 @@
  * Internal to kerf — re-exported via `list-reconcile.ts`'s `reconcileList`.
  */
 
-import { type BoundItem, endAnchor, type ListBinding } from './list-reconcile.js';
+import { type BoundItem, endAnchor, type ListBinding } from './list-binding.js';
 import { captureFocus, restoreFocus } from './list-reconcile-focus.js';
 import type { ListSegment } from './segment.js';
 import { parseRowTemplate, rowContractError } from './utils/rowContract.js';

@@ -4,7 +4,9 @@
  * Public surface (re-exported via the rest of the runtime):
  *   - `BoundItem` / `ListBinding`: the binding shape `mount()` keeps
  *     per-list, mapping `each()` items to their live DOM nodes.
+ *     Defined in `list-binding.ts` and re-exported here.
  *   - `endAnchor(binding)`: dynamic "insert at end of list" anchor.
+ *     Also defined in `list-binding.ts` and re-exported here.
  *   - `reconcileList(binding, listSeg)`: top-level dispatch.
  *
  * Implementation lives in two sibling files:
@@ -18,59 +20,17 @@
  *
  * The split mirrors the two-axis nature of the reconciler: snapshot-vs-
  * granular path × shared bookkeeping (binding shape, end-of-list anchor,
- * focus capture/restore). Internal to kerf — not part of the public API.
+ * focus capture/restore). The binding shape is in its own `list-binding.ts`
+ * file so the two sibling reconcilers can import it without creating a
+ * circular dependency back to `list-reconcile.ts`. Internal to kerf — not
+ * part of the public API.
  */
 
+export { type BoundItem, endAnchor, type ListBinding } from './list-binding.js';
+import type { ListBinding } from './list-binding.js';
 import { reconcileGranular } from './list-reconcile-granular.js';
 import { reconcileSnapshot } from './list-reconcile-snapshot.js';
 import type { ListSegment } from './segment.js';
-
-export interface BoundItem {
-  ref: object;
-  cacheKey: unknown;
-  html: string;
-  node: Element;
-}
-
-export interface ListBinding {
-  liveParent: Element;
-  /**
-   * One entry per item currently mounted under `liveParent`, in order.
-   * Mirrors the segment's `items` length after each reconcile.
-   */
-  items: BoundItem[];
-  /**
-   * The list's `<!--kf-list:N-->` start marker, kept in the live DOM as
-   * a permanent anchor (KF-102 round 2). The marker stays put across
-   * static-surrounds diffs (it morphs as a comment node), so it gives
-   * the list reconciler a stable "begin" position even when surrounding
-   * siblings get inserted, removed, or reordered around the list.
-   *
-   * `endAnchor(binding)` derives the "insert at end of list" anchor from
-   * `marker.nextElementSibling` (empty list) or
-   * `items[last].node.nextElementSibling` (non-empty list) — picking up
-   * any non-list element the diff inserted between the list and the
-   * parent's tail.
-   */
-  marker: Comment;
-}
-
-/**
- * Compute the live-DOM anchor that comes after the list's last item, used
- * by the apply* functions when inserting at the tail of the list.
- *
- * - Empty list: `marker.nextElementSibling` — the next non-list element
- *   after the marker, or `null` if the list is the last thing in `liveParent`.
- * - Non-empty list: `items[last].node.nextElementSibling` — derived
- *   dynamically so that non-list siblings the diff inserted between the
- *   list's last item and the parent's tail still anchor correctly.
- */
-export function endAnchor(binding: ListBinding): Element | null {
-  if (binding.items.length > 0) {
-    return binding.items[binding.items.length - 1].node.nextElementSibling;
-  }
-  return binding.marker.nextElementSibling;
-}
 
 /**
  * Reconcile `binding`'s live parent against `listSeg`. Mutates `binding.items`

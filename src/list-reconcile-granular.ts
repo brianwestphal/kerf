@@ -21,7 +21,7 @@
  * Internal to kerf — re-exported via `list-reconcile.ts`'s `reconcileList`.
  */
 
-import { type BoundItem, endAnchor, type ListBinding } from './list-reconcile.js';
+import { type BoundItem, endAnchor, type ListBinding } from './list-binding.js';
 import type { ListSegment } from './segment.js';
 import { parseRowTemplate, rowContractError, truncateRowHtml } from './utils/rowContract.js';
 

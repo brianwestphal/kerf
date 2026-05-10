@@ -112,7 +112,9 @@ export function mountArraySignalSection(root: HTMLElement): void {
   delegate(root, 'click', '[data-action="toggle-first"]', () => {
     if (rows.value.length === 0) return;
     rows.update(0, (r) => ({ ...r, selected: !r.selected }));
-    logPatch('update', `0 selected→${!rows.value[0].selected ? 'true' : 'false'}`);
+    // arraySignal mutates _items eagerly, so rows.value[0].selected is
+    // already the post-update value here — log it directly, not negated.
+    logPatch('update', `0 selected→${rows.value[0].selected ? 'true' : 'false'}`);
   });
 
   delegate(root, 'click', '[data-action="toggle"]', (_e, btn) => {
