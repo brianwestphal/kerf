@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>kerf consumer-app fixture</title>
+  <style>
+    body { font: 14px system-ui; padding: 16px; }
+    section { border: 1px solid #ddd; padding: 12px; margin: 8px 0; }
+    h2 { margin: 0 0 8px; font-size: 14px; }
+    button { padding: 4px 10px; }
+    .row { display: flex; gap: 8px; align-items: center; }
+    .skip-host { background: #ffd; padding: 4px; }
+  </style>
+</head>
+<body>
+  <h1>kerf consumer-app — exercises dist/ as a real downstream app would</h1>
+  <section id="zone-counter"></section>
+  <section id="zone-store"></section>
+  <section id="zone-each"></section>
+  <section id="zone-array"></section>
+  <section id="zone-capture"></section>
+  <section id="zone-focus"></section>
+  <section id="zone-skip"></section>
+  <section id="zone-svg"></section>
+  <section id="zone-fragment"></section>
+  <section id="zone-merge"></section>
+  <script type="module" src="./dist/main.js"></script>
+</body>
+</html>

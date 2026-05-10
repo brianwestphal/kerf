@@ -1,0 +1,28 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+
+    "strict": true,
+    "skipLibCheck": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "noEmit": true,
+
+    "jsx": "react-jsx",
+    "jsxImportSource": "kerfjs",
+
+    "paths": {
+      "kerfjs": ["../../../dist/index.d.ts"],
+      "kerfjs/jsx-runtime": ["../../../dist/jsx-runtime.d.ts"],
+      "kerfjs/array-signal": ["../../../dist/array-signal.d.ts"],
+      "kerfjs/testing": ["../../../dist/testing.d.ts"]
+    },
+
+    "types": []
+  },
+  "include": ["./src/**/*"],
+  "exclude": ["node_modules", "dist"]
+}

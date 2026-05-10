@@ -516,7 +516,15 @@ export interface KerfCustomElement extends KerfBaseAttrs {
   [k: string]: AttrValue | unknown;
 }
 
-export interface IntrinsicElements {
+/**
+ * Built-in tag table. Renamed from `IntrinsicElements` (KF-123) so the type
+ * name in `dist/jsx-runtime.d.ts` cannot shadow the namespace's own
+ * `IntrinsicElements` after tsup/tsc strips import aliases — the previous
+ * name produced `interface IntrinsicElements extends IntrinsicElements {}`
+ * in the emitted .d.ts, which self-resolves to an empty interface and
+ * breaks every `<tag>` in consumer .tsx with TS2339.
+ */
+export interface KerfBuiltinIntrinsicElements {
   // ----- HTML elements (focused subset of common ones) -----
   // Sectioning / structure
   html: KerfBaseAttrs;

@@ -23,7 +23,7 @@
  * `jsxs` / `jsxDEV` / `Fragment` exports the JSX transform looks for.
  */
 
-import type { IntrinsicElements as KerfIntrinsicElements } from './jsx-types.js';
+import type { KerfBuiltinIntrinsicElements } from './jsx-types.js';
 import {
   flatten,
   type ListSegment,
@@ -232,9 +232,10 @@ export namespace JSX {
   export interface ElementChildrenAttribute {
     children: unknown;
   }
-  // Per-tag attribute contracts live in `./jsx-types.ts`. Re-exposed as an
-  // **interface** (not a type alias) so consumers can declaration-merge
-  // custom-element tags (KF-100):
+  // Per-tag attribute contracts live in `./jsx-types.ts` as
+  // `KerfBuiltinIntrinsicElements`. Re-exposed as an **interface** (not a
+  // type alias) so consumers can declaration-merge custom-element tags
+  // (KF-100):
   //
   //     declare module 'kerfjs/jsx-runtime' {
   //       namespace JSX {
@@ -244,11 +245,14 @@ export namespace JSX {
   //       }
   //     }
   //
-  // Type aliases can't be merged; interfaces can. Extending here keeps every
-  // tag from `KerfIntrinsicElements` available while leaving the door open
-  // for project-specific additions.
+  // KF-123: the imported interface is named `KerfBuiltinIntrinsicElements`
+  // upstream so tsup/tsc cannot strip an import alias and end up emitting
+  // `interface IntrinsicElements extends IntrinsicElements {}` in the .d.ts
+  // — that shadowed form self-resolves to empty and breaks every `<tag>` in
+  // consumer .tsx with TS2339. Verified against `dist/jsx-runtime.d.ts` by
+  // `tests/dist/jsx-typing/` on every `npm run build`.
   // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-  export interface IntrinsicElements extends KerfIntrinsicElements {}
+  export interface IntrinsicElements extends KerfBuiltinIntrinsicElements {}
 }
 
 /**

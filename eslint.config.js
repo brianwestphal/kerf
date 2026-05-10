@@ -61,7 +61,7 @@ export default [
     // Playwright real-browser tests run in a Node test runner that drives a
     // browser via `page.evaluate`. Both globals are available in their
     // respective execution contexts; we silence undef + console-info here.
-    files: ['tests/browser/**/*.ts', 'tests/browser/**/*.tsx'],
+    files: ['tests/browser/**/*.ts', 'tests/browser/**/*.tsx', 'tests/browser/**/*.mjs'],
     languageOptions: {
       globals: {
         performance: 'readonly',
@@ -70,6 +70,7 @@ export default [
         CompositionEvent: 'readonly',
         HTMLInputElement: 'readonly',
         HTMLTextAreaElement: 'readonly',
+        process: 'readonly',
       },
     },
     rules: {
@@ -77,6 +78,19 @@ export default [
     },
   },
   {
-    ignores: ['dist/**', 'coverage/**', 'node_modules/**', 'examples/**'],
+    ignores: [
+      'dist/**',
+      'coverage/**',
+      'node_modules/**',
+      'examples/**',
+      // KF-123: these directories are compiled by separate `tsc -p` / esbuild
+      // invocations against `dist/*.d.ts` (not by the root tsconfig used for
+      // the main lint pass), so the root eslint can't resolve their
+      // parserOptions.project. They get type-checked by their own dedicated
+      // gates: `tsc -p tests/dist/jsx-typing/tsconfig.json` and the
+      // consumer-app esbuild build inside Playwright's globalSetup.
+      'tests/dist/jsx-typing/**',
+      'tests/dist/consumer-app/**',
+    ],
   },
 ];

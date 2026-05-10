@@ -50,6 +50,8 @@ kerf/
 │   │   └── full-pipeline.test.ts ← end-to-end cart UI exercising every primitive
 │   ├── browser/                  ← Playwright real-browser tests (chromium/firefox/webkit) — run via `npm run test:browser`
 │   │   ├── fixtures/index.html         ← importmap-based page that loads kerf from dist/
+│   │   ├── consumer-app.spec.ts        ← KF-123 — drives `tests/dist/consumer-app/` (real esbuild-bundled app against dist/) across Chromium / Firefox / WebKit
+│   │   ├── global-setup.mjs            ← rebuilds `tests/dist/consumer-app/dist/main.js` before the suite
 │   │   ├── ime-composition.spec.ts     ← IME composition survives a re-render
 │   │   ├── mutation-count.spec.ts      ← LIS-based reorder produces the minimum insertBefore count
 │   │   ├── perf-1k.spec.ts             ← 1k-row stress (real-browser sanity check on the bench app)
@@ -57,6 +59,8 @@ kerf/
 │   │   └── svg-mathml.spec.ts          ← KF-83 — SVG/MathML namespacing across real browsers
 │   └── dist/                     ← run via `npm run test:dist`, against the built bundles
 │       ├── barrel-completeness.test.ts    ← KF-24 — pins the public-API list
+│       ├── consumer-app/                  ← KF-123 — esbuild-bundled downstream-style app; main.tsx exercises every public primitive (counter/store/each/arraySignal/delegateCapture/focus/morph-skip/SVG/Fragment/declaration-merged custom element). Driven by `tests/browser/consumer-app.spec.ts`
+│       ├── jsx-typing/                    ← KF-123 — `tsc -p tests/dist/jsx-typing/tsconfig.json` typechecks consumer .tsx against `dist/jsx-runtime.d.ts` to catch IntrinsicElements self-shadow / declaration-merging regressions; gated by `npm run check`
 │       ├── safe-html-cross-bundle.test.ts ← KF-14 regression
 │       └── store-registry-shared.test.ts  ← KF-15 regression
 ├── examples/

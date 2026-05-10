@@ -97,12 +97,13 @@ npm run test:unit         # tests/unit only
 npm run test:integration  # tests/integration only
 npm run test:dist         # build, then targeted dist regression suite (tests/dist) vs dist/
 npm run test:dist:full    # build, then full unit + integration suite remapped onto dist/
-npm run test:browser      # build, then Playwright across chromium/firefox/webkit (tests/browser/)
+npm run test:dist:jsx-typing  # KF-123: build, then `tsc -p tests/dist/jsx-typing/tsconfig.json` — typechecks consumer .tsx against dist/jsx-runtime.d.ts
+npm run test:browser      # build, then Playwright across chromium/firefox/webkit (tests/browser/) — globalSetup also rebuilds tests/dist/consumer-app/
 npm run typecheck         # tsc --noEmit
 npm run lint              # eslint
 npm run check:docs:test-inventory  # KF-109: ensures docs/ai/code-summary.md mentions every test file in tests/
-npm run check             # local pre-commit gate: lint + typecheck + doc inventory + test + build + both dist:* suites
-npm run check:full        # KF-118: pre-push gate — `check` plus the Playwright browser suite (chromium/firefox/webkit)
+npm run check             # local pre-commit gate: lint + typecheck + doc inventory + test + build + both dist:* suites + jsx-typing dist gate
+npm run check:full        # KF-118: pre-push gate — `check` plus the Playwright browser suite (chromium/firefox/webkit), which exercises tests/dist/consumer-app/ end-to-end
 ```
 
 `npm run check` is what the husky pre-commit hook runs — the canonical "is everything green" command for fast local turnaround. `npm run check:full` is the heavier opt-in gate: run it before `git push` to also exercise the Playwright tests (SVG/MathML namespacing, IME composition, mutation counts, stateful attributes — anything the happy-dom unit tests can't model truthfully). CI runs both on every push/PR (see `.github/workflows/ci.yml`); locally the split keeps the inner loop fast and lets you opt into the full gate when you want push-day confidence.
@@ -113,7 +114,8 @@ Coverage thresholds (`vitest.config.ts`): **100% lines / functions / statements,
 
 - **Unit tests** (`tests/unit/`): Test each module in isolation with `happy-dom`. Mock external state (timers, network) but exercise real logic.
 - **Integration tests** (`tests/integration/`): Exercise the full pipeline — signals + stores + mount + delegate against a real DOM tree.
-- **Browser tests** (`tests/browser/`): Real-browser tests via Playwright (Chromium / Firefox / WebKit) for scenarios `happy-dom` can't model truthfully — SVG/MathML namespacing, IME composition, MutationObserver counts. Run with `npm run test:browser` (builds dist first; the fixture page imports from `dist/` via importmap). Browser binaries are downloaded once via `npx playwright install`.
+- **Browser tests** (`tests/browser/`): Real-browser tests via Playwright (Chromium / Firefox / WebKit) for scenarios `happy-dom` can't model truthfully — SVG/MathML namespacing, IME composition, MutationObserver counts. Run with `npm run test:browser` (builds dist first; the fixture page imports from `dist/` via importmap). Browser binaries are downloaded once via `npx playwright install`. **`tests/browser/consumer-app.spec.ts`** (KF-123) drives a real downstream-style app at `tests/dist/consumer-app/` that's bundled by esbuild against `dist/` (Playwright's `globalSetup` rebuilds it before every run); each zone exercises a public primitive end-to-end through all three engines, so a `dist/` regression that only manifests in a real-consumer bundle (KF-14 SafeHtml duplication, KF-123 IntrinsicElements self-shadow, etc.) trips the gate.
+- **Dist `.d.ts` typing gate** (`tests/dist/jsx-typing/`, KF-123): `tsc -p tests/dist/jsx-typing/tsconfig.json` typechecks `consumer.tsx` + `consumer-merge.tsx` against `dist/jsx-runtime.d.ts` with `jsxImportSource: "kerfjs"`. Catches IntrinsicElements self-shadow regressions (where `dist/jsx-runtime.d.ts` emits `interface IntrinsicElements extends IntrinsicElements {}`) and declaration-merge breakage that the in-source typing tests can't see because they never look at the emitted .d.ts.
 - **Coverage target**: Keep coverage above the thresholds. New code without tests fails CI.
 
 ## Code Quality Gates

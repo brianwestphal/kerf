@@ -41,5 +41,12 @@
     "outDir": "./dist"
   },
   "include": ["src/**/*", "tests/**/*"],
-  "exclude": ["node_modules", "dist", "coverage", "examples"]
+  "exclude": [
+    "node_modules",
+    "dist",
+    "coverage",
+    "examples",
+    "tests/dist/jsx-typing",
+    "tests/dist/consumer-app"
+  ]
 }

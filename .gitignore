@@ -1,6 +1,10 @@
 node_modules/
 dist/
 !tests/dist/
+# KF-123: consumer-app emits its bundled output here at test time. Keep the
+# source committed (src/, index.html, build.mjs, tsconfig.json) but ignore
+# the rebuilt artifact.
+tests/dist/consumer-app/dist/
 coverage/
 playwright-report/
 test-results/
