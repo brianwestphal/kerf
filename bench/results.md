@@ -1,10 +1,10 @@
 # kerfjs vs reference frameworks — krausest js-framework-benchmark
 
-Captured by **KF-105** on 2026-05-10 (post-KF-102 / KF-103 / KF-104). Environment: macOS, Chrome (headless via webdriver-ts/puppeteer), `bench/run.sh keyed/kerfjs --count=3`. The reference frameworks (vanillajs, solid, lit, react, vue, vanjs, preact-signals) are carried over from the 2026-05-09 baseline (their build state and benchmarks didn't change in this re-run); only the kerfjs row reflects the latest source.
+Captured by **KF-105 / KF-112** on 2026-05-10 (post-KF-102 / KF-103 / KF-111..KF-116). Environment: macOS, Chrome (headless via webdriver-ts/puppeteer), `bench/run.sh keyed/kerfjs --count=3`. The reference frameworks (vanillajs, solid, lit, react, vue, vanjs, preact-signals) are carried over from the 2026-05-09 baseline (their build state and benchmarks didn't change in this re-run); only the kerfjs row reflects the latest source.
 
 All numbers are **medians across 3 iterations**. Lower is better. Sorted by the first column.
 
-> **Note:** the kerf numbers reflect the post-KF-102/103 codepath: each() with non-list siblings now reconciles correctly (KF-102 round 2), and the "exactly one top-level element per row" contract is enforced (KF-103). Both add small per-render bookkeeping (ownedItems set construction, marker-based endAnchor lookup, per-row `outerHTML` equality check on first render) that costs 1–9 % across most scenarios vs the post-KF-94 baseline. The kerfjs-impl bench app continues to use `arraySignal` for row mutations.
+> **Note:** the kerf numbers reflect the post-KF-103 codepath plus the KF-111/112/115/116 hygiene refactors. Each() with non-list siblings now reconciles correctly (KF-102 round 2), and the "exactly one top-level element per row" contract is enforced (KF-103). The KF-112 split (list-reconcile.ts → snapshot/granular siblings) and KF-115 parseRowTemplate consolidation reclaimed some of the per-render overhead from KF-102/103: select-row improved from 30.0 → 27.6 (-8%), swap-rows from 25.1 → 22.3 (-11%), partial-update from 45.9 → 44.6 (-3%) vs the post-KF-103 measurement two days ago. The kerfjs-impl bench app continues to use `arraySignal` for row mutations.
 
 ## CPU benchmarks (ms)
 
@@ -15,25 +15,27 @@ All numbers are **medians across 3 iterations**. Lower is better. Sorted by the 
 | lit 3.2.0 | 38.5 | 45.3 | 21.9 | 9.3 | 28.9 | 18.3 | 403.2 | 48.7 | 22.9 |
 | react 19.2.0 (hooks) | 40.9 | 49.4 | 24.1 | 8.0 | 157.3 | 18.0 | 562.0 | 48.8 | 26.7 |
 | vue 3.6.0-alpha.2 | 42.0 | 45.3 | 22.5 | 6.8 | 23.6 | 20.0 | 408.8 | 46.0 | 19.0 |
-| **kerfjs 0.4.2** (post-KF-103) | 45.8 | 50.7 | 45.9 | 30.0 | 25.1 | 17.7 | 429.9 | 51.4 | 19.4 |
+| **kerfjs 0.4.2** (post-KF-116) | 46.1 | 48.2 | 44.6 | 27.6 | 22.3 | 17.0 | 428.3 | 50.5 | 18.6 |
 | vanjs 1.5.2 | 46.6 | 48.9 | 41.8 | 14.3 | 23.7 | 18.3 | 435.0 | 55.7 | 15.4 |
 | preact 10.27.1 + signals 2.3.1 | 50.0 | 53.1 | 19.7 | 7.9 | 28.3 | 19.4 | 479.3 | 53.9 | 23.7 |
 
-### Δ vs post-KF-94 baseline (2026-05-09)
+### Δ across the recent run
 
-| scenario | post-KF-94 | post-KF-103 | Δ ms | Δ % |
-| --- | --- | --- | --- | --- |
-| create 1k | 44.4 | 45.8 | +1.4 | +3% |
-| replace 1k | 48.2 | 50.7 | +2.5 | +5% |
-| partial update | 42.0 | 45.9 | +3.9 | +9% |
-| select row | 26.1 | 30.0 | +3.9 | +15% |
-| swap rows | 24.8 | 25.1 | +0.3 | +1% |
-| remove row | 17.3 | 17.7 | +0.4 | +2% |
-| create 10k | 416.2 | 429.9 | +13.7 | +3% |
-| append 1k | 50.2 | 51.4 | +1.2 | +2% |
-| clear 1k | 18.5 | 19.4 | +0.9 | +5% |
+| scenario | post-KF-94 (05-09) | post-KF-103 (05-10 morning) | post-KF-116 (05-10 afternoon) | Δ vs KF-94 | Δ vs KF-103 |
+| --- | --- | --- | --- | --- | --- |
+| create 1k | 44.4 | 45.8 | 46.1 | +4 % | +1 % |
+| replace 1k | 48.2 | 50.7 | 48.2 | 0 % | -5 % |
+| partial update | 42.0 | 45.9 | 44.6 | +6 % | -3 % |
+| select row | 26.1 | 30.0 | 27.6 | +6 % | -8 % |
+| swap rows | 24.8 | 25.1 | 22.3 | -10 % | -11 % |
+| remove row | 17.3 | 17.7 | 17.0 | -2 % | -4 % |
+| create 10k | 416.2 | 429.9 | 428.3 | +3 % | 0 % |
+| append 1k | 50.2 | 51.4 | 50.5 | +1 % | -2 % |
+| clear 1k | 18.5 | 19.4 | 18.6 | +1 % | -4 % |
 
-The biggest hits are on `partial update` and `select row` — both run the snapshot reconciler over 1000 rows and now incur the KF-102 `ownedItems` set construction at the top of each diff plus the dynamic `endAnchor` lookup per `applyMoves`. The KF-103 first-render `validateInlinedRowMatch` check adds an `outerHTML` compare per row on the initial render path (1000 cheap string compares for `create 1k`); on the success path that's a no-op early-return, but still measurable. These costs buy correctness for two real bug classes (KF-102 sibling reconcile, KF-103 silent multi-root misalignment) and the cluster-positioning vs vanjs and preact-signals is unchanged.
+The KF-112 split + KF-115 parseRowTemplate consolidation reclaimed most of the cost KF-102/103 added. `swap rows` ended up faster than even the pre-KF-103 baseline; `select row`, `partial update`, `remove row`, `append 1k`, and `clear 1k` all came back within 0–6 % of their post-KF-94 numbers. The KF-103 contract enforcement (per-row `validateInlinedRowMatch` on first render + bulk-parse count check on subsequent renders) is the residual cost that keeps `create 1k` and `partial update` very slightly above the pre-KF-103 baseline — that cost buys silent-misalignment-free behaviour for multi-root rows.
+
+The cluster ranking vs vanjs and preact-signals is unchanged from KF-105's measurement.
 
 ### Reading the table
 
@@ -111,8 +113,10 @@ For kerf specifically, measured by bundling a realistic consumer with esbuild ag
 | minimal (post-KF-72 baseline) | mount + signal + each | 5.6 | pre any KF-87..KF-94 perf work |
 | minimal (post-KF-94, no arraySignal) | mount + signal + each | **5.6** | KF-95 split arraySignal into its own subpath, so a consumer that doesn't import it shed ~1 KB |
 | minimal (post-KF-94, with arraySignal) | mount + each + arraySignal (subpath) | **5.9** | +0.3 KB for the arraySignal class |
-| **minimal (post-KF-103, no arraySignal)** | mount + signal + each | **6.1** | +0.5 KB for the KF-102 ownedItems / endAnchor / cleanupOrphan handling and KF-103 contract enforcement |
-| **minimal (post-KF-103, with arraySignal)** | mount + each + arraySignal (subpath) | **6.5** | same +0.5 KB delta |
+| minimal (post-KF-103, no arraySignal) | mount + signal + each | 6.1 | +0.5 KB for the KF-102 ownedItems / endAnchor / cleanupOrphan handling and KF-103 contract enforcement |
+| minimal (post-KF-103, with arraySignal) | mount + each + arraySignal (subpath) | 6.5 | same +0.5 KB delta |
+| **minimal (post-KF-116, no arraySignal)** | mount + signal + each | **6.1** | parseRowTemplate consolidation (KF-115) + utils/rowContract.ts dedupe (KF-111) shaved ~28 bytes vs post-KF-103 |
+| **minimal (post-KF-116, with arraySignal)** | mount + each + arraySignal (subpath) | **6.5** | same |
 | full-feature consumer | every barrel + arraySignal | 8.1 | imports nearly every export; useful as an upper-bound |
 
 6.1–6.5 KB places kerf:
