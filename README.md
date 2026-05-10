@@ -31,9 +31,9 @@ That's it. Your JSX renders to HTML strings, kerf's native diff applies the mini
 
 ## Why Kerf
 
-1. **Built for the AI-assisted era.** Tiny public surface (15 exports), no compiler magic, no hidden lifecycle. An LLM holds the framework in context and predicts behaviour — your AI agent generates code that works the first time. Ships [`llms.txt`](./llms.txt) and a dedicated AI usage guide.
+1. **Built for the AI-assisted era.** Tiny public surface (15 exports), no compiler magic, no hidden lifecycle. An LLM holds the framework in context and predicts behaviour — your AI agent generates code that works the first time. Ships [`llms.txt`](./llms.txt) and a dedicated AI usage guide; the [Built by an AI · Pomodoro](https://brianwestphal.github.io/kerf/examples/complete/built-by-an-ai/) example is a working app one-shotted by Claude with `llms.txt` as its only kerf knowledge.
 
-2. **Smallest cut.** 6.1 KB gzipped including signals (6.5 KB if you opt into `arraySignal`). Fine-grained reactivity re-runs only what changed; the diff touches only the DOM nodes that differ.
+2. **Smallest cut.** 6.1 KB gzipped including signals (6.5 KB with `arraySignal`). Fine-grained reactivity re-runs only what changed; the diff touches only the DOM nodes that differ. On the [krausest js-framework-benchmark](./bench/results.md) kerf is competitive with Solid and Vue on swap-rows, remove-row, and clear — no compiler required.
 
 3. **No virtual DOM, no compiler.** JSX → HTML strings → native diff. DevTools shows the real DOM because it *is* the DOM.
 
@@ -148,7 +148,7 @@ npm install kerfjs
 - **Site:** [brianwestphal.github.io/kerf](https://brianwestphal.github.io/kerf/)
 - **Docs:** [`docs/`](./docs/) — overview · reactivity · stores · render · events · jsx · svg · [API reference](./docs/8-api-reference.md)
 - **AI guide:** [`docs/ai/usage-guide.md`](./docs/ai/usage-guide.md) — read once before writing kerf code with an LLM
-- **Demo:** [live demo](https://brianwestphal.github.io/kerf/demo/) — seven sections exercising every primitive
+- **Demo:** [live demo](https://brianwestphal.github.io/kerf/demo/) — eight sections exercising every primitive (counter, store-backed cart, focus survival, keyed list, morph-skip, SVG render, Tier-2 capture, `arraySignal` patches)
 - **Repo:** [github.com/brianwestphal/kerf](https://github.com/brianwestphal/kerf)
 
 ## Why "kerf"?
