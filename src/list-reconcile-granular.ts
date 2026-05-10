@@ -22,6 +22,7 @@
  */
 
 import { type BoundItem, endAnchor, type ListBinding } from './list-binding.js';
+import { captureFocus, restoreFocus } from './list-reconcile-focus.js';
 import type { ListSegment } from './segment.js';
 import { parseRowTemplate, rowContractError, truncateRowHtml } from './utils/rowContract.js';
 
@@ -31,6 +32,14 @@ export function reconcileGranular(
 ): void {
   const { liveParent } = binding;
   const items = binding.items;
+
+  // Capture/restore focus around the whole batch (mirrors the snapshot
+  // path's KF-65 fix). Some engines (older Safari, happy-dom) blur a
+  // focused descendant on `insertBefore` / `replaceChild` even when the
+  // ancestor stays connected — covers the move patch (which moves an
+  // existing row's <li>), and is a no-op on engines that already
+  // preserve focus across DOM ops.
+  const focusSnap = captureFocus(liveParent);
 
   let i = 0;
   while (i < patches.length) {
@@ -104,6 +113,8 @@ export function reconcileGranular(
       continue;
     }
   }
+
+  if (focusSnap !== null) restoreFocus(focusSnap);
 }
 
 function applySingleInsert(

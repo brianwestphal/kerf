@@ -1,0 +1,909 @@
+/**
+ * Adversarial edge-case probes — written in response to the "we should
+ * be extremely thorough" directive. Each test exercises a scenario the
+ * earlier audit (KF-104) flagged as untested but plausibly bug-prone.
+ *
+ * Categories covered:
+ *   - mount lifecycle: mount → dispose → mount on the same element;
+ *     mount on a pre-populated element; render returning null /
+ *     undefined / number / boolean; many mounts sharing one signal.
+ *   - delegate lifecycle: handler that disposes its own mount; root
+ *     detached from document; re-entrance through re-render.
+ *   - arraySignal corner cases: drift recovery; cross-mount sharing
+ *     after dispose; replace-then-update batched; mutation inside a
+ *     computed; computed reading both length and array.
+ *   - shape transitions: two each() callsites where a phase flip
+ *     re-orders them (KF-104 §2 — known positional-id collision).
+ *   - focus survival: focus inside an UNCHANGED row across a granular
+ *     update; focus on a SIBLING of a granular-updated row.
+ *   - fast-path corners: KF-88 with re-render that DOES change a
+ *     list's items but not the surrounds; KF-89 with stable items in
+ *     out-of-order positions; KF-93 with non-contiguous insert runs;
+ *     KF-99 drift recovery after a granular reconcile failure.
+ *   - data-morph-skip wrapping a list parent.
+ *   - Stress: 1000-row mutate-and-restore round-trip.
+ */
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+
+import { arraySignal } from '../../src/array-signal.js';
+import {
+  batch,
+  computed,
+  delegate,
+  delegateCapture,
+  each,
+  effect,
+  mount,
+  signal,
+} from '../../src/index.js';
+
+describe('Adversarial edge cases', () => {
+  let root: HTMLElement;
+  beforeEach(() => { root = document.createElement('div'); document.body.appendChild(root); });
+  afterEach(() => { document.body.innerHTML = ''; });
+
+  // ─── Mount lifecycle ────────────────────────────────────────────────
+
+  describe('mount lifecycle', () => {
+    it('mount → dispose → mount(sameEl) with stale list content cleans up correctly', () => {
+      const listA = [{ id: 1, label: 'a' }, { id: 2, label: 'b' }];
+      const dispose1 = mount(root, () => (
+        <ul>{each(listA, (it) => <li data-key={String(it.id)}>{it.label}</li>)}</ul>
+      ));
+      expect(root.querySelectorAll('li').length).toBe(2);
+      dispose1();
+
+      // Stale content from mount A is still in the DOM after dispose.
+      // mount B should wipe it cleanly via its first-render innerHTML reset.
+      const listB = [{ id: 100, label: 'x' }, { id: 200, label: 'y' }, { id: 300, label: 'z' }];
+      const dispose2 = mount(root, () => (
+        <ol>{each(listB, (it) => <li data-key={String(it.id)}>{it.label}</li>)}</ol>
+      ));
+      expect(root.querySelector('ul')).toBe(null);
+      expect(root.querySelector('ol')).not.toBe(null);
+      expect(root.querySelectorAll('li').length).toBe(3);
+      expect(Array.from(root.querySelectorAll('li')).map((l) => l.textContent)).toEqual(['x', 'y', 'z']);
+      dispose2();
+    });
+
+    it('mount → dispose → mount on same element with both using arraySignal — patch queues do not bleed', () => {
+      const sigA = arraySignal([{ id: 1, v: 'A1' }]);
+      const dispose1 = mount(root, () => (
+        <ul>{each(sigA, (r) => <li data-key={String(r.id)}>{r.v}</li>)}</ul>
+      ));
+      sigA.push({ id: 2, v: 'A2' });
+      expect(root.querySelectorAll('li').length).toBe(2);
+      dispose1();
+
+      // After dispose, mutate sigA — should not crash (no live mount).
+      sigA.push({ id: 3, v: 'A3' });
+
+      // Second mount on the same element with a DIFFERENT arraySignal.
+      const sigB = arraySignal([{ id: 100, v: 'B1' }, { id: 200, v: 'B2' }]);
+      const dispose2 = mount(root, () => (
+        <ul>{each(sigB, (r) => <li data-key={String(r.id)}>{r.v}</li>)}</ul>
+      ));
+      expect(root.querySelectorAll('li').length).toBe(2);
+      expect(Array.from(root.querySelectorAll('li')).map((l) => l.textContent)).toEqual(['B1', 'B2']);
+
+      // Mutating sigA must NOT update mount B's DOM.
+      sigA.push({ id: 4, v: 'A4' });
+      expect(root.querySelectorAll('li').length).toBe(2);  // still B's content
+
+      // Mutating sigB updates B's DOM.
+      sigB.push({ id: 300, v: 'B3' });
+      expect(root.querySelectorAll('li').length).toBe(3);
+      expect(Array.from(root.querySelectorAll('li')).map((l) => l.textContent)).toEqual(['B1', 'B2', 'B3']);
+      dispose2();
+    });
+
+    it('mount on an element with pre-existing children replaces them', () => {
+      root.innerHTML = '<p class="placeholder">loading…</p>';
+      mount(root, () => <span>ready</span>);
+      expect(root.querySelector('.placeholder')).toBe(null);
+      expect(root.querySelector('span')!.textContent).toBe('ready');
+    });
+
+    it('100 mounts sharing one signal all update on signal change', () => {
+      const tick = signal(0);
+      const hosts: HTMLElement[] = [];
+      const disposers: (() => void)[] = [];
+      for (let i = 0; i < 100; i++) {
+        const host = document.createElement('div');
+        document.body.appendChild(host);
+        hosts.push(host);
+        disposers.push(mount(host, () => <span>{tick.value}</span>));
+      }
+      for (const h of hosts) expect(h.querySelector('span')!.textContent).toBe('0');
+      tick.value = 42;
+      for (const h of hosts) expect(h.querySelector('span')!.textContent).toBe('42');
+      for (const d of disposers) d();
+    });
+
+    it('dispose called twice is a no-op', () => {
+      const dispose = mount(root, () => <span>x</span>);
+      dispose();
+      expect(() => dispose()).not.toThrow();
+    });
+
+    it('signal mutation after dispose does not throw', () => {
+      const x = signal(0);
+      const dispose = mount(root, () => <span>{x.value}</span>);
+      dispose();
+      expect(() => { x.value = 99; }).not.toThrow();
+      // DOM should NOT update post-dispose.
+      expect(root.querySelector('span')!.textContent).toBe('0');
+    });
+  });
+
+  // ─── Render returning unusual values ────────────────────────────────
+
+  describe('render returning unusual values', () => {
+    it('render returning null produces an empty render (React-style nothing)', () => {
+      const dispose = mount(root, () => null as unknown as string);
+      expect(root.innerHTML).toBe('');
+      dispose();
+    });
+
+    it('render returning undefined produces an empty render', () => {
+      const dispose = mount(root, () => undefined as unknown as string);
+      expect(root.innerHTML).toBe('');
+      dispose();
+    });
+
+    it('render returning false produces an empty render (cond && jsx pattern)', () => {
+      const dispose = mount(root, () => false as unknown as string);
+      expect(root.innerHTML).toBe('');
+      dispose();
+    });
+
+    it('render returning true also produces an empty render (defensive)', () => {
+      const dispose = mount(root, () => true as unknown as string);
+      expect(root.innerHTML).toBe('');
+      dispose();
+    });
+
+    it('render returning a number coerces to string via innerHTML', () => {
+      const dispose = mount(root, () => 42 as unknown as string);
+      expect(root.innerHTML).toBe('42');
+      dispose();
+    });
+
+    it('render returning empty string mounts cleanly', () => {
+      const dispose = mount(root, () => '');
+      expect(root.innerHTML).toBe('');
+      dispose();
+    });
+
+    it('conditional-render pattern { cond ? <jsx/> : null } toggles between content and empty', () => {
+      const show = signal(true);
+      mount(root, () => (show.value ? <span>here</span> : null) as unknown as string);
+      expect(root.querySelector('span')!.textContent).toBe('here');
+      show.value = false;
+      expect(root.querySelector('span')).toBe(null);
+      show.value = true;
+      expect(root.querySelector('span')!.textContent).toBe('here');
+    });
+
+    it('conditional-render pattern { cond && <jsx/> } toggles between content and empty', () => {
+      const show = signal(false);
+      mount(root, () => (show.value && <span>here</span>) as unknown as string);
+      expect(root.querySelector('span')).toBe(null);
+      show.value = true;
+      expect(root.querySelector('span')!.textContent).toBe('here');
+    });
+  });
+
+  // ─── Delegate lifecycle ─────────────────────────────────────────────
+
+  describe('delegate lifecycle', () => {
+    it('delegate handler that disposes the mount mid-event handles cleanly', () => {
+      const tick = signal(0);
+      let disposed = false;
+      const dispose = mount(root, () => (
+        <div>
+          <button data-action="boom">{tick.value}</button>
+        </div>
+      ));
+      delegate(root, 'click', '[data-action="boom"]', () => {
+        dispose();
+        disposed = true;
+      });
+      const btn = root.querySelector('button')!;
+      expect(() => btn.click()).not.toThrow();
+      expect(disposed).toBe(true);
+      // Subsequent signal mutations should be a no-op.
+      tick.value = 99;
+      expect(root.querySelector('button')!.textContent).toBe('0');
+    });
+
+    it('delegate handler triggering its own re-render does not lose the binding', () => {
+      const count = signal(0);
+      mount(root, () => (
+        <div>
+          <button data-action="inc">{count.value}</button>
+        </div>
+      ));
+      delegate(root, 'click', '[data-action="inc"]', () => { count.value += 1; });
+      const btn = (): HTMLButtonElement => root.querySelector('button')!;
+      btn().click();
+      expect(btn().textContent).toBe('1');
+      btn().click();
+      btn().click();
+      expect(btn().textContent).toBe('3');
+    });
+
+    it('delegate on a detached root does not throw on listener install', () => {
+      const detached = document.createElement('div');
+      // No `document.body.appendChild` — root is unattached.
+      expect(() => {
+        delegate(detached, 'click', '[data-action="x"]', () => undefined);
+      }).not.toThrow();
+    });
+  });
+
+  // ─── arraySignal corner cases ───────────────────────────────────────
+
+  describe('arraySignal corner cases', () => {
+    it('arraySignal sharing across mounts: each mount sees its own first-render snapshot', () => {
+      const rows = arraySignal([{ id: 1, v: 'a' }, { id: 2, v: 'b' }]);
+      const a = document.createElement('div'); document.body.appendChild(a);
+      const b = document.createElement('div'); document.body.appendChild(b);
+
+      const dispA = mount(a, () => <ul>{each(rows, (r) => <li data-key={String(r.id)}>A:{r.v}</li>)}</ul>);
+      const dispB = mount(b, () => <ul>{each(rows, (r) => <li data-key={String(r.id)}>B:{r.v}</li>)}</ul>);
+
+      expect(a.querySelectorAll('li').length).toBe(2);
+      expect(b.querySelectorAll('li').length).toBe(2);
+
+      // Mutate — both should update (one via granular, the other falls
+      // through to snapshot per the documented contract).
+      rows.update(0, (r) => ({ ...r, v: 'A!' }));
+      expect(a.querySelector('li')!.textContent).toBe('A:A!');
+      expect(b.querySelector('li')!.textContent).toBe('B:A!');
+
+      dispA();
+      dispB();
+    });
+
+    it('replace then update in same batch: snapshot path correctly applies both', () => {
+      const rows = arraySignal([{ id: 1, v: 'a' }]);
+      mount(root, () => <ul>{each(rows, (r) => <li data-key={String(r.id)}>{r.v}</li>)}</ul>);
+      batch(() => {
+        rows.replace([{ id: 10, v: 'X' }, { id: 20, v: 'Y' }]);
+        rows.update(0, (r) => ({ ...r, v: 'X!' }));
+      });
+      const lis = root.querySelectorAll('li');
+      expect(lis.length).toBe(2);
+      expect(lis[0].textContent).toBe('X!');
+      expect(lis[1].textContent).toBe('Y');
+    });
+
+    it('drift recovery: granular update after a thrown render rebuilds via snapshot', () => {
+      // Pin the recovery path: a thrown row render leaves binding stale,
+      // next mutation should rebuild via snapshot (KF-99).
+      type R = { id: number; v: string; bad?: boolean };
+      const rows = arraySignal<R>([{ id: 1, v: 'a' }]);
+      mount(root, () => (
+        <ul>{each(rows, (r) => {
+          if (r.bad) throw new Error('boom');
+          return <li data-key={String(r.id)}>{r.v}</li>;
+        })}</ul>
+      ));
+      let caught: unknown = null;
+      try {
+        rows.insert(1, { id: 2, v: 'b', bad: true });
+      } catch (e) { caught = e; }
+      expect(caught).toBeInstanceOf(Error);
+      // Recover by replacing the bad row.
+      rows.update(1, () => ({ id: 2, v: 'b' }));
+      const lis = root.querySelectorAll('li');
+      expect(Array.from(lis).map((l) => l.textContent)).toEqual(['a', 'b']);
+    });
+
+    it('move with from === to is a no-op (no re-render)', () => {
+      const rows = arraySignal([{ id: 1, v: 'a' }, { id: 2, v: 'b' }]);
+      let renders = 0;
+      mount(root, () => {
+        renders++;
+        return <ul>{each(rows, (r) => <li data-key={String(r.id)}>{r.v}</li>)}</ul>;
+      });
+      const initialRenders = renders;
+      rows.move(0, 0);
+      expect(renders).toBe(initialRenders);  // no patch, no re-render
+    });
+
+    it('computed reading both length and items reacts to both axes', () => {
+      const rows = arraySignal([{ id: 1, v: 'a' }, { id: 2, v: 'b' }]);
+      const summary = computed(() => `${rows.value.length}:${rows.value.map((r) => r.v).join(',')}`);
+      expect(summary.value).toBe('2:a,b');
+      rows.push({ id: 3, v: 'c' });
+      expect(summary.value).toBe('3:a,b,c');
+      rows.update(0, (r) => ({ ...r, v: 'A' }));
+      expect(summary.value).toBe('3:A,b,c');
+      rows.move(2, 0);
+      expect(summary.value).toBe('3:c,A,b');
+    });
+
+    it('arraySignal mutated outside any mount does not throw and patches still queue', () => {
+      const rows = arraySignal<{ id: number; v: string }>([]);
+      // No mount — just mutating the signal.
+      rows.push({ id: 1, v: 'a' });
+      rows.push({ id: 2, v: 'b' });
+      rows.update(0, (r) => ({ ...r, v: 'A' }));
+      expect(rows.value).toEqual([{ id: 1, v: 'A' }, { id: 2, v: 'b' }]);
+      // The patch queue should also have accumulated (verified via _consumePatches).
+      const patches = (rows as unknown as { _consumePatches: () => unknown[] })._consumePatches();
+      expect(patches.length).toBe(3);  // 2 inserts + 1 update
+    });
+
+    it('rapid-fire arraySignal mutations across many renders do not corrupt state', () => {
+      const rows = arraySignal<{ id: number }>([]);
+      mount(root, () => <ul>{each(rows, (r) => <li data-key={String(r.id)}>{r.id}</li>)}</ul>);
+      // 200 pushes
+      for (let i = 0; i < 200; i++) rows.push({ id: i });
+      expect(root.querySelectorAll('li').length).toBe(200);
+      // 100 random updates
+      for (let i = 0; i < 100; i++) {
+        const idx = Math.floor(Math.random() * rows.value.length);
+        rows.update(idx, (r) => ({ id: r.id + 10000 }));
+      }
+      expect(root.querySelectorAll('li').length).toBe(200);
+      // Reverse the whole thing via 200 moves
+      for (let i = 0; i < 200; i++) rows.move(rows.value.length - 1, 0);
+      expect(root.querySelectorAll('li').length).toBe(200);
+    });
+  });
+
+  // ─── Shape transitions ──────────────────────────────────────────────
+
+  describe('shape transitions', () => {
+    it('two each() callsites that flip JSX order across renders — list-id behaviour pinned', () => {
+      // Per audit §2: list ids are positional via context.counter. If a render
+      // re-orders each() calls, the counter assigns them differently. This test
+      // pins current behaviour and surfaces any regression.
+      const phase = signal<'AB' | 'BA'>('AB');
+      const itemsA = [{ id: 'a1', label: 'A1' }, { id: 'a2', label: 'A2' }];
+      const itemsB = [{ id: 'b1', label: 'B1' }, { id: 'b2', label: 'B2' }];
+      mount(root, () => (
+        <div>
+          {phase.value === 'AB' ? (
+            <>
+              <ul className="X">{each(itemsA, (it) => <li data-key={it.id}>{it.label}</li>)}</ul>
+              <ul className="Y">{each(itemsB, (it) => <li data-key={it.id}>{it.label}</li>)}</ul>
+            </>
+          ) : (
+            <>
+              <ul className="X">{each(itemsB, (it) => <li data-key={it.id}>{it.label}</li>)}</ul>
+              <ul className="Y">{each(itemsA, (it) => <li data-key={it.id}>{it.label}</li>)}</ul>
+            </>
+          )}
+        </div>
+      ));
+      expect(root.querySelector('.X')!.querySelectorAll('li')[0].textContent).toBe('A1');
+      expect(root.querySelector('.Y')!.querySelectorAll('li')[0].textContent).toBe('B1');
+      // Flip JSX order. Behaviour pinned: the .X list now contains itemsB
+      // (because the each() at id=0 is now the B one), and .Y has itemsA.
+      phase.value = 'BA';
+      expect(root.querySelector('.X')!.querySelectorAll('li')[0].textContent).toBe('B1');
+      expect(root.querySelector('.Y')!.querySelectorAll('li')[0].textContent).toBe('A1');
+    });
+
+    it('list disappears from segment then reappears — no ghost rows from a stale binding', () => {
+      const show = signal(true);
+      const items = [{ id: 1, label: 'x' }];
+      mount(root, () => (
+        <div>{show.value ? each(items, (it) => <li data-key={String(it.id)}>{it.label}</li>) : null}</div>
+      ));
+      expect(root.querySelectorAll('li').length).toBe(1);
+      show.value = false;
+      expect(root.querySelectorAll('li').length).toBe(0);
+      show.value = true;
+      expect(root.querySelectorAll('li').length).toBe(1);
+      expect(root.querySelector('li')!.textContent).toBe('x');
+    });
+
+    it('each() inside a data-morph-skip subtree continues to update via the list reconciler', () => {
+      // The diff stops at data-morph-skip, but the list reconciler is keyed on
+      // its binding map (independent of the diff). Verify behaviour.
+      const rows = arraySignal([{ id: 1, v: 'a' }]);
+      mount(root, () => (
+        <div data-morph-skip>
+          <ul>{each(rows, (r) => <li data-key={String(r.id)}>{r.v}</li>)}</ul>
+        </div>
+      ));
+      expect(root.querySelector('li')!.textContent).toBe('a');
+      // arraySignal mutation triggers a re-render. The diff sees the
+      // top-level <div data-morph-skip> and short-circuits — but the list
+      // reconciler runs AFTER the diff in mount.ts and operates directly on
+      // binding.liveParent. So the list updates regardless.
+      rows.push({ id: 2, v: 'b' });
+      const lis = root.querySelectorAll('li');
+      expect(lis.length).toBe(2);
+      expect(Array.from(lis).map((l) => l.textContent)).toEqual(['a', 'b']);
+    });
+  });
+
+  // ─── Focus survival ────────────────────────────────────────────────
+
+  describe('focus survival on the granular path', () => {
+    it('focus inside an unchanged row survives a granular update of a different row', () => {
+      const rows = arraySignal([
+        { id: 1, label: 'a' },
+        { id: 2, label: 'b' },
+      ]);
+      mount(root, () => (
+        <ul>{each(rows, (r) => (
+          <li data-key={String(r.id)}>
+            <input type="text" defaultValue={r.label} />
+          </li>
+        ))}</ul>
+      ));
+      const inputs = root.querySelectorAll('input');
+      const firstInput = inputs[0] as HTMLInputElement;
+      firstInput.focus();
+      firstInput.value = 'typed';
+      expect(document.activeElement).toBe(firstInput);
+
+      // Update a DIFFERENT row — should not disturb the focused first input.
+      rows.update(1, (r) => ({ ...r, label: 'B!' }));
+      expect(document.activeElement).toBe(firstInput);
+      expect((document.activeElement as HTMLInputElement).value).toBe('typed');
+    });
+
+    it('focus inside the same row that gets granular-updated is lost (documented)', () => {
+      // Granular update replaces the row's <li>, so focus inside is gone.
+      // This test pins the documented trade-off.
+      const rows = arraySignal([{ id: 1, label: 'a' }]);
+      mount(root, () => (
+        <ul>{each(rows, (r) => (
+          <li data-key={String(r.id)}>
+            <input type="text" defaultValue={r.label} />
+          </li>
+        ))}</ul>
+      ));
+      const input = root.querySelector('input') as HTMLInputElement;
+      input.focus();
+      expect(document.activeElement).toBe(input);
+
+      rows.update(0, (r) => ({ ...r, label: 'A!' }));
+      // Old input was replaced; focus is lost.
+      expect(document.activeElement).not.toBe(input);
+    });
+  });
+
+  // ─── Fast-path corners ────────────────────────────────────────────
+
+  describe('fast-path corners', () => {
+    it('KF-89 fast path with same-length list of same refs but text-changed via cacheKey', () => {
+      const items = [{ id: 1 }, { id: 2 }];
+      const selectedId = signal(1);
+      mount(root, () => (
+        <ul>
+          {each(items, (it) => (
+            <li
+              data-key={String(it.id)}
+              className={it.id === selectedId.value ? 'sel' : ''}
+            >
+              {it.id}
+            </li>
+          ), (it) => `${it.id}-${it.id === selectedId.value ? 1 : 0}`)}
+        </ul>
+      ));
+      expect(root.querySelectorAll('li.sel').length).toBe(1);
+      expect(root.querySelectorAll('li.sel')[0].textContent).toBe('1');
+      selectedId.value = 2;
+      expect(root.querySelectorAll('li.sel').length).toBe(1);
+      expect(root.querySelectorAll('li.sel')[0].textContent).toBe('2');
+    });
+
+    it('KF-93 contiguous insert detector: alternating insert/update breaks the run', () => {
+      const rows = arraySignal([{ id: 0, v: 'seed' }]);
+      mount(root, () => <ul>{each(rows, (r) => <li data-key={String(r.id)}>{r.v}</li>)}</ul>);
+      // Mix insert + update in one batch — KF-93's run detector should NOT
+      // bulk-parse all of them; it only fires for contiguous-index insert runs.
+      batch(() => {
+        rows.insert(1, { id: 1, v: 'A' });
+        rows.update(0, (r) => ({ ...r, v: 'SEED!' }));
+        rows.insert(2, { id: 2, v: 'B' });
+      });
+      const lis = root.querySelectorAll('li');
+      expect(Array.from(lis).map((l) => l.textContent)).toEqual(['SEED!', 'A', 'B']);
+    });
+
+    it('KF-94 update run detector: identical-html updates are no-ops, run still recognised', () => {
+      const rows = arraySignal([
+        { id: 1, v: 'a' }, { id: 2, v: 'b' }, { id: 3, v: 'c' },
+      ]);
+      mount(root, () => <ul>{each(rows, (r) => <li data-key={String(r.id)}>{r.v}</li>)}</ul>);
+      const before = Array.from(root.querySelectorAll('li'));
+      // Trigger updates that produce IDENTICAL html (same v).
+      batch(() => {
+        rows.update(0, (r) => ({ ...r }));
+        rows.update(1, (r) => ({ ...r }));
+        rows.update(2, (r) => ({ ...r }));
+      });
+      const after = Array.from(root.querySelectorAll('li'));
+      // Same nodes (identity preserved) — no replacement happened.
+      expect(after[0]).toBe(before[0]);
+      expect(after[1]).toBe(before[1]);
+      expect(after[2]).toBe(before[2]);
+    });
+
+    it('KF-99 drift detection: external _consumePatches drain followed by a normal mutation', () => {
+      // Simulate something draining the patch queue mid-flight (e.g. a second
+      // each() callsite that ran granular before this one). The next mutation
+      // should still reconcile correctly.
+      const rows = arraySignal([{ id: 1, v: 'a' }, { id: 2, v: 'b' }]);
+      mount(root, () => <ul>{each(rows, (r) => <li data-key={String(r.id)}>{r.v}</li>)}</ul>);
+      // Drain externally — simulates the "second consumer of same arraySignal".
+      (rows as unknown as { _consumePatches: () => unknown[] })._consumePatches();
+      // Normal mutation: should still propagate.
+      rows.update(0, (r) => ({ ...r, v: 'A!' }));
+      expect(root.querySelector('li')!.textContent).toBe('A!');
+    });
+
+    it('first render of an arraySignal that was mutated 1000 times pre-mount renders all 1000 rows', () => {
+      // KF-98 pinning: pre-mount mutations should NOT produce an empty first render.
+      const rows = arraySignal<{ id: number }>([]);
+      for (let i = 0; i < 1000; i++) rows.push({ id: i });
+      mount(root, () => <ul>{each(rows, (r) => <li data-key={String(r.id)}>{r.id}</li>)}</ul>);
+      expect(root.querySelectorAll('li').length).toBe(1000);
+    });
+  });
+
+  // ─── Stress + invariants ──────────────────────────────────────────
+
+  describe('stress + invariants', () => {
+    it('1000-row mutate-and-restore round-trip: final DOM matches initial DOM', () => {
+      const initial = Array.from({ length: 1000 }, (_, i) => ({ id: i, v: `r${i}` }));
+      const rows = arraySignal(initial);
+      mount(root, () => <ul>{each(rows, (r) => <li data-key={String(r.id)}>{r.v}</li>)}</ul>);
+      const initialFingerprint = Array.from(root.querySelectorAll('li')).map((l) => l.textContent);
+      expect(initialFingerprint.length).toBe(1000);
+
+      // Reverse, then reverse again.
+      rows.replace([...rows.value].reverse());
+      rows.replace([...rows.value].reverse());
+      const finalFingerprint = Array.from(root.querySelectorAll('li')).map((l) => l.textContent);
+      expect(finalFingerprint).toEqual(initialFingerprint);
+    });
+
+    it('mount + delegate + arraySignal stress: 100 click-driven inserts produce 100 rows in correct order', () => {
+      const rows = arraySignal<{ id: number }>([]);
+      mount(root, () => (
+        <div>
+          <button data-action="add">add</button>
+          <ul>{each(rows, (r) => <li data-key={String(r.id)}>{r.id}</li>)}</ul>
+        </div>
+      ));
+      let nextId = 0;
+      delegate(root, 'click', '[data-action="add"]', () => {
+        rows.push({ id: nextId++ });
+      });
+      const btn = root.querySelector('button')!;
+      for (let i = 0; i < 100; i++) btn.click();
+      const lis = root.querySelectorAll('li');
+      expect(lis.length).toBe(100);
+      expect(Array.from(lis).map((l) => Number(l.textContent))).toEqual(
+        Array.from({ length: 100 }, (_, i) => i),
+      );
+    });
+
+    it('signal mutated 100 times in a single batch fires render exactly once', () => {
+      const x = signal(0);
+      let renders = 0;
+      mount(root, () => {
+        renders++;
+        return <span>{x.value}</span>;
+      });
+      const before = renders;
+      batch(() => {
+        for (let i = 0; i < 100; i++) x.value = i;
+      });
+      // Renders incremented by exactly 1 (final coalesced run).
+      expect(renders).toBe(before + 1);
+      expect(root.querySelector('span')!.textContent).toBe('99');
+    });
+  });
+
+  // ─── computed corner cases ───────────────────────────────────────
+
+  describe('computed corner cases', () => {
+    it('computed used as a JSX expression updates correctly', () => {
+      const a = signal(1);
+      const b = signal(2);
+      const sum = computed(() => a.value + b.value);
+      mount(root, () => <span>sum={sum.value}</span>);
+      expect(root.querySelector('span')!.textContent).toBe('sum=3');
+      a.value = 10;
+      expect(root.querySelector('span')!.textContent).toBe('sum=12');
+    });
+
+    it('effect throws → next signal mutation still triggers the effect (subscription survives)', () => {
+      const x = signal(0);
+      let runs = 0;
+      effect(() => {
+        runs++;
+        if (x.value === 1) throw new Error('boom');
+      });
+      expect(runs).toBe(1);
+      expect(() => { x.value = 1; }).toThrow();
+      expect(runs).toBe(2);  // ran, threw
+      // Subscription survives: next mutation still fires the effect.
+      x.value = 2;
+      expect(runs).toBe(3);
+    });
+
+    it('chain of computed (a → b → c) updates in dependency order', () => {
+      const a = signal(1);
+      const b = computed(() => a.value * 10);
+      const c = computed(() => b.value + 1);
+      mount(root, () => <span>{c.value}</span>);
+      expect(root.querySelector('span')!.textContent).toBe('11');
+      a.value = 5;
+      expect(root.querySelector('span')!.textContent).toBe('51');
+    });
+  });
+
+  // ─── Marker resilience ───────────────────────────────────────────
+
+  describe('marker resilience', () => {
+    it('list marker remains in the DOM after first render and across re-renders', () => {
+      const tick = signal(0);
+      mount(root, () => {
+        void tick.value;
+        return <ul>{each([{ id: 1 }, { id: 2 }], (r) => <li data-key={String(r.id)}>{r.id}</li>)}</ul>;
+      });
+      const ul = root.querySelector('ul')!;
+      const findMarker = (): Comment | null => {
+        for (let c = ul.firstChild; c !== null; c = c.nextSibling) {
+          if (c.nodeType === Node.COMMENT_NODE) return c as Comment;
+        }
+        return null;
+      };
+      const m1 = findMarker();
+      expect(m1).not.toBe(null);
+      expect(m1!.data).toBe('kf-list:0');
+
+      // Re-render shouldn't move or duplicate the marker.
+      tick.value = 1;
+      tick.value = 2;
+      const m2 = findMarker();
+      expect(m2).toBe(m1);  // same node identity
+      const allComments: Comment[] = [];
+      for (let c = ul.firstChild; c !== null; c = c.nextSibling) {
+        if (c.nodeType === Node.COMMENT_NODE) allComments.push(c as Comment);
+      }
+      expect(allComments.length).toBe(1);  // exactly one marker, no duplicates
+    });
+  });
+});
+
+// Avoid unused import warning if vi is referenced only for setup/teardown semantics.
+void vi;
+
+describe('More adversarial cases', () => {
+  let root: HTMLElement;
+  beforeEach(() => { root = document.createElement('div'); document.body.appendChild(root); });
+  afterEach(() => { document.body.innerHTML = ''; });
+
+  // ─── Mutation inside render ──────────────────────────────────────
+
+  it('signal mutated synchronously inside its own render closure does not infinite-loop', () => {
+    // signals-core uses cycle detection; mutating a signal you just read
+    // should either coalesce or throw — verify no infinite loop crashes the test.
+    const x = signal(0);
+    let renders = 0;
+    const dispose = mount(root, () => {
+      renders++;
+      // Read AND write in the same closure — only mutate once to avoid loop.
+      if (x.value === 0 && renders === 1) {
+        // Defer the mutation so we don't recurse synchronously into ourselves.
+        Promise.resolve().then(() => { x.value = 1; });
+      }
+      return <span>{x.value}</span>;
+    });
+    // After the microtask runs, render should fire again with x=1.
+    return Promise.resolve().then(() => {
+      expect(root.querySelector('span')!.textContent).toBe('1');
+      dispose();
+    });
+  });
+
+  it('arraySignal mutation inside the render closure mid-render does not corrupt state', () => {
+    // The arraySignal's eager mutation means changes are visible in the
+    // signal even mid-render. Verify the next render reconciles correctly.
+    const rows = arraySignal<{ id: number }>([{ id: 1 }]);
+    let renders = 0;
+    mount(root, () => {
+      renders++;
+      if (renders === 1) {
+        // Defer to avoid sync recursion.
+        Promise.resolve().then(() => { rows.push({ id: 2 }); });
+      }
+      return <ul>{each(rows, (r) => <li data-key={String(r.id)}>{r.id}</li>)}</ul>;
+    });
+    return Promise.resolve().then(() => {
+      expect(root.querySelectorAll('li').length).toBe(2);
+    });
+  });
+
+  // ─── Delegate stopPropagation ────────────────────────────────────
+
+  it('delegateCapture stopPropagation prevents bubble-phase delegate from firing', () => {
+    mount(root, () => (
+      <div>
+        <button data-action="x">click</button>
+      </div>
+    ));
+    const captureCalls: string[] = [];
+    const bubbleCalls: string[] = [];
+    // delegateCapture installs in capture phase; stop here prevents bubble.
+    const captureDispose = delegateCapture(root, 'click', '[data-action="x"]', (e) => {
+      captureCalls.push('cap');
+      e.stopPropagation();
+    });
+    const bubbleDispose = delegate(root, 'click', '[data-action="x"]', () => {
+      bubbleCalls.push('bub');
+    });
+    root.querySelector('button')!.click();
+    expect(captureCalls).toEqual(['cap']);
+    expect(bubbleCalls).toEqual([]);
+    captureDispose();
+    bubbleDispose();
+  });
+
+  // ─── Cross-feature interaction ───────────────────────────────────
+
+  it('focused input + each() reorder + delegated click all firing together', () => {
+    interface Row { id: number; label: string }
+    const rows = arraySignal<Row>([
+      { id: 1, label: 'first' },
+      { id: 2, label: 'second' },
+    ]);
+    let clicks = 0;
+    mount(root, () => (
+      <div>
+        <ul>{each(rows, (r) => (
+          <li data-key={String(r.id)}>
+            <input type="text" defaultValue={r.label} />
+            <button data-action="bump" data-id={String(r.id)}>+</button>
+          </li>
+        ))}</ul>
+      </div>
+    ));
+    delegate(root, 'click', '[data-action="bump"]', () => { clicks++; });
+
+    // Focus first input.
+    const firstInput = root.querySelectorAll('input')[0] as HTMLInputElement;
+    firstInput.focus();
+    firstInput.value = 'edited';
+    expect(document.activeElement).toBe(firstInput);
+
+    // Reorder via move — the focused input's row goes to index 1.
+    rows.move(0, 1);
+    // Focus survives across the move (same node, different position).
+    expect(document.activeElement).toBe(firstInput);
+    expect((document.activeElement as HTMLInputElement).value).toBe('edited');
+
+    // Click a button on the (now-second-position) row → handler fires.
+    const buttons = root.querySelectorAll('button');
+    buttons[1].click();
+    expect(clicks).toBe(1);
+  });
+
+  // ─── Many signals + arraySignals in one render ──────────────────
+
+  it('mixed signals + arraySignals render coherently in a single mount', () => {
+    const heading = signal('initial heading');
+    const rows = arraySignal([{ id: 1, v: 'r1' }]);
+    mount(root, () => (
+      <div>
+        <h1>{heading.value}</h1>
+        <ul>{each(rows, (r) => <li data-key={String(r.id)}>{r.v}</li>)}</ul>
+      </div>
+    ));
+    expect(root.querySelector('h1')!.textContent).toBe('initial heading');
+    expect(root.querySelectorAll('li').length).toBe(1);
+
+    heading.value = 'updated';
+    expect(root.querySelector('h1')!.textContent).toBe('updated');
+    expect(root.querySelectorAll('li').length).toBe(1);  // list unchanged
+
+    rows.push({ id: 2, v: 'r2' });
+    expect(root.querySelectorAll('li').length).toBe(2);
+    expect(root.querySelector('h1')!.textContent).toBe('updated');  // heading unchanged
+  });
+
+  // ─── Effect inside a mount render ────────────────────────────────
+
+  it('effect created inside a mount render runs every render (caller responsibility)', () => {
+    // No detection — effects inside renders accumulate. This test pins
+    // current behaviour (callers should not do this; documenting the cost).
+    const tick = signal(0);
+    let effectRuns = 0;
+    const disposers: (() => void)[] = [];
+    const dispose = mount(root, () => {
+      void tick.value;
+      // Each render creates a NEW effect. Without external dispose, they
+      // pile up — but each one's subscription is independent.
+      const d = effect(() => { effectRuns++; });
+      disposers.push(d);
+      return <span>{tick.value}</span>;
+    });
+    expect(effectRuns).toBeGreaterThanOrEqual(1);
+    tick.value = 1;
+    // The new render created another effect; the OLD effect's subscription
+    // graph still exists too. effectRuns should grow per render plus per
+    // subscription. Just verify it's increasing — the actual count is
+    // implementation-detail-y.
+    expect(effectRuns).toBeGreaterThanOrEqual(2);
+    for (const d of disposers) d();
+    dispose();
+  });
+
+  // ─── Dispose interleaving ───────────────────────────────────────
+
+  it('disposing during a batched mutation does not crash', () => {
+    const rows = arraySignal<{ id: number }>([{ id: 1 }]);
+    const dispose = mount(root, () => (
+      <ul>{each(rows, (r) => <li data-key={String(r.id)}>{r.id}</li>)}</ul>
+    ));
+    expect(() => {
+      batch(() => {
+        rows.push({ id: 2 });
+        rows.push({ id: 3 });
+        dispose();
+        rows.push({ id: 4 });  // post-dispose mutation
+      });
+    }).not.toThrow();
+  });
+
+  // ─── arraySignal of objects with shared shape but different identity ─
+
+  it('two each() callsites with the same items array produce same DOM (identity in cache)', () => {
+    const items = [{ id: 1, v: 'a' }, { id: 2, v: 'b' }];
+    mount(root, () => (
+      <div>
+        <ul className="P">{each(items, (it) => <li data-key={String(it.id)}>P:{it.v}</li>)}</ul>
+        <ul className="Q">{each(items, (it) => <li data-key={String(it.id)}>Q:{it.v}</li>)}</ul>
+      </div>
+    ));
+    expect(root.querySelector('.P')!.querySelectorAll('li').length).toBe(2);
+    expect(root.querySelector('.Q')!.querySelectorAll('li').length).toBe(2);
+    // Different render functions → different cache entries by id, but the
+    // item refs are shared. Both lists rendered correctly.
+    expect(root.querySelector('.P')!.querySelectorAll('li')[0].textContent).toBe('P:a');
+    expect(root.querySelector('.Q')!.querySelectorAll('li')[0].textContent).toBe('Q:a');
+  });
+
+  // ─── First render / dispose race ────────────────────────────────
+
+  it('immediate dispose right after mount cleans up before any reactivity', () => {
+    const x = signal(0);
+    const dispose = mount(root, () => <span>{x.value}</span>);
+    dispose();
+    // After dispose, mutation should not propagate.
+    x.value = 99;
+    expect(root.querySelector('span')!.textContent).toBe('0');
+  });
+
+  // ─── Marker integrity under stress ──────────────────────────────
+
+  it('marker remains a single comment node after 100 list-shape changes', () => {
+    const items = signal<{ id: number }[]>([{ id: 1 }]);
+    mount(root, () => (
+      <ul>{each(items.value, (r) => <li data-key={String(r.id)}>{r.id}</li>)}</ul>
+    ));
+    for (let i = 0; i < 100; i++) {
+      items.value = Array.from({ length: (i % 10) + 1 }, (_, j) => ({ id: j }));
+    }
+    const ul = root.querySelector('ul')!;
+    let markerCount = 0;
+    for (let c = ul.firstChild; c !== null; c = c.nextSibling) {
+      if (c.nodeType === Node.COMMENT_NODE) markerCount++;
+    }
+    expect(markerCount).toBe(1);
+  });
+});

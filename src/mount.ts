@@ -106,9 +106,15 @@ export function mount(rootEl: HTMLElement, render: () => SafeHtml | string): () 
       _setRenderContext(null);
     }
 
+    // Permissive runtime coercion for `result`. The TypeScript signature
+    // requires `SafeHtml | string`, but conditional-render patterns like
+    // `{cond ? <jsx/> : null}` or `{cond && <jsx/>}` return `null` /
+    // `false` at runtime. Treat any nullish or boolean value as "render
+    // nothing" — anything else falls through to the existing string path
+    // (numbers stringify, real strings pass through).
     const segment: Segment = isSafeHtml(result)
       ? (result.__segment ?? { kind: 'static', html: result.__html })
-      : { kind: 'static', html: result };
+      : { kind: 'static', html: coerceRenderResult(result) };
 
     if (isFirst) {
       // Bulk-render with items inlined and a marker per list. The marker walk
@@ -164,6 +170,19 @@ export function mount(rootEl: HTMLElement, render: () => SafeHtml | string): () 
       renderCtx.bindingCounts.set(listSeg.id, binding.items.length);
     }
   });
+}
+
+/**
+ * Coerce a non-`SafeHtml` render result to a safe HTML string. Nullish
+ * values and booleans become `''` (render nothing) — matches the React /
+ * Solid convention so `{cond ? <jsx/> : null}` and `{cond && <jsx/>}`
+ * patterns work without each consumer adding a sentinel. Everything else
+ * is stringified (numbers → `"42"`, strings pass through).
+ */
+function coerceRenderResult(result: unknown): string {
+  if (result === null || result === undefined) return '';
+  if (result === false || result === true) return '';
+  return String(result);
 }
 
 /**

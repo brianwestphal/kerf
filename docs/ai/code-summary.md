@@ -35,6 +35,7 @@ kerf/
 │   │   ├── diff.internal.test.ts
 │   │   ├── doc-contract-coverage.test.tsx  ← KF-104 — comprehensive contract suite covering every doc-asserted behaviour
 │   │   ├── each.test.ts
+│   │   ├── edge-case-coverage.test.tsx     ← adversarial probes for mount-lifecycle / shape-transitions / focus-on-granular-path / fast-path corners / 1000-row stress
 │   │   ├── jsx-runtime.test.ts
 │   │   ├── jsx-types.test.tsx
 │   │   ├── kf102-each-after-transition.test.tsx ← KF-102 round 2 — each() reconcile after sibling-introduction transitions
