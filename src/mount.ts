@@ -69,7 +69,9 @@ const LIST_MARKER_PREFIX = 'kf-list:';
  *   else they did to the DOM — survives verbatim. The next render after
  *   blur catches up.
  */
-export function mount(rootEl: HTMLElement, render: () => SafeHtml | string): () => void {
+export type MountResult = SafeHtml | string | number | boolean | null | undefined;
+
+export function mount(rootEl: HTMLElement, render: () => MountResult): () => void {
   if (rootEl == null) {
     throw new Error(
       'mount: rootEl is null/undefined — pass the live element, e.g. mount(document.getElementById("app")!, render). '
@@ -99,66 +101,27 @@ export function mount(rootEl: HTMLElement, render: () => SafeHtml | string): () 
   return effect(() => {
     renderCtx.counter = 0;
     _setRenderContext(renderCtx);
-    let result: SafeHtml | string;
+    let result: MountResult;
     try {
       result = render();
     } finally {
       _setRenderContext(null);
     }
 
-    // Permissive runtime coercion for `result`. The TypeScript signature
-    // requires `SafeHtml | string`, but conditional-render patterns like
-    // `{cond ? <jsx/> : null}` or `{cond && <jsx/>}` return `null` /
-    // `false` at runtime. Treat any nullish or boolean value as "render
-    // nothing" — anything else falls through to the existing string path
-    // (numbers stringify, real strings pass through).
+    // The `MountResult` union covers `null`, `undefined`, `false`, `true`,
+    // and `number` so consumers can write `() => cond ? <jsx/> : null` and
+    // `() => cond && <jsx/>` without a cast. `coerceRenderResult` collapses
+    // nullish + boolean to `''` (render nothing) and stringifies numbers.
     const segment: Segment = isSafeHtml(result)
       ? (result.__segment ?? { kind: 'static', html: result.__html })
       : { kind: 'static', html: coerceRenderResult(result) };
 
     if (isFirst) {
-      // Bulk-render with items inlined and a marker per list. The marker walk
-      // afterwards binds each list to the rows already in the DOM, so the
-      // first-render reconcile is a no-op (every item is a cache hit).
-      rootEl.innerHTML = flatten(segment, true);
-      bindListsFromMarkers(rootEl, segment, bindings, true);
+      runFirstRender(rootEl, segment, bindings);
       prevStaticHtml = flattenWithoutListItems(segment);
       isFirst = false;
     } else {
-      const currentStaticHtml = flattenWithoutListItems(segment);
-      if (currentStaticHtml === prevStaticHtml) {
-        // KF-88 fast path: static surrounds didn't change byte-for-byte.
-        // bindListsFromMarkers has nothing to discover (every list id is
-        // already bound) and the diff would short-circuit on isEqualNode for
-        // every element it visited — but the visit itself isn't free. Skip
-        // both to save ~8 ms per partial-update / select-row / swap-rows
-        // render in the krausest harness.
-        //
-        // Trade-off (KF-117, documented in docs/4-render.md §4.4.2): any
-        // attribute or child set imperatively on a kerf-managed element
-        // (e.g. `el.setAttribute(...)`) survives across no-op re-renders
-        // because the diff doesn't run to wipe it. When the surrounds DO
-        // change, the diff runs and `morphAttributes` removes anything the
-        // JSX didn't authorise. This matches the framework's "smallest cut"
-        // model: don't touch what JSX didn't change.
-      } else {
-        // Static surrounds changed (a signal-driven attribute flip outside
-        // any `each()`, a conditional sub-tree appearing or disappearing,
-        // a list newly added at this position, etc.). Clean up bindings
-        // for lists that disappeared from the segment, then run diff over
-        // the surrounds, then bind any newly-appearing lists.
-        cleanupOrphanBindings(segment, bindings, renderCtx);
-        const template = rootEl.cloneNode(false) as HTMLElement;
-        template.innerHTML = currentStaticHtml;
-        // KF-102 round 2: instead of telling diff to skip a list parent's
-        // entire children subtree (which made non-list siblings invisible
-        // to the diff), pass the set of list-owned item nodes. The diff
-        // walks every parent's children but skips owned items individually,
-        // so non-list siblings around an each() reconcile correctly.
-        diff(rootEl, template, collectOwnedItems(bindings));
-        bindListsFromMarkers(rootEl, segment, bindings, false);
-        prevStaticHtml = currentStaticHtml;
-      }
+      prevStaticHtml = runSubsequentRender(rootEl, segment, bindings, renderCtx, prevStaticHtml);
     }
 
     for (const listSeg of collectLists(segment).values()) {
@@ -170,6 +133,68 @@ export function mount(rootEl: HTMLElement, render: () => SafeHtml | string): () 
       renderCtx.bindingCounts.set(listSeg.id, binding.items.length);
     }
   });
+}
+
+/**
+ * First render of a mount: bulk-flatten the segment (items inlined, markers
+ * around each list) into `rootEl.innerHTML`, then walk the markers to
+ * register a `ListBinding` per list. The subsequent `reconcileList` pass is
+ * a no-op (every row's a cache hit on the just-bound items).
+ */
+function runFirstRender(
+  rootEl: HTMLElement,
+  segment: Segment,
+  bindings: Map<string, ListBinding>,
+): void {
+  rootEl.innerHTML = flatten(segment, true);
+  bindListsFromMarkers(rootEl, segment, bindings, true);
+}
+
+/**
+ * Subsequent render of a mount. Returns the new `prevStaticHtml` so the
+ * caller can carry it forward.
+ *
+ * Two paths:
+ *
+ * - **KF-88 fast path**: when the static-surrounds string didn't change
+ *   byte-for-byte, `bindListsFromMarkers` has nothing to discover and the
+ *   diff would short-circuit on `isEqualNode` for every element it visited —
+ *   but the visit itself isn't free. Skip both to save ~8 ms per partial-
+ *   update / select-row / swap-rows render against the krausest harness.
+ *
+ *   Trade-off (KF-117, documented in `docs/4-render.md` §4.4.2): any
+ *   attribute or child set imperatively on a kerf-managed element (e.g.
+ *   `el.setAttribute(...)`) survives across no-op re-renders because the
+ *   diff doesn't run to wipe it. When the surrounds DO change, the diff
+ *   runs and `morphAttributes` removes anything the JSX didn't authorise.
+ *   This matches the framework's "smallest cut" model: don't touch what
+ *   JSX didn't change.
+ *
+ * - **Surrounds-changed path**: clean up orphan bindings (lists that
+ *   disappeared from this render's segment), build a template from the
+ *   static-only HTML, run `diff()` over the surrounds with the
+ *   list-owned items as `ownedItems` (KF-102 round 2 — the diff skips
+ *   owned items individually but still walks every parent so non-list
+ *   siblings around an each() reconcile correctly), then bind any
+ *   newly-appearing lists.
+ */
+function runSubsequentRender(
+  rootEl: HTMLElement,
+  segment: Segment,
+  bindings: Map<string, ListBinding>,
+  renderCtx: RenderContext,
+  prevStaticHtml: string,
+): string {
+  const currentStaticHtml = flattenWithoutListItems(segment);
+  if (currentStaticHtml === prevStaticHtml) {
+    return prevStaticHtml;
+  }
+  cleanupOrphanBindings(segment, bindings, renderCtx);
+  const template = rootEl.cloneNode(false) as HTMLElement;
+  template.innerHTML = currentStaticHtml;
+  diff(rootEl, template, collectOwnedItems(bindings));
+  bindListsFromMarkers(rootEl, segment, bindings, false);
+  return currentStaticHtml;
 }
 
 /**

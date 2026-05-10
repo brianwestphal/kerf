@@ -11,7 +11,7 @@
 export { delegate, delegateCapture } from './delegate.js';
 export { each } from './each.js';
 export { Fragment, isSafeHtml, raw, SafeHtml } from './jsx-runtime.js';
-export { mount } from './mount.js';
+export { mount, type MountResult } from './mount.js';
 export {
   batch,
   computed,

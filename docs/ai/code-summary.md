@@ -17,7 +17,8 @@ kerf/
 │   ├── diff.ts                   ← native general-purpose DOM reconciler (replaces morphdom)
 │   ├── segment.ts                ← Segment types (static/list/mixed) + flatten helpers
 │   ├── each.ts                   ← each() — keyed list iteration with per-item memo
-│   ├── list-reconcile.ts         ← top-level dispatcher (KF-112) — BoundItem, ListBinding, endAnchor, reconcileList
+│   ├── list-reconcile.ts         ← top-level dispatcher (KF-112) — re-exports BoundItem / ListBinding / endAnchor and defines reconcileList
+│   ├── list-binding.ts           ← BoundItem / ListBinding shape + endAnchor() (KF-116) — extracted to break the circular import between list-reconcile.ts and its sibling reconcilers
 │   ├── list-reconcile-snapshot.ts ← snapshot reconcile path (classify / bulk-parse / LIS / move)
 │   ├── list-reconcile-granular.ts ← granular reconcile path (KF-92 patch-driven, KF-93/94 bulk parse)
 │   ├── list-reconcile-focus.ts   ← focus snapshot/restore around the move pass (engine-quirk fix)

@@ -99,6 +99,8 @@ import { clearStoreRegistry } from 'kerfjs/testing';
 
 Bind `render()` to `rootEl`'s children. Wraps `effect()` with kerf's segment-aware diff. Returns a disposer.
 
+Although the static signature requires `SafeHtml | string`, the runtime additionally accepts `null`, `undefined`, `false`, and `true` — they coerce to "render nothing" (empty string), matching the React / Solid convention so `() => cond ? <jsx/> : null` and `() => cond && <jsx/>` patterns work without each consumer adding a sentinel. Numbers stringify; non-string non-`SafeHtml` values fall through `String(...)`.
+
 The diff:
 
 - Only ever touches `rootEl`'s subtree; `rootEl` itself is preserved.

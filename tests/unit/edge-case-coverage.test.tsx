@@ -141,31 +141,31 @@ describe('Adversarial edge cases', () => {
 
   describe('render returning unusual values', () => {
     it('render returning null produces an empty render (React-style nothing)', () => {
-      const dispose = mount(root, () => null as unknown as string);
+      const dispose = mount(root, () => null);
       expect(root.innerHTML).toBe('');
       dispose();
     });
 
     it('render returning undefined produces an empty render', () => {
-      const dispose = mount(root, () => undefined as unknown as string);
+      const dispose = mount(root, () => undefined);
       expect(root.innerHTML).toBe('');
       dispose();
     });
 
     it('render returning false produces an empty render (cond && jsx pattern)', () => {
-      const dispose = mount(root, () => false as unknown as string);
+      const dispose = mount(root, () => false);
       expect(root.innerHTML).toBe('');
       dispose();
     });
 
     it('render returning true also produces an empty render (defensive)', () => {
-      const dispose = mount(root, () => true as unknown as string);
+      const dispose = mount(root, () => true);
       expect(root.innerHTML).toBe('');
       dispose();
     });
 
     it('render returning a number coerces to string via innerHTML', () => {
-      const dispose = mount(root, () => 42 as unknown as string);
+      const dispose = mount(root, () => 42);
       expect(root.innerHTML).toBe('42');
       dispose();
     });
@@ -178,7 +178,7 @@ describe('Adversarial edge cases', () => {
 
     it('conditional-render pattern { cond ? <jsx/> : null } toggles between content and empty', () => {
       const show = signal(true);
-      mount(root, () => (show.value ? <span>here</span> : null) as unknown as string);
+      mount(root, () => (show.value ? <span>here</span> : null));
       expect(root.querySelector('span')!.textContent).toBe('here');
       show.value = false;
       expect(root.querySelector('span')).toBe(null);
@@ -188,7 +188,7 @@ describe('Adversarial edge cases', () => {
 
     it('conditional-render pattern { cond && <jsx/> } toggles between content and empty', () => {
       const show = signal(false);
-      mount(root, () => (show.value && <span>here</span>) as unknown as string);
+      mount(root, () => (show.value && <span>here</span>));
       expect(root.querySelector('span')).toBe(null);
       show.value = true;
       expect(root.querySelector('span')!.textContent).toBe('here');
@@ -1313,7 +1313,7 @@ describe('Round 3: delegate handler corner cases', () => {
     const remove = signal(false);
     mount(root, () => (
       remove.value ? <p>gone</p> : <button data-action="self-destruct">click</button>
-    ) as unknown as string);
+    ));
     delegate(root, 'click', '[data-action="self-destruct"]', () => { remove.value = true; });
     const btn = root.querySelector('button')!;
     expect(() => btn.click()).not.toThrow();

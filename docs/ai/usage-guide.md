@@ -141,6 +141,7 @@ delegate(rootEl, 'click', '[data-action="inc"]', () => { count.value += 1; });
 | `<my-element>` fails to typecheck | The tag is not in `IntrinsicElements`; declaration merging targeted the wrong namespace | Use `declare module 'kerfjs/jsx-runtime' { namespace JSX { interface IntrinsicElements { ... } } }`. `declare global { namespace JSX … }` does NOT work because kerf's JSX is module-scoped (KF-100) |
 | `each(): row render at index N produced K top-level elements` | A row's render returned multiple sibling elements (`<td/><td/>`) or zero elements | Wrap them in one parent so the row renders exactly one top-level element (`<tr><td/><td/></tr>`). The reconciler binds one live DOM node per item (KF-103) |
 | `arraySignal` mutated before mount renders empty | First render of a list always takes the snapshot path; this is by design (KF-98) — but if you've drained patches via something other than `each()` first, the snapshot still reflects the truth so you'll get a correct render |
+| TypeScript complains about `mount(el, () => cond ? <jsx/> : null)` returning a non-`SafeHtml` | Should not happen on current kerf — `mount()`'s `render` is typed `() => MountResult` where `MountResult = SafeHtml \| string \| number \| boolean \| null \| undefined` (KF-119). If you still see the error, your `kerfjs` install predates the widening; upgrade or, as a stop-gap, return `''` / `raw('')` from the falsy branch. |
 
 ## Server / SSR
 

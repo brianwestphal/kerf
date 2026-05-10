@@ -18,7 +18,7 @@ const dispose = mount(document.getElementById('app')!, () => (
 ## 4.1 What `mount` does
 
 1. Wraps `effect()` so the render fn re-runs whenever any signal it reads changes.
-2. Evaluates `render()` to a `SafeHtml`. The wrapped `Segment` is either a single static-html node (most renders), or a tree containing `list` segments (anywhere `each(...)` was used) and `mixed` segments wrapping their parents.
+2. Evaluates `render()` to a `SafeHtml`. The wrapped `Segment` is either a single static-html node (most renders), or a tree containing `list` segments (anywhere `each(...)` was used) and `mixed` segments wrapping their parents. As a small ergonomic affordance, a render that returns `null`, `undefined`, `false`, or `true` is coerced to "render nothing" (empty string) — so `mount(el, () => cond ? <jsx/> : null)` and `mount(el, () => cond && <jsx/>)` work without each consumer adding a sentinel. Numbers stringify; real strings pass through.
 3. **First render:** sets `rootEl.innerHTML` to the flattened HTML (with sentinel comments around each list), then walks those comments to bind every list to its live parent. Bulk parse, single pass.
 4. **Subsequent renders:** builds a marker-only template (lists become `<!--kf-list:N-->` placeholders, *no row HTML*), runs kerf's native diff (`src/diff.ts`) over the static surrounds, then dispatches each list segment to a keyed reconciler that operates directly on the live parent's children. Cache-hit rows are reused verbatim; replaced/new rows are batched into one parse and `insertBefore`'d into place. A longest-increasing-subsequence pass keeps reorder mutations to the minimum.
 5. Returns a disposer that tears down the effect.
