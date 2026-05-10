@@ -34,6 +34,7 @@ import {
   each,
   effect,
   mount,
+  type SafeHtml,
   signal,
 } from '../../src/index.js';
 
@@ -905,5 +906,505 @@ describe('More adversarial cases', () => {
       if (c.nodeType === Node.COMMENT_NODE) markerCount++;
     }
     expect(markerCount).toBe(1);
+  });
+});
+
+// ═══════════════════════════════════════════════════════════════════
+// Round 3 — exhaustive "forgot path B" probes
+// ═══════════════════════════════════════════════════════════════════
+
+describe('Round 3: granular path × cross-feature interactions', () => {
+  let root: HTMLElement;
+  beforeEach(() => { root = document.createElement('div'); document.body.appendChild(root); });
+  afterEach(() => { document.body.innerHTML = ''; });
+
+  it('granular update of a row: data-morph-skip subtree on the row is replaced like any other row', () => {
+    // The granular update path uses replaceChild — the old row's entire
+    // subtree is gone. Pinning current behaviour: data-morph-skip on a row
+    // does NOT prevent a granular update from replacing the row, because
+    // the morph-skip honoured by the diff is for the static-surrounds path,
+    // not the list reconciler.
+    type R = { id: number; v: string };
+    const rows = arraySignal<R>([{ id: 1, v: 'a' }]);
+    let imperativePoke = '';
+    mount(root, () => (
+      <ul>{each(rows, (r) => (
+        <li data-key={String(r.id)} data-morph-skip>
+          <span>{r.v}</span>
+        </li>
+      ))}</ul>
+    ));
+    const li = root.querySelector('li')!;
+    li.setAttribute('data-imperative', 'sticky');
+    imperativePoke = li.getAttribute('data-imperative') ?? '';
+    expect(imperativePoke).toBe('sticky');
+
+    rows.update(0, (r) => ({ ...r, v: 'A' }));
+    // Behaviour pin: morph-skip does NOT prevent a granular update from
+    // replacing the <li>. The `data-imperative` attribute is gone.
+    const newLi = root.querySelector('li')!;
+    expect(newLi).not.toBe(li);
+    expect(newLi.getAttribute('data-imperative')).toBe(null);
+    expect(newLi.querySelector('span')!.textContent).toBe('A');
+  });
+
+  it('granular update preserves focused contenteditable behaviour: same row → focus lost (documented)', () => {
+    // The focused-contenteditable preservation is implemented in src/diff.ts
+    // (the morph short-circuits the subtree). The granular path uses
+    // replaceChild directly — so a focused contenteditable in the SAME row
+    // that gets updated loses its content. Pinning the gap.
+    const rows = arraySignal([{ id: 1, body: 'orig' }]);
+    mount(root, () => (
+      <ul>{each(rows, (r) => (
+        <li data-key={String(r.id)}>
+          <div contentEditable="true">{r.body}</div>
+        </li>
+      ))}</ul>
+    ));
+    const ce = root.querySelector('[contenteditable]') as HTMLElement;
+    ce.focus();
+    // Imperatively edit (simulate user typing).
+    ce.innerHTML = 'edited inline';
+    expect(document.activeElement).toBe(ce);
+
+    // Granular update of the same row → replaceChild → typed content lost.
+    rows.update(0, (r) => ({ ...r, body: 'updated' }));
+    const newCe = root.querySelector('[contenteditable]') as HTMLElement;
+    expect(newCe).not.toBe(ce);
+    expect(newCe.innerHTML).toBe('updated');  // typed content gone
+    // Focus lost too.
+    expect(document.activeElement).not.toBe(ce);
+  });
+
+  it('granular update preserves focused contenteditable behaviour: different row → focus survives', () => {
+    const rows = arraySignal([
+      { id: 1, body: 'first' },
+      { id: 2, body: 'second' },
+    ]);
+    mount(root, () => (
+      <ul>{each(rows, (r) => (
+        <li data-key={String(r.id)}>
+          <div contentEditable="true">{r.body}</div>
+        </li>
+      ))}</ul>
+    ));
+    const editables = root.querySelectorAll('[contenteditable]');
+    const firstCe = editables[0] as HTMLElement;
+    firstCe.focus();
+    firstCe.innerHTML = 'edited inline';
+    expect(document.activeElement).toBe(firstCe);
+
+    // Update a DIFFERENT row → first row is untouched, focus + typed text survive.
+    rows.update(1, (r) => ({ ...r, body: 'second updated' }));
+    expect(document.activeElement).toBe(firstCe);
+    expect(firstCe.innerHTML).toBe('edited inline');
+  });
+
+  it('granular update of a <details open> row replaces the element — `open` is gone', () => {
+    // `<details open>` user-agent-owned-attr preservation is in src/diff.ts's
+    // morphAttributes (KF-84). The granular path uses replaceChild, so the
+    // browser-set `open` attribute is wiped along with the <details> element.
+    // Pinning the gap — controlled-style users should drive `.open`
+    // imperatively (per docs/4-render.md §4.4.1).
+    const rows = arraySignal([{ id: 1, label: 'panel' }]);
+    mount(root, () => (
+      <ul>{each(rows, (r) => (
+        <li data-key={String(r.id)}>
+          <details>
+            <summary>click me</summary>
+            <p>{r.label}</p>
+          </details>
+        </li>
+      ))}</ul>
+    ));
+    const details = root.querySelector('details') as HTMLDetailsElement;
+    details.setAttribute('open', '');
+    expect(details.hasAttribute('open')).toBe(true);
+
+    // Granular update — replaces <li>, including the <details>.
+    rows.update(0, (r) => ({ ...r, label: 'updated panel' }));
+    const newDetails = root.querySelector('details') as HTMLDetailsElement;
+    expect(newDetails).not.toBe(details);
+    expect(newDetails.hasAttribute('open')).toBe(false);  // gone
+  });
+});
+
+describe('Round 3: cleanupOrphanBindings completeness', () => {
+  let root: HTMLElement;
+  beforeEach(() => { root = document.createElement('div'); document.body.appendChild(root); });
+  afterEach(() => { document.body.innerHTML = ''; });
+
+  it('orphaned binding: items removed from DOM, marker removed, no leak after re-introduction', () => {
+    const showA = signal(true);
+    const itemsA = [{ id: 'a1' }, { id: 'a2' }];
+    const itemsB = [{ id: 'b1' }];
+    mount(root, () => (
+      <div>
+        {showA.value
+          ? <ul className="A">{each(itemsA, (it) => <li data-key={it.id}>{it.id}</li>)}</ul>
+          : <ul className="B">{each(itemsB, (it) => <li data-key={it.id}>{it.id}</li>)}</ul>}
+      </div>
+    ));
+    expect(root.querySelectorAll('.A li').length).toBe(2);
+    expect(root.querySelectorAll('.B').length).toBe(0);
+
+    showA.value = false;
+    expect(root.querySelectorAll('.A').length).toBe(0);
+    expect(root.querySelectorAll('.B li').length).toBe(1);
+    // No stray items from list A.
+    expect(root.querySelector('[data-key="a1"]')).toBe(null);
+    expect(root.querySelector('[data-key="a2"]')).toBe(null);
+    // No stray markers.
+    const allComments: Comment[] = [];
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_COMMENT);
+    let c: Node | null;
+    while ((c = walker.nextNode()) !== null) allComments.push(c as Comment);
+    expect(allComments.length).toBe(1);  // exactly the B-list marker
+    expect(allComments[0].data).toBe('kf-list:0');
+
+    // Bring A back. Should rebuild from scratch — no ghost rows.
+    showA.value = true;
+    expect(root.querySelectorAll('.A li').length).toBe(2);
+    expect(root.querySelectorAll('.B').length).toBe(0);
+    expect(root.querySelector('[data-key="b1"]')).toBe(null);
+  });
+
+  it('multiple lists disappearing simultaneously: all cleaned up correctly', () => {
+    const phase = signal<'AB' | 'none'>('AB');
+    const itemsA = [{ id: 'a1' }];
+    const itemsB = [{ id: 'b1' }];
+    mount(root, () => (
+      <div>
+        {phase.value === 'AB' ? (
+          <>
+            <ul className="A">{each(itemsA, (it) => <li data-key={it.id}>{it.id}</li>)}</ul>
+            <ul className="B">{each(itemsB, (it) => <li data-key={it.id}>{it.id}</li>)}</ul>
+          </>
+        ) : <p>nothing</p>}
+      </div>
+    ));
+    expect(root.querySelectorAll('li').length).toBe(2);
+
+    phase.value = 'none';
+    expect(root.querySelectorAll('li').length).toBe(0);
+    expect(root.querySelector('p')!.textContent).toBe('nothing');
+    // No leftover markers.
+    let markerCount = 0;
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_COMMENT);
+    let c: Node | null;
+    while ((c = walker.nextNode()) !== null) {
+      if ((c as Comment).data.startsWith('kf-list:')) markerCount++;
+    }
+    expect(markerCount).toBe(0);
+
+    // Restore — everything rebuilds.
+    phase.value = 'AB';
+    expect(root.querySelectorAll('li').length).toBe(2);
+  });
+
+  it('granular reconcile after a list is removed and re-introduced uses the snapshot path correctly', () => {
+    const showA = signal(true);
+    const sigA = arraySignal([{ id: 1, v: 'a' }]);
+    mount(root, () => (
+      <div>{showA.value
+        ? <ul>{each(sigA, (r) => <li data-key={String(r.id)}>{r.v}</li>)}</ul>
+        : <p>hidden</p>}
+      </div>
+    ));
+    expect(root.querySelectorAll('li').length).toBe(1);
+
+    // Hide.
+    showA.value = false;
+    expect(root.querySelector('p')!.textContent).toBe('hidden');
+
+    // Mutate sigA while hidden — patches accumulate in the queue.
+    sigA.push({ id: 2, v: 'b' });
+    sigA.push({ id: 3, v: 'c' });
+
+    // Re-show — first render of the now-fresh list. KF-98: first render
+    // should drain patches and take the snapshot path, rendering all 3 rows.
+    showA.value = true;
+    const lis = root.querySelectorAll('li');
+    expect(lis.length).toBe(3);
+    expect(Array.from(lis).map((l) => l.textContent)).toEqual(['a', 'b', 'c']);
+  });
+});
+
+describe('Round 3: re-mount state reset', () => {
+  let root: HTMLElement;
+  beforeEach(() => { root = document.createElement('div'); document.body.appendChild(root); });
+  afterEach(() => { document.body.innerHTML = ''; });
+
+  it('re-mount on same element: each() callsite at position 0 starts with id 0 (no leak from prior mount)', () => {
+    const itemsA = [{ id: 'a1' }, { id: 'a2' }];
+    const dispose1 = mount(root, () => (
+      <div>
+        <ul>{each(itemsA, (it) => <li data-key={it.id}>{it.id}</li>)}</ul>
+        <ul>{each(itemsA, (it) => <li data-key={`${it.id}-x`}>{it.id}-x</li>)}</ul>
+      </div>
+    ));
+    expect(root.querySelectorAll('li').length).toBe(4);  // 2 + 2
+    const m1 = root.querySelectorAll('ul')[0];
+    const m1Comments = Array.from(m1.childNodes).filter((n) => n.nodeType === Node.COMMENT_NODE) as Comment[];
+    expect(m1Comments[0].data).toBe('kf-list:0');
+    dispose1();
+
+    // Re-mount — counter should reset.
+    const itemsB = [{ id: 'b1' }];
+    const dispose2 = mount(root, () => (
+      <ol>{each(itemsB, (it) => <li data-key={it.id}>{it.id}</li>)}</ol>
+    ));
+    const ol = root.querySelector('ol')!;
+    const olComments = Array.from(ol.childNodes).filter((n) => n.nodeType === Node.COMMENT_NODE) as Comment[];
+    expect(olComments[0].data).toBe('kf-list:0');
+    expect(root.querySelectorAll('li').length).toBe(1);
+    dispose2();
+  });
+
+  it('re-mount on same element: prevStaticHtml comparison does not falsely match cross-mount', () => {
+    const tickA = signal(0);
+    const dispose1 = mount(root, () => {
+      void tickA.value;
+      return <div>same</div>;
+    });
+    expect(root.querySelector('div')!.textContent).toBe('same');
+    dispose1();
+
+    // Second mount produces the SAME static HTML. Verify the new mount
+    // does its own first render correctly (doesn't accidentally hit the
+    // KF-88 fast path from a stale closure).
+    const tickB = signal(0);
+    const dispose2 = mount(root, () => {
+      void tickB.value;
+      return <div>same</div>;
+    });
+    expect(root.querySelector('div')!.textContent).toBe('same');
+
+    // Mutating B's signal triggers a re-render. KF-88 fast path WILL fire
+    // (surrounds match), but the second-mount's own renderCtx is fresh,
+    // not B-from-A's. Verify the binding map is independent.
+    tickB.value = 1;
+    expect(root.querySelector('div')!.textContent).toBe('same');
+    dispose2();
+  });
+});
+
+describe('Round 3: subtle JSX child types', () => {
+  let root: HTMLElement;
+  beforeEach(() => { root = document.createElement('div'); document.body.appendChild(root); });
+  afterEach(() => { document.body.innerHTML = ''; });
+
+  it('JSX child of 0 (falsy number) renders as the string "0"', () => {
+    // The trap: `{count}` where count === 0 should render "0", not skip.
+    // React-style "render number except false-y short-circuit" is:
+    //   `{count && <Foo/>}` → false / 0 / null / undefined renders nothing.
+    //   `{count}` → renders the number's string.
+    // Verify kerf does the same.
+    mount(root, () => <div>count={0}</div>);
+    expect(root.querySelector('div')!.textContent).toBe('count=0');
+  });
+
+  it('JSX child of NaN renders as "NaN" string', () => {
+    mount(root, () => <div>{NaN}</div>);
+    expect(root.querySelector('div')!.textContent).toBe('NaN');
+  });
+
+  it('JSX child of empty array renders nothing', () => {
+    mount(root, () => <div>{[]}</div>);
+    expect(root.querySelector('div')!.textContent).toBe('');
+  });
+
+  it('JSX child of array of strings renders concatenated', () => {
+    mount(root, () => <div>{['a', 'b', 'c']}</div>);
+    expect(root.querySelector('div')!.textContent).toBe('abc');
+  });
+
+  it('JSX child of array containing null/false/undefined skips them', () => {
+    mount(root, () => <div>{['a', null, 'b', false, 'c', undefined]}</div>);
+    expect(root.querySelector('div')!.textContent).toBe('abc');
+  });
+
+  it('Function-component invocation with children prop works correctly', () => {
+    function Card({ title, children }: { title: string; children?: unknown }): SafeHtml {
+      return <div className="card"><h3>{title}</h3><div>{children as never}</div></div>;
+    }
+    mount(root, () => (
+      <Card title="hello"><p>body</p></Card>
+    ));
+    expect(root.querySelector('.card h3')!.textContent).toBe('hello');
+    expect(root.querySelector('.card p')!.textContent).toBe('body');
+  });
+});
+
+describe('Round 3: nested each()', () => {
+  let root: HTMLElement;
+  beforeEach(() => { root = document.createElement('div'); document.body.appendChild(root); });
+  afterEach(() => { document.body.innerHTML = ''; });
+
+  it('each() inside each(): parent rows + child rows render with stable identity', () => {
+    interface Group { id: string; items: { id: string; label: string }[] }
+    const groups: Group[] = [
+      { id: 'g1', items: [{ id: 'g1.a', label: '1.A' }, { id: 'g1.b', label: '1.B' }] },
+      { id: 'g2', items: [{ id: 'g2.a', label: '2.A' }] },
+    ];
+    mount(root, () => (
+      <ul>{each(groups, (g) => (
+        <li data-key={g.id}>
+          <strong>{g.id}</strong>
+          <ul>{each(g.items, (it) => <li data-key={it.id}>{it.label}</li>)}</ul>
+        </li>
+      ))}</ul>
+    ));
+    expect(root.querySelectorAll('li[data-key="g1"]').length).toBe(1);
+    expect(root.querySelectorAll('li[data-key="g1.a"]').length).toBe(1);
+    expect(root.querySelectorAll('li[data-key="g1.b"]').length).toBe(1);
+    expect(root.querySelectorAll('li[data-key="g2.a"]').length).toBe(1);
+    // Two ULs total: outer + each inner group's inner UL.
+    expect(root.querySelectorAll('ul').length).toBe(3);
+  });
+});
+
+describe('Round 3: render-throw recovery', () => {
+  let root: HTMLElement;
+  beforeEach(() => { root = document.createElement('div'); document.body.appendChild(root); });
+  afterEach(() => { document.body.innerHTML = ''; });
+
+  it('render throws on first call: mount itself throws', () => {
+    expect(() => {
+      mount(root, () => { throw new Error('boom'); });
+    }).toThrow(/boom/);
+  });
+
+  it('render throws on subsequent call: signal mutation propagates the throw', () => {
+    const tick = signal(0);
+    let calls = 0;
+    mount(root, () => {
+      calls++;
+      if (tick.value === 1) throw new Error('boom');
+      return <span>{tick.value}</span>;
+    });
+    expect(calls).toBe(1);
+    expect(() => { tick.value = 1; }).toThrow();
+    expect(calls).toBe(2);
+    // Recovery: subsequent mutation re-runs the render.
+    tick.value = 2;
+    expect(calls).toBe(3);
+    expect(root.querySelector('span')!.textContent).toBe('2');
+  });
+});
+
+describe('Round 3: delegate handler corner cases', () => {
+  let root: HTMLElement;
+  beforeEach(() => { root = document.createElement('div'); document.body.appendChild(root); });
+  afterEach(() => { document.body.innerHTML = ''; });
+
+  it('multiple delegate handlers for the same selector + event type both fire', () => {
+    mount(root, () => <button data-action="x">click</button>);
+    let aCalls = 0;
+    let bCalls = 0;
+    delegate(root, 'click', '[data-action="x"]', () => { aCalls++; });
+    delegate(root, 'click', '[data-action="x"]', () => { bCalls++; });
+    root.querySelector('button')!.click();
+    expect(aCalls).toBe(1);
+    expect(bCalls).toBe(1);
+  });
+
+  it('delegate handler that removes the matched element does not crash', () => {
+    const remove = signal(false);
+    mount(root, () => (
+      remove.value ? <p>gone</p> : <button data-action="self-destruct">click</button>
+    ) as unknown as string);
+    delegate(root, 'click', '[data-action="self-destruct"]', () => { remove.value = true; });
+    const btn = root.querySelector('button')!;
+    expect(() => btn.click()).not.toThrow();
+    expect(root.querySelector('button')).toBe(null);
+    expect(root.querySelector('p')!.textContent).toBe('gone');
+  });
+
+  it('delegate disposer called twice is a no-op', () => {
+    mount(root, () => <button data-action="x">click</button>);
+    const dispose = delegate(root, 'click', '[data-action="x"]', () => undefined);
+    dispose();
+    expect(() => dispose()).not.toThrow();
+  });
+});
+
+describe('Round 3: arraySignal × rare item shapes', () => {
+  let root: HTMLElement;
+  beforeEach(() => { root = document.createElement('div'); document.body.appendChild(root); });
+  afterEach(() => { document.body.innerHTML = ''; });
+
+  it('arraySignal of items with Symbol-keyed properties renders correctly', () => {
+    const tag = Symbol('tag');
+    interface Item { id: number; [tag]: string; label: string }
+    const items: Item[] = [
+      { id: 1, [tag]: 'a', label: 'one' },
+      { id: 2, [tag]: 'b', label: 'two' },
+    ];
+    const sig = arraySignal(items);
+    mount(root, () => <ul>{each(sig, (r) => <li data-key={String(r.id)}>{r.label}</li>)}</ul>);
+    expect(root.querySelectorAll('li').length).toBe(2);
+    expect(root.querySelectorAll('li')[0].textContent).toBe('one');
+  });
+
+  it('arraySignal items can be class instances (not just plain objects)', () => {
+    class Row {
+      constructor(public id: number, public label: string) {}
+    }
+    const sig = arraySignal<Row>([new Row(1, 'one'), new Row(2, 'two')]);
+    mount(root, () => <ul>{each(sig, (r) => <li data-key={String(r.id)}>{r.label}</li>)}</ul>);
+    expect(root.querySelectorAll('li').length).toBe(2);
+    sig.update(0, (r) => new Row(r.id, 'ONE'));
+    expect(root.querySelector('li')!.textContent).toBe('ONE');
+  });
+
+  it('arraySignal containing frozen objects (Object.freeze) — mutation still works via update', () => {
+    interface Row { id: number; v: string }
+    const sig = arraySignal<Row>([Object.freeze({ id: 1, v: 'a' }) as Row]);
+    mount(root, () => <ul>{each(sig, (r) => <li data-key={String(r.id)}>{r.v}</li>)}</ul>);
+    expect(root.querySelector('li')!.textContent).toBe('a');
+    // update returns a new object, so the frozen one isn't mutated in place.
+    sig.update(0, (r) => ({ id: r.id, v: 'A' }));
+    expect(root.querySelector('li')!.textContent).toBe('A');
+  });
+});
+
+describe('Round 3: signal/computed extreme cases', () => {
+  let root: HTMLElement;
+  beforeEach(() => { root = document.createElement('div'); document.body.appendChild(root); });
+  afterEach(() => { document.body.innerHTML = ''; });
+
+  it('signal === comparison: setting same value does NOT trigger re-render', () => {
+    const x = signal({ ref: 1 });
+    let runs = 0;
+    mount(root, () => {
+      void x.value;
+      runs++;
+      return <span>x</span>;
+    });
+    expect(runs).toBe(1);
+    // Same reference → no notification. Capture the ref into a local first
+    // so the reassignment isn't a literal `x.value = x.value` self-assign
+    // (which lint flags but is exactly the behaviour we want to test).
+    const sameRef = x.value;
+    x.value = sameRef;
+    expect(runs).toBe(1);
+  });
+
+  it('computed of a computed (chained) updates correctly when bottom signal changes', () => {
+    const a = signal(1);
+    const b = computed(() => a.value + 1);
+    const c = computed(() => b.value + 1);
+    const d = computed(() => c.value + 1);
+    mount(root, () => <span>{d.value}</span>);
+    expect(root.querySelector('span')!.textContent).toBe('4');
+    a.value = 10;
+    expect(root.querySelector('span')!.textContent).toBe('13');
+  });
+
+  it('computed with no dependencies acts as a constant', () => {
+    const c = computed(() => 42);
+    mount(root, () => <span>{c.value}</span>);
+    expect(root.querySelector('span')!.textContent).toBe('42');
   });
 });
