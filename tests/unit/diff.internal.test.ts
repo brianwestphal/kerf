@@ -146,23 +146,40 @@ describe('diff()', () => {
     expect(live.querySelector('b')).toBe(null);
   });
 
-  it('skips children of an element listed in listParents (kerf list reconciler owns them)', () => {
-    live.innerHTML = '<ul><li>row 1</li><li>row 2</li></ul>';
+  it('skips elements listed in ownedItems (kerf list reconciler owns them)', () => {
+    live.innerHTML = '<ul><!--marker--><li>row 1</li><li>row 2</li></ul>';
     const ul = live.querySelector('ul')!;
+    const items = Array.from(ul.querySelectorAll('li'));
     const tpl = renderTemplate('<ul><!--marker--></ul>');
-    diff(live, tpl, new Set([ul]));
-    // Children unchanged.
+    diff(live, tpl, new Set(items));
+    // Owned items survive the diff even though the template doesn't mention them.
     expect(ul.children.length).toBe(2);
     expect(ul.querySelectorAll('li').length).toBe(2);
   });
 
-  it('still updates list-parent attributes even when children are skipped', () => {
-    live.innerHTML = '<ul class="old"><li>a</li><li>b</li></ul>';
+  it('still updates list-parent attributes even when children are owned', () => {
+    live.innerHTML = '<ul class="old"><!--marker--><li>a</li><li>b</li></ul>';
     const ul = live.querySelector('ul')!;
+    const items = Array.from(ul.querySelectorAll('li'));
     const tpl = renderTemplate('<ul class="new"><!--marker--></ul>');
-    diff(live, tpl, new Set([ul]));
+    diff(live, tpl, new Set(items));
     expect(ul.getAttribute('class')).toBe('new');
     expect(ul.children.length).toBe(2);
+  });
+
+  it('reconciles non-list siblings of an owned-item region (KF-102 round 2)', () => {
+    // The list parent contains: [marker, ownedItem1, ownedItem2, sibling]
+    // The diff should walk children, skip owned items, and update sibling.
+    live.innerHTML = '<div><!--marker--><li data-key="a">A</li><li data-key="b">B</li><button class="old">x</button></div>';
+    const wrap = live.querySelector('div')!;
+    const items = Array.from(wrap.querySelectorAll('li'));
+    const tpl = renderTemplate('<div><!--marker--><button class="new">x</button></div>');
+    diff(live, tpl, new Set(items));
+    // Owned items survive; sibling's class updates.
+    expect(wrap.querySelectorAll('li').length).toBe(2);
+    expect(wrap.querySelector('button')!.getAttribute('class')).toBe('new');
+    // Marker also still present.
+    expect(wrap.firstChild!.nodeType).toBe(Node.COMMENT_NODE);
   });
 
   it('short-circuits on isEqualNode-equal subtrees', () => {

@@ -114,7 +114,7 @@ export function mount(rootEl: HTMLElement, render: () => SafeHtml | string): () 
       // afterwards binds each list to the rows already in the DOM, so the
       // first-render reconcile is a no-op (every item is a cache hit).
       rootEl.innerHTML = flatten(segment, true);
-      bindListsFromMarkers(rootEl, segment, bindings);
+      bindListsFromMarkers(rootEl, segment, bindings, true);
       prevStaticHtml = flattenWithoutListItems(segment);
       isFirst = false;
     } else {
@@ -126,15 +126,23 @@ export function mount(rootEl: HTMLElement, render: () => SafeHtml | string): () 
       } else {
         // Static surrounds changed (a signal-driven attribute flip outside
         // any `each()`, a conditional sub-tree appearing or disappearing,
-        // a list newly added at this position, etc.). Build the template
-        // and run diff() over the surrounds, then re-bind any lists that
-        // appeared.
+        // a list newly added at this position, etc.). Clean up bindings
+        // for lists that disappeared from the segment, then run diff over
+        // the surrounds, then bind any newly-appearing lists.
+        cleanupOrphanBindings(segment, bindings, renderCtx);
         const template = rootEl.cloneNode(false) as HTMLElement;
         template.innerHTML = currentStaticHtml;
-        const listParents = new Set<Element>();
-        for (const b of bindings.values()) listParents.add(b.liveParent);
-        diff(rootEl, template, listParents);
-        bindListsFromMarkers(rootEl, segment, bindings);
+        // KF-102 round 2: instead of telling diff to skip a list parent's
+        // entire children subtree (which made non-list siblings invisible
+        // to the diff), pass the set of list-owned item nodes. The diff
+        // walks every parent's children but skips owned items individually,
+        // so non-list siblings around an each() reconcile correctly.
+        const ownedItems = new Set<Element>();
+        for (const b of bindings.values()) {
+          for (const item of b.items) ownedItems.add(item.node);
+        }
+        diff(rootEl, template, ownedItems);
+        bindListsFromMarkers(rootEl, segment, bindings, false);
         prevStaticHtml = currentStaticHtml;
       }
     }
@@ -152,14 +160,28 @@ export function mount(rootEl: HTMLElement, render: () => SafeHtml | string): () 
 
 /**
  * Walk the live tree's comment nodes; every `<!--kf-list:{id}-->` marker
- * is the first child of a list parent. Record the binding (parent + the
- * already-rendered item nodes that follow the marker) and then remove the
- * marker — bindings live in JS, not in the DOM.
+ * is the start anchor of a list inside `liveParent`. Bind the list (parent +
+ * already-rendered item nodes between the marker and the tail). The marker
+ * stays in the live DOM (KF-102 round 2): keeping it as a permanent
+ * comment-node anchor lets the static-surrounds diff insert/remove/morph
+ * non-list siblings around the list without needing to re-establish the
+ * list's begin position.
+ *
+ * `inlinedItems` distinguishes the first-render path (where `flatten(seg,
+ * true)` inlines item HTML right after the marker, so the marker's element
+ * siblings *are* the list rows) from subsequent renders that newly
+ * introduce a list (where `flattenWithoutListItems` emits only the marker
+ * and the list reconciler populates items afterwards).
+ *
+ * Existing bindings whose marker is still in the DOM are left intact —
+ * `bindings.has(id)` skips re-binding so the prior render's item nodes
+ * survive across static-surrounds diffs.
  */
 function bindListsFromMarkers(
   rootEl: Element,
   segment: Segment,
   bindings: Map<string, ListBinding>,
+  inlinedItems: boolean,
 ): void {
   const lists = collectLists(segment);
   const found: Comment[] = [];
@@ -167,28 +189,52 @@ function bindListsFromMarkers(
   for (const marker of found) {
     if (!marker.data.startsWith(LIST_MARKER_PREFIX)) continue;
     const id = marker.data.slice(LIST_MARKER_PREFIX.length);
-    // Markers are only emitted by `flatten(..., true)` paired with a list
-    // segment in the same render, so both lookups always succeed here.
+    if (bindings.has(id)) continue;  // existing binding survives the diff
     const listSeg = lists.get(id) as ListSegment;
     const liveParent = marker.parentElement as Element;
-    // On first render, items are inlined right after the marker (so the
-    // first element sibling is `items[0]`, the next is `items[1]`, etc.).
-    // On subsequent renders for a list newly appearing, the list parent
-    // is empty after the marker; the loop falls through with `items=[]`
-    // and the reconcile phase below builds the items.
     const items: BoundItem[] = [];
-    let next: Element | null = marker.nextElementSibling;
-    for (let i = 0; i < listSeg.items.length && next !== null; i++) {
-      items.push({
-        ref: listSeg.items[i].ref,
-        cacheKey: listSeg.items[i].cacheKey,
-        html: listSeg.items[i].html,
-        node: next,
-      });
-      next = next.nextElementSibling;
+    if (inlinedItems) {
+      let next: Element | null = marker.nextElementSibling;
+      for (let i = 0; i < listSeg.items.length && next !== null; i++) {
+        items.push({
+          ref: listSeg.items[i].ref,
+          cacheKey: listSeg.items[i].cacheKey,
+          html: listSeg.items[i].html,
+          node: next,
+        });
+        next = next.nextElementSibling;
+      }
     }
-    bindings.set(id, { liveParent, items });
-    marker.remove();
+    bindings.set(id, { liveParent, items, marker });
+  }
+}
+
+/**
+ * Remove items + binding entries for any list that's no longer present in
+ * the new segment. The diff's trailing-removal pass would have removed the
+ * marker (since the new template no longer emits one for this id), but
+ * items are owned and stay protected from removal — so we drop them
+ * explicitly here before the diff runs.
+ */
+function cleanupOrphanBindings(
+  segment: Segment,
+  bindings: Map<string, ListBinding>,
+  renderCtx: RenderContext,
+): void {
+  const liveIds = collectLists(segment);
+  for (const [id, binding] of bindings) {
+    if (liveIds.has(id)) continue;
+    for (const item of binding.items) {
+      if (item.node.parentElement !== null) {
+        item.node.parentElement.removeChild(item.node);
+      }
+    }
+    if (binding.marker.parentElement !== null) {
+      binding.marker.parentElement.removeChild(binding.marker);
+    }
+    bindings.delete(id);
+    renderCtx.bindingCounts.delete(id);
+    renderCtx.caches.delete(id);
   }
 }
 

@@ -517,12 +517,17 @@ describe('mount() — focus and selection preservation', () => {
       mount(root, () => jsx('ul', {
         children: each(rows.value, (r) => jsx('li', { children: r.label, 'data-key': r.id })),
       }));
+      // The `<!--kf-list:0-->` marker stays in the live DOM (KF-102 round 2)
+      // as a permanent anchor for the list region — items live AFTER the
+      // marker, surrounding non-list siblings live OUTSIDE it. This lets
+      // the static-surrounds diff coexist with each() in the same parent.
       expect(root.innerHTML).toBe(
-        '<ul><li data-key="1">r1</li><li data-key="2">r2</li><li data-key="3">r3</li></ul>',
+        '<ul><!--kf-list:0--><li data-key="1">r1</li><li data-key="2">r2</li><li data-key="3">r3</li></ul>',
       );
-      // Marker comments are stripped from the live tree after binding.
       const walker = document.createTreeWalker(root, NodeFilter.SHOW_COMMENT);
-      expect(walker.nextNode()).toBe(null);
+      const marker = walker.nextNode() as Comment | null;
+      expect(marker).not.toBe(null);
+      expect(marker!.data).toBe('kf-list:0');
     });
 
     it('preserves identity for unchanged rows on partial update', () => {

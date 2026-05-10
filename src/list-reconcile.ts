@@ -36,6 +36,37 @@ export interface ListBinding {
    * Mirrors the segment's `items` length after each reconcile.
    */
   items: BoundItem[];
+  /**
+   * The list's `<!--kf-list:N-->` start marker, kept in the live DOM as
+   * a permanent anchor (KF-102 round 2). The marker stays put across
+   * static-surrounds diffs (it morphs as a comment node), so it gives
+   * the list reconciler a stable "begin" position even when surrounding
+   * siblings get inserted, removed, or reordered around the list.
+   *
+   * `endAnchor(binding)` derives the "insert at end of list" anchor from
+   * `marker.nextElementSibling` (empty list) or
+   * `items[last].node.nextElementSibling` (non-empty list) — picking up
+   * any non-list element the diff inserted between the list and the
+   * parent's tail.
+   */
+  marker: Comment;
+}
+
+/**
+ * Compute the live-DOM anchor that comes after the list's last item, used
+ * by the apply* functions when inserting at the tail of the list.
+ *
+ * - Empty list: `marker.nextElementSibling` — the next non-list element
+ *   after the marker, or `null` if the list is the last thing in `liveParent`.
+ * - Non-empty list: `items[last].node.nextElementSibling` — derived
+ *   dynamically so that non-list siblings the diff inserted between the
+ *   list's last item and the parent's tail still anchor correctly.
+ */
+export function endAnchor(binding: ListBinding): Element | null {
+  if (binding.items.length > 0) {
+    return binding.items[binding.items.length - 1].node.nextElementSibling;
+  }
+  return binding.marker.nextElementSibling;
 }
 
 interface Classification {
@@ -134,14 +165,20 @@ function removeOldNodes(liveParent: Element, replacedNodes: Element[]): void {
  * `insertBefore` everything that's not in the LIS. Walks the new record in
  * reverse so each move's anchor (`nextSibling`) is already in its final
  * position by the time we reach earlier items.
+ *
+ * `tailAnchor` is the element that comes AFTER the list inside `liveParent`
+ * (or `null` if the list is at the end). The reconciler computes it via
+ * `endAnchor(binding)` so it picks up non-list siblings the diff may have
+ * inserted between the list and the parent's tail (KF-102).
  */
 function applyMoves(
   liveParent: Element,
   newRecord: BoundItem[],
   prevIdx: number[],
   stable: ReadonlySet<number>,
+  tailAnchor: Element | null,
 ): void {
-  let nextSibling: Element | null = null;
+  let nextSibling: Element | null = tailAnchor;
   for (let i = newRecord.length - 1; i >= 0; i--) {
     const node = newRecord[i].node;
     if (prevIdx[i] === -1 || !stable.has(i)) {
@@ -226,10 +263,15 @@ export function reconcileList(binding: ListBinding, listSeg: ListSegment): void 
     return;
   }
 
+  // Compute tail anchor BEFORE removing old nodes: once an item is
+  // detached, its `.nextElementSibling` is null and we lose the
+  // boundary. Capturing here uses the binding's current (pre-mutation)
+  // items[last].node which is still attached.
+  const tailAnchor = endAnchor(binding);
   buildFreshNodes(newRecord, freshIndices, freshHtmls);
   const focusSnap = captureFocus(liveParent);
   removeOldNodes(liveParent, replacedNodes);
-  applyMoves(liveParent, newRecord, prevIdx, lis(prevIdx));
+  applyMoves(liveParent, newRecord, prevIdx, lis(prevIdx), tailAnchor);
   if (focusSnap !== null) restoreFocus(focusSnap);
   binding.items = newRecord;
 }
@@ -308,9 +350,9 @@ function reconcileGranular(
       }
       const runLen = runEnd - i;
       if (runLen === 1) {
-        applySingleInsert(liveParent, items, patch);
+        applySingleInsert(liveParent, items, patch, endAnchor(binding));
       } else {
-        applyBulkInsert(liveParent, items, patches, i, runEnd);
+        applyBulkInsert(liveParent, items, patches, i, runEnd, endAnchor(binding));
       }
       i = runEnd;
       continue;
@@ -328,7 +370,7 @@ function reconcileGranular(
       // pre-move state.
       let anchorIdx = patch.to;
       if (patch.from < patch.to) anchorIdx += 1;  // account for upcoming splice removal
-      const anchor = anchorIdx < items.length ? items[anchorIdx].node : null;
+      const anchor = anchorIdx < items.length ? items[anchorIdx].node : endAnchor(binding);
       liveParent.insertBefore(moved.node, anchor);
       items.splice(patch.from, 1);
       items.splice(patch.to, 0, moved);
@@ -342,10 +384,11 @@ function applySingleInsert(
   liveParent: Element,
   items: BoundItem[],
   patch: { type: 'insert'; index: number; item: object; html: string },
+  tailAnchor: Element | null,
 ): void {
   const { html } = patch;
   const newNode = parseSingleRow(html);
-  const anchor = patch.index < items.length ? items[patch.index].node : null;
+  const anchor = patch.index < items.length ? items[patch.index].node : tailAnchor;
   liveParent.insertBefore(newNode, anchor);
   items.splice(patch.index, 0, {
     ref: patch.item, cacheKey: undefined, html, node: newNode,
@@ -431,6 +474,7 @@ function applyBulkInsert(
   patches: NonNullable<ListSegment['patches']>,
   start: number,
   end: number,
+  tailAnchor: Element | null,
 ): void {
   const startIdx = (patches[start] as { index: number }).index;
   const htmls = new Array<string>(end - start);
@@ -452,7 +496,7 @@ function applyBulkInsert(
     newNodes[k] = child;
     child = child.nextElementSibling;
   }
-  const anchor = startIdx < items.length ? items[startIdx].node : null;
+  const anchor = startIdx < items.length ? items[startIdx].node : tailAnchor;
   liveParent.insertBefore(tpl.content, anchor);
   // Splice all new entries into binding.items at the run's start index.
   const newEntries = new Array<BoundItem>(end - start);

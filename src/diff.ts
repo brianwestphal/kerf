@@ -1,5 +1,5 @@
 /**
- * `diff(liveRoot, templateRoot, listParents)` — minimum-mutation DOM
+ * `diff(liveRoot, templateRoot, ownedItems)` — minimum-mutation DOM
  * reconciliation.
  *
  * Replaces our previous dependency on `morphdom`. The algorithm is the
@@ -8,11 +8,15 @@
  * the rest. Specialised for what kerf needs:
  *
  * - `childrenOnly` is always true; the live root is never replaced.
- * - Three short-circuit paths on each element:
- *     1. `data-morph-skip`: subtree is library-owned, leave verbatim.
- *     2. `isEqualNode`: subtree is byte-identical, no work needed.
- *     3. `listParents` membership: a kerf list reconciler owns this
- *        element's children, so we morph attributes only and stop.
+ * - Per-element short-circuits: `data-morph-skip` (library-owned, leave
+ *   verbatim) and `isEqualNode` (byte-identical, no work needed).
+ * - **`ownedItems`** is the set of element nodes owned by an `each()`
+ *   list reconciler. The diff skips them in every children walk —
+ *   they're not added to the keyed-lookup map, the from-cursor advances
+ *   past them, and the trailing-removal pass leaves them in place. This
+ *   lets each() coexist with non-list siblings inside the same parent
+ *   (KF-102 round 2): the diff still walks the parent's children to
+ *   reconcile siblings, but never disturbs list rows.
  * - Focused text inputs (`<input>`/`<textarea>`) keep their value +
  *   selection across the morph; focused `[contenteditable]` keeps its
  *   entire subtree (typed content + caret + multi-range selection).
@@ -42,32 +46,45 @@ function getNodeKey(node: Node): string | undefined {
 
 /**
  * Reconcile the children of `liveRoot` to match the children of
- * `templateRoot`. `listParents` is the set of live elements whose children
- * are managed by `each()`'s reconciler — they get attribute morphing but
- * not children diffing.
+ * `templateRoot`. `ownedItems` is the set of element nodes owned by `each()`
+ * list reconcilers — the diff skips them in every children walk.
  */
 export function diff(
   liveRoot: Element,
   templateRoot: Element,
-  listParents: ReadonlySet<Element>,
+  ownedItems: ReadonlySet<Element>,
 ): void {
-  diffChildren(liveRoot, templateRoot, listParents);
+  diffChildren(liveRoot, templateRoot, ownedItems);
+}
+
+/**
+ * Advance past any owned (list-reconciler-managed) element. Owned items
+ * stay put across diffs — they're invisible to the diff's child cursor.
+ */
+function skipOwned(node: Node | null, ownedItems: ReadonlySet<Element>): Node | null {
+  while (node !== null && node.nodeType === ELEMENT_NODE
+      && ownedItems.has(node as Element)) {
+    node = node.nextSibling;
+  }
+  return node;
 }
 
 function diffChildren(
   fromParent: Element,
   toParent: Element,
-  listParents: ReadonlySet<Element>,
+  ownedItems: ReadonlySet<Element>,
 ): void {
   // Build a keyed lookup from the live children so we can match by key
-  // even after reorders.
+  // even after reorders. Owned items don't participate in keyed matching
+  // (they're not visible to the diff).
   const keyed = new Map<string, Element>();
   for (let c = fromParent.firstChild; c !== null; c = c.nextSibling) {
+    if (c.nodeType === ELEMENT_NODE && ownedItems.has(c as Element)) continue;
     const k = getNodeKey(c);
     if (k !== undefined) keyed.set(k, c as Element);
   }
 
-  let fromChild: Node | null = fromParent.firstChild;
+  let fromChild: Node | null = skipOwned(fromParent.firstChild, ownedItems);
   let toChild: Node | null = toParent.firstChild;
 
   while (toChild !== null) {
@@ -82,7 +99,7 @@ function diffChildren(
       if (matched !== fromChild) {
         fromParent.insertBefore(matched, fromChild);
       } else {
-        fromChild = fromChild.nextSibling;
+        fromChild = skipOwned(fromChild.nextSibling, ownedItems);
       }
     }
 
@@ -95,13 +112,16 @@ function diffChildren(
             || ((fromChild as Element).tagName === (toChild as Element).tagName
                 && getNodeKey(fromChild) === undefined))) {
       matched = fromChild;
-      fromChild = fromChild.nextSibling;
+      fromChild = skipOwned(fromChild.nextSibling, ownedItems);
     }
 
     if (matched !== null) {
-      morphNode(matched, toChild, listParents);
+      morphNode(matched, toChild, ownedItems);
     } else {
-      // 3. No match — clone the new node and insert.
+      // 3. No match — clone the new node and insert before fromChild
+      //    (which may be an owned item we deliberately stopped at; that's
+      //    fine — `insertBefore(node, ownedItem)` slots the new sibling
+      //    in immediately before the list region).
       const cloned = toChild.cloneNode(true);
       fromParent.insertBefore(cloned, fromChild);
     }
@@ -109,14 +129,14 @@ function diffChildren(
     toChild = toNext;
   }
 
-  // 4. Anything past the cursor is unmatched — remove. Any keyed node that
-  //    wasn't matched in the toParent walk falls into this trailing range
-  //    by construction (matched keyed nodes get moved before the cursor;
-  //    unmatched ones stay at or after it), so we don't need a separate
-  //    orphan pass.
+  // 4. Anything past the cursor is unmatched — remove, except for owned
+  //    items (those stay; they belong to a list reconciler).
   while (fromChild !== null) {
     const next = fromChild.nextSibling;
-    fromParent.removeChild(fromChild);
+    if (fromChild.nodeType !== ELEMENT_NODE
+        || !ownedItems.has(fromChild as Element)) {
+      fromParent.removeChild(fromChild);
+    }
     fromChild = next;
   }
 }
@@ -124,10 +144,10 @@ function diffChildren(
 function morphNode(
   fromNode: Node,
   toNode: Node,
-  listParents: ReadonlySet<Element>,
+  ownedItems: ReadonlySet<Element>,
 ): void {
   if (fromNode.nodeType === ELEMENT_NODE) {
-    morphElement(fromNode as Element, toNode as Element, listParents);
+    morphElement(fromNode as Element, toNode as Element, ownedItems);
     return;
   }
   if (fromNode.nodeType === TEXT_NODE || fromNode.nodeType === COMMENT_NODE) {
@@ -140,7 +160,7 @@ function morphNode(
 function morphElement(
   fromEl: Element,
   toEl: Element,
-  listParents: ReadonlySet<Element>,
+  ownedItems: ReadonlySet<Element>,
 ): void {
   if (fromEl.tagName !== toEl.tagName) {
     const replacement = toEl.cloneNode(true);
@@ -158,11 +178,10 @@ function morphElement(
     if (isTextInputOrTextarea(fromEl)) preserveTextEntryState(fromEl, toEl);
   }
   morphAttributes(fromEl, toEl);
-  // 4. List parent — its children are managed by the each() reconciler;
-  //    diff stops here. We still ran morphAttributes above, so attribute
-  //    changes on the parent itself (id, class, data-* …) propagate.
-  if (listParents.has(fromEl)) return;
-  diffChildren(fromEl, toEl, listParents);
+  // 4. Recurse into children. List items inside `fromEl` (if any) are
+  //    skipped via `ownedItems` inside diffChildren — list reconciler
+  //    owns them — but non-list siblings are still diffed.
+  diffChildren(fromEl, toEl, ownedItems);
 }
 
 /**
