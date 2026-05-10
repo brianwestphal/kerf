@@ -4,6 +4,20 @@ All notable changes to **kerf** are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.0] - 2026-05-10
+
+
+- Add `arraySignal` (`kerfjs/array-signal` subpath) — granular collection signal that drives O(patches) DOM updates for keyed lists
+- Faster keyed-list updates: bulk-parse contiguous insert runs and consecutive update patches in the granular reconcile path
+- Perf optimisations on the `each()` / `mount()` update path; benchmarks now competitive with Solid/Vue on swap/remove/clear
+- Preserve uncontrolled `<details open>` and `<dialog open>` state across re-renders
+- `each()` now reconciles correctly when list rows have non-list siblings under the same parent
+- Enforce the "exactly one top-level element per row" contract in `each()` with clearer errors
+- Typed JSX `IntrinsicElements` table; custom elements extend it via declaration merging
+- JSX runtime hardens URL attributes against `javascript:` XSS
+- Widen `mount()` return type for better tooling/typed usage
+- Add `kerfjs/testing` subpath exposing `clearStoreRegistry` for unit-test isolation
+
 ## [0.4.2] - 2026-05-09
 
 
