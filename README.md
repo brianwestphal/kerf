@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./site/src/assets/logo-placeholder.svg" alt="Kerf logo placeholder" width="96" height="96" />
+  <img src="./site/src/assets/logo.svg" alt="Kerf logo" width="96" height="96" />
 </p>
 
 <h1 align="center">Kerf</h1>
