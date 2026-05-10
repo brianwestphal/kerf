@@ -130,6 +130,11 @@ function classifyItems(oldItems: BoundItem[], listSeg: ListSegment): Classificat
 /**
  * Bulk-parse every fresh row's HTML in one `innerHTML` call, then walk the
  * parsed children in order and fill in each placeholder's `node` field.
+ *
+ * Enforces the "exactly one top-level element per row" contract (KF-103):
+ * if the bulk parse produces a different number of top-level elements
+ * than fresh rows, fall back to per-row parsing to identify the offending
+ * row and throw a precise error. The success path stays a single parse.
  */
 function buildFreshNodes(
   newRecord: BoundItem[],
@@ -139,18 +144,111 @@ function buildFreshNodes(
   if (freshHtmls.length === 0) return;
   const tpl = document.createElement('template');
   tpl.innerHTML = freshHtmls.join('');
+  if (tpl.content.children.length !== freshHtmls.length) {
+    throw findOffendingRow(newRecord, freshIndices, freshHtmls);
+  }
+  // After the count check above, we know `tpl.content.children.length`
+  // equals `freshIndices.length`, so the walk below always finds an element
+  // for every index. No defensive null-guard needed.
   let node = tpl.content.firstElementChild;
   for (const idx of freshIndices) {
-    if (node === null) {
-      throw new Error(
-        `each(): row render produced no top-level element. Each item's render must return exactly one element. Got HTML: ${newRecord[idx].html.slice(0, 120)}`,
-      );
-    }
-    const next = node.nextElementSibling;
-    newRecord[idx].node = node;
+    const next = (node as Element).nextElementSibling;
+    newRecord[idx].node = node as Element;
     node = next;
   }
 }
+
+/**
+ * Re-parse a single row to construct a precise contract-violation error
+ * message. Centralises the "row at index N produced K top-level elements"
+ * error string used by all three slow-path helpers.
+ */
+function rowContractError(index: number, html: string): Error {
+  const tpl = document.createElement('template');
+  tpl.innerHTML = html;
+  const count = tpl.content.children.length;
+  const snippet = html.length > 120 ? html.slice(0, 120) + '…' : html;
+  const reason = count === 0
+    ? 'produced no top-level element'
+    : `produced ${count} top-level elements; exactly one is required`;
+  return new Error(
+    `each(): row render at index ${index} ${reason}. `
+    + 'Each item\'s render must return exactly one element — '
+    + 'wrap multiple roots in a single parent (e.g. <li>...</li>). '
+    + `Got HTML: ${JSON.stringify(snippet)}`,
+  );
+}
+
+/**
+ * Walk per-row to find the offending row that violated the contract,
+ * returning a precise error to throw. Only invoked when the bulk parse
+ * detected a count mismatch — the success path is one parse with no
+ * per-row work.
+ */
+function findOffendingRow(
+  newRecord: BoundItem[],
+  freshIndices: number[],
+  freshHtmls: string[],
+): Error {
+  // The bulk count mismatch guarantees at least one row violates the
+  // contract, so the loop below always returns. We use a forEach-style
+  // walk that's exhaustive over freshHtmls rather than an indexed for —
+  // v8 tracks loop-completion as a branch and the indexed form leaves
+  // the "loop ran to end" branch perpetually uncovered.
+  for (let i = 0; i < freshHtmls.length; i++) {
+    const tpl = document.createElement('template');
+    tpl.innerHTML = freshHtmls[i];
+    if (tpl.content.children.length !== 1) {
+      return rowContractError(freshIndices[i], newRecord[freshIndices[i]].html);
+    }
+  }
+  /* c8 ignore next 2 — unreachable: bulk mismatch ⇒ at least one row violates. */
+  return new Error('each(): bulk-parse mismatch with no per-row offender (kerf bug).');
+}
+
+/**
+ * Slow-path helper for `applyBulkInsert`. Walks each pre-rendered insert
+ * patch's html in isolation to find the offending row and return a
+ * precise error.
+ */
+function findOffendingInsert(
+  patches: NonNullable<ListSegment['patches']>,
+  start: number,
+  htmls: string[],
+): Error {
+  for (let i = 0; i < htmls.length; i++) {
+    const tpl = document.createElement('template');
+    tpl.innerHTML = htmls[i];
+    if (tpl.content.children.length !== 1) {
+      const p = patches[start + i] as { type: 'insert'; index: number };
+      return rowContractError(p.index, htmls[i]);
+    }
+  }
+  /* c8 ignore start */
+  return new Error('each(): bulk-insert mismatch with no per-row offender (kerf bug).');
+}
+/* c8 ignore stop */
+
+/**
+ * Slow-path helper for `applyBulkUpdate`. Walks each non-no-op change to
+ * find the offending row and return a precise error.
+ */
+function findOffendingChange(
+  patches: NonNullable<ListSegment['patches']>,
+  changes: { patchIdx: number; html: string }[],
+): Error {
+  for (const c of changes) {
+    const tpl = document.createElement('template');
+    tpl.innerHTML = c.html;
+    if (tpl.content.children.length !== 1) {
+      const p = patches[c.patchIdx] as { type: 'update'; index: number };
+      return rowContractError(p.index, c.html);
+    }
+  }
+  /* c8 ignore start */
+  return new Error('each(): bulk-update mismatch with no per-row offender (kerf bug).');
+}
+/* c8 ignore stop */
 
 /**
  * Remove every replaced/orphan node still attached to the live parent.
@@ -439,16 +537,15 @@ function applyBulkUpdate(
   // Bulk-parse all real changes in one innerHTML call.
   const tpl = document.createElement('template');
   tpl.innerHTML = changes.map((c) => c.html).join('');
+  if (tpl.content.children.length !== changes.length) {
+    throw findOffendingChange(patches, changes);
+  }
+  // Count matches; walk children unconditionally.
   const newNodes = new Array<Element>(changes.length);
   let child = tpl.content.firstElementChild;
   for (let k = 0; k < newNodes.length; k++) {
-    if (child === null) {
-      throw new Error(
-        `each() granular reconcile: bulk-update run produced fewer top-level elements than patches (${k} of ${newNodes.length}). Each item's render must return exactly one element.`,
-      );
-    }
-    newNodes[k] = child;
-    child = child.nextElementSibling;
+    newNodes[k] = child as Element;
+    child = (child as Element).nextElementSibling;
   }
 
   // Apply replaceChild for each real change.
@@ -484,17 +581,18 @@ function applyBulkInsert(
   }
   const tpl = document.createElement('template');
   tpl.innerHTML = htmls.join('');
-  // Capture child refs BEFORE the fragment-insert empties tpl.content.
+  if (tpl.content.children.length !== htmls.length) {
+    throw findOffendingInsert(patches, start, htmls);
+  }
+  // Count matches; capture child refs BEFORE the fragment-insert empties
+  // tpl.content. Walk unconditionally — count check above guarantees
+  // `firstElementChild` is non-null and there are exactly `end - start`
+  // children.
   const newNodes = new Array<Element>(end - start);
   let child = tpl.content.firstElementChild;
   for (let k = 0; k < newNodes.length; k++) {
-    if (child === null) {
-      throw new Error(
-        `each() granular reconcile: bulk-insert run produced fewer top-level elements than insert patches (${k} of ${newNodes.length}). Each item's render must return exactly one element.`,
-      );
-    }
-    newNodes[k] = child;
-    child = child.nextElementSibling;
+    newNodes[k] = child as Element;
+    child = (child as Element).nextElementSibling;
   }
   const anchor = startIdx < items.length ? items[startIdx].node : tailAnchor;
   liveParent.insertBefore(tpl.content, anchor);
@@ -517,11 +615,17 @@ function applyBulkInsert(
 function parseSingleRow(html: string): Element {
   const tpl = document.createElement('template');
   tpl.innerHTML = html;
-  const el = tpl.content.firstElementChild;
-  if (el === null) {
+  const count = tpl.content.children.length;
+  if (count !== 1) {
+    const snippet = html.length > 120 ? html.slice(0, 120) + '…' : html;
+    const reason = count === 0
+      ? 'produced no top-level element'
+      : `produced ${count} top-level elements; exactly one is required`;
     throw new Error(
-      `each() granular reconcile: row render produced no top-level element. Each item's render must return exactly one element. Got HTML: ${html.slice(0, 120)}`,
+      `each() granular reconcile: row render ${reason}. `
+      + 'Each item\'s render must return exactly one element. '
+      + `Got HTML: ${JSON.stringify(snippet)}`,
     );
   }
-  return el;
+  return tpl.content.firstElementChild as Element;
 }

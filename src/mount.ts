@@ -194,8 +194,15 @@ function bindListsFromMarkers(
     const liveParent = marker.parentElement as Element;
     const items: BoundItem[] = [];
     if (inlinedItems) {
+      // KF-103: enforce the "exactly one top-level element per row" contract
+      // on first render too. Without this check, a multi-root row inlined
+      // via `flatten(seg, true)` would silently misalign the binding (each
+      // bound item.node points at only the first of a row's 2+ elements,
+      // and the leftover elements are picked up as "next" rows). The check
+      // is per-row so we can pinpoint the offender by index.
       let next: Element | null = marker.nextElementSibling;
       for (let i = 0; i < listSeg.items.length && next !== null; i++) {
+        validateInlinedRowMatch(listSeg.items[i].html, i, next);
         items.push({
           ref: listSeg.items[i].ref,
           cacheKey: listSeg.items[i].cacheKey,
@@ -207,6 +214,43 @@ function bindListsFromMarkers(
     }
     bindings.set(id, { liveParent, items, marker });
   }
+}
+
+/**
+ * KF-103: validate that `expectedHtml` (one row's render output) matches
+ * the live `boundEl`'s `outerHTML` — confirming the row produced exactly
+ * one top-level element. If they differ, parse the row in isolation and
+ * throw a precise error mentioning the row index and the actual count.
+ *
+ * Fast path: outerHTML compare is a string equality check (zero allocs in
+ * happy-dom; one alloc in V8). Only when they DON'T match (multi-root or
+ * subtle browser-normalised single-root case) do we fall back to a full
+ * per-row parse for the precise count.
+ */
+function validateInlinedRowMatch(
+  expectedHtml: string,
+  index: number,
+  boundEl: Element,
+): void {
+  if (boundEl.outerHTML === expectedHtml) return;
+  // The bound element's outerHTML differs from what we emitted. Parse the
+  // expected html in isolation and check the element count — multi-root
+  // and zero-element cases throw with a precise error.
+  const tpl = document.createElement('template');
+  tpl.innerHTML = expectedHtml;
+  const count = tpl.content.children.length;
+  if (count === 1) return;  // single-root, just whitespace/normalisation differs
+  const snippet = expectedHtml.length > 120
+    ? expectedHtml.slice(0, 120) + '…' : expectedHtml;
+  const reason = count === 0
+    ? 'produced no top-level element'
+    : `produced ${count} top-level elements; exactly one is required`;
+  throw new Error(
+    `each(): row render at index ${index} ${reason}. `
+    + 'Each item\'s render must return exactly one element — '
+    + 'wrap multiple roots in a single parent (e.g. <li>...</li>). '
+    + `Got HTML: ${JSON.stringify(snippet)}`,
+  );
 }
 
 /**

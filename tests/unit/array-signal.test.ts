@@ -267,7 +267,7 @@ describe('arraySignal — each() granular integration via mount()', () => {
         rows.update(0, (r) => ({ ...r, label: 'X' }));
         rows.update(1, (r) => ({ ...r, label: 'Y' }));
       });
-    }).toThrow(/bulk-update run produced fewer top-level elements/);
+    }).toThrow(/row render at index 1 produced no top-level element/);
   });
 
   it('insert patch adds a single row without re-rendering siblings', () => {
@@ -394,7 +394,7 @@ describe('arraySignal — each() granular integration via mount()', () => {
         rows.insert(2, { id: 3, label: 'c' });
         rows.insert(3, { id: 4, label: 'd' });
       });
-    }).toThrow(/bulk-insert run produced fewer top-level elements/);
+    }).toThrow(/row render at index \d+ produced no top-level element/);
   });
 
   it('move patch reorders a single row via insertBefore (preserves node identity)', () => {
@@ -483,6 +483,11 @@ describe('arraySignal — each() granular integration via mount()', () => {
     expect(() => rows.update(0, (r) => ({ ...r, label: 'changed' }))).toThrow(
       /granular reconcile: row render produced no top-level element/,
     );
+    // Note: this case goes through `parseSingleRow` (single-update patch),
+    // which throws with the granular-reconcile message. KF-103 changed bulk
+    // paths to surface "row render at index N produced K top-level elements"
+    // and parseSingleRow keeps the unindexed message because there is no
+    // index ambiguity for a single patch.
   });
 
   it('KF-98: pre-mount push mutations render correctly on first mount', () => {

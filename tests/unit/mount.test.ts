@@ -837,7 +837,7 @@ describe('mount() — focus and selection preservation', () => {
       const rows = signal<Row[]>([{ id: 1, label: 'r1' }]);
       expect(() => mount(root, () => jsx('ul', {
         children: each(rows.value, () => raw('')),
-      }))).toThrow(/each\(\): row render produced no top-level element/);
+      }))).toThrow(/each\(\): row render at index 0 produced no top-level element/);
     });
   });
 

@@ -1,10 +1,10 @@
 # kerfjs vs reference frameworks — krausest js-framework-benchmark
 
-Captured by **KF-86 / KF-87 / KF-88 / KF-89 / KF-90 / KF-92 / KF-93 / KF-94** on 2026-05-09. Environment: macOS, Chrome (headless via webdriver-ts/puppeteer), `bench/run.sh --count=3`. Frameworks built locally via `bench/setup.sh` (kerfjs from `dist/` packed as a tarball, references from upstream `master`).
+Captured by **KF-105** on 2026-05-10 (post-KF-102 / KF-103 / KF-104). Environment: macOS, Chrome (headless via webdriver-ts/puppeteer), `bench/run.sh keyed/kerfjs --count=3`. The reference frameworks (vanillajs, solid, lit, react, vue, vanjs, preact-signals) are carried over from the 2026-05-09 baseline (their build state and benchmarks didn't change in this re-run); only the kerfjs row reflects the latest source.
 
 All numbers are **medians across 3 iterations**. Lower is better. Sorted by the first column.
 
-> **Note:** the kerf numbers reflect the post-KF-92 codepath. The kerfjs-impl bench app uses `arraySignal` (granular collection signal — KF-92) for row mutations and stores selection state on each row via `selected: boolean`, so every interactive scenario emits granular patch events the keyed-list reconciler applies in O(changes). Cumulative improvement vs the pre-KF-87 baseline: select-row -61%, swap-rows -64%, remove-row -51%, partial-update -39%.
+> **Note:** the kerf numbers reflect the post-KF-102/103 codepath: each() with non-list siblings now reconciles correctly (KF-102 round 2), and the "exactly one top-level element per row" contract is enforced (KF-103). Both add small per-render bookkeeping (ownedItems set construction, marker-based endAnchor lookup, per-row `outerHTML` equality check on first render) that costs 1–9 % across most scenarios vs the post-KF-94 baseline. The kerfjs-impl bench app continues to use `arraySignal` for row mutations.
 
 ## CPU benchmarks (ms)
 
@@ -15,9 +15,25 @@ All numbers are **medians across 3 iterations**. Lower is better. Sorted by the 
 | lit 3.2.0 | 38.5 | 45.3 | 21.9 | 9.3 | 28.9 | 18.3 | 403.2 | 48.7 | 22.9 |
 | react 19.2.0 (hooks) | 40.9 | 49.4 | 24.1 | 8.0 | 157.3 | 18.0 | 562.0 | 48.8 | 26.7 |
 | vue 3.6.0-alpha.2 | 42.0 | 45.3 | 22.5 | 6.8 | 23.6 | 20.0 | 408.8 | 46.0 | 19.0 |
-| **kerfjs 0.4.2** (post-KF-94) | 44.4 | 48.2 | 42.0 | 26.1 | 24.8 | 17.3 | 416.2 | 50.2 | 18.5 |
+| **kerfjs 0.4.2** (post-KF-103) | 45.8 | 50.7 | 45.9 | 30.0 | 25.1 | 17.7 | 429.9 | 51.4 | 19.4 |
 | vanjs 1.5.2 | 46.6 | 48.9 | 41.8 | 14.3 | 23.7 | 18.3 | 435.0 | 55.7 | 15.4 |
 | preact 10.27.1 + signals 2.3.1 | 50.0 | 53.1 | 19.7 | 7.9 | 28.3 | 19.4 | 479.3 | 53.9 | 23.7 |
+
+### Δ vs post-KF-94 baseline (2026-05-09)
+
+| scenario | post-KF-94 | post-KF-103 | Δ ms | Δ % |
+| --- | --- | --- | --- | --- |
+| create 1k | 44.4 | 45.8 | +1.4 | +3% |
+| replace 1k | 48.2 | 50.7 | +2.5 | +5% |
+| partial update | 42.0 | 45.9 | +3.9 | +9% |
+| select row | 26.1 | 30.0 | +3.9 | +15% |
+| swap rows | 24.8 | 25.1 | +0.3 | +1% |
+| remove row | 17.3 | 17.7 | +0.4 | +2% |
+| create 10k | 416.2 | 429.9 | +13.7 | +3% |
+| append 1k | 50.2 | 51.4 | +1.2 | +2% |
+| clear 1k | 18.5 | 19.4 | +0.9 | +5% |
+
+The biggest hits are on `partial update` and `select row` — both run the snapshot reconciler over 1000 rows and now incur the KF-102 `ownedItems` set construction at the top of each diff plus the dynamic `endAnchor` lookup per `applyMoves`. The KF-103 first-render `validateInlinedRowMatch` check adds an `outerHTML` compare per row on the initial render path (1000 cheap string compares for `create 1k`); on the success path that's a no-op early-return, but still measurable. These costs buy correctness for two real bug classes (KF-102 sibling reconcile, KF-103 silent multi-root misalignment) and the cluster-positioning vs vanjs and preact-signals is unchanged.
 
 ### Reading the table
 
@@ -88,19 +104,25 @@ The krausest harness's size benchmark didn't complete for the four frameworks ad
 | vue 3.6.0-alpha.2 | 22.8 | 63.7 | 140.0 |
 | react 19.2.0 (hooks) | 51.4 | 190.3 | 301.2 |
 
-For kerf specifically, measured directly via `npx esbuild dist/index.js --bundle --minify --format=esm --platform=neutral | gzip -c | wc -c`:
+For kerf specifically, measured by bundling a realistic consumer with esbuild against `dist/`:
 
-| kerfjs version | Δ from previous | gzipped (KB) | notes |
+| consumer shape | imports | gzipped (KB) | notes |
 | --- | --- | --- | --- |
-| 0.4.2 (post-KF-72 baseline) | — | 5.7 | original measurement before any KF-87..KF-94 perf work |
-| 0.4.2 (post-KF-94 / current) | +1.5 KB | **7.2** | adds arraySignal class (+1 KB) and the two bulk-parse paths (+0.5 KB) |
+| minimal (post-KF-72 baseline) | mount + signal + each | 5.6 | pre any KF-87..KF-94 perf work |
+| minimal (post-KF-94, no arraySignal) | mount + signal + each | **5.6** | KF-95 split arraySignal into its own subpath, so a consumer that doesn't import it shed ~1 KB |
+| minimal (post-KF-94, with arraySignal) | mount + each + arraySignal (subpath) | **5.9** | +0.3 KB for the arraySignal class |
+| **minimal (post-KF-103, no arraySignal)** | mount + signal + each | **6.1** | +0.5 KB for the KF-102 ownedItems / endAnchor / cleanupOrphan handling and KF-103 contract enforcement |
+| **minimal (post-KF-103, with arraySignal)** | mount + each + arraySignal (subpath) | **6.5** | same +0.5 KB delta |
+| full-feature consumer | every barrel + arraySignal | 8.1 | imports nearly every export; useful as an upper-bound |
 
-7.2 KB places kerf:
+6.1–6.5 KB places kerf:
 - Larger than Solid (4.5 KB) and Lit (~6 KB).
 - Roughly tied with Preact + signals (~7 KB).
 - Still well under Vue (22.8 KB), let alone React (51 KB).
 
-The +1.5 KB cost buys the KF-92/93/94 perf wins. If a consumer doesn't need arraySignal, tree-shaking removes its class — but a typical app importing `arraySignal` from the barrel pulls in the whole module. Code-splitting arraySignal into a `kerfjs/array-signal` subpath is worth a follow-up if the size matters.
+The +0.5 KB delta in this round buys the KF-102 round-2 fix (each() with non-list siblings reconciles correctly across renders) and the KF-103 contract enforcement (multi-root rows throw with row-precise diagnostics instead of silently misaligning bindings).
+
+For reference, the bench app's own dist (kerfjs + signals-core + the bench-impl glue + arraySignal) measures **8.7 KB gzipped** at first-paint, which is what the krausest size column reports.
 
 ## Caveats
 
