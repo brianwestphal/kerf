@@ -32,15 +32,36 @@ delegate(rootEl, 'focus', '.field-row', (_e, row) => {
 
 ### Tier 2 — `delegateCapture()`
 
-Explicit-capture escape hatch. Use when the auto-promotion list doesn't cover your event type, or when you want capture-phase semantics with direct `matches()`-style selector matching (no walk-up).
+Explicit-capture escape hatch. After `delegate()`'s auto-promotion list expanded to cover focus / blur / scroll / load / error / mouseenter / mouseleave, the only remaining cases for `delegateCapture()` are:
+
+1. **Custom non-bubbling events** that a third-party library or your own code dispatches without bubbling, which `delegate()`'s auto-promotion list doesn't know about.
+2. **Capture-phase interception** — you want the listener to run BEFORE any descendant's bubble-phase handler sees the event.
+3. **Strict element-match semantics** — `delegateCapture()` uses `target.matches()` (no `closest()` walk-up), so the handler fires only when the event lands on the exact element the selector identifies.
 
 ```ts
 import { delegateCapture } from 'kerfjs';
 
-// e.g. catching a custom non-bubbling event the auto-promotion doesn't know
-// about, or intercepting before descendant handlers see it.
-delegateCapture(rootEl, 'my-custom-event', '.target', handler);
+// 1. Custom non-bubbling event from a third-party widget.
+//    e.g. `xterm-resize` is dispatched on the terminal element and doesn't bubble:
+delegateCapture(rootEl, 'xterm-resize', '.terminal-host', (event, host) => {
+  // host === the .terminal-host element; event was dispatched on it directly.
+  void event; void host;
+});
+
+// 2. Intercept clicks BEFORE the bubble-phase delegate handler sees them
+//    (e.g. to validate before a "submit" handler runs).
+delegateCapture(rootEl, 'click', '[data-action="submit"]', (event) => {
+  if (!isValid()) event.stopPropagation();  // bubble-phase handler won't fire
+});
+
+// 3. Strict-match: only fire when the click lands ON the element, not a child.
+delegateCapture(rootEl, 'click', '.exact-target', (_event, exact) => {
+  // descendant clicks won't trigger this — `target.matches('.exact-target')` is false.
+  void exact;
+});
 ```
+
+In practice you almost never need `delegateCapture()` — `delegate()` covers the common cases. Reach for it only when the three scenarios above apply.
 
 ### Tier 3 — per-element instances / library-owned subtrees
 

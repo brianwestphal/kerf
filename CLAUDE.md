@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-kerf is a tiny reactive UI framework: fine-grained signals + a custom DOM diff specialised for keyed lists + a tiny JSX runtime. The whole runtime is roughly 6.6 KB minified + gzipped including its sole runtime dependency (`@preact/signals-core`).
+kerf is a tiny reactive UI framework: fine-grained signals + a custom DOM diff specialised for keyed lists + a tiny JSX runtime. The whole runtime is roughly 6.1 KB minified + gzipped without `arraySignal`, 6.5 KB with it, including its sole runtime dependency (`@preact/signals-core`).
 
 The name *kerf* is a woodworking term — the narrow strip a saw blade removes. The framework's job is the same: apply the smallest possible cut to update your DOM.
 
@@ -25,9 +25,12 @@ The framework is a small set of independent modules that compose. Each one earns
 - `src/jsx-types.ts` — typed JSX intrinsic-element interfaces (`KerfBaseAttrs`, per-element attribute types, the `IntrinsicElements` mapping). Catches typos on tag names + attribute names at compile time. Custom elements / web components extend this via `declare global { namespace JSX { interface IntrinsicElements { 'my-tag': KerfCustomElement & {...} } } }`.
 - `src/reactive.ts` — re-export of `@preact/signals-core` (`signal`, `computed`, `effect`, `batch`). One-file abstraction layer so the underlying lib is swappable.
 - `src/store.ts` — `defineStore({ initial, actions })` + global registry + `resetAllStores()`.
+- `src/array-signal.ts` — `arraySignal(initial)` granular collection signal at the `kerfjs/array-signal` subpath (KF-92 / KF-95). Brand-detected by `each()` so the class only ships when the consumer actually imports it.
 - `src/mount.ts` — `mount(el, render)`. Wraps `effect()` + the segment-aware diff. Bulk-renders on first paint, then on subsequent renders runs `diff()` over the static surrounds (skipping any list parents) and dispatches each list to its native keyed reconciler. Conventions for diff keys, `data-morph-skip`, focus/selection preservation.
 - `src/each.ts` — `each(items, render, key?)`. Keyed list iteration. Returns a structured list segment (not a flat HTML string) so `mount()` can run a native reconciler per list — no parse-the-whole-table round trip on partial updates. Per-item memoisation by object identity (+ optional `key`) skips the JSX work for unchanged rows.
-- `src/list-reconcile.ts` — keyed list reconciler used by `mount()`. Classify (stable/replaced/new) → bulk-parse fresh row HTML in one `innerHTML` → remove orphans/replaced → LIS pass to compute the minimum `insertBefore` set → reverse-pass move. Internal — not part of the public API.
+- `src/list-reconcile.ts` — top-level dispatcher for the keyed list reconciler (KF-112 split). Defines `BoundItem`, `ListBinding`, `endAnchor()`, and `reconcileList()`; the latter routes to one of the two sibling files based on whether an `arraySignal` patch queue is applicable.
+- `src/list-reconcile-snapshot.ts` — snapshot reconcile path. Classify (stable/replaced/new) → bulk-parse fresh row HTML in one `innerHTML` → remove orphans/replaced → LIS pass to compute the minimum `insertBefore` set → reverse-pass move. Used for plain-array `each()` and for arraySignal-backed `each()` when the patch path can't apply (first render, post-`replace()`, post-drift). Internal.
+- `src/list-reconcile-granular.ts` — KF-92 patch-driven path. Applies an `arraySignal`'s update/insert/remove/move patches directly to the live DOM in O(patches). KF-93 bulk-parses contiguous insert runs; KF-94 bulk-parses consecutive update runs at any indices. Internal.
 - `src/list-reconcile-focus.ts` — focus snapshot/restore around the keyed list reconciler's move pass. Some engines (older Safari, happy-dom) blur a focused descendant on `insertBefore` even when it survives the move; this module captures and re-applies focus + selection range so the user's caret survives a row reorder uniformly. Internal.
 - `src/segment.ts` — `Segment` types (`static` / `list` / `mixed`) + flatten helpers. The JSX runtime emits these from `_jsx`; `mount()` consumes them.
 - `src/diff.ts` — kerf's general-purpose DOM reconciler. Replaces the prior `morphdom` dependency. Specialised: knows about `data-morph-skip`, the focused-input/contenteditable rules, the `id`/`data-key` matching scheme, and a `listParents` set whose children are owned by the list reconciler. Algorithm derived from [morphdom](https://github.com/patrick-steele-idem/morphdom) (MIT, attribution in `LICENSE`).
@@ -36,6 +39,7 @@ The framework is a small set of independent modules that compose. Each one earns
 - `src/testing.ts` — `kerfjs/testing` subpath. Re-exports `clearStoreRegistry` for unit-test isolation.
 - `src/utils/escapeHtml.ts` — HTML / attribute escaping helpers used by the JSX runtime.
 - `src/utils/jsx-attr-aliases.ts` — `ATTR_ALIASES` table mapping camelCase JSX attributes to their HTML / SVG equivalents (extracted from `jsx-runtime.ts` to keep it under the 200-LOC guideline).
+- `src/utils/rowContract.ts` — shared "exactly one top-level element per row" helpers (KF-103). `ROW_HTML_SNIPPET_MAX`, `truncateRowHtml`, `parseRowTemplate`, `rowContractError`. Used by both reconcile paths and by `mount.ts`'s first-render `validateInlinedRowMatch`.
 - `bench/` — local performance harness against [`krausest/js-framework-benchmark`](https://github.com/krausest/js-framework-benchmark). `bench/kerfjs-impl/` is the framework entry (PR-ready for upstream); `bench/setup.sh`, `run.sh`, `results.sh` orchestrate the benchmark. CHANGELOG perf numbers come from this harness.
 
 ### Public API surface
@@ -45,15 +49,20 @@ Everything users import lives at the top level of `kerfjs`:
 ```ts
 import {
   signal, computed, effect, batch,
-  defineStore, resetAllStores,
+  type Signal, type ReadonlySignal,
+  defineStore, resetAllStores, type Store,
   mount, each,
   delegate, delegateCapture,
   toElement,
   SafeHtml, isSafeHtml, raw, Fragment,
 } from 'kerfjs';
+
+// Optional, separate subpath — apps that don't use granular collection signals
+// shed ~0.4 KB from the main barrel.
+import { arraySignal, type ArraySignal, type ArrayPatch } from 'kerfjs/array-signal';
 ```
 
-The JSX runtime sits at `kerfjs/jsx-runtime` (subpath export). Users configure it via `tsconfig.json`'s `"jsxImportSource": "kerfjs"`. The `kerfjs/testing` subpath exposes `clearStoreRegistry` for test isolation.
+The JSX runtime sits at `kerfjs/jsx-runtime` (subpath export). Users configure it via `tsconfig.json`'s `"jsxImportSource": "kerfjs"`. `kerfjs/jsx-runtime` also re-exports the typed JSX building blocks (`KerfBaseAttrs`, `KerfCustomElement`, `AttrLike`, `AttrValue`, `DataAriaAttrs`) for declaration-merging custom-element types into `JSX.IntrinsicElements` (KF-100). The `kerfjs/testing` subpath exposes `clearStoreRegistry` for test isolation.
 
 ### Design rules
 
@@ -72,7 +81,7 @@ The JSX runtime sits at `kerfjs/jsx-runtime` (subpath export). Users configure i
 ## Build
 
 ```bash
-npm run build       # tsup → dist/{index,jsx-runtime,testing}.js + dist/chunk-*.js + .d.ts
+npm run build       # tsup → dist/{index,jsx-runtime,testing,array-signal}.js + dist/chunk-*.js + .d.ts
 npm run dev         # tsup --watch
 ```
 
@@ -90,12 +99,13 @@ npm run test:dist:full    # build, then full unit + integration suite remapped o
 npm run test:browser      # build, then Playwright across chromium/firefox/webkit (tests/browser/)
 npm run typecheck         # tsc --noEmit
 npm run lint              # eslint
-npm run check             # full pre-push gate: lint + typecheck + test + build + both dist:* suites
+npm run check:docs:test-inventory  # KF-109: ensures docs/ai/code-summary.md mentions every test file in tests/
+npm run check             # full pre-push gate: lint + typecheck + doc inventory + test + build + both dist:* suites
 ```
 
 `npm run check` is what the husky pre-commit hook runs — the canonical "is everything green" command.
 
-Coverage thresholds (`vitest.config.ts`): **100% lines / functions / branches / statements** on `src/`. Don't add code without tests; CI fails on any uncovered line.
+Coverage thresholds (`vitest.config.ts`): **100% lines / functions / statements, 99% branches** on `src/`. The branches threshold was lowered from 100% to 99% in KF-103 to accommodate a small number of documented-unreachable defensive returns (annotated with `c8 ignore`) whose loop-completion branches v8 tracks but cannot be exercised by construction. The lines / statements / functions thresholds at 100% still catch any actual unexercised code.
 
 ### Testing Philosophy
 

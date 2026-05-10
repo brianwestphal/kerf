@@ -11,7 +11,7 @@
 > Introducing Kerf.
 > The smallest cut.
 >
-> 6.6 KB. No virtual DOM. No compiler. No magic.
+> 6.1 KB. No virtual DOM. No compiler. No magic.
 > Reactive UI that touches only the bytes that changed.
 
 ```ts
@@ -33,7 +33,7 @@ That's it. Your JSX renders to HTML strings, kerf's native diff applies the mini
 
 1. **Built for the AI-assisted era.** Tiny public surface (15 exports), no compiler magic, no hidden lifecycle. An LLM holds the framework in context and predicts behaviour — your AI agent generates code that works the first time. Ships [`llms.txt`](./llms.txt) and a dedicated AI usage guide.
 
-2. **Smallest cut.** 6.6 KB gzipped including signals. Fine-grained reactivity re-runs only what changed; the diff touches only the DOM nodes that differ.
+2. **Smallest cut.** 6.1 KB gzipped including signals (6.5 KB if you opt into `arraySignal`). Fine-grained reactivity re-runs only what changed; the diff touches only the DOM nodes that differ.
 
 3. **No virtual DOM, no compiler.** JSX → HTML strings → native diff. DevTools shows the real DOM because it *is* the DOM.
 
@@ -57,6 +57,7 @@ That's it. Your JSX renders to HTML strings, kerf's native diff applies the mini
 - Building a deeply componentised design-system app → **React / Solid / Svelte**.
 - Need React Native / cross-platform mobile → **React** (Kerf + Tauri/Electron also covers many of these cases).
 - Building a static site → **Astro** (we use it for *this* project's site).
+- Already invested in a framework where switching cost outweighs the ~6 KB win.
 
 ## Quick tour
 

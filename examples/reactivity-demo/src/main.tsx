@@ -1,3 +1,4 @@
+import { mountArraySignalSection } from './sections/arraySignalSection.js';
 import { mountCart } from './sections/cartSection.js';
 import { mountCounter } from './sections/counterSection.js';
 import { mountFocusSurvival } from './sections/focusSurvivalSection.js';
@@ -14,4 +15,5 @@ document.addEventListener('DOMContentLoaded', () => {
   mountMorphSkip(document.getElementById('section-skip')!);
   mountSvgRender(document.getElementById('section-svg')!);
   mountTier2Capture(document.getElementById('section-tier2')!);
+  mountArraySignalSection(document.getElementById('section-arraysignal')!);
 });

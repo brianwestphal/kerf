@@ -344,11 +344,9 @@ describe('Doc contract coverage (KF-104)', () => {
 
     it('move with from === to is a no-op (no patch emitted)', () => {
       const a = arraySignal([{ id: 1 }, { id: 2 }]);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const before = (a as any)._patches.length;
+      const before = (a as unknown as { _patches: unknown[] })._patches.length;
       a.move(1, 1);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const after = (a as any)._patches.length;
+      const after = (a as unknown as { _patches: unknown[] })._patches.length;
       expect(after).toBe(before);
     });
 

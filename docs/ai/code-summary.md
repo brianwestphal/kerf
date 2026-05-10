@@ -17,30 +17,41 @@ kerf/
 │   ├── diff.ts                   ← native general-purpose DOM reconciler (replaces morphdom)
 │   ├── segment.ts                ← Segment types (static/list/mixed) + flatten helpers
 │   ├── each.ts                   ← each() — keyed list iteration with per-item memo
-│   ├── list-reconcile.ts         ← keyed list reconciler (classify / bulk-parse / LIS / move)
+│   ├── list-reconcile.ts         ← top-level dispatcher (KF-112) — BoundItem, ListBinding, endAnchor, reconcileList
+│   ├── list-reconcile-snapshot.ts ← snapshot reconcile path (classify / bulk-parse / LIS / move)
+│   ├── list-reconcile-granular.ts ← granular reconcile path (KF-92 patch-driven, KF-93/94 bulk parse)
 │   ├── list-reconcile-focus.ts   ← focus snapshot/restore around the move pass (engine-quirk fix)
 │   ├── delegate.ts               ← delegate + delegateCapture
 │   ├── toElement.ts              ← SVG-aware JSX-to-DOM
 │   └── utils/
 │       ├── escapeHtml.ts         ← used by jsx-runtime
-│       └── jsx-attr-aliases.ts   ← camelCase → HTML/SVG attribute name table (KF-21)
+│       ├── jsx-attr-aliases.ts   ← camelCase → HTML/SVG attribute name table (KF-21)
+│       └── rowContract.ts        ← KF-103 row-contract helpers — ROW_HTML_SNIPPET_MAX, parseRowTemplate, rowContractError, truncateRowHtml
 ├── tests/
 │   ├── unit/
-│   │   ├── jsx-runtime.test.ts
 │   │   ├── array-signal.test.ts
-│   │   ├── jsx-types.test.tsx
-│   │   ├── reactive.test.ts
-│   │   ├── store.test.ts
-│   │   ├── mount.test.ts
+│   │   ├── audit-gap-coverage.test.tsx     ← regression-net for v8-only branches found via coverage gaps
 │   │   ├── delegate.test.ts
-│   │   ├── each.test.ts
 │   │   ├── diff.internal.test.ts
+│   │   ├── doc-contract-coverage.test.tsx  ← KF-104 — comprehensive contract suite covering every doc-asserted behaviour
+│   │   ├── each.test.ts
+│   │   ├── jsx-runtime.test.ts
+│   │   ├── jsx-types.test.tsx
+│   │   ├── kf102-each-after-transition.test.tsx ← KF-102 round 2 — each() reconcile after sibling-introduction transitions
+│   │   ├── mount.test.ts
+│   │   ├── no-stale-deps.test.ts            ← guards against accidentally re-introducing morphdom or removed deps
+│   │   ├── reactive.test.ts
 │   │   ├── segment.internal.test.ts
+│   │   ├── store.test.ts
 │   │   └── toElement.test.ts
 │   ├── integration/
 │   │   └── full-pipeline.test.ts ← end-to-end cart UI exercising every primitive
 │   ├── browser/                  ← Playwright real-browser tests (chromium/firefox/webkit) — run via `npm run test:browser`
 │   │   ├── fixtures/index.html         ← importmap-based page that loads kerf from dist/
+│   │   ├── ime-composition.spec.ts     ← IME composition survives a re-render
+│   │   ├── mutation-count.spec.ts      ← LIS-based reorder produces the minimum insertBefore count
+│   │   ├── perf-1k.spec.ts             ← 1k-row stress (real-browser sanity check on the bench app)
+│   │   ├── stateful-attrs.spec.ts      ← `<details open>` / `<dialog open>` user-agent-owned attribute survival
 │   │   └── svg-mathml.spec.ts          ← KF-83 — SVG/MathML namespacing across real browsers
 │   └── dist/                     ← run via `npm run test:dist`, against the built bundles
 │       ├── barrel-completeness.test.ts    ← KF-24 — pins the public-API list
@@ -137,7 +148,7 @@ The JSX runtime is a separate subpath export at `kerfjs/jsx-runtime`. It's refer
 
 `npm run build` → `tsup` → `dist/`:
 
-- `dist/index.js` (ESM bundle, ~6.6 KB min+gz including `@preact/signals-core`)
+- `dist/index.js` (ESM bundle, ~6.1 KB min+gz including `@preact/signals-core`; ~6.5 KB if a consumer also imports `arraySignal` from `kerfjs/array-signal`. See `bench/results.md` for the per-shape numbers.)
 - `dist/index.d.ts` (types)
 - `dist/jsx-runtime.js`
 - `dist/jsx-runtime.d.ts`
@@ -149,6 +160,8 @@ The JSX runtime is a separate subpath export at `kerfjs/jsx-runtime`. It's refer
 - Source maps for everything
 
 `tsup.config.ts` runs with `splitting: true` (KF-14 / KF-15) — without it, esbuild bundles each entry independently, which both duplicates shared classes (breaking `instanceof` checks across entries) and tree-shakes shared module-level state into broken stubs.
+
+The four entries (`index`, `jsx-runtime`, `testing`, `array-signal`) each emit a tiny shim that re-exports from one of the shared chunks; the bulk of the runtime lives in those chunks. That keeps the cross-bundle brand symbols (`Symbol.for('kerfjs.SafeHtml')`, `Symbol.for('kerfjs.ArraySignal')`) addressing exactly one class identity per kerf copy.
 
 Runtime dep (`@preact/signals-core`) is external — consumers' bundlers pick it up from their own `node_modules`.
 

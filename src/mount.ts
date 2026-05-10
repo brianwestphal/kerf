@@ -42,6 +42,7 @@ import {
   type ListSegment,
   type Segment,
 } from './segment.js';
+import { parseRowTemplate, rowContractError } from './utils/rowContract.js';
 
 const LIST_MARKER_PREFIX = 'kf-list:';
 
@@ -137,11 +138,7 @@ export function mount(rootEl: HTMLElement, render: () => SafeHtml | string): () 
         // to the diff), pass the set of list-owned item nodes. The diff
         // walks every parent's children but skips owned items individually,
         // so non-list siblings around an each() reconcile correctly.
-        const ownedItems = new Set<Element>();
-        for (const b of bindings.values()) {
-          for (const item of b.items) ownedItems.add(item.node);
-        }
-        diff(rootEl, template, ownedItems);
+        diff(rootEl, template, collectOwnedItems(bindings));
         bindListsFromMarkers(rootEl, segment, bindings, false);
         prevStaticHtml = currentStaticHtml;
       }
@@ -234,23 +231,27 @@ function validateInlinedRowMatch(
 ): void {
   if (boundEl.outerHTML === expectedHtml) return;
   // The bound element's outerHTML differs from what we emitted. Parse the
-  // expected html in isolation and check the element count — multi-root
-  // and zero-element cases throw with a precise error.
-  const tpl = document.createElement('template');
-  tpl.innerHTML = expectedHtml;
-  const count = tpl.content.children.length;
-  if (count === 1) return;  // single-root, just whitespace/normalisation differs
-  const snippet = expectedHtml.length > 120
-    ? expectedHtml.slice(0, 120) + '…' : expectedHtml;
-  const reason = count === 0
-    ? 'produced no top-level element'
-    : `produced ${count} top-level elements; exactly one is required`;
-  throw new Error(
-    `each(): row render at index ${index} ${reason}. `
-    + 'Each item\'s render must return exactly one element — '
-    + 'wrap multiple roots in a single parent (e.g. <li>...</li>). '
-    + `Got HTML: ${JSON.stringify(snippet)}`,
-  );
+  // expected html in isolation; if it's still single-root the difference
+  // is whitespace / browser-normalisation (e.g. `<br/>` → `<br>`) and
+  // we proceed silently. Otherwise build the precise contract-violation
+  // error from the shared helper.
+  const { count } = parseRowTemplate(expectedHtml);
+  if (count === 1) return;
+  throw rowContractError(index, expectedHtml);
+}
+
+/**
+ * Build the set of element nodes owned by `each()` list reconcilers, the
+ * union of every binding's `items[].node`. The static-surrounds diff
+ * skips these so list rows are invisible to the parent walk while
+ * sibling reconciliation continues normally (KF-102 round 2).
+ */
+function collectOwnedItems(bindings: Map<string, ListBinding>): Set<Element> {
+  const owned = new Set<Element>();
+  for (const b of bindings.values()) {
+    for (const item of b.items) owned.add(item.node);
+  }
+  return owned;
 }
 
 /**

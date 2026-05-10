@@ -140,7 +140,9 @@ body {
   padding: 8px 12px; border-bottom: 1px solid var(--demo-border);
 }
 .demo-keyed-row:last-child { border-bottom: none; }
+.demo-keyed-row--selected { background: #fef3c7; }
 .demo-keyed-label { min-width: 80px; font-weight: 500; font-size: 13px; }
+.demo-arraysig-list { max-height: 320px; overflow-y: auto; }
 
 .demo-skip-mount { margin: 12px 0; }
 .demo-skip-widget {

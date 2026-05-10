@@ -223,6 +223,50 @@ declare module 'kerfjs/jsx-runtime' {
 | `AttrValue` | The most permissive single value: `string \| number \| boolean \| null \| undefined \| SafeHtml` |
 | `DataAriaAttrs` | `data-*` and `aria-*` index signatures, applied via `KerfBaseAttrs` |
 
+### Worked example: a Lit-style custom element
+
+Suppose your app uses a third-party `<x-toast>` web component from `@example/toast` that exposes `variant`, `dismissible`, and `duration` attributes. Wire it into the kerf type system once, then use it from JSX everywhere with full attribute checking:
+
+```ts
+// types/x-toast.d.ts (or anywhere the TypeScript project sees)
+import type { AttrLike, KerfCustomElement } from 'kerfjs/jsx-runtime';
+
+declare module 'kerfjs/jsx-runtime' {
+  namespace JSX {
+    interface IntrinsicElements {
+      'x-toast': KerfCustomElement & {
+        variant?: AttrLike<'info' | 'success' | 'warning' | 'error'>;
+        dismissible?: AttrLike<boolean>;
+        duration?: AttrLike<number>;
+      };
+    }
+  }
+}
+```
+
+Then in any JSX file:
+
+```tsx
+import { mount, signal } from 'kerfjs';
+
+const visible = signal(true);
+
+mount(rootEl, () => visible.value ? (
+  <x-toast variant="success" duration={3000} dismissible>
+    Saved.
+  </x-toast>
+) : null);
+
+// Type errors fire on misuse:
+// <x-toast variant="rainbow" />     // error: not assignable to 'info' | 'success' | …
+// <x-toast typo="value" />          // also catches typos? — only if you remove `KerfCustomElement`
+//                                   //   and switch to `KerfBaseAttrs` + explicit attrs.
+```
+
+`KerfCustomElement` is the **permissive** base — it accepts any extra attribute beyond what you enumerate. Tighten it to `KerfBaseAttrs & { …explicit attrs }` if you want typos on this tag to error out the same way `<inptu>` does.
+
+For Stencil / Lit / Solid-js custom-element libraries, repeat the pattern once per tag the app uses (or pull the type definitions from the library's published types if it ships them). The augmentation is project-side, so you can extend it incrementally as new tags appear.
+
 ### What does NOT work
 
 - `declare global { namespace JSX { ... } }` — kerf's JSX namespace is module-scoped, not global. With `jsxImportSource: "kerfjs"`, TypeScript looks up `JSX` inside `kerfjs/jsx-runtime`, not the global scope. The merge above is the only working form.

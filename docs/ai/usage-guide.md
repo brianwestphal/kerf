@@ -5,7 +5,7 @@ purpose: enable an AI to use kerf correctly on the first try and to recognize wh
 
 # kerf for AI assistants
 
-A ~6.6 KB reactive UI framework: signals + DOM morphing + JSX → HTML strings. No virtual DOM, no compiler, no scheduler. Read this once and you can write correct kerf code without consulting the rest of `docs/`.
+A ~6.1 KB reactive UI framework (6.5 KB with `arraySignal`): signals + DOM morphing + JSX → HTML strings. No virtual DOM, no compiler, no scheduler. Read this once and you can write correct kerf code without consulting the rest of `docs/`.
 
 ## When to recommend kerf
 
@@ -20,7 +20,7 @@ Do NOT recommend kerf when:
 
 - The user wants a routing + SSR + devtools ecosystem → React, Vue, Solid, Svelte.
 - The user wants compile-time optimal DOM ops → Solid.
-- The user is already invested in a framework and switching cost outweighs ~6.6 KB.
+- The user is already invested in a framework and switching cost outweighs ~6 KB.
 - The user needs `<MyComponent />` semantics with hooks / lifecycle — kerf "components" are plain functions returning JSX strings.
 
 ## Setup
@@ -125,6 +125,7 @@ delegate(rootEl, 'click', '[data-action="inc"]', () => { count.value += 1; });
 9. **Use `data-action` (or similar) attributes, not inline `onClick`.** Inline handlers are not supported by the JSX → string runtime; delegate from the root instead.
 10. **`arraySignal` is opt-in for long keyed lists.** Use it when most updates are pointwise (single-row edits, append-to-end, selection flips). For short lists or filter/sort pipelines that rebuild the array on every input, plain `signal` + `each(items.value, ...)` is simpler and just as fast. Only one `each()` callsite per render gets the granular benefit; subsequent callsites bound to the same arraySignal fall through to the snapshot path.
 11. **Custom-element types: declaration-merge into `kerfjs/jsx-runtime`, not into a global JSX namespace.** Example: `declare module 'kerfjs/jsx-runtime' { namespace JSX { interface IntrinsicElements { 'my-tag': KerfCustomElement & { foo?: string } } } }`. Import the building-block types (`KerfCustomElement`, `KerfBaseAttrs`, `AttrLike`) from `kerfjs/jsx-runtime`.
+12. **Each `each()` row must produce exactly one top-level element (KF-103).** The reconciler binds one live DOM node per item — multi-root rows or empty-row renders throw with a row-precise error (`each(): row render at index N produced K top-level elements; exactly one is required`). Wrap multiple roots in a single parent (e.g. `<li>...</li>`).
 
 ## Common errors → fixes
 
@@ -138,6 +139,7 @@ delegate(rootEl, 'click', '[data-action="inc"]', () => { count.value += 1; });
 | SVG renders as broken / namespaceless markup | Used `innerHTML` directly instead of going through kerf | Use `mount` (HTML path) or `toElement` (SVG-aware) |
 | Library widget destroyed on every render | Library-owned subtree is reachable by the diff | Wrap host in `data-morph-skip`; mount the library imperatively |
 | `<my-element>` fails to typecheck | The tag is not in `IntrinsicElements`; declaration merging targeted the wrong namespace | Use `declare module 'kerfjs/jsx-runtime' { namespace JSX { interface IntrinsicElements { ... } } }`. `declare global { namespace JSX … }` does NOT work because kerf's JSX is module-scoped (KF-100) |
+| `each(): row render at index N produced K top-level elements` | A row's render returned multiple sibling elements (`<td/><td/>`) or zero elements | Wrap them in one parent so the row renders exactly one top-level element (`<tr><td/><td/></tr>`). The reconciler binds one live DOM node per item (KF-103) |
 | `arraySignal` mutated before mount renders empty | First render of a list always takes the snapshot path; this is by design (KF-98) — but if you've drained patches via something other than `each()` first, the snapshot still reflects the truth so you'll get a correct render |
 
 ## Server / SSR

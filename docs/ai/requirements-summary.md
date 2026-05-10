@@ -28,7 +28,7 @@ Everything in the v0.1–v0.3 design is shipped (each / native diff / list recon
 
 ### §1 Overview
 
-States kerf's positioning: tiny reactive UI framework, ~6.6 KB, no virtual DOM, no compiler, no component lifecycle, no third-party DOM-diff dependency. Four primitives (signals / stores / render / delegation) plus a JSX runtime and an SVG-aware `toElement`. Rules out: routing, full SSR, styling opinions, ecosystem.
+States kerf's positioning: tiny reactive UI framework, ~6.1 KB (6.5 KB with `arraySignal`), no virtual DOM, no compiler, no component lifecycle, no third-party DOM-diff dependency. Four primitives (signals / stores / render / delegation) plus a JSX runtime and an SVG-aware `toElement`. Rules out: routing, full SSR, styling opinions, ecosystem.
 
 ### §2 Reactivity
 
@@ -42,15 +42,19 @@ Also covers `arraySignal()` (KF-92) — a granular collection signal at the `ker
 
 ### §4 Render
 
-`mount(rootEl, render)` wraps `effect()` + kerf's native segment-aware diff. Static surrounds reconcile through `src/diff.ts`; lists from `each(...)` go through a keyed reconciler that operates on live children directly (O(changes), not O(rows)). Diff keys: `id` then `data-key`. `data-morph-skip` for library-owned subtrees. Focus + selection preservation for active text-entry inputs; **focused `[contenteditable]` short-circuits the entire subtree on the morph (same mechanism as `data-morph-skip`)** — attribute updates deferred until the next render after blur. Multiple `mount()` calls compose; each tracks its own signals. `SafeHtml.toString()` is server-safe.
+`mount(rootEl, render)` wraps `effect()` + kerf's native segment-aware diff. Static surrounds reconcile through `src/diff.ts`; lists from `each(...)` go through a keyed reconciler that operates on live children directly (O(changes), not O(rows)). Diff keys: `id` then `data-key`. `data-morph-skip` for library-owned subtrees. Focus + selection preservation for active text-entry inputs; **focused `[contenteditable]` short-circuits the entire subtree on the morph (same mechanism as `data-morph-skip`)** — attribute updates deferred until the next render after blur. User-agent-owned `open` on `<details>` / `<dialog>` is never removed by the morph (KF-84) so user-driven expansion survives re-renders. Multiple `mount()` calls compose; each tracks its own signals. `SafeHtml.toString()` is server-safe.
 
 When `each()` is bound to an `arraySignal`, the reconciler takes a granular path (KF-92): drains the patch queue, pre-renders insert/update HTML inside try/catch (KF-99), and applies patches directly — bulk-parsing contiguous insert runs (KF-93) and consecutive update runs (KF-94). Drift between the binding and the signal triggers a snapshot rebuild on the next render. First render of a list always takes the snapshot path (KF-98) — there's no binding yet to apply patches against.
+
+KF-102 round 2 changed the diff signature from `listParents` (skip a parent's whole children subtree) to `ownedItems` (skip individual list-row elements). The diff still walks every parent's children to reconcile non-list siblings, but never disturbs rows owned by `each()`. List markers stay in the live DOM as comment-node anchors; `bindListsFromMarkers(rootEl, segment, bindings, inlinedItems)` distinguishes the first-render inlined-items path from subsequent renders that newly introduce a list. `cleanupOrphanBindings` drops binding entries (and their items) for lists that disappear from the segment between renders. `endAnchor(binding)` is exported from `list-reconcile.ts` and dynamically derives the "after the last item" anchor from `marker.nextElementSibling` (empty list) or `items[last].node.nextElementSibling` (non-empty), so non-list siblings the diff inserted between the list and the parent's tail still anchor moves correctly.
+
+KF-103 enforces "exactly one top-level element per row" with row-precise diagnostics: `validateInlinedRowMatch` (mount.ts) checks first-render inlined rows by `outerHTML` equality (fast path) and falls back to a per-row parse only on mismatch; `buildFreshNodes` (list-reconcile.ts) checks the bulk-parse count and dispatches to `findOffendingRow` on mismatch; `applyBulkInsert` / `applyBulkUpdate` have analogous helpers; `parseSingleRow` rejects the multi-root case in the granular path. The error message names the offending row index, the actual element count, and shows the row's HTML.
 
 ### §5 Event delegation
 
 Three-tier model:
-- **Tier 1** (bubbling) → `delegate()`. Walk-up via `closest()`.
-- **Tier 2** (non-bubbling: focus/blur/scroll/load/error) → `delegateCapture()`. `target.matches()` only.
+- **Tier 1** (`delegate()`) — bubbling events plus the well-known non-bubblers (`focus`, `blur`, `scroll`, `load`, `error`, `mouseenter`, `mouseleave`) auto-promoted to capture phase under the hood. Walk-up via `closest()` for every event type.
+- **Tier 2** (`delegateCapture()`) — explicit-capture escape hatch. Use when the auto-promotion list doesn't cover your event type (custom non-bubbling events) or when you want capture-phase semantics with strict element-match (`target.matches()`) instead of walk-up.
 - **Tier 3** (library-owned subtrees) → `data-morph-skip` + manual lifecycle.
 
 ### §6 JSX runtime
