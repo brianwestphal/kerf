@@ -1,0 +1,82 @@
+---
+title: Migrating to Kerf
+description: Side-by-side translations of the same app from React, Alpine, Lit, and vanjs to Kerf. Bundle size, mental model, perf, and gotchas — per source framework.
+---
+
+import { Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
+
+Kerf doesn't try to replace your framework. But if you've already decided to leave one — or you're building something new and weighing the cluster — these pages show your current code translated, line for line, into kerf.
+
+The reference app is a **classic todo list**: add, toggle, delete, filter. Roughly 150 lines in every framework. Big enough to exercise state, keyed lists, delegated events, and persistence. Small enough that you can read the whole thing.
+
+## Pick your starting point
+
+<CardGrid>
+  <LinkCard
+    title="Coming from React"
+    description="useState → signal, useEffect → effect, no JSX components. Bundle delta, hooks → primitives, and the gotchas a React dev hits first."
+    href="/kerf/migrating/react/"
+  />
+  <LinkCard
+    title="Coming from Alpine"
+    description="x-data → store, x-text → JSX, no directives. How HTML-first instincts translate when JSX is the template language."
+    href="/kerf/migrating/alpine/"
+  />
+  <LinkCard
+    title="Coming from Lit"
+    description="LitElement → mount, reactive properties → signals, no Shadow DOM. What changes when you trade web components for plain functions."
+    href="/kerf/migrating/lit/"
+  />
+  <LinkCard
+    title="Coming from vanjs"
+    description="vanjs → kerf is the smallest jump. Both are ~6 KB, both use signals. The differences are JSX vs hyperscript and how keyed lists reconcile."
+    href="/kerf/migrating/vanjs/"
+  />
+</CardGrid>
+
+## At a glance — the comparison matrix
+
+How kerf compares to each source framework on the dimensions developers usually decide on.
+
+| Dimension | React 19 | Alpine 3 | Lit 3 | vanjs 1.5 | **Kerf** |
+| --- | --- | --- | --- | --- | --- |
+| Bundle (min+gz, runtime only) | ~45 KB (react + react-dom) | ~14 KB | ~6 KB (lit-html + lit-element) | ~1.6 KB | **~6.6 KB** (incl. signals) |
+| Reactivity model | hooks + virtual DOM | per-component `x-data` proxies | reactive properties + lit-html | signals + direct DOM | **signals + DOM morph** |
+| Component model | function / class components | HTML directives | web components | hyperscript factories | **plain functions returning JSX** |
+| Templating | JSX → virtual DOM | HTML attributes | tagged-template literals | hyperscript / DOM nodes | **JSX → HTML strings → morph** |
+| Compiler required | no (but `@vitejs/plugin-react`) | no | no | no | **no** |
+| Keyed list reconciliation | `key` prop, virtual-DOM diff | manual via `x-for :key` | `repeat()` directive | manual via signal arrays | **`each(items, render, key)`** |
+| Focus / selection survival across re-render | manual via refs | manual | manual | manual | **automatic in `morph()`** |
+| Event handling | per-node JSX handlers | `@click=` attributes | `@click=` template directives | hyperscript handlers | **`delegate()` once on the root** |
+| Server rendering | first-class | none | declarative shadow DOM | `vanX.replace` story | **`SafeHtml.toString()`** |
+| State sharing across components | Context / Redux / Zustand | `Alpine.store` | global state libs | shared `van.state()` | **`defineStore`** |
+
+### Perf snapshot
+
+Numbers from [`bench/results.md`](https://github.com/brianwestphal/kerf/blob/main/bench/results.md) (krausest js-framework-benchmark, medians of 3 runs, ms — lower is better).
+
+| Op | React 19 | Lit 3 | vanjs 1.5 | **Kerf 0.5** |
+| --- | --- | --- | --- | --- |
+| create 1k | 40.9 | 38.5 | 46.6 | 46.1 |
+| partial update | 24.1 | 21.9 | 41.8 | 44.6 |
+| swap rows | 157.3 | 28.9 | 23.7 | 22.3 |
+| select row | 8.0 | 9.3 | 14.3 | 27.6 |
+| remove row | 18.0 | 18.3 | 18.3 | 17.0 |
+
+Alpine isn't in the krausest benchmark; it's not designed for keyed-list throughput so the comparison wouldn't be apples-to-apples.
+
+## How the per-framework pages are structured
+
+Each page is the same shape so you can scan for what you care about:
+
+1. **Bundle delta** — what the swap costs (or saves) in bytes.
+2. **Mental-model translations** — a table mapping the source framework's primitives to kerf's. React `useState` → kerf `signal`. Lit `@property` → kerf `signal`. Alpine `x-data` → kerf `defineStore`.
+3. **Side-by-side code** — the same todo list, side by side, section by section (state, render, events, list). Click any code block to see it full-width.
+4. **Gotchas** — what trips developers coming from this framework. React devs expect `<Component />` semantics; kerf doesn't have them. Alpine devs expect DOM-attribute reactivity; kerf renders JSX. Lit devs expect Shadow DOM; kerf is light-DOM.
+5. **Perf numbers** — krausest benchmark deltas for the operations that change most when you swap.
+
+## Not your starting point?
+
+If you're coming from Vue, Svelte, Solid, or Preact — the React page is the closest fit in spirit (signals/hooks/keyed lists are the same shape). For framework-free vanilla JS, the vanjs page is closest (no template language, direct DOM).
+
+If your app is built around heavy component composition (`<DataGrid>`, `<DatePicker>`, deep prop drilling), kerf probably isn't your next stop — see [When to reach for something else](/kerf/alternatives/).

@@ -5,6 +5,14 @@ import { defineConfig } from 'astro/config';
 export default defineConfig({
   site: 'https://brianwestphal.github.io',
   base: '/kerf',
+  // KF-154: the basics example at index 9 was originally `09-raw-sanitise`
+  // (British spelling). The slug moved to `09-raw-sanitize` after the
+  // American-English sweep (KF-153); this redirect preserves deep links
+  // to the old URL. Remove once external traffic to the old slug stops.
+  redirects: {
+    '/examples/basics/09-raw-sanitise': '/kerf/examples/basics/09-raw-sanitize/',
+    '/examples/basics/09-raw-sanitise/': '/kerf/examples/basics/09-raw-sanitize/',
+  },
   vite: {
     esbuild: {
       jsx: 'automatic',
@@ -93,6 +101,16 @@ export default defineConfig({
               collapsed: true,
               items: [{ autogenerate: { directory: 'examples/complete' } }],
             },
+          ],
+        },
+        {
+          label: 'Migrating',
+          items: [
+            { label: 'Pick your starting point', slug: 'migrating' },
+            { label: 'Coming from React', slug: 'migrating/react' },
+            { label: 'Coming from Alpine', slug: 'migrating/alpine' },
+            { label: 'Coming from Lit', slug: 'migrating/lit' },
+            { label: 'Coming from vanjs', slug: 'migrating/vanjs' },
           ],
         },
       ],

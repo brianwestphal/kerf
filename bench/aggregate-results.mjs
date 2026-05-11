@@ -7,12 +7,19 @@
  * Produces a table per benchmark category (CPU / memory / size) ranked by
  * median, with kerfjs highlighted. Output is stdout — pipe to a file, or
  * paste into bench/results.md.
+ *
+ * Side effect (KF-138): also writes `bench/results.json` — a structured
+ * snapshot the site's homepage `PerfTable.astro` imports at build time.
+ * Keeping the snapshot tracked in-repo means the GitHub Pages build doesn't
+ * need a bench cache; the JSON refreshes whenever a developer reruns the
+ * benchmark and commits the regenerated file alongside `bench/results.md`.
  */
 
-import { readdirSync, readFileSync } from 'node:fs';
+import { readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 const RESULTS_DIR = new URL('./.bench-cache/js-framework-benchmark/webdriver-ts/results/', import.meta.url).pathname;
+const JSON_OUT = new URL('./results.json', import.meta.url).pathname;
 
 // CPU benchmarks in display order with friendly labels.
 const CPU_BENCHMARKS = [
@@ -87,6 +94,45 @@ function table(title, benchmarks, byFramework) {
   return out;
 }
 
+function newestResultMtime() {
+  let newest = 0;
+  for (const file of readdirSync(RESULTS_DIR)) {
+    if (!file.endsWith('.json')) continue;
+    const m = statSync(join(RESULTS_DIR, file)).mtimeMs;
+    if (m > newest) newest = m;
+  }
+  return newest === 0 ? null : new Date(newest).toISOString();
+}
+
+// Parse the webdriver-ts framework key (e.g. `kerfjs-v0.4.2-keyed`,
+// `react-hooks-v19.2-keyed`, `vanillajs-v1.0.0-non-keyed`) into a
+// display-friendly `{ name, version, keyed }`. The pattern is
+// `<name>-v<version>-<keyed|non-keyed>`.
+function parseFrameworkKey(key) {
+  const m = key.match(/^(.+)-v([^-]+(?:-[^-]+)*?)-(keyed|non-keyed)$/);
+  if (m === null) return { name: key, version: '', keyed: null };
+  return { name: m[1], version: m[2], keyed: m[3] === 'keyed' };
+}
+
+function buildJsonSnapshot(byFramework) {
+  const scenarios = CPU_BENCHMARKS.map(([id, label]) => ({ id, label }));
+  const frameworks = [];
+  for (const [key, results] of byFramework) {
+    const { name, version, keyed } = parseFrameworkKey(key);
+    const values = CPU_BENCHMARKS.map(([bench]) => median(results[bench]));
+    if (values.every((v) => v === null)) continue;
+    frameworks.push({ key, name, version, keyed, values });
+  }
+  // Stable sort by name, then version — consumers (PerfTable, etc.) can
+  // re-sort by their own preferred axis.
+  frameworks.sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : a.version.localeCompare(b.version)));
+  return {
+    capturedAt: newestResultMtime(),
+    scenarios,
+    frameworks,
+  };
+}
+
 const byFramework = loadAll();
 console.log('# kerfjs vs reference frameworks — krausest js-framework-benchmark');
 console.log('');
@@ -96,3 +142,6 @@ console.log('All numbers are medians across the iterations the benchmark ran (pe
 console.log(table('CPU benchmarks (ms)', CPU_BENCHMARKS, byFramework));
 console.log(table('Memory benchmarks', MEM_BENCHMARKS, byFramework));
 console.log(table('Size + first-paint', SIZE_BENCHMARKS, byFramework));
+
+writeFileSync(JSON_OUT, JSON.stringify(buildJsonSnapshot(byFramework), null, 2) + '\n');
+console.error(`\n[aggregate-results] wrote ${JSON_OUT}`);

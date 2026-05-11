@@ -107,6 +107,28 @@ framework, `Nx` is the ratio to that fastest. The header line surfaces the
 mtime of the newest results file so you can tell at a glance how stale the
 data is.
 
+## Refreshing the homepage perf widget (KF-138)
+
+```bash
+node bench/aggregate-results.mjs > bench/results.md
+```
+
+`aggregate-results.mjs` writes two outputs every run:
+
+- **`bench/results.md`** (stdout, redirect to the file) — the markdown
+  tables published in the repo.
+- **`bench/results.json`** (side effect, fixed path) — a structured
+  snapshot the homepage's `site/src/components/PerfTable.astro` imports
+  at build time.
+
+Both files are tracked in git. Commit the regenerated pair whenever you
+publish new numbers — the GitHub Pages build doesn't have access to
+`bench/.bench-cache/`, so `bench/results.json` IS the source of truth at
+site-build time. The homepage table is a subset (5 scenarios × 4
+frameworks); edit `SUBSET_SCENARIOS` / `SUBSET_FRAMEWORKS` in
+`PerfTable.astro` to change what gets surfaced without re-running the
+bench.
+
 ## Caveats
 
 - **Absolute numbers aren't comparable across machines.** Only the

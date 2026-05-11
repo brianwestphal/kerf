@@ -210,3 +210,12 @@ const html = (<div>Hello</div>).toString(); // "<div>Hello</div>"
 - [`docs/4-render.md`](/kerf/docs/render/) — segment-aware diff, list reconciler, focus-preservation rules.
 - [`docs/5-event-delegation.md`](/kerf/docs/events/) — tier model deep dive.
 - [`examples/reactivity-demo`](/kerf/demo/) — runnable examples of every primitive.
+
+## Drop-in AI-tool config (KF-128)
+
+For tools that read project-level config files, the kerf repo ships two pre-baked drop-ins that condense the rules above into the format each tool expects:
+
+- [`kerf.cursorrules`](../../kerf.cursorrules) — copy into a project as `.cursorrules`; Cursor picks it up automatically.
+- [`kerf.claude-skill.md`](../../kerf.claude-skill.md) — copy into `~/.claude/skills/kerf-app/SKILL.md` (or `your-project/.claude/skills/kerf-app/SKILL.md`); Claude Code activates the skill whenever it spots a `kerfjs` import.
+
+Both mirror the hard rules + canonical patterns + common errors from this guide. Refresh them after API changes by re-summarizing this document.
