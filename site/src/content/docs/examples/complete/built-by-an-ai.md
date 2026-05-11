@@ -12,7 +12,7 @@ We took an off-the-shelf model, pointed it at [`llms.txt`](https://github.com/br
 ## The prompt
 
 ````
-You're writing a UI in kerf (https://github.com/brianwestphal/kerf), a ~6.6 KB
+You're writing a UI in kerf (https://github.com/brianwestphal/kerf), a ~6.5 KB
 reactive framework: signals + DOM diff + JSX → HTML strings. Read
 https://raw.githubusercontent.com/brianwestphal/kerf/main/docs/ai/usage-guide.md
 once before writing any code.

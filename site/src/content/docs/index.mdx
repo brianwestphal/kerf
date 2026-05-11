@@ -1,13 +1,13 @@
 ---
 title: Kerf — the smallest cut
-description: Tiny reactive UI framework — fine-grained signals + DOM diff + JSX. 6.6 KB, no virtual DOM, no compiler.
+description: Tiny reactive UI framework — fine-grained signals + DOM diff + JSX. 6.5 KB, no virtual DOM, no compiler.
 template: splash
 hero:
   title: Introducing Kerf.
   tagline: |
     The smallest cut.
 
-    6.6 KB. No virtual DOM. No compiler. No magic.
+    6.5 KB. No virtual DOM. No compiler. No magic.
 
     Reactive UI that touches only the bytes that changed.
   image:
@@ -69,7 +69,7 @@ That's it. Your JSX renders to HTML strings, kerf's native diff applies the mini
 
 <PerfTable />
 
-Kerf sits in the keyed-framework cluster with Solid and Vue on the operations that exercise its smallest-cut path. Solid wins the compiler-driven `select row` / `partial update` benchmarks; kerf's general-purpose reconciler trades that gap for a 6.6 KB runtime, no compiler, and no per-component machinery.
+Kerf sits in the keyed-framework cluster with Solid and Vue on the operations that exercise its smallest-cut path. Solid wins the compiler-driven `select row` / `partial update` benchmarks; kerf's general-purpose reconciler trades that gap for a 6.5 KB runtime, no compiler, and no per-component machinery.
 
 ## Why Kerf
 
@@ -78,7 +78,7 @@ Kerf sits in the keyed-framework cluster with Solid and Vue on the operations th
     Tiny public surface (15 exports), no compiler magic, no hidden lifecycle. An LLM holds the framework in context and predicts behavior — your AI agent generates code that works the first time.
   </Card>
   <Card title="Smallest cut" icon="approve-check">
-    6.6 KB gzipped including signals. Fine-grained reactivity re-runs only what changed; the diff touches only the DOM nodes that differ.
+    6.5 KB gzipped including signals. Fine-grained reactivity re-runs only what changed; the diff touches only the DOM nodes that differ.
   </Card>
   <Card title="No virtual DOM, no compiler" icon="seti:javascript">
     JSX → HTML strings → native diff. DevTools shows the real DOM because it *is* the DOM.

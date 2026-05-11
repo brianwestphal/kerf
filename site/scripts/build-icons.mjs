@@ -97,7 +97,7 @@ console.log('[build-icons] wrote public/mask-icon.svg');
 const manifest = {
   name: 'kerf',
   short_name: 'kerf',
-  description: 'Tiny reactive UI framework — fine-grained signals + DOM diff + JSX. 6.6 KB, no virtual DOM, no compiler.',
+  description: 'Tiny reactive UI framework — fine-grained signals + DOM diff + JSX. 6.5 KB, no virtual DOM, no compiler.',
   start_url: '/kerf/',
   scope: '/kerf/',
   display: 'minimal-ui',

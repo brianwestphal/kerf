@@ -52,7 +52,7 @@ import {
   signal, computed, effect, batch,
   type Signal, type ReadonlySignal,
   defineStore, resetAllStores, type Store,
-  mount, each,
+  mount, type MountResult, morph, each,
   delegate, delegateCapture,
   toElement,
   SafeHtml, isSafeHtml, raw, Fragment,
@@ -102,6 +102,7 @@ npm run test:browser      # build, then Playwright across chromium/firefox/webki
 npm run typecheck         # tsc --noEmit
 npm run lint              # eslint
 npm run check:docs:test-inventory  # KF-109: ensures docs/ai/code-summary.md mentions every test file in tests/
+npm run check:docs:api-coverage  # KF-162: ensures docs/8-api-reference.md mentions every public export from src/index.ts and its subpaths
 npm run check             # local pre-commit gate: lint + typecheck + doc inventory + test + build + both dist:* suites + jsx-typing dist gate
 npm run check:full        # KF-118: pre-push gate — `check` plus the Playwright browser suite (chromium/firefox/webkit), which exercises tests/dist/consumer-app/ end-to-end
 ```
@@ -167,6 +168,7 @@ Numbered docs in `docs/` cover the design. Reading order:
 7. `7-svg.md` — namespace handling.
 8. `8-api-reference.md` — every export.
 9. `9-live-demo.md` — the GitHub Pages deploy of `examples/reactivity-demo`.
+10. `10-migrating.md` — the `/kerf/migrating/` comparison hub (coming-from-React/Alpine/Lit/vanjs pages).
 
 **Keep these docs up to date.** When adding/removing/changing an API, update the matching doc + `docs/8-api-reference.md` + `CHANGELOG.md` in the same change.
 
@@ -177,6 +179,15 @@ Numbered docs in `docs/` cover the design. Reading order:
 - `docs/ai/usage-guide.md` — consumer-facing cheat sheet for AI assistants writing apps *with* kerf (when to recommend it, public API at a glance, hard rules, common errors → fixes). Keep in sync with `docs/8-api-reference.md`.
 
 Update all three whenever the corresponding source / design changes. The repo-root [`llms.txt`](../llms.txt) is the AI-discovery entry point and indexes the docs above — update it when the doc set changes.
+
+### Drop-in AI-tool config (KF-128)
+
+Two pre-baked config files at the repo root that condense `docs/ai/usage-guide.md` into the format each tool expects:
+
+- `kerf.cursorrules` — copy into a project as `.cursorrules`; Cursor picks it up automatically.
+- `kerf.claude-skill.md` — copy into `~/.claude/skills/kerf-app/SKILL.md` (or `your-project/.claude/skills/kerf-app/SKILL.md`); Claude Code activates the skill whenever it spots a `kerfjs` import.
+
+Both mirror the hard rules + canonical patterns + common errors from the AI usage guide. Refresh them after API changes by re-summarising `docs/ai/usage-guide.md`.
 
 ## Releasing
 

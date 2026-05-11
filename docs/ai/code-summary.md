@@ -70,7 +70,11 @@ kerf/
 │   ├── setup.sh                  ← clones the upstream harness into .bench-cache/
 │   ├── preflight.sh              ← KF-139 — system-busy pre-check (sourced by run.sh; `--force` / `KERF_BENCH_FORCE=1` to skip)
 │   ├── run.sh                    ← runs the benchmark against kerfjs + reference frameworks
-│   └── results.sh                ← aggregates results into the viewer (CHANGELOG perf numbers come from here)
+│   ├── results.sh                ← aggregates results into the viewer (CHANGELOG perf numbers come from here)
+│   ├── aggregate-results.mjs     ← KF-138 — writes both `results.md` (stdout) and `results.json` (structured snapshot the homepage `PerfTable.astro` imports at build time)
+│   ├── results.json              ← KF-138 — in-repo snapshot tracked in git; the Pages build has no bench-cache so this IS the source of truth at site-build time
+│   ├── results.md                ← markdown tables consumed by docs
+│   └── results-table.mjs         ← helper for the perf-comparison renderer
 ├── site/                         ← Astro + Starlight marketing/docs site, deployed to /kerf/ on GitHub Pages
 ├── docs/
 │   ├── 1-overview.md
@@ -82,6 +86,7 @@ kerf/
 │   ├── 7-svg.md
 │   ├── 8-api-reference.md
 │   ├── 9-live-demo.md
+│   ├── 10-migrating.md           ← KF-132 — design doc for the /kerf/migrating/ hub (rendered pages live under site/src/content/docs/migrating/)
 │   └── ai/
 │       ├── code-summary.md       ← THIS FILE
 │       ├── requirements-summary.md
@@ -103,6 +108,8 @@ kerf/
 ├── CHANGELOG.md
 ├── LICENSE                       ← MIT
 ├── llms.txt                      ← AI-discovery entry point indexing the docs
+├── kerf.cursorrules              ← KF-128 — drop-in Cursor rules; copy into a project as `.cursorrules`
+├── kerf.claude-skill.md          ← KF-128 — drop-in Claude Code skill; copy into `~/.claude/skills/kerf-app/SKILL.md`
 └── README.md
 ```
 
@@ -122,6 +129,8 @@ Every export reachable via `import { ... } from 'kerfjs'`:
 | `resetAllStores` | `store.ts` | Reset every registered store |
 | `Store<TState, TActions>` | `store.ts` | Type |
 | `mount` | `mount.ts` | Render JSX into a DOM element via kerf's segment-aware diff |
+| `MountResult` | `mount.ts` | Type — what `mount()`'s render function can return (`SafeHtml \| string \| number \| boolean \| null \| undefined`, KF-119) |
+| `morph` | `morph.ts` | KF-150 — one-shot in-place DOM reconciliation; same algorithm `mount()` uses, but doesn't subscribe to signals |
 | `each` | `each.ts` | Keyed list iteration; per-item HTML memo by object identity (+ optional key) |
 | `delegate` | `delegate.ts` | Event delegation; auto-promotes known non-bubblers (focus/blur/scroll/load/error/mouseenter/mouseleave) to capture, keeps `closest()` matching |
 | `delegateCapture` | `delegate.ts` | Explicit-capture escape hatch; `target.matches()`-style direct matching |
@@ -138,8 +147,15 @@ Plus, on the `kerfjs/array-signal` subpath:
 | `arraySignal` | `array-signal.ts` | Factory for `ArraySignal<T>` — granular collection signal emitting typed patches |
 | `ArraySignal<T>` | `array-signal.ts` | Class (and type) — `update`/`insert`/`push`/`remove`/`move`/`replace` mutators + `value` snapshot read |
 | `ArrayPatch<T>` | `array-signal.ts` | Type — patch event shape (`update`/`insert`/`remove`/`move`/`replace`) |
+| `ARRAY_SIGNAL_BRAND` | `array-signal.ts` | The `Symbol.for('kerfjs.ArraySignal')` brand symbol — exported so consumers that build their own collection types can opt into the brand and have `each()` recognize them |
 
 The class is detected via `Symbol.for('kerfjs.ArraySignal')` (KF-95), not `instanceof`, so multiple bundle copies still interoperate. The `each()` runtime in the main barrel uses the brand to detect `arraySignal` arguments without importing the class.
+
+Plus, on the `kerfjs/testing` subpath:
+
+| Export | From | Purpose |
+| --- | --- | --- |
+| `clearStoreRegistry` | `store.ts` (re-exported via `testing.ts`) | Drop every registered store. Test-only — lets a unit-test file reset `defineStore`'s module-level `REGISTRY` between cases without re-importing the store modules. |
 
 Plus, on the `kerfjs/jsx-runtime` subpath (re-exported types for declaration merging — KF-100):
 
@@ -185,7 +201,9 @@ Runtime dep (`@preact/signals-core`) is external — consumers' bundlers pick it
 | Test coverage thresholds | `vitest.config.ts` |
 | Release flow / version bumping | `scripts/release.sh` |
 | GitHub Pages live-demo deploy | `.github/workflows/pages.yml` + `examples/reactivity-demo/vite.config.ts` (`base: '/kerf/demo/'`) + `site/astro.config.mjs` (`base: '/kerf'`) + `docs/9-live-demo.md` |
-| Benchmark harness / perf numbers | `bench/` (`bench/README.md` + `setup.sh` / `run.sh` / `results.sh`); CHANGELOG perf entries come from runs here |
+| Benchmark harness / perf numbers | `bench/` (`bench/README.md` + `setup.sh` / `run.sh` / `results.sh` / `aggregate-results.mjs`); CHANGELOG perf entries come from runs here. Homepage's `site/src/components/PerfTable.astro` imports `bench/results.json` (KF-138) — refresh it by re-running `aggregate-results.mjs` and committing the regenerated file. |
+| Migrating hub (`/kerf/migrating/`) | `docs/10-migrating.md` (design doc) + `site/src/content/docs/migrating/{index.mdx,react.md,alpine.md,lit.md,vanjs.md}` (rendered pages) — KF-132 + KF-156/157/158/159 |
+| Drop-in AI-tool config | `kerf.cursorrules` + `kerf.claude-skill.md` at repo root (KF-128) — both regenerate from `docs/ai/usage-guide.md` |
 
 ## Update triggers
 

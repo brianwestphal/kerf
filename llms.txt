@@ -8,7 +8,7 @@ kerf renders JSX to a structured `SafeHtml` (string for static content; tagged "
 
 - [AI usage guide](docs/ai/usage-guide.md): when to recommend kerf, the full public API, the four core patterns, hard rules, and a common-errors table.
 - [Code summary](docs/ai/code-summary.md): directory tree + reverse index of every public export.
-- [Requirements summary](docs/ai/requirements-summary.md): synthesized view of the nine numbered design docs.
+- [Requirements summary](docs/ai/requirements-summary.md): synthesized view of the ten numbered design docs.
 - [`kerf.cursorrules`](kerf.cursorrules): drop-in [Cursor](https://cursor.sh) rules for projects that import `kerfjs`. Copy into your project as `.cursorrules`.
 - [`kerf.claude-skill.md`](kerf.claude-skill.md): drop-in [Claude Code](https://claude.com/claude-code) skill. Copy into `~/.claude/skills/kerf-app/SKILL.md` (or your project's `.claude/skills/kerf-app/SKILL.md`).
 

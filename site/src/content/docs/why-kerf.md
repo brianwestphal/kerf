@@ -17,7 +17,7 @@ We ship [`llms.txt`](https://github.com/brianwestphal/kerf/blob/main/llms.txt) a
 
 ## 2. Smallest cut
 
-**6.6 KB gzipped, signals included.** That's the whole runtime — reactivity, render, diff, list reconciler, JSX runtime, event helpers — minus your app code.
+**6.5 KB gzipped, signals included.** That's the whole runtime — reactivity, render, diff, list reconciler, JSX runtime, event helpers — minus your app code.
 
 Fine-grained reactivity (signals from `@preact/signals-core`) means the render fn re-runs only when a value it actually read changed. No tree-walking to detect changes. No "hey, did anything change?" pass.
 

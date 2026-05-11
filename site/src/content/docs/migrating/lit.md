@@ -12,7 +12,7 @@ The kerf side is the exact code shipping at [`site/src/examples/complete/todomvc
 | | Min + gz, runtime only |
 | --- | --- |
 | `lit` 3.2 (lit-html + lit-element) | ~6 KB |
-| `kerfjs` 0.5 (incl. signals) | ~6.6 KB |
+| `kerfjs` 0.5 (incl. signals) | ~6.5 KB |
 | **Delta** | roughly a wash |
 
 You're not migrating for bytes. You're migrating because:

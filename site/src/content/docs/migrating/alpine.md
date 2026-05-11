@@ -12,7 +12,7 @@ The kerf side is the exact code shipping at [`site/src/examples/complete/todomvc
 | | Min + gz, runtime only |
 | --- | --- |
 | `alpinejs` 3.14 | ~14 KB |
-| `kerfjs` 0.5 (incl. signals) | ~6.6 KB |
+| `kerfjs` 0.5 (incl. signals) | ~6.5 KB |
 | **Delta** | **~7 KB lighter** |
 
 But the realistic trade is bigger than the runtime row suggests: Alpine wants no build step, kerf wants one. If your Alpine app is currently `<script src="alpine.js">` + sprinkles of `x-data` on server-rendered HTML, kerf changes the shape of how the page is assembled. Static-site shells (Astro / Hono / 11ty / Rails / Phoenix) + per-island `mount()` is a clean fit; replacing Alpine on a fully server-rendered page is more disruptive.

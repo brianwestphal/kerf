@@ -12,7 +12,7 @@ The kerf side is the exact code shipping at [`site/src/examples/complete/todomvc
 | | Min + gz, runtime only |
 | --- | --- |
 | `react` + `react-dom` 19.2 | ~45 KB |
-| `kerfjs` 0.5 (incl. signals) | ~6.6 KB |
+| `kerfjs` 0.5 (incl. signals) | ~6.5 KB |
 | **Delta** | **~38 KB lighter** |
 
 The trade you're making: virtual DOM and the hooks scheduler go away. JSX still works (it compiles to HTML strings, not virtual nodes), `signal`/`computed`/`effect` replace `useState`/`useMemo`/`useEffect`, and `each(items, render, key)` replaces `.map(item => <Row key={item.id} ... />)`. There are no components — function calls return JSX directly.

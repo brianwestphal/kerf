@@ -13,7 +13,7 @@ The embedded webview is constrained: bundle size matters, debuggability matters,
 
 ## Embedded widgets
 
-Chat bubbles, comment boxes, support widgets, dashboards that drop into someone else's page. The host page may already have React, jQuery, Vue, or nothing. Adding 6.6 KB is reasonable; adding 200 KB is not.
+Chat bubbles, comment boxes, support widgets, dashboards that drop into someone else's page. The host page may already have React, jQuery, Vue, or nothing. Adding 6.5 KB is reasonable; adding 200 KB is not.
 
 ## Server-rendered apps with islands
 

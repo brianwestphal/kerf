@@ -40,7 +40,7 @@ How kerf compares to each source framework on the dimensions developers usually 
 
 | Dimension | React 19 | Alpine 3 | Lit 3 | vanjs 1.5 | **Kerf** |
 | --- | --- | --- | --- | --- | --- |
-| Bundle (min+gz, runtime only) | ~45 KB (react + react-dom) | ~14 KB | ~6 KB (lit-html + lit-element) | ~1.6 KB | **~6.6 KB** (incl. signals) |
+| Bundle (min+gz, runtime only) | ~45 KB (react + react-dom) | ~14 KB | ~6 KB (lit-html + lit-element) | ~1.6 KB | **~6.5 KB** (incl. signals) |
 | Reactivity model | hooks + virtual DOM | per-component `x-data` proxies | reactive properties + lit-html | signals + direct DOM | **signals + DOM morph** |
 | Component model | function / class components | HTML directives | web components | hyperscript factories | **plain functions returning JSX** |
 | Templating | JSX → virtual DOM | HTML attributes | tagged-template literals | hyperscript / DOM nodes | **JSX → HTML strings → morph** |

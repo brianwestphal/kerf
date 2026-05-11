@@ -56,7 +56,20 @@ class ArraySignal<T> {
 
 All mutators throw a descriptive `Error` on out-of-bounds indices. Reads on `arraySig.value` register a tracking dependency just like `signal.value` — `computed(() => arraySig.value.filter(...))` and `effect(() => render(arraySig.value))` work the same way.
 
-The `ArraySignal<T>` class is detected via `Symbol.for('kerfjs.ArraySignal')`, not `instanceof`, so multiple bundle copies still interoperate.
+The `ArraySignal<T>` class is detected via `Symbol.for('kerfjs.ArraySignal')`, not `instanceof`, so multiple bundle copies still interoperate. The brand symbol itself is also exported as **`ARRAY_SIGNAL_BRAND`** from `kerfjs/array-signal` for consumers who build their own collection types and want `each(...)` to recognize them via brand check.
+
+The mutator events are surfaced as the **`ArrayPatch<T>`** type — a tagged-union covering `update` / `insert` / `remove` / `move` / `replace`:
+
+```ts
+type ArrayPatch<T> =
+  | { type: 'update'; index: number; item: T }
+  | { type: 'insert'; index: number; item: T }
+  | { type: 'remove'; index: number }
+  | { type: 'move'; from: number; to: number }
+  | { type: 'replace'; items: readonly T[] };
+```
+
+Most consumers never touch `ArrayPatch` directly — `each(...)` consumes the queue internally. Export the type when you want to observe patches from outside `each()` (e.g. logging, persistence layers, custom reconcilers).
 
 ## 8.2 Stores
 
@@ -95,11 +108,15 @@ import { clearStoreRegistry } from 'kerfjs/testing';
 
 ## 8.3 Render
 
-### `mount(rootEl: HTMLElement, render: () => SafeHtml | string): () => void`
+### `mount(rootEl: HTMLElement, render: () => MountResult): () => void`
+
+```ts
+type MountResult = SafeHtml | string | number | boolean | null | undefined;
+```
 
 Bind `render()` to `rootEl`'s children. Wraps `effect()` with kerf's segment-aware diff. Returns a disposer.
 
-Although the static signature requires `SafeHtml | string`, the runtime additionally accepts `null`, `undefined`, `false`, and `true` — they coerce to "render nothing" (empty string), matching the React / Solid convention so `() => cond ? <jsx/> : null` and `() => cond && <jsx/>` patterns work without each consumer adding a sentinel. Numbers stringify; non-string non-`SafeHtml` values fall through `String(...)`.
+`MountResult` was widened in KF-119 so consumers can write `() => cond ? <jsx/> : null` and `() => cond && <jsx/>` without a sentinel — matching the React / Solid convention. `null` / `undefined` / `false` / `true` coerce to "render nothing" (empty string); numbers stringify; everything else falls through `String(...)`. See `docs/4-render.md` §4.4 for the rationale and the equivalent fallback patterns. The `MountResult` type alias is exported from the main barrel for consumers that want to annotate their render functions explicitly.
 
 The diff:
 

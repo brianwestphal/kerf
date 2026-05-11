@@ -127,7 +127,7 @@ async function syncAiPage() {
     'Drop this into your assistant when starting a kerf project:',
     '',
     '````',
-    'You are writing a UI in kerf (https://github.com/brianwestphal/kerf), a ~6.6 KB reactive framework: signals + DOM diff + JSX → HTML strings. No virtual DOM, no compiler.',
+    'You are writing a UI in kerf (https://github.com/brianwestphal/kerf), a ~6.5 KB reactive framework: signals + DOM diff + JSX → HTML strings. No virtual DOM, no compiler.',
     '',
     'Before writing any kerf code:',
     '1. Read https://raw.githubusercontent.com/brianwestphal/kerf/main/llms.txt for the doc index.',
