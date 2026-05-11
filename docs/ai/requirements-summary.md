@@ -23,7 +23,7 @@ Status markers:
 | §7 | SVG (`toElement` SVG-aware) | Shipped |
 | §8 | API reference | Shipped |
 | §9 | Live demo (GitHub Pages deploy of `examples/reactivity-demo`) | Shipped |
-| §10 | Migrating hub (`/kerf/migrating/` — coming-from-React/Alpine/Lit/vanjs pages) | Partial (skeleton shipped; per-framework content tracked under KF-156/157/158/159) |
+| §10 | Migrating hub (`/kerf/migrating/` — coming-from-React/Alpine/Lit/vanjs pages) | Shipped |
 
 Everything in the v0.1–v0.3 design is shipped (each / native diff / list reconciler / `isSafeHtml` / `Fragment` barrel re-export all landed in 0.2–0.3). No partial / design-only / deferred entries yet — those will accumulate as the project evolves.
 
@@ -82,7 +82,7 @@ A single GitHub Pages artifact bundles two independent builds: the Astro + Starl
 
 ### §10 Migrating hub
 
-Pillar page set at `/kerf/migrating/` that translates a single classic-todo-list reference app from React, Alpine, Lit, and vanjs into kerf, side by side. Five pages total: an index with the cross-framework comparison matrix + perf snapshot, plus one page per source framework. Four separate pages (not tabs, not one long page) so each "coming from X" headline matches the real search query and gets its own indexable URL. Each per-framework page has the same five-section shape: bundle delta, mental-model translations table, side-by-side code, gotchas, perf numbers. Linked from the sidebar nav (a `Migrating` section) and from the homepage hero (a `Coming from React?` CTA that links to the index, not framework-detected). KF-132 ships the skeleton; per-framework page content lands under KF-156/157/158/159 follow-ups so each translation reviews independently.
+Pillar page set at `/kerf/migrating/` that translates a single classic-todo-list reference app from React, Alpine, Lit, and vanjs into kerf, side by side. Five pages total: an index with the cross-framework comparison matrix + perf snapshot, plus one page per source framework. Four separate pages (not tabs, not one long page) so each "coming from X" headline matches the real search query and gets its own indexable URL. Each per-framework page has the same five-section shape: bundle delta, mental-model translations table, side-by-side code, gotchas, perf numbers. Linked from the sidebar nav (a `Migrating` section) and from the homepage hero (a `Coming from React?` CTA that links to the index, not framework-detected). KF-132 shipped the skeleton; KF-156/157/158/159 filled in the per-framework page content (React / Alpine / Lit / vanjs respectively).
 
 ## Update triggers
 
