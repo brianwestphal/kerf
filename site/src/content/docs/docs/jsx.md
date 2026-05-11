@@ -63,6 +63,29 @@ Anything not in the alias table is passed through verbatim. So `data-action`, `a
 
 This matches HTML semantics — a boolean attribute is "on" by being present, regardless of its value.
 
+### 6.4.1 Dangerous URL filter
+
+Plain-string values written to URL-bearing attributes are screened against a small allow-list. If a value starts with `javascript:`, `vbscript:`, or `data:text/html` (case-insensitive, leading whitespace tolerated), kerf **drops the attribute entirely** and `console.warn`s. The screen runs only on these attribute names: `href`, `src`, `xlink:href`, `formaction`, `action`.
+
+```tsx
+<a href={userInput}>click</a>
+// userInput === 'javascript:alert(1)'  →  rendered as <a>click</a>, warning logged
+// userInput === 'https://example.com'  →  rendered as <a href="https://example.com">click</a>
+```
+
+The screen exists so a stored-XSS payload reaching a `href={...}` interpolation cannot turn into a clickable script vector. It is **not** a general sanitiser — `javascript:`/`vbscript:` URLs at non-URL attributes (`data-action`, custom attributes, etc.) pass through unchanged because they aren't an attack surface there.
+
+`SafeHtml` (i.e. `raw()`) values bypass the screen — that's the documented escape hatch:
+
+```tsx
+import { raw } from 'kerfjs';
+
+// Bookmarklet builder, sanitised-upstream input, etc.
+<a href={raw('javascript:doStuff()')}>bookmarklet</a>
+```
+
+If you find yourself reaching for `raw()` on URLs that came from users, route them through a real sanitiser (DOMPurify, Linkify, etc.) first; `raw()` is "I take responsibility for this string", not "skip the safety net."
+
 ## 6.5 Children
 
 ```tsx
@@ -168,3 +191,87 @@ The `mount()` that hosts `<Counter />` will re-render when `count` changes, whic
 ## 6.9 Server-side use
 
 `SafeHtml.toString()` works in any JS environment — Node, Deno, Bun, edge runtimes. There's no DOM dependency. Build your page server-side, write the string into the response, then call `mount()` on the same root in the browser to wire up reactivity.
+
+## 6.10 Typed JSX intrinsic elements
+
+The JSX transform looks at `JSX.IntrinsicElements` in `kerfjs/jsx-runtime` to type-check tags and attributes. The table covers the ~30 most common HTML elements and the SVG primitives that `toElement()` supports. Misspelled tags (`<diiv>`) and misspelled attribute names (`<input typo />`) fail to compile.
+
+### Adding custom elements / web components
+
+The framework uses **module augmentation**, not a global namespace. Open the `kerfjs/jsx-runtime` JSX namespace and add your tag:
+
+```ts
+import type { KerfCustomElement } from 'kerfjs/jsx-runtime';
+
+declare module 'kerfjs/jsx-runtime' {
+  namespace JSX {
+    interface IntrinsicElements {
+      'my-element': KerfCustomElement & {
+        foo?: string;
+        bar?: number;
+      };
+    }
+  }
+}
+
+// Now `<my-element foo="hi" bar={3} />` typechecks.
+```
+
+`KerfCustomElement` is a permissive base that extends `KerfBaseAttrs` and admits any extra attribute. Tighten it for your project by listing the attributes explicitly. The building-block types are all re-exported from `kerfjs/jsx-runtime`:
+
+| Type | Purpose |
+| --- | --- |
+| `KerfBaseAttrs` | Common attributes valid on every HTML element (`id`, `className`, `style`, `data-*`, `aria-*`, …) |
+| `KerfCustomElement` | `KerfBaseAttrs` plus an open index signature — for unknown / loose web components |
+| `AttrLike<T>` | An attribute value typed as `T` plus the runtime fall-throughs (`SafeHtml`, `null`, `undefined`) |
+| `AttrValue` | The most permissive single value: `string \| number \| boolean \| null \| undefined \| SafeHtml` |
+| `DataAriaAttrs` | `data-*` and `aria-*` index signatures, applied via `KerfBaseAttrs` |
+
+### Worked example: a Lit-style custom element
+
+Suppose your app uses a third-party `<x-toast>` web component from `@example/toast` that exposes `variant`, `dismissible`, and `duration` attributes. Wire it into the kerf type system once, then use it from JSX everywhere with full attribute checking:
+
+```ts
+// types/x-toast.d.ts (or anywhere the TypeScript project sees)
+import type { AttrLike, KerfCustomElement } from 'kerfjs/jsx-runtime';
+
+declare module 'kerfjs/jsx-runtime' {
+  namespace JSX {
+    interface IntrinsicElements {
+      'x-toast': KerfCustomElement & {
+        variant?: AttrLike<'info' | 'success' | 'warning' | 'error'>;
+        dismissible?: AttrLike<boolean>;
+        duration?: AttrLike<number>;
+      };
+    }
+  }
+}
+```
+
+Then in any JSX file:
+
+```tsx
+import { mount, signal } from 'kerfjs';
+
+const visible = signal(true);
+
+mount(rootEl, () => visible.value ? (
+  <x-toast variant="success" duration={3000} dismissible>
+    Saved.
+  </x-toast>
+) : null);
+
+// Type errors fire on misuse:
+// <x-toast variant="rainbow" />     // error: not assignable to 'info' | 'success' | …
+// <x-toast typo="value" />          // also catches typos? — only if you remove `KerfCustomElement`
+//                                   //   and switch to `KerfBaseAttrs` + explicit attrs.
+```
+
+`KerfCustomElement` is the **permissive** base — it accepts any extra attribute beyond what you enumerate. Tighten it to `KerfBaseAttrs & { …explicit attrs }` if you want typos on this tag to error out the same way `<inptu>` does.
+
+For Stencil / Lit / Solid-js custom-element libraries, repeat the pattern once per tag the app uses (or pull the type definitions from the library's published types if it ships them). The augmentation is project-side, so you can extend it incrementally as new tags appear.
+
+### What does NOT work
+
+- `declare global { namespace JSX { ... } }` — kerf's JSX namespace is module-scoped, not global. With `jsxImportSource: "kerfjs"`, TypeScript looks up `JSX` inside `kerfjs/jsx-runtime`, not the global scope. The merge above is the only working form.
+- Importing from `kerfjs/jsx-types` — that's an internal module and is intentionally not in `package.json#exports`.

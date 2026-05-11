@@ -1,0 +1,161 @@
+---
+// Perf-comparison snapshot from bench/results.md (post-KF-116, 2026-05-10).
+// Source: krausest/js-framework-benchmark, medians across 3 iterations,
+// Chrome (headless via webdriver-ts/puppeteer). Lower is better.
+//
+// When refreshing: copy the corresponding row from the latest
+// bench/results.md "CPU benchmarks (ms)" table. Keep the scenario set
+// and framework set small — the homepage table is a teaser, not the
+// full report.
+
+interface Row {
+  framework: string;
+  version: string;
+  values: (number | null)[];
+  highlight?: boolean;
+}
+
+const scenarios = [
+  'swap rows',
+  'remove row',
+  'clear 1k',
+  'partial update',
+  'select row',
+] as const;
+
+const rows: Row[] = [
+  { framework: 'kerf',  version: '0.4.2', values: [22.3, 17.0, 18.6, 44.6, 27.6], highlight: true },
+  { framework: 'Solid', version: '1.9.3', values: [21.9, 16.6, 20.3, 19.1,  6.5] },
+  { framework: 'Vue',   version: '3.6.0', values: [23.6, 20.0, 19.0, 22.5,  6.8] },
+  { framework: 'React', version: '19.2',  values: [157.3, 18.0, 26.7, 24.1, 8.0] },
+];
+
+const best = scenarios.map((_, col) => {
+  const nums = rows.map(r => r.values[col]).filter((n): n is number => n !== null);
+  return Math.min(...nums);
+});
+
+const captured = '2026-05-10';
+---
+
+<figure class="perf-table" role="group" aria-labelledby="perf-table-caption">
+  <table>
+    <caption id="perf-table-caption">
+      Keyed list operations — median ms, lower is better
+      <span class="perf-meta">(krausest js-framework-benchmark · {captured})</span>
+    </caption>
+    <thead>
+      <tr>
+        <th scope="col">Framework</th>
+        {scenarios.map(s => <th scope="col">{s}</th>)}
+      </tr>
+    </thead>
+    <tbody>
+      {rows.map(row => (
+        <tr class:list={['perf-row', { highlight: row.highlight }]}>
+          <th scope="row">
+            <span class="perf-fw">{row.framework}</span>
+            <span class="perf-ver">{row.version}</span>
+          </th>
+          {row.values.map((v, col) => (
+            <td class:list={{ 'is-best': v !== null && v === best[col] }}>
+              {v === null ? '—' : v.toFixed(1)}
+            </td>
+          ))}
+        </tr>
+      ))}
+    </tbody>
+  </table>
+  <p class="perf-foot">
+    Bold = fastest in column. Full table + every scenario:
+    <a href="https://github.com/brianwestphal/kerf/blob/main/bench/results.md">bench/results.md</a>.
+  </p>
+</figure>
+
+<style>
+  .perf-table {
+    margin: 1.5rem 0 2rem;
+    overflow-x: auto;
+  }
+
+  .perf-table table {
+    width: 100%;
+    border-collapse: collapse;
+    font-variant-numeric: tabular-nums;
+    font-size: 0.95rem;
+  }
+
+  .perf-table caption {
+    caption-side: top;
+    text-align: left;
+    padding: 0 0 0.6rem;
+    font-weight: 600;
+    color: var(--sl-color-white);
+  }
+
+  .perf-table .perf-meta {
+    display: block;
+    font-weight: 400;
+    font-size: 0.85em;
+    color: var(--sl-color-gray-3);
+    margin-top: 0.15rem;
+  }
+
+  .perf-table thead th {
+    text-align: right;
+    padding: 0.5rem 0.75rem;
+    border-bottom: 2px solid var(--sl-color-gray-5);
+    font-weight: 600;
+    color: var(--sl-color-gray-2);
+    white-space: nowrap;
+  }
+
+  .perf-table thead th:first-child {
+    text-align: left;
+  }
+
+  .perf-table tbody th {
+    text-align: left;
+    padding: 0.55rem 0.75rem;
+    font-weight: 500;
+    border-bottom: 1px solid var(--sl-color-gray-6);
+    white-space: nowrap;
+  }
+
+  .perf-table tbody td {
+    text-align: right;
+    padding: 0.55rem 0.75rem;
+    border-bottom: 1px solid var(--sl-color-gray-6);
+  }
+
+  .perf-table .perf-fw {
+    font-weight: 600;
+  }
+
+  .perf-table .perf-ver {
+    margin-left: 0.4rem;
+    font-size: 0.85em;
+    color: var(--sl-color-gray-3);
+    font-weight: 400;
+  }
+
+  .perf-table tr.highlight th,
+  .perf-table tr.highlight td {
+    background: color-mix(in srgb, var(--sl-color-accent) 12%, transparent);
+    border-bottom-color: color-mix(in srgb, var(--sl-color-accent) 35%, transparent);
+  }
+
+  .perf-table tr.highlight .perf-fw {
+    color: var(--sl-color-accent-high);
+  }
+
+  .perf-table td.is-best {
+    font-weight: 700;
+  }
+
+  .perf-table .perf-foot {
+    margin: 0.6rem 0 0;
+    font-size: 0.85rem;
+    color: var(--sl-color-gray-3);
+  }
+</style>

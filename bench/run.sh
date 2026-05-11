@@ -36,10 +36,13 @@ DEFAULT_FRAMEWORKS=(
 )
 
 # Split args into "framework selectors" (no leading dash) and "passthrough flags".
+# `--force` is consumed by us (skip preflight) and NOT forwarded to webdriver-ts.
 FRAMEWORKS=()
 PASSTHROUGH=()
 for arg in "$@"; do
-  if [[ "${arg}" == --* || "${arg}" == -* ]]; then
+  if [[ "${arg}" == "--force" ]]; then
+    export KERF_BENCH_FORCE=1
+  elif [[ "${arg}" == --* || "${arg}" == -* ]]; then
     PASSTHROUGH+=("${arg}")
   else
     FRAMEWORKS+=("${arg}")
@@ -48,6 +51,14 @@ done
 
 if [[ ${#FRAMEWORKS[@]} -eq 0 ]]; then
   FRAMEWORKS=("${DEFAULT_FRAMEWORKS[@]}")
+fi
+
+# KF-139: refuse to run when the host is busy — published bench numbers are
+# only useful when the system is quiet. Override with --force or KERF_BENCH_FORCE=1.
+# shellcheck source=bench/preflight.sh
+source "${REPO_ROOT}/bench/preflight.sh"
+if ! preflight; then
+  exit 1
 fi
 
 echo "==> Starting upstream HTTP server in the background"

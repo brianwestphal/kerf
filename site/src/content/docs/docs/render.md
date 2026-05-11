@@ -22,7 +22,7 @@ const dispose = mount(document.getElementById('app')!, () => (
 ## 4.1 What `mount` does
 
 1. Wraps `effect()` so the render fn re-runs whenever any signal it reads changes.
-2. Evaluates `render()` to a `SafeHtml`. The wrapped `Segment` is either a single static-html node (most renders), or a tree containing `list` segments (anywhere `each(...)` was used) and `mixed` segments wrapping their parents.
+2. Evaluates `render()` to a `SafeHtml`. The wrapped `Segment` is either a single static-html node (most renders), or a tree containing `list` segments (anywhere `each(...)` was used) and `mixed` segments wrapping their parents. As a small ergonomic affordance, a render that returns `null`, `undefined`, `false`, or `true` is coerced to "render nothing" (empty string) — so `mount(el, () => cond ? <jsx/> : null)` and `mount(el, () => cond && <jsx/>)` work without each consumer adding a sentinel. Numbers stringify; real strings pass through.
 3. **First render:** sets `rootEl.innerHTML` to the flattened HTML (with sentinel comments around each list), then walks those comments to bind every list to its live parent. Bulk parse, single pass.
 4. **Subsequent renders:** builds a marker-only template (lists become `<!--kf-list:N-->` placeholders, *no row HTML*), runs kerf's native diff (`src/diff.ts`) over the static surrounds, then dispatches each list segment to a keyed reconciler that operates directly on the live parent's children. Cache-hit rows are reused verbatim; replaced/new rows are batched into one parse and `insertBefore`'d into place. A longest-increasing-subsequence pass keeps reorder mutations to the minimum.
 5. Returns a disposer that tears down the effect.
@@ -56,6 +56,35 @@ import { each } from 'kerfjs';
   {each(rows.value, (r) => <li data-key={r.id}>{r.label}</li>)}
 </ul>
 ```
+
+### Granular reconcile via `arraySignal`
+
+Pass an `arraySignal` to `each()` and `mount()` runs an even faster path: instead of iterating the whole snapshot to classify changed/unchanged rows, the reconciler consumes the patch queue the `arraySignal` emitted (one `update`/`insert`/`remove`/`move` per mutation) and applies only those to the live DOM. Cost is O(patches), not O(N).
+
+```tsx
+import { each, mount } from 'kerfjs';
+import { arraySignal } from 'kerfjs/array-signal';
+
+const rows = arraySignal<{ id: number; label: string }>([]);
+
+mount(rootEl, () => (
+  <ul>{each(rows, (r) => <li data-key={r.id}>{r.label}</li>)}</ul>
+));
+
+rows.push({ id: 1, label: 'a' });           // 1 insert patch
+rows.update(0, (r) => ({ ...r, label: 'A' })); // 1 update patch
+```
+
+When patches are emitted contiguously (e.g. an append-1k loop, or a partial-update batch), the reconciler bulk-parses them in a single `template.innerHTML` call and applies one `insertBefore` per fragment.
+
+A few invariants the granular path holds:
+
+- **First render takes the snapshot path** even when patches were queued before mount — there's no binding yet to apply patches against, so the whole list is rendered fresh.
+- **`replace()` always falls back to snapshot** — wholesale resets are easier to reconcile that way and preserve focus better.
+- **A throwing render falls back to snapshot** — pre-rendering happens at JSX-eval time inside a try/catch (KF-99), so a single bad row doesn't desync the binding from the signal.
+- **Drift triggers a rebuild** — if a previous render threw mid-batch, the next render notices that `binding.length + patch_delta !== signal.length` and rebuilds via the snapshot path.
+
+See §2.6 for the full `arraySignal` API.
 
 ## 4.3 `data-morph-skip`
 
@@ -107,6 +136,79 @@ For anything else with focus (a `<button>`, `<a>`, `<div tabindex>`), the diff p
 When the keyed list reconciler moves a row whose descendant is the focused element, the row's DOM node is reused — the focused element stays connected to the document. Some engines (older Safari, happy-dom) drop focus state on `insertBefore` even when the element survives, so the reconciler snapshots the active element + its selection range before the move pass and re-applies them afterwards. Engines that already preserve focus see a no-op; engines that don't get a transparent fix.
 
 Replaced rows (cache miss — the row's HTML changed) are a different story: the old node is removed before the new one is inserted, so focus that lived inside it is genuinely gone. That matches the behaviour of any framework that re-renders a row.
+
+## 4.4.1 User-agent-owned state attributes
+
+A handful of HTML elements have boolean attributes that the *user agent* sets in response to user interaction — `<details open>` and `<dialog open>` are the canonical pair. When a user expands a `<details>`, the browser adds `open=""` to the element. If kerf's morph treated that attribute like any other developer-authored attribute, the next re-render would see the live `open=""` against a template without it and remove it — collapsing the user's expansion.
+
+To keep uncontrolled `<details>` and `<dialog>` working naturally, the morph **never removes `open` from these elements**. The attribute is treated as user-agent-owned: the diff doesn't know whether the developer or the browser put it there, so the safe default is to leave it alone.
+
+### Trade-off
+
+Controlled-style usage where a signal flips `open` from `true` → `false` does NOT auto-collapse the element:
+
+```tsx
+// Open the panel from JSX — works.
+<details open={isOpen.value}>...</details>
+//   isOpen.value === true  → open attribute set on the live element.
+//   isOpen.value === false → open attribute is NOT removed (it survives like a user-set one).
+```
+
+If you need controlled behaviour, drive `open` imperatively from a signal subscription:
+
+```tsx
+import { effect } from 'kerfjs';
+
+mount(rootEl, () => <details id="panel">...</details>);
+effect(() => {
+  const det = document.getElementById('panel') as HTMLDetailsElement;
+  if (det) det.open = isOpen.value;
+});
+```
+
+Or design around the element's native semantics: render `<details>` once, listen for the `toggle` event, and push the open state into a signal — that way the user's interaction and your state stay in sync without the framework arbitrating.
+
+## 4.4.2 Imperative DOM mutations and the no-op-render fast path (KF-117)
+
+`mount()` re-runs your render function whenever a signal it read changes. On each re-run kerf compares the new "static surrounds" HTML (everything outside `each()` lists) against the previous render's. **If they're byte-for-byte identical, the diff is skipped entirely** — the cost-saving optimisation that lets a list signal flip a class without paying for a parent walk.
+
+The implication for imperative DOM mutations: any attribute, text node, or child you set on a kerf-managed element via `el.setAttribute(...)`, `el.appendChild(...)`, or similar **survives across no-op re-renders**. The framework's "smallest cut" model says: if JSX didn't ask for the change, don't touch what's there.
+
+```tsx
+const tick = signal(0);
+mount(rootEl, () => {
+  void tick.value;                           // re-renders on every tick
+  return <div className="card">hello</div>;  // …producing the same HTML
+});
+
+const div = rootEl.querySelector('div')!;
+div.setAttribute('data-instrumented', 'true');  // imperative mutation
+
+tick.value = 1;
+// div.getAttribute('data-instrumented') === 'true'
+// — no diff ran, the attribute survived.
+```
+
+The complementary half: **when the surrounds DO change**, the diff runs and `morphAttributes` removes anything the JSX didn't authorise:
+
+```tsx
+const label = signal('first');
+mount(rootEl, () => <div className="card">{label.value}</div>);
+const div = rootEl.querySelector('div')!;
+div.setAttribute('data-instrumented', 'true');
+
+label.value = 'second';   // surrounds changed → diff runs → attribute wiped.
+```
+
+### Practical guidance
+
+- For library-owned subtrees (charts, terminals, editors), use `data-morph-skip` to opt out of diffing entirely. The fast path's behaviour above is brittle as a long-term plan because *any* change to the JSX surrounds will wipe your imperative mutations on the next render.
+- For attribute reflection (e.g. an MutationObserver-driven highlight), prefer driving the attribute through a signal so the JSX is the source of truth. The fast path then becomes irrelevant.
+- For one-off attribute pokes (analytics IDs, ARIA mirrors), the fast path means the poke usually sticks — but you should expect it to disappear the moment the surrounding render changes shape. Design for that.
+
+### Why kept this way
+
+The alternative — running the diff on every render even when nothing changed — costs ~8 ms per update on partial-update / select-row / swap-rows in the krausest harness (the scenarios where the list changes but surrounds don't). The "smallest cut" promise is the framework's headline. KF-117 surfaced this trade-off; we kept the fast path and documented it here.
 
 ## 4.5 Multiple `mount()` calls
 

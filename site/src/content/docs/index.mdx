@@ -27,6 +27,7 @@ hero:
 ---
 
 import { Card, CardGrid, Code } from '@astrojs/starlight/components';
+import PerfTable from '../../components/PerfTable.astro';
 
 ## Where to go next
 
@@ -59,6 +60,12 @@ mount(document.getElementById('app')!, () => (
 ));`} />
 
 That's it. Your JSX renders to HTML strings, kerf's native diff applies the minimum DOM mutations to make the live tree match, and signals re-run the render only when something they read actually changed.
+
+## How fast
+
+<PerfTable />
+
+Kerf sits in the keyed-framework cluster with Solid and Vue on the operations that exercise its smallest-cut path. Solid wins the compiler-driven `select row` / `partial update` benchmarks; kerf's general-purpose reconciler trades that gap for a 6.6 KB runtime, no compiler, and no per-component machinery.
 
 ## Why Kerf
 

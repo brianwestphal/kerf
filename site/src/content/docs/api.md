@@ -36,6 +36,32 @@ interface Signal<T> { value: T }
 interface ReadonlySignal<T> { readonly value: T }
 ```
 
+### `arraySignal<T>(initial?: readonly T[]): ArraySignal<T>` — `kerfjs/array-signal` subpath
+
+```ts
+import { arraySignal } from 'kerfjs/array-signal';
+
+const rows = arraySignal<{ id: number; label: string }>([]);
+```
+
+Granular collection signal. Lives in its own subpath — `import { arraySignal } from 'kerfjs/array-signal'` — so apps that don't use it shed ~1 KB from the main barrel. Pair with `each(...)` inside a `mount()` for O(patches)-not-O(N) reconciles. See `docs/2-reactivity.md` §2.6 for the rationale and gotchas, and `docs/4-render.md` §4.2 (granular reconcile) for how the binding works.
+
+```ts
+class ArraySignal<T> {
+  readonly value: readonly T[];                            // tracking read
+  update(index: number, fn: (item: T) => T): void;        // → 1 update patch
+  insert(index: number, item: T): void;                   // → 1 insert patch
+  push(item: T): void;                                    // sugar for insert(length, item)
+  remove(index: number): T;                               // → 1 remove patch (returns removed item)
+  move(from: number, to: number): void;                   // → 1 move patch (no-op if from === to)
+  replace(items: readonly T[]): void;                     // → 1 replace patch (forces snapshot reconcile)
+}
+```
+
+All mutators throw a descriptive `Error` on out-of-bounds indices. Reads on `arraySig.value` register a tracking dependency just like `signal.value` — `computed(() => arraySig.value.filter(...))` and `effect(() => render(arraySig.value))` work the same way.
+
+The `ArraySignal<T>` class is detected via `Symbol.for('kerfjs.ArraySignal')`, not `instanceof`, so multiple bundle copies still interoperate.
+
 ## 8.2 Stores
 
 ### `defineStore<TState, TActions>(spec): Store<TState, TActions>`
@@ -77,6 +103,8 @@ import { clearStoreRegistry } from 'kerfjs/testing';
 
 Bind `render()` to `rootEl`'s children. Wraps `effect()` with kerf's segment-aware diff. Returns a disposer.
 
+Although the static signature requires `SafeHtml | string`, the runtime additionally accepts `null`, `undefined`, `false`, and `true` — they coerce to "render nothing" (empty string), matching the React / Solid convention so `() => cond ? <jsx/> : null` and `() => cond && <jsx/>` patterns work without each consumer adding a sentinel. Numbers stringify; non-string non-`SafeHtml` values fall through `String(...)`.
+
 The diff:
 
 - Only ever touches `rootEl`'s subtree; `rootEl` itself is preserved.
@@ -107,13 +135,16 @@ If a descendant of a moved row holds focus, the reconciler snapshots the active 
 
 ```ts
 delegate(rootEl, 'click', '[data-action="add"]', (event, matched) => { ... });
+delegate(rootEl, 'focus', '.field-row',          (event, row)     => { ... });
 ```
 
-Bubble-phase delegation. Walks up from `event.target` via `closest(selector)`; if the match is inside `rootEl`, fires `handler(event, matched)`. Returns a disposer.
+One root listener with `closest(selector)`-style walk-up matching; fires `handler(event, matched)` if the match is inside `rootEl`. Returns a disposer.
+
+Auto-promotes the well-known non-bubbling event types (`focus`, `blur`, `scroll`, `load`, `error`, `mouseenter`, `mouseleave`) to capture phase under the hood, so the call site looks identical regardless of whether the event bubbles. Selector matching stays `closest()`-style for every event type — wrapper selectors still match when the event lands on a descendant.
 
 ### `delegateCapture(rootEl, type, selector, handler): () => void`
 
-Same shape, but installs the listener with `capture: true`. Use for non-bubbling events (`focus`, `blur`, `scroll`, `load`, `error`). Match is via `target.matches(selector)` (no walk-up).
+Same shape, but installs on the capture phase and matches via `target.matches(selector)` (direct match, no walk-up). The escape hatch — use it for custom non-bubbling events that aren't in `delegate()`'s auto-promotion list, or when you want capture-phase semantics with strict element-match behaviour.
 
 ## 8.5 JSX runtime
 
@@ -154,6 +185,28 @@ Wrap a pre-escaped HTML string. Useful for icons, rendered Markdown, server-incl
 
 JSX `<>...</>` — concatenates children without a wrapper tag. Available from both `kerfjs/jsx-runtime` (used by the JSX transform) and the main `kerfjs` barrel (when you need to compose `Fragment` manually, e.g. `jsx(Fragment, { children })`).
 
+### Custom-element typing via declaration merging
+
+Per-tag intrinsic-element interfaces live in `src/jsx-types.ts` and are aliased into the JSX namespace by `src/jsx-runtime.ts`. To add tags for custom elements / web components, declaration-merge into the `kerfjs/jsx-runtime` JSX namespace:
+
+```ts
+import type { KerfCustomElement } from 'kerfjs/jsx-runtime';
+
+declare module 'kerfjs/jsx-runtime' {
+  namespace JSX {
+    interface IntrinsicElements {
+      'my-element': KerfCustomElement & { foo?: string };
+    }
+  }
+}
+```
+
+`IntrinsicElements` is exported as an `interface` (not a `type` alias) precisely to make this pattern work — type aliases can't be merged. `KerfCustomElement`, `KerfBaseAttrs`, `AttrLike`, `AttrValue`, and `DataAriaAttrs` are all re-exported from `kerfjs/jsx-runtime` so apps can compose attribute types without reaching into the internal `kerfjs/jsx-types` path.
+
+### Dangerous URL filter
+
+Plain-string values passed to `href`, `src`, `xlink:href`, `formaction`, or `action` are screened against `/^\s*(?:(?:java|vb)script:|data:text\/html[;,])/i`. Matching values cause the attribute to be **dropped entirely** and a `console.warn` to be emitted. The screen is bypassed for `SafeHtml` (i.e. `raw(...)`) values — that's the documented opt-out for legitimate cases (bookmarklet builders, sanitised-upstream URLs). Non-URL attributes are not screened. See `docs/6-jsx-runtime.md` §6.4.1 for the full rationale and examples.
+
 ## 8.6 Direct JSX → DOM
 
 ### `toElement(jsx: SafeHtml | string): Element`
@@ -176,3 +229,8 @@ Throws if the input produces zero elements OR if `DOMParser` returns a `parserer
 | `<textarea>` | Same as text-entry inputs. |
 | `[contenteditable]` | Entire subtree skipped on this morph (same mechanism as `data-morph-skip`). User's edit + caret + multi-range selection preserved verbatim; attribute updates deferred until the next render after blur. See `docs/4-render.md` §4.4. |
 | Anything else (`<button>`, `<a>`, `<div tabindex>`, non-text inputs…) | Morph proceeds normally — no special handling. |
+
+| User-agent-owned attribute | Effect |
+| --- | --- |
+| `<details>` `open` | The morph never removes `open` from a live `<details>` — the user agent toggles it on summary click and the diff treats it as user-owned. Trade-off: controlled-style `<details open={false}>` won't auto-collapse a previously-opened details element; drive `.open` imperatively if you need controlled behaviour. See `docs/4-render.md` §4.4.1. |
+| `<dialog>` `open` | Same as `<details>`. The browser sets `open=""` when `.show()` / `.showModal()` is called; the morph leaves it alone. |

@@ -20,6 +20,7 @@ bench/
     tsconfig.json
     index.html
   setup.sh             builds local kerfjs, clones upstream, builds frameworks
+  preflight.sh         system-busy pre-check (KF-139) — sourced by run.sh
   run.sh               runs the benchmark against kerfjs + reference frameworks
   results.sh           builds the aggregated table and serves the viewer
   .bench-cache/        gitignored — upstream clone + build outputs
@@ -60,7 +61,28 @@ bench/run.sh --count 5                    # run 5 iterations instead of the defa
 ```
 
 Anything starting with `-` is forwarded to webdriver-ts; anything else is
-treated as a framework selector.
+treated as a framework selector. `--force` is consumed locally (skip the
+pre-flight system check) and is NOT forwarded.
+
+### Pre-flight check (KF-139)
+
+`bench/run.sh` calls `bench/preflight.sh` before kicking off any timing.
+If the host is busy — CPU loaded, on battery, in Low Power Mode, thermal-
+throttled, or has another process pegged above 25 % CPU — the run aborts
+with a one-line cause + remediation for each failed check. This is what
+keeps the numbers in `bench/results.md` clean instead of noisy.
+
+```bash
+bench/preflight.sh                       # run the checks standalone
+bench/run.sh --force                     # skip checks (intentional noisy run)
+KERF_BENCH_FORCE=1 bench/run.sh ...      # same, via env (useful for CI)
+BENCH_LOAD_MAX=4.0 bench/run.sh ...      # raise the load-avg ceiling
+BENCH_OTHER_CPU_MAX=50 bench/run.sh ...  # raise the per-process CPU ceiling
+```
+
+Linux is supported for CI (`uptime` for load, `/sys/class/power_supply` for
+AC); the macOS-only checks (Low Power Mode, thermal, pageouts) are skipped
+on other platforms.
 
 ## Viewing results
 

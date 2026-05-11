@@ -95,7 +95,44 @@ function display(s: ReadonlySignal<number>) {
 
 `computed()` returns `ReadonlySignal<T>`. `signal()` returns `Signal<T>`. Stores expose `state: ReadonlySignal<TState>` so consumers can't bypass the action layer.
 
-## 2.6 What signals are NOT
+## 2.6 `arraySignal(initial)` (granular collection signal)
+
+```ts
+import { arraySignal } from 'kerfjs/array-signal';
+
+const rows = arraySignal<{ id: number; label: string }>([]);
+
+rows.push({ id: 1, label: 'a' });
+rows.update(0, (r) => ({ ...r, label: 'A' }));
+rows.insert(1, { id: 2, label: 'b' });
+rows.move(0, 1);
+rows.remove(0);
+rows.replace([{ id: 99, label: 'reset' }]);
+
+rows.value;       // → readonly snapshot, registers a tracking dependency
+```
+
+`arraySignal` is a keyed-list-friendly variant of `signal()`. The mutators emit typed patch events (`update` / `insert` / `remove` / `move` / `replace`); when an `arraySignal` is bound to `each(...)` inside a `mount()`, the keyed list reconciler applies just the patches against the live DOM — no per-row iteration, no `classifyItems` Map build, no LIS pass over unchanged rows. Cost is **O(patches)**, not O(N).
+
+It lives in its own subpath (`kerfjs/array-signal`, KF-95) so apps that don't need granular collections shed ~1 KB from the main barrel. The class itself is detected via a brand symbol — not `instanceof` — so multiple bundle copies still interoperate.
+
+Read-side semantics match a regular signal: `arraySig.value` is a snapshot, and reads inside `effect()` / `computed()` register as dependencies. So `computed(() => arraySig.value.filter(...))` works the way you expect.
+
+### When to reach for `arraySignal`
+- Long keyed lists (hundreds of rows) where most updates are pointwise (selection class flips, single-row edits, append-to-end, etc.).
+- Lists where `signal(items.value = [...items.value, x])` is the bottleneck — that pattern triggers a full classify pass on every render.
+
+### When NOT to reach for it
+- Short lists (a handful of items). The constant-factor wins don't outweigh the API friction.
+- Lists where every render rebuilds from scratch (filter / sort pipelines that reset on every input change). Use `signal` + `computed` and let `each()`'s identity-based caching handle the rest.
+
+### Gotchas
+- `arraySignal` mutates `_items` eagerly at the call site. The patch queue and the snapshot are always in sync after a mutation returns.
+- Multiple `each(...)` callsites bound to the same `arraySignal` in one render: the first caller drains the patch queue and runs granular reconcile; the second (and beyond) sees an empty queue and falls through to the snapshot path. Both lists end up correct, but only one gets the perf win. Prefer one-binding-per-arraySignal-per-render.
+- A `replace()` patch in a batch forces the snapshot path for that render. Granular optimisations resume the next render.
+- A throwing row render falls back to the snapshot path automatically (KF-99). If the snapshot also throws on the same bad row, the error bubbles to the user — fix the row in the signal, and the next render rebuilds from scratch.
+
+## 2.7 What signals are NOT
 
 - They are not deep-reactive. Mutating an array or object inside `signal.value` does NOT trigger subscribers. Always assign a new value:
   ```ts
@@ -108,7 +145,7 @@ function display(s: ReadonlySignal<number>) {
 - They don't track property accesses on plain objects — just `.value` on signal/computed instances.
 - They are not async. There's no scheduling, no concurrent mode. Effects run synchronously when their dependencies write.
 
-## 2.7 When to use raw signals vs. stores
+## 2.8 When to use raw signals vs. stores
 
 - **One consumer reads it = signal.** Local UI state (this dialog's open/closed, this counter's value, this slider's position) belongs in a signal scoped to the component that owns it.
 - **Two+ consumers / multi-step mutations / cross-route lifetime = store.** See [§3 Stores](/kerf/docs/stores/).

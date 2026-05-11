@@ -68,6 +68,7 @@ kerf/
 ├── bench/
 │   ├── kerfjs-impl/              ← PR-ready entry for krausest/js-framework-benchmark
 │   ├── setup.sh                  ← clones the upstream harness into .bench-cache/
+│   ├── preflight.sh              ← KF-139 — system-busy pre-check (sourced by run.sh; `--force` / `KERF_BENCH_FORCE=1` to skip)
 │   ├── run.sh                    ← runs the benchmark against kerfjs + reference frameworks
 │   └── results.sh                ← aggregates results into the viewer (CHANGELOG perf numbers come from here)
 ├── site/                         ← Astro + Starlight marketing/docs site, deployed to /kerf/ on GitHub Pages
