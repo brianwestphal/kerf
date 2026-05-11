@@ -4,6 +4,14 @@ All notable changes to **kerf** are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.0] - 2026-05-11
+
+
+- Public `morph(liveRoot, template)` export for standalone DOM reconciliation
+- New `data-morph-preserve` attribute to opt elements out of morphing
+- New `data-morph-skip-children` attribute — morph host attrs but leave subtree intact
+- Drop-in AI-tool config files (`kerf.cursorrules`, `kerf.claude-skill.md`) for Cursor and Claude Code
+
 ## [Unreleased]
 
 
