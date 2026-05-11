@@ -87,7 +87,7 @@ describe('delegate() — auto-promotion to capture for known non-bubblers (KF-56
   });
 
   it('uses closest()-style matching, NOT direct matches() — selector matches a wrapper of the focused element', () => {
-    // Key behavioural guarantee: auto-promoted events still walk up from
+    // Key behavioral guarantee: auto-promoted events still walk up from
     // event.target via closest(). delegateCapture would only match the
     // exact focused element. The wrapper-selector case is the common
     // delegation pattern users expect from delegate().

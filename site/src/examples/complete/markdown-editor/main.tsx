@@ -16,7 +16,7 @@ Hit \`Cmd+B\` and watch nothing break. **Bold**, *italic*, ~~strike~~, \`code\`,
 
 const source = signal(SAMPLE);
 
-// computed → memoised. Re-renders only when source changes.
+// computed → memoized. Re-renders only when source changes.
 const html = computed(() => DOMPurify.sanitize(marked.parse(source.value, { async: false }) as string));
 
 const root = document.getElementById('app')!;

@@ -1,11 +1,16 @@
 /**
- * `diff(liveRoot, templateRoot, ownedItems)` — minimum-mutation DOM
- * reconciliation.
+ * `morph(liveRoot, template)` — minimum-mutation DOM reconciliation.
+ *
+ * Public primitive (KF-150): one-shot reconciliation against an
+ * already-populated element. `mount()` first paints by writing
+ * `innerHTML`; `morph()` is the "I have a live tree and a template,
+ * reconcile them in place" sibling. Use it for SSR hydration of static
+ * fragments, page-refresh diffs, third-party widget remounts, etc.
  *
  * Replaces our previous dependency on `morphdom`. The algorithm is the
  * classic two-tree walk: match children by key (id, then data-key, then
  * positional same-tag), morph matches in place, insert / remove / clone
- * the rest. Specialised for what kerf needs:
+ * the rest. Specialized for what kerf needs:
  *
  * - `childrenOnly` is always true; the live root is never replaced.
  * - Per-element short-circuits: `data-morph-skip` (library-owned, leave
@@ -13,23 +18,33 @@
  *   morph attrs on the element, leave its subtree verbatim — for
  *   client-hydrated slots whose loading/state classes still need to flow
  *   through), and `isEqualNode` (byte-identical, no work needed).
+ * - **`data-morph-preserve`** (KF-151) is honored in the trailing-removal
+ *   pass: an unmatched live element with this attribute is skipped instead
+ *   of removed. Lets imperatively-injected nodes (autoplay `<video>`s,
+ *   tour-widget tooltips, analytics pixels) survive across renders without
+ *   having to `data-morph-skip` the entire parent.
  * - **`ownedItems`** is the set of element nodes owned by an `each()`
- *   list reconciler. The diff skips them in every children walk —
+ *   list reconciler. The morph skips them in every children walk —
  *   they're not added to the keyed-lookup map, the from-cursor advances
  *   past them, and the trailing-removal pass leaves them in place. This
  *   lets each() coexist with non-list siblings inside the same parent
- *   (KF-102 round 2): the diff still walks the parent's children to
- *   reconcile siblings, but never disturbs list rows.
+ *   (KF-102 round 2): the morph still walks the parent's children to
+ *   reconcile siblings, but never disturbs list rows. The parameter is an
+ *   internal coordination channel between `mount()` and the reconciler;
+ *   public callers should omit it (the default empty set is correct for
+ *   any tree that isn't being managed by an active `mount()`).
  * - Focused text inputs (`<input>`/`<textarea>`) keep their value +
  *   selection across the morph; focused `[contenteditable]` keeps its
  *   entire subtree (typed content + caret + multi-range selection).
  *
  * Algorithm credit: based on the design of
  * https://github.com/patrick-steele-idem/morphdom by Patrick Steele-Idem
- * (MIT licensed). Reimplemented here so kerf can specialise the hot paths
+ * (MIT licensed). Reimplemented here so kerf can specialize the hot paths
  * (segment-aware list dispatch, lighter callback surface) and drop the
  * runtime dependency. Original copyright preserved in `LICENSE`.
  */
+
+import type { SafeHtml } from './jsx-runtime.js';
 
 const ID_KEY_PREFIX = 'id:';
 const DATA_KEY_PREFIX = 'data-key:';
@@ -47,22 +62,44 @@ function getNodeKey(node: Node): string | undefined {
   return undefined;
 }
 
+const EMPTY_OWNED: ReadonlySet<Element> = new Set();
+
 /**
- * Reconcile the children of `liveRoot` to match the children of
- * `templateRoot`. `ownedItems` is the set of element nodes owned by `each()`
- * list reconcilers — the diff skips them in every children walk.
+ * Reconcile the children of `liveRoot` to match `template`.
+ *
+ * `template` can be an `Element` (used directly), a `SafeHtml`, or a raw
+ * HTML string — the latter two are stringified and parsed into a transient
+ * element whose tag matches `liveRoot`. The active text-entry / focused-
+ * contenteditable preservation rules apply in all cases.
+ *
+ * `ownedItems` is an internal coordination channel for `mount()`'s list
+ * reconciler; public callers should omit it.
  */
-export function diff(
+export function morph(
   liveRoot: Element,
-  templateRoot: Element,
-  ownedItems: ReadonlySet<Element>,
+  template: Element | SafeHtml | string,
+  ownedItems: ReadonlySet<Element> = EMPTY_OWNED,
 ): void {
-  diffChildren(liveRoot, templateRoot, ownedItems);
+  const templateEl: Element = isElementNode(template)
+    ? template
+    : parseTemplate(liveRoot, template);
+  morphChildren(liveRoot, templateEl, ownedItems);
+}
+
+function isElementNode(t: Element | SafeHtml | string): t is Element {
+  return typeof t === 'object' && t !== null
+    && (t as Node).nodeType === ELEMENT_NODE;
+}
+
+function parseTemplate(liveRoot: Element, template: SafeHtml | string): Element {
+  const el = liveRoot.cloneNode(false) as Element;
+  el.innerHTML = String(template);
+  return el;
 }
 
 /**
  * Advance past any owned (list-reconciler-managed) element. Owned items
- * stay put across diffs — they're invisible to the diff's child cursor.
+ * stay put across morphs — they're invisible to the morph's child cursor.
  */
 function skipOwned(node: Node | null, ownedItems: ReadonlySet<Element>): Node | null {
   while (node !== null && node.nodeType === ELEMENT_NODE
@@ -72,14 +109,14 @@ function skipOwned(node: Node | null, ownedItems: ReadonlySet<Element>): Node | 
   return node;
 }
 
-function diffChildren(
+function morphChildren(
   fromParent: Element,
   toParent: Element,
   ownedItems: ReadonlySet<Element>,
 ): void {
   // Build a keyed lookup from the live children so we can match by key
   // even after reorders. Owned items don't participate in keyed matching
-  // (they're not visible to the diff).
+  // (they're not visible to the morph).
   const keyed = new Map<string, Element>();
   for (let c = fromParent.firstChild; c !== null; c = c.nextSibling) {
     if (c.nodeType === ELEMENT_NODE && ownedItems.has(c as Element)) continue;
@@ -133,11 +170,18 @@ function diffChildren(
   }
 
   // 4. Anything past the cursor is unmatched — remove, except for owned
-  //    items (those stay; they belong to a list reconciler).
+  //    items (those stay; they belong to a list reconciler) and elements
+  //    marked `data-morph-preserve` (KF-151 — imperatively-injected nodes
+  //    whose lifetime the consumer manages outside kerf).
   while (fromChild !== null) {
     const next = fromChild.nextSibling;
-    if (fromChild.nodeType !== ELEMENT_NODE
-        || !ownedItems.has(fromChild as Element)) {
+    if (fromChild.nodeType === ELEMENT_NODE) {
+      const el = fromChild as Element;
+      if (!ownedItems.has(el)
+          && (el as HTMLElement).dataset.morphPreserve === undefined) {
+        fromParent.removeChild(fromChild);
+      }
+    } else {
       fromParent.removeChild(fromChild);
     }
     fromChild = next;
@@ -186,9 +230,9 @@ function morphElement(
   //    state classes still need to flow through.
   if ((fromEl as HTMLElement).dataset.morphSkipChildren !== undefined) return;
   // 5. Recurse into children. List items inside `fromEl` (if any) are
-  //    skipped via `ownedItems` inside diffChildren — list reconciler
-  //    owns them — but non-list siblings are still diffed.
-  diffChildren(fromEl, toEl, ownedItems);
+  //    skipped via `ownedItems` inside morphChildren — list reconciler
+  //    owns them — but non-list siblings are still morphed.
+  morphChildren(fromEl, toEl, ownedItems);
 }
 
 /**
@@ -201,7 +245,7 @@ function morphElement(
  * Trade-off (KF-84): controlled-style `<details open={signal.value}>` where
  * the signal flips false won't auto-collapse the element, because the
  * morph's remove pass no longer reaches `open`. Apps that need controlled
- * behaviour should drive `open` imperatively (e.g. `el.removeAttribute('open')`
+ * behavior should drive `open` imperatively (e.g. `el.removeAttribute('open')`
  * inside an action) or wrap with a state-toggle pattern. The uncontrolled
  * case is the common one and the one that was silently broken before.
  */

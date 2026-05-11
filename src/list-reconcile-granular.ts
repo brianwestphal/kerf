@@ -5,7 +5,7 @@
  * the live DOM and to `binding.items`, without iterating the full snapshot
  * or doing a classify pass. Cost is O(patches), not O(N).
  *
- * Two perf optimisations:
+ * Two perf optimizations:
  * - **KF-93**: contiguous insert runs (patches at index N, N+1, N+2, …) are
  *   bulk-parsed in one `template.innerHTML` call and inserted as a single
  *   fragment. Saves ~50 ms on append-1k.

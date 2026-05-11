@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-kerf is a tiny reactive UI framework: fine-grained signals + a custom DOM diff specialised for keyed lists + a tiny JSX runtime. The whole runtime is roughly 6.1 KB minified + gzipped without `arraySignal`, 6.5 KB with it, including its sole runtime dependency (`@preact/signals-core`).
+kerf is a tiny reactive UI framework: fine-grained signals + a custom DOM diff specialized for keyed lists + a tiny JSX runtime. The whole runtime is roughly 6.1 KB minified + gzipped without `arraySignal`, 6.5 KB with it, including its sole runtime dependency (`@preact/signals-core`).
 
 The name *kerf* is a woodworking term — the narrow strip a saw blade removes. The framework's job is the same: apply the smallest possible cut to update your DOM.
 
@@ -26,15 +26,15 @@ The framework is a small set of independent modules that compose. Each one earns
 - `src/reactive.ts` — re-export of `@preact/signals-core` (`signal`, `computed`, `effect`, `batch`). One-file abstraction layer so the underlying lib is swappable.
 - `src/store.ts` — `defineStore({ initial, actions })` + global registry + `resetAllStores()`.
 - `src/array-signal.ts` — `arraySignal(initial)` granular collection signal at the `kerfjs/array-signal` subpath (KF-92 / KF-95). Brand-detected by `each()` so the class only ships when the consumer actually imports it.
-- `src/mount.ts` — `mount(el, render)`. Wraps `effect()` + the segment-aware diff. Bulk-renders on first paint, then on subsequent renders runs `diff()` over the static surrounds (skipping any list parents) and dispatches each list to its native keyed reconciler. Conventions for diff keys, `data-morph-skip`, focus/selection preservation.
-- `src/each.ts` — `each(items, render, key?)`. Keyed list iteration. Returns a structured list segment (not a flat HTML string) so `mount()` can run a native reconciler per list — no parse-the-whole-table round trip on partial updates. Per-item memoisation by object identity (+ optional `key`) skips the JSX work for unchanged rows.
+- `src/mount.ts` — `mount(el, render)`. Wraps `effect()` + the segment-aware morph. Bulk-renders on first paint, then on subsequent renders runs `morph()` over the static surrounds (skipping any list parents) and dispatches each list to its native keyed reconciler. Conventions for morph keys, `data-morph-skip`, focus/selection preservation.
+- `src/each.ts` — `each(items, render, key?)`. Keyed list iteration. Returns a structured list segment (not a flat HTML string) so `mount()` can run a native reconciler per list — no parse-the-whole-table round trip on partial updates. Per-item memoization by object identity (+ optional `key`) skips the JSX work for unchanged rows.
 - `src/list-reconcile.ts` — top-level dispatcher for the keyed list reconciler (KF-112 split). Re-exports `BoundItem` / `ListBinding` / `endAnchor()` from `list-binding.ts` and defines `reconcileList()`; the latter routes to one of the two sibling reconciler files based on whether an `arraySignal` patch queue is applicable.
 - `src/list-binding.ts` — `BoundItem` / `ListBinding` interface + `endAnchor(binding)` helper (KF-116 split). Lives in its own file so the snapshot + granular reconciler files can import the binding shape without creating a circular dependency back to `list-reconcile.ts`. Internal.
 - `src/list-reconcile-snapshot.ts` — snapshot reconcile path. Classify (stable/replaced/new) → bulk-parse fresh row HTML in one `innerHTML` → remove orphans/replaced → LIS pass to compute the minimum `insertBefore` set → reverse-pass move. Used for plain-array `each()` and for arraySignal-backed `each()` when the patch path can't apply (first render, post-`replace()`, post-drift). Internal.
 - `src/list-reconcile-granular.ts` — KF-92 patch-driven path. Applies an `arraySignal`'s update/insert/remove/move patches directly to the live DOM in O(patches). KF-93 bulk-parses contiguous insert runs; KF-94 bulk-parses consecutive update runs at any indices. Internal.
 - `src/list-reconcile-focus.ts` — focus snapshot/restore around the keyed list reconciler's move pass. Some engines (older Safari, happy-dom) blur a focused descendant on `insertBefore` even when it survives the move; this module captures and re-applies focus + selection range so the user's caret survives a row reorder uniformly. Internal.
 - `src/segment.ts` — `Segment` types (`static` / `list` / `mixed`) + flatten helpers. The JSX runtime emits these from `_jsx`; `mount()` consumes them.
-- `src/diff.ts` — kerf's general-purpose DOM reconciler. Replaces the prior `morphdom` dependency. Specialised: knows about `data-morph-skip`, the focused-input/contenteditable rules, the `id`/`data-key` matching scheme, and an `ownedItems` set whose elements are owned by the keyed list reconciler (KF-102 round 2 — the diff skips owned list rows individually but still walks every parent's children so non-list siblings around an `each()` reconcile correctly). Algorithm derived from [morphdom](https://github.com/patrick-steele-idem/morphdom) (MIT, attribution in `LICENSE`).
+- `src/morph.ts` — kerf's general-purpose DOM reconciler, exported publicly as `morph(liveRoot, template)` (KF-150) and used internally by `mount()`. Accepts an `Element`, a `SafeHtml`, or a raw HTML string for the template; the optional third `ownedItems` parameter is an internal coordination channel for `mount()`'s list reconciler that public callers should omit. Replaces the prior `morphdom` dependency. Specialized: knows about `data-morph-skip`, `data-morph-skip-children` (KF-152), `data-morph-preserve` (KF-151), the focused-input/contenteditable rules, the `id`/`data-key` matching scheme, and an `ownedItems` set whose elements are owned by the keyed list reconciler (KF-102 round 2 — the morph skips owned list rows individually but still walks every parent's children so non-list siblings around an `each()` reconcile correctly). Algorithm derived from [morphdom](https://github.com/patrick-steele-idem/morphdom) (MIT, attribution in `LICENSE`).
 - `src/delegate.ts` — `delegate()` (Tier 1; auto-promotes known non-bubblers to capture) + `delegateCapture()` (Tier 2 explicit-capture escape hatch).
 - `src/toElement.ts` — SVG-aware JSX → DOM helper. Routes SVG content through `DOMParser('image/svg+xml')`.
 - `src/testing.ts` — `kerfjs/testing` subpath. Re-exports `clearStoreRegistry` for unit-test isolation.
@@ -67,7 +67,7 @@ The JSX runtime sits at `kerfjs/jsx-runtime` (subpath export). Users configure i
 
 ### Design rules
 
-1. **No virtual DOM.** Render JSX to HTML strings (with structured "list" and "mixed" segments where lists appear); let `diff()` reconcile the static surrounds and the list reconciler own its rows.
+1. **No virtual DOM.** Render JSX to HTML strings (with structured "list" and "mixed" segments where lists appear); let `morph()` reconcile the static surrounds and the list reconciler own its rows.
 2. **No compiler.** Plain JSX, plain TypeScript, plain esbuild. No special build step in the consumer's project beyond what they already use.
 3. **Tier 1 / Tier 2 / Tier 3 listener model.** `delegate()` covers bubbling events and auto-promotes the well-known non-bubblers (focus, blur, scroll, load, error, mouseenter, mouseleave) to capture phase under the hood; `delegateCapture()` is the explicit-capture escape hatch with `matches()`-style direct matching; `data-morph-skip` for library-owned subtrees.
 4. **One primary export per file.** Each file has one main exported function/concept.
@@ -139,7 +139,7 @@ This project is managed via [Hot Sheet](https://github.com/brianwestphal/hotshee
 
 ### Concerns → tickets, not ad-hoc fixes
 
-When a review, hygiene scan, audit, or any in-flight investigation surfaces a concern that isn't part of the current ticket's scope, **always file a follow-up Hot Sheet ticket immediately rather than acting on it directly.** This applies to bugs, refactors, doc drift, design questions, and anything else that "I noticed while working on X." The current ticket stays focused on what was asked; everything else gets its own ticket so it can be prioritised, scheduled, and reviewed alongside the rest of the queue.
+When a review, hygiene scan, audit, or any in-flight investigation surfaces a concern that isn't part of the current ticket's scope, **always file a follow-up Hot Sheet ticket immediately rather than acting on it directly.** This applies to bugs, refactors, doc drift, design questions, and anything else that "I noticed while working on X." The current ticket stays focused on what was asked; everything else gets its own ticket so it can be prioritized, scheduled, and reviewed alongside the rest of the queue.
 
 The only edits to make in-flight under another ticket are ones explicitly within that ticket's scope (e.g., the doc-summary fixes that the `/check-requirements-against-code` skill is itself defined to perform). Anything else — even a one-line README fix — gets a ticket.
 
@@ -152,6 +152,7 @@ Use the `hs-bug` / `hs-task` / `hs-issue` / `hs-feature` / `hs-investigation` / 
 - No transitive deps beyond `@preact/signals-core`.
 - Public API is documented in `docs/8-api-reference.md`.
 - **File naming**: kebab-case / lowercase by default (`jsx-runtime.ts`, `mount.ts`). camelCase is allowed when the filename matches the primary export (`toElement.ts` → `toElement`, `utils/escapeHtml.ts` → `escapeHtml`). The principle is "filename = primary export"; do not file tickets to rename files that already match this rule.
+- **American English everywhere.** Prose, code comments, JSDoc, identifiers, test names, CHANGELOG entries, and docs all use American spelling (`behavior`, `optimize`, `recognize`, `memoize`, `sanitize`, `serialize`, `normalize`, `initialize`, `color`, `gray`, `analyze`, etc. — not `behaviour` / `optimise` / `colour` / `grey` / `analyse`). When in doubt, default to the form Merriam-Webster uses. Existing public-URL slugs (e.g. example directory names) are grandfathered in — don't rename them without a dedicated ticket because they change permalinks.
 
 ## Requirements Documentation
 
@@ -172,7 +173,7 @@ Numbered docs in `docs/` cover the design. Reading order:
 ### AI summaries (`docs/ai/`)
 
 - `docs/ai/code-summary.md` — directory tree, public exports, where-to-find-X reverse index.
-- `docs/ai/requirements-summary.md` — synthesised view of every numbered doc with status markers.
+- `docs/ai/requirements-summary.md` — synthesized view of every numbered doc with status markers.
 - `docs/ai/usage-guide.md` — consumer-facing cheat sheet for AI assistants writing apps *with* kerf (when to recommend it, public API at a glance, hard rules, common errors → fixes). Keep in sync with `docs/8-api-reference.md`.
 
 Update all three whenever the corresponding source / design changes. The repo-root [`llms.txt`](../llms.txt) is the AI-discovery entry point and indexes the docs above — update it when the doc set changes.

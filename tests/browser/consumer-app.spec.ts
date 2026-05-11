@@ -66,7 +66,7 @@ test('each() — keyed reverse + targeted rename, identity-based memo keeps DOM 
   // Rename only #1: only that row's content changes, others' stamped nodes survive.
   await page.getByTestId('each-rename').click();
   await expect(page.getByTestId('each-input-1')).toHaveValue('Alpha-RENAMED');
-  // Other rows still stamped — they were memoised on identity, not re-rendered.
+  // Other rows still stamped — they were memoized on identity, not re-rendered.
   const otherStamps = await page.evaluate(() =>
     Array.from(document.querySelectorAll('[data-testid^="each-input-"]'))
       .filter((el) => (el as HTMLElement).dataset.testid !== 'each-input-1')

@@ -116,7 +116,7 @@ test('<use xlink:href="..."> via xlinkHref alias resolves correctly', async ({ p
     return {
       ns: useEl.namespaceURI,
       // Both xlink:href (legacy SVG 1.1) and href (SVG 2) are valid.
-      // The runtime serialised xlinkHref → xlink:href.
+      // The runtime serialized xlinkHref → xlink:href.
       xlinkAttr: useEl.getAttributeNS('http://www.w3.org/1999/xlink', 'href'),
       hasOuter: useEl.outerHTML.includes('xlink:href') || useEl.outerHTML.includes('href'),
     };

@@ -45,7 +45,7 @@ The basic single-concept examples (9 of them) are **not** built by this pipeline
 5. `actions/upload-pages-artifact@v3` with `path: site/dist` → uploads the bundle.
 6. A separate `deploy` job uses `actions/deploy-pages@v4` to publish.
 
-The workflow uses the standard Pages permissions (`pages: write`, `id-token: write`) and a single `pages` concurrency group so overlapping pushes serialise.
+The workflow uses the standard Pages permissions (`pages: write`, `id-token: write`) and a single `pages` concurrency group so overlapping pushes serialize.
 
 ## 9.4 One-time repo setup
 

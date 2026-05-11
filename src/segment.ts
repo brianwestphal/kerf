@@ -11,7 +11,7 @@
  *
  * Why have a structured form at all: the perf bottleneck for huge
  * keyed lists isn't the per-row JSX work (which `each()` already
- * memoises). It's that flattening every render's whole tree to one
+ * memoizes). It's that flattening every render's whole tree to one
  * big HTML string forces a full `innerHTML` parse and a tree walk
  * over rows we know are unchanged. The segment shape lets mount()
  * skip both for the list parts.

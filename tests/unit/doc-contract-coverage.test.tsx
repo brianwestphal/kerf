@@ -1,7 +1,7 @@
 /**
  * KF-104 — doc-contract coverage. Each test pins a documented assertion
  * from `docs/` or `README.md` that the audit identified as untested at
- * the API surface. The goal: every behavioural promise the framework
+ * the API surface. The goal: every behavioral promise the framework
  * makes to users is verified at the public-import boundary.
  *
  * Cross-reference (audit §3 / §4):
@@ -15,7 +15,7 @@
  *  - docs/4-render.md §4.4 — replaced row loses focus (KF-65 partial)
  *  - docs/4-render.md §4.4.1 — controlled <details> via imperative removeAttribute
  *  - docs/5-event-delegation.md §5.4 — listeners on rebuilt nodes are lost
- *  - docs/8-api-reference.md §8.7 — range/color input morph behaviour
+ *  - docs/8-api-reference.md §8.7 — range/color input morph behavior
  *  - signal NOT deep-reactive (docs/2-reactivity.md §2.7)
  *  - effect disposer stops re-runs after dispose
  *  - Fragment composes children without a wrapper tag

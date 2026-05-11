@@ -48,7 +48,7 @@ export class ArraySignal<T> {
   private _items: T[];
   private _version: Signal<number>;
   private _patches: ArrayPatch<T>[];
-  // Branded so `isArraySignal()` recognises instances from any copy of this module.
+  // Branded so `isArraySignal()` recognizes instances from any copy of this module.
   readonly [ARRAY_SIGNAL_BRAND] = true as const;
 
   constructor(initial: readonly T[] = []) {

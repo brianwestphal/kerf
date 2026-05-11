@@ -1,6 +1,6 @@
 # 7. SVG
 
-SVG inside JSX works without ceremony for the common case (a JSX subtree with `<svg>` as the root tag). The HTML5 parser recognises `<svg>` and switches to "foreign content" mode for its descendants, applying the SVG namespace correctly.
+SVG inside JSX works without ceremony for the common case (a JSX subtree with `<svg>` as the root tag). The HTML5 parser recognizes `<svg>` and switches to "foreign content" mode for its descendants, applying the SVG namespace correctly.
 
 ```tsx
 mount(rootEl, () => (
@@ -65,7 +65,7 @@ If you're not sure which you need, default to `mount()`. The vast majority of SV
 A handful of theoretical edge cases that the AST-based approach in some other reactive libs handles but kerf doesn't, in exchange for a simpler runtime:
 
 - Custom-element `is="..."` attributes inside `<table>` / `<select>` parents have parser-quirk handling that depends on the surrounding context. Rarely a problem in practice.
-- Whitespace-only text nodes between sibling elements are sometimes normalised by the parser. Same — rarely matters.
+- Whitespace-only text nodes between sibling elements are sometimes normalized by the parser. Same — rarely matters.
 - `xlink:href` requires the alias config the JSX runtime already provides (`xlinkHref`).
 
 If you hit one of these, file an issue — they're fixable as a more complete `toElement` if there's demand.

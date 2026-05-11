@@ -31,7 +31,7 @@ That's it. Your JSX renders to HTML strings, kerf's native diff applies the mini
 
 ## Why Kerf
 
-1. **Built for the AI-assisted era.** Tiny public surface (15 exports), no compiler magic, no hidden lifecycle. An LLM holds the framework in context and predicts behaviour — your AI agent generates code that works the first time. Ships [`llms.txt`](./llms.txt) and a dedicated AI usage guide; the [Built by an AI · Pomodoro](https://brianwestphal.github.io/kerf/examples/complete/built-by-an-ai/) example is a working app one-shotted by Claude with `llms.txt` as its only kerf knowledge.
+1. **Built for the AI-assisted era.** Tiny public surface (15 exports), no compiler magic, no hidden lifecycle. An LLM holds the framework in context and predicts behavior — your AI agent generates code that works the first time. Ships [`llms.txt`](./llms.txt) and a dedicated AI usage guide; the [Built by an AI · Pomodoro](https://brianwestphal.github.io/kerf/examples/complete/built-by-an-ai/) example is a working app one-shotted by Claude with `llms.txt` as its only kerf knowledge.
 
 2. **Smallest cut.** 6.1 KB gzipped including signals (6.5 KB with `arraySignal`). Fine-grained reactivity re-runs only what changed; the diff touches only the DOM nodes that differ. On the [krausest js-framework-benchmark](./bench/results.md) kerf is competitive with Solid and Vue on swap-rows, remove-row, and clear — no compiler required.
 

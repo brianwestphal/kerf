@@ -242,7 +242,7 @@ describe('mount()', () => {
   });
 
   it('still removes <details open> when the developer explicitly toggles it via the template (controlled mode)', () => {
-    // Trade-off documented in src/diff.ts: with the user-agent-owned rule,
+    // Trade-off documented in src/morph.ts: with the user-agent-owned rule,
     // a controlled `<details open={isOpen.value}>` flipping from true → false
     // does NOT auto-collapse. We pin this so any future fix that restores
     // controlled-mode semantics fails this test loudly and prompts a doc
@@ -259,7 +259,7 @@ describe('mount()', () => {
     isOpen.value = false;
     // Documented limitation: the morph's remove pass skips `open` on
     // <details>/<dialog>, so even an explicit "remove via template" doesn't
-    // take effect. Apps that need controlled behaviour drive `open`
+    // take effect. Apps that need controlled behavior drive `open`
     // imperatively (e.g. `el.removeAttribute('open')`).
     expect(det.hasAttribute('open')).toBe(true);
   });
@@ -319,7 +319,7 @@ describe('mount() — focus and selection preservation', () => {
     // the focused contenteditable. The whole subtree (typed content, caret,
     // any DOM the user produced) is preserved verbatim. Attribute updates
     // are deferred until the next render after blur — that's the trade-off
-    // and the desired behaviour for in-progress edits.
+    // and the desired behavior for in-progress edits.
 
     const cls = signal('a');
     mount(root, () => jsx('div', {
@@ -479,7 +479,7 @@ describe('mount() — focus and selection preservation', () => {
     // docs/5-event-delegation.md — Tier 3: "Add direct event listeners on
     // the library's API (or on elements inside the host); they survive
     // every parent re-render because the host is morph-skipped." The skip
-    // behaviour is tested elsewhere; this pins the listener-survival
+    // behavior is tested elsewhere; this pins the listener-survival
     // guarantee that motivates the entire pattern (xterm/CodeMirror/charts).
     const tick = signal(0);
     mount(root, () => jsx('div', {

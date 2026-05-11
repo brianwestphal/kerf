@@ -49,7 +49,7 @@ describe('dist/ — SafeHtml cross-bundle identity (KF-14)', () => {
     expect(typeof indexMod.isSafeHtml).toBe('function');
   });
 
-  it('a SafeHtml created by the barrel is recognised by the JSX runtime as a valid child (the KF-14 case)', async () => {
+  it('a SafeHtml created by the barrel is recognized by the JSX runtime as a valid child (the KF-14 case)', async () => {
     requireDist();
     const { raw } = await import(DIST_INDEX) as { raw: (html: string) => unknown };
     const { jsx } = await import(DIST_JSX) as {
@@ -64,7 +64,7 @@ describe('dist/ — SafeHtml cross-bundle identity (KF-14)', () => {
     expect(out.toString()).toBe('<div><b>x</b></div>');
   });
 
-  it('a SafeHtml created by the JSX runtime is recognised by the barrel\'s isSafeHtml()', async () => {
+  it('a SafeHtml created by the JSX runtime is recognized by the barrel\'s isSafeHtml()', async () => {
     requireDist();
     const { isSafeHtml } = await import(DIST_INDEX) as {
       isSafeHtml: (v: unknown) => boolean;

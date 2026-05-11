@@ -1,20 +1,20 @@
 /**
- * `each(items, render, key?)` — keyed list iteration with per-item memoisation.
+ * `each(items, render, key?)` — keyed list iteration with per-item memoization.
  *
  * Drops in as the body of a list-rendering JSX expression inside a `mount()`
  * render function. Returns a `SafeHtml` carrying a structured list segment,
  * so `mount()` can run a native keyed reconciler instead of the general-
  * purpose morph for these children.
  *
- * Two layers of optimisation:
+ * Two layers of optimization:
  *
- * 1. Per-item memoisation. `render(item)` is skipped for items whose object
+ * 1. Per-item memoization. `render(item)` is skipped for items whose object
  *    identity (and optional `key`) are unchanged since the previous call.
  *    Their HTML strings come from a `WeakMap` keyed by item reference. The
  *    immutable-update style ("replace the row object" instead of "mutate it")
  *    makes the cache work automatically.
  *
- * 2. Structural handoff. `mount()` recognises the list segment and bypasses
+ * 2. Structural handoff. `mount()` recognizes the list segment and bypasses
  *    the parse-the-whole-table round trip: only fresh items get parsed (one
  *    at a time, into the smallest detached element), and only changed rows
  *    get patched in the live DOM. Unchanged rows are physically the same

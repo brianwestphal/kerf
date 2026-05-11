@@ -1,6 +1,6 @@
 # 8. API reference
 
-Everything kerf exports, organised by module. Imported via `import { … } from 'kerfjs'` unless noted.
+Everything kerf exports, organized by module. Imported via `import { … } from 'kerfjs'` unless noted.
 
 ## 8.1 Reactivity
 
@@ -111,9 +111,28 @@ The diff:
   - It's a list parent owned by `each(...)` (children-only short-circuit; `each`'s reconciler owns those rows). Attribute morphing on the parent itself still happens.
   - `fromEl.isEqualNode(toEl)` (no work needed).
   - It's the focused `[contenteditable]` (entire subtree preserved on this morph; see §8.7 below and `docs/4-render.md` §4.4).
+- The trailing-removal pass (unmatched live children that the new template doesn't emit) skips elements marked `data-morph-preserve` (KF-151) — imperatively-injected nodes whose lifetime the consumer manages outside kerf.
 - Otherwise preserves the focused text-entry's value + selection range, then proceeds.
 
 Lists rendered with `each(...)` go through a separate keyed reconciler that operates directly on the live parent's children — O(changes), not O(rows). See `each` below.
+
+### `morph(liveRoot: Element, template: Element | SafeHtml | string): void` (KF-150)
+
+One-shot in-place reconciliation primitive — the same algorithm `mount()` uses internally, exported for consumers that have an already-populated element they need to reconcile against a freshly-built template. Unlike `mount()`, `morph()` doesn't wrap an `effect()` and doesn't bulk-write `innerHTML` first: it runs once per call against the live tree as-is.
+
+```ts
+import { morph, raw } from 'kerfjs';
+
+morph(liveCard, freshlyBuiltCardEl);         // Element template
+morph(liveCard, '<article class="card">…</article>'); // raw HTML string
+morph(liveCard, raw(htmlFromServer));        // SafeHtml
+```
+
+When `template` is a string or `SafeHtml`, kerf creates a transient element by cloning `liveRoot`'s shell (so the parsed children land inside an element with the same tag, which keeps `innerHTML` parsing rules consistent) and assigns the stringified template to its `innerHTML`. The transient is discarded after the reconciliation.
+
+Every short-circuit `mount()`'s morph honors carries over: `data-morph-skip` (element + subtree preserved), `data-morph-skip-children` (KF-152 — attrs morph, subtree preserved), `data-morph-preserve` (KF-151 — element survives the trailing-removal pass), `isEqualNode` byte-identity skip, focused text-input value + selection preservation, focused-`[contenteditable]` subtree preservation, and `<details>` / `<dialog>`'s user-agent-owned `open` attribute. Match keys (`id`, then `data-key`) behave the same way.
+
+`morph()` does NOT subscribe to signals. If you want re-renders, use `mount()`. If you want a one-shot reconciliation against a tree you own, this is the primitive. See `docs/4-render.md` §4.4.3.
 
 ### `each<T>(items, render, key?): SafeHtml`
 
@@ -122,7 +141,7 @@ each(rows.value, (row) => <tr data-key={row.id}>{row.label}</tr>);
 each(rows.value, (row) => <tr…>…</tr>, (row) => row.id === selectedId ? 1 : 0);
 ```
 
-Keyed list iteration with per-item memoisation, routed through `mount()`'s native list reconciler. Skips re-running `render` for items whose object identity (and optional `key`) are unchanged since the previous call — those items keep their existing live DOM nodes verbatim. Items whose identity or key did change get a fresh node (all fresh-node HTML for a render is bulk-parsed in one `innerHTML` call); items that disappeared are removed. Reorders use a longest-increasing-subsequence pass so the number of `insertBefore` calls is the minimum possible. Items must be objects (cache is a `WeakMap`); wrap primitives if you need to iterate them. Each item's render output must produce exactly one top-level element. Use `key` when external state, not the item itself, drives what the row should render (e.g. a "currently selected" id flips a CSS class).
+Keyed list iteration with per-item memoization, routed through `mount()`'s native list reconciler. Skips re-running `render` for items whose object identity (and optional `key`) are unchanged since the previous call — those items keep their existing live DOM nodes verbatim. Items whose identity or key did change get a fresh node (all fresh-node HTML for a render is bulk-parsed in one `innerHTML` call); items that disappeared are removed. Reorders use a longest-increasing-subsequence pass so the number of `insertBefore` calls is the minimum possible. Items must be objects (cache is a `WeakMap`); wrap primitives if you need to iterate them. Each item's render output must produce exactly one top-level element. Use `key` when external state, not the item itself, drives what the row should render (e.g. a "currently selected" id flips a CSS class).
 
 If a descendant of a moved row holds focus, the reconciler snapshots the active element + its selection range before the move pass and re-applies them afterwards — so focus and caret position survive a reorder even on engines that drop focus on `insertBefore` (older Safari, happy-dom). See `docs/4-render.md` §4.4.
 
@@ -141,7 +160,7 @@ Auto-promotes the well-known non-bubbling event types (`focus`, `blur`, `scroll`
 
 ### `delegateCapture(rootEl, type, selector, handler): () => void`
 
-Same shape, but installs on the capture phase and matches via `target.matches(selector)` (direct match, no walk-up). The escape hatch — use it for custom non-bubbling events that aren't in `delegate()`'s auto-promotion list, or when you want capture-phase semantics with strict element-match behaviour.
+Same shape, but installs on the capture phase and matches via `target.matches(selector)` (direct match, no walk-up). The escape hatch — use it for custom non-bubbling events that aren't in `delegate()`'s auto-promotion list, or when you want capture-phase semantics with strict element-match behavior.
 
 ## 8.5 JSX runtime
 
@@ -202,7 +221,7 @@ declare module 'kerfjs/jsx-runtime' {
 
 ### Dangerous URL filter
 
-Plain-string values passed to `href`, `src`, `xlink:href`, `formaction`, or `action` are screened against `/^\s*(?:(?:java|vb)script:|data:text\/html[;,])/i`. Matching values cause the attribute to be **dropped entirely** and a `console.warn` to be emitted. The screen is bypassed for `SafeHtml` (i.e. `raw(...)`) values — that's the documented opt-out for legitimate cases (bookmarklet builders, sanitised-upstream URLs). Non-URL attributes are not screened. See `docs/6-jsx-runtime.md` §6.4.1 for the full rationale and examples.
+Plain-string values passed to `href`, `src`, `xlink:href`, `formaction`, or `action` are screened against `/^\s*(?:(?:java|vb)script:|data:text\/html[;,])/i`. Matching values cause the attribute to be **dropped entirely** and a `console.warn` to be emitted. The screen is bypassed for `SafeHtml` (i.e. `raw(...)`) values — that's the documented opt-out for legitimate cases (bookmarklet builders, sanitized-upstream URLs). Non-URL attributes are not screened. See `docs/6-jsx-runtime.md` §6.4.1 for the full rationale and examples.
 
 ## 8.6 Direct JSX → DOM
 
@@ -220,8 +239,9 @@ Throws if the input produces zero elements OR if `DOMParser` returns a `parserer
 | `data-key="..."` | Used as a diff key. Lower priority than `id`. |
 | `data-morph-skip` (any value, even empty) | Element AND subtree preserved as-is on every re-render. No attribute morphing on the element itself. |
 | `data-morph-skip-children` (any value, even empty) | Attributes on the element morph normally; the subtree is left as-is. For client-hydrated slots whose host state classes still need to flow through. KF-152. |
+| `data-morph-preserve` (any value, even empty) | The element is skipped by the diff's trailing-removal pass — survives across renders even when the new template doesn't emit it. For imperatively-injected nodes (autoplay video, tooltip overlays, analytics pixels). Does NOT block a keyed-match move. KF-151. |
 
-| Element kind | Behaviour when focused during a morph |
+| Element kind | Behavior when focused during a morph |
 | --- | --- |
 | `<input type="text" \| "search" \| "url" \| "email" \| "tel" \| "password" \| "">` | Live `.value` + `selectionStart`/`selectionEnd` copied to the morph target; morph proceeds (attribute updates apply). |
 | `<textarea>` | Same as text-entry inputs. |
@@ -230,5 +250,5 @@ Throws if the input produces zero elements OR if `DOMParser` returns a `parserer
 
 | User-agent-owned attribute | Effect |
 | --- | --- |
-| `<details>` `open` | The morph never removes `open` from a live `<details>` — the user agent toggles it on summary click and the diff treats it as user-owned. Trade-off: controlled-style `<details open={false}>` won't auto-collapse a previously-opened details element; drive `.open` imperatively if you need controlled behaviour. See `docs/4-render.md` §4.4.1. |
+| `<details>` `open` | The morph never removes `open` from a live `<details>` — the user agent toggles it on summary click and the diff treats it as user-owned. Trade-off: controlled-style `<details open={false}>` won't auto-collapse a previously-opened details element; drive `.open` imperatively if you need controlled behavior. See `docs/4-render.md` §4.4.1. |
 | `<dialog>` `open` | Same as `<details>`. The browser sets `open=""` when `.show()` / `.showModal()` is called; the morph leaves it alone. |

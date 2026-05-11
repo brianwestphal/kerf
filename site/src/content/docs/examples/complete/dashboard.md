@@ -9,7 +9,7 @@ A simulated live ticker dashboard. 500 rows, ~60 of them update per "WebSocket m
 
 **What to look at:**
 
-- **`each()` at scale.** The ticker table runs through the keyed list reconciler. Per-row memoisation by identity *plus* an optional memo key (`\`${id}-${price}\``) means a row whose price didn't change skips JSX evaluation, string-building, *and* the morph walk. Only the ~60 rows that actually moved get touched.
+- **`each()` at scale.** The ticker table runs through the keyed list reconciler. Per-row memoization by identity *plus* an optional memo key (`\`${id}-${price}\``) means a row whose price didn't change skips JSX evaluation, string-building, *and* the morph walk. Only the ~60 rows that actually moved get touched.
 - **`batch()`** wraps the simulated WS message handler. Inside, `tickers.value`, `frame.value`, and `connected.value` all change — `batch()` ensures the surrounding `effect()`s and the mount's render fn each run **once** at the end, not three times.
 - **`data-morph-skip` on the chart canvas.** The canvas's `requestAnimationFrame` loop draws independently; without skip, every dashboard tick (~30/s) would walk into the canvas's children and clobber its DOM.
 - **`effect()` for WS lifecycle.** The simulated feed starts inside `effect()` and returns a cleanup that clears the interval and flips `connected` to false. In a real app you'd open the WebSocket here and close it in the cleanup.

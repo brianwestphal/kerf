@@ -5,7 +5,7 @@ import { defineConfig, devices } from '@playwright/test';
  *
  * Real-browser tests cover scenarios that happy-dom can't exercise truthfully:
  * SVG/MathML namespacing, IME composition, MutationObserver mutation counts,
- * and stateful element behaviour on real engines (KF-78, KF-79, KF-83).
+ * and stateful element behavior on real engines (KF-78, KF-79, KF-83).
  *
  * The tests run against a static fixture page served by Playwright's
  * `webServer`. Run with `npm run test:browser`.

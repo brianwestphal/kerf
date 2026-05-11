@@ -73,18 +73,18 @@ Plain-string values written to URL-bearing attributes are screened against a sma
 // userInput === 'https://example.com'  →  rendered as <a href="https://example.com">click</a>
 ```
 
-The screen exists so a stored-XSS payload reaching a `href={...}` interpolation cannot turn into a clickable script vector. It is **not** a general sanitiser — `javascript:`/`vbscript:` URLs at non-URL attributes (`data-action`, custom attributes, etc.) pass through unchanged because they aren't an attack surface there.
+The screen exists so a stored-XSS payload reaching a `href={...}` interpolation cannot turn into a clickable script vector. It is **not** a general sanitizer — `javascript:`/`vbscript:` URLs at non-URL attributes (`data-action`, custom attributes, etc.) pass through unchanged because they aren't an attack surface there.
 
 `SafeHtml` (i.e. `raw()`) values bypass the screen — that's the documented escape hatch:
 
 ```tsx
 import { raw } from 'kerfjs';
 
-// Bookmarklet builder, sanitised-upstream input, etc.
+// Bookmarklet builder, sanitized-upstream input, etc.
 <a href={raw('javascript:doStuff()')}>bookmarklet</a>
 ```
 
-If you find yourself reaching for `raw()` on URLs that came from users, route them through a real sanitiser (DOMPurify, Linkify, etc.) first; `raw()` is "I take responsibility for this string", not "skip the safety net."
+If you find yourself reaching for `raw()` on URLs that came from users, route them through a real sanitizer (DOMPurify, Linkify, etc.) first; `raw()` is "I take responsibility for this string", not "skip the safety net."
 
 ## 6.5 Children
 
@@ -107,7 +107,7 @@ If you find yourself reaching for `raw()` on URLs that came from users, route th
 
 ## 6.6 `raw(html)`
 
-For when you have a pre-escaped HTML string (rendered Markdown, sanitised user input, an SVG icon literal):
+For when you have a pre-escaped HTML string (rendered Markdown, sanitized user input, an SVG icon literal):
 
 ```ts
 import { raw } from 'kerfjs';
@@ -175,7 +175,7 @@ mount(root, () => (
 
 The JSX transform invokes the function with the props it gathered; the function returns a `SafeHtml`; the parent JSX inlines it. There's no instance, no lifecycle, no state — components are just JSX-string builders.
 
-If you want stateful behaviour, the state lives in signals/stores OUTSIDE the component, and the component reads them:
+If you want stateful behavior, the state lives in signals/stores OUTSIDE the component, and the component reads them:
 
 ```tsx
 import { signal } from 'kerfjs';

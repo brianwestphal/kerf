@@ -10,7 +10,7 @@
  * Two phases per render:
  *
  *   - Static surrounds (everything outside `each()` lists): kerf's native
- *     `diff()` reconciler walks a freshly-built template against the live
+ *     `morph()` reconciler walks a freshly-built template against the live
  *     tree. Conventions: id/data-key matching, `data-morph-skip`, focus
  *     preservation.
  *
@@ -25,7 +25,6 @@
  * position are not destroyed and recreated on each tick.
  */
 
-import { diff } from './diff.js';
 import { _setRenderContext, type RenderContext } from './each.js';
 import type { SafeHtml } from './jsx-runtime.js';
 import { isSafeHtml } from './jsx-runtime.js';
@@ -34,6 +33,7 @@ import {
   type ListBinding,
   reconcileList,
 } from './list-reconcile.js';
+import { morph } from './morph.js';
 import { effect } from './reactive.js';
 import {
   collectLists,
@@ -93,7 +93,7 @@ export function mount(rootEl: HTMLElement, render: () => MountResult): () => voi
   // KF-88: the static-surrounds HTML string from the previous render. If a
   // re-render produces the same string (the common case when a signal flips
   // a class on one row but the page chrome is unchanged), we skip the
-  // template clone, the innerHTML re-parse, and the diff() walk entirely
+  // template clone, the innerHTML re-parse, and the morph() walk entirely
   // and go straight to the per-list reconcilers. Saves ~8 ms per update-
   // path render against the krausest harness.
   let prevStaticHtml = '';
@@ -172,8 +172,8 @@ function runFirstRender(
  *
  * - **Surrounds-changed path**: clean up orphan bindings (lists that
  *   disappeared from this render's segment), build a template from the
- *   static-only HTML, run `diff()` over the surrounds with the
- *   list-owned items as `ownedItems` (KF-102 round 2 — the diff skips
+ *   static-only HTML, run `morph()` over the surrounds with the
+ *   list-owned items as `ownedItems` (KF-102 round 2 — the morph skips
  *   owned items individually but still walks every parent so non-list
  *   siblings around an each() reconcile correctly), then bind any
  *   newly-appearing lists.
@@ -192,7 +192,7 @@ function runSubsequentRender(
   cleanupOrphanBindings(segment, bindings, renderCtx);
   const template = rootEl.cloneNode(false) as HTMLElement;
   template.innerHTML = currentStaticHtml;
-  diff(rootEl, template, collectOwnedItems(bindings));
+  morph(rootEl, template, collectOwnedItems(bindings));
   bindListsFromMarkers(rootEl, segment, bindings, false);
   return currentStaticHtml;
 }
@@ -276,7 +276,7 @@ function bindListsFromMarkers(
  *
  * Fast path: outerHTML compare is a string equality check (zero allocs in
  * happy-dom; one alloc in V8). Only when they DON'T match (multi-root or
- * subtle browser-normalised single-root case) do we fall back to a full
+ * subtle browser-normalized single-root case) do we fall back to a full
  * per-row parse for the precise count.
  */
 function validateInlinedRowMatch(
@@ -287,7 +287,7 @@ function validateInlinedRowMatch(
   if (boundEl.outerHTML === expectedHtml) return;
   // The bound element's outerHTML differs from what we emitted. Parse the
   // expected html in isolation; if it's still single-root the difference
-  // is whitespace / browser-normalisation (e.g. `<br/>` → `<br>`) and
+  // is whitespace / browser-normalization (e.g. `<br/>` → `<br>`) and
   // we proceed silently. Otherwise build the precise contract-violation
   // error from the shared helper.
   const { count } = parseRowTemplate(expectedHtml);

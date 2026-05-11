@@ -33,7 +33,7 @@ All numbers are **medians across 3 iterations**. Lower is better. Sorted by the 
 | append 1k | 50.2 | 51.4 | 50.5 | +1 % | -2 % |
 | clear 1k | 18.5 | 19.4 | 18.6 | +1 % | -4 % |
 
-The KF-112 split + KF-115 parseRowTemplate consolidation reclaimed most of the cost KF-102/103 added. `swap rows` ended up faster than even the pre-KF-103 baseline; `select row`, `partial update`, `remove row`, `append 1k`, and `clear 1k` all came back within 0–6 % of their post-KF-94 numbers. The KF-103 contract enforcement (per-row `validateInlinedRowMatch` on first render + bulk-parse count check on subsequent renders) is the residual cost that keeps `create 1k` and `partial update` very slightly above the pre-KF-103 baseline — that cost buys silent-misalignment-free behaviour for multi-root rows.
+The KF-112 split + KF-115 parseRowTemplate consolidation reclaimed most of the cost KF-102/103 added. `swap rows` ended up faster than even the pre-KF-103 baseline; `select row`, `partial update`, `remove row`, `append 1k`, and `clear 1k` all came back within 0–6 % of their post-KF-94 numbers. The KF-103 contract enforcement (per-row `validateInlinedRowMatch` on first render + bulk-parse count check on subsequent renders) is the residual cost that keeps `create 1k` and `partial update` very slightly above the pre-KF-103 baseline — that cost buys silent-misalignment-free behavior for multi-root rows.
 
 The cluster ranking vs vanjs and preact-signals is unchanged from KF-105's measurement.
 
@@ -48,7 +48,7 @@ The cluster ranking vs vanjs and preact-signals is unchanged from KF-105's measu
 
 ### Cumulative perf wins from KF-87..KF-94
 
-For posterity, kerf 0.4.2's path through the optimisations:
+For posterity, kerf 0.4.2's path through the optimizations:
 
 | Scenario | pre-KF-87 | post-KF-87 | post-KF-90 | post-KF-92 | post-KF-93 | post-KF-94 (this row) | total Δ |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -65,7 +65,7 @@ For posterity, kerf 0.4.2's path through the optimisations:
 - KF-93: bulk-parse contiguous insert runs — recovered the post-KF-92 append regression.
 - KF-94: bulk-parse consecutive update runs (any indices) — closes the partial-update gap to vanjs (41.8) and the keyed cluster.
 
-Static-build scenarios (create / replace / create10k) stayed within noise throughout — these optimisations target update-path costs.
+Static-build scenarios (create / replace / create10k) stayed within noise throughout — these optimizations target update-path costs.
 
 ### Where kerf now stands vs the keyed-framework cluster
 

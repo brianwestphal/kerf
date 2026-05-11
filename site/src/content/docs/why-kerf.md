@@ -1,15 +1,15 @@
 ---
 title: Why Kerf
-description: The five pillars — what kerf optimises for, and why.
+description: The five pillars — what kerf optimizes for, and why.
 ---
 
-Five things kerf optimises for. In order.
+Five things kerf optimizes for. In order.
 
 ## 1. Built for the AI-assisted era
 
 The way people write UI is changing. AI assistants generate the first draft. Pair-programmers, agents, and code-completion models do meaningful work *inside* your codebase. Frameworks designed in the early 2010s assume a single human developer with infinite patience for ceremony.
 
-kerf inverts that. The whole public surface is **15 exports**. There is no compiler magic, no hidden lifecycle, no implicit context. An LLM can hold the entire framework in its context window and predict behaviour from API names alone — which means your AI agent generates code that works the first time, and your AI reviewer can reason about whether the code is correct.
+kerf inverts that. The whole public surface is **15 exports**. There is no compiler magic, no hidden lifecycle, no implicit context. An LLM can hold the entire framework in its context window and predict behavior from API names alone — which means your AI agent generates code that works the first time, and your AI reviewer can reason about whether the code is correct.
 
 The user-side framing: *predictable, debuggable performance; fast; easy for humans to read & write; easy for AI to read, write, and reason about.*
 

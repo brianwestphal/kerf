@@ -69,10 +69,12 @@ export interface KerfBaseAttrs extends DataAriaAttrs {
   autoCapitalize?: AttrLike<'off' | 'none' | 'on' | 'sentences' | 'words' | 'characters'>;
   autoFocus?: AttrLike<boolean>;
   accessKey?: AttrLike;
-  /** `data-morph-skip` opts a subtree out of kerf's diff. Any value (incl. `true`) is treated as set. */
+  /** `data-morph-skip` opts a subtree out of kerf's morph. Any value (incl. `true`) is treated as set. */
   'data-morph-skip'?: AttrValue;
   /** `data-morph-skip-children` (KF-152) — morph the element's attributes but leave its children verbatim. For client-hydrated slots whose loading/state classes still need to flow through. Any value (incl. `true`) is treated as set. */
   'data-morph-skip-children'?: AttrValue;
+  /** `data-morph-preserve` (KF-151) — an unmatched live element with this attribute is skipped by kerf's morph trailing-removal pass instead of removed. For imperatively-injected nodes (autoplay videos, tour overlays, analytics pixels) whose lifetime the consumer manages outside kerf. Does NOT block a keyed-match move; this is strictly an end-of-list-discard opt-out. Any value (incl. `true`) is treated as set. */
+  'data-morph-preserve'?: AttrValue;
   children?: unknown;
 }
 

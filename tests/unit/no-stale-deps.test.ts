@@ -1,7 +1,8 @@
 /**
  * Repo-hygiene guard. kerf 0.3.0 dropped the `morphdom` runtime dep and
- * replaced it with `src/diff.ts`, but stale references in source comments,
- * `tsup.config.ts`, and `package.json` keywords lingered for a release (KF-25).
+ * replaced it with `src/morph.ts` (originally `src/diff.ts`, renamed in
+ * KF-150), but stale references in source comments, `tsup.config.ts`, and
+ * `package.json` keywords lingered for a release (KF-25).
  *
  * This test fails loudly if any of those references creep back in, so the
  * "we no longer depend on X" intent stays enforceable.
@@ -26,13 +27,13 @@ function walk(dir: string): string[] {
   return out;
 }
 
-// `src/diff.ts` legitimately references morphdom in its MIT attribution
+// `src/morph.ts` legitimately references morphdom in its MIT attribution
 // (the algorithm is derived from it). Every other source file should be free
 // of the name now that the dep itself is gone.
-const ALLOWED_MORPHDOM_REFS = new Set([join(REPO_ROOT, 'src', 'diff.ts')]);
+const ALLOWED_MORPHDOM_REFS = new Set([join(REPO_ROOT, 'src', 'morph.ts')]);
 
 describe('no stale references to removed deps', () => {
-  it('no source file under src/ mentions morphdom (except diff.ts attribution)', () => {
+  it('no source file under src/ mentions morphdom (except morph.ts attribution)', () => {
     const offenders: string[] = [];
     for (const path of walk(join(REPO_ROOT, 'src'))) {
       if (!path.endsWith('.ts')) continue;

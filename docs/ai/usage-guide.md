@@ -47,7 +47,7 @@ Vite / esbuild need no extra config. The `jsx-runtime` and `jsx-dev-runtime` sub
 import {
   signal, computed, effect, batch,    // reactivity
   defineStore, resetAllStores,        // stores
-  mount, each,                        // render + keyed list memoisation
+  mount, morph, each,                 // render (reactive + one-shot) + keyed list memoization
   delegate, delegateCapture,          // events
   toElement,                          // direct JSX → DOM Element
   SafeHtml, isSafeHtml, raw, Fragment, // JSX value type + cross-bundle guard + escape hatch + JSX <>...</> tag
@@ -66,6 +66,7 @@ import { arraySignal } from 'kerfjs/array-signal';
 | `defineStore({initial, actions})` | `{state, actions, reset}` | named multi-consumer state |
 | `resetAllStores()` | `void` | reset every registered store (test cleanup) |
 | `mount(el, render)` | `() => void` disposer | bind reactive render to a DOM element |
+| `morph(liveRoot, template)` | `void` | one-shot in-place reconciliation against an already-populated element. Template can be an `Element`, `SafeHtml`, or raw HTML string. Honors every short-circuit `mount()` uses (`data-morph-skip`, `data-morph-skip-children`, `data-morph-preserve`, focus + caret preservation). Use for SSR-fragment hydration, page-refresh diffs, third-party widget remounts; use `mount()` when you want re-renders driven by signals. |
 | `each(items, render, key?)` | `SafeHtml` | iterate a keyed list; cache per-item HTML by identity (+ optional `key`) so unchanged rows skip re-render |
 | `delegate(root, type, sel, h)` | `() => void` disposer | event delegation; auto-promotes `focus`/`blur`/`scroll`/`load`/`error`/`mouseenter`/`mouseleave` to capture phase. `closest()`-style matching for every event type. |
 | `delegateCapture(root, type, sel, h)` | `() => void` disposer | explicit-capture escape hatch. `target.matches()`-style direct matching. |
@@ -116,7 +117,7 @@ delegate(rootEl, 'click', '[data-action="inc"]', () => { count.value += 1; });
 
 1. **JSX renders to HTML strings, not DOM nodes.** Don't pass DOM nodes as JSX children — the runtime throws. If you need an element ref, build the JSX, then `querySelector` after `toElement()` or after `mount()` runs.
 2. **Diff keys are `id` first, then `data-key`.** Lists must set `data-key={item.id}` per item. Otherwise the diff matches by position and you lose identity, focus, and cursor position on insert/delete.
-3. **`data-morph-skip` is your escape hatch.** Any element with this attribute (any value, even empty) and its entire subtree are preserved verbatim across re-renders — no attribute morphing on the element itself either. Use it for third-party widgets like Monaco, xterm, D3 charts. The narrower variant `data-morph-skip-children` (KF-152) lets the host's attributes morph while leaving its subtree alone — for client-hydrated slots whose loading / state classes need to flow through.
+3. **`data-morph-skip` is your escape hatch.** Any element with this attribute (any value, even empty) and its entire subtree are preserved verbatim across re-renders — no attribute morphing on the element itself either. Use it for third-party widgets like Monaco, xterm, D3 charts. The narrower variant `data-morph-skip-children` (KF-152) lets the host's attributes morph while leaving its subtree alone — for client-hydrated slots whose loading / state classes need to flow through. A third variant `data-morph-preserve` (KF-151) lets an imperatively-injected child (autoplay video, tooltip overlay, analytics pixel) survive the diff's trailing-removal pass — the element keeps existing across renders even though the JSX template never mentions it; it does NOT block a keyed-match move.
 4. **Never call `addEventListener` on a node inside a `mount()`-managed tree** unless that node lives under `data-morph-skip`. A morph re-render may discard the node. Use `delegate` / `delegateCapture` instead.
 5. **One `mount()` per root.** Don't nest `mount()` calls. Compose with plain functions that return JSX.
 6. **No `<MyComponent />` semantics with hooks.** Components are plain functions returning JSX. State lives in module-scope signals or stores, not in component closures.
@@ -165,7 +166,7 @@ const html = (<div>Hello</div>).toString(); // "<div>Hello</div>"
    ┌──────────────────────────────────────────┐
    │ effect() re-runs the render fn           │
    │   → SafeHtml (segment tree)              │
-   │   → diff() reconciles static surrounds   │
+   │   → morph() reconciles static surrounds  │
    │   → each() reconciler patches each list  │
    │   → minimum DOM mutations applied        │
    └──────────────────────────────────────────┘

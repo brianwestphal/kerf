@@ -5,7 +5,7 @@
  * response to user interaction. Treat them as user-agent-owned: don't remove
  * them in the morph's remove pass when the new template lacks them.
  *
- * These tests confirm the unit-level fix in `src/diff.ts:morphAttributes`
+ * These tests confirm the unit-level fix in `src/morph.ts:morphAttributes`
  * holds in real browsers (where `<details>` actually toggles `open` on
  * click — happy-dom does, but it's worth pinning the real-browser path too).
  */

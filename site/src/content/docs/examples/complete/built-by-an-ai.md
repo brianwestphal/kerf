@@ -34,7 +34,7 @@ structure and assume an external stylesheet handles the look.
 
 - **Model:** Anthropic Claude Opus 4.7 (1M context).
 - **Knowledge of kerf:** none beforehand. The prompt referenced `llms.txt` and the AI usage guide as the *only* source. This is the differentiator — kerf publishes the docs an LLM needs to one-shot a working app.
-- **Edits to the produced code:** zero behavioural edits. Two cosmetic touches:
+- **Edits to the produced code:** zero behavioral edits. Two cosmetic touches:
   1. Renamed the file to `main.tsx` to match the rest of the `complete/` examples.
   2. Added the leading comment block linking back to this page.
 

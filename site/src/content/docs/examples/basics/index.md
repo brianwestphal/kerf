@@ -17,4 +17,4 @@ Every snippet is **complete and copy-pasteable** into a Vite project with `kerfj
 | 6 | [Capture-phase delegate](/kerf/examples/basics/06-capture-delegate/) | `delegateCapture` |
 | 7 | [`data-morph-skip`](/kerf/examples/basics/07-morph-skip/) | preserving library-owned subtrees |
 | 8 | [JSX SVG via `toElement`](/kerf/examples/basics/08-svg-toelement/) | SVG namespace + interactive shape |
-| 9 | [`raw()` + sanitisation](/kerf/examples/basics/09-raw-sanitise/) | injecting safe HTML |
+| 9 | [`raw()` + sanitization](/kerf/examples/basics/09-raw-sanitize/) | injecting safe HTML |

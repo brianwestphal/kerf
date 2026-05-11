@@ -359,10 +359,10 @@ describe('Adversarial edge cases', () => {
   // ─── Shape transitions ──────────────────────────────────────────────
 
   describe('shape transitions', () => {
-    it('two each() callsites that flip JSX order across renders — list-id behaviour pinned', () => {
+    it('two each() callsites that flip JSX order across renders — list-id behavior pinned', () => {
       // Per audit §2: list ids are positional via context.counter. If a render
       // re-orders each() calls, the counter assigns them differently. This test
-      // pins current behaviour and surfaces any regression.
+      // pins current behavior and surfaces any regression.
       const phase = signal<'AB' | 'BA'>('AB');
       const itemsA = [{ id: 'a1', label: 'A1' }, { id: 'a2', label: 'A2' }];
       const itemsB = [{ id: 'b1', label: 'B1' }, { id: 'b2', label: 'B2' }];
@@ -383,7 +383,7 @@ describe('Adversarial edge cases', () => {
       ));
       expect(root.querySelector('.X')!.querySelectorAll('li')[0].textContent).toBe('A1');
       expect(root.querySelector('.Y')!.querySelectorAll('li')[0].textContent).toBe('B1');
-      // Flip JSX order. Behaviour pinned: the .X list now contains itemsB
+      // Flip JSX order. Behavior pinned: the .X list now contains itemsB
       // (because the each() at id=0 is now the B one), and .Y has itemsA.
       phase.value = 'BA';
       expect(root.querySelector('.X')!.querySelectorAll('li')[0].textContent).toBe('B1');
@@ -406,7 +406,7 @@ describe('Adversarial edge cases', () => {
 
     it('each() inside a data-morph-skip subtree continues to update via the list reconciler', () => {
       // The diff stops at data-morph-skip, but the list reconciler is keyed on
-      // its binding map (independent of the diff). Verify behaviour.
+      // its binding map (independent of the diff). Verify behavior.
       const rows = arraySignal([{ id: 1, v: 'a' }]);
       mount(root, () => (
         <div data-morph-skip>
@@ -512,7 +512,7 @@ describe('Adversarial edge cases', () => {
       expect(Array.from(lis).map((l) => l.textContent)).toEqual(['SEED!', 'A', 'B']);
     });
 
-    it('KF-94 update run detector: identical-html updates are no-ops, run still recognised', () => {
+    it('KF-94 update run detector: identical-html updates are no-ops, run still recognized', () => {
       const rows = arraySignal([
         { id: 1, v: 'a' }, { id: 2, v: 'b' }, { id: 3, v: 'c' },
       ]);
@@ -821,7 +821,7 @@ describe('More adversarial cases', () => {
 
   it('effect created inside a mount render runs every render (caller responsibility)', () => {
     // No detection — effects inside renders accumulate. This test pins
-    // current behaviour (callers should not do this; documenting the cost).
+    // current behavior (callers should not do this; documenting the cost).
     const tick = signal(0);
     let effectRuns = 0;
     const disposers: (() => void)[] = [];
@@ -920,9 +920,9 @@ describe('Round 3: granular path × cross-feature interactions', () => {
 
   it('granular update of a row: data-morph-skip subtree on the row is replaced like any other row', () => {
     // The granular update path uses replaceChild — the old row's entire
-    // subtree is gone. Pinning current behaviour: data-morph-skip on a row
+    // subtree is gone. Pinning current behavior: data-morph-skip on a row
     // does NOT prevent a granular update from replacing the row, because
-    // the morph-skip honoured by the diff is for the static-surrounds path,
+    // the morph-skip honored by the diff is for the static-surrounds path,
     // not the list reconciler.
     type R = { id: number; v: string };
     const rows = arraySignal<R>([{ id: 1, v: 'a' }]);
@@ -940,7 +940,7 @@ describe('Round 3: granular path × cross-feature interactions', () => {
     expect(imperativePoke).toBe('sticky');
 
     rows.update(0, (r) => ({ ...r, v: 'A' }));
-    // Behaviour pin: morph-skip does NOT prevent a granular update from
+    // Behavior pin: morph-skip does NOT prevent a granular update from
     // replacing the <li>. The `data-imperative` attribute is gone.
     const newLi = root.querySelector('li')!;
     expect(newLi).not.toBe(li);
@@ -948,8 +948,8 @@ describe('Round 3: granular path × cross-feature interactions', () => {
     expect(newLi.querySelector('span')!.textContent).toBe('A');
   });
 
-  it('granular update preserves focused contenteditable behaviour: same row → focus lost (documented)', () => {
-    // The focused-contenteditable preservation is implemented in src/diff.ts
+  it('granular update preserves focused contenteditable behavior: same row → focus lost (documented)', () => {
+    // The focused-contenteditable preservation is implemented in src/morph.ts
     // (the morph short-circuits the subtree). The granular path uses
     // replaceChild directly — so a focused contenteditable in the SAME row
     // that gets updated loses its content. Pinning the gap.
@@ -976,7 +976,7 @@ describe('Round 3: granular path × cross-feature interactions', () => {
     expect(document.activeElement).not.toBe(ce);
   });
 
-  it('granular update preserves focused contenteditable behaviour: different row → focus survives', () => {
+  it('granular update preserves focused contenteditable behavior: different row → focus survives', () => {
     const rows = arraySignal([
       { id: 1, body: 'first' },
       { id: 2, body: 'second' },
@@ -1001,7 +1001,7 @@ describe('Round 3: granular path × cross-feature interactions', () => {
   });
 
   it('granular update of a <details open> row replaces the element — `open` is gone', () => {
-    // `<details open>` user-agent-owned-attr preservation is in src/diff.ts's
+    // `<details open>` user-agent-owned-attr preservation is in src/morph.ts's
     // morphAttributes (KF-84). The granular path uses replaceChild, so the
     // browser-set `open` attribute is wiped along with the <details> element.
     // Pinning the gap — controlled-style users should drive `.open`
@@ -1385,7 +1385,7 @@ describe('Round 3: signal/computed extreme cases', () => {
     expect(runs).toBe(1);
     // Same reference → no notification. Capture the ref into a local first
     // so the reassignment isn't a literal `x.value = x.value` self-assign
-    // (which lint flags but is exactly the behaviour we want to test).
+    // (which lint flags but is exactly the behavior we want to test).
     const sameRef = x.value;
     x.value = sameRef;
     expect(runs).toBe(1);

@@ -21,7 +21,7 @@ describe('isSafeHtml() — cross-bundle brand', () => {
   // classes are no longer === each other. `instanceof` would fail; the brand
   // symbol (`Symbol.for('kerfjs.SafeHtml')`) makes `isSafeHtml()` work anyway.
 
-  it('recognises real SafeHtml instances', () => {
+  it('recognizes real SafeHtml instances', () => {
     expect(isSafeHtml(new SafeHtml('<p>x</p>'))).toBe(true);
     expect(isSafeHtml(raw('<p>x</p>'))).toBe(true);
   });
@@ -35,7 +35,7 @@ describe('isSafeHtml() — cross-bundle brand', () => {
     expect(isSafeHtml({ __html: '<p>x</p>' })).toBe(false);
   });
 
-  it('recognises an instance from a separate SafeHtml class that uses the same brand symbol', () => {
+  it('recognizes an instance from a separate SafeHtml class that uses the same brand symbol', () => {
     // Simulate what happens when a consumer's bundler ships two copies of
     // jsx-runtime — each copy defines its own `SafeHtml` class. As long as
     // both classes were built from the same kerf source, they share the

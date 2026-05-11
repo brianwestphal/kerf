@@ -35,7 +35,7 @@ import { escapeAttr, escapeHtml } from './utils/escapeHtml.js';
 import { ATTR_ALIASES } from './utils/jsx-attr-aliases.js';
 
 // Cross-realm/cross-bundle brand. Using `Symbol.for` (the global registry)
-// means two `SafeHtml` classes from different module copies still recognise
+// means two `SafeHtml` classes from different module copies still recognize
 // each other. Same approach React uses for `$$typeof: Symbol.for('react.element')`.
 // Without this, `instanceof SafeHtml` fails when the consumer's bundler ends
 // up loading two copies of kerf (separate barrel + jsx-runtime entries,
@@ -45,7 +45,7 @@ const SAFE_HTML_BRAND = Symbol.for('kerfjs.SafeHtml');
 export class SafeHtml {
   readonly __html: string;
   readonly __segment: Segment;
-  // Branded so `isSafeHtml()` recognises instances from any copy of this module.
+  // Branded so `isSafeHtml()` recognizes instances from any copy of this module.
   readonly [SAFE_HTML_BRAND] = true as const;
   constructor(input: string | Segment) {
     if (typeof input === 'string') {
@@ -166,7 +166,7 @@ function describeValue(v: unknown): string {
 // `<a href={userInput}>` with `userInput === 'javascript:alert(1)'` produces
 // a dropped attribute (and a console.warn) rather than a clickable script
 // vector. `SafeHtml` values (i.e. `raw(...)`) bypass the screen — that's the
-// documented opt-out for legitimate cases (bookmarklet builders, sanitised
+// documented opt-out for legitimate cases (bookmarklet builders, sanitized
 // inputs from a separate trust layer).
 const URL_ATTRS = new Set(['href', 'src', 'xlink:href', 'formaction', 'action']);
 const DANGEROUS_URL_RE = /^\s*(?:(?:java|vb)script:|data:text\/html[;,])/i;
@@ -185,7 +185,7 @@ function renderAttr(key: string, value: unknown): string {
       console.warn(
         `JSX: dropped dangerous URL value for ${name}=${JSON.stringify(value.slice(0, 80))}. `
         + 'kerf blocks javascript:, vbscript:, and data:text/html URLs in href/src/formaction/action/xlink:href by default. '
-        + 'Wrap in raw() if this is intentional (e.g. bookmarklets), or sanitise upstream.',
+        + 'Wrap in raw() if this is intentional (e.g. bookmarklets), or sanitize upstream.',
       );
       return '';
     }

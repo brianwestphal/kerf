@@ -1,18 +1,18 @@
 ---
 title: Live Markdown editor
-description: Split-pane editor — contenteditable on the left, sanitised HTML preview on the right.
+description: Split-pane editor — contenteditable on the left, sanitized HTML preview on the right.
 ---
 
 **[▶ Run live](/kerf/run/markdown-editor/)** · [View source on GitHub](https://github.com/brianwestphal/kerf/tree/main/site/src/examples/complete/markdown-editor)
 
-A live Markdown editor. ~30 lines of kerf, plus `marked` for parsing and `DOMPurify` for sanitisation.
+A live Markdown editor. ~30 lines of kerf, plus `marked` for parsing and `DOMPurify` for sanitization.
 
 **Try typing fast — your cursor stays where you put it. That's the morph at work.**
 
 **What to look at:**
 
 - The editor pane is a `contenteditable`. While focused, kerf preserves caret + multi-range selection automatically. The wrapper is also marked `data-morph-skip` for explicit, unconditional protection — the diff never recurses inside.
-- `computed(() => DOMPurify.sanitize(marked.parse(source.value)))` is **memoised**. Toggle the source and the parse + sanitise pair runs exactly once, not once per consumer.
+- `computed(() => DOMPurify.sanitize(marked.parse(source.value)))` is **memoized**. Toggle the source and the parse + sanitize pair runs exactly once, not once per consumer.
 - `raw(html.value)` injects the cleaned HTML verbatim. No further escaping. Crucially: `raw()` is the contract that says *"trust this string"* — DOMPurify is what makes the contract honest.
 - One `delegate('input', '.editor-input', …)` syncs typing back into the source signal. State flows in one direction (DOM → signal); the morph never writes the editor's content back.
 

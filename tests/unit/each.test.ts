@@ -1,5 +1,5 @@
 /**
- * Unit tests for `each()` — keyed list iteration with per-item memoisation.
+ * Unit tests for `each()` — keyed list iteration with per-item memoization.
  *
  * KF-87 changed the cache scope from per-render-fn (module-level) to
  * per-(mount, listId) (mount-owned). Caching is now a `mount()` feature —

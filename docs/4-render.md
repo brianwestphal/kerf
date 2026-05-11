@@ -20,14 +20,14 @@ const dispose = mount(document.getElementById('app')!, () => (
 1. Wraps `effect()` so the render fn re-runs whenever any signal it reads changes.
 2. Evaluates `render()` to a `SafeHtml`. The wrapped `Segment` is either a single static-html node (most renders), or a tree containing `list` segments (anywhere `each(...)` was used) and `mixed` segments wrapping their parents. As a small ergonomic affordance, a render that returns `null`, `undefined`, `false`, or `true` is coerced to "render nothing" (empty string) — so `mount(el, () => cond ? <jsx/> : null)` and `mount(el, () => cond && <jsx/>)` work without each consumer adding a sentinel. Numbers stringify; real strings pass through.
 3. **First render:** sets `rootEl.innerHTML` to the flattened HTML (with sentinel comments around each list), then walks those comments to bind every list to its live parent. Bulk parse, single pass.
-4. **Subsequent renders:** builds a marker-only template (lists become `<!--kf-list:N-->` placeholders, *no row HTML*), runs kerf's native diff (`src/diff.ts`) over the static surrounds, then dispatches each list segment to a keyed reconciler that operates directly on the live parent's children. Cache-hit rows are reused verbatim; replaced/new rows are batched into one parse and `insertBefore`'d into place. A longest-increasing-subsequence pass keeps reorder mutations to the minimum.
+4. **Subsequent renders:** builds a marker-only template (lists become `<!--kf-list:N-->` placeholders, *no row HTML*), runs kerf's native morph (`src/morph.ts`) over the static surrounds, then dispatches each list segment to a keyed reconciler that operates directly on the live parent's children. Cache-hit rows are reused verbatim; replaced/new rows are batched into one parse and `insertBefore`'d into place. A longest-increasing-subsequence pass keeps reorder mutations to the minimum.
 5. Returns a disposer that tears down the effect.
 
 The structural payoff: a thousand-row list where 100 rows changed runs ~100 cache misses, one bulk parse for those 100 rows, ~100 `insertBefore` calls, and zero work for the 900 unchanged rows. The static surrounds (which are usually small) go through the general-purpose diff.
 
-## 4.2 Diff keys
+## 4.2 Morph keys
 
-`diff()` matches elements across the reconciliation by:
+`morph()` matches elements across the reconciliation by:
 
 - **`id`** — wins over any other key. Useful for singletons.
 - **`data-key`** — generic per-row key for list items.
@@ -43,7 +43,7 @@ Elements without a key are matched positionally by tag name. Pure-HTML diffs wor
 </ul>
 ```
 
-For large lists, swap `.map(...)` for the `each(items, render, key?)` helper. It returns a structured list segment that `mount()` recognises and routes to the keyed reconciler — bypassing the parse-the-whole-table step entirely. Each row is memoised by item identity (with an optional `key` that captures external state like a "selected id"), so unchanged rows skip JSX evaluation, string-building, *and* the morph walk. Items must be objects (the cache is a `WeakMap`); the immutable-update style elsewhere in this codebase makes the cache work automatically — replace a row with a fresh object and it re-renders, leave its reference alone and it doesn't.
+For large lists, swap `.map(...)` for the `each(items, render, key?)` helper. It returns a structured list segment that `mount()` recognizes and routes to the keyed reconciler — bypassing the parse-the-whole-table step entirely. Each row is memoized by item identity (with an optional `key` that captures external state like a "selected id"), so unchanged rows skip JSX evaluation, string-building, *and* the morph walk. Items must be objects (the cache is a `WeakMap`); the immutable-update style elsewhere in this codebase makes the cache work automatically — replace a row with a fresh object and it re-renders, leave its reference alone and it doesn't.
 
 ```tsx
 import { each } from 'kerfjs';
@@ -84,12 +84,13 @@ See §2.6 for the full `arraySignal` API.
 
 ## 4.3 Diff escape hatches
 
-Two `data-*` attributes opt portions of the live tree out of the diff. They overlap deliberately — pick the one that matches your reason for excluding the element.
+Three `data-*` attributes opt portions of the live tree out of the diff. They overlap deliberately — pick the one that matches your reason for excluding the element.
 
-| Attribute | Element itself | Subtree | Use when |
-| --- | --- | --- | --- |
-| `data-morph-skip` | left verbatim (no attr morph) | left verbatim | Library-owned hosts: xterm / Monaco / D3 — the library mutates classes too, so you don't want kerf undoing them. |
-| `data-morph-skip-children` | attrs morph | left verbatim | Client-hydrated slots: server emits an empty container, the client fills it asynchronously, but the server's classes / data attrs on the slot itself still need to flow through (e.g. `class="slot is-loading"` → `"slot is-ready"`). |
+| Attribute | Element itself | Subtree | Trailing-removal | Use when |
+| --- | --- | --- | --- | --- |
+| `data-morph-skip` | left verbatim (no attr morph) | left verbatim | n/a (the element is in the template) | Library-owned hosts: xterm / Monaco / D3 — the library mutates classes too, so you don't want kerf undoing them. |
+| `data-morph-skip-children` | attrs morph | left verbatim | n/a | Client-hydrated slots: server emits an empty container, the client fills it asynchronously, but the server's classes / data attrs on the slot itself still need to flow through (e.g. `class="slot is-loading"` → `"slot is-ready"`). |
+| `data-morph-preserve` | attrs morph if matched; otherwise untouched | morphed if matched; otherwise untouched | skipped (element survives even when the new template doesn't emit it) | Imperatively-injected nodes the consumer added AFTER first render — autoplay `<video>`, tooltip layer, analytics pixel — that aren't in the JSX. |
 
 ### `data-morph-skip` — library-owned subtree
 
@@ -131,6 +132,34 @@ The diff still morphs the slot's `class` (so `is-loading` → `is-ready` transit
 
 The distinction vs `data-morph-skip` matters: if the slot's host classes need to update across renders, you want this, not `data-morph-skip`.
 
+### `data-morph-preserve` — imperatively-injected child (KF-151)
+
+Apply this attribute to an element that the consumer adds to the live tree AFTER first render — a node the JSX never emits but whose lifetime is managed outside kerf:
+
+```ts
+// First render emits <article class="card">...</article>.
+// Client-side autoplay module appends a hidden <video> per card:
+const v = document.createElement('video');
+v.dataset.morphPreserve = '';  // any value (even '') opts the node out of removal
+v.muted = true; v.playsInline = true;
+v.src = card.videoUrl;
+card.appendChild(v);
+```
+
+On the next render kerf's template still emits just `<article class="card">…</article>` (no `<video>`). Without the attribute, the diff's trailing-removal pass would remove the `<video>` because nothing in the new template matched it. With `data-morph-preserve`, kerf skips it in that pass and the imperatively-added element survives.
+
+Scope is deliberately narrow — it's an **end-of-list-discard opt-out**, nothing more:
+
+- If a keyed-match (`id` / `data-key`) in the new template lines up with the preserved element, kerf will still move it (`insertBefore`) to wherever the template places it. The attribute doesn't pin position.
+- Attribute morphing and child diffing still run on a matched preserved element exactly as on any other element. The attribute only affects the "unmatched → remove" decision.
+- Use `data-morph-skip` if you also need the element's subtree/attributes left alone.
+
+Comparison:
+
+- `data-morph-skip` covers *library-owned hosts*: the whole region is off-limits.
+- `data-morph-skip-children` covers *server-rendered shells*: attributes flow, children are off-limits.
+- `data-morph-preserve` covers *imperatively-injected children*: the element keeps existing across renders even though kerf's template never mentions it.
+
 ## 4.4 Focus + selection preservation
 
 When the diff is about to update an element that is currently the active element, kerf preserves the user's in-progress edit. The mechanism differs by element kind:
@@ -150,7 +179,7 @@ Other input types (range, color, file, date, checkbox, radio…) don't have mean
 
 For a focused contenteditable, kerf takes the heavier-handed approach: **the entire subtree is skipped on this morph**, the same way `data-morph-skip` works. The user's typed content, caret position, and any multi-range selection survive verbatim — including any custom DOM they produced (`<b>`, `<a>`, line breaks, etc.). The trade-off is that *any* update to the contenteditable's attributes or children is also deferred until the next render after the user blurs.
 
-This is the behaviour you almost always want for in-progress rich-text editing: don't disturb the editor mid-edit. If you want kerf to drive a contenteditable's content despite the user being focused, that's outside the framework — manage it imperatively or move that state outside the contenteditable.
+This is the behavior you almost always want for in-progress rich-text editing: don't disturb the editor mid-edit. If you want kerf to drive a contenteditable's content despite the user being focused, that's outside the framework — manage it imperatively or move that state outside the contenteditable.
 
 ### Non-text focused elements
 
@@ -160,7 +189,7 @@ For anything else with focus (a `<button>`, `<a>`, `<div tabindex>`), the diff p
 
 When the keyed list reconciler moves a row whose descendant is the focused element, the row's DOM node is reused — the focused element stays connected to the document. Some engines (older Safari, happy-dom) drop focus state on `insertBefore` even when the element survives, so the reconciler snapshots the active element + its selection range before the move pass and re-applies them afterwards. Engines that already preserve focus see a no-op; engines that don't get a transparent fix.
 
-Replaced rows (cache miss — the row's HTML changed) are a different story: the old node is removed before the new one is inserted, so focus that lived inside it is genuinely gone. That matches the behaviour of any framework that re-renders a row.
+Replaced rows (cache miss — the row's HTML changed) are a different story: the old node is removed before the new one is inserted, so focus that lived inside it is genuinely gone. That matches the behavior of any framework that re-renders a row.
 
 ## 4.4.1 User-agent-owned state attributes
 
@@ -179,7 +208,7 @@ Controlled-style usage where a signal flips `open` from `true` → `false` does 
 //   isOpen.value === false → open attribute is NOT removed (it survives like a user-set one).
 ```
 
-If you need controlled behaviour, drive `open` imperatively from a signal subscription:
+If you need controlled behavior, drive `open` imperatively from a signal subscription:
 
 ```tsx
 import { effect } from 'kerfjs';
@@ -195,7 +224,7 @@ Or design around the element's native semantics: render `<details>` once, listen
 
 ## 4.4.2 Imperative DOM mutations and the no-op-render fast path (KF-117)
 
-`mount()` re-runs your render function whenever a signal it read changes. On each re-run kerf compares the new "static surrounds" HTML (everything outside `each()` lists) against the previous render's. **If they're byte-for-byte identical, the diff is skipped entirely** — the cost-saving optimisation that lets a list signal flip a class without paying for a parent walk.
+`mount()` re-runs your render function whenever a signal it read changes. On each re-run kerf compares the new "static surrounds" HTML (everything outside `each()` lists) against the previous render's. **If they're byte-for-byte identical, the diff is skipped entirely** — the cost-saving optimization that lets a list signal flip a class without paying for a parent walk.
 
 The implication for imperative DOM mutations: any attribute, text node, or child you set on a kerf-managed element via `el.setAttribute(...)`, `el.appendChild(...)`, or similar **survives across no-op re-renders**. The framework's "smallest cut" model says: if JSX didn't ask for the change, don't touch what's there.
 
@@ -227,13 +256,40 @@ label.value = 'second';   // surrounds changed → diff runs → attribute wiped
 
 ### Practical guidance
 
-- For library-owned subtrees (charts, terminals, editors), use `data-morph-skip` to opt out of diffing entirely. The fast path's behaviour above is brittle as a long-term plan because *any* change to the JSX surrounds will wipe your imperative mutations on the next render.
+- For library-owned subtrees (charts, terminals, editors), use `data-morph-skip` to opt out of diffing entirely. The fast path's behavior above is brittle as a long-term plan because *any* change to the JSX surrounds will wipe your imperative mutations on the next render.
 - For attribute reflection (e.g. an MutationObserver-driven highlight), prefer driving the attribute through a signal so the JSX is the source of truth. The fast path then becomes irrelevant.
 - For one-off attribute pokes (analytics IDs, ARIA mirrors), the fast path means the poke usually sticks — but you should expect it to disappear the moment the surrounding render changes shape. Design for that.
 
 ### Why kept this way
 
 The alternative — running the diff on every render even when nothing changed — costs ~8 ms per update on partial-update / select-row / swap-rows in the krausest harness (the scenarios where the list changes but surrounds don't). The "smallest cut" promise is the framework's headline. KF-117 surfaced this trade-off; we kept the fast path and documented it here.
+
+## 4.4.3 Using `morph()` outside of `mount()` (KF-150)
+
+`morph(liveRoot, template)` is the same reconciliation primitive `mount()` uses internally, exported for one-shot use against an already-populated element. Reach for it when `mount()`'s "wipe and bulk-render on first paint" semantics don't fit — typical cases:
+
+- **SSR / static-fragment hydration.** The server delivered an HTML fragment; you want to reconcile it toward a freshly-built version after some client-side state arrives, without throwing away the DOM nodes the server already streamed.
+- **Page-refresh diffs.** You hold a freshly-built `<article>` and want the live `<article>` on screen to morph to match — preserving any focused inputs, any user-toggled `<details open>`, any imperative mutations the user didn't make.
+- **Third-party widget remounts.** The widget rendered something; you have a new version of "what it should look like" as HTML and need an in-place update.
+
+```ts
+import { morph } from 'kerfjs';
+
+// Element template
+morph(liveCard, freshlyBuiltCard);
+
+// Raw HTML string (parsed into a transient element whose tag matches liveCard)
+morph(liveCard, '<article class="card">…</article>');
+
+// SafeHtml (e.g. from `raw()` or a JSX expression)
+morph(liveCard, raw(htmlFromServer));
+```
+
+`morph()` honors every short-circuit `mount()`'s internal pipeline uses: `data-morph-skip`, `data-morph-skip-children`, `data-morph-preserve`, focused-input value + selection preservation, focused-`[contenteditable]` subtree preservation, and `<details>`/`<dialog>`'s user-agent-owned `open` attribute. Match keys (`id`, then `data-key`) work the same way as inside a mount.
+
+What `morph()` doesn't do: it isn't reactive (no signal subscription, no effect). It runs once per call. If you want re-renders, use `mount()`. If you want a one-shot reconciliation against a tree you already own, `morph()` is the primitive — five lines of glue away from what would otherwise force you back to `mount()`'s wipe-and-rebuild semantics or to a third-party morph library.
+
+The internal third parameter (`ownedItems`) coordinates with `mount()`'s list reconciler and should be omitted by public callers.
 
 ## 4.5 Multiple `mount()` calls
 

@@ -93,7 +93,7 @@ A click on an icon inside a button should fire the button's handler, not the ico
 
 `delegate()` uses `closest()` for **every** event type, including the auto-promoted non-bubblers. So `delegate(root, 'focus', '.field-row', ...)` fires when a descendant `<input>` of `.field-row` receives focus, with the row as the matched element.
 
-`delegateCapture()` uses `target.matches()` (direct match only). This is the escape-hatch behaviour — useful when you want the listener to fire only when the event lands on the exact element the selector identifies, not any descendant.
+`delegateCapture()` uses `target.matches()` (direct match only). This is the escape-hatch behavior — useful when you want the listener to fire only when the event lands on the exact element the selector identifies, not any descendant.
 
 ## 5.3 Disposers
 

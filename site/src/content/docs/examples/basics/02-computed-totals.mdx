@@ -7,7 +7,7 @@ import { Code } from '@astrojs/starlight/components';
 import LiveExample from '../../../../components/examples/basics/02-computed-totals.astro';
 import source from '../../../../examples/basics/02-computed-totals/main.tsx?raw';
 
-`computed()` derives a value from other signals. It's lazy and memoised — recomputes only when its dependencies change, and only when a consumer reads it.
+`computed()` derives a value from other signals. It's lazy and memoized — recomputes only when its dependencies change, and only when a consumer reads it.
 
 **What to look at:** three inputs (bill, tip %, party size), three derived values (tip, total, per-person). The `total` computed depends on the `tip` computed, which depends on `bill` and `tipPct` — that chain re-derives only what changed. Edit the bill: `tip`, `total`, and `perPerson` all update; edit just party size and `tip` is *not* recomputed.
 

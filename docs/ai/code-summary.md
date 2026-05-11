@@ -14,7 +14,7 @@ kerf/
 │   ├── array-signal.ts           ← arraySignal (KF-92) — granular collection signal; lives at the kerfjs/array-signal subpath (KF-95) so non-users shed ~1 KB
 │   ├── store.ts                  ← defineStore + resetAllStores + REGISTRY
 │   ├── mount.ts                  ← mount() — segment-aware render bound to effect()
-│   ├── diff.ts                   ← native general-purpose DOM reconciler (replaces morphdom)
+│   ├── morph.ts                  ← native general-purpose DOM reconciler (replaces morphdom); exported publicly as morph() (KF-150)
 │   ├── segment.ts                ← Segment types (static/list/mixed) + flatten helpers
 │   ├── each.ts                   ← each() — keyed list iteration with per-item memo
 │   ├── list-reconcile.ts         ← top-level dispatcher (KF-112) — re-exports BoundItem / ListBinding / endAnchor and defines reconcileList
@@ -33,8 +33,8 @@ kerf/
 │   │   ├── array-signal.test.ts
 │   │   ├── audit-gap-coverage.test.tsx     ← regression-net for v8-only branches found via coverage gaps
 │   │   ├── delegate.test.ts
-│   │   ├── diff.internal.test.ts
-│   │   ├── doc-contract-coverage.test.tsx  ← KF-104 — comprehensive contract suite covering every doc-asserted behaviour
+│   │   ├── morph.internal.test.ts
+│   │   ├── doc-contract-coverage.test.tsx  ← KF-104 — comprehensive contract suite covering every doc-asserted behavior
 │   │   ├── each.test.ts
 │   │   ├── edge-case-coverage.test.tsx     ← adversarial probes for mount-lifecycle / shape-transitions / focus-on-granular-path / fast-path corners / 1000-row stress
 │   │   ├── jsx-runtime.test.ts
@@ -178,7 +178,7 @@ Runtime dep (`@preact/signals-core`) is external — consumers' bundlers pick it
 | --- | --- |
 | Adding a new public export | `src/index.ts` + the relevant module + `docs/8-api-reference.md` |
 | JSX attribute alias | `src/utils/jsx-attr-aliases.ts` (the `ATTR_ALIASES` map) |
-| diff conventions | `src/diff.ts` (key matching, `data-morph-skip`, `data-morph-skip-children` (KF-152), focus preservation), `src/mount.ts` (segment dispatch) |
+| morph conventions | `src/morph.ts` (public `morph()` (KF-150), key matching, `data-morph-skip`, `data-morph-skip-children` (KF-152), `data-morph-preserve` (KF-151), focus preservation), `src/mount.ts` (segment dispatch) |
 | SVG namespace handling | `src/toElement.ts` (`SVG_FRAGMENT_TAGS`) |
 | Store reset semantics | `src/store.ts` (`REGISTRY`, `resetAllStores`) |
 | Delegation tier docs | `docs/5-event-delegation.md` |
@@ -194,5 +194,5 @@ Update this doc whenever you:
 1. Add or rename a file under `src/`.
 2. Add a new public export to `src/index.ts`.
 3. Change the build output shape (`tsup.config.ts`).
-4. Add a new conventional `data-*` attribute that `mount()` recognises.
+4. Add a new conventional `data-*` attribute that `mount()` recognizes.
 5. Add a new test directory or convention.

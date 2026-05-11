@@ -334,8 +334,8 @@ describe('Audit gap coverage', () => {
       }).toThrow(/Got HTML: ".+…"/);
     });
 
-    it('browser-normalised single-root HTML (e.g. self-closing void tag) does not throw', () => {
-      // <br/> in expectedHtml normalises to <br> in the live DOM's outerHTML.
+    it('browser-normalized single-root HTML (e.g. self-closing void tag) does not throw', () => {
+      // <br/> in expectedHtml normalizes to <br> in the live DOM's outerHTML.
       // validateInlinedRowMatch's first equality check fails, but the
       // per-row parse confirms count === 1 and returns without throwing.
       const items = [{ id: 1 }];

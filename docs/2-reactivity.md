@@ -125,7 +125,7 @@ Read-side semantics match a regular signal: `arraySig.value` is a snapshot, and 
 ### Gotchas
 - `arraySignal` mutates `_items` eagerly at the call site. The patch queue and the snapshot are always in sync after a mutation returns.
 - Multiple `each(...)` callsites bound to the same `arraySignal` in one render: the first caller drains the patch queue and runs granular reconcile; the second (and beyond) sees an empty queue and falls through to the snapshot path. Both lists end up correct, but only one gets the perf win. Prefer one-binding-per-arraySignal-per-render.
-- A `replace()` patch in a batch forces the snapshot path for that render. Granular optimisations resume the next render.
+- A `replace()` patch in a batch forces the snapshot path for that render. Granular optimizations resume the next render.
 - A throwing row render falls back to the snapshot path automatically (KF-99). If the snapshot also throws on the same bad row, the error bubbles to the user — fix the row in the signal, and the next render rebuilds from scratch.
 
 ## 2.7 What signals are NOT

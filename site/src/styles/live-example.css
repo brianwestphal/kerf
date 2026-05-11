@@ -211,7 +211,7 @@
   border-radius: 6px;
 }
 
-/* Two-column split editor used by the markdown / sanitised-HTML demo
+/* Two-column split editor used by the markdown / sanitized-HTML demo
  * (basics/09). `minmax(0, 1fr)` lets each column shrink under wide rendered
  * output so the article never overflows the live-preview frame. Stacks
  * vertically on narrow viewports — at that size the side-by-side comparison

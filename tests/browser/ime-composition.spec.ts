@@ -1,7 +1,7 @@
 /**
  * KF-79 — IME composition state survival across kerf morphs.
  *
- * The focused-input branch in `src/diff.ts` handles `<input>` and
+ * The focused-input branch in `src/morph.ts` handles `<input>` and
  * `<textarea>` value/selection preservation, but the existing happy-dom
  * test suite says nothing about composition events
  * (compositionstart/compositionupdate/compositionend). Real CJK input
