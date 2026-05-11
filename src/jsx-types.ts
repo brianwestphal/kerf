@@ -71,6 +71,8 @@ export interface KerfBaseAttrs extends DataAriaAttrs {
   accessKey?: AttrLike;
   /** `data-morph-skip` opts a subtree out of kerf's diff. Any value (incl. `true`) is treated as set. */
   'data-morph-skip'?: AttrValue;
+  /** `data-morph-skip-children` (KF-152) — morph the element's attributes but leave its children verbatim. For client-hydrated slots whose loading/state classes still need to flow through. Any value (incl. `true`) is treated as set. */
+  'data-morph-skip-children'?: AttrValue;
   children?: unknown;
 }
 

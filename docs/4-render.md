@@ -82,9 +82,18 @@ A few invariants the granular path holds:
 
 See §2.6 for the full `arraySignal` API.
 
-## 4.3 `data-morph-skip`
+## 4.3 Diff escape hatches
 
-Apply this attribute to any element whose subtree you DON'T want kerf to touch:
+Two `data-*` attributes opt portions of the live tree out of the diff. They overlap deliberately — pick the one that matches your reason for excluding the element.
+
+| Attribute | Element itself | Subtree | Use when |
+| --- | --- | --- | --- |
+| `data-morph-skip` | left verbatim (no attr morph) | left verbatim | Library-owned hosts: xterm / Monaco / D3 — the library mutates classes too, so you don't want kerf undoing them. |
+| `data-morph-skip-children` | attrs morph | left verbatim | Client-hydrated slots: server emits an empty container, the client fills it asynchronously, but the server's classes / data attrs on the slot itself still need to flow through (e.g. `class="slot is-loading"` → `"slot is-ready"`). |
+
+### `data-morph-skip` — library-owned subtree
+
+Apply this attribute to any element whose subtree AND attributes you DON'T want kerf to touch:
 
 ```tsx
 <div id="chart-mount" data-morph-skip />
@@ -96,11 +105,31 @@ After the first render, mount your library widget into `#chart-mount` directly:
 const chart = new ThirdPartyChart(document.getElementById('chart-mount')!);
 ```
 
-On subsequent re-renders, the diff sees `data-morph-skip` on the host and short-circuits — so the entire subtree (the chart's internal DOM) is preserved. Use this for:
+On subsequent re-renders, the diff sees `data-morph-skip` on the host and short-circuits before attribute morphing — so the entire subtree (the chart's internal DOM) AND any classes the library set on the host are preserved. Use this for:
 
 - xterm.js / Monaco-style editors.
 - D3 / Plotly / Chart.js mounted regions.
 - Any element with imperative DOM mutations you manage yourself.
+
+### `data-morph-skip-children` — client-hydrated slot (KF-152)
+
+Apply this attribute when the *children* are imperatively painted (and must survive the morph) but the element itself is server-rendered and needs its attributes to keep flowing through:
+
+```tsx
+// Server template
+<div class={`card-comments ${state}`} data-morph-skip-children />
+```
+
+```ts
+// Client paints comments into the slot asynchronously
+fetchComments(cardId).then(rows => {
+  slot.replaceChildren(...rows.map(renderRow));
+});
+```
+
+The diff still morphs the slot's `class` (so `is-loading` → `is-ready` transitions work) but leaves the comment rows alone. Use this for any "server controls the shell, client owns the contents" pattern.
+
+The distinction vs `data-morph-skip` matters: if the slot's host classes need to update across renders, you want this, not `data-morph-skip`.
 
 ## 4.4 Focus + selection preservation
 

@@ -178,7 +178,7 @@ Runtime dep (`@preact/signals-core`) is external — consumers' bundlers pick it
 | --- | --- |
 | Adding a new public export | `src/index.ts` + the relevant module + `docs/8-api-reference.md` |
 | JSX attribute alias | `src/utils/jsx-attr-aliases.ts` (the `ATTR_ALIASES` map) |
-| diff conventions | `src/diff.ts` (key matching, `data-morph-skip`, focus preservation), `src/mount.ts` (segment dispatch) |
+| diff conventions | `src/diff.ts` (key matching, `data-morph-skip`, `data-morph-skip-children` (KF-152), focus preservation), `src/mount.ts` (segment dispatch) |
 | SVG namespace handling | `src/toElement.ts` (`SVG_FRAGMENT_TAGS`) |
 | Store reset semantics | `src/store.ts` (`REGISTRY`, `resetAllStores`) |
 | Delegation tier docs | `docs/5-event-delegation.md` |

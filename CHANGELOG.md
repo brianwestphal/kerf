@@ -4,6 +4,11 @@ All notable changes to **kerf** are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+
+- Add `data-morph-skip-children` attribute — morphs attributes on the host but leaves its subtree alone. For client-hydrated slots whose loading / state classes still need to flow through. Companion to existing `data-morph-skip`; decision matrix in `docs/4-render.md` §4.3 (KF-152).
+
 ## [0.5.1] - 2026-05-11
 
 

@@ -9,7 +9,10 @@
  *
  * - `childrenOnly` is always true; the live root is never replaced.
  * - Per-element short-circuits: `data-morph-skip` (library-owned, leave
- *   verbatim) and `isEqualNode` (byte-identical, no work needed).
+ *   element AND subtree verbatim), `data-morph-skip-children` (KF-152 —
+ *   morph attrs on the element, leave its subtree verbatim — for
+ *   client-hydrated slots whose loading/state classes still need to flow
+ *   through), and `isEqualNode` (byte-identical, no work needed).
  * - **`ownedItems`** is the set of element nodes owned by an `each()`
  *   list reconciler. The diff skips them in every children walk —
  *   they're not added to the keyed-lookup map, the from-cursor advances
@@ -178,7 +181,11 @@ function morphElement(
     if (isTextInputOrTextarea(fromEl)) preserveTextEntryState(fromEl, toEl);
   }
   morphAttributes(fromEl, toEl);
-  // 4. Recurse into children. List items inside `fromEl` (if any) are
+  // 4. Subtree-only skip (KF-152) — attributes have already morphed; leave
+  //    the children alone. Use for client-hydrated slots whose loading /
+  //    state classes still need to flow through.
+  if ((fromEl as HTMLElement).dataset.morphSkipChildren !== undefined) return;
+  // 5. Recurse into children. List items inside `fromEl` (if any) are
   //    skipped via `ownedItems` inside diffChildren — list reconciler
   //    owns them — but non-list siblings are still diffed.
   diffChildren(fromEl, toEl, ownedItems);

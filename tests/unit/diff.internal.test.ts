@@ -146,6 +146,21 @@ describe('diff()', () => {
     expect(live.querySelector('b')).toBe(null);
   });
 
+  it('KF-152: data-morph-skip-children morphs attrs but leaves children intact', () => {
+    // The slot's classes flip from "is-loading" to "is-ready" across renders
+    // (server-driven state) but the children were imperatively painted by the
+    // client and must survive the morph.
+    live.innerHTML = '<div data-morph-skip-children class="slot is-loading"><span>client-painted</span></div>';
+    const inner = live.querySelector('span');
+    const tpl = renderTemplate('<div data-morph-skip-children class="slot is-ready"><b>different</b></div>');
+    diff(live, tpl, new Set());
+    // Attribute morph still happened on the slot itself…
+    expect(live.querySelector('div')?.getAttribute('class')).toBe('slot is-ready');
+    // …but the children are untouched.
+    expect(live.querySelector('span')).toBe(inner);
+    expect(live.querySelector('b')).toBe(null);
+  });
+
   it('skips elements listed in ownedItems (kerf list reconciler owns them)', () => {
     live.innerHTML = '<ul><!--marker--><li>row 1</li><li>row 2</li></ul>';
     const ul = live.querySelector('ul')!;

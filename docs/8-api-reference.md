@@ -106,7 +106,8 @@ The diff:
 - Only ever touches `rootEl`'s subtree; `rootEl` itself is preserved.
 - Matches elements by `id`, then `data-key`. Position otherwise.
 - Short-circuits on the live element when:
-  - It has `data-morph-skip` (subtree preserved as-is).
+  - It has `data-morph-skip` (element AND subtree preserved as-is; no attribute morphing).
+  - It has `data-morph-skip-children` (attributes morph; subtree preserved as-is). KF-152.
   - It's a list parent owned by `each(...)` (children-only short-circuit; `each`'s reconciler owns those rows). Attribute morphing on the parent itself still happens.
   - `fromEl.isEqualNode(toEl)` (no work needed).
   - It's the focused `[contenteditable]` (entire subtree preserved on this morph; see §8.7 below and `docs/4-render.md` §4.4).
@@ -217,7 +218,8 @@ Throws if the input produces zero elements OR if `DOMParser` returns a `parserer
 | --- | --- |
 | `id="..."` | Used as a diff key. Highest priority. |
 | `data-key="..."` | Used as a diff key. Lower priority than `id`. |
-| `data-morph-skip` (any value, even empty) | Subtree preserved as-is on every re-render. |
+| `data-morph-skip` (any value, even empty) | Element AND subtree preserved as-is on every re-render. No attribute morphing on the element itself. |
+| `data-morph-skip-children` (any value, even empty) | Attributes on the element morph normally; the subtree is left as-is. For client-hydrated slots whose host state classes still need to flow through. KF-152. |
 
 | Element kind | Behaviour when focused during a morph |
 | --- | --- |
