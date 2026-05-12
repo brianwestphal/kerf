@@ -1,14 +1,29 @@
 import { defineStore, signal, mount, each, delegateCapture } from 'kerfjs';
 
-interface Card { id: string; text: string }
+type Tag = 'design' | 'code' | 'docs' | 'bug' | 'ops';
+type Avatar = 'a' | 'b' | 'c' | 'd' | 'e';
+interface Card { id: string; text: string; tag: Tag; who: Avatar; initial: string }
 type ColId = 'todo' | 'doing' | 'done';
 
 const board = defineStore({
   initial: () => ({
     cols: {
-      todo:  [{ id: 'a', text: 'Design hero copy' }, { id: 'b', text: 'Write llms.txt' }, { id: 'c', text: 'Sketch logo' }] as Card[],
-      doing: [{ id: 'd', text: 'Implement keyed list' }, { id: 'e', text: 'Wire delegate()' }] as Card[],
-      done:  [{ id: 'f', text: 'Pick a name' }, { id: 'g', text: 'Set up repo' }] as Card[],
+      todo: [
+        { id: 'a', text: 'Design new hero illustration',     tag: 'design', who: 'a', initial: 'A' },
+        { id: 'b', text: 'Draft v1.0 announcement post',     tag: 'docs',   who: 'b', initial: 'M' },
+        { id: 'c', text: 'Investigate flicker on slow 4G',   tag: 'bug',    who: 'c', initial: 'J' },
+        { id: 'd', text: 'Sketch component playground UX',   tag: 'design', who: 'a', initial: 'A' },
+      ] as Card[],
+      doing: [
+        { id: 'e', text: 'Wire up streaming chat example',   tag: 'code',   who: 'd', initial: 'S' },
+        { id: 'f', text: 'Migrate CI to ARM runners',        tag: 'ops',    who: 'e', initial: 'T' },
+        { id: 'g', text: 'Rewrite onboarding tour',          tag: 'docs',   who: 'b', initial: 'M' },
+      ] as Card[],
+      done: [
+        { id: 'h', text: 'Ship granular array signals',      tag: 'code',   who: 'd', initial: 'S' },
+        { id: 'i', text: 'Tune morph for IME composition',   tag: 'code',   who: 'c', initial: 'J' },
+        { id: 'j', text: 'Audit American-English spelling',  tag: 'docs',   who: 'b', initial: 'M' },
+      ] as Card[],
     } satisfies Record<ColId, Card[]>,
   }),
   actions: (set, get) => ({
@@ -41,37 +56,48 @@ const COL_TITLES: Record<ColId, string> = { todo: 'To do', doing: 'Doing', done:
 
 mount(root, () => (
   <div class="board">
-    {COLS.map((col) => (
-      <section class="col" data-col={col} data-key={col}>
-        <h2>{COL_TITLES[col]}</h2>
-        <ul class="cards">
-          {each(
-            board.state.value.cols[col],
-            (card) => {
-              const d = drag.value;
-              const dragging = d?.id === card.id;
-              // While dragging, freeze the card via data-morph-skip and apply a transform.
-              // Without skip, the diff might recurse and the transform would fight identity.
-              const style = dragging
-                ? `position:relative;z-index:10;transform:translate(${d!.dx}px,${d!.dy}px);width:${d!.w}px;pointer-events:none`
-                : '';
-              return (
-                <li
-                  data-key={card.id}
-                  class={`card ${dragging ? 'dragging' : ''}`}
-                  data-card={card.id}
-                  style={style}
-                  {...(dragging ? { 'data-morph-skip': '' } : {})}
-                >
-                  {card.text}
-                </li>
-              );
-            },
-            (card) => `${card.id}-${drag.value?.id === card.id ? 'drag' : 'rest'}`,
-          )}
-        </ul>
-      </section>
-    ))}
+    {COLS.map((col) => {
+      const cards = board.state.value.cols[col];
+      return (
+        <section class="col" data-col={col} data-key={col}>
+          <div class="col-header">
+            <h2>{COL_TITLES[col]}</h2>
+            <span class="count">{cards.length}</span>
+          </div>
+          <ul class="cards">
+            {each(
+              cards,
+              (card) => {
+                const d = drag.value;
+                const dragging = d?.id === card.id;
+                // While dragging, freeze the card via data-morph-skip and apply a transform.
+                // Without skip, the diff might recurse and the transform would fight identity.
+                const style = dragging
+                  ? `position:relative;z-index:10;transform:translate(${d!.dx}px,${d!.dy}px) rotate(2deg);width:${d!.w}px;pointer-events:none`
+                  : '';
+                return (
+                  <li
+                    data-key={card.id}
+                    class={`card ${dragging ? 'dragging' : ''}`}
+                    data-card={card.id}
+                    style={style}
+                    {...(dragging ? { 'data-morph-skip': '' } : {})}
+                  >
+                    <span class={`card-tag ${card.tag}`}>{card.tag}</span>
+                    <div class="card-text">{card.text}</div>
+                    <div class="card-meta">
+                      <span><span class={`avatar ${card.who}`}>{card.initial}</span></span>
+                      <span>#{card.id.toUpperCase()}</span>
+                    </div>
+                  </li>
+                );
+              },
+              (card) => `${card.id}-${drag.value?.id === card.id ? 'drag' : 'rest'}`,
+            )}
+          </ul>
+        </section>
+      );
+    })}
   </div>
 ));
 

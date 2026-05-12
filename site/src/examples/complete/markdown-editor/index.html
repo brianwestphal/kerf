@@ -5,20 +5,112 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>kerf · Live Markdown editor</title>
     <style>
-      body { font-family: system-ui; margin: 0; padding: 0; height: 100vh; }
-      .editor { display: grid; grid-template-columns: 1fr 1fr; height: 100%; }
-      .pane { padding: 1.5rem; overflow: auto; }
-      .editor-pane { background: #1f2937; }
-      .editor-input { color: #f9fafb; font-family: ui-monospace, monospace; font-size: 0.9rem; line-height: 1.5; min-height: 100%; outline: none; white-space: pre-wrap; }
-      .preview { background: white; }
-      .preview h1, .preview h2, .preview h3 { margin-top: 0.5em; }
-      .preview code { background: #f3f4f6; padding: 0.1em 0.3em; border-radius: 3px; font-family: ui-monospace, monospace; }
-      .preview a { color: #2563eb; }
-      .preview ul { padding-left: 1.5rem; }
+      :root {
+        --bg: #0f172a;
+        --bg-elev: #111a2e;
+        --border: #1e293b;
+        --text: #e2e8f0;
+        --text-dim: #94a3b8;
+        --accent: #38bdf8;
+        --accent-2: #818cf8;
+      }
+      * { box-sizing: border-box; }
+      html, body { height: 100%; }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Inter', system-ui, sans-serif;
+        margin: 0;
+        color: var(--text);
+        background: var(--bg);
+      }
+      .shell { display: grid; grid-template-rows: auto 1fr; height: 100vh; }
+      #app { display: grid; min-height: 0; }
+      header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.7rem 1.25rem;
+        border-bottom: 1px solid var(--border);
+        background: linear-gradient(180deg, rgba(56,189,248,0.06), transparent);
+      }
+      .brand { display: flex; align-items: center; gap: 0.55rem; font-weight: 600; font-size: 0.95rem; }
+      .brand .mark {
+        width: 22px; height: 22px; border-radius: 6px;
+        background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      }
+      .badge {
+        display: inline-flex; align-items: center; gap: 0.4rem;
+        font-size: 0.75rem; color: var(--text-dim);
+        padding: 0.25rem 0.65rem;
+        border-radius: 999px;
+        background: rgba(56,189,248,0.08);
+        border: 1px solid rgba(56,189,248,0.25);
+      }
+      .badge::before {
+        content: ''; width: 6px; height: 6px; border-radius: 50%;
+        background: var(--accent); box-shadow: 0 0 6px var(--accent);
+      }
+      .editor { display: grid; grid-template-columns: 1fr 1fr; min-height: 0; }
+      .pane { padding: 1.5rem 1.75rem; overflow: auto; min-width: 0; }
+      .editor-pane { background: var(--bg-elev); border-right: 1px solid var(--border); }
+      .editor-input {
+        color: var(--text);
+        font-family: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        font-size: 0.92rem;
+        line-height: 1.65;
+        min-height: 100%;
+        outline: none;
+        white-space: pre-wrap;
+        caret-color: var(--accent);
+      }
+      .preview {
+        background: #fafafa;
+        color: #0f172a;
+        font-family: -apple-system, BlinkMacSystemFont, 'Inter', Georgia, serif;
+        line-height: 1.7;
+      }
+      .preview h1 { margin: 0 0 0.5em; font-size: 1.7rem; font-weight: 700; }
+      .preview h2 { margin-top: 1.4em; font-size: 1.25rem; }
+      .preview h3 { margin-top: 1.2em; font-size: 1.05rem; }
+      .preview p { margin: 0 0 0.9em; }
+      .preview code {
+        background: #e2e8f0;
+        padding: 0.1em 0.35em;
+        border-radius: 4px;
+        font-family: 'IBM Plex Mono', ui-monospace, monospace;
+        font-size: 0.88em;
+      }
+      .preview pre {
+        background: #0f172a;
+        color: #e2e8f0;
+        padding: 0.9em 1em;
+        border-radius: 6px;
+        overflow-x: auto;
+      }
+      .preview pre code { background: transparent; padding: 0; color: inherit; }
+      .preview a { color: #2563eb; text-decoration: underline; text-underline-offset: 2px; }
+      .preview ul, .preview ol { padding-left: 1.5rem; margin: 0 0 0.9em; }
+      .preview blockquote {
+        margin: 0 0 0.9em;
+        padding: 0.4em 1em;
+        border-left: 3px solid var(--accent);
+        color: #475569;
+        background: #f1f5f9;
+        border-radius: 0 4px 4px 0;
+      }
+      .preview hr { border: 0; border-top: 1px solid #cbd5e1; margin: 1.5em 0; }
     </style>
   </head>
   <body>
-    <div id="app"></div>
+    <div class="shell">
+      <header>
+        <div class="brand">
+          <div class="mark"></div>
+          <div>Live Markdown</div>
+        </div>
+        <div class="badge">Focus survival is on. Type freely.</div>
+      </header>
+      <div id="app"></div>
+    </div>
     <script type="module" src="./main.tsx"></script>
   </body>
 </html>

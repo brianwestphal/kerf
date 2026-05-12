@@ -9,6 +9,11 @@ A live Markdown editor. ~30 lines of kerf, plus `marked` for parsing and `DOMPur
 
 **Try typing fast — your cursor stays where you put it. That's the morph at work.**
 
+<div class="video-placeholder">
+  🎬 <strong>Demo clip — Coming Soon</strong>
+  <p>30-second screen-record showing focus survival while typing into the middle of a paragraph.</p>
+</div>
+
 **What to look at:**
 
 - The editor pane is a `contenteditable`. While focused, kerf preserves caret + multi-range selection automatically. The wrapper is also marked `data-morph-skip` for explicit, unconditional protection — the diff never recurses inside.

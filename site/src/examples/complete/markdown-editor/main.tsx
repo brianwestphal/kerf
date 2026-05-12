@@ -2,16 +2,32 @@ import { signal, computed, mount, raw, delegate } from 'kerfjs';
 import { marked } from 'marked';
 import DOMPurify from 'dompurify';
 
-const SAMPLE = `# Try typing fast
+const SAMPLE = `# Type fast. The cursor stays put.
 
-The cursor stays where you put it. That's the morph at work.
+This is the live preview on the right. The editor on the left is a
+\`contenteditable\` — kerf preserves your caret and selection on every
+re-render, so you can edit in the *middle* of a line and never
+get bumped to the end.
 
-Hit \`Cmd+B\` and watch nothing break. **Bold**, *italic*, ~~strike~~, \`code\`, lists, links — they all just work.
+## Try it
 
-- Item one
-- Item two
-  - Nested
-- [A link](https://github.com/brianwestphal/kerf)
+- Drop your cursor anywhere in this paragraph and keep typing — nothing jumps.
+- Select a phrase, hit delete, watch only that span disappear in the preview.
+- The whole reactive loop is \`signal\` → \`computed\` → \`raw()\` → morph.
+
+## Code
+
+\`\`\`js
+const html = computed(() =>
+  DOMPurify.sanitize(marked.parse(source.value)),
+);
+\`\`\`
+
+> kerf does no virtual DOM. It diffs the live tree directly.
+> Focused inputs and \`contenteditable\` regions are protected
+> automatically.
+
+[Read the docs →](https://brianwestphal.github.io/kerf/)
 `;
 
 const source = signal(SAMPLE);

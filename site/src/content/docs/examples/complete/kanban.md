@@ -7,6 +7,11 @@ description: Three columns, ten cards, drag-to-reorder across columns. Pointer e
 
 A mini Kanban board. Three columns (`To do` / `Doing` / `Done`), drag any card across columns or within a column. Not a full Trello — three columns, ~10 cards, drag works, that's it.
 
+<div class="video-placeholder">
+  🎬 <strong>Demo clip — Coming Soon</strong>
+  <p>30-second screen-record showing a card dragged across columns + per-column count updating live.</p>
+</div>
+
 **What to look at:**
 
 - **One `each()` per column.** Three keyed lists, one parent each. The list reconciler owns the rows of each column independently — moving a card across columns is just a remove from one list and insert into another.

@@ -5,17 +5,151 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>kerf · Mini Kanban</title>
     <style>
-      body { font-family: system-ui; background: #f3f4f6; margin: 0; padding: 2rem; }
-      .board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; max-width: 1200px; margin: 0 auto; }
-      .col { background: #e5e7eb; border-radius: 8px; padding: 1rem; min-height: 400px; }
-      .col h2 { margin: 0 0 0.75rem; font-size: 1rem; text-transform: uppercase; letter-spacing: 0.05em; color: #4b5563; }
-      .cards { list-style: none; padding: 0; margin: 0; min-height: 100px; display: flex; flex-direction: column; gap: 0.5rem; }
-      .card { background: white; padding: 0.75rem; border-radius: 6px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); cursor: grab; user-select: none; touch-action: none; }
-      .card.dragging { box-shadow: 0 6px 16px rgba(0,0,0,0.2); cursor: grabbing; opacity: 0.9; }
+      :root {
+        --bg: #f8fafc;
+        --col-bg: #ffffff;
+        --col-header-bg: #f1f5f9;
+        --border: #e2e8f0;
+        --text: #0f172a;
+        --text-dim: #64748b;
+        --accent: #6366f1;
+        --shadow-card: 0 1px 2px rgba(15, 23, 42, 0.06), 0 1px 1px rgba(15, 23, 42, 0.04);
+        --shadow-drag: 0 14px 32px rgba(99, 102, 241, 0.32), 0 2px 6px rgba(0,0,0,0.08);
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Inter', system-ui, sans-serif;
+        background: radial-gradient(800px 600px at 10% -10%, #eef2ff 0%, var(--bg) 50%);
+        color: var(--text);
+        min-height: 100vh;
+        padding: 1.5rem;
+      }
+      .shell { max-width: 1100px; margin: 0 auto; }
+      header { margin: 0 0 1.25rem; display: flex; align-items: center; justify-content: space-between; }
+      .brand { display: flex; align-items: center; gap: 0.6rem; font-weight: 600; font-size: 1rem; }
+      .brand .mark {
+        width: 24px; height: 24px; border-radius: 6px;
+        background: linear-gradient(135deg, #6366f1, #a855f7);
+      }
+      .hint { font-size: 0.8rem; color: var(--text-dim); }
+
+      .board {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+      }
+      .col {
+        background: var(--col-bg);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 0.75rem;
+        min-height: 480px;
+        display: flex;
+        flex-direction: column;
+        gap: 0.6rem;
+      }
+      .col-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.35rem 0.5rem 0.55rem;
+        border-bottom: 1px solid var(--border);
+      }
+      .col h2 {
+        margin: 0;
+        font-size: 0.78rem;
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        color: var(--text-dim);
+        display: flex; align-items: center; gap: 0.45rem;
+      }
+      .col[data-col="todo"]  h2::before  { content: ''; width: 8px; height: 8px; border-radius: 50%; background: #94a3b8; }
+      .col[data-col="doing"] h2::before  { content: ''; width: 8px; height: 8px; border-radius: 50%; background: #f59e0b; }
+      .col[data-col="done"]  h2::before  { content: ''; width: 8px; height: 8px; border-radius: 50%; background: #10b981; }
+      .count {
+        font-size: 0.72rem;
+        color: var(--text-dim);
+        background: var(--col-header-bg);
+        padding: 0.12rem 0.5rem;
+        border-radius: 999px;
+        min-width: 1.5rem;
+        text-align: center;
+      }
+      .cards {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        min-height: 100px;
+        display: flex;
+        flex-direction: column;
+        gap: 0.55rem;
+        flex: 1;
+      }
+      .card {
+        background: white;
+        padding: 0.7rem 0.85rem;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        box-shadow: var(--shadow-card);
+        cursor: grab;
+        user-select: none;
+        touch-action: none;
+        transition: transform 120ms, box-shadow 120ms, border-color 120ms;
+      }
+      .card:hover { border-color: var(--accent); }
+      .card.dragging {
+        box-shadow: var(--shadow-drag);
+        cursor: grabbing;
+        border-color: var(--accent);
+      }
+      .card-tag {
+        display: inline-block;
+        font-size: 0.68rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        padding: 0.12rem 0.5rem;
+        border-radius: 999px;
+        margin-bottom: 0.4rem;
+      }
+      .card-tag.design { background: #ede9fe; color: #6d28d9; }
+      .card-tag.code   { background: #dbeafe; color: #1d4ed8; }
+      .card-tag.docs   { background: #dcfce7; color: #166534; }
+      .card-tag.bug    { background: #fee2e2; color: #b91c1c; }
+      .card-tag.ops    { background: #fef3c7; color: #92400e; }
+      .card-text { font-size: 0.92rem; line-height: 1.4; }
+      .card-meta {
+        margin-top: 0.55rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 0.72rem;
+        color: var(--text-dim);
+      }
+      .avatar {
+        width: 20px; height: 20px; border-radius: 50%;
+        display: inline-grid; place-items: center;
+        font-size: 0.65rem; font-weight: 700; color: white;
+      }
+      .avatar.a { background: #6366f1; }
+      .avatar.b { background: #10b981; }
+      .avatar.c { background: #f59e0b; }
+      .avatar.d { background: #ec4899; }
+      .avatar.e { background: #14b8a6; }
     </style>
   </head>
   <body>
-    <div id="app"></div>
+    <div class="shell">
+      <header>
+        <div class="brand">
+          <div class="mark"></div>
+          <div>Mini Kanban</div>
+        </div>
+        <div class="hint">Drag any card across columns. The reconciler owns each list independently.</div>
+      </header>
+      <div id="app"></div>
+    </div>
     <script type="module" src="./main.tsx"></script>
   </body>
 </html>

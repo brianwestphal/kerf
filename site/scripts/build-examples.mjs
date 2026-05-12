@@ -24,6 +24,7 @@ const COMPLETE_APPS = [
   'todomvc',
   'markdown-editor',
   'kanban',
+  'chat',
   'dashboard',
   'pomodoro-ai',
 ];
