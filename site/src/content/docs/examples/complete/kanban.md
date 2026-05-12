@@ -1,29 +1,34 @@
 ---
 title: Mini Kanban
-description: Three columns, ten cards, drag-to-reorder across columns. Pointer events + delegateCapture + data-morph-skip on the dragging card.
+description: Three columns, ten cards, drag-to-reorder across columns. Pointer events + delegate() + data-morph-skip on the dragging card.
 ---
 
 **[▶ Run live](/kerf/run/kanban/)** · [View source on GitHub](https://github.com/brianwestphal/kerf/tree/main/site/src/examples/complete/kanban)
 
 A mini Kanban board. Three columns (`To do` / `Doing` / `Done`), drag any card across columns or within a column. Not a full Trello — three columns, ~10 cards, drag works, that's it.
 
+<!--
+  KF-164: video placeholder commented out until the screen-record flow is ready.
+  Drop a <video controls> in here when the clip lands, or restore the placeholder
+  block below.
 <div class="video-placeholder">
   🎬 <strong>Demo clip — Coming Soon</strong>
   <p>30-second screen-record showing a card dragged across columns + per-column count updating live.</p>
 </div>
+-->
 
 **What to look at:**
 
 - **One `each()` per column.** Three keyed lists, one parent each. The list reconciler owns the rows of each column independently — moving a card across columns is just a remove from one list and insert into another.
-- **`delegateCapture('pointerdown', '.card', …)`** captures the drag start. `pointerdown` *does* bubble, but capture-phase fires *first* — so even if a child of `.card` swallows the event, drag still initiates. The remaining `pointermove` / `pointerup` listeners go on `window` because the cursor can leave the board.
-- **`data-morph-skip` on the dragging card.** While dragged, the card is marked skip and given a `transform: translate(...)` style. The diff would otherwise see the moving transform as an attribute drift on every render and might fight identity. Skipping it makes the dragged card a stable, owned-by-the-drag-handler element until drop.
+- **`delegate('pointerdown', '.card', …)`** kicks off the drag. `delegate()` matches via `closest()`, so a pointer-down landing on any descendant of `.card` (the tag badge, the text, the meta row) climbs up to the card itself. The remaining `pointermove` / `pointerup` listeners go on `window` because the cursor can leave the board.
+- **`data-morph-skip` on the dragging card.** While dragged, the card is marked skip and the live `transform: translate(...)` is written imperatively from the `pointermove` handler. The skip stops the morph from fighting the drag handler — the row becomes "owned by the drag handler" until drop. (KF-163: doing the transform reactively would either freeze the row to its initial position via memo cache, or thrash a per-frame re-render of pure visuals.)
 - **Optimistic store update on drop.** The drag handler computes the target column + slot from `elementFromPoint`, then calls `board.actions.move(cardId, toCol, toIdx)`. The store mutation triggers exactly one re-render — the dropped card lands in its new home.
 
 [View source on GitHub →](https://github.com/brianwestphal/kerf/tree/main/site/src/examples/complete/kanban)
 
 ```tsx
 // site/src/examples/complete/kanban/main.tsx (excerpt — full source on GitHub)
-import { defineStore, signal, mount, each, delegateCapture } from 'kerfjs';
+import { defineStore, signal, mount, each, delegate } from 'kerfjs';
 
 const board = defineStore({
   initial: () => ({
@@ -34,7 +39,11 @@ const board = defineStore({
   }),
 });
 
-const drag = signal<{ id: string; dx: number; dy: number; w: number; h: number } | null>(null);
+// drag holds only what the render needs. The live translate is written
+// imperatively from `onMove` — see KF-163 in the comments next to the
+// real source.
+const drag = signal<{ id: string; w: number; h: number } | null>(null);
+let dragEl: HTMLElement | null = null;
 
 mount(root, () => (
   <div class="board">
@@ -47,15 +56,18 @@ mount(root, () => (
             (card) => {
               const d = drag.value;
               const dragging = d?.id === card.id;
+              const style = dragging
+                ? `position:relative;z-index:10;transform:translate(0,0) rotate(2deg);width:${d!.w}px;pointer-events:none`
+                : '';
               return (
                 <li
                   data-key={card.id}
                   class={`card ${dragging ? 'dragging' : ''}`}
                   data-card={card.id}
-                  style={dragging ? `transform:translate(${d!.dx}px,${d!.dy}px);…` : ''}
+                  style={style}
                   {...(dragging ? { 'data-morph-skip': '' } : {})}
                 >
-                  {card.text}
+                  {/* …tag badge, .card-text, .card-meta children… */}
                 </li>
               );
             },
@@ -67,8 +79,11 @@ mount(root, () => (
   </div>
 ));
 
-// Capture-phase pointerdown — fires first, even if a child handles the bubble.
-delegateCapture(root, 'pointerdown', '.card', (e, el) => {
-  // …capture rect, set drag signal, attach window listeners for move/up
+// `delegate()` (not `delegateCapture()`) — pointerdown bubbles, and `delegate()`
+// uses `closest()` so a click on any descendant of `.card` resolves to the card.
+delegate(root, 'pointerdown', '.card', (e, el) => {
+  // preventDefault, set drag.value, dragEl = querySelector('.card.dragging[...]'),
+  // attach window listeners for pointermove (writes dragEl.style.transform) and
+  // pointerup (drops + clears).
 });
 ```

@@ -57,6 +57,8 @@ import { each } from 'kerfjs';
 </ul>
 ```
 
+> **Memo cache invariant.** The memo cache invalidates *purely* on the third argument (the `key` function's return value) plus item identity. If a row's rendered output depends on external state that the memo doesn't include, the row will go stale — kerf will return cached HTML even though the render function would produce something different now. The fix is either: (a) bake that state into the memo (`(r) => \`${r.id}-${selectedId === r.id ? 'on' : 'off'}\``), or (b) own the changing DOM imperatively under `data-morph-skip` and let kerf cache the surrounding shell. The kanban example chooses (b) for the live drag transform (KF-163); the TodoMVC example chooses (a) for the per-row view/edit flip.
+
 ### Granular reconcile via `arraySignal`
 
 Pass an `arraySignal` to `each()` and `mount()` runs an even faster path: instead of iterating the whole snapshot to classify changed/unchanged rows, the reconciler consumes the patch queue the `arraySignal` emitted (one `update`/`insert`/`remove`/`move` per mutation) and applies only those to the live DOM. Cost is O(patches), not O(N).

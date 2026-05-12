@@ -9,10 +9,15 @@ A live Markdown editor. ~30 lines of kerf, plus `marked` for parsing and `DOMPur
 
 **Try typing fast — your cursor stays where you put it. That's the morph at work.**
 
+<!--
+  KF-164: video placeholder commented out until the screen-record flow is ready.
+  Drop a <video controls> in here when the clip lands, or restore the placeholder
+  block below.
 <div class="video-placeholder">
   🎬 <strong>Demo clip — Coming Soon</strong>
   <p>30-second screen-record showing focus survival while typing into the middle of a paragraph.</p>
 </div>
+-->
 
 **What to look at:**
 

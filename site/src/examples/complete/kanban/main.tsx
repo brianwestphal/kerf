@@ -1,4 +1,4 @@
-import { defineStore, signal, mount, each, delegateCapture } from 'kerfjs';
+import { defineStore, signal, mount, each, delegate } from 'kerfjs';
 
 type Tag = 'design' | 'code' | 'docs' | 'bug' | 'ops';
 type Avatar = 'a' | 'b' | 'c' | 'd' | 'e';
@@ -46,7 +46,15 @@ const board = defineStore({
   }),
 });
 
-interface DragState { id: string; dx: number; dy: number; w: number; h: number }
+// drag holds only what the render needs (id + initial geometry). The live `dx, dy`
+// transform is applied imperatively in `onMove` (see KF-163) because:
+//   1. Updating dx/dy through the signal would either freeze the row (each() memo is
+//      `id-drag` while dragging, so a cache-hit reuses stale HTML — the original bug)
+//      or, if dx/dy were folded into the memo, re-render the row at pointer rate for
+//      a pure visual effect.
+//   2. The dragging row carries `data-morph-skip`, so it's already "owned by the drag
+//      handler" by contract. Direct DOM writes are the natural way to drive it.
+interface DragState { id: string; w: number; h: number }
 const drag = signal<DragState | null>(null);
 
 const root = document.getElementById('app')!;
@@ -70,10 +78,11 @@ mount(root, () => (
               (card) => {
                 const d = drag.value;
                 const dragging = d?.id === card.id;
-                // While dragging, freeze the card via data-morph-skip and apply a transform.
-                // Without skip, the diff might recurse and the transform would fight identity.
+                // Initial style snapshot at drag start. `onMove` mutates `transform`
+                // imperatively from here; the row is `data-morph-skip` so the morph
+                // won't fight that.
                 const style = dragging
-                  ? `position:relative;z-index:10;transform:translate(${d!.dx}px,${d!.dy}px) rotate(2deg);width:${d!.w}px;pointer-events:none`
+                  ? `position:relative;z-index:10;transform:translate(0px,0px) rotate(2deg);width:${d!.w}px;pointer-events:none`
                   : '';
                 return (
                   <li
@@ -101,33 +110,51 @@ mount(root, () => (
   </div>
 ));
 
-// One delegateCapture for pointerdown — capture-phase makes it predictable inside
-// nested containers. The other phases (move/up) bind to window during the drag.
 let startX = 0;
 let startY = 0;
+let dragEl: HTMLElement | null = null;
 
-delegateCapture(root, 'pointerdown', '.card', (e, el) => {
+// `delegate()` here (vs `delegateCapture()`): pointerdown bubbles natively, and
+// `delegate()` matches via `closest()` so a click on any descendant of `.card`
+// (the tag span, the text div, the meta row) climbs up to the card itself.
+// `delegateCapture` would use `target.matches()` — exact-match only — and miss
+// children entirely. (Surfaced by KF-165's regression spec.)
+delegate(root, 'pointerdown', '.card', (e, el) => {
   if (drag.value) return;
   const ev = e as PointerEvent;
   if (ev.button !== 0) return;
+  // KF-163: suppress the browser's default text-selection start. `user-select: none`
+  // in CSS prevents the *visual* highlight inside the card but doesn't stop pointerdown
+  // from initiating a selection that drifts into siblings as the cursor moves. Calling
+  // preventDefault on the down event is the canonical fix and keeps the page selection
+  // empty for the duration of the drag.
+  ev.preventDefault();
   const card = el as HTMLElement;
   const rect = card.getBoundingClientRect();
   startX = ev.clientX;
   startY = ev.clientY;
-  drag.value = { id: card.dataset.card!, dx: 0, dy: 0, w: rect.width, h: rect.height };
+  drag.value = { id: card.dataset.card!, w: rect.width, h: rect.height };
+  // The signal write above runs the mount() re-render synchronously (signals-core
+  // effects are synchronous), so the `.dragging` + `data-morph-skip` row already
+  // exists in the DOM by the time we look it up here.
+  dragEl = root.querySelector(`.card.dragging[data-card="${card.dataset.card!}"]`) as HTMLElement | null;
   window.addEventListener('pointermove', onMove);
   window.addEventListener('pointerup', onUp, { once: true });
 });
 
 function onMove(ev: PointerEvent) {
-  const d = drag.value;
-  if (!d) return;
-  drag.value = { ...d, dx: ev.clientX - startX, dy: ev.clientY - startY };
+  if (!dragEl) return;
+  const dx = ev.clientX - startX;
+  const dy = ev.clientY - startY;
+  // Imperative: bypass the reactive path so we update at pointer rate without
+  // re-rendering the row. The row is `data-morph-skip` so the morph won't undo this.
+  dragEl.style.transform = `translate(${dx}px, ${dy}px) rotate(2deg)`;
 }
 
 function onUp(ev: PointerEvent) {
   window.removeEventListener('pointermove', onMove);
   const d = drag.value;
+  dragEl = null;
   drag.value = null;
   if (!d) return;
   // Find the column and slot the cursor was over.

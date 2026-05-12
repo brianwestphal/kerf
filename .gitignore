@@ -5,6 +5,9 @@ dist/
 # source committed (src/, index.html, build.mjs, tsconfig.json) but ignore
 # the rebuilt artifact.
 tests/dist/consumer-app/dist/
+# KF-165: example-apps' per-app Vite output is rebuilt at globalSetup time;
+# keep `tests/dist/example-apps/build.mjs` committed but ignore the bundles.
+tests/dist/example-apps/*/
 coverage/
 playwright-report/
 test-results/

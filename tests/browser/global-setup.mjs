@@ -1,11 +1,13 @@
 /**
- * Playwright globalSetup: ensure the consumer-app fixture is freshly bundled
- * against the current `dist/` build before any spec runs. The build step is
- * cheap (~15 ms via esbuild) so doing it on every test run keeps the spec
- * honest — the assertions always reflect the latest source + dist.
+ * Playwright globalSetup:
+ *  1. Bundle the consumer-app fixture against the current `dist/` build (~15 ms).
+ *  2. KF-165: Bundle each `site/src/examples/complete/<name>/` app with
+ *     `base: './'` to `tests/dist/example-apps/<name>/` so the example-apps
+ *     spec can drive them through Playwright. ~2 s for all six apps.
  *
- * Skipped if `KERF_SKIP_CONSUMER_BUILD=1` is set (useful during iteration on
- * a non-consumer-app spec).
+ * Skipped when `KERF_SKIP_CONSUMER_BUILD=1` (consumer-app) or
+ * `KERF_SKIP_EXAMPLE_APPS_BUILD=1` (example-apps) is set — useful while
+ * iterating on an unrelated spec.
  */
 
 import { spawnSync } from 'node:child_process';
@@ -13,11 +15,21 @@ import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
 
 export default async function globalSetup() {
-  if (process.env.KERF_SKIP_CONSUMER_BUILD === '1') return;
   const here = dirname(fileURLToPath(import.meta.url));
-  const buildScript = resolve(here, '../dist/consumer-app/build.mjs');
-  const result = spawnSync(process.execPath, [buildScript], { stdio: 'inherit' });
-  if (result.status !== 0) {
-    throw new Error('consumer-app build failed; aborting Playwright run');
+
+  if (process.env.KERF_SKIP_CONSUMER_BUILD !== '1') {
+    const buildScript = resolve(here, '../dist/consumer-app/build.mjs');
+    const result = spawnSync(process.execPath, [buildScript], { stdio: 'inherit' });
+    if (result.status !== 0) {
+      throw new Error('consumer-app build failed; aborting Playwright run');
+    }
+  }
+
+  if (process.env.KERF_SKIP_EXAMPLE_APPS_BUILD !== '1') {
+    const buildScript = resolve(here, '../dist/example-apps/build.mjs');
+    const result = spawnSync(process.execPath, [buildScript], { stdio: 'inherit' });
+    if (result.status !== 0) {
+      throw new Error('example-apps build failed; aborting Playwright run');
+    }
   }
 }

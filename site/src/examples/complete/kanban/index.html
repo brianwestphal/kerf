@@ -93,15 +93,31 @@
         border-radius: 8px;
         box-shadow: var(--shadow-card);
         cursor: grab;
+        /* KF-163: user-select on .card alone isn't enough — Safari/Chromium will still
+         * highlight descendant text during a drag-like pointer gesture if the children
+         * carry their own selection style. Force the descendants too. The JS handler
+         * also calls preventDefault() on pointerdown to keep the page selection empty. */
         user-select: none;
+        -webkit-user-select: none;
         touch-action: none;
-        transition: transform 120ms, box-shadow 120ms, border-color 120ms;
+        /* KF-163 (round 2): no `transform` in the transition list. The drag handler
+         * writes `dragEl.style.transform` directly on every pointermove (60×/s);
+         * a 120 ms transform transition would animate each tiny move toward its
+         * target, get interrupted by the next move, and produce the visual
+         * "jitter between two points" the user reported. Restrict the transition
+         * to the hover-related properties only. */
+        transition: box-shadow 120ms, border-color 120ms;
       }
+      .card * { user-select: none; -webkit-user-select: none; }
       .card:hover { border-color: var(--accent); }
       .card.dragging {
         box-shadow: var(--shadow-drag);
         cursor: grabbing;
         border-color: var(--accent);
+        /* Belt-and-suspenders: even if a future CSS edit re-adds `transform`
+         * to the base transition, the dragging row explicitly opts out so
+         * onMove writes land instantly. */
+        transition: none;
       }
       .card-tag {
         display: inline-block;

@@ -70,6 +70,7 @@ export default [
         CompositionEvent: 'readonly',
         HTMLInputElement: 'readonly',
         HTMLTextAreaElement: 'readonly',
+        localStorage: 'readonly',
         process: 'readonly',
       },
     },
@@ -91,6 +92,12 @@ export default [
       // consumer-app esbuild build inside Playwright's globalSetup.
       'tests/dist/jsx-typing/**',
       'tests/dist/consumer-app/**',
+      // KF-165: each complete example app is bundled by Vite into its own
+      // `tests/dist/example-apps/<name>/` directory at globalSetup time. The
+      // build script + the emitted JS bundles aren't source files we lint
+      // (matching the `tests/dist/consumer-app/**` pattern). The driving spec
+      // at `tests/browser/example-apps.spec.ts` is still linted.
+      'tests/dist/example-apps/**',
     ],
   },
 ];
