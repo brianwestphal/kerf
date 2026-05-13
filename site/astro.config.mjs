@@ -113,6 +113,10 @@ export default defineConfig({
             { label: 'Coming from vanjs', slug: 'migrating/vanjs' },
           ],
         },
+        {
+          label: 'Blog',
+          items: [{ autogenerate: { directory: 'blog' } }],
+        },
       ],
     }),
   ],
