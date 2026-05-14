@@ -190,6 +190,14 @@ function renderAttr(key: string, value: unknown): string {
       return '';
     }
     strValue = escapeAttr(value);
+  } else if (typeof value === 'function' && /^on[A-Z]/.test(key)) {
+    throw new Error(
+      `JSX: inline event handlers like ${key}={fn} are not supported by kerf's JSX → HTML-string runtime. `
+      + 'Use event delegation from the mount root instead:\n\n'
+      + '  delegate(rootEl, \'click\', \'[data-action="..."]\', (evt, target) => { ... });\n'
+      + '  <button data-action="...">click</button>\n\n'
+      + 'See docs/5-event-delegation.md for the tier-1/tier-2/tier-3 model.',
+    );
   } else {
     throw new Error(
       `JSX: unsupported value for attribute "${key}" — got ${describeValue(value)}. `

@@ -22,13 +22,12 @@ Every test in this audit is pinned in [`tests/unit/diagnostic-error-audit.test.t
 
 Of the 12 hard rules:
 
-- **3 score Excellent** (Rules 1, 9-as-attr-validation, 12) plus the `mount(null, …)` precondition and 2 bonus contracts on `each()` (primitive items, duplicate references) — **5 score-3 captures total.**
-- **1 scores Good** (Rule 9 — the inline-handler case picks up an unrelated error path that doesn't mention `delegate()`).
+- **4 score Excellent** (Rules 1, 9, 12) plus the `mount(null, …)` precondition and 2 bonus contracts on `each()` (primitive items, duplicate references) — **6 score-3 captures total.**
 - **1 scores Weak** (Rule 10 — multiple `each()` callsites bound to the same `arraySignal`).
 - **5 score Silent** (Rules 2, 4, 5, 7, 8). These are the diagnostic gaps an AI feels most.
 - **3 are N/A** (Rules 3, 6, 11) — positive-only instructions or compile-time type contracts, not runtime violations.
 
-Honest read: kerf is best-in-class where it *does* throw (Rules 1, 12, the mount precondition, the row contract — all row/index-precise, fix-suggestive). Where the framework is silent — list keys, listener-on-mounted-node, nested mounts, signal read outside render, store mutation via `get()` — there's clear room to improve. Each score-0 row below has a follow-up improvement ticket linked.
+Honest read: kerf is best-in-class where it *does* throw (Rules 1, 9, 12, the mount precondition, the row contract — all row/index-precise, fix-suggestive). Where the framework is silent — list keys, listener-on-mounted-node, nested mounts, signal read outside render, store mutation via `get()` — there's clear room to improve. Each score-0 row below has a follow-up improvement ticket linked.
 
 ## Per-rule audit
 
@@ -161,7 +160,7 @@ counter.actions.wronglyMutate();
 
 **Follow-up:** `defineStore` could `Object.freeze()` the value returned from `get()` in dev. That would convert the silent miss into a `TypeError: Cannot assign to read only property 'count'` — score 3.
 
-### Rule 9 — Inline `onClick` (function-valued attribute) · **Score 2**
+### Rule 9 — Inline `onClick` (function-valued attribute) · **Score 3**
 
 > *"Use `data-action` (or similar) attributes, not inline `onClick`. Inline handlers aren't supported by the JSX → string runtime; delegate from the root instead."*
 
@@ -175,14 +174,18 @@ const handler = () => {};
 Runtime behavior: **throws.**
 
 ```
-JSX: unsupported value for attribute "onClick" — got function. Attribute
-values must be string, number, boolean, null, undefined, or SafeHtml. Did
-you mean to read .value off a Signal, or stringify the object first?
+JSX: inline event handlers like onClick={fn} are not supported by kerf's
+JSX → HTML-string runtime. Use event delegation from the mount root instead:
+
+  delegate(rootEl, 'click', '[data-action="..."]', (evt, target) => { ... });
+  <button data-action="...">click</button>
+
+See docs/5-event-delegation.md for the tier-1/tier-2/tier-3 model.
 ```
 
-Why this scores 2, not 3: the error correctly identifies the attribute and the type mismatch, but doesn't mention the canonical fix (`delegate(root, 'click', '[data-action="..."]', handler)`). A model that hits this error might JSON-stringify the handler instead of switching to `delegate`.
+Why this scores 3: the error names what's wrong (inline event handlers like `onClick={fn}`), why it's wrong (the JSX → HTML-string runtime can't serialize functions), and the canonical fix (a `delegate()` snippet wired to a `data-action` attribute). A model that hits this error self-corrects without external help — the throw delivers the canonical pattern in-line.
 
-**Follow-up filed:** when the attribute name matches `/^on[A-Z]/` and the value is a function, emit a dedicated error pointing at `delegate()` rather than the generic "stringify it" message. Cheap change in `src/jsx-runtime.ts`.
+Originally captured at score 2; promoted to score 3 by the dedicated `onX={fn}` error path in `src/jsx-runtime.ts` that fires before the generic "stringify it" message.
 
 ### Rule 10 — Multiple `each()` callsites bound to the same `arraySignal` · **Score 1**
 
@@ -245,11 +248,11 @@ Why this scores 3: the error names the rule (the contract), the location (row in
 ## Score distribution
 
 ```
-Score 3 (excellent):  ████████  5 captures
-Score 2 (good):       ██        1 capture
-Score 1 (weak):       ██        1 capture
-Score 0 (silent):     ████████  5 captures
-N/A:                  ████      3 rules
+Score 3 (excellent):  ██████████  6 captures
+Score 2 (good):       (none)
+Score 1 (weak):       ██          1 capture
+Score 0 (silent):     ████████    5 captures
+N/A:                  ████        3 rules
 ```
 
 ## What this evidence does and doesn't show

@@ -162,6 +162,22 @@ describe('jsx()', () => {
       .toThrow(/object \(MySignal\)/);
   });
 
+  it('function-valued onX={fn} attributes throw with a delegate() fix-pointer (KF-178)', () => {
+    const handler = () => {};
+    expect(() => jsx('button', { onClick: handler, children: 'x' } as never).toString())
+      .toThrow(/inline event handlers like onClick=\{fn\} are not supported/);
+    expect(() => jsx('button', { onClick: handler, children: 'x' } as never).toString())
+      .toThrow(/delegate\(rootEl, 'click', '\[data-action="\.\.\."\]'/);
+    expect(() => jsx('input', { onInput: handler } as never).toString())
+      .toThrow(/inline event handlers like onInput=\{fn\}/);
+  });
+
+  it('function-valued non-onX attributes still hit the generic unsupported-value path', () => {
+    const handler = () => {};
+    expect(() => jsx('div', { customAttr: handler } as never).toString())
+      .toThrow(/unsupported value for attribute "customAttr"/);
+  });
+
   it('accepts a SafeHtml as an attribute value (raw injection for pre-escaped data)', () => {
     const out = jsx('div', { 'data-html': raw('a&amp;b') });
     expect(out.toString()).toBe('<div data-html="a&amp;b"></div>');

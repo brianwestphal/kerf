@@ -83,10 +83,10 @@ describe('Diagnostic-error audit (KF-169) — Hard Rules 1–12', () => {
     );
   });
 
-  it('Rule 9 — function-valued attribute (inline onClick): throws naming the attribute (score 2)', () => {
-    // The runtime catches function attribute values, but the error names the
-    // attribute and the allowed value shapes without specifically pointing at
-    // delegate(). That's why we score 2, not 3 — see audit page.
+  it('Rule 9 — function-valued attribute (inline onClick): throws with the delegate() fix-pointer (score 3)', () => {
+    // KF-178: function-valued attributes whose names match /^on[A-Z]/ throw a
+    // dedicated error that names the attribute AND points at delegate() as the
+    // canonical fix. Score 3 — the model can self-correct without external help.
     //
     // The type system also blocks `onClick` on HTMLButtonAttrs — kerf doesn't
     // expose inline-handler props in its JSX types. We bypass via an
@@ -95,7 +95,7 @@ describe('Diagnostic-error audit (KF-169) — Hard Rules 1–12', () => {
     const handler = () => {};
     const props = { onClick: handler } as unknown as Record<string, unknown>;
     expect(() => (<button {...props as Record<string, never>}>x</button>).toString()).toThrow(
-      /JSX: unsupported value for attribute "onClick" — got function/,
+      /JSX: inline event handlers like onClick=\{fn\} are not supported.*delegate\(rootEl/s,
     );
   });
 
@@ -294,8 +294,8 @@ describe('Diagnostic-error audit (KF-169) — Hard Rules 1–12', () => {
     // Pinned here so the page and the audit can't drift apart. Updating
     // either side without the other trips this test.
     const summary = {
-      score3: 5, // Rules 1, 12, 5-precondition (mount-null) + 2 bonus (each-primitives, each-duplicates)
-      score2: 1, // Rule 9
+      score3: 6, // Rules 1, 9 (KF-178), 12, 5-precondition (mount-null) + 2 bonus (each-primitives, each-duplicates)
+      score2: 0,
       score1: 1, // Rule 10
       score0: 5, // Rules 2, 4, 5 (nested-mount silent), 7, 8
       na: 3, // Rules 3, 6, 11
