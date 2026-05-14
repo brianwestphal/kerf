@@ -13,6 +13,7 @@ kerf is built **for the AI-assisted era**. The whole public surface fits in 15 e
 - [`docs/ai/usage-guide.md`](https://github.com/brianwestphal/kerf/blob/main/docs/ai/usage-guide.md) — the canonical version of the guide below.
 - [`docs/ai/code-summary.md`](https://github.com/brianwestphal/kerf/blob/main/docs/ai/code-summary.md) — directory tree, public exports, where-to-find-X reverse index.
 - [`docs/ai/requirements-summary.md`](https://github.com/brianwestphal/kerf/blob/main/docs/ai/requirements-summary.md) — synthesized view of every numbered design doc.
+- [AI evidence](/kerf/ai-evidence/) — the four layers of evidence kerf publishes so the AI-friendliness claim is checkable: structural (intrinsic measurements), diagnostic (runtime-error audit), operational (one-shot transcripts), empirical (cross-framework benchmark).
 
 ## Copy-paste system prompt
 

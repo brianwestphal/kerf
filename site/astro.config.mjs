@@ -70,6 +70,7 @@ export default defineConfig({
             { label: 'Use cases', slug: 'use-cases' },
             { label: 'When to use something else', slug: 'alternatives' },
             { label: 'AI', slug: 'ai' },
+            { label: 'AI evidence', slug: 'ai-evidence' },
             { label: 'AI evidence: structural', slug: 'ai-evidence/structural' },
             { label: 'AI evidence: diagnostics', slug: 'ai-evidence/diagnostics' },
           ],

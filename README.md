@@ -163,6 +163,7 @@ npm install kerfjs
 - **Docs:** [`docs/`](./docs/) — overview · reactivity · stores · render · events · jsx · svg · [API reference](./docs/8-api-reference.md)
 - **Migrating:** [coming from React / Alpine / Lit / vanjs?](https://brianwestphal.github.io/kerf/migrating/) — side-by-side TodoMVC translations + per-framework gotchas
 - **AI guide:** [`docs/ai/usage-guide.md`](./docs/ai/usage-guide.md) — read once before writing kerf code with an LLM
+- **AI evidence:** [the four layers of evidence we publish](https://brianwestphal.github.io/kerf/ai-evidence/) — structural (intrinsic measurements), diagnostic (runtime-error audit), operational (one-shot transcripts), empirical (cross-framework benchmark) — so the AI-friendliness claim is checkable
 - **Demo:** [live demo](https://brianwestphal.github.io/kerf/demo/) — eight sections exercising every primitive (counter, store-backed cart, focus survival, keyed list, morph-skip, SVG render, Tier-2 capture, `arraySignal` patches)
 - **Repo:** [github.com/brianwestphal/kerf](https://github.com/brianwestphal/kerf)
 
