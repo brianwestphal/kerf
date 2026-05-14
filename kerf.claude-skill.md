@@ -56,8 +56,8 @@ import { arraySignal } from 'kerfjs/array-signal';
 2. **Diff keys: `id` first, then `data-key`.** Lists MUST set `data-key={item.id}` per item — otherwise the diff matches by position and you lose focus, cursor, and identity on insert/delete.
 3. **Three escape hatches for the morph:**
    - `data-morph-skip` — element AND subtree preserved verbatim. For library-owned hosts (Monaco, xterm, D3).
-   - `data-morph-skip-children` (KF-152) — attrs on the host morph, subtree preserved. For client-hydrated slots whose loading/state classes need to flow through.
-   - `data-morph-preserve` (KF-151) — element survives the trailing-removal pass even when the new template doesn't emit it. For imperatively-injected children (autoplay video, tooltip overlay, analytics pixel). Does NOT block a keyed-match move.
+   - `data-morph-skip-children` — attrs on the host morph, subtree preserved. For client-hydrated slots whose loading/state classes need to flow through.
+   - `data-morph-preserve` — element survives the trailing-removal pass even when the new template doesn't emit it. For imperatively-injected children (autoplay video, tooltip overlay, analytics pixel). Does NOT block a keyed-match move.
 4. **Never `addEventListener` inside a `mount()`-managed tree** unless under `data-morph-skip`. A morph re-render may discard the node. Use `delegate` / `delegateCapture` instead.
 5. **One `mount()` per root.** Don't nest `mount()` calls. Compose with plain functions returning JSX.
 6. **No `<MyComponent />` semantics with hooks.** Components are plain functions returning JSX. State lives in module-scope signals or stores, never in component closures.

@@ -6,6 +6,8 @@ kerf is a tiny reactive UI framework: fine-grained signals + a custom DOM diff s
 
 The name *kerf* is a woodworking term — the narrow strip a saw blade removes. The framework's job is the same: apply the smallest possible cut to update your DOM.
 
+**New to this codebase?** Read [`docs/orientation.md`](docs/orientation.md) first — a hard-capped 500-word one-pager with the module map, render-pipeline diagram, and the unusual-things checklist. It's maintained by the `/check-requirements-against-code` skill alongside the AI summaries.
+
 ## Tech Stack
 
 - **Runtime**: Browser (modern, ES2022+). Node 22.12+ for build/test (Astro requirement).
@@ -132,11 +134,18 @@ Coverage thresholds (`vitest.config.ts`): **100% lines / functions / statements,
 
 ## Hot Sheet integration
 
-This project is managed via [Hot Sheet](https://github.com/brianwestphal/hotsheet). Tickets use the `KF-` prefix.
+This project is managed via [Hot Sheet](https://github.com/brianwestphal/hotsheet) — a **local-only** ticket tracker. Tickets use the `KF-` prefix and exist only on the maintainer's machine. Run `hotsheet` from the project root to launch the local UI; the skill files under `.claude/skills/kerf/` reference the worklist for AI-driven work.
 
-- Run `hotsheet` from the project root to launch the local UI.
-- Worklists are auto-synced to `.hotsheet/worklist.md` and `.hotsheet/open-tickets.md`.
-- Skill files live in `.claude/skills/kerf/` and reference the worklist for AI-driven work.
+### Referencing tickets in code and docs
+
+Hot Sheet is local-only, so a bare `KF-NN` reference can't be looked up by anyone but the maintainer. When you mention a ticket number — in code comments, in user-facing docs, in commit messages, anywhere a reader who isn't the maintainer might see it — **always include a short self-contained summary** in the same sentence or parenthetical. The summary should make sense on its own without the reader resolving the ticket number.
+
+- ✅ `data-morph-skip-children (attrs on the host morph, subtree preserved)` — self-contained.
+- ✅ `(KF-103 row contract: exactly one top-level element per each() row)` — self-contained with the number kept as provenance.
+- ❌ `(KF-103)` — bare blame marker, unlookable, drop or expand it.
+- ❌ "See `.hotsheet/worklist.md`" — `.hotsheet/` is local-only; never link to it in user-facing docs.
+
+The same rule applies to commit messages — `git log` is a public-facing surface for any open-source consumer. Use `KF-NN: <short title>` shape so the title makes the commit understandable without a ticket lookup.
 
 ### Concerns → tickets, not ad-hoc fixes
 

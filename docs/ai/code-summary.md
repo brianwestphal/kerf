@@ -81,6 +81,9 @@ kerf/
 │   └── results-table.mjs         ← helper for the perf-comparison renderer
 ├── site/                         ← Astro + Starlight marketing/docs site, deployed to /kerf/ on GitHub Pages
 ├── docs/
+│   ├── orientation.md            ← KF-179 — hard-capped 500-word one-pager for humans new to the codebase. Maintained by the `/check-requirements-against-code` skill.
+│   ├── diagrams/
+│   │   └── render-pipeline.svg   ← embedded in orientation.md
 │   ├── 1-overview.md
 │   ├── 2-reactivity.md
 │   ├── 3-stores.md

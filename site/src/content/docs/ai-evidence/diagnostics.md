@@ -53,7 +53,7 @@ after toElement() to get element refs.
 
 Why this scores 3: the error names what's wrong (DOM elements as children), why it's wrong (the runtime renders to strings), and the canonical fix (one JSX expression + `querySelector` after `toElement()`). A model that hits this error self-corrects on the next pass.
 
-### Rule 2 — List rows without `data-key`/`id` · **Score 0** · follow-up: KF-173
+### Rule 2 — List rows without `data-key`/`id` · **Score 0** · follow-up filed: dev-time warn from `each()` when a row has no `id`/`data-key`
 
 > *"Diff keys are `id` first, then `data-key`. Lists must set them."*
 
@@ -74,7 +74,7 @@ Why this scores 0: the violation produces a working-looking program. The bug onl
 
 **Follow-up:** a dev-time `console.warn` when an `each()` row has neither `id` nor `data-key` would raise this to score 2 without any runtime cost in production.
 
-### Rule 4 — `addEventListener` on a node inside a `mount()`-managed tree · **Score 0** · follow-up: KF-174
+### Rule 4 — `addEventListener` on a node inside a `mount()`-managed tree · **Score 0** · follow-up filed: dev-mode `MutationObserver` warning when a listener-bearing node gets rebuilt
 
 > *"Never `addEventListener` on a node inside a `mount()`-managed tree unless that node lives under `data-morph-skip`."*
 
@@ -94,7 +94,7 @@ Why this scores 0: the model sees the first click work, concludes the code is co
 
 **Follow-up:** a `MutationObserver`-backed dev assertion in `mount()` could flag listener-bearing nodes that get replaced (the existing browser test for §5.4 already documents the rebuilt-nodes contract). Cost: dev-only, off by default in production.
 
-### Rule 5 — One `mount()` per root · **Score 0** · follow-up: KF-175
+### Rule 5 — One `mount()` per root · **Score 0** · follow-up filed: `mount()` throws when called on an already-mounted element or any ancestor of one
 
 > *"One `mount()` per root. Don't nest `mount()` calls."*
 
@@ -118,7 +118,7 @@ types say HTMLElement.
 
 **Follow-up:** tag elements with a non-enumerable `__kerfMounted` marker on first mount; throw on a second `mount(el, …)` against an already-mounted element (or any ancestor of one).
 
-### Rule 7 — Signal read outside the render fn · **Score 0** · follow-up: KF-176
+### Rule 7 — Signal read outside the render fn · **Score 0** · follow-up filed: dev-mode warn on writes to signals with no live subscriber from the last `mount()` pass
 
 > *"Signal reads must happen inside the render function to be tracked."*
 
@@ -137,7 +137,7 @@ This is the classic stale-closure tax in a smaller form. `@preact/signals-core` 
 
 **Follow-up:** a dev-mode wrapper around `signal()` could mark each signal with a "last subscribed at" timestamp and warn when `.value` is written to a signal that has live `mount()`-bound consumers that didn't read it during the most recent render pass. Heuristic — would catch the common case without false positives on intentionally-untracked writes.
 
-### Rule 8 — Store action mutates `get()` instead of calling `set()` · **Score 0** · follow-up: KF-177
+### Rule 8 — Store action mutates `get()` instead of calling `set()` · **Score 0** · follow-up filed: `defineStore()` `Object.freeze`s the `get()` result in dev so mutations throw a `TypeError`
 
 > *"Store actions receive `(set, get)`, not `(state)`. `set(next)` replaces state; mutating `get()` does nothing."*
 
@@ -182,7 +182,7 @@ you mean to read .value off a Signal, or stringify the object first?
 
 Why this scores 2, not 3: the error correctly identifies the attribute and the type mismatch, but doesn't mention the canonical fix (`delegate(root, 'click', '[data-action="..."]', handler)`). A model that hits this error might JSON-stringify the handler instead of switching to `delegate`.
 
-**Follow-up:** KF-178 — when the attribute name matches `/^on[A-Z]/` and the value is a function, emit a dedicated error pointing at `delegate()` rather than the generic "stringify it" message. Cheap change in `src/jsx-runtime.ts`.
+**Follow-up filed:** when the attribute name matches `/^on[A-Z]/` and the value is a function, emit a dedicated error pointing at `delegate()` rather than the generic "stringify it" message. Cheap change in `src/jsx-runtime.ts`.
 
 ### Rule 10 — Multiple `each()` callsites bound to the same `arraySignal` · **Score 1**
 
@@ -208,7 +208,7 @@ Why this scores 1, not 0: the output is correct. There's no user-visible bug —
 
 ### Rule 12 — Multi-root `each()` row · **Score 3**
 
-> *"Each `each()` row must produce exactly one top-level element (KF-103)."*
+> *"Each `each()` row must produce exactly one top-level element."*
 
 Violating fixture:
 

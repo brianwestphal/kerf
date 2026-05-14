@@ -149,7 +149,7 @@ delegate(rootEl, 'click', '[data-action="inc"]', () => { count.value += 1; });
 
 1. **JSX renders to HTML strings, not DOM nodes.** Don't pass DOM nodes as JSX children — the runtime throws. If you need an element ref, build the JSX, then `querySelector` after `toElement()` or after `mount()` runs.
 2. **Diff keys are `id` first, then `data-key`.** Lists must set `data-key={item.id}` per item. Otherwise the diff matches by position and you lose identity, focus, and cursor position on insert/delete.
-3. **`data-morph-skip` is your escape hatch.** Any element with this attribute (any value, even empty) and its entire subtree are preserved verbatim across re-renders — no attribute morphing on the element itself either. Use it for third-party widgets like Monaco, xterm, D3 charts. The narrower variant `data-morph-skip-children` (KF-152) lets the host's attributes morph while leaving its subtree alone — for client-hydrated slots whose loading / state classes need to flow through. A third variant `data-morph-preserve` (KF-151) lets an imperatively-injected child (autoplay video, tooltip overlay, analytics pixel) survive the diff's trailing-removal pass — the element keeps existing across renders even though the JSX template never mentions it; it does NOT block a keyed-match move.
+3. **`data-morph-skip` is your escape hatch.** Any element with this attribute (any value, even empty) and its entire subtree are preserved verbatim across re-renders — no attribute morphing on the element itself either. Use it for third-party widgets like Monaco, xterm, D3 charts. The narrower variant `data-morph-skip-children` lets the host's attributes morph while leaving its subtree alone — for client-hydrated slots whose loading / state classes need to flow through. A third variant `data-morph-preserve` lets an imperatively-injected child (autoplay video, tooltip overlay, analytics pixel) survive the diff's trailing-removal pass — the element keeps existing across renders even though the JSX template never mentions it; it does NOT block a keyed-match move.
 4. **Never call `addEventListener` on a node inside a `mount()`-managed tree** unless that node lives under `data-morph-skip`. A morph re-render may discard the node. Use `delegate` / `delegateCapture` instead.
 5. **One `mount()` per root.** Don't nest `mount()` calls. Compose with plain functions that return JSX.
 6. **No `<MyComponent />` semantics with hooks.** Components are plain functions returning JSX. State lives in module-scope signals or stores, not in component closures.
@@ -158,7 +158,7 @@ delegate(rootEl, 'click', '[data-action="inc"]', () => { count.value += 1; });
 9. **Use `data-action` (or similar) attributes, not inline `onClick`.** Inline handlers are not supported by the JSX → string runtime; delegate from the root instead.
 10. **`arraySignal` is opt-in for long keyed lists.** Use it when most updates are pointwise (single-row edits, append-to-end, selection flips). For short lists or filter/sort pipelines that rebuild the array on every input, plain `signal` + `each(items.value, ...)` is simpler and just as fast. Only one `each()` callsite per render gets the granular benefit; subsequent callsites bound to the same arraySignal fall through to the snapshot path.
 11. **Custom-element types: declaration-merge into `kerfjs/jsx-runtime`, not into a global JSX namespace.** Example: `declare module 'kerfjs/jsx-runtime' { namespace JSX { interface IntrinsicElements { 'my-tag': KerfCustomElement & { foo?: string } } } }`. Import the building-block types (`KerfCustomElement`, `KerfBaseAttrs`, `AttrLike`) from `kerfjs/jsx-runtime`.
-12. **Each `each()` row must produce exactly one top-level element (KF-103).** The reconciler binds one live DOM node per item — multi-root rows or empty-row renders throw with a row-precise error (`each(): row render at index N produced K top-level elements; exactly one is required`). Wrap multiple roots in a single parent (e.g. `<li>...</li>`).
+12. **Each `each()` row must produce exactly one top-level element.** The reconciler binds one live DOM node per item — multi-root rows or empty-row renders throw with a row-precise error (`each(): row render at index N produced K top-level elements; exactly one is required`). Wrap multiple roots in a single parent (e.g. `<li>...</li>`).
 
 ## Common errors → fixes
 
@@ -171,10 +171,10 @@ delegate(rootEl, 'click', '[data-action="inc"]', () => { count.value += 1; });
 | Render fn never re-runs | Signal was read outside the render fn (cached into a local) | Read `signal.value` inside the render fn |
 | SVG renders as broken / namespaceless markup | Used `innerHTML` directly instead of going through kerf | Use `mount` (HTML path) or `toElement` (SVG-aware) |
 | Library widget destroyed on every render | Library-owned subtree is reachable by the diff | Wrap host in `data-morph-skip`; mount the library imperatively |
-| `<my-element>` fails to typecheck | The tag is not in `IntrinsicElements`; declaration merging targeted the wrong namespace | Use `declare module 'kerfjs/jsx-runtime' { namespace JSX { interface IntrinsicElements { ... } } }`. `declare global { namespace JSX … }` does NOT work because kerf's JSX is module-scoped (KF-100) |
-| `each(): row render at index N produced K top-level elements` | A row's render returned multiple sibling elements (`<td/><td/>`) or zero elements | Wrap them in one parent so the row renders exactly one top-level element (`<tr><td/><td/></tr>`). The reconciler binds one live DOM node per item (KF-103) |
-| `arraySignal` mutated before mount renders empty | First render of a list always takes the snapshot path; this is by design (KF-98) — but if you've drained patches via something other than `each()` first, the snapshot still reflects the truth so you'll get a correct render |
-| TypeScript complains about `mount(el, () => cond ? <jsx/> : null)` returning a non-`SafeHtml` | Should not happen on current kerf — `mount()`'s `render` is typed `() => MountResult` where `MountResult = SafeHtml \| string \| number \| boolean \| null \| undefined` (KF-119). If you still see the error, your `kerfjs` install predates the widening; upgrade or, as a stop-gap, return `''` / `raw('')` from the falsy branch. |
+| `<my-element>` fails to typecheck | The tag is not in `IntrinsicElements`; declaration merging targeted the wrong namespace | Use `declare module 'kerfjs/jsx-runtime' { namespace JSX { interface IntrinsicElements { ... } } }`. `declare global { namespace JSX … }` does NOT work because kerf's JSX is module-scoped |
+| `each(): row render at index N produced K top-level elements` | A row's render returned multiple sibling elements (`<td/><td/>`) or zero elements | Wrap them in one parent so the row renders exactly one top-level element (`<tr><td/><td/></tr>`). The reconciler binds one live DOM node per item |
+| `arraySignal` mutated before mount renders empty | First render of a list always takes the snapshot path; this is by design — but if you've drained patches via something other than `each()` first, the snapshot still reflects the truth so you'll get a correct render |
+| TypeScript complains about `mount(el, () => cond ? <jsx/> : null)` returning a non-`SafeHtml` | Should not happen on current kerf — `mount()`'s `render` is typed `() => MountResult` where `MountResult = SafeHtml \| string \| number \| boolean \| null \| undefined`. If you still see the error, your `kerfjs` install predates the widening; upgrade or, as a stop-gap, return `''` / `raw('')` from the falsy branch. |
 
 ## Server / SSR
 
@@ -211,7 +211,7 @@ const html = (<div>Hello</div>).toString(); // "<div>Hello</div>"
 - [`docs/5-event-delegation.md`](/kerf/docs/events/) — tier model deep dive.
 - [`examples/reactivity-demo`](/kerf/demo/) — runnable examples of every primitive.
 
-## Drop-in AI-tool config (KF-128)
+## Drop-in AI-tool config
 
 For tools that read project-level config files, the kerf repo ships two pre-baked drop-ins that condense the rules above into the format each tool expects:
 

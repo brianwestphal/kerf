@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 360" role="img" aria-labelledby="title desc" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif">
+  <title id="title">kerf render pipeline</title>
+  <desc id="desc">A signal write re-runs the render function which produces SafeHtml — an HTML string for static surrounds plus tagged list segments for each() callsites. morph() reconciles the static surrounds while the list reconciler patches keyed list rows directly against live DOM children. Both paths converge on the live DOM.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#475569"/>
+    </marker>
+    <style>
+      .node     { fill: #f8fafc; stroke: #475569; stroke-width: 1.5; rx: 6; ry: 6; }
+      .node.acc { fill: #ffe4ec; stroke: #ef4370; }
+      .node.dom { fill: #eef2ff; stroke: #4f46e5; }
+      .label    { font-size: 13px; fill: #0f172a; }
+      .sub      { font-size: 11px; fill: #475569; }
+      .edge     { stroke: #475569; stroke-width: 1.5; fill: none; marker-end: url(#arrow); }
+      .annot    { font-size: 11px; fill: #475569; font-style: italic; }
+    </style>
+  </defs>
+
+  <!-- Signal write -->
+  <rect class="node acc" x="280" y="20" width="160" height="38"/>
+  <text class="label" x="360" y="38" text-anchor="middle">signal.value = …</text>
+  <text class="sub"   x="360" y="52" text-anchor="middle">re-runs render fn</text>
+
+  <!-- Edge: signal -> render fn -->
+  <path class="edge" d="M360,58 L360,86"/>
+
+  <!-- Render fn -->
+  <rect class="node" x="280" y="86" width="160" height="38"/>
+  <text class="label" x="360" y="104" text-anchor="middle">render() =&gt; JSX</text>
+  <text class="sub"   x="360" y="118" text-anchor="middle">runs inside effect()</text>
+
+  <!-- Edge: render fn -> SafeHtml -->
+  <path class="edge" d="M360,124 L360,152"/>
+
+  <!-- SafeHtml -->
+  <rect class="node" x="220" y="152" width="280" height="44"/>
+  <text class="label" x="360" y="170" text-anchor="middle">SafeHtml = string + segment tree</text>
+  <text class="sub"   x="360" y="186" text-anchor="middle">static HTML + tagged "list" segments per each()</text>
+
+  <!-- Split edges to morph / list reconciler -->
+  <path class="edge" d="M310,196 L150,238"/>
+  <path class="edge" d="M410,196 L570,238"/>
+
+  <!-- morph() -->
+  <rect class="node" x="40"  y="238" width="220" height="44"/>
+  <text class="label" x="150" y="256" text-anchor="middle">morph(liveRoot, template)</text>
+  <text class="sub"   x="150" y="272" text-anchor="middle">in-place tree diff of static surrounds</text>
+
+  <!-- list reconciler -->
+  <rect class="node" x="460" y="238" width="220" height="44"/>
+  <text class="label" x="570" y="256" text-anchor="middle">list reconciler</text>
+  <text class="sub"   x="570" y="272" text-anchor="middle">keyed patches against live DOM children</text>
+
+  <!-- Edges to DOM -->
+  <path class="edge" d="M150,282 L320,322"/>
+  <path class="edge" d="M570,282 L400,322"/>
+
+  <!-- Live DOM -->
+  <rect class="node dom" x="280" y="322" width="160" height="38"/>
+  <text class="label" x="360" y="340" text-anchor="middle">live DOM</text>
+  <text class="sub"   x="360" y="354" text-anchor="middle">minimum mutations applied</text>
+
+  <!-- Side annotations -->
+  <text class="annot" x="10"  y="232">static surrounds</text>
+  <text class="annot" x="680" y="232" text-anchor="end">each() rows</text>
+</svg>
