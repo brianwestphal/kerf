@@ -75,6 +75,31 @@ describe('JSX.IntrinsicElements typing (compile-time)', () => {
     expect(bad.toString()).toContain('kf-undeclared-tag');
   });
 
+  it('KF-183: accepts both camelCase and lowercase HTML forms for autocomplete / spellcheck', () => {
+    // The kerf JSX → HTML-string runtime renders both forms to the same
+    // lowercase output (ATTR_ALIASES normalizes the camelCase form). The
+    // type system now accepts either spelling so HTML-savvy developers
+    // who type the canonical HTML attribute names compile cleanly.
+    const inputCamel = <input autoComplete="off" spellCheck />;
+    const inputLower = <input autocomplete="off" spellcheck />;
+    const formCamel = <form autoComplete="on" spellCheck />;
+    const formLower = <form autocomplete="on" spellcheck />;
+    const selectCamel = <select autoComplete="off" />;
+    const selectLower = <select autocomplete="off" />;
+    const textareaCamel = <textarea autoComplete="off" spellCheck />;
+    const textareaLower = <textarea autocomplete="off" spellcheck />;
+    expect(inputCamel.toString()).toContain('autocomplete="off"');
+    expect(inputLower.toString()).toContain('autocomplete="off"');
+    expect(formCamel.toString()).toContain('autocomplete="on"');
+    expect(formLower.toString()).toContain('autocomplete="on"');
+    expect(selectCamel.toString()).toContain('autocomplete="off"');
+    expect(selectLower.toString()).toContain('autocomplete="off"');
+    expect(textareaCamel.toString()).toContain('autocomplete="off"');
+    expect(textareaLower.toString()).toContain('autocomplete="off"');
+    expect(inputCamel.toString()).toContain('spellcheck');
+    expect(inputLower.toString()).toContain('spellcheck');
+  });
+
   it('still allows arbitrary data-* and aria-* attributes', () => {
     const ok1 = <div data-action="add" data-id="42" />;
     const ok2 = <button aria-label="close" aria-pressed={false} />;

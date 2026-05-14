@@ -62,6 +62,14 @@ export interface KerfBaseAttrs extends DataAriaAttrs {
   contentEditable?: AttrLike<boolean | 'true' | 'false' | 'inherit'>;
   inputMode?: AttrLike<'none' | 'text' | 'tel' | 'url' | 'email' | 'numeric' | 'decimal' | 'search'>;
   spellCheck?: AttrLike<boolean>;
+  /**
+   * KF-183 — lowercase HTML form accepted alongside `spellCheck`. Widened
+   * to also accept the literal string values `'true'` / `'false'` because
+   * the HTML spec defines `spellcheck` as a string-valued enumerated
+   * attribute, and an HTML-savvy developer typing the lowercase form
+   * will naturally reach for `spellcheck="false"`.
+   */
+  spellcheck?: AttrLike<boolean | 'true' | 'false'>;
   tabIndex?: AttrLike<number>;
   role?: AttrLike;
   slot?: AttrLike;
@@ -135,6 +143,8 @@ export interface HTMLInputAttrs extends KerfBaseAttrs {
   maxLength?: AttrLike<number>;
   size?: AttrLike<number>;
   autoComplete?: AttrLike;
+  /** KF-183 — lowercase HTML form accepted alongside `autoComplete`. */
+  autocomplete?: AttrLike;
   form?: AttrLike;
   formAction?: AttrLike;
   formMethod?: AttrLike<'get' | 'post' | 'dialog'>;
@@ -172,6 +182,8 @@ export interface HTMLFormAttrs extends KerfBaseAttrs {
   noValidate?: AttrLike<boolean>;
   acceptCharset?: AttrLike;
   autoComplete?: AttrLike;
+  /** KF-183 — lowercase HTML form accepted alongside `autoComplete`. */
+  autocomplete?: AttrLike;
 }
 
 export interface HTMLLabelAttrs extends KerfBaseAttrs {
@@ -202,6 +214,8 @@ export interface HTMLSelectAttrs extends KerfBaseAttrs {
   size?: AttrLike<number>;
   form?: AttrLike;
   autoComplete?: AttrLike;
+  /** KF-183 — lowercase HTML form accepted alongside `autoComplete`. */
+  autocomplete?: AttrLike;
 }
 
 export interface HTMLTextareaAttrs extends KerfBaseAttrs {
@@ -218,6 +232,8 @@ export interface HTMLTextareaAttrs extends KerfBaseAttrs {
   minLength?: AttrLike<number>;
   wrap?: AttrLike<'hard' | 'soft' | 'off'>;
   autoComplete?: AttrLike;
+  /** KF-183 — lowercase HTML form accepted alongside `autoComplete`. */
+  autocomplete?: AttrLike;
   form?: AttrLike;
 }
 
