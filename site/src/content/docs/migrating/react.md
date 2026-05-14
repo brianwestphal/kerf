@@ -248,7 +248,7 @@ In kerf: focus + caret position + selection range on the currently-focused input
 
 ## 4. Gotchas
 
-**`<MyComponent />` does not exist as a concept.** Components are plain functions that return JSX. They run once when called; there's no instance state, no `props` object, no lifecycle. If you find yourself reaching for `useState` inside a child component, the value goes in a module-level `signal` or a `defineStore` instead. The mental adjustment is from "components own state" to "modules own state, functions render it."
+**`<MyComponent />` is sugar for a function call, not a component instance.** Writing `<MyComponent props />` works — the JSX runtime calls `MyComponent(props)` and uses the returned JSX — but there's no instance state, no hooks, no lifecycle. The function takes its props and returns JSX; that's it. If you find yourself reaching for `useState` inside a child component, the value goes in a module-level `signal` or a `defineStore` instead. The mental adjustment is from "components own state" to "modules own state, functions render it."
 
 **No closure-capture footgun on event handlers.** React's `useEffect` famously captures stale state unless you list every read in the deps array. `effect()` in kerf auto-tracks; you never list deps. The flip side: `effect()` re-runs the *entire* function whenever any signal it reads changes, so don't pile unrelated work into one `effect`.
 

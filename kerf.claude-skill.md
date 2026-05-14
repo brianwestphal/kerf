@@ -60,7 +60,7 @@ import { arraySignal } from 'kerfjs/array-signal';
    - `data-morph-preserve` — element survives the trailing-removal pass even when the new template doesn't emit it. For imperatively-injected children (autoplay video, tooltip overlay, analytics pixel). Does NOT block a keyed-match move.
 4. **Never `addEventListener` inside a `mount()`-managed tree** unless under `data-morph-skip`. A morph re-render may discard the node. Use `delegate` / `delegateCapture` instead.
 5. **One `mount()` per root.** Don't nest `mount()` calls. Compose with plain functions returning JSX.
-6. **No `<MyComponent />` semantics with hooks.** Components are plain functions returning JSX. State lives in module-scope signals or stores, never in component closures.
+6. **Components are plain functions.** `<MyComponent props />` works — the JSX runtime calls `MyComponent(props)` and uses the returned JSX — but there's no hook system, no lifecycle, and no per-instance state. State lives in module-scope signals or stores, never in component closures.
 7. **Signal reads must happen INSIDE the render function** to be tracked. `const x = count.value; mount(el, () => <span>{x}</span>)` does NOT re-render. Move the read inside.
 8. **Store actions take `(set, get)`, not `(state)`.** `set(next)` replaces state; mutating `get()` does nothing.
 9. **Use `data-action` attributes, not inline `onClick`.** Inline handlers are NOT supported by the JSX → string runtime; delegate from the root.

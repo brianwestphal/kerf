@@ -51,7 +51,7 @@ If your toolchain can build a React app, it can build a kerf app, with **less** 
 
 ## What kerf is *not*
 
-- **Not a component framework.** There's no `<MyComponent />` notion with hooks or lifecycle. Components are plain functions returning JSX.
+- **Not a component framework.** `<MyComponent props />` works as JSX sugar — the runtime calls `MyComponent(props)` and uses the returned JSX — but there's no hooks, no lifecycle, no per-instance state. Components are plain functions; state lives in module-scope signals or stores.
 - **Not a router.** Use `wouter`, `nanoroute`, the URL bar, your server, whatever you like.
 - **Not a state-management library** beyond `defineStore`. The bare store factory is enough for most use cases; if you need Redux DevTools, integrate it yourself.
 - **Not an SSR framework.** `SafeHtml.toString()` works server-side, but there's no streaming, no hydration mismatch detection, no islands runtime baked in.

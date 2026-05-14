@@ -13,7 +13,7 @@ Plus a JSX runtime (`kerfjs/jsx-runtime`) and an SVG-aware `toElement()` for dir
 
 ## 1.2 What kerf is NOT
 
-- Not a component framework. There's no `<MyComponent />` notion. Components are plain functions returning JSX.
+- Not a component framework. `<MyComponent props />` works as JSX sugar — the runtime calls `MyComponent(props)` and uses the returned JSX — but there's no per-instance state, no hooks, and no lifecycle. Components are plain functions; state lives in module-scope signals or stores.
 - Not a router. Not a build tool. Not an SSR framework (though `SafeHtml.toString()` works server-side if you want it).
 - Not opinionated about styling. Bring your own CSS.
 - Not magical. There's no compiler, no virtual DOM, no scheduler, no concurrent rendering, no hooks model, no lifecycle.

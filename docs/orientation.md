@@ -29,7 +29,7 @@ If you need to **opt a subtree out of the diff** (third-party widget, imperative
 ## What surprises React people
 
 - **JSX renders to strings, not DOM nodes.** Passing an element as a child throws. `toElement()` is the one-shot string-to-Element bridge.
-- **Components are plain functions returning JSX.** No hooks, no lifecycle, no `<MyComponent />` semantics. State lives in module-scope signals or stores.
+- **Components are plain functions.** `<MyComponent props />` calls `MyComponent(props)` and uses the returned JSX — no hooks, no lifecycle, no per-instance state. State lives in module-scope signals or stores.
 - **Lists require `id` or `data-key` per row.** Without one, rows match positionally; focus and selection swap on insert/delete.
 - **No synthetic event system.** You opt into delegation via `delegate()`.
 

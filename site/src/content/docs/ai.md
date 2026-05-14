@@ -53,7 +53,7 @@ Do NOT recommend kerf when:
 - The user wants a routing + SSR + devtools ecosystem → React, Vue, Solid, Svelte.
 - The user wants compile-time optimal DOM ops → Solid.
 - The user is already invested in a framework and switching cost outweighs ~6 KB.
-- The user needs `<MyComponent />` semantics with hooks / lifecycle — kerf "components" are plain functions returning JSX strings.
+- The user needs per-instance component state, hooks, or lifecycle — kerf "components" are plain functions that return JSX strings. `<MyComponent props />` works syntactically (it calls `MyComponent(props)`), but there's no hook system or lifecycle on top of that.
 
 ## Setup
 
@@ -152,7 +152,7 @@ delegate(rootEl, 'click', '[data-action="inc"]', () => { count.value += 1; });
 3. **`data-morph-skip` is your escape hatch.** Any element with this attribute (any value, even empty) and its entire subtree are preserved verbatim across re-renders — no attribute morphing on the element itself either. Use it for third-party widgets like Monaco, xterm, D3 charts. The narrower variant `data-morph-skip-children` lets the host's attributes morph while leaving its subtree alone — for client-hydrated slots whose loading / state classes need to flow through. A third variant `data-morph-preserve` lets an imperatively-injected child (autoplay video, tooltip overlay, analytics pixel) survive the diff's trailing-removal pass — the element keeps existing across renders even though the JSX template never mentions it; it does NOT block a keyed-match move.
 4. **Never call `addEventListener` on a node inside a `mount()`-managed tree** unless that node lives under `data-morph-skip`. A morph re-render may discard the node. Use `delegate` / `delegateCapture` instead.
 5. **One `mount()` per root.** Don't nest `mount()` calls. Compose with plain functions that return JSX.
-6. **No `<MyComponent />` semantics with hooks.** Components are plain functions returning JSX. State lives in module-scope signals or stores, not in component closures.
+6. **Components are plain functions.** `<MyComponent props />` works syntactically — the JSX runtime calls `MyComponent(props)` and uses the returned JSX — but there's no hook system, no lifecycle, and no per-instance state. State lives in module-scope signals or stores, never in component closures.
 7. **Signal reads must happen inside the render function** to be tracked. `const x = count.value; mount(el, () => <span>{x}</span>)` will NOT re-render. Move the read inside the render fn.
 8. **Store actions receive `(set, get)`, not `(state)`.** `set(next)` replaces state; mutating `get()` does nothing.
 9. **Use `data-action` (or similar) attributes, not inline `onClick`.** Inline handlers are not supported by the JSX → string runtime; delegate from the root instead.

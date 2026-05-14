@@ -77,7 +77,7 @@ The JSX runtime sits at `kerfjs/jsx-runtime` (subpath export). Users configure i
 
 ### What kerf is NOT
 
-- Not a component framework — there's no `<MyComponent />` notion. Components are plain functions returning JSX.
+- Not a component framework. `<MyComponent props />` works as JSX sugar — the runtime calls `MyComponent(props)` and uses the returned JSX — but there are no hooks, no lifecycle, and no per-instance state. Components are plain functions; state lives in module-scope signals or stores.
 - Not a router. Not a state-management library beyond the bare store factory. Not an SSR framework (though `SafeHtml.toString()` works server-side).
 - Not opinionated about styling. Bring your own CSS.
 
