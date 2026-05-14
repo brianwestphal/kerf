@@ -73,6 +73,7 @@ export default defineConfig({
             { label: 'AI evidence', slug: 'ai-evidence' },
             { label: 'AI evidence: structural', slug: 'ai-evidence/structural' },
             { label: 'AI evidence: diagnostics', slug: 'ai-evidence/diagnostics' },
+            { label: 'AI evidence: one-shots', slug: 'ai-evidence/one-shots' },
           ],
         },
         {

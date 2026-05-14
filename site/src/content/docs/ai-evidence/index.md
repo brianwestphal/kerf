@@ -23,7 +23,9 @@ For each of kerf's 12 hard rules, a fixture that deliberately violates the rule,
 
 A portfolio of one-shot transcripts: kanban, todoMVC, dashboard, markdown editor, streaming chat — re-derived from prompt-only against a pinned kerf version, a pinned model, and a pinned `llms.txt` revision. When the model gets something wrong, the transcript shows it.
 
-*In progress.* The [built-by-an-ai Pomodoro](/kerf/examples/complete/built-by-an-ai/) is the precedent; the rest of the portfolio is the work tracked in the AI-evidence epic.
+The [built-by-an-ai Pomodoro](/kerf/examples/complete/built-by-an-ai/) is the shipped precedent; the [one-shot transcript portfolio](/kerf/ai-evidence/one-shots/) extends it with prompt scaffolds for five harder shapes (kanban / TodoMVC / dashboard / markdown editor / streaming chat) — transcripts are captured one at a time as the AI-evidence epic progresses.
+
+→ [AI evidence: one-shots](/kerf/ai-evidence/one-shots/)
 
 ### Empirical — *what the model produces across frameworks, models, prompts, and doc conditions*
 
