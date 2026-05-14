@@ -165,27 +165,32 @@ describe('Diagnostic-error audit (KF-169) — Hard Rules 1–12', () => {
     expect(() => host.querySelector('span')!.click()).not.toThrow();
   });
 
-  it('Rule 5 — nested mount() in the same tree: both mounts run; no error fires (score 0)', () => {
-    // The outer mount's effect and the inner mount's effect both subscribe to
-    // their respective signals, but they fight over the same DOM. There is
-    // no detection or warning today.
+  it('Rule 5 — nested mount() in the same tree: the second mount throws naming the precondition (score 3, KF-175)', () => {
+    // KF-175: `mount()` walks the requested root's ancestors / descendants /
+    // self for the `Symbol.for("kerfjs.mounted")` marker before installing
+    // the effect, and throws if any is found. Score 3 — the error names what
+    // happened ("already inside (or contains) a mounted tree") and the fix
+    // ("compose with plain functions that return JSX instead of nesting").
+    // Previously this was silent: both mounts ran, both effects subscribed,
+    // and the outer's morph would reconcile the inner mount's DOM back to
+    // whatever the outer template said — invisible from one read site, broken
+    // from another.
     const outer = signal(0);
     const inner = signal('hello');
-    const innerHost = document.createElement('div');
-    innerHost.id = 'inner-host';
-    host.appendChild(innerHost);
 
-    expect(() => {
-      mount(host, () => (
-        <div>
-          outer={outer.value}
-          <div id="inner-host">slot</div>
-        </div>
-      ));
-      // The outer morph will reconcile `#inner-host` back to "slot",
-      // overwriting whatever the inner mount writes. Today: no warning.
-      mount(innerHost, () => <span>{inner.value}</span>);
-    }).not.toThrow();
+    mount(host, () => (
+      <div>
+        outer={outer.value}
+        <div id="inner-host">slot</div>
+      </div>
+    ));
+    // Query AFTER mount so we get the post-render `#inner-host` element that
+    // is actually a descendant of the mounted `host`. (Pre-creating an element
+    // and appending it before mount wouldn't work — the first render's
+    // `innerHTML =` replaces the children, orphaning the pre-created element.)
+    const innerHost = host.querySelector('#inner-host') as HTMLElement;
+    expect(() => mount(innerHost, () => <span>{inner.value}</span>))
+      .toThrow(/already inside.*mounted tree/);
   });
 
   it('Rule 7 — signal read outside render fn: the captured value is frozen; subsequent updates do not re-render (score 0 by default; score 2 with KF-176 opt-in)', () => {
@@ -301,10 +306,10 @@ describe('Diagnostic-error audit (KF-169) — Hard Rules 1–12', () => {
     // Pinned here so the page and the audit can't drift apart. Updating
     // either side without the other trips this test.
     const summary = {
-      score3: 7, // Rules 1, 8 (KF-177), 9 (KF-178), 12, 5-precondition (mount-null) + 2 bonus (each-primitives, each-duplicates)
+      score3: 8, // Rules 1, 5 (KF-175 nested mount), 8 (KF-177), 9 (KF-178), 12, 5-precondition (mount-null) + 2 bonus (each-primitives, each-duplicates)
       score2: 0,
       score1: 1, // Rule 10
-      score0: 4, // Rules 2, 4, 5 (nested-mount silent), 7
+      score0: 3, // Rules 2, 4, 7
       na: 3, // Rules 3, 6, 11
     };
     const total = summary.score3 + summary.score2 + summary.score1 + summary.score0 + summary.na;

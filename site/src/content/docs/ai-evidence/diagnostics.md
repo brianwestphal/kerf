@@ -22,12 +22,12 @@ Every test in this audit is pinned in [`tests/unit/diagnostic-error-audit.test.t
 
 Of the 12 hard rules:
 
-- **5 score Excellent** (Rules 1, 8, 9, 12) plus the `mount(null, …)` precondition and 2 bonus contracts on `each()` (primitive items, duplicate references) — **7 score-3 captures total.**
+- **6 score Excellent** (Rules 1, 5, 8, 9, 12) plus the `mount(null, …)` precondition and 2 bonus contracts on `each()` (primitive items, duplicate references) — **8 score-3 captures total.**
 - **1 scores Weak** (Rule 10 — multiple `each()` callsites bound to the same `arraySignal`).
-- **4 score Silent** (Rules 2, 4, 5, 7). These are the diagnostic gaps an AI feels most.
+- **3 score Silent** (Rules 2, 4, 7). These are the diagnostic gaps an AI feels most.
 - **3 are N/A** (Rules 3, 6, 11) — positive-only instructions or compile-time type contracts, not runtime violations.
 
-Honest read: kerf is best-in-class where it *does* throw (Rules 1, 8, 9, 12, the mount precondition, the row contract — all row/index-precise, fix-suggestive). Where the framework is silent — list keys, listener-on-mounted-node, nested mounts, signal read outside render — there's clear room to improve. Each score-0 row below has a follow-up improvement ticket linked.
+Honest read: kerf is best-in-class where it *does* throw (Rules 1, 5, 8, 9, 12, the mount-null precondition, the row contract — all row/index-precise, fix-suggestive). Where the framework is silent — list keys, listener-on-mounted-node, signal read outside render — there's clear room to improve. Each score-0 row below has a follow-up improvement ticket linked.
 
 ## Per-rule audit
 
@@ -93,7 +93,7 @@ Why this scores 0: the model sees the first click work, concludes the code is co
 
 **Follow-up:** a `MutationObserver`-backed dev assertion in `mount()` could flag listener-bearing nodes that get replaced (the existing browser test for §5.4 already documents the rebuilt-nodes contract). Cost: dev-only, off by default in production.
 
-### Rule 5 — One `mount()` per root · **Score 0** · follow-up filed: `mount()` throws when called on an already-mounted element or any ancestor of one
+### Rule 5 — One `mount()` per root · **Score 3**
 
 > *"One `mount()` per root. Don't nest `mount()` calls."*
 
@@ -104,9 +104,17 @@ mount(host, () => <div>outer <div id="inner-host">slot</div></div>);
 mount(host.querySelector('#inner-host')!, () => <span>{inner.value}</span>);
 ```
 
-Runtime behavior: **no error.** The outer effect's next re-render reconciles `#inner-host` back to `"slot"`, overwriting whatever the inner mount wrote. No warning identifies the nesting.
+Runtime behavior: **throws.**
 
-The related precondition — `mount(null, …)` — scores 3:
+```
+mount: rootEl is already inside (or contains) a mounted tree. kerf supports
+one mount per tree — compose with plain functions that return JSX instead of
+nesting mounts.
+```
+
+Why this scores 3: the second `mount()` call walks the requested root's ancestors, descendants, and the root itself for a `Symbol.for("kerfjs.mounted")` marker placed by the first `mount()`. If any is found, it throws naming the violation ("already inside (or contains) a mounted tree") and the canonical fix ("compose with plain functions that return JSX instead of nesting"). The marker is cleared on dispose, so `mount(sameEl, …)` after dispose works as before.
+
+The related precondition — `mount(null, …)` — also scores 3:
 
 ```
 mount: rootEl is null/undefined — pass the live element, e.g.
@@ -115,7 +123,7 @@ the id or selector that returns null at runtime even though the TypeScript
 types say HTMLElement.
 ```
 
-**Follow-up:** tag elements with a non-enumerable `__kerfMounted` marker on first mount; throw on a second `mount(el, …)` against an already-mounted element (or any ancestor of one).
+Promoted from score 0 to score 3 by the one-mount-per-tree precondition in `src/mount.ts` (KF-175).
 
 ### Rule 7 — Signal read outside the render fn · **Score 0 by default · Score 2 with `KERF_DEV_WARN_UNTRACKED_SIGNALS=1`**
 
@@ -262,18 +270,18 @@ Why this scores 3: the error names the rule (the contract), the location (row in
 ## Score distribution
 
 ```
-Score 3 (excellent):  ████████████  7 captures
+Score 3 (excellent):  ██████████████  8 captures
 Score 2 (good):       (none)
-Score 1 (weak):       ██            1 capture
-Score 0 (silent):     ██████        4 captures
-N/A:                  ████          3 rules
+Score 1 (weak):       ██              1 capture
+Score 0 (silent):     ████            3 captures
+N/A:                  ████            3 rules
 ```
 
 ## What this evidence does and doesn't show
 
 What it shows:
 - When kerf **does** throw, it throws well — row/index-precise, fix-suggestive, scored 3 on the rubric. The Rule 12 (`each()` row contract) error is the template.
-- Where kerf is silent (Rules 2, 4, 5, 7), the gap is well-defined and individually fixable. Each row has a follow-up improvement ticket attached.
+- Where kerf is silent (Rules 2, 4, 7), the gap is well-defined and individually fixable. Each row has a follow-up improvement ticket attached.
 
 What it doesn't show:
 - Whether the *quantity* of diagnostic guidance is enough for an AI in practice — see the empirical [AI codegen benchmark](#) (in progress) for the cross-framework comparison.

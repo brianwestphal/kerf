@@ -154,6 +154,46 @@ describe('mount()', () => {
       .toThrow(/mount: rootEl is null\/undefined/);
   });
 
+  describe('one-mount-per-tree precondition (KF-175)', () => {
+    it('throws when mount() is called on a descendant of an already-mounted element', () => {
+      mount(root, () => jsx('div', { children: jsx('span', { id: 'inner', children: 'x' }) }));
+      const inner = root.querySelector('#inner') as HTMLElement;
+      expect(() => mount(inner, () => 'y')).toThrow(/already inside.*mounted tree/);
+    });
+
+    it('throws when mount() is called on an ancestor of an already-mounted element', () => {
+      const inner = document.createElement('div');
+      root.appendChild(inner);
+      mount(inner, () => 'inner');
+      expect(() => mount(root, () => 'outer')).toThrow(/already inside.*mounted tree/);
+    });
+
+    it('throws when mount() is called twice on the same element without dispose', () => {
+      mount(root, () => 'first');
+      expect(() => mount(root, () => 'second')).toThrow(/already inside.*mounted tree/);
+    });
+
+    it('allows mount() on the same element after the prior mount has been disposed', () => {
+      const dispose = mount(root, () => 'first');
+      dispose();
+      expect(() => mount(root, () => 'second')).not.toThrow();
+    });
+
+    it('allows sibling mount() calls into independent regions of the same scaffold', () => {
+      // The cart-section pattern: a shared scaffold with two region divs,
+      // each getting its own mount(). Neither is an ancestor or descendant
+      // of the other, so the precondition does not fire.
+      const a = document.createElement('div');
+      const b = document.createElement('div');
+      root.appendChild(a);
+      root.appendChild(b);
+      expect(() => {
+        mount(a, () => 'A');
+        mount(b, () => 'B');
+      }).not.toThrow();
+    });
+  });
+
   it('preserves user-set <details open> across re-renders (KF-84)', () => {
     // Force the template to actually change between renders (KF-88's fast
     // path skips the diff when surrounds are byte-identical, which would

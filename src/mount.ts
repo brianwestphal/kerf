@@ -71,6 +71,47 @@ const LIST_MARKER_PREFIX = 'kf-list:';
  */
 export type MountResult = SafeHtml | string | number | boolean | null | undefined;
 
+// KF-175 — non-enumerable marker placed on `mount()`'s rootEl so that a
+// second `mount()` call on a descendant, ancestor, or the same element can be
+// detected and rejected. `Symbol.for(...)` so the marker survives multiple
+// kerfjs imports in the same realm (e.g. the dist-full test suite running a
+// rebuilt bundle against the src test infrastructure).
+const MOUNTED_MARKER = Symbol.for('kerfjs.mounted');
+
+function assertNotInsideMountedTree(rootEl: HTMLElement): void {
+  // The element itself.
+  if ((rootEl as unknown as Record<symbol, unknown>)[MOUNTED_MARKER] === true) {
+    throw new Error(
+      'mount: rootEl is already inside (or contains) a mounted tree. '
+      + 'kerf supports one mount per tree — compose with plain functions that return JSX instead of nesting mounts.',
+    );
+  }
+  // Ancestors — walk up.
+  let ancestor: Element | null = rootEl.parentElement;
+  while (ancestor !== null) {
+    if ((ancestor as unknown as Record<symbol, unknown>)[MOUNTED_MARKER] === true) {
+      throw new Error(
+        'mount: rootEl is already inside (or contains) a mounted tree. '
+        + 'kerf supports one mount per tree — compose with plain functions that return JSX instead of nesting mounts.',
+      );
+    }
+    ancestor = ancestor.parentElement;
+  }
+  // Descendants — DFS.
+  const stack: Element[] = [];
+  for (let i = 0; i < rootEl.children.length; i++) stack.push(rootEl.children[i]);
+  while (stack.length > 0) {
+    const cur = stack.pop() as Element;
+    if ((cur as unknown as Record<symbol, unknown>)[MOUNTED_MARKER] === true) {
+      throw new Error(
+        'mount: rootEl is already inside (or contains) a mounted tree. '
+        + 'kerf supports one mount per tree — compose with plain functions that return JSX instead of nesting mounts.',
+      );
+    }
+    for (let i = 0; i < cur.children.length; i++) stack.push(cur.children[i]);
+  }
+}
+
 export function mount(rootEl: HTMLElement, render: () => MountResult): () => void {
   if (rootEl == null) {
     throw new Error(
@@ -78,6 +119,8 @@ export function mount(rootEl: HTMLElement, render: () => MountResult): () => voi
       + 'A common cause is a typo in the id or selector that returns null at runtime even though the TypeScript types say HTMLElement.',
     );
   }
+  assertNotInsideMountedTree(rootEl);
+  (rootEl as unknown as Record<symbol, unknown>)[MOUNTED_MARKER] = true;
   const bindings = new Map<string, ListBinding>();
   // Per-mount render context: the list-id counter is reset at the start of
   // each render (so the n-th `each()` call gets the same id every render);
@@ -98,7 +141,7 @@ export function mount(rootEl: HTMLElement, render: () => MountResult): () => voi
   // path render against the krausest harness.
   let prevStaticHtml = '';
 
-  return effect(() => {
+  const disposeEffect = effect(() => {
     renderCtx.counter = 0;
     _setRenderContext(renderCtx);
     let result: MountResult;
@@ -133,6 +176,12 @@ export function mount(rootEl: HTMLElement, render: () => MountResult): () => voi
       renderCtx.bindingCounts.set(listSeg.id, binding.items.length);
     }
   });
+
+  return () => {
+    disposeEffect();
+    // Clear the mounted marker so `mount(sameEl, ...)` after dispose works.
+    delete (rootEl as unknown as Record<symbol, unknown>)[MOUNTED_MARKER];
+  };
 }
 
 /**
