@@ -1,45 +1,42 @@
-# kerf — 5-minute orientation
+# kerf — orientation for new developers
 
-> A one-pager for humans new to the codebase. **Hard cap: 500 words.** For deeper material follow the links at the bottom. The `check-requirements-against-code` skill keeps this in sync.
+> One-pager. **Hard cap: 500 words.** Assumes you've used a reactive UI library like React, Vue, or Solid. You don't need to know their internals. The `check-requirements-against-code` skill keeps this in sync.
 
-## What kerf is
+## Mental model
 
-A ~6.1 KB reactive UI framework: fine-grained signals (`@preact/signals-core`) + a custom DOM morph + a keyed list reconciler + a JSX-to-HTML-string runtime. No virtual DOM, no compiler, no scheduler.
+kerf is **signals + a DOM-string render + a morph diff**. There is no virtual DOM, no compiler, no fiber tree, no scheduler.
 
-## How the source is organized
-
-`src/` follows one rule: **one primary export per file**, files under ~200 LOC.
-
-- `index.ts` — public barrel. 16 runtime exports.
-- `jsx-runtime.ts` + `jsx-types.ts` — JSX → `SafeHtml` (string + structured "list"/"mixed" segments).
-- `reactive.ts`, `store.ts`, `array-signal.ts` — reactivity primitives.
-- `mount.ts` — binds a render function to a DOM root via `effect()`.
-- `morph.ts` — kerf's general-purpose DOM diff (forked from morphdom, attribution in `LICENSE`).
-- `each.ts` + `list-reconcile*.ts` + `list-binding.ts` — keyed list reconciler. Snapshot path (default) and granular-patch path (when fed an `arraySignal`).
-- `segment.ts` — types for the structured render output.
-- `delegate.ts` — Tier-1 / Tier-2 event delegation.
-- `toElement.ts` — SVG-aware JSX → DOM Element.
-- `utils/` — `escapeHtml`, JSX-attr aliases, row-contract helpers.
-
-## The render pipeline
+`mount(rootEl, () => jsx)` runs your render function inside an `effect()` from `@preact/signals-core`. The render function returns a `SafeHtml` — an HTML string for static markup, plus structured "list" segments where `each()` was called. On a signal write, the effect re-fires; `morph()` reconciles the static parts against the live DOM in place; the keyed list reconciler patches each `each()` list against its live children in O(changes). Coming from React: there is no in-memory tree to diff — kerf re-reads the live DOM and writes only what changed.
 
 ![Render pipeline](./diagrams/render-pipeline.svg)
 
-A `signal` write re-runs the render fn → it produces a `SafeHtml` (an HTML string for the static surrounds plus tagged "list" segments where `each()` was called) → `morph()` reconciles the static surrounds → the list reconciler patches each list directly against live DOM children. Partial updates on a 1000-row table are O(changes), not O(rows).
+## Where to look first
 
-## Things to be aware of
+If you're trying to **understand the public API**, start at `src/index.ts` (16 exports) and `docs/8-api-reference.md`.
 
-- **Two documented module-level mutable spots, no others.** `store.ts:REGISTRY` (so `resetAllStores()` works) and `each.ts:context` (the per-render render-context reference, set by `mount()`). Everything else flows through arguments.
-- **Components are plain functions returning JSX.** No hooks, no lifecycle, no `<MyComponent />` semantics. State lives in module-scope signals/stores.
-- **JSX renders to HTML *strings*, not DOM nodes.** Passing a DOM node into JSX throws. `toElement()` is the bridge for the one-shot SVG/HTML → Element case.
-- **Diff keys are `id` first, then `data-key`.** Without one of these, list rows match by position — focus and selection swap on insert/delete.
-- **`data-morph-skip` (+ `-children`, + `data-morph-preserve`) are escape hatches.** Mark third-party widgets (Monaco, charts) so the diff leaves them alone.
-- **Coverage gates.** `vitest.config.ts` enforces 100% lines / functions / statements, 99% branches on `src/`. `npm run check` runs the full lint + typecheck + tests + build + dist suite. `npm run check:full` adds Playwright across Chromium / Firefox / WebKit.
-- **Ticket numbers (`KF-NN`) are local-only** — outside readers can't look them up, so always include a self-contained summary. See `CLAUDE.md` § Referencing tickets.
+If you're trying to **change how rendering wires up or schedules**, look at `src/mount.ts` — it owns the effect, the first-render bulk insert, and the dispatch to morph + list reconciler.
 
-## Where to look next
+If you're trying to **fix a static-element diff bug** (attributes, text, focus preservation, `data-morph-*`), look at `src/morph.ts`.
 
-- `CLAUDE.md` — agent-facing canonical reference; source-of-truth for the export list, file map, test scripts.
-- `docs/1-overview.md` through `docs/10-migrating.md` — numbered design docs.
-- `docs/ai/usage-guide.md` — the AI-first reference (hard rules, four core patterns, common errors → fixes).
-- `docs/ai/code-summary.md` — reverse index of every public export.
+If you're trying to **fix a keyed-list bug** (rows not moving, focus loss, duplicate keys), look at `src/list-reconcile.ts` and its two siblings: `list-reconcile-snapshot.ts` (default LIS path) and `list-reconcile-granular.ts` (the `arraySignal` patch path).
+
+If you're trying to **add or debug a reactive primitive**, see `src/reactive.ts` (re-export of signals-core), `src/store.ts` (`defineStore`), `src/array-signal.ts` (granular collection signal).
+
+If you're trying to **wire an event handler**, do NOT use inline `onClick={fn}` — the JSX runtime renders to strings and will throw. Use `delegate(rootEl, 'click', '[data-action="..."]', handler)` from `src/delegate.ts`.
+
+If you need to **opt a subtree out of the diff** (third-party widget, imperative DOM), put `data-morph-skip` / `data-morph-skip-children` / `data-morph-preserve` on the host. See `docs/4-render.md` §4.3.
+
+## What surprises React people
+
+- **JSX renders to strings, not DOM nodes.** Passing an element as a child throws. `toElement()` is the one-shot string-to-Element bridge.
+- **Components are plain functions returning JSX.** No hooks, no lifecycle, no `<MyComponent />` semantics. State lives in module-scope signals or stores.
+- **Lists require `id` or `data-key` per row.** Without one, rows match positionally; focus and selection swap on insert/delete.
+- **No synthetic event system.** You opt into delegation via `delegate()`.
+
+## Conventions
+
+One primary export per file, files under ~200 LOC, ESM-only, kebab-case filenames. `npm run check` is the fast gate (lint + typecheck + tests + build + dist suite); `npm run check:full` adds Playwright. Coverage is enforced at 100% lines/functions/statements, 99% branches on `src/`. Ticket numbers (`KF-NN`) are local-only — always include a self-contained summary when referencing them. See `CLAUDE.md` § Hot Sheet integration.
+
+## Deeper reading
+
+`docs/1-overview.md` → `docs/10-migrating.md` (design); `docs/ai/usage-guide.md` (AI-first reference); `CLAUDE.md` (canonical agent doc).
