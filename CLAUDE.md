@@ -138,7 +138,7 @@ This project is managed via [Hot Sheet](https://github.com/brianwestphal/hotshee
 
 ### Referencing tickets in code and docs
 
-Hot Sheet is local-only, so a bare `KF-NN` reference can't be looked up by anyone but the maintainer. When you mention a ticket number — in code comments, in user-facing docs, in commit messages, anywhere a reader who isn't the maintainer might see it — **always include a short self-contained summary** in the same sentence or parenthetical. The summary should make sense on its own without the reader resolving the ticket number.
+Hot Sheet is local-only, so a bare `KF-NN` reference can't be looked up by anyone but the maintainer. When you mention a ticket number anywhere a reader who isn't the maintainer might see it — code comments, user-facing docs, commit messages — **always include a short self-contained summary** in the same sentence or parenthetical. The summary should make sense on its own without the reader resolving the ticket number.
 
 - ✅ `data-morph-skip-children (attrs on the host morph, subtree preserved)` — self-contained.
 - ✅ `(KF-103 row contract: exactly one top-level element per each() row)` — self-contained with the number kept as provenance.
@@ -146,6 +146,8 @@ Hot Sheet is local-only, so a bare `KF-NN` reference can't be looked up by anyon
 - ❌ "See `.hotsheet/worklist.md`" — `.hotsheet/` is local-only; never link to it in user-facing docs.
 
 The same rule applies to commit messages — `git log` is a public-facing surface for any open-source consumer. Use `KF-NN: <short title>` shape so the title makes the commit understandable without a ticket lookup.
+
+**Exception: ticket-to-ticket references inside Hot Sheet itself are fine.** Anyone reading a ticket already has Hot Sheet open, so bare `KF-NN` cross-references in ticket titles, details, and notes resolve trivially. The self-contained-summary rule is only about surfaces *outside* Hot Sheet where readers may not have it.
 
 ### Concerns → tickets, not ad-hoc fixes
 
