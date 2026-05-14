@@ -25,7 +25,7 @@ Of the 12 hard rules:
 - **6 score Excellent** (Rules 1, 5, 8, 9, 12) plus the `mount(null, …)` precondition and 2 bonus contracts on `each()` (primitive items, duplicate references) — **8 score-3 captures total.**
 - **1 scores Good** (Rule 2 — KF-173 dev `console.warn` from `each()` when a row has no `id` / `data-key`).
 - **1 scores Weak** (Rule 10 — multiple `each()` callsites bound to the same `arraySignal`).
-- **2 score Silent** (Rules 4, 7). These are the diagnostic gaps an AI feels most.
+- **2 score Silent by default** (Rules 4 and 7). Both promote to **Score 2** under opt-in env vars: `KERF_DEV_WARN_REBUILT_LISTENERS=1` (Rule 4, KF-174 — MutationObserver-backed dev warn on rebuilt listener-bearing nodes) and `KERF_DEV_WARN_UNTRACKED_SIGNALS=1` (Rule 7, KF-176 — `DevSignal` warn on writes with no subscribers).
 - **3 are N/A** (Rules 3, 6, 11) — positive-only instructions or compile-time type contracts, not runtime violations.
 
 Honest read: kerf is best-in-class where it *does* throw (Rules 1, 5, 8, 9, 12, the mount-null precondition, the row contract — all row/index-precise, fix-suggestive). Where the framework is silent — listener-on-mounted-node, signal read outside render — there's clear room to improve. Each score-0 row below has a follow-up improvement ticket linked.
@@ -82,7 +82,7 @@ Row HTML: "<li>b</li>"
 
 Why this scores 2 (not 3): the warning names what's wrong, why it's wrong, and the canonical fix — but it fires *after* the first render rather than at the offending code site, and the subsequent insert/remove misbehavior still happens. A score-3 capture would catch the misuse at the read site, which would require static analysis kerf can't do at runtime. Promoted from score 0 to score 2 by the per-binding key check in `src/utils/rowContract.ts`'s `maybeWarnMissingRowKey()` (KF-173), called once per `ListBinding` from `mount.ts`'s first-render path and from both list reconcilers; the warning is suppressed after the first emission per binding so re-renders don't spam.
 
-### Rule 4 — `addEventListener` on a node inside a `mount()`-managed tree · **Score 0** · follow-up filed: dev-mode `MutationObserver` warning when a listener-bearing node gets rebuilt
+### Rule 4 — `addEventListener` on a node inside a `mount()`-managed tree · **Score 0 by default · Score 2 with `KERF_DEV_WARN_REBUILT_LISTENERS=1`**
 
 > *"Never `addEventListener` on a node inside a `mount()`-managed tree unless that node lives under `data-morph-skip`."*
 
@@ -93,14 +93,26 @@ mount(host, () => <span class={cls.value}>label</span>);
 const span = host.querySelector('span')!;
 span.addEventListener('click', () => { /* … */ });
 // First click works. Subsequent re-render rebuilds the span → listener is
-// lost. No warning fires.
+// lost.
 ```
 
-Runtime behavior: **no error.** The listener works for the first interaction, then disappears the next time the morph rebuilds the node.
+Default runtime behavior: **no error.** The listener works for the first interaction, then disappears the next time the morph rebuilds the node. The model sees the first click work, concludes the code is correct, and moves on; the listener-loss surfaces minutes or hours later in unrelated user testing.
 
-Why this scores 0: the model sees the first click work, concludes the code is correct, and moves on. The listener-loss surfaces minutes or hours later in unrelated user testing.
+With `KERF_DEV_WARN_REBUILT_LISTENERS=1` (opt-in, dev only): `mount()` installs a `MutationObserver` on the mount root, scoped to `childList: true, subtree: true`. A one-time monkey-patch on the realm's `EventTarget.prototype.addEventListener` (resolved via a probe Element's prototype chain so the patch lands on happy-dom's per-realm EventTarget, not `globalThis.EventTarget`) marks each Element receiver with a `Symbol.for("kerfjs.devListener")` flag. When the observer reports a removed Element (or any descendant in the removed subtree) carrying the marker, it emits a one-shot `console.warn`:
 
-**Follow-up:** a `MutationObserver`-backed dev assertion in `mount()` could flag listener-bearing nodes that get replaced (the existing browser test for §5.4 already documents the rebuilt-nodes contract). Cost: dev-only, off by default in production.
+```
+kerf: a node inside a mount()-managed tree was removed/rebuilt while
+carrying an imperative addEventListener listener. The listener is gone
+with the old node. Use `delegate(rootEl, 'click', '[data-action="..."]',
+handler)` so the listener lives on a stable ancestor and survives
+re-renders, or wrap the host in `data-morph-skip` if the subtree is
+library-owned (Monaco, xterm, D3 charts). Set
+KERF_DEV_WARN_REBUILT_LISTENERS=0 (or unset it) to silence this warning.
+```
+
+Why this is opt-in and not on by default: the monkey-patch affects every `addEventListener` call in the realm (including non-kerf code paths), and the MutationObserver delivers asynchronously (microtask after the morph), so false positives are possible — third-party widgets that call `addEventListener` inside a kerf-managed tree without `data-morph-skip` would also trigger the warning. Opt-in keeps the diagnostic available for dev / CI runs without surprising existing projects. Production behavior is unchanged for zero runtime cost.
+
+Score 2 (not 3) when opted in because the warning fires *after* the bad re-render — the user sees that their listener stopped working AND sees the warning; a score-3 capture would surface at `addEventListener` time, which would require static analysis kerf can't do at runtime (KF-174).
 
 ### Rule 5 — One `mount()` per root · **Score 3**
 

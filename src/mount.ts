@@ -25,6 +25,7 @@
  * position are not destroyed and recreated on each tick.
  */
 
+import { installListenerRebuildWarn } from './dev-listener-warn.js';
 import { _setRenderContext, type RenderContext } from './each.js';
 import type { SafeHtml } from './jsx-runtime.js';
 import { isSafeHtml } from './jsx-runtime.js';
@@ -121,6 +122,9 @@ export function mount(rootEl: HTMLElement, render: () => MountResult): () => voi
   }
   assertNotInsideMountedTree(rootEl);
   (rootEl as unknown as Record<symbol, unknown>)[MOUNTED_MARKER] = true;
+  // KF-174: opt-in dev MutationObserver that warns when a node carrying an
+  // imperative addEventListener listener is removed/rebuilt by the morph.
+  const listenerWarnObserver = installListenerRebuildWarn(rootEl);
   const bindings = new Map<string, ListBinding>();
   // Per-mount render context: the list-id counter is reset at the start of
   // each render (so the n-th `each()` call gets the same id every render);
@@ -179,6 +183,7 @@ export function mount(rootEl: HTMLElement, render: () => MountResult): () => voi
 
   return () => {
     disposeEffect();
+    listenerWarnObserver?.disconnect();
     // Clear the mounted marker so `mount(sameEl, ...)` after dispose works.
     delete (rootEl as unknown as Record<symbol, unknown>)[MOUNTED_MARKER];
   };

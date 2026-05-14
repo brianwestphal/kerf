@@ -57,10 +57,10 @@ export function rowContractError(index: number, html: string): Error {
   );
 }
 
-const IS_DEV: boolean = (() => {
+function isDevMode(): boolean {
   const proc = (globalThis as { process?: { env?: { NODE_ENV?: string } } }).process;
   return proc?.env?.NODE_ENV !== 'production';
-})();
+}
 
 /**
  * KF-173: emit a one-shot dev-mode `console.warn` when the first row of an
@@ -81,7 +81,7 @@ export function maybeWarnMissingRowKey(
   rowHtml: string,
   binding: { warnedMissingKey?: boolean },
 ): void {
-  if (!IS_DEV) return;
+  if (!isDevMode()) return;
   if (binding.warnedMissingKey === true) return;
   binding.warnedMissingKey = true;
   if (rowEl.id !== '' || rowEl.hasAttribute('data-key')) return;
