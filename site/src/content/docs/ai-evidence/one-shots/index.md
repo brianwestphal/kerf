@@ -34,7 +34,7 @@ The reproducibility recipe is identical for every page:
 
 | App | Prompt drafted | Transcript captured | Page published |
 | --- | :-: | :-: | :-: |
-| Kanban | ✅ | ⏳ | scaffold |
+| Kanban | ✅ | ✅ (2026-05-15) | transcript published, build-and-run verification pending |
 | TodoMVC | ✅ | ⏳ | scaffold |
 | Dashboard | ✅ | ⏳ | scaffold |
 | Markdown editor | ✅ | ⏳ | scaffold |
