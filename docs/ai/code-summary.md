@@ -33,6 +33,7 @@ kerf/
 │   │   ├── array-signal.test.ts
 │   │   ├── audit-gap-coverage.test.tsx     ← regression-net for v8-only branches found via coverage gaps
 │   │   ├── delegate.test.ts
+│   │   ├── diagnostic-error-audit.test.tsx ← KF-169 — one test per Hard Rule pinning the runtime behavior an AI sees on violation; gates `/kerf/ai-evidence/diagnostics/`
 │   │   ├── morph.internal.test.ts
 │   │   ├── doc-contract-coverage.test.tsx  ← KF-104 — comprehensive contract suite covering every doc-asserted behavior
 │   │   ├── each.test.ts

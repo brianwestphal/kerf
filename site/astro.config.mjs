@@ -71,6 +71,7 @@ export default defineConfig({
             { label: 'When to use something else', slug: 'alternatives' },
             { label: 'AI', slug: 'ai' },
             { label: 'AI evidence: structural', slug: 'ai-evidence/structural' },
+            { label: 'AI evidence: diagnostics', slug: 'ai-evidence/diagnostics' },
           ],
         },
         {
