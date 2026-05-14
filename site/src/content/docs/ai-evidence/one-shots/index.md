@@ -40,7 +40,7 @@ The reproducibility recipe is identical for every page:
 | Markdown editor | ✅ | ⏳ | scaffold |
 | Streaming chat | ✅ | ⏳ | scaffold |
 
-The five prompts are drafted in their respective pages; the transcript capture is the remaining work. Tracked in [KF-170](https://github.com/brianwestphal/kerf/blob/main/CLAUDE.md#hot-sheet-integration) — the one-shot transcript portfolio sub-ticket of the AI-evidence epic (Hot Sheet is local-only, so the ticket reference is for provenance only).
+The five prompts are drafted in their respective pages; the transcript capture is the remaining work — each one is its own sub-ticket of the AI-evidence epic.
 
 ## Caveats
 

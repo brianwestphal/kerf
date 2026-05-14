@@ -266,20 +266,6 @@ In kerf: focus + caret position + selection range on the currently-focused input
 
 ## 5. Perf numbers
 
-[krausest js-framework-benchmark](https://github.com/krausest/js-framework-benchmark), medians of 3 iterations, ms — lower is better. Pulled from [`bench/results.md`](https://github.com/brianwestphal/kerf/blob/main/bench/results.md).
-
-| Op | React 19.2 (hooks) | Kerf 0.5 | Δ |
-| --- | --- | --- | --- |
-| create 1k | 40.9 | 46.1 | kerf ~13 % slower |
-| partial update | 24.1 | 44.6 | kerf ~85 % slower |
-| swap rows | 157.3 | 22.3 | **kerf ~7× faster** |
-| select row | 8.0 | 27.6 | kerf ~3.5× slower |
-| remove row | 18.0 | 17.0 | kerf marginally faster |
-| append 1k | 48.8 | 50.5 | wash |
-| clear 1k | 26.7 | 18.6 | kerf ~30 % faster |
-
-Where kerf wins: anything that exercises the LIS-based move pass (swap rows) or the keyed-list reconciler's bulk parse (clear, remove). Where React wins: select-row and partial-update are where React's reconciler's hash-keyed per-row work pays off vs kerf's per-render Map+LIS overhead.
-
-Worth knowing: React's swap-rows 157ms is the cost of React 19 specifically reconciling a list when two non-adjacent items swap — that single op alone is probably enough to motivate a rewrite if your app does any reordering. Solid (6.5 select-row, 21.9 swap-rows) is the framework that wins both columns; if you're shopping for the absolute fastest *and* you want a real component framework, look at Solid first.
+Cross-framework perf comparisons are only published from official benchmark runs — clean machine, no background load, results re-generated under controlled conditions. The first official run lands once we have substantial framework changes worth measuring against. Until then: kerf and React 19 sit in the same performance cluster on most [krausest js-framework-benchmark](https://github.com/krausest/js-framework-benchmark) keyed scenarios; kerf's LIS-based move pass is the part that does meaningfully better than React's reconciler on list-reorder operations, but the deciding factor between the two frameworks is the bundle / ecosystem / training-set tradeoff in §1–§4, not row-update latency. Solid is also a sensible answer if raw performance is your decision driver.
 
 [See the full bench table →](https://github.com/brianwestphal/kerf/blob/main/bench/results.md)

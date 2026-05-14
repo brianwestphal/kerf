@@ -1,0 +1,37 @@
+/* Comparison-table convention.
+ *
+ * Any Markdown table that compares kerf against other frameworks should be
+ * wrapped in `<div class="kerf-compare"> … </div>`. Inside that wrapper:
+ *
+ *   - The kerf row (rendered as `| **kerf** | …` in Markdown — i.e. a single
+ *     bold cell as the first cell) gets a slight accent-tinted background so
+ *     it's visually distinct from the comparison rows.
+ *   - Best values per column should be bolded in the Markdown source (the
+ *     author picks the winner explicitly; this CSS doesn't compute it). Markdown
+ *     bold renders as a `<strong>` and stands out in tabular-numeric tables.
+ *
+ * The kerf-row detector uses CSS `:has()` to find a row whose first cell's
+ * only content is a single `<strong>` element. The Markdown emitter only
+ * produces that shape when the cell's source is exactly `**kerf**`, so this
+ * matches the kerf row and not other rows that happen to bold a value in the
+ * first column. */
+
+.kerf-compare table {
+  /* Inherit Starlight's default table styling; we layer on row + cell tweaks. */
+  font-variant-numeric: tabular-nums;
+}
+
+.kerf-compare table tbody tr:has(td:first-child > strong:only-child),
+.kerf-compare table tbody tr:has(th:first-child > strong:only-child) {
+  background: color-mix(in srgb, var(--sl-color-accent) 12%, transparent);
+}
+
+/* When the row is highlighted, lift the kerf label itself to the accent
+ * color so the row reads as one cohesive callout. */
+.kerf-compare table tbody tr:has(td:first-child > strong:only-child) td:first-child > strong,
+.kerf-compare table tbody tr:has(th:first-child > strong:only-child) th:first-child > strong {
+  color: var(--sl-color-accent-high);
+}
+
+/* Best-in-column bolding is done by the Markdown source via `**value**`.
+ * No CSS work needed beyond what Starlight already gives `<strong>`. */

@@ -281,20 +281,6 @@ What moved: `:host { ... }` becomes a wrapper-class selector. `static styles = c
 
 ## 5. Perf numbers
 
-[krausest js-framework-benchmark](https://github.com/krausest/js-framework-benchmark), medians of 3 iterations, ms — lower is better. Both frameworks land in the keyed cluster.
-
-| Op | Lit 3.2 | Kerf 0.5 | Δ |
-| --- | --- | --- | --- |
-| create 1k | 38.5 | 46.1 | kerf ~20 % slower |
-| partial update | 21.9 | 44.6 | kerf ~100 % slower |
-| swap rows | 28.9 | 22.3 | **kerf ~25 % faster** |
-| select row | 9.3 | 27.6 | kerf ~3× slower |
-| remove row | 18.3 | 17.0 | wash |
-| append 1k | 48.7 | 50.5 | wash |
-| clear 1k | 22.9 | 18.6 | **kerf ~20 % faster** |
-
-Where Lit wins: per-row targeted ops (select-row, partial-update) where lit-html's compiled template parts can mutate a single text node without walking siblings. Where kerf wins: anything bulk (swap, clear, remove) where the LIS-based move pass + bulk-parse insert path produce fewer DOM operations.
-
-In practice both frameworks are in the same performance neighborhood and the perf delta is almost never the deciding factor between them. The deciding factor is the Shadow-DOM / web-components question in §4 — if you want them, stay in Lit; if they're costing you more than they're paying, kerf is the closer-to-the-metal alternative.
+Cross-framework perf comparisons are only published from official benchmark runs — clean machine, no background load, results re-generated under controlled conditions. The first official run lands once we have substantial framework changes worth measuring against. Until then: in practice Lit 3 and kerf are in the same performance cluster on the [krausest js-framework-benchmark](https://github.com/krausest/js-framework-benchmark) keyed scenarios; the deciding factor between the two frameworks is the Shadow-DOM / web-components question in §4, not raw row-update latency.
 
 [See the full bench table →](https://github.com/brianwestphal/kerf/blob/main/bench/results.md)

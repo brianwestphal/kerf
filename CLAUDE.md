@@ -138,16 +138,41 @@ This project is managed via [Hot Sheet](https://github.com/brianwestphal/hotshee
 
 ### Referencing tickets in code and docs
 
-Hot Sheet is local-only, so a bare `KF-NN` reference can't be looked up by anyone but the maintainer. When you mention a ticket number anywhere a reader who isn't the maintainer might see it — code comments, user-facing docs, commit messages — **always include a short self-contained summary** in the same sentence or parenthetical. The summary should make sense on its own without the reader resolving the ticket number.
+Hot Sheet is local-only, so a bare `KF-NN` reference can't be looked up by anyone but the maintainer. The rules differ by surface:
 
-- ✅ `data-morph-skip-children (attrs on the host morph, subtree preserved)` — self-contained.
-- ✅ `(KF-103 row contract: exactly one top-level element per each() row)` — self-contained with the number kept as provenance.
-- ❌ `(KF-103)` — bare blame marker, unlookable, drop or expand it.
+**Never mention KF-NN anywhere on the published site.** That includes prose in `site/src/content/docs/**`, the source docs that sync into it (`docs/1-overview.md` … `docs/8-api-reference.md`), any HTML comment inside a published markdown file, and any code-block excerpt the site renders. Site readers don't have Hot Sheet, so the number is dead weight at best and noisy at worst. When you'd normally write `(KF-103)` for provenance, drop the marker and keep only the self-contained summary.
+
+**For everything else (code comments in `src/`, commit messages, source docs that are NOT site-synced):** when you mention a ticket number, **always include a short self-contained summary** in the same sentence or parenthetical so the reference stands alone without the reader resolving the ticket.
+
+- ✅ `data-morph-skip-children (attrs on the host morph, subtree preserved)` — self-contained; no ticket number needed.
+- ✅ `// KF-103 row contract: exactly one top-level element per each() row` — code comment with self-contained summary; the number is provenance.
+- ❌ `(KF-103)` — bare blame marker, unlookable; drop it or expand it.
+- ❌ Any `KF-NN` anywhere under `site/src/content/docs/**` or in the synced source docs (`docs/1-overview.md`, `docs/2-reactivity.md`, `docs/4-render.md`, `docs/8-api-reference.md`).
 - ❌ "See `.hotsheet/worklist.md`" — `.hotsheet/` is local-only; never link to it in user-facing docs.
 
 The same rule applies to commit messages — `git log` is a public-facing surface for any open-source consumer. Use `KF-NN: <short title>` shape so the title makes the commit understandable without a ticket lookup.
 
 **Exception: ticket-to-ticket references inside Hot Sheet itself are fine.** Anyone reading a ticket already has Hot Sheet open, so bare `KF-NN` cross-references in ticket titles, details, and notes resolve trivially. The self-contained-summary rule is only about surfaces *outside* Hot Sheet where readers may not have it.
+
+### Comparison tables on the site
+
+Any Markdown table that compares kerf against other frameworks must follow two conventions so the table reads cleanly across the docs:
+
+- **Wrap the table in `<div class="kerf-compare"> … </div>`.** The kerf-compare stylesheet (`site/src/styles/kerf-compare.css`, registered in `site/astro.config.mjs`'s `customCss`) gives the kerf row a slight accent-tinted background so a reader scanning the table can spot it without re-reading the labels. The detector is `tr:has(td:first-child > strong:only-child)` — i.e. the first cell renders as a single `<strong>` element — so the kerf row's first cell must be exactly `**kerf**` in the Markdown source.
+- **Bold the best value in each numeric column.** Use Markdown `**…**` on whichever framework's value wins the column on the lower-is-better (or higher-is-better, depending on the metric) ordering. This is an author decision per column, not computed by CSS. The kerf row's first cell being bold (`**kerf**`) is what triggers the row highlight; bold values inside the row's data cells are independent and indicate "best in column."
+
+If the table has no numeric columns to rank, skip the bold-best step and just wrap for the row highlight.
+
+### Performance comparison numbers — official runs only
+
+Cross-framework benchmark numbers (kerf vs Lit, kerf vs React, etc.) are only published on the site when they come from an **official run** — a scheduled `bench/run.sh` invocation on a clean machine (no background load, on AC, not in Low Power Mode, no other process pegging CPU; `bench/preflight.sh` enforces the gate). Official runs happen at 2 AM local via a scheduled cron (use the `schedule` skill — `run_once_at` with the next 2 AM UTC equivalent — and pin the `bench/results.json` produced as that run's official output).
+
+Cadence: schedule a new 2 AM official run whenever the framework has had **substantial enough changes** since the last official run that the comparison would be informative — a runtime change that touches the reconciler / morph / list-reconcile / signal-tracking path, a memo cache contract change, a public-API addition, etc. Documentation-only releases don't warrant a new bench run.
+
+What this means for the site:
+- The homepage `PerfTable.astro` (wired to `bench/results.json`) is *de facto* showing the most recent committed JSON. The JSON should only be re-committed from an official run.
+- Per-framework migration pages (`/kerf/migrating/{react,lit,vanjs,…}/`) MUST NOT publish a Δ comparison column with absolute numbers from a random run. If no official run has produced numbers for that framework pair, the §5 "Perf numbers" section is a one-paragraph qualitative note: "Both frameworks are in the same performance cluster on the krausest benchmark; the next official run will publish the numbers."
+- The bench-ai design doc (`docs/ai-codegen-bench-design.md`) lays out the same cadence for the *AI-codegen* benchmark — once that ships, its leaderboard is also gated on the 2 AM official-run convention.
 
 ### Concerns → tickets, not ad-hoc fixes
 

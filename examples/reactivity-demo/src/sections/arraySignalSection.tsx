@@ -13,7 +13,7 @@
  * Watch the patch counter: a single `update` of one row's flag emits a
  * single `update` patch and replaces a single `<li>` node. A 1000-row
  * append emits 1000 contiguous `insert` patches the reconciler bulk-parses
- * in one `template.innerHTML` call (KF-93).
+ * in one `template.innerHTML` call.
  */
 
 import { delegate, each, mount, signal } from 'kerfjs';
@@ -87,7 +87,7 @@ export function mountArraySignalSection(root: HTMLElement): void {
       <p className="demo-note">
         Each mutator emits one patch event. <code>push 100</code> emits 100
         contiguous <code>insert</code> patches that the reconciler bulk-parses
-        in one <code>template.innerHTML</code> call (KF-93). Toggle a row — only
+        in one <code>template.innerHTML</code> call. Toggle a row — only
         that row's <code>&lt;li&gt;</code> is replaced; siblings keep their
         existing DOM nodes. Move row 0 to the end — the LIS pass moves a single
         node, no rebuild.

@@ -39,7 +39,7 @@ The runtime answers two questions:
 
 1. **WHEN do we re-render?** Answered by signals: an `effect()` re-runs whenever any signal it read during its last run changes. `mount()` wraps `effect()` so that re-renders happen automatically when the JSX you return depends on a signal that changes.
 
-2. **HOW do we re-render?** Answered by kerf's morph: render JSX to a `SafeHtml` (which is a string for static content and a structured tree where lists or list-containing parents appear), then walk the live DOM in lock-step. Static surrounds go through a general-purpose tree-morph (`src/morph.ts`, also exported as `morph()` for one-shot consumer use — KF-150); list contents go through a keyed reconciler (`each(...)`'s side of `mount`) that operates directly on live children — no parse-the-whole-list step. Element identity is preserved wherever the morph matches by key (`id`, `data-key`) or position.
+2. **HOW do we re-render?** Answered by kerf's morph: render JSX to a `SafeHtml` (which is a string for static content and a structured tree where lists or list-containing parents appear), then walk the live DOM in lock-step. Static surrounds go through a general-purpose tree-morph (`src/morph.ts`, also exported as `morph()` for one-shot consumer use); list contents go through a keyed reconciler (`each(...)`'s side of `mount`) that operates directly on live children — no parse-the-whole-list step. Element identity is preserved wherever the morph matches by key (`id`, `data-key`) or position.
 
 Everything else is detail.
 

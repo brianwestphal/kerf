@@ -15,7 +15,7 @@ The intrinsic properties of each framework that predict AI-friendliness independ
 
 ### Diagnostic — *what the model sees when it gets a rule wrong*
 
-For each of kerf's 12 hard rules, a fixture that deliberately violates the rule, run under happy-dom, with the error scored 0–3 on actionability. Pinned by a runtime test so the page and the audit can't drift apart. Includes the post-fix promotions from KF-173 (each-row missing-key warn), KF-174 (rebuilt-listener observer, opt-in), KF-175 (nested-mount throw), KF-176 (untracked-signal-write warn, opt-in), KF-177 (frozen `get()` snapshot for store actions), and KF-178 (dedicated `onX={fn}` error pointing at `delegate()`).
+For each of kerf's 12 hard rules, a fixture that deliberately violates the rule, run under happy-dom, with the error scored 0–3 on actionability. Pinned by a runtime test so the page and the audit can't drift apart. Includes the post-fix promotions for the each-row missing-key warn, the rebuilt-listener observer (opt-in), the nested-mount throw, the untracked-signal-write warn (opt-in), the frozen `get()` snapshot for store actions, and the dedicated `onX={fn}` error pointing at `delegate()`.
 
 → [AI evidence: diagnostics](/kerf/ai-evidence/diagnostics/)
 
@@ -39,7 +39,7 @@ A krausest-style benchmark, but for *making the framework work* rather than for 
 - **The training-set bias is real.** Models have seen orders of magnitude more React than kerf. The structural numbers are unaffected by that bias; the operational and empirical numbers will partly reflect it. The empirical layer's doc-condition A (no docs fetched) is the falsification test — if kerf is competitive there too, the result is honest; if kerf loses on A and wins on B/C, the doc-fetch is doing the work.
 - **The self-fulfilling-docs effect.** kerf's `docs/ai/usage-guide.md` is written *for* an LLM to fit and reason about. That's a deliberate shape, but it does mean the documentation is part of what we're measuring. The empirical layer's doc-condition axis exists to surface this rather than hide it.
 - **The diagnostic-error audit is fixture-based.** Each rule has one captured violation under happy-dom; real codebases vary. The pinned tests guard against the framework regressing — but they don't claim the AI sees every misuse this clearly in every real-world variant.
-- **Diagnostic promotions under opt-in env vars are opt-in.** KF-174 (`KERF_DEV_WARN_REBUILT_LISTENERS`) and KF-176 (`KERF_DEV_WARN_UNTRACKED_SIGNALS`) ship the warning behind a flag because the underlying heuristics can produce false positives in real codebases (third-party widgets calling `addEventListener` inside a mount tree, purely-imperative signals with no UI consumer). The default-mode audit score reflects the off-by-default behavior.
+- **Two diagnostic promotions ship behind env-var opt-ins.** `KERF_DEV_WARN_REBUILT_LISTENERS` (the rebuilt-listener observer) and `KERF_DEV_WARN_UNTRACKED_SIGNALS` (the untracked-signal-write warn) are gated because the underlying heuristics can produce false positives in real codebases — third-party widgets calling `addEventListener` inside a mount tree; purely-imperative signals with no UI consumer. The default-mode audit score reflects the off-by-default behavior.
 
 ## Further reading
 

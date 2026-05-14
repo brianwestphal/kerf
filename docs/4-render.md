@@ -53,7 +53,7 @@ import { each } from 'kerfjs';
 </ul>
 ```
 
-> **Memo cache invariant.** The memo cache invalidates *purely* on the third argument (the `key` function's return value) plus item identity. If a row's rendered output depends on external state that the memo doesn't include, the row will go stale — kerf will return cached HTML even though the render function would produce something different now. The fix is either: (a) bake that state into the memo (`(r) => \`${r.id}-${selectedId === r.id ? 'on' : 'off'}\``), or (b) own the changing DOM imperatively under `data-morph-skip` and let kerf cache the surrounding shell. The kanban example chooses (b) for the live drag transform (KF-163); the TodoMVC example chooses (a) for the per-row view/edit flip.
+> **Memo cache invariant.** The memo cache invalidates *purely* on the third argument (the `key` function's return value) plus item identity. If a row's rendered output depends on external state that the memo doesn't include, the row will go stale — kerf will return cached HTML even though the render function would produce something different now. The fix is either: (a) bake that state into the memo (`(r) => \`${r.id}-${selectedId === r.id ? 'on' : 'off'}\``), or (b) own the changing DOM imperatively under `data-morph-skip` and let kerf cache the surrounding shell. The kanban example chooses (b) for the live drag transform; the TodoMVC example chooses (a) for the per-row view/edit flip.
 
 ### Granular reconcile via `arraySignal`
 
@@ -79,7 +79,7 @@ A few invariants the granular path holds:
 
 - **First render takes the snapshot path** even when patches were queued before mount — there's no binding yet to apply patches against, so the whole list is rendered fresh.
 - **`replace()` always falls back to snapshot** — wholesale resets are easier to reconcile that way and preserve focus better.
-- **A throwing render falls back to snapshot** — pre-rendering happens at JSX-eval time inside a try/catch (KF-99), so a single bad row doesn't desync the binding from the signal.
+- **A throwing render falls back to snapshot** — pre-rendering happens at JSX-eval time inside a try/catch, so a single bad row doesn't desync the binding from the signal.
 - **Drift triggers a rebuild** — if a previous render threw mid-batch, the next render notices that `binding.length + patch_delta !== signal.length` and rebuilds via the snapshot path.
 
 See §2.6 for the full `arraySignal` API.
@@ -114,7 +114,7 @@ On subsequent re-renders, the diff sees `data-morph-skip` on the host and short-
 - D3 / Plotly / Chart.js mounted regions.
 - Any element with imperative DOM mutations you manage yourself.
 
-### `data-morph-skip-children` — client-hydrated slot (KF-152)
+### `data-morph-skip-children` — client-hydrated slot
 
 Apply this attribute when the *children* are imperatively painted (and must survive the morph) but the element itself is server-rendered and needs its attributes to keep flowing through:
 
@@ -134,7 +134,7 @@ The diff still morphs the slot's `class` (so `is-loading` → `is-ready` transit
 
 The distinction vs `data-morph-skip` matters: if the slot's host classes need to update across renders, you want this, not `data-morph-skip`.
 
-### `data-morph-preserve` — imperatively-injected child (KF-151)
+### `data-morph-preserve` — imperatively-injected child
 
 Apply this attribute to an element that the consumer adds to the live tree AFTER first render — a node the JSX never emits but whose lifetime is managed outside kerf:
 
@@ -224,7 +224,7 @@ effect(() => {
 
 Or design around the element's native semantics: render `<details>` once, listen for the `toggle` event, and push the open state into a signal — that way the user's interaction and your state stay in sync without the framework arbitrating.
 
-## 4.4.2 Imperative DOM mutations and the no-op-render fast path (KF-117)
+## 4.4.2 Imperative DOM mutations and the no-op-render fast path
 
 `mount()` re-runs your render function whenever a signal it read changes. On each re-run kerf compares the new "static surrounds" HTML (everything outside `each()` lists) against the previous render's. **If they're byte-for-byte identical, the diff is skipped entirely** — the cost-saving optimization that lets a list signal flip a class without paying for a parent walk.
 
@@ -264,9 +264,9 @@ label.value = 'second';   // surrounds changed → diff runs → attribute wiped
 
 ### Why kept this way
 
-The alternative — running the diff on every render even when nothing changed — costs ~8 ms per update on partial-update / select-row / swap-rows in the krausest harness (the scenarios where the list changes but surrounds don't). The "smallest cut" promise is the framework's headline. KF-117 surfaced this trade-off; we kept the fast path and documented it here.
+The alternative — running the diff on every render even when nothing changed — costs ~8 ms per update on partial-update / select-row / swap-rows in the krausest harness (the scenarios where the list changes but surrounds don't). The "smallest cut" promise is the framework's headline. The fast path is kept and documented here.
 
-## 4.4.3 Using `morph()` outside of `mount()` (KF-150)
+## 4.4.3 Using `morph()` outside of `mount()`
 
 `morph(liveRoot, template)` is the same reconciliation primitive `mount()` uses internally, exported for one-shot use against an already-populated element. Reach for it when `mount()`'s "wipe and bulk-render on first paint" semantics don't fit — typical cases:
 

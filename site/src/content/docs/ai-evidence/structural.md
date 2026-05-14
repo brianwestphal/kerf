@@ -20,6 +20,8 @@ None of these is a moonshot metric. Taken individually they're each pretty old. 
 
 The frameworks in this table are kerf plus the [migration hub](/kerf/migrating/) set (React, Alpine, Lit, vanjs) extended with Vue, Solid, and Svelte 5 to cover the population a developer is likely to be choosing between in 2026.
 
+<div class="kerf-compare">
+
 | Framework | Version | Reactivity model |
 | --- | --- | --- |
 | **kerf** | 0.6.0 | Fine-grained signals (`@preact/signals-core`) + DOM morph |
@@ -31,22 +33,28 @@ The frameworks in this table are kerf plus the [migration hub](/kerf/migrating/)
 | Alpine | 3 | Inline directives on existing DOM |
 | vanjs | 1.5 | Fine-grained state + direct DOM |
 
+</div>
+
 ## 1. Minimum-docs-to-correct-code token budget
 
 The smallest doc set an agent needs to write *correct* (not just plausible) code in each framework. Counted as raw bytes of the canonical official page(s) listed; token estimates assume the rough English-prose ratio of ~4 chars/token.
 
 For frameworks that publish a single condensed AI/quick-reference page (kerf, vanjs), the budget is that page. For frameworks that don't, the budget is the smallest set of official pages a developer would actually need: the Quick Start plus the canonical rules pages plus the reactivity primer.
 
+<div class="kerf-compare">
+
 | Framework | Doc set used | Bytes | ~Tokens |
 | --- | --- | --- | --- |
-| **kerf** | [`docs/ai/usage-guide.md`](https://github.com/brianwestphal/kerf/blob/main/docs/ai/usage-guide.md) (the entire AI guide) | **~14 KB** | **~3,500** |
-| vanjs | [vanjs.org/tutorial](https://vanjs.org/tutorial) (the entire tutorial) | ~13 KB | ~3,300 |
+| **kerf** | [`docs/ai/usage-guide.md`](https://github.com/brianwestphal/kerf/blob/main/docs/ai/usage-guide.md) (the entire AI guide) | ~14 KB | ~3,500 |
+| vanjs | [vanjs.org/tutorial](https://vanjs.org/tutorial) (the entire tutorial) | **~13 KB** | **~3,300** |
 | Alpine | [alpinejs.dev/start-here](https://alpinejs.dev/start-here) + magics + directives index | ~25 KB | ~6,300 |
 | Svelte 5 | [Tutorial: Introduction → Runes](https://svelte.dev/tutorial) (~10 pages) + [Runes docs](https://svelte.dev/docs/svelte/what-are-runes) | ~30 KB | ~7,500 |
 | Solid | [docs.solidjs.com/concepts](https://docs.solidjs.com/concepts) (reactivity + components + control flow) | ~35 KB | ~8,800 |
 | Lit | [Components → Templates → Reactive properties → Lifecycle](https://lit.dev/docs/components/overview/) | ~45 KB | ~11,300 |
 | Vue 3 | [Essentials guide](https://vuejs.org/guide/essentials/application.html) (10 pages) + [Reactivity in depth](https://vuejs.org/guide/extras/reactivity-in-depth.html) | ~55 KB | ~13,800 |
 | React 19 | [react.dev/learn](https://react.dev/learn) (10 pages) + [Rules of React](https://react.dev/reference/rules) + [Rules of Hooks](https://react.dev/reference/rules/rules-of-hooks) + Effects + Keys + StrictMode + Server Components rules | ~80 KB | ~20,000 |
+
+</div>
 
 Notes:
 - "Doc set used" lists the canonical official pages, not a curated subset. Sizes are best-effort byte counts of the rendered prose; exact numbers will drift as upstream docs change. **Corrections welcome** ([open a PR](https://github.com/brianwestphal/kerf/edit/main/site/src/content/docs/ai-evidence/structural.md)).
@@ -59,16 +67,20 @@ Notes:
 
 Rules a developer can break that produce a working-looking program with subtly wrong behavior — the kind of bug an LLM doesn't notice on the way out. Counted from the canonical "rules" page where one exists, or enumerated from the framework's primary guide otherwise.
 
+<div class="kerf-compare">
+
 | Framework | Hidden-rule count | Examples (not exhaustive) | Source |
 | --- | --- | --- | --- |
-| **kerf** | **12** | data-key required on list rows; signal reads must be inside the render fn; no addEventListener on mounted nodes; one mount per root; exactly one top-level element per `each()` row; custom-element types declaration-merge into `kerfjs/jsx-runtime`, not global JSX | [usage-guide.md § Hard rules](https://github.com/brianwestphal/kerf/blob/main/docs/ai/usage-guide.md#hard-rules-every-ai-gets-these-wrong-at-least-once) |
-| vanjs | ~4 | `state.val` vs `state.rawVal`; DOM ownership rules; derived state in `van.derive`; child elements consumed once | [vanjs.org/tutorial](https://vanjs.org/tutorial) |
+| **kerf** | 12 | data-key required on list rows; signal reads must be inside the render fn; no addEventListener on mounted nodes; one mount per root; exactly one top-level element per `each()` row; custom-element types declaration-merge into `kerfjs/jsx-runtime`, not global JSX | [usage-guide.md § Hard rules](https://github.com/brianwestphal/kerf/blob/main/docs/ai/usage-guide.md#hard-rules-every-ai-gets-these-wrong-at-least-once) |
+| vanjs | **~4** | `state.val` vs `state.rawVal`; DOM ownership rules; derived state in `van.derive`; child elements consumed once | [vanjs.org/tutorial](https://vanjs.org/tutorial) |
 | Alpine | ~5 | `x-data` scope rules; `x-init` vs `x-effect` timing; magic property scoping; tracked-vs-untracked reads in expressions | [alpinejs.dev/essentials](https://alpinejs.dev/essentials/installation) |
 | Solid | ~7 | Component runs once; no destructuring props; reactivity boundary (`createRoot`/`createMemo` for tracking); `Show`/`For` vs ternary/`map` semantics; signal reads outside reactive scope drop tracking | [docs.solidjs.com/concepts/reactivity/basic-reactivity](https://docs.solidjs.com/concepts/reactivity/basic-reactivity) |
 | Svelte 5 | ~8 | Runes only in `.svelte`/`.svelte.js` files; `$state` vs `$derived` vs `$effect` placement; `$state.frozen`/`$state.snapshot` semantics; legacy stores vs runes interop; `$bindable` constraints | [svelte.dev/docs/svelte/what-are-runes](https://svelte.dev/docs/svelte/what-are-runes) |
 | Lit | ~8 | Reactive property declarations; property type converters; update cycle (request-update → update → updated); shadow DOM scoping; slotchange timing; template literal-only HTML | [lit.dev/docs/components/properties](https://lit.dev/docs/components/properties) |
 | Vue 3 | ~10 | `ref` vs `reactive` distinction; reactivity loss on destructure; `watch` flush timing; lifecycle hook context; template-ref unwrapping; setup-context restrictions; `defineProps`/`defineEmits` compile-only macros | [vuejs.org/guide/extras/reactivity-in-depth](https://vuejs.org/guide/extras/reactivity-in-depth.html) |
 | React 19 | ~14 | Rules-of-Hooks (3 rules in one); key stability; effect dep arrays; StrictMode double-invocation; Suspense placement; Server-Component constraints (~3 sub-rules); stale-closure tax in handlers; `use` hook only in render/Server Components; `useId` must be paired across server/client | [react.dev/reference/rules](https://react.dev/reference/rules) |
+
+</div>
 
 Notes:
 - Counts are enumerable rules a model has to *remember*, not an exhaustive bug taxonomy. The honest comparison is "what's on the framework's own rules page or equivalently surfaced in its essentials guide."
@@ -78,16 +90,20 @@ Notes:
 
 Runtime values an LLM has to know exist to write idiomatic code. Counted as named exports from the framework's canonical entry point.
 
+<div class="kerf-compare">
+
 | Framework | Public exports | Entry point(s) | Notes |
 | --- | --- | --- | --- |
-| **kerf** | **16** (+1 opt-in) | `kerfjs`, with `kerfjs/array-signal` as an opt-in subpath | Full list: `signal`, `computed`, `effect`, `batch`, `defineStore`, `resetAllStores`, `mount`, `morph`, `each`, `delegate`, `delegateCapture`, `toElement`, `SafeHtml`, `isSafeHtml`, `raw`, `Fragment` + `arraySignal` |
-| vanjs | ~5 | `vanjs-core` | `van.state`, `van.derive`, `van.tags`, `van.add`, `van.hydrate` |
+| **kerf** | 16 (+1 opt-in) | `kerfjs`, with `kerfjs/array-signal` as an opt-in subpath | Full list: `signal`, `computed`, `effect`, `batch`, `defineStore`, `resetAllStores`, `mount`, `morph`, `each`, `delegate`, `delegateCapture`, `toElement`, `SafeHtml`, `isSafeHtml`, `raw`, `Fragment` + `arraySignal` |
+| vanjs | **~5** | `vanjs-core` | `van.state`, `van.derive`, `van.tags`, `van.add`, `van.hydrate` |
 | Alpine | ~6 + magics | `alpinejs` | `Alpine.data`, `Alpine.directive`, `Alpine.magic`, `Alpine.store`, `Alpine.plugin`, `Alpine.start` + 6 in-template magics (`$el`, `$refs`, `$watch`, `$dispatch`, `$nextTick`, `$root`) |
 | Svelte 5 | ~13 | `svelte` + `.svelte` runes | 7 runes (`$state`, `$derived`, `$effect`, `$props`, `$bindable`, `$host`, `$inspect`) + 6 lifecycle/context (`onMount`, `onDestroy`, `tick`, `getContext`, `setContext`, `hasContext`) |
 | Lit | ~18 | `lit` + `lit/decorators.js` + `lit/directives/*` | `LitElement`, `html`, `css`, `render`, `nothing`, `noChange` + 8 decorators + ~10 directives |
 | Solid | ~32 | `solid-js` | `createSignal`, `createEffect`, `createMemo`, `createResource`, `createComputed`, `createRenderEffect`, `createRoot`, `createContext`, `useContext`, `onMount`, `onCleanup`, `onError`, `batch`, `untrack`, `observable`, `from`, `mergeProps`, `splitProps`, `children`, `lazy`, `Show`, `For`, `Switch`, `Match`, `Index`, `Portal`, `Suspense`, `SuspenseList`, `ErrorBoundary`, `Dynamic`, `render`, `hydrate` |
 | Vue 3 | ~50 | `vue` | ~16 reactivity (`ref`, `reactive`, `computed`, `watch`, `watchEffect`, `watchPostEffect`, `watchSyncEffect`, `toRef`, `toRefs`, `toRaw`, `markRaw`, `shallowRef`, `shallowReactive`, `customRef`, `triggerRef`, `effectScope`) + ~12 lifecycle hooks + components/directives (`defineComponent`, `h`, `createApp`, `Teleport`, `Suspense`, `KeepAlive`, `Transition`, `TransitionGroup`, ...) + `provide`/`inject`/`useSlots`/`useAttrs` + the `defineProps`/`defineEmits`/`defineExpose` compiler macros |
 | React 19 | ~40 + `react-dom` (~20) + `react/jsx-runtime` | `react`, `react-dom`, `react-dom/client` | `useState`, `useEffect`, `useCallback`, `useMemo`, `useReducer`, `useRef`, `useContext`, `useTransition`, `useDeferredValue`, `useId`, `useImperativeHandle`, `useLayoutEffect`, `useInsertionEffect`, `useSyncExternalStore`, `use`, `useActionState`, `useFormStatus`, `useOptimistic` (18 hooks); `createContext`, `createElement`, `cloneElement`, `Children`, `Fragment`, `lazy`, `memo`, `forwardRef`, `Suspense`, `StrictMode`, `Profiler`, `startTransition`, `createRef`, `isValidElement`, `Component`, `PureComponent`; plus `react-dom`: `createPortal`, `flushSync`, `preload`, `preconnect`, `prefetchDNS`, `preinit`, `unstable_batchedUpdates`, ... |
+
+</div>
 
 Notes:
 - kerf, vanjs, and Svelte 5 all sit in the "small enough that an LLM holds the entire surface in working memory" tier (≤20 exports).
@@ -98,16 +114,20 @@ Notes:
 
 Mental-model steps a model has to simulate to predict the DOM state after a reactive change. Fewer steps → fewer places the model's prediction can diverge from reality.
 
+<div class="kerf-compare">
+
 | Framework | Steps | Path |
 | --- | --- | --- |
-| **kerf** | **3** | render fn → SafeHtml + segment tree → morph patches live DOM |
-| vanjs | 2 | state set → direct DOM op |
+| **kerf** | 3 | render fn → SafeHtml + segment tree → morph patches live DOM |
+| vanjs | **2** | state set → direct DOM op |
 | Alpine | 3 | expression eval → dependency tracking → DOM attribute/text patch |
 | Solid | 3 | signal write → reactive effect → compiled DOM op |
 | Svelte 5 | 3 | rune write → compiled effect → DOM op |
 | Lit | 5 | property set → request update → microtask schedule → lit-html render → diff → DOM |
 | Vue 3 | 5 | reactive write → scheduler → render → vnode patch → DOM op + effects flush |
 | React 19 | 7 | state setter → schedule (priority) → fiber reconcile → commit phase → layout effects → passive effects → (StrictMode replay in dev) |
+
+</div>
 
 Notes:
 - React's path is the most-steps-to-simulate at runtime. Most React-specific AI failure modes (stale closure in a handler, missing dep, effect that fires twice in StrictMode) are byproducts of this depth.

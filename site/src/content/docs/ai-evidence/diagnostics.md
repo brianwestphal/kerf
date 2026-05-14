@@ -23,9 +23,9 @@ Every test in this audit is pinned in [`tests/unit/diagnostic-error-audit.test.t
 Of the 12 hard rules:
 
 - **6 score Excellent** (Rules 1, 5, 8, 9, 12) plus the `mount(null, …)` precondition and 2 bonus contracts on `each()` (primitive items, duplicate references) — **8 score-3 captures total.**
-- **1 scores Good** (Rule 2 — KF-173 dev `console.warn` from `each()` when a row has no `id` / `data-key`).
+- **1 scores Good** (Rule 2 — dev `console.warn` from `each()` when a row has no `id` / `data-key`).
 - **1 scores Weak** (Rule 10 — multiple `each()` callsites bound to the same `arraySignal`).
-- **2 score Silent by default** (Rules 4 and 7). Both promote to **Score 2** under opt-in env vars: `KERF_DEV_WARN_REBUILT_LISTENERS=1` (Rule 4, KF-174 — MutationObserver-backed dev warn on rebuilt listener-bearing nodes) and `KERF_DEV_WARN_UNTRACKED_SIGNALS=1` (Rule 7, KF-176 — `DevSignal` warn on writes with no subscribers).
+- **2 score Silent by default** (Rules 4 and 7). Both promote to **Score 2** under opt-in env vars: `KERF_DEV_WARN_REBUILT_LISTENERS=1` (Rule 4 — MutationObserver-backed dev warn on rebuilt listener-bearing nodes) and `KERF_DEV_WARN_UNTRACKED_SIGNALS=1` (Rule 7 — `DevSignal` warn on writes with no subscribers).
 - **3 are N/A** (Rules 3, 6, 11) — positive-only instructions or compile-time type contracts, not runtime violations.
 
 Honest read: kerf is best-in-class where it *does* throw (Rules 1, 5, 8, 9, 12, the mount-null precondition, the row contract — all row/index-precise, fix-suggestive). Where the framework is silent — listener-on-mounted-node, signal read outside render — there's clear room to improve. Each score-0 row below has a follow-up improvement ticket linked.
@@ -80,7 +80,7 @@ to the top-level element returned by the row render.
 Row HTML: "<li>b</li>"
 ```
 
-Why this scores 2 (not 3): the warning names what's wrong, why it's wrong, and the canonical fix — but it fires *after* the first render rather than at the offending code site, and the subsequent insert/remove misbehavior still happens. A score-3 capture would catch the misuse at the read site, which would require static analysis kerf can't do at runtime. Promoted from score 0 to score 2 by the per-binding key check in `src/utils/rowContract.ts`'s `maybeWarnMissingRowKey()` (KF-173), called once per `ListBinding` from `mount.ts`'s first-render path and from both list reconcilers; the warning is suppressed after the first emission per binding so re-renders don't spam.
+Why this scores 2 (not 3): the warning names what's wrong, why it's wrong, and the canonical fix — but it fires *after* the first render rather than at the offending code site, and the subsequent insert/remove misbehavior still happens. A score-3 capture would catch the misuse at the read site, which would require static analysis kerf can't do at runtime. Promoted from score 0 to score 2 by the per-binding key check in `src/utils/rowContract.ts`'s `maybeWarnMissingRowKey()`, called once per `ListBinding` from `mount.ts`'s first-render path and from both list reconcilers; the warning is suppressed after the first emission per binding so re-renders don't spam.
 
 ### Rule 4 — `addEventListener` on a node inside a `mount()`-managed tree · **Score 0 by default · Score 2 with `KERF_DEV_WARN_REBUILT_LISTENERS=1`**
 
@@ -112,7 +112,7 @@ KERF_DEV_WARN_REBUILT_LISTENERS=0 (or unset it) to silence this warning.
 
 Why this is opt-in and not on by default: the monkey-patch affects every `addEventListener` call in the realm (including non-kerf code paths), and the MutationObserver delivers asynchronously (microtask after the morph), so false positives are possible — third-party widgets that call `addEventListener` inside a kerf-managed tree without `data-morph-skip` would also trigger the warning. Opt-in keeps the diagnostic available for dev / CI runs without surprising existing projects. Production behavior is unchanged for zero runtime cost.
 
-Score 2 (not 3) when opted in because the warning fires *after* the bad re-render — the user sees that their listener stopped working AND sees the warning; a score-3 capture would surface at `addEventListener` time, which would require static analysis kerf can't do at runtime (KF-174).
+Score 2 (not 3) when opted in because the warning fires *after* the bad re-render — the user sees that their listener stopped working AND sees the warning; a score-3 capture would surface at `addEventListener` time, which would require static analysis kerf can't do at runtime.
 
 ### Rule 5 — One `mount()` per root · **Score 3**
 
@@ -144,7 +144,7 @@ the id or selector that returns null at runtime even though the TypeScript
 types say HTMLElement.
 ```
 
-Promoted from score 0 to score 3 by the one-mount-per-tree precondition in `src/mount.ts` (KF-175).
+Promoted from score 0 to score 3 by the one-mount-per-tree precondition in `src/mount.ts`.
 
 ### Rule 7 — Signal read outside the render fn · **Score 0 by default · Score 2 with `KERF_DEV_WARN_UNTRACKED_SIGNALS=1`**
 
@@ -171,7 +171,7 @@ render fn or effect() callback. Set KERF_DEV_WARN_UNTRACKED_SIGNALS=0
 (or unset it) to silence this warning.
 ```
 
-Why this is opt-in and not on by default: the heuristic produces false positives for purely-imperative signals (used as mutable cells with no UI consumer). Until a sharper heuristic emerges, the opt-in gate lets dev environments and CI enable it without surprising existing projects. Production behavior is unchanged for zero runtime cost (KF-176).
+Why this is opt-in and not on by default: the heuristic produces false positives for purely-imperative signals (used as mutable cells with no UI consumer). Until a sharper heuristic emerges, the opt-in gate lets dev environments and CI enable it without surprising existing projects. Production behavior is unchanged for zero runtime cost.
 
 Score 2 (not 3) when opted in because the warning fires *after* the bad write — the user sees that their UI didn't update, then sees the warning explaining why; a score-3 capture would catch the misuse at the read site, which would require static analysis kerf can't do at runtime.
 
@@ -201,7 +201,7 @@ TypeError: Cannot assign to read only property 'count' of object '#<Object>'
 
 Why this scores 3: in dev, `defineStore`'s `get` parameter freezes the snapshot before returning it (`process.env.NODE_ENV !== 'production'` gate). The V8/JavaScriptCore/SpiderMonkey runtime's native `TypeError` already names the property and the object — a model that hits it self-corrects by switching to `set(next)`. Production keeps the bare reference for zero overhead; the silent-mutation path remains the documented production behavior.
 
-Promoted from score 0 to score 3 by the dev-mode freeze in `src/store.ts` (KF-177).
+Promoted from score 0 to score 3 by the dev-mode freeze in `src/store.ts`.
 
 ### Rule 9 — Inline `onClick` (function-valued attribute) · **Score 3**
 

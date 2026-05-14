@@ -116,7 +116,7 @@ type MountResult = SafeHtml | string | number | boolean | null | undefined;
 
 Bind `render()` to `rootEl`'s children. Wraps `effect()` with kerf's segment-aware diff. Returns a disposer.
 
-`MountResult` was widened in KF-119 so consumers can write `() => cond ? <jsx/> : null` and `() => cond && <jsx/>` without a sentinel — matching the React / Solid convention. `null` / `undefined` / `false` / `true` coerce to "render nothing" (empty string); numbers stringify; everything else falls through `String(...)`. See `docs/4-render.md` §4.4 for the rationale and the equivalent fallback patterns. The `MountResult` type alias is exported from the main barrel for consumers that want to annotate their render functions explicitly.
+`MountResult` is wide enough that consumers can write `() => cond ? <jsx/> : null` and `() => cond && <jsx/>` without a sentinel — matching the React / Solid convention. `null` / `undefined` / `false` / `true` coerce to "render nothing" (empty string); numbers stringify; everything else falls through `String(...)`. See `docs/4-render.md` §4.4 for the rationale and the equivalent fallback patterns. The `MountResult` type alias is exported from the main barrel for consumers that want to annotate their render functions explicitly.
 
 The diff:
 
@@ -124,16 +124,16 @@ The diff:
 - Matches elements by `id`, then `data-key`. Position otherwise.
 - Short-circuits on the live element when:
   - It has `data-morph-skip` (element AND subtree preserved as-is; no attribute morphing).
-  - It has `data-morph-skip-children` (attributes morph; subtree preserved as-is). KF-152.
+  - It has `data-morph-skip-children` (attributes morph; subtree preserved as-is).
   - It's a list parent owned by `each(...)` (children-only short-circuit; `each`'s reconciler owns those rows). Attribute morphing on the parent itself still happens.
   - `fromEl.isEqualNode(toEl)` (no work needed).
   - It's the focused `[contenteditable]` (entire subtree preserved on this morph; see §8.7 below and `docs/4-render.md` §4.4).
-- The trailing-removal pass (unmatched live children that the new template doesn't emit) skips elements marked `data-morph-preserve` (KF-151) — imperatively-injected nodes whose lifetime the consumer manages outside kerf.
+- The trailing-removal pass (unmatched live children that the new template doesn't emit) skips elements marked `data-morph-preserve` — imperatively-injected nodes whose lifetime the consumer manages outside kerf.
 - Otherwise preserves the focused text-entry's value + selection range, then proceeds.
 
 Lists rendered with `each(...)` go through a separate keyed reconciler that operates directly on the live parent's children — O(changes), not O(rows). See `each` below.
 
-### `morph(liveRoot: Element, template: Element | SafeHtml | string): void` (KF-150)
+### `morph(liveRoot: Element, template: Element | SafeHtml | string): void`
 
 One-shot in-place reconciliation primitive — the same algorithm `mount()` uses internally, exported for consumers that have an already-populated element they need to reconcile against a freshly-built template. Unlike `mount()`, `morph()` doesn't wrap an `effect()` and doesn't bulk-write `innerHTML` first: it runs once per call against the live tree as-is.
 
@@ -147,7 +147,7 @@ morph(liveCard, raw(htmlFromServer));        // SafeHtml
 
 When `template` is a string or `SafeHtml`, kerf creates a transient element by cloning `liveRoot`'s shell (so the parsed children land inside an element with the same tag, which keeps `innerHTML` parsing rules consistent) and assigns the stringified template to its `innerHTML`. The transient is discarded after the reconciliation.
 
-Every short-circuit `mount()`'s morph honors carries over: `data-morph-skip` (element + subtree preserved), `data-morph-skip-children` (KF-152 — attrs morph, subtree preserved), `data-morph-preserve` (KF-151 — element survives the trailing-removal pass), `isEqualNode` byte-identity skip, focused text-input value + selection preservation, focused-`[contenteditable]` subtree preservation, and `<details>` / `<dialog>`'s user-agent-owned `open` attribute. Match keys (`id`, then `data-key`) behave the same way.
+Every short-circuit `mount()`'s morph honors carries over: `data-morph-skip` (element + subtree preserved), `data-morph-skip-children` (attrs morph, subtree preserved), `data-morph-preserve` (element survives the trailing-removal pass), `isEqualNode` byte-identity skip, focused text-input value + selection preservation, focused-`[contenteditable]` subtree preservation, and `<details>` / `<dialog>`'s user-agent-owned `open` attribute. Match keys (`id`, then `data-key`) behave the same way.
 
 `morph()` does NOT subscribe to signals. If you want re-renders, use `mount()`. If you want a one-shot reconciliation against a tree you own, this is the primitive. See `docs/4-render.md` §4.4.3.
 
@@ -255,8 +255,8 @@ Throws if the input produces zero elements OR if `DOMParser` returns a `parserer
 | `id="..."` | Used as a diff key. Highest priority. |
 | `data-key="..."` | Used as a diff key. Lower priority than `id`. |
 | `data-morph-skip` (any value, even empty) | Element AND subtree preserved as-is on every re-render. No attribute morphing on the element itself. |
-| `data-morph-skip-children` (any value, even empty) | Attributes on the element morph normally; the subtree is left as-is. For client-hydrated slots whose host state classes still need to flow through. KF-152. |
-| `data-morph-preserve` (any value, even empty) | The element is skipped by the diff's trailing-removal pass — survives across renders even when the new template doesn't emit it. For imperatively-injected nodes (autoplay video, tooltip overlays, analytics pixels). Does NOT block a keyed-match move. KF-151. |
+| `data-morph-skip-children` (any value, even empty) | Attributes on the element morph normally; the subtree is left as-is. For client-hydrated slots whose host state classes still need to flow through. |
+| `data-morph-preserve` (any value, even empty) | The element is skipped by the diff's trailing-removal pass — survives across renders even when the new template doesn't emit it. For imperatively-injected nodes (autoplay video, tooltip overlays, analytics pixels). Does NOT block a keyed-match move. |
 
 | Element kind | Behavior when focused during a morph |
 | --- | --- |

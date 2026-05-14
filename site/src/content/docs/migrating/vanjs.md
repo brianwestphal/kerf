@@ -265,21 +265,6 @@ What moved: `onclick: fn` / `onchange: fn` / `ondblclick: fn` on every element c
 
 ## 5. Perf numbers
 
-[krausest js-framework-benchmark](https://github.com/krausest/js-framework-benchmark), medians of 3 iterations, ms — lower is better. Both frameworks land in the same cluster.
-
-| Op | vanjs 1.5 | Kerf 0.5 | Δ |
-| --- | --- | --- | --- |
-| create 1k | 46.6 | 46.1 | wash |
-| partial update | 41.8 | 44.6 | wash |
-| swap rows | 23.7 | 22.3 | wash |
-| select row | 14.3 | 27.6 | kerf ~2× slower |
-| remove row | 18.3 | 17.0 | wash |
-| append 1k | 55.7 | 50.5 | kerf ~10 % faster |
-| clear 1k | 15.4 | 18.6 | kerf ~20 % slower |
-| create 10k | 435.0 | 428.3 | wash |
-
-On most bulk ops the two frameworks are within noise of each other. The notable gap is **select-row** (kerf ~2× slower): vanjs's `vanX.list` mutates the one row that changed and skips the rest; kerf's `each` walks the cacheKey map every render to decide which rows can be served from cache. The cacheKey path correctly avoids re-rendering 999 of 1,000 rows, but the per-render Map+LIS overhead is the residual cost.
-
-If your app reorders, inserts, or removes rows frequently, kerf's LIS-based move pass is the same speed as vanjs but with focus + selection automatically preserved. If your app's hottest path is "flip one boolean on one row out of 1,000 every keystroke," the vanjs path is faster in isolation but you're writing your own focus-restoration code to handle the side effects.
+Cross-framework perf comparisons are only published from official benchmark runs — clean machine, no background load, results re-generated under controlled conditions. The first official run lands once we have substantial framework changes worth measuring against. Until then: kerf and vanjs are in the same performance cluster on the [krausest js-framework-benchmark](https://github.com/krausest/js-framework-benchmark) keyed scenarios. The shape-level qualitative call: if your app reorders / inserts / removes rows frequently, kerf's LIS-based move pass keeps focus + selection automatically preserved, which vanjs doesn't; if your app's hottest path is "flip one boolean on one row out of 1,000 every keystroke," vanjs's per-row mutation path is faster in isolation, but you're writing your own focus-restoration code to handle the side effects.
 
 [See the full bench table →](https://github.com/brianwestphal/kerf/blob/main/bench/results.md)

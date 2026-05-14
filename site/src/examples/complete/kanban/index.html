@@ -93,14 +93,14 @@
         border-radius: 8px;
         box-shadow: var(--shadow-card);
         cursor: grab;
-        /* KF-163: user-select on .card alone isn't enough — Safari/Chromium will still
+        /* user-select on .card alone isn't enough — Safari/Chromium will still
          * highlight descendant text during a drag-like pointer gesture if the children
          * carry their own selection style. Force the descendants too. The JS handler
          * also calls preventDefault() on pointerdown to keep the page selection empty. */
         user-select: none;
         -webkit-user-select: none;
         touch-action: none;
-        /* KF-163 (round 2): no `transform` in the transition list. The drag handler
+        /* No `transform` in the transition list. The drag handler
          * writes `dragEl.style.transform` directly on every pointermove (60×/s);
          * a 120 ms transform transition would animate each tiny move toward its
          * target, get interrupted by the next move, and produce the visual

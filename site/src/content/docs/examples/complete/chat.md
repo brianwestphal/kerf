@@ -8,7 +8,7 @@ description: Streaming chat — token-by-token bot reply, delegation everywhere,
 A small streaming chat. Type a question, hit Enter, watch the bot reply type itself out token-by-token while your textarea caret stays exactly where you left it. ~110 lines of kerf, no other runtime dependencies.
 
 <!--
-  KF-164: video placeholder commented out until the screen-record flow is ready.
+  Video placeholder commented out until the screen-record flow is ready.
   Drop a <video controls> in here when the clip lands, or restore the placeholder
   block below.
 <div class="video-placeholder">

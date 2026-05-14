@@ -114,7 +114,7 @@ rows.value;       // → readonly snapshot, registers a tracking dependency
 
 `arraySignal` is a keyed-list-friendly variant of `signal()`. The mutators emit typed patch events (`update` / `insert` / `remove` / `move` / `replace`); when an `arraySignal` is bound to `each(...)` inside a `mount()`, the keyed list reconciler applies just the patches against the live DOM — no per-row iteration, no `classifyItems` Map build, no LIS pass over unchanged rows. Cost is **O(patches)**, not O(N).
 
-It lives in its own subpath (`kerfjs/array-signal`, KF-95) so apps that don't need granular collections shed ~1 KB from the main barrel. The class itself is detected via a brand symbol — not `instanceof` — so multiple bundle copies still interoperate.
+It lives in its own subpath (`kerfjs/array-signal`) so apps that don't need granular collections shed ~1 KB from the main barrel. The class itself is detected via a brand symbol — not `instanceof` — so multiple bundle copies still interoperate.
 
 Read-side semantics match a regular signal: `arraySig.value` is a snapshot, and reads inside `effect()` / `computed()` register as dependencies. So `computed(() => arraySig.value.filter(...))` works the way you expect.
 
@@ -130,7 +130,7 @@ Read-side semantics match a regular signal: `arraySig.value` is a snapshot, and 
 - `arraySignal` mutates `_items` eagerly at the call site. The patch queue and the snapshot are always in sync after a mutation returns.
 - Multiple `each(...)` callsites bound to the same `arraySignal` in one render: the first caller drains the patch queue and runs granular reconcile; the second (and beyond) sees an empty queue and falls through to the snapshot path. Both lists end up correct, but only one gets the perf win. Prefer one-binding-per-arraySignal-per-render.
 - A `replace()` patch in a batch forces the snapshot path for that render. Granular optimizations resume the next render.
-- A throwing row render falls back to the snapshot path automatically (KF-99). If the snapshot also throws on the same bad row, the error bubbles to the user — fix the row in the signal, and the next render rebuilds from scratch.
+- A throwing row render falls back to the snapshot path automatically. If the snapshot also throws on the same bad row, the error bubbles to the user — fix the row in the signal, and the next render rebuilds from scratch.
 
 ## 2.7 What signals are NOT
 
