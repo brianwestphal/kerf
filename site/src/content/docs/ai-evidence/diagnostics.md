@@ -22,12 +22,12 @@ Every test in this audit is pinned in [`tests/unit/diagnostic-error-audit.test.t
 
 Of the 12 hard rules:
 
-- **4 score Excellent** (Rules 1, 9, 12) plus the `mount(null, …)` precondition and 2 bonus contracts on `each()` (primitive items, duplicate references) — **6 score-3 captures total.**
+- **5 score Excellent** (Rules 1, 8, 9, 12) plus the `mount(null, …)` precondition and 2 bonus contracts on `each()` (primitive items, duplicate references) — **7 score-3 captures total.**
 - **1 scores Weak** (Rule 10 — multiple `each()` callsites bound to the same `arraySignal`).
-- **5 score Silent** (Rules 2, 4, 5, 7, 8). These are the diagnostic gaps an AI feels most.
+- **4 score Silent** (Rules 2, 4, 5, 7). These are the diagnostic gaps an AI feels most.
 - **3 are N/A** (Rules 3, 6, 11) — positive-only instructions or compile-time type contracts, not runtime violations.
 
-Honest read: kerf is best-in-class where it *does* throw (Rules 1, 9, 12, the mount precondition, the row contract — all row/index-precise, fix-suggestive). Where the framework is silent — list keys, listener-on-mounted-node, nested mounts, signal read outside render, store mutation via `get()` — there's clear room to improve. Each score-0 row below has a follow-up improvement ticket linked.
+Honest read: kerf is best-in-class where it *does* throw (Rules 1, 8, 9, 12, the mount precondition, the row contract — all row/index-precise, fix-suggestive). Where the framework is silent — list keys, listener-on-mounted-node, nested mounts, signal read outside render — there's clear room to improve. Each score-0 row below has a follow-up improvement ticket linked.
 
 ## Per-rule audit
 
@@ -136,11 +136,11 @@ This is the classic stale-closure tax in a smaller form. `@preact/signals-core` 
 
 **Follow-up:** a dev-mode wrapper around `signal()` could mark each signal with a "last subscribed at" timestamp and warn when `.value` is written to a signal that has live `mount()`-bound consumers that didn't read it during the most recent render pass. Heuristic — would catch the common case without false positives on intentionally-untracked writes.
 
-### Rule 8 — Store action mutates `get()` instead of calling `set()` · **Score 0** · follow-up filed: `defineStore()` `Object.freeze`s the `get()` result in dev so mutations throw a `TypeError`
+### Rule 8 — Store action mutates `get()` instead of calling `set()` · **Score 3**
 
 > *"Store actions receive `(set, get)`, not `(state)`. `set(next)` replaces state; mutating `get()` does nothing."*
 
-The audit found this rule's failure mode is **worse than the rule itself implies.** The mutation actually does land on the state object — direct `.value` reads see the new value — but the signal's version is never incremented, so reactive consumers stay stale. The bug looks like it worked from one read site and looks broken from another.
+Originally captured at score 0 — the silent-and-divergent failure mode of all the rules: the mutation actually landed on the state object so direct `.value` reads saw the new value, but the signal's version was never incremented, so reactive consumers stayed stale. The bug looked like it worked from one read site and looked broken from another.
 
 Violating fixture:
 
@@ -151,14 +151,18 @@ const counter = defineStore({
     wronglyMutate: () => { get().count = 42; },   // mutates the snapshot
   }),
 });
-let observed = -1;
-effect(() => { observed = counter.state.value.count; });
 counter.actions.wronglyMutate();
-// counter.state.value.count === 42   ← mutation visible to direct reads
-// observed                  === 0    ← effects don't see it
 ```
 
-**Follow-up:** `defineStore` could `Object.freeze()` the value returned from `get()` in dev. That would convert the silent miss into a `TypeError: Cannot assign to read only property 'count'` — score 3.
+Runtime behavior in dev: **throws.**
+
+```
+TypeError: Cannot assign to read only property 'count' of object '#<Object>'
+```
+
+Why this scores 3: in dev, `defineStore`'s `get` parameter freezes the snapshot before returning it (`process.env.NODE_ENV !== 'production'` gate). The V8/JavaScriptCore/SpiderMonkey runtime's native `TypeError` already names the property and the object — a model that hits it self-corrects by switching to `set(next)`. Production keeps the bare reference for zero overhead; the silent-mutation path remains the documented production behavior.
+
+Promoted from score 0 to score 3 by the dev-mode freeze in `src/store.ts` (KF-177).
 
 ### Rule 9 — Inline `onClick` (function-valued attribute) · **Score 3**
 
@@ -248,18 +252,18 @@ Why this scores 3: the error names the rule (the contract), the location (row in
 ## Score distribution
 
 ```
-Score 3 (excellent):  ██████████  6 captures
+Score 3 (excellent):  ████████████  7 captures
 Score 2 (good):       (none)
-Score 1 (weak):       ██          1 capture
-Score 0 (silent):     ████████    5 captures
-N/A:                  ████        3 rules
+Score 1 (weak):       ██            1 capture
+Score 0 (silent):     ██████        4 captures
+N/A:                  ████          3 rules
 ```
 
 ## What this evidence does and doesn't show
 
 What it shows:
 - When kerf **does** throw, it throws well — row/index-precise, fix-suggestive, scored 3 on the rubric. The Rule 12 (`each()` row contract) error is the template.
-- Where kerf is silent (Rules 2, 4, 5, 7, 8 — half the hard rules), the gap is well-defined and individually fixable. Each row has a follow-up improvement ticket attached.
+- Where kerf is silent (Rules 2, 4, 5, 7), the gap is well-defined and individually fixable. Each row has a follow-up improvement ticket attached.
 
 What it doesn't show:
 - Whether the *quantity* of diagnostic guidance is enough for an AI in practice — see the empirical [AI codegen benchmark](#) (in progress) for the cross-framework comparison.

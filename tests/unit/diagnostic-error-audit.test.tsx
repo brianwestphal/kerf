@@ -199,13 +199,17 @@ describe('Diagnostic-error audit (KF-169) — Hard Rules 1–12', () => {
     expect(host.textContent).toBe('0');
   });
 
-  it('Rule 8 — store action mutates get() instead of calling set(): mutation lands on the object but the signal is not notified (score 0)', () => {
-    // This is a worse silent-misbehavior than the audit originally hypothesized.
-    // signals-core holds a reference to the state object; mutating that object
-    // mutates state in place — direct .value reads see the new value, so the
-    // bug looks like it worked. But the signal version is never incremented,
-    // so reactive consumers (effects, mount render fns) DO NOT re-run.
-    // Score 0 — silent, divergent, and the most confusing failure mode of all.
+  it('Rule 8 — store action mutates get() instead of calling set(): throws a native TypeError naming the property (score 3, KF-177)', () => {
+    // KF-177: in dev, defineStore's `get` parameter freezes the snapshot
+    // before returning it, so a Rule 8 violation throws V8's native
+    // `TypeError: Cannot assign to read only property 'count' …` — score 3
+    // because the error names the property and the object. Previously this
+    // landed silently (mutation hit the underlying state without notifying
+    // subscribers; direct .value reads saw the new value but effects stayed
+    // stale — the worst silent-misbehavior of all the rules).
+    //
+    // Production keeps the bare reference for zero overhead — the freeze
+    // gate is `process.env.NODE_ENV !== 'production'`.
     const counter = defineStore({
       initial: () => ({ count: 0 }),
       actions: (_set, get) => ({
@@ -219,10 +223,9 @@ describe('Diagnostic-error audit (KF-169) — Hard Rules 1–12', () => {
       observed = counter.state.value.count;
     });
     expect(observed).toBe(0);
-    expect(() => counter.actions.wronglyMutate()).not.toThrow();
-    // Direct read sees the mutation:
-    expect(counter.state.value.count).toBe(42);
-    // But the effect did not re-fire — observers stay stale.
+    expect(() => counter.actions.wronglyMutate()).toThrow(/Cannot assign to read only property/);
+    // State and observer both stay at the initial value — the mutation never landed.
+    expect(counter.state.value.count).toBe(0);
     expect(observed).toBe(0);
   });
 
@@ -294,10 +297,10 @@ describe('Diagnostic-error audit (KF-169) — Hard Rules 1–12', () => {
     // Pinned here so the page and the audit can't drift apart. Updating
     // either side without the other trips this test.
     const summary = {
-      score3: 6, // Rules 1, 9 (KF-178), 12, 5-precondition (mount-null) + 2 bonus (each-primitives, each-duplicates)
+      score3: 7, // Rules 1, 8 (KF-177), 9 (KF-178), 12, 5-precondition (mount-null) + 2 bonus (each-primitives, each-duplicates)
       score2: 0,
       score1: 1, // Rule 10
-      score0: 5, // Rules 2, 4, 5 (nested-mount silent), 7, 8
+      score0: 4, // Rules 2, 4, 5 (nested-mount silent), 7
       na: 3, // Rules 3, 6, 11
     };
     const total = summary.score3 + summary.score2 + summary.score1 + summary.score0 + summary.na;

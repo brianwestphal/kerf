@@ -37,6 +37,11 @@ interface DefineStoreSpec<TState, TActions> {
 
 const REGISTRY: Array<{ reset: () => void }> = [];
 
+const IS_DEV: boolean = (() => {
+  const proc = (globalThis as { process?: { env?: { NODE_ENV?: string } } }).process;
+  return proc?.env?.NODE_ENV !== 'production';
+})();
+
 export function defineStore<TState, TActions>(
   spec: DefineStoreSpec<TState, TActions>,
 ): Store<TState, TActions> {
@@ -45,7 +50,19 @@ export function defineStore<TState, TActions>(
   const set = (next: TState): void => {
     internal.value = next;
   };
-  const get = (): TState => internal.value;
+  // In dev, freeze the snapshot returned to actions so that
+  // `get().count = 42`-style mutations (a documented Rule 8 violation) throw
+  // a native `TypeError: Cannot assign to read only property` instead of
+  // silently landing on the underlying state without notifying subscribers.
+  // Production keeps the bare reference for zero overhead. Read NODE_ENV via
+  // globalThis so the source works untouched in browsers (no bare `process`).
+  const get = (): TState => {
+    const v = internal.value;
+    if (IS_DEV && v !== null && typeof v === 'object') {
+      Object.freeze(v);
+    }
+    return v;
+  };
 
   const actions = spec.actions(set, get);
 

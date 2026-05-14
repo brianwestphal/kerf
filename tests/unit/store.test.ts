@@ -127,6 +127,51 @@ describe('resetAllStores()', () => {
   });
 });
 
+describe('dev-mode freeze of get() snapshot (KF-177)', () => {
+  // Vitest sets `NODE_ENV=test`, so the dev-only freeze gate is active here.
+  // Mutating the snapshot returned by `get()` from inside an action throws a
+  // native `TypeError` — the worst silent-misbehavior in the diagnostic audit
+  // (Rule 8: mutation lands on the underlying object but never re-fires
+  // effects) is now a loud throw. Production keeps the bare reference for
+  // zero overhead.
+  it('mutating get() from inside an action throws Cannot-assign-to-read-only', () => {
+    const counter = defineStore({
+      initial: () => ({ count: 0 }),
+      actions: (_set, get) => ({
+        wronglyMutate: () => { (get() as { count: number }).count = 42; },
+      }),
+    });
+    expect(() => counter.actions.wronglyMutate()).toThrow(/Cannot assign to read only property/);
+    expect(counter.state.value.count).toBe(0);
+  });
+
+  it('the canonical set(next) action path is unaffected by the freeze', () => {
+    // Each set() produces a fresh object that gets re-frozen on the next
+    // get() call; the action factory's get() returning a frozen snapshot
+    // doesn't block the action from constructing a new state object and
+    // calling set() with it.
+    const counter = defineStore({
+      initial: () => ({ count: 0 }),
+      actions: (set, get) => ({
+        inc: () => set({ count: get().count + 1 }),
+      }),
+    });
+    counter.actions.inc();
+    counter.actions.inc();
+    counter.actions.inc();
+    expect(counter.state.value.count).toBe(3);
+  });
+
+  it('primitive-valued state is not frozen (no-op on non-objects)', () => {
+    const flag = defineStore({
+      initial: () => false,
+      actions: (set, get) => ({ toggle: () => set(!get()) }),
+    });
+    expect(() => flag.actions.toggle()).not.toThrow();
+    expect(flag.state.value).toBe(true);
+  });
+});
+
 describe('batch() inside an action', () => {
   // docs/3-stores.md §3.5 — wrapping multiple set() calls in batch() inside
   // a multi-step action coalesces consumer notifications. Without this,
