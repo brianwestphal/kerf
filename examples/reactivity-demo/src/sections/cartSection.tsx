@@ -9,7 +9,7 @@
  * `defineStore()`.
  */
 
-import { computed, defineStore, delegate, mount, resetAllStores } from 'kerfjs';
+import { computed, defineStore, delegate, mount, resetAllStores, toElement } from 'kerfjs';
 
 interface CartItem { id: string; name: string; price: number }
 interface CartState { items: CartItem[] }
@@ -38,8 +38,7 @@ const SAMPLES: Array<[string, number]> = [
 ];
 
 export function mountCart(root: HTMLElement): void {
-  root.innerHTML = '';
-  root.appendChild(createScaffold());
+  root.replaceChildren(createScaffold());
 
   const badgeEl = root.querySelector<HTMLElement>('[data-region="badge"]')!;
   const listEl = root.querySelector<HTMLElement>('[data-region="list"]')!;
@@ -95,31 +94,32 @@ export function mountCart(root: HTMLElement): void {
   delegate(root, 'click', '[data-action="reset-all"]', () => { resetAllStores(); });
 }
 
-function createScaffold(): HTMLElement {
-  const wrapper = document.createElement('div');
-  wrapper.className = 'demo-card';
-  wrapper.innerHTML = `
-    <h2>
-      2. Cart store
-      <span class="demo-tag">defineStore • multi-consumer • resetAllStores()</span>
-      <span class="demo-cart-badge-slot" data-region="badge"></span>
-    </h2>
+function createScaffold(): Element {
+  return toElement(
+    <div className="demo-card">
+      <h2>
+        2. Cart store
+        <span className="demo-tag">defineStore • multi-consumer • resetAllStores()</span>
+        <span className="demo-cart-badge-slot" data-region="badge"></span>
+      </h2>
 
-    <div class="demo-row demo-cart-add-row">
-      ${SAMPLES.map((s, i) => `<button type="button" data-action="add" data-idx="${i}" class="demo-btn">+ ${s[0]} ($${s[1].toFixed(2)})</button>`).join('')}
-      <button type="button" data-action="clear" class="demo-btn demo-btn-ghost">clear</button>
-      <button type="button" data-action="reset-all" class="demo-btn demo-btn-warn">resetAllStores()</button>
-    </div>
+      <div className="demo-row demo-cart-add-row">
+        {SAMPLES.map(([name, price], i) => (
+          <button type="button" data-action="add" data-idx={i} className="demo-btn">+ {name} (${price.toFixed(2)})</button>
+        ))}
+        <button type="button" data-action="clear" className="demo-btn demo-btn-ghost">clear</button>
+        <button type="button" data-action="reset-all" className="demo-btn demo-btn-warn">resetAllStores()</button>
+      </div>
 
-    <div data-region="list"></div>
-    <div data-region="footer"></div>
+      <div data-region="list"></div>
+      <div data-region="footer"></div>
 
-    <p class="demo-note">
-      Three independent regions (badge, list, footer) subscribe via separate
-      <code>mount()</code> calls. The footer's total is a <code>computed()</code>
-      derived from the same store. <code>resetAllStores()</code> walks the registry —
-      every store created via <code>defineStore()</code> is reset.
-    </p>
-  `;
-  return wrapper;
+      <p className="demo-note">
+        Three independent regions (badge, list, footer) subscribe via separate
+        <code>mount()</code> calls. The footer's total is a <code>computed()</code>
+        derived from the same store. <code>resetAllStores()</code> walks the registry —
+        every store created via <code>defineStore()</code> is reset.
+      </p>
+    </div>,
+  );
 }
