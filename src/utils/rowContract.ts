@@ -3,7 +3,7 @@
  *
  * The keyed-list reconciler in `list-reconcile.ts` and the first-render
  * binding path in `mount.ts` both enforce the same contract on `each()`
- * row HTML. Centralising the constants and helpers here keeps the three
+ * row HTML. Centralizing the constants and helpers here keeps the three
  * call sites that build error snippets and the eight call sites that
  * parse a row's HTML into a template element from drifting (KF-111 +
  * KF-115).
