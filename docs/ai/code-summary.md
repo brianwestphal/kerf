@@ -10,7 +10,8 @@ kerf/
 │   ├── index.ts                  ← public entry — re-exports everything users import
 │   ├── jsx-runtime.ts            ← JSX → SafeHtml string emitter
 │   ├── jsx-types.ts              ← typed IntrinsicElements (KF-75) — per-tag attribute contracts, catches JSX typos at compile time
-│   ├── reactive.ts               ← signal/computed/effect/batch (re-export)
+│   ├── reactive.ts               ← signal/computed/effect/batch (re-export) — `signal()` is dev-gated through `dev-signal.ts` when KF-176's opt-in env var is set
+│   ├── dev-signal.ts             ← KF-176 — `DevSignal<T> extends Signal<T>` subclass that warns once on writes to signals with no subscribers (Rule 7 helper). Opt-in via `KERF_DEV_WARN_UNTRACKED_SIGNALS=1` in dev; production unchanged.
 │   ├── array-signal.ts           ← arraySignal (KF-92) — granular collection signal; lives at the kerfjs/array-signal subpath (KF-95) so non-users shed ~1 KB
 │   ├── store.ts                  ← defineStore + resetAllStores + REGISTRY
 │   ├── mount.ts                  ← mount() — segment-aware render bound to effect()

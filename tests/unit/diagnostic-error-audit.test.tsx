@@ -188,14 +188,18 @@ describe('Diagnostic-error audit (KF-169) — Hard Rules 1–12', () => {
     }).not.toThrow();
   });
 
-  it('Rule 7 — signal read outside render fn: the captured value is frozen; subsequent updates do not re-render (score 0)', () => {
+  it('Rule 7 — signal read outside render fn: the captured value is frozen; subsequent updates do not re-render (score 0 by default; score 2 with KF-176 opt-in)', () => {
+    // Default mode (no `KERF_DEV_WARN_UNTRACKED_SIGNALS` env var): no throw,
+    // no warning — the re-render simply does not happen because the render
+    // fn never subscribed. KF-176 ships a `DevSignal` subclass that emits a
+    // one-shot console.warn when this env var is set to "1" — tested in
+    // `tests/unit/reactive.test.ts` under the "dev-mode untracked-write
+    // warning" describe block. The audit page documents both modes.
     const count = signal(0);
     const captured = count.value; // wrong: read outside render fn
     mount(host, () => <span>{String(captured)}</span>);
     expect(host.textContent).toBe('0');
     count.value = 5;
-    // No throw, no warning — the re-render simply does not happen because
-    // the render fn never subscribed.
     expect(host.textContent).toBe('0');
   });
 

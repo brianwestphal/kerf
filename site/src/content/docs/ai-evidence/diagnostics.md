@@ -117,7 +117,7 @@ types say HTMLElement.
 
 **Follow-up:** tag elements with a non-enumerable `__kerfMounted` marker on first mount; throw on a second `mount(el, …)` against an already-mounted element (or any ancestor of one).
 
-### Rule 7 — Signal read outside the render fn · **Score 0** · follow-up filed: dev-mode warn on writes to signals with no live subscriber from the last `mount()` pass
+### Rule 7 — Signal read outside the render fn · **Score 0 by default · Score 2 with `KERF_DEV_WARN_UNTRACKED_SIGNALS=1`**
 
 > *"Signal reads must happen inside the render function to be tracked."*
 
@@ -130,11 +130,21 @@ mount(host, () => <span>{String(captured)}</span>);
 count.value = 5;                    // no re-render fires
 ```
 
-Runtime behavior: **no error.** The render fn never subscribed; subsequent writes are ignored as far as the bound element is concerned.
+Default runtime behavior: **no error.** The render fn never subscribed; subsequent writes are ignored as far as the bound element is concerned. This is the classic stale-closure tax in a smaller form.
 
-This is the classic stale-closure tax in a smaller form. `@preact/signals-core` has no warn-on-untracked-write hook out of the box.
+With `KERF_DEV_WARN_UNTRACKED_SIGNALS=1` (opt-in, dev only): kerf's `signal()` factory returns a `DevSignal` subclass that wires up signals-core's `watched` callback. The first `.value =` write to a signal that has never had a subscriber attached emits a one-shot `console.warn`:
 
-**Follow-up:** a dev-mode wrapper around `signal()` could mark each signal with a "last subscribed at" timestamp and warn when `.value` is written to a signal that has live `mount()`-bound consumers that didn't read it during the most recent render pass. Heuristic — would catch the common case without false positives on intentionally-untracked writes.
+```
+kerf: signal was written but has no subscribers. Did you read `.value`
+outside of a render fn / effect()? Hoisted reads do not subscribe, so
+subsequent writes will not re-render. Move the read inside mount()'s
+render fn or effect() callback. Set KERF_DEV_WARN_UNTRACKED_SIGNALS=0
+(or unset it) to silence this warning.
+```
+
+Why this is opt-in and not on by default: the heuristic produces false positives for purely-imperative signals (used as mutable cells with no UI consumer). Until a sharper heuristic emerges, the opt-in gate lets dev environments and CI enable it without surprising existing projects. Production behavior is unchanged for zero runtime cost (KF-176).
+
+Score 2 (not 3) when opted in because the warning fires *after* the bad write — the user sees that their UI didn't update, then sees the warning explaining why; a score-3 capture would catch the misuse at the read site, which would require static analysis kerf can't do at runtime.
 
 ### Rule 8 — Store action mutates `get()` instead of calling `set()` · **Score 3**
 

@@ -4,7 +4,7 @@
  * their semantics.
  */
 
-import { describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { batch, computed, effect, signal } from '../../src/reactive.js';
 
@@ -80,6 +80,94 @@ describe('batch()', () => {
     });
     // One run after the batch, not two.
     expect(log).toEqual(['1,2', '10,20']);
+  });
+});
+
+describe('dev-mode untracked-write warning (KF-176, opt-in)', () => {
+  // Gated behind `KERF_DEV_WARN_UNTRACKED_SIGNALS=1`. The check is per-call,
+  // so flipping the env var before each `signal()` call is enough; no module
+  // reload required. Routes via `globalThis.process` to keep the test file
+  // working under the same lint config as `src/` (no bare `process` ref).
+  const env = (globalThis as { process: { env: Record<string, string | undefined> } }).process.env;
+  let warnSpy: ReturnType<typeof vi.spyOn>;
+
+  beforeEach(() => {
+    env.KERF_DEV_WARN_UNTRACKED_SIGNALS = '1';
+    warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    delete env.KERF_DEV_WARN_UNTRACKED_SIGNALS;
+    warnSpy.mockRestore();
+  });
+
+  it('warns on the first write to a signal that has never had a subscriber', () => {
+    const s = signal(0);
+    expect(warnSpy).not.toHaveBeenCalled(); // constructor's initial assignment is not flagged
+    s.value = 1;
+    expect(warnSpy).toHaveBeenCalledTimes(1);
+    expect(warnSpy.mock.calls[0][0]).toMatch(/written but has no subscribers/);
+    expect(warnSpy.mock.calls[0][0]).toMatch(/KERF_DEV_WARN_UNTRACKED_SIGNALS=0/);
+  });
+
+  it('warns only once per signal even after many writes', () => {
+    const s = signal(0);
+    s.value = 1;
+    s.value = 2;
+    s.value = 3;
+    expect(warnSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it('does NOT warn when the signal has been subscribed via effect()', () => {
+    const s = signal(0);
+    effect(() => { void s.value; });
+    s.value = 1;
+    s.value = 2;
+    expect(warnSpy).not.toHaveBeenCalled();
+  });
+
+  it('does NOT warn when the signal has been subscribed via computed() (read inside one)', () => {
+    const s = signal(0);
+    const doubled = computed(() => s.value * 2);
+    // Force the computed to evaluate so its source subscribes — computeds are lazy.
+    expect(doubled.value).toBe(0);
+    // Bind a live consumer so signals-core treats the computed's source as watched.
+    const dispose = effect(() => { void doubled.value; });
+    s.value = 5;
+    expect(warnSpy).not.toHaveBeenCalled();
+    dispose();
+  });
+
+  it('does NOT warn when the opt-in env var is unset (default off)', () => {
+    delete env.KERF_DEV_WARN_UNTRACKED_SIGNALS;
+    const s = signal(0);
+    s.value = 1;
+    s.value = 2;
+    expect(warnSpy).not.toHaveBeenCalled();
+  });
+
+  it('does NOT warn when NODE_ENV === \'production\' even with the opt-in env var set', () => {
+    const prevEnv = env.NODE_ENV;
+    env.NODE_ENV = 'production';
+    try {
+      const s = signal(0);
+      s.value = 1;
+      expect(warnSpy).not.toHaveBeenCalled();
+    } finally {
+      env.NODE_ENV = prevEnv;
+    }
+  });
+
+  it('the Rule 7 canonical case (read outside an effect) trips the warning', () => {
+    // The exact failing pattern from docs/ai/usage-guide.md Hard Rule 7:
+    // `const x = count.value; mount(el, () => <span>{x}</span>)`. Here we
+    // model it without mount/JSX: read .value to capture it locally, then
+    // write — no effect has subscribed, so the warning fires.
+    const count = signal(0);
+    const captured = count.value;
+    expect(captured).toBe(0);
+    count.value = 5;
+    expect(warnSpy).toHaveBeenCalledTimes(1);
   });
 });
 
