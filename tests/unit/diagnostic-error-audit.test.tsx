@@ -13,7 +13,7 @@
  * (or breaks one of the silent-misbehavior captures), this suite trips
  * before the audit page can drift out of sync.
  */
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { arraySignal } from '../../src/array-signal.js';
 import type { KerfBaseAttrs, KerfCustomElement } from '../../src/jsx-runtime.js';
@@ -120,22 +120,34 @@ describe('Diagnostic-error audit (KF-169) — Hard Rules 1–12', () => {
 
   /* ──────────────── SCORE 0–1: silent or undiagnosed misbehavior ──────────────── */
 
-  it('Rule 2 — list items without data-key/id: renders without error; positional matching swaps state (score 0)', () => {
-    // This is the headline silent-misbehavior case. The reconciler matches by
-    // position when no key is present, so inserting at the head visually
-    // shifts every row's state (e.g. a focused input loses focus to the
-    // wrong row). The audit page captures this; the follow-up bug asks for
-    // a dev-time warning when an each() row has no id/data-key.
-    const items = signal([{ id: 'b' }, { id: 'c' }]);
-    expect(() => {
-      mount(host, () => (
-        <ul>
-          {each(items.value, (item) => <li>{item.id}</li>)}
-        </ul>
-      ));
-    }).not.toThrow();
-    expect(host.textContent).toContain('b');
-    expect(host.textContent).toContain('c');
+  it('Rule 2 — list items without data-key/id: console.warns with a fix-pointer once per binding (score 2, KF-173)', () => {
+    // KF-173 lifts this from score 0 to score 2: render still succeeds (the
+    // reconciler still falls back to positional matching), but a one-shot
+    // dev-mode `console.warn` names the row index, the canonical fix
+    // (`data-key={item.id}` on the row's top-level element), and quotes the
+    // row HTML so the author can locate the offending each() callsite.
+    // Score 2 not 3 because the warning fires AFTER the first render — the
+    // misbehavior on insert/remove still occurs; the user just gets a
+    // pointer at WHY.
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    try {
+      const items = signal([{ id: 'b' }, { id: 'c' }]);
+      expect(() => {
+        mount(host, () => (
+          <ul>
+            {each(items.value, (item) => <li>{item.id}</li>)}
+          </ul>
+        ));
+      }).not.toThrow();
+      expect(host.textContent).toContain('b');
+      expect(host.textContent).toContain('c');
+      expect(warnSpy).toHaveBeenCalledTimes(1);
+      const message = warnSpy.mock.calls[0][0];
+      expect(message).toMatch(/row at index 0 has no `id` or `data-key`/);
+      expect(message).toMatch(/Add `data-key=\{item\.id\}`/);
+    } finally {
+      warnSpy.mockRestore();
+    }
   });
 
   it('Rule 4 — addEventListener on a mount-managed node: works once; the listener is lost on next morph (score 0)', () => {
@@ -307,9 +319,9 @@ describe('Diagnostic-error audit (KF-169) — Hard Rules 1–12', () => {
     // either side without the other trips this test.
     const summary = {
       score3: 8, // Rules 1, 5 (KF-175 nested mount), 8 (KF-177), 9 (KF-178), 12, 5-precondition (mount-null) + 2 bonus (each-primitives, each-duplicates)
-      score2: 0,
+      score2: 1, // Rule 2 (KF-173 missing-key warn)
       score1: 1, // Rule 10
-      score0: 3, // Rules 2, 4, 7
+      score0: 2, // Rules 4, 7
       na: 3, // Rules 3, 6, 11
     };
     const total = summary.score3 + summary.score2 + summary.score1 + summary.score0 + summary.na;

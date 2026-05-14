@@ -24,7 +24,7 @@
 import { type BoundItem, endAnchor, type ListBinding } from './list-binding.js';
 import { captureFocus, restoreFocus } from './list-reconcile-focus.js';
 import type { ListSegment } from './segment.js';
-import { parseRowTemplate, rowContractError, truncateRowHtml } from './utils/rowContract.js';
+import { maybeWarnMissingRowKey,parseRowTemplate, rowContractError, truncateRowHtml } from './utils/rowContract.js';
 
 export function reconcileGranular(
   binding: ListBinding,
@@ -115,6 +115,10 @@ export function reconcileGranular(
   }
 
   if (focusSnap !== null) restoreFocus(focusSnap);
+  // KF-173: warn once per binding if rows lack id / data-key.
+  if (items.length > 0) {
+    maybeWarnMissingRowKey(items[0].node, 0, items[0].html, binding);
+  }
 }
 
 function applySingleInsert(

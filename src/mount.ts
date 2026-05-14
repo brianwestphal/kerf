@@ -42,7 +42,7 @@ import {
   type ListSegment,
   type Segment,
 } from './segment.js';
-import { parseRowTemplate, rowContractError } from './utils/rowContract.js';
+import { maybeWarnMissingRowKey,parseRowTemplate, rowContractError } from './utils/rowContract.js';
 
 const LIST_MARKER_PREFIX = 'kf-list:';
 
@@ -313,7 +313,12 @@ function bindListsFromMarkers(
         next = next.nextElementSibling;
       }
     }
-    bindings.set(id, { liveParent, items, marker });
+    const binding: ListBinding = { liveParent, items, marker };
+    // KF-173: dev-only one-shot warning if the first row has no id/data-key.
+    if (items.length > 0) {
+      maybeWarnMissingRowKey(items[0].node, 0, items[0].html, binding);
+    }
+    bindings.set(id, binding);
   }
 }
 

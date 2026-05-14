@@ -23,11 +23,12 @@ Every test in this audit is pinned in [`tests/unit/diagnostic-error-audit.test.t
 Of the 12 hard rules:
 
 - **6 score Excellent** (Rules 1, 5, 8, 9, 12) plus the `mount(null, …)` precondition and 2 bonus contracts on `each()` (primitive items, duplicate references) — **8 score-3 captures total.**
+- **1 scores Good** (Rule 2 — KF-173 dev `console.warn` from `each()` when a row has no `id` / `data-key`).
 - **1 scores Weak** (Rule 10 — multiple `each()` callsites bound to the same `arraySignal`).
-- **3 score Silent** (Rules 2, 4, 7). These are the diagnostic gaps an AI feels most.
+- **2 score Silent** (Rules 4, 7). These are the diagnostic gaps an AI feels most.
 - **3 are N/A** (Rules 3, 6, 11) — positive-only instructions or compile-time type contracts, not runtime violations.
 
-Honest read: kerf is best-in-class where it *does* throw (Rules 1, 5, 8, 9, 12, the mount-null precondition, the row contract — all row/index-precise, fix-suggestive). Where the framework is silent — list keys, listener-on-mounted-node, signal read outside render — there's clear room to improve. Each score-0 row below has a follow-up improvement ticket linked.
+Honest read: kerf is best-in-class where it *does* throw (Rules 1, 5, 8, 9, 12, the mount-null precondition, the row contract — all row/index-precise, fix-suggestive). Where the framework is silent — listener-on-mounted-node, signal read outside render — there's clear room to improve. Each score-0 row below has a follow-up improvement ticket linked.
 
 ## Per-rule audit
 
@@ -52,7 +53,7 @@ after toElement() to get element refs.
 
 Why this scores 3: the error names what's wrong (DOM elements as children), why it's wrong (the runtime renders to strings), and the canonical fix (one JSX expression + `querySelector` after `toElement()`). A model that hits this error self-corrects on the next pass.
 
-### Rule 2 — List rows without `data-key`/`id` · **Score 0** · follow-up filed: dev-time warn from `each()` when a row has no `id`/`data-key`
+### Rule 2 — List rows without `data-key`/`id` · **Score 2**
 
 > *"Diff keys are `id` first, then `data-key`. Lists must set them."*
 
@@ -67,11 +68,19 @@ mount(host, () => (
 ));
 ```
 
-Runtime behavior: **no error, no warning.** The reconciler falls back to positional matching, so an insert at the head visually shifts every row's state — a focused input loses focus to the wrong row, a mid-edit textarea swaps its content with its neighbor.
+Runtime behavior: render succeeds, then a one-shot **`console.warn`** fires (dev only):
 
-Why this scores 0: the violation produces a working-looking program. The bug only surfaces under specific user interactions (focused-input + insert-at-head) and looks like a state-management issue rather than a missing-attribute issue.
+```
+kerf each(): row at index 0 has no `id` or `data-key` attribute. Without
+one, rows match positionally — an insert/remove at the head shifts every
+row's identity, so focused inputs jump to the wrong row, mid-edit
+textareas swap content with their neighbor, and any per-row state
+silently follows the wrong item. Add `data-key={item.id}` (or set `id`)
+to the top-level element returned by the row render.
+Row HTML: "<li>b</li>"
+```
 
-**Follow-up:** a dev-time `console.warn` when an `each()` row has neither `id` nor `data-key` would raise this to score 2 without any runtime cost in production.
+Why this scores 2 (not 3): the warning names what's wrong, why it's wrong, and the canonical fix — but it fires *after* the first render rather than at the offending code site, and the subsequent insert/remove misbehavior still happens. A score-3 capture would catch the misuse at the read site, which would require static analysis kerf can't do at runtime. Promoted from score 0 to score 2 by the per-binding key check in `src/utils/rowContract.ts`'s `maybeWarnMissingRowKey()` (KF-173), called once per `ListBinding` from `mount.ts`'s first-render path and from both list reconcilers; the warning is suppressed after the first emission per binding so re-renders don't spam.
 
 ### Rule 4 — `addEventListener` on a node inside a `mount()`-managed tree · **Score 0** · follow-up filed: dev-mode `MutationObserver` warning when a listener-bearing node gets rebuilt
 
@@ -271,9 +280,9 @@ Why this scores 3: the error names the rule (the contract), the location (row in
 
 ```
 Score 3 (excellent):  ██████████████  8 captures
-Score 2 (good):       (none)
+Score 2 (good):       ██              1 capture
 Score 1 (weak):       ██              1 capture
-Score 0 (silent):     ████            3 captures
+Score 0 (silent):     ████            2 captures
 N/A:                  ████            3 rules
 ```
 
@@ -281,7 +290,7 @@ N/A:                  ████            3 rules
 
 What it shows:
 - When kerf **does** throw, it throws well — row/index-precise, fix-suggestive, scored 3 on the rubric. The Rule 12 (`each()` row contract) error is the template.
-- Where kerf is silent (Rules 2, 4, 7), the gap is well-defined and individually fixable. Each row has a follow-up improvement ticket attached.
+- Where kerf is silent (Rules 4, 7), the gap is well-defined and individually fixable. Each row has a follow-up improvement ticket attached.
 
 What it doesn't show:
 - Whether the *quantity* of diagnostic guidance is enough for an AI in practice — see the empirical [AI codegen benchmark](#) (in progress) for the cross-framework comparison.

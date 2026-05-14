@@ -56,3 +56,41 @@ export function rowContractError(index: number, html: string): Error {
     + `Got HTML: ${JSON.stringify(truncateRowHtml(html))}`,
   );
 }
+
+const IS_DEV: boolean = (() => {
+  const proc = (globalThis as { process?: { env?: { NODE_ENV?: string } } }).process;
+  return proc?.env?.NODE_ENV !== 'production';
+})();
+
+/**
+ * KF-173: emit a one-shot dev-mode `console.warn` when the first row of an
+ * `each()` list lacks both `id` and `data-key` attributes. The reconciler
+ * falls back to positional matching in that case, which silently shifts row
+ * state (focused inputs, mid-edit textareas) on insert/delete. The warning
+ * names the row index, points at the canonical fix, and quotes the HTML
+ * snippet so the author can locate the call site.
+ *
+ * Called per-binding; the caller passes a mutable flag holder so the warning
+ * fires at most once per `mount()`-lifetime per `each()` callsite. Set the
+ * holder's flag after the call regardless of whether the warning fired.
+ * Production builds emit nothing — the gate is `NODE_ENV !== 'production'`.
+ */
+export function maybeWarnMissingRowKey(
+  rowEl: Element,
+  rowIndex: number,
+  rowHtml: string,
+  binding: { warnedMissingKey?: boolean },
+): void {
+  if (!IS_DEV) return;
+  if (binding.warnedMissingKey === true) return;
+  binding.warnedMissingKey = true;
+  if (rowEl.id !== '' || rowEl.hasAttribute('data-key')) return;
+  console.warn(
+    `kerf each(): row at index ${rowIndex} has no \`id\` or \`data-key\` attribute. `
+    + 'Without one, rows match positionally — an insert/remove at the head shifts every row\'s '
+    + 'identity, so focused inputs jump to the wrong row, mid-edit textareas swap content with their neighbor, '
+    + 'and any per-row state silently follows the wrong item. '
+    + 'Add `data-key={item.id}` (or set `id`) to the top-level element returned by the row render. '
+    + `Row HTML: ${JSON.stringify(truncateRowHtml(rowHtml))}`,
+  );
+}

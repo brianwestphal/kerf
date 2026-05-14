@@ -338,10 +338,12 @@ describe('Audit gap coverage', () => {
       // <br/> in expectedHtml normalizes to <br> in the live DOM's outerHTML.
       // validateInlinedRowMatch's first equality check fails, but the
       // per-row parse confirms count === 1 and returns without throwing.
+      // (`data-key` on the <li> so KF-173's missing-key dev warning stays quiet
+      // — this test is about void-tag normalization, not row keying.)
       const items = [{ id: 1 }];
       mount(root, () => (
         <ul>
-          {each(items, () => raw('<li><br/></li>'), (item) => String(item.id))}
+          {each(items, (item) => raw(`<li data-key="${item.id}"><br/></li>`), (item) => String(item.id))}
         </ul>
       ));
       expect(root.querySelectorAll('li').length).toBe(1);

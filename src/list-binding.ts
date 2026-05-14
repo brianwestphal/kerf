@@ -38,6 +38,13 @@ export interface ListBinding {
    * parent's tail.
    */
   marker: Comment;
+  /**
+   * KF-173: once we've emitted the missing-key dev warning for this list,
+   * we suppress further warnings for the same binding. The flag is set
+   * inside `maybeWarnMissingRowKey()` and never cleared — the list is
+   * considered "decided" after the first row check.
+   */
+  warnedMissingKey?: boolean;
 }
 
 /**

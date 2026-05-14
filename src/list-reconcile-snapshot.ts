@@ -26,7 +26,7 @@
 import { type BoundItem, endAnchor, type ListBinding } from './list-binding.js';
 import { captureFocus, restoreFocus } from './list-reconcile-focus.js';
 import type { ListSegment } from './segment.js';
-import { parseRowTemplate, rowContractError } from './utils/rowContract.js';
+import { maybeWarnMissingRowKey,parseRowTemplate, rowContractError } from './utils/rowContract.js';
 
 interface Classification {
   newRecord: BoundItem[];
@@ -60,6 +60,9 @@ export function reconcileSnapshot(binding: ListBinding, listSeg: ListSegment): v
   if (replacedNodes.length === 0 && freshIndices.length === 0
       && isInOrder(prevIdx)) {
     binding.items = newRecord;
+    if (newRecord.length > 0) {
+      maybeWarnMissingRowKey(newRecord[0].node, 0, newRecord[0].html, binding);
+    }
     return;
   }
 
@@ -74,6 +77,9 @@ export function reconcileSnapshot(binding: ListBinding, listSeg: ListSegment): v
   applyMoves(liveParent, newRecord, prevIdx, lis(prevIdx), tailAnchor);
   if (focusSnap !== null) restoreFocus(focusSnap);
   binding.items = newRecord;
+  if (newRecord.length > 0) {
+    maybeWarnMissingRowKey(newRecord[0].node, 0, newRecord[0].html, binding);
+  }
 }
 
 /**
