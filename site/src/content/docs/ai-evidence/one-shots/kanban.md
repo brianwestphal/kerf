@@ -375,6 +375,43 @@ Same shape: `tabindex` should typecheck as `AttrLike<number>` per `KerfBaseAttrs
 
 The model used selector `'*'` for `pointermove`, `pointerup`, and `pointercancel`. `'*'` matches any element, which is the broadest possible selector — fine because the handlers themselves check `drag !== null` first and bail otherwise. The reference implementation uses `[data-action="drag"]` for the same handlers, which is narrower; `setPointerCapture` makes both work the same way in practice because pointer-captured events route to the capturer regardless of where the cursor is. Either approach is defensible. Worth flagging as a stylistic choice that broadens the delegated-handler scope.
 
+### Stacking-context bug — dragged card appears *behind* the target column
+
+This one bites visually. While dragging a card from column 1 toward column 2, the dragged card slides *under* column 2 instead of over it. The drop still lands correctly when the user releases, but mid-drag the card looks like it's been swallowed by the destination column.
+
+**Root cause** — three CSS rules the model wrote that interact badly:
+
+```css
+.column {
+  backdrop-filter: blur(10px);           /* ⇐ creates a stacking context */
+  -webkit-backdrop-filter: blur(10px);   /* ⇐ same */
+}
+.column.drop-target {
+  transform: translateY(-1px);           /* ⇐ also creates a stacking context */
+}
+.card.dragging {
+  position: relative;
+  z-index: 50;                           /* ⇐ scoped to source column's stacking context */
+}
+```
+
+Every `.column` has its own stacking context from the start (the `backdrop-filter`); when a column becomes a `.drop-target` it gets an *additional* stacking-context source (the `transform`). The dragged card's `z-index: 50` is scoped to its **source column's** stacking context — it cannot escape upward and paint above the neighboring column's stacking context, which sits later in source order and therefore paints later (= on top).
+
+**The minimum fix** — one CSS rule that elevates the source column while a card inside it is being dragged:
+
+```css
+.column:has(.card.dragging) {
+  z-index: 1000;
+  position: relative;
+}
+```
+
+CSS `:has()` is supported in Chrome 105+ / Safari 15.4+ / Firefox 121+; the rule lifts the entire source-column stacking context above its siblings during a drag, so the card painted inside it ends up on top of everything else. Leaves the dragged card's transform math alone — no JS changes needed.
+
+**Heavier-but-cleaner alternative:** portal the dragged card out to a sibling of `#app` via `data-morph-skip` (so the morph leaves it alone) and absolutely position it. Avoids the stacking-context tangle entirely. The kerf reference implementation goes a step softer — it uses `position: relative; z-index: 10` on the dragging card and gets away with it because its columns don't use `backdrop-filter`. The cleanest one-line CSS for *this* model's design is the `:has()` rule above.
+
+**Why this counts as a real finding:** the model's CSS choices (the glassmorphism palette with `backdrop-filter`, the drop-target `translateY(-1px)` micro-lift, the `position: relative; z-index: 50` on the dragging card) are individually fine. The composition broke in a way that's only visible *while interacting* — `npm run build` succeeds, the running app loads, all the framework hard rules pass, but the drag UX is subtly broken. The empirical-benchmark layer's "subtle-bug presence" probes are designed to catch exactly this class of issue. Tracked as a per-prompt subtle-probe addition for the kanban prompt.
+
 ### Doc-fetch behavior (situational, not wrong)
 
 The model invoked the WebFetch tool three times for `usage-guide.md` (twice via raw.githubusercontent.com, once via github.com/blob/...) plus a `curl` of the same URL. That's tool-retry behavior, not self-expansion. Worth recording because the empirical-benchmark layer (krausest-style AI codegen benchmark) will count fetch invocations differently from unique URLs fetched — and the v1 transcript's "4 unique URLs fetched, only 2 cited" framing doesn't apply here.
