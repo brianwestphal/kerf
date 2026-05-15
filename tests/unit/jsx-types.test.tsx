@@ -100,6 +100,38 @@ describe('JSX.IntrinsicElements typing (compile-time)', () => {
     expect(inputLower.toString()).toContain('spellcheck');
   });
 
+  it('KF-191: accepts both camelCase and lowercase HTML forms for class / for / tabindex / autofocus', () => {
+    // Migration doc (`/kerf/migrating/react/`) explicitly directs developers
+    // to write the canonical HTML attribute names (`class`, `for`,
+    // `tabindex`, `autofocus`). The type system now accepts either
+    // spelling so JSX that follows the doc's guidance compiles cleanly.
+    const divCamel = <div className="x" tabIndex={0} />;
+    const divLower = <div class="x" tabindex="0" />;
+    const labelCamel = <label htmlFor="email">Email</label>;
+    const labelLower = <label for="email">Email</label>;
+    const inputCamel = <input autoFocus />;
+    const inputLower = <input autofocus />;
+    const inputLowerStr = <input autofocus="true" />;
+    const outputCamel = <output htmlFor="x" />;
+    const outputLower = <output for="x" />;
+    // SVG attribute set picks up the lowercase forms too.
+    const svgCamel = <svg className="icon" tabIndex={0} />;
+    const svgLower = <svg class="icon" tabindex={0} />;
+    expect(divCamel.toString()).toContain('class="x"');
+    expect(divLower.toString()).toContain('class="x"');
+    expect(divCamel.toString()).toContain('tabindex="0"');
+    expect(divLower.toString()).toContain('tabindex="0"');
+    expect(labelCamel.toString()).toContain('for="email"');
+    expect(labelLower.toString()).toContain('for="email"');
+    expect(inputCamel.toString()).toContain('autofocus');
+    expect(inputLower.toString()).toContain('autofocus');
+    expect(inputLowerStr.toString()).toContain('autofocus');
+    expect(outputCamel.toString()).toContain('for="x"');
+    expect(outputLower.toString()).toContain('for="x"');
+    expect(svgCamel.toString()).toContain('class="icon"');
+    expect(svgLower.toString()).toContain('class="icon"');
+  });
+
   it('still allows arbitrary data-* and aria-* attributes', () => {
     const ok1 = <div data-action="add" data-id="42" />;
     const ok2 = <button aria-label="close" aria-pressed={false} />;

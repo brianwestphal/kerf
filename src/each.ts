@@ -1,5 +1,5 @@
 /**
- * `each(items, render, key?)` — keyed list iteration with per-item memoization.
+ * `each(items, render, cacheKey?)` — keyed list iteration with per-item memoization.
  *
  * Drops in as the body of a list-rendering JSX expression inside a `mount()`
  * render function. Returns a `SafeHtml` carrying a structured list segment,
@@ -9,10 +9,10 @@
  * Two layers of optimization:
  *
  * 1. Per-item memoization. `render(item)` is skipped for items whose object
- *    identity (and optional `key`) are unchanged since the previous call.
- *    Their HTML strings come from a `WeakMap` keyed by item reference. The
- *    immutable-update style ("replace the row object" instead of "mutate it")
- *    makes the cache work automatically.
+ *    identity (and optional `cacheKey`) are unchanged since the previous
+ *    call. Their HTML strings come from a `WeakMap` keyed by item reference.
+ *    The immutable-update style ("replace the row object" instead of "mutate
+ *    it") makes the cache work automatically.
  *
  * 2. Structural handoff. `mount()` recognizes the list segment and bypasses
  *    the parse-the-whole-table round trip: only fresh items get parsed (one
@@ -20,11 +20,17 @@
  *    get patched in the live DOM. Unchanged rows are physically the same
  *    nodes they were before — never visited.
  *
- * `key` covers the case where external state, not the item itself, drives
- * what the row should render (e.g. a "currently selected" id flips a CSS
- * class on one row). Same item identity but a different `key` value means
- * "re-render this item." If you don't pass `key`, only identity changes
- * invalidate.
+ * `cacheKey` is a passive comparator — it covers the case where external
+ * state, not the item itself, drives what the row should render (e.g. a
+ * "currently selected" id flips a CSS class on one row). Same item identity
+ * but a different `cacheKey` return value means "the cached HTML is stale —
+ * re-render this row." Not a reactive subscription: it's evaluated once per
+ * mount-effect run and compared against the previous run's return value. If
+ * you don't pass `cacheKey`, only object-identity changes invalidate the
+ * cache. (Renamed from `key` for clarity — it shared a name with React's
+ * `key` prop but has different semantics; the new name says what the
+ * parameter actually does. Positional callers — the canonical form — are
+ * unaffected.)
  *
  * Items must be objects (cache is a `WeakMap`); wrap primitives if you need
  * to iterate them. Each item's render output must produce exactly one
@@ -53,7 +59,7 @@ function isArraySignal<T extends object>(value: unknown): value is ArraySignal<T
 }
 
 interface CacheEntry {
-  key: unknown;
+  cacheKey: unknown;
   html: string;
 }
 
@@ -101,7 +107,7 @@ export function _setRenderContext(c: RenderContext | null): void {
 export function each<T extends object>(
   items: readonly T[] | ArraySignal<T>,
   render: (item: T, index: number) => SafeHtml | string,
-  key?: (item: T, index: number) => unknown,
+  cacheKey?: (item: T, index: number) => unknown,
 ): SafeHtml {
   // KF-92 fast path: when items is an ArraySignal AND we're inside a mount
   // render context AND patches have queued since the last drain, emit a
@@ -110,18 +116,18 @@ export function each<T extends object>(
   // `arraySignal` class lives in the `kerfjs/array-signal` subpath and is
   // not imported here at runtime.
   if (isArraySignal<T>(items) && context !== null) {
-    return eachGranular(items, render, key);
+    return eachGranular(items, render, cacheKey);
   }
   const snapshotItems: readonly T[] = isArraySignal<T>(items)
     ? items.value as readonly T[]
     : items;
-  return eachSnapshot(snapshotItems, render, key);
+  return eachSnapshot(snapshotItems, render, cacheKey);
 }
 
 function eachSnapshot<T extends object>(
   items: readonly T[],
   render: (item: T, index: number) => SafeHtml | string,
-  key: ((item: T, index: number) => unknown) | undefined,
+  cacheKey: ((item: T, index: number) => unknown) | undefined,
 ): SafeHtml {
   let id: string;
   if (context !== null) {
@@ -129,7 +135,7 @@ function eachSnapshot<T extends object>(
   } else {
     id = 'orphan';
   }
-  return eachSnapshotById(items, render, key, id);
+  return eachSnapshotById(items, render, cacheKey, id);
 }
 
 /**
@@ -145,7 +151,7 @@ function eachSnapshot<T extends object>(
 function eachGranular<T extends object>(
   sig: ArraySignal<T>,
   render: (item: T, index: number) => SafeHtml | string,
-  key: ((item: T, index: number) => unknown) | undefined,
+  cacheKey: ((item: T, index: number) => unknown) | undefined,
 ): SafeHtml {
   // We're inside a mount context (caller-checked).
   const ctx = context as RenderContext;
@@ -165,7 +171,7 @@ function eachGranular<T extends object>(
   // 'replace': wholesale reset — granular can't help; the snapshot already
   // reflects the post-replace state (and any subsequent granular ops).
   if (previousBindingCount === undefined || patches.length === 0) {
-    return eachSnapshotById(snapshot, render, key, id);
+    return eachSnapshotById(snapshot, render, cacheKey, id);
   }
   // KF-99: detect drift between the live binding and the arraySignal. After
   // a clean prior reconcile, `previousBindingCount + (#inserts - #removes)`
@@ -178,7 +184,7 @@ function eachGranular<T extends object>(
     if (p.type === 'insert') netDelta += 1;
     else if (p.type === 'remove') netDelta -= 1;
     else if (p.type === 'replace') {
-      return eachSnapshotById(snapshot, render, key, id);
+      return eachSnapshotById(snapshot, render, cacheKey, id);
     }
   }
   // Defensive: triggered only when an external party drains `_consumePatches()`
@@ -187,7 +193,7 @@ function eachGranular<T extends object>(
   // don't throw on well-formed row HTML).
   /* c8 ignore next 3 */
   if (previousBindingCount + netDelta !== snapshot.length) {
-    return eachSnapshotById(snapshot, render, key, id);
+    return eachSnapshotById(snapshot, render, cacheKey, id);
   }
 
   // Granular path: pre-render every insert/update HTML at JSX-eval time so
@@ -221,7 +227,7 @@ function eachGranular<T extends object>(
     // render's count and falsely conclude there's no drift; instead it'll
     // take the snapshot path and rebuild from scratch.
     ctx.bindingCounts.delete(id);
-    return eachSnapshotById(snapshot, render, key, id);
+    return eachSnapshotById(snapshot, render, cacheKey, id);
   }
   // The `items` field is left empty for the granular case — the reconciler
   // doesn't need it; every insert/update patch carries pre-rendered HTML.
@@ -232,7 +238,7 @@ function eachGranular<T extends object>(
 function eachSnapshotById<T extends object>(
   items: readonly T[],
   render: (item: T, index: number) => SafeHtml | string,
-  key: ((item: T, index: number) => unknown) | undefined,
+  cacheKey: ((item: T, index: number) => unknown) | undefined,
   id: string,
 ): SafeHtml {
   let cache: WeakMap<object, CacheEntry> | null = null;
@@ -262,15 +268,15 @@ function eachSnapshotById<T extends object>(
       );
     }
     seen.add(item);
-    const k = key ? key(item, i) : undefined;
+    const k = cacheKey ? cacheKey(item, i) : undefined;
     let html: string;
     const cached = cache !== null ? cache.get(item) : undefined;
-    if (cached !== undefined && cached.key === k) {
+    if (cached !== undefined && cached.cacheKey === k) {
       html = cached.html;
     } else {
       const out = render(item, i);
       html = isSafeHtml(out) ? out.toString() : out;
-      if (cache !== null) cache.set(item, { key: k, html });
+      if (cache !== null) cache.set(item, { cacheKey: k, html });
     }
     segItems[i] = { ref: item, cacheKey: k, html };
   }

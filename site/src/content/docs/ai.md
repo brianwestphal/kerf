@@ -100,7 +100,7 @@ import { arraySignal } from 'kerfjs/array-signal';
 | `resetAllStores()` | `void` | reset every registered store (test cleanup) |
 | `mount(el, render)` | `() => void` disposer | bind reactive render to a DOM element |
 | `morph(liveRoot, template)` | `void` | one-shot in-place reconciliation against an already-populated element. Template can be an `Element`, `SafeHtml`, or raw HTML string. Honors every short-circuit `mount()` uses (`data-morph-skip`, `data-morph-skip-children`, `data-morph-preserve`, focus + caret preservation). Use for SSR-fragment hydration, page-refresh diffs, third-party widget remounts; use `mount()` when you want re-renders driven by signals. |
-| `each(items, render, key?)` | `SafeHtml` | iterate a keyed list; cache per-item HTML by identity (+ optional `key`) so unchanged rows skip re-render |
+| `each(items, render, cacheKey?)` | `SafeHtml` | iterate a keyed list; cache per-item HTML by identity (+ optional `cacheKey`) so unchanged rows skip re-render. The `cacheKey` function is a passive comparator — it bakes external state (e.g. a "selected id") into the cache invalidation. Distinct from `data-key` on the rendered element, which is the DOM-reconciliation identity that morph uses |
 | `delegate(root, type, sel, h)` | `() => void` disposer | event delegation; auto-promotes `focus`/`blur`/`scroll`/`load`/`error`/`mouseenter`/`mouseleave` to capture phase. `closest()`-style matching for every event type. |
 | `delegateCapture(root, type, sel, h)` | `() => void` disposer | explicit-capture escape hatch. `target.matches()`-style direct matching. |
 | `toElement(jsx)` | `Element` | parse JSX/HTML string into one DOM node (SVG-aware) |
@@ -160,6 +160,58 @@ delegate(rootEl, 'click', '[data-action="inc"]', () => { count.value += 1; });
 10. **`arraySignal` is opt-in for long keyed lists.** Use it when most updates are pointwise (single-row edits, append-to-end, selection flips). For short lists or filter/sort pipelines that rebuild the array on every input, plain `signal` + `each(items.value, ...)` is simpler and just as fast. Only one `each()` callsite per render gets the granular benefit; subsequent callsites bound to the same arraySignal fall through to the snapshot path.
 11. **Custom-element types: declaration-merge into `kerfjs/jsx-runtime`, not into a global JSX namespace.** Example: `declare module 'kerfjs/jsx-runtime' { namespace JSX { interface IntrinsicElements { 'my-tag': KerfCustomElement & { foo?: string } } } }`. Import the building-block types (`KerfCustomElement`, `KerfBaseAttrs`, `AttrLike`) from `kerfjs/jsx-runtime`.
 12. **Each `each()` row must produce exactly one top-level element.** The reconciler binds one live DOM node per item — multi-root rows or empty-row renders throw with a row-precise error (`each(): row render at index N produced K top-level elements; exactly one is required`). Wrap multiple roots in a single parent (e.g. `<li>...</li>`).
+13. **`each()` is for dynamic lists. Use `.map()` for static structural enumerations** (a constant `COLUMNS` / `TABS` / settings-sections array) whose row render reads dynamic signals. `each()` memoizes per-item HTML by object identity; module-level constant items never change identity, so the cached HTML is returned on every re-render and signal reads inside the row render silently stop reflecting state changes — the drop logic fires, `signal.value = next` executes, but the rows visibly don't update. Use `STATIC.map(item => <jsx/>)` for the outer structural loop. The inner `each(item.children, …)` (if any) over the *dynamic* sub-list still gets the keyed reconciler.
+
+## Decision-making axes
+
+`docs/ai/usage-guide.md` is a reference, not a recipe book. For each cluster of primitives below, the axes are the questions you ask to derive the kerf-idiomatic pattern. When the axes aren't enough, the linked worked examples are the deeper-consultation layer — fetch them only if the axes leave you uncertain.
+
+### Events
+
+- **Where does the event originate?**
+  - Inside the mount tree → `delegate(rootEl, type, selector, handler)`. One listener at the mount root that survives every re-render and dispatches via `closest(selector)` from the event target. Almost every UI event in a kerf app is this case.
+  - Outside the mount tree (window-level keyboard shortcuts, `online`/`offline`, `beforeunload`, page-visibility) → use the native listener at the appropriate target (`window`, `document`). `delegate()` doesn't apply because there's no mount-tree root to dispatch from. Attach at module top-level (not inside the mount callback — that would leak a listener per re-render).
+- **Does the event need to *follow* an element after a user gesture (drag, draw, resize)?**
+  - Yes → at the gesture-start event, call `el.setPointerCapture(e.pointerId)` on the dragged/drawn/resized element. Subsequent `pointermove` / `pointerup` / `pointercancel` events redirect back to the captured element even when the pointer is over a different column, off the window, or above the viewport. Because the events are still delivered through the mount tree, `delegate(rootEl, 'pointermove', '[data-card]', …)` still picks them up — you don't need `window.addEventListener`. Use this pattern, not the window-listener pattern, for in-mount-tree gestures.
+  - No → plain `delegate()` for the originating event is sufficient.
+- **Is the event one of the well-known non-bubblers (`focus`, `blur`, `scroll`, `load`, `error`, `mouseenter`, `mouseleave`)?**
+  - Yes → use plain `delegate()` anyway. It auto-promotes these to capture phase under the hood, so no special handling is needed.
+  - Anything else that needs capture-phase semantics specifically (custom non-bubblers, strict element-match instead of `closest`) → `delegateCapture()`.
+
+Worked example: pointer drag across columns at `site/src/examples/complete/kanban/main.tsx`. Tier table earlier in this doc enumerates which events fall in which tier.
+
+### Lists
+
+- **Does the list change item-by-item across renders (todos, chat messages, table rows)?**
+  - Yes → `each(items, render)`. The per-item HTML cache is keyed on object identity; new objects per render naturally invalidate, unchanged objects skip re-render. This is the hot path.
+- **Is the list a static structural enumeration (`COLUMNS`, settings sections, nav tabs) whose items don't change but whose row render reads dynamic signals?**
+  - Yes → `items.map(item => <jsx/>)`. The outer loop re-runs every render so signal reads inside the row render stay tracked. If the row contains a dynamic sub-list, use `each(item.children, …)` *inside* the `.map` — that inner `each()` still gets the keyed reconciler. This is the case Hard Rule 13 covers.
+- **Are mutations point-wise on a long list (large chat history, big table with per-row edits)?**
+  - Yes → `arraySignal<T>(initial)` from `kerfjs/array-signal`. Paired with `each(arraySig, render)`, mutations apply in O(patches) instead of O(N). For short lists or pipelines that rebuild the array on every input, plain `signal<T[]>` + `each(items.value, …)` is simpler and just as fast.
+
+Worked examples: TodoMVC at `site/src/examples/complete/todomvc/main.tsx` (plain signal + each), streaming-chat at `site/src/examples/complete/chat/main.tsx` (arraySignal). Reconciliation rules at `docs/4-render.md` §4.4.
+
+### Side effects / imperative DOM
+
+- **Does a library-owned subtree (Monaco, xterm, charts, third-party widget) need to survive across renders untouched?**
+  - Yes → put `data-morph-skip` on the host element. The element's attributes, children, and event listeners are all left verbatim across morphs. Mount the library imperatively once; kerf never touches it again.
+- **Does the host's *attributes* still need to morph (loading classes, ARIA state) but its children should be left alone?**
+  - Yes → `data-morph-skip-children` is the narrower variant. Attributes flow through; subtree is preserved.
+- **Was an element imperatively injected outside the JSX tree (autoplay video, tooltip overlay, analytics pixel) that should survive subsequent morphs even though no JSX references it?**
+  - Yes → `data-morph-preserve` opts it out of the trailing-removal pass. Keyed-match moves and attribute morphs still apply if the JSX *does* end up referencing it.
+- **Does a focused input or contenteditable need its caret / selection to survive a re-render?**
+  - Already automatic — the morph's focus-preservation pass restores caret position and selection range. No opt-in needed. (Lists must still have per-row keys per Hard Rule 2; otherwise the focused element matches by position and the focus jumps to the wrong row.)
+
+Worked examples: markdown-editor at `site/src/examples/complete/markdown-editor/main.tsx` (focus survival), the `data-morph-skip*` decision matrix at `docs/4-render.md` §4.3.
+
+### Raw HTML
+
+- **Is the HTML user-controlled (markdown from a textarea, content from an API, anything the user can influence)?**
+  - Yes → sanitize first, then `raw(sanitized)`. The reference pattern is `marked` → `DOMPurify.sanitize` → `raw`. Skipping sanitization is the canonical XSS vector.
+- **Is the HTML author-controlled and trusted (a literal template, a constant rendered at build time)?**
+  - Yes → `raw(html)` directly. The `raw()` brand is what tells the JSX runtime to skip auto-escaping; there's no other way to inject HTML.
+
+Worked example: markdown-editor renders user input via marked + DOMPurify + raw — see the `complete/markdown-editor` example for the full pipeline.
 
 ## Common errors → fixes
 
@@ -174,6 +226,7 @@ delegate(rootEl, 'click', '[data-action="inc"]', () => { count.value += 1; });
 | Library widget destroyed on every render | Library-owned subtree is reachable by the diff | Wrap host in `data-morph-skip`; mount the library imperatively |
 | `<my-element>` fails to typecheck | The tag is not in `IntrinsicElements`; declaration merging targeted the wrong namespace | Use `declare module 'kerfjs/jsx-runtime' { namespace JSX { interface IntrinsicElements { ... } } }`. `declare global { namespace JSX … }` does NOT work because kerf's JSX is module-scoped |
 | `each(): row render at index N produced K top-level elements` | A row's render returned multiple sibling elements (`<td/><td/>`) or zero elements | Wrap them in one parent so the row renders exactly one top-level element (`<tr><td/><td/></tr>`). The reconciler binds one live DOM node per item |
+| Drag/drop, selection-flip, or any state change has no visible effect — only the elements *outside* `each()` update | Used `each(STATIC_ARRAY, …)` (e.g. a constant `COLUMNS` array) where the row render reads dynamic signals. The items never change identity, so the per-item HTML cache hits every render and the row render fn is never re-invoked — signal reads inside it silently stop tracking | Replace the outer loop with `STATIC_ARRAY.map(item => <jsx/>)`. `each()` is for dynamic lists. The inner `each(item.children, …)` (if any) still gets the keyed reconciler. See Hard Rule 13 |
 | `arraySignal` mutated before mount renders empty | First render of a list always takes the snapshot path; this is by design — but if you've drained patches via something other than `each()` first, the snapshot still reflects the truth so you'll get a correct render |
 | TypeScript complains about `mount(el, () => cond ? <jsx/> : null)` returning a non-`SafeHtml` | Should not happen on current kerf — `mount()`'s `render` is typed `() => MountResult` where `MountResult = SafeHtml \| string \| number \| boolean \| null \| undefined`. If you still see the error, your `kerfjs` install predates the widening; upgrade or, as a stop-gap, return `''` / `raw('')` from the falsy branch. |
 

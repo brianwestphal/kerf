@@ -53,6 +53,14 @@ export interface DataAriaAttrs {
 export interface KerfBaseAttrs extends DataAriaAttrs {
   id?: AttrLike;
   className?: AttrLike;
+  /**
+   * KF-191 — lowercase HTML form accepted alongside `className`. The
+   * migration doc (`docs/10-migrating.md` / the published React-migration
+   * page) tells incoming developers to write `class` because that's the
+   * canonical HTML attribute name; the type system now accepts either
+   * spelling so `<div class="...">` per the docs compiles cleanly.
+   */
+  class?: AttrLike;
   style?: AttrLike;
   title?: AttrLike;
   lang?: AttrLike;
@@ -71,11 +79,26 @@ export interface KerfBaseAttrs extends DataAriaAttrs {
    */
   spellcheck?: AttrLike<boolean | 'true' | 'false'>;
   tabIndex?: AttrLike<number>;
+  /**
+   * KF-191 — lowercase HTML form accepted alongside `tabIndex`. Widened to
+   * also accept strings because the HTML spec defines `tabindex` as a
+   * string-valued integer attribute, and an HTML-savvy developer typing
+   * the lowercase form will naturally reach for `tabindex="0"`.
+   */
+  tabindex?: AttrLike<number | string>;
   role?: AttrLike;
   slot?: AttrLike;
   is?: AttrLike;
   autoCapitalize?: AttrLike<'off' | 'none' | 'on' | 'sentences' | 'words' | 'characters'>;
   autoFocus?: AttrLike<boolean>;
+  /**
+   * KF-191 — lowercase HTML form accepted alongside `autoFocus`. Widened
+   * to also accept `'true'` / `'false'` strings (same rationale as KF-183
+   * for `spellcheck` — HTML boolean-attribute parsing allows the string
+   * forms, and the canonical HTML attribute name lets developers reach
+   * for either spelling).
+   */
+  autofocus?: AttrLike<boolean | 'true' | 'false'>;
   accessKey?: AttrLike;
   /** `data-morph-skip` opts a subtree out of kerf's morph. Any value (incl. `true`) is treated as set. */
   'data-morph-skip'?: AttrValue;
@@ -188,6 +211,8 @@ export interface HTMLFormAttrs extends KerfBaseAttrs {
 
 export interface HTMLLabelAttrs extends KerfBaseAttrs {
   htmlFor?: AttrLike;
+  /** KF-191 — lowercase HTML form accepted alongside `htmlFor`. */
+  for?: AttrLike;
   form?: AttrLike;
 }
 
@@ -418,9 +443,13 @@ export interface SVGPresentationAttrs {
 export interface SVGCommonAttrs extends DataAriaAttrs, SVGPresentationAttrs {
   id?: AttrLike;
   className?: AttrLike;
+  /** KF-191 — lowercase HTML form accepted alongside `className`. */
+  class?: AttrLike;
   style?: AttrLike;
   transform?: AttrLike;
   tabIndex?: AttrLike<number>;
+  /** KF-191 — lowercase HTML form accepted alongside `tabIndex` (string-valued per the HTML/SVG spec). */
+  tabindex?: AttrLike<number | string>;
   role?: AttrLike;
   xmlns?: AttrLike;
   xmlnsXlink?: AttrLike;
@@ -624,7 +653,7 @@ export interface KerfBuiltinIntrinsicElements {
   fieldset: KerfBaseAttrs & { name?: AttrLike; form?: AttrLike; disabled?: AttrLike<boolean> };
   legend: KerfBaseAttrs;
   datalist: KerfBaseAttrs;
-  output: KerfBaseAttrs & { name?: AttrLike; form?: AttrLike; htmlFor?: AttrLike };
+  output: KerfBaseAttrs & { name?: AttrLike; form?: AttrLike; htmlFor?: AttrLike; for?: AttrLike };
   progress: HTMLProgressAttrs;
   meter: HTMLMeterAttrs;
   // Tables

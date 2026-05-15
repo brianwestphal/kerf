@@ -49,6 +49,11 @@ const safeRef: SafeHtml = (
         <label htmlFor="i">L</label>
         <input id="i" name="i" />
       </form>
+      {/* KF-191: lowercase HTML attribute names must compile against dist. */}
+      <section class="lowercase-form" tabindex="0">
+        <label for="i2">L2</label>
+        <input id="i2" name="i2" autofocus />
+      </section>
       <svg viewBox="0 0 10 10" xmlns="http://www.w3.org/2000/svg">
         <circle cx={5} cy={5} r={3} fill="currentColor" />
         <path d="M0 0 L10 10" stroke="black" />

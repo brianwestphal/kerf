@@ -38,7 +38,7 @@ import { arraySignal } from 'kerfjs/array-signal';
 | `resetAllStores()` | reset every store (test teardown) |
 | `mount(el, render)` | bind reactive render to a DOM element; returns a disposer |
 | `morph(liveRoot, template)` | one-shot reconcile against an already-populated element (SSR hydration, page-refresh diffs). Template can be `Element`, `SafeHtml`, or HTML string |
-| `each(items, render, key?)` | keyed list iteration; per-row memoization on object identity (+ optional key) |
+| `each(items, render, cacheKey?)` | keyed list iteration; per-row memoization on object identity (+ optional cacheKey — a passive comparator for external state). Distinct from `data-key` on the rendered element |
 | `delegate(root, type, sel, h)` | one listener at the root, walks `closest(selector)` from target |
 | `delegateCapture(root, type, sel, h)` | capture-phase escape hatch, strict `target.matches()` |
 | `toElement(jsx)` | parse JSX into one DOM node (SVG-aware) |
@@ -59,6 +59,31 @@ import { arraySignal } from 'kerfjs/array-signal';
 10. **`arraySignal` is opt-in for long keyed lists** where most updates are pointwise (single-row edits, append-to-end). For short lists / filter+sort pipelines, plain `signal` + `each(items.value, ...)` is simpler and equally fast.
 11. **Custom-element types: declaration-merge into `kerfjs/jsx-runtime`**, NOT into a global JSX namespace. Pattern: `declare module 'kerfjs/jsx-runtime' { namespace JSX { interface IntrinsicElements { 'my-tag': KerfCustomElement & { foo?: string } } } }`.
 12. **Each `each()` row must produce exactly one top-level element.** The reconciler binds one live DOM node per item — multi-root or empty rows throw with a row-precise error. Wrap multiple roots in one parent.
+13. **`each()` is for DYNAMIC lists. Use `.map()` for static structural arrays** (constant `COLUMNS` / `TABS` / settings sections) whose row render reads signals. `each()` memoizes per-item HTML by object identity; constant items never change identity, so the cache hits forever, the row render is never re-invoked, and signal reads inside it silently stop tracking. Outer `.map()` for the static frame + inner `each()` for the dynamic sub-list is the idiomatic shape.
+
+## Decision-making axes
+
+When deciding which primitive to reach for, work down the axes:
+
+**Events.**
+- Originates inside the mount tree → `delegate(rootEl, type, sel, handler)`. Originates outside (window-level keyboard, online/offline, beforeunload) → native `window.addEventListener` at module top-level.
+- Gesture that needs to follow an element after press (drag, draw, resize) → at the start event, `el.setPointerCapture(e.pointerId)`. Subsequent `pointermove` / `pointerup` redirect to the captured element and `delegate(rootEl, 'pointermove', '[data-card]', …)` still picks them up. Don't reach for `window.addEventListener` for in-mount-tree gestures.
+- Well-known non-bubbler (`focus`, `blur`, `scroll`, `load`, `error`, `mouseenter`, `mouseleave`) → still `delegate()`; it auto-promotes to capture. Custom non-bubblers or strict element-match → `delegateCapture()`.
+
+**Lists.**
+- Items change across renders (todos, chat messages, table rows) → `each(items, render)`.
+- Static structural enumeration whose row render reads signals → `STATIC.map(item => <jsx/>)`. Inner `each(item.children, …)` still gets keyed reconcile.
+- Long list with point-wise mutations → `arraySignal` + `each(arraySig, render)` for O(patches) updates.
+
+**Side effects / imperative DOM.**
+- Library-owned subtree survives across renders → `data-morph-skip` on host.
+- Host attributes morph but subtree preserved → `data-morph-skip-children`.
+- Imperatively-injected element survives the trailing-removal pass → `data-morph-preserve`.
+- Focused input / contenteditable caret survives re-renders → automatic; no opt-in.
+
+**Raw HTML.**
+- User-controlled HTML → sanitize first (DOMPurify) then `raw(sanitized)`.
+- Author-controlled trusted HTML → `raw(html)` directly.
 
 ## Canonical patterns
 
@@ -102,6 +127,7 @@ morph(liveCard, '<article class="card">…</article>');
 - SVG renders as broken / namespaceless markup → use `mount` (HTML path) or `toElement` (SVG-aware), not `innerHTML`.
 - Library widget destroyed on every render → wrap host in `data-morph-skip`; mount the library imperatively after first render.
 - `each(): row render at index N produced K top-level elements` → wrap multiple roots in one parent.
+- Drag/drop / state change has no visible effect, only stuff *outside* `each()` updates → you used `each(STATIC_ARRAY, …)` whose row render reads signals. Replace the outer with `STATIC_ARRAY.map(...)`; keep inner `each()` for the dynamic sub-list. See Hard Rule 13.
 
 ## Server / SSR
 

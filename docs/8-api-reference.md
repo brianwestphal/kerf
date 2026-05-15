@@ -151,14 +151,16 @@ Every short-circuit `mount()`'s morph honors carries over: `data-morph-skip` (el
 
 `morph()` does NOT subscribe to signals. If you want re-renders, use `mount()`. If you want a one-shot reconciliation against a tree you own, this is the primitive. See `docs/4-render.md` §4.4.3.
 
-### `each<T>(items, render, key?): SafeHtml`
+### `each<T>(items, render, cacheKey?): SafeHtml`
 
 ```ts
 each(rows.value, (row) => <tr data-key={row.id}>{row.label}</tr>);
 each(rows.value, (row) => <tr…>…</tr>, (row) => row.id === selectedId ? 1 : 0);
 ```
 
-Keyed list iteration with per-item memoization, routed through `mount()`'s native list reconciler. Skips re-running `render` for items whose object identity (and optional `key`) are unchanged since the previous call — those items keep their existing live DOM nodes verbatim. Items whose identity or key did change get a fresh node (all fresh-node HTML for a render is bulk-parsed in one `innerHTML` call); items that disappeared are removed. Reorders use a longest-increasing-subsequence pass so the number of `insertBefore` calls is the minimum possible. Items must be objects (cache is a `WeakMap`); wrap primitives if you need to iterate them. Each item's render output must produce exactly one top-level element. Use `key` when external state, not the item itself, drives what the row should render (e.g. a "currently selected" id flips a CSS class).
+Keyed list iteration with per-item memoization, routed through `mount()`'s native list reconciler. Skips re-running `render` for items whose object identity (and optional `cacheKey`) are unchanged since the previous call — those items keep their existing live DOM nodes verbatim. Items whose identity or cacheKey did change get a fresh node (all fresh-node HTML for a render is bulk-parsed in one `innerHTML` call); items that disappeared are removed. Reorders use a longest-increasing-subsequence pass so the number of `insertBefore` calls is the minimum possible. Items must be objects (cache is a `WeakMap`); wrap primitives if you need to iterate them. Each item's render output must produce exactly one top-level element.
+
+`cacheKey` is a passive comparator (not a reactive subscription): kerf calls it once per item per mount-effect run and compares the returned value against the previous run's. Use it when external state, not the item itself, drives what the row should render (e.g. a "currently selected" id flips a CSS class). Distinct from `data-key` on the rendered element, which is the DOM-reconciliation identity that morph uses — `cacheKey` controls when the cached HTML is invalidated; `data-key` controls how a row maps to its existing live DOM node. (Renamed from `key` for clarity; positional callers — the canonical form — are unaffected.)
 
 If a descendant of a moved row holds focus, the reconciler snapshots the active element + its selection range before the move pass and re-applies them afterwards — so focus and caret position survive a reorder even on engines that drop focus on `insertBefore` (older Safari, happy-dom). See `docs/4-render.md` §4.4.
 

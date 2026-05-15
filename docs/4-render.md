@@ -43,7 +43,7 @@ Elements without a key are matched positionally by tag name. Pure-HTML diffs wor
 </ul>
 ```
 
-For large lists, swap `.map(...)` for the `each(items, render, key?)` helper. It returns a structured list segment that `mount()` recognizes and routes to the keyed reconciler — bypassing the parse-the-whole-table step entirely. Each row is memoized by item identity (with an optional `key` that captures external state like a "selected id"), so unchanged rows skip JSX evaluation, string-building, *and* the morph walk. Items must be objects (the cache is a `WeakMap`); the immutable-update style elsewhere in this codebase makes the cache work automatically — replace a row with a fresh object and it re-renders, leave its reference alone and it doesn't.
+For large lists, swap `.map(...)` for the `each(items, render, cacheKey?)` helper. It returns a structured list segment that `mount()` recognizes and routes to the keyed reconciler — bypassing the parse-the-whole-table step entirely. Each row is memoized by item identity (with an optional `cacheKey` that captures external state like a "selected id"), so unchanged rows skip JSX evaluation, string-building, *and* the morph walk. Items must be objects (the cache is a `WeakMap`); the immutable-update style elsewhere in this codebase makes the cache work automatically — replace a row with a fresh object and it re-renders, leave its reference alone and it doesn't.
 
 ```tsx
 import { each } from 'kerfjs';
@@ -53,7 +53,42 @@ import { each } from 'kerfjs';
 </ul>
 ```
 
-> **Memo cache invariant.** The memo cache invalidates *purely* on the third argument (the `key` function's return value) plus item identity. If a row's rendered output depends on external state that the memo doesn't include, the row will go stale — kerf will return cached HTML even though the render function would produce something different now. The fix is either: (a) bake that state into the memo (`(r) => \`${r.id}-${selectedId === r.id ? 'on' : 'off'}\``), or (b) own the changing DOM imperatively under `data-morph-skip` and let kerf cache the surrounding shell. The kanban example chooses (b) for the live drag transform; the TodoMVC example chooses (a) for the per-row view/edit flip.
+> **Memo cache invariant.** The memo cache invalidates *purely* on the third argument (the `cacheKey` function's return value) plus item identity. If a row's rendered output depends on external state that the memo doesn't include, the row will go stale — kerf will return cached HTML even though the render function would produce something different now. The fix is either: (a) bake that state into the memo (`(r) => \`${r.id}-${selectedId === r.id ? 'on' : 'off'}\``), or (b) own the changing DOM imperatively under `data-morph-skip` and let kerf cache the surrounding shell. The kanban example chooses (b) for the live drag transform; the TodoMVC example chooses (a) for the per-row view/edit flip.
+
+> **Static structural arrays — use `.map()`, not `each()`.** `each()` is for dynamic lists. When the outer array is a module-level constant (`COLUMNS`, settings sections, nav tabs) whose items never change identity, the per-item HTML cache hits every render *forever* — the row render fn is invoked exactly once at first paint and never again, even when signals it reads change. Signal subscriptions established during that first render get dropped after the next effect run (signal-core only retains subscriptions for signals re-read in the current run), so writes to those signals quietly stop triggering re-renders. The whole rendered tree looks frozen; only elements *outside* the `each()` reflect updates.
+>
+> The wrong shape:
+>
+> ```tsx
+> const COLUMNS = [{ id: 'todo', title: 'To do' }, { id: 'doing', title: 'Doing' }, { id: 'done', title: 'Done' }];
+> const board = signal<Record<string, Card[]>>({ todo: [...], doing: [...], done: [...] });
+>
+> mount(root, () => (
+>   <div>
+>     {each(COLUMNS, (col) => (                  // ← static array; cache-hits forever
+>       <div data-key={col.id}>
+>         {each(board.value[col.id], (card) => ...)}   // ← signal read never re-tracked
+>       </div>
+>     ))}
+>   </div>
+> ));
+> ```
+>
+> The right shape:
+>
+> ```tsx
+> mount(root, () => (
+>   <div>
+>     {COLUMNS.map((col) => (                    // ← .map: outer loop re-runs every render
+>       <div data-key={col.id}>
+>         {each(board.value[col.id], (card) => ...)}   // ← inner each() still gets keyed reconcile
+>       </div>
+>     ))}
+>   </div>
+> ));
+> ```
+>
+> Rule of thumb: if the array reference is the same across renders AND the row render reads signals, you want `.map()`. If the array is a fresh reference per render (because it came from a signal or a filter/sort pipeline), you want `each()`. Inner `each()` over the *dynamic* sub-list is fine in both shapes.
 
 ### Granular reconcile via `arraySignal`
 
