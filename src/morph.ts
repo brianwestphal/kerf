@@ -86,6 +86,27 @@ export function morph(
   morphChildren(liveRoot, templateEl, ownedItems);
 }
 
+/**
+ * Internal: morph `fromEl` to match `toEl` including the element's own
+ * attributes (which the public `morph()` does NOT touch — it only morphs
+ * children of the live root). Used by `list-reconcile-granular.ts` to apply
+ * an `update` patch in place via attribute + child morphing instead of
+ * `replaceChild` discarding the whole subtree. Same short-circuits as
+ * `morph()`: `data-morph-skip`, `data-morph-skip-children`, `isEqualNode`,
+ * focused contenteditable / text-entry preservation. Tag mismatch falls
+ * through to the same parent.replaceChild fallback the public API uses.
+ *
+ * Underscore-prefixed export (not part of the public API surface). Public
+ * callers should use `morph(liveRoot, template)`.
+ */
+export function _morphElement(
+  fromEl: Element,
+  toEl: Element,
+  ownedItems: ReadonlySet<Element> = EMPTY_OWNED,
+): void {
+  morphElement(fromEl, toEl, ownedItems);
+}
+
 function isElementNode(t: Element | SafeHtml | string): t is Element {
   return typeof t === 'object' && t !== null
     && (t as Node).nodeType === ELEMENT_NODE;

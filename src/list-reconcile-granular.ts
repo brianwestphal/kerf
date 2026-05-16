@@ -23,6 +23,7 @@
 
 import { type BoundItem, endAnchor, type ListBinding } from './list-binding.js';
 import { captureFocus, restoreFocus } from './list-reconcile-focus.js';
+import { _morphElement } from './morph.js';
 import type { ListSegment } from './segment.js';
 import { maybeWarnMissingRowKey,parseRowTemplate, rowContractError, truncateRowHtml } from './utils/rowContract.js';
 
@@ -145,8 +146,20 @@ function applySingleUpdate(
   const oldEntry = items[patch.index];
   if (html === oldEntry.html) return;  // no-op (defensive: caller may emit redundant patches)
   const newNode = parseSingleRow(html);
-  liveParent.replaceChild(newNode, oldEntry.node);
-  items[patch.index] = { ref: patch.item, cacheKey: undefined, html, node: newNode };
+  // KF-201: morph the existing live node in place when tags match, so
+  // structure-preserving updates (text-node change, attribute flip) apply
+  // surgically — preserving DOM identity, focus, scroll, IME state, and
+  // skipping the layout cost of a full subtree discard-and-reinsert. For
+  // the rare tag-mismatch case (consumer's render fn returns a different
+  // top-level tag for the same item), fall back to explicit replaceChild
+  // so we keep a reference to the new live node.
+  if (oldEntry.node.tagName === newNode.tagName) {
+    _morphElement(oldEntry.node, newNode);
+    items[patch.index] = { ref: patch.item, cacheKey: undefined, html, node: oldEntry.node };
+  } else {
+    liveParent.replaceChild(newNode, oldEntry.node);
+    items[patch.index] = { ref: patch.item, cacheKey: undefined, html, node: newNode };
+  }
 }
 
 /**
@@ -188,13 +201,21 @@ function applyBulkUpdate(
     child = (child as Element).nextElementSibling;
   }
 
-  // Apply replaceChild for each real change.
+  // KF-201: morph each row in place when tags match (the common case), so
+  // structure-preserving updates skip the discard-and-reinsert layout cost.
+  // Tag-mismatch falls back to explicit replaceChild so we keep a reference
+  // to the new live node.
   for (let k = 0; k < changes.length; k++) {
     const c = changes[k];
     const p = patches[c.patchIdx] as { type: 'update'; index: number; item: object; html: string };
     const oldEntry = items[p.index];
-    liveParent.replaceChild(newNodes[k], oldEntry.node);
-    items[p.index] = { ref: p.item, cacheKey: undefined, html: c.html, node: newNodes[k] };
+    if (oldEntry.node.tagName === newNodes[k].tagName) {
+      _morphElement(oldEntry.node, newNodes[k]);
+      items[p.index] = { ref: p.item, cacheKey: undefined, html: c.html, node: oldEntry.node };
+    } else {
+      liveParent.replaceChild(newNodes[k], oldEntry.node);
+      items[p.index] = { ref: p.item, cacheKey: undefined, html: c.html, node: newNodes[k] };
+    }
   }
 }
 

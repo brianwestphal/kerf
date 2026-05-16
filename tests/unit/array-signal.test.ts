@@ -155,6 +155,72 @@ describe('arraySignal — each() granular integration via mount()', () => {
     expect(root.querySelectorAll('li')[1].textContent).toBe('b');
   });
 
+  it('KF-201: update with a tag mismatch falls back to replaceChild (single-update path)', () => {
+    // Consumer's render fn returns <li> for some items and <article> for
+    // others — same key, different tag. Granular update on the same item
+    // can't morph in place (different tag) and must fall back to
+    // replaceChild. This covers `applySingleUpdate`'s tag-mismatch branch.
+    type R = { id: number; kind: 'li' | 'article'; label: string };
+    const rows = arraySignal<R>([{ id: 1, kind: 'li', label: 'a' }]);
+    mount(root, () => jsx('div', {
+      children: each(rows, (r) => (
+        r.kind === 'li'
+          ? jsx('li', { 'data-key': String(r.id), children: r.label })
+          : jsx('article', { 'data-key': String(r.id), children: r.label })
+      )),
+    }));
+    const oldLi = root.querySelector('li');
+    expect(oldLi).not.toBeNull();
+    expect(root.querySelector('article')).toBeNull();
+
+    // Update flips the kind — same id, different top-level tag.
+    rows.update(0, (r) => ({ ...r, kind: 'article', label: 'A' }));
+    expect(root.querySelector('li')).toBeNull();
+    const newArticle = root.querySelector('article');
+    expect(newArticle).not.toBeNull();
+    expect(newArticle!.textContent).toBe('A');
+    // The old <li> node is detached.
+    expect(oldLi!.isConnected).toBe(false);
+  });
+
+  it('KF-201: bulk update with a tag mismatch in one row falls back to replaceChild for that row', () => {
+    // Two updates in a batch: one same-tag (morphed in place), one
+    // tag-mismatch (replaced). Covers `applyBulkUpdate`'s tag-mismatch branch.
+    type R = { id: number; kind: 'li' | 'div'; label: string };
+    const rows = arraySignal<R>([
+      { id: 1, kind: 'li', label: 'a' },
+      { id: 2, kind: 'li', label: 'b' },
+    ]);
+    mount(root, () => jsx('section', {
+      children: each(rows, (r) => (
+        r.kind === 'li'
+          ? jsx('li', { 'data-key': String(r.id), children: r.label })
+          : jsx('div', { 'data-key': String(r.id), children: r.label })
+      )),
+    }));
+    const oldLi1 = root.querySelectorAll('li')[0];
+    const oldLi2 = root.querySelectorAll('li')[1];
+    expect(root.querySelectorAll('li').length).toBe(2);
+
+    batch(() => {
+      // Row 0: same tag, different label → morph in place (identity preserved).
+      rows.update(0, (r) => ({ ...r, label: 'A' }));
+      // Row 1: tag change → fall back to replaceChild.
+      rows.update(1, (r) => ({ ...r, kind: 'div', label: 'B' }));
+    });
+
+    // Row 0's <li> kept its identity.
+    expect(root.querySelectorAll('li').length).toBe(1);
+    expect(root.querySelectorAll('li')[0]).toBe(oldLi1);
+    expect(oldLi1.textContent).toBe('A');
+
+    // Row 1 is now a <div>; old <li> is detached.
+    const newDiv = root.querySelector('div');
+    expect(newDiv).not.toBeNull();
+    expect(newDiv!.textContent).toBe('B');
+    expect(oldLi2.isConnected).toBe(false);
+  });
+
   it('update patch applies via reconcileGranular and preserves siblings', () => {
     const rows = arraySignal([{ id: 1, label: 'a' }, { id: 2, label: 'b' }]);
     renderRows(rows);
@@ -164,7 +230,12 @@ describe('arraySignal — each() granular integration via mount()', () => {
     const lis = root.querySelectorAll('li');
     expect(lis[0].textContent).toBe('A');
     expect(lis[1]).toBe(oldB);  // sibling preserved (granular reconciler doesn't touch unchanged rows)
-    expect(lis[0]).not.toBe(oldA);  // updated row gets a fresh node (replaceChild)
+    // KF-201: updated row preserves its DOM node identity — morph applies the
+    // text-node change in place. Skips the layout cost of a full subtree
+    // discard-and-reinsert, and preserves focus / scroll / IME state on
+    // descendants. (Pre-KF-201 the granular path called replaceChild here,
+    // which swapped the node entirely.)
+    expect(lis[0]).toBe(oldA);
   });
 
   it('KF-94 bulk-update: a run of consecutive updates at non-contiguous indices uses one parse', async () => {

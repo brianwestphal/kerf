@@ -452,9 +452,11 @@ describe('Adversarial edge cases', () => {
       expect((document.activeElement as HTMLInputElement).value).toBe('typed');
     });
 
-    it('focus inside the same row that gets granular-updated is lost (documented)', () => {
-      // Granular update replaces the row's <li>, so focus inside is gone.
-      // This test pins the documented trade-off.
+    it('KF-201: focus inside the same row that gets granular-updated NOW survives', () => {
+      // KF-201: granular updates now morph the row in place instead of
+      // replaceChild. The row's <li> keeps its identity, and focus on a
+      // descendant input survives the update. (Pre-KF-201 the granular path
+      // replaced the whole <li> on every update, which dropped focus inside.)
       const rows = arraySignal([{ id: 1, label: 'a' }]);
       mount(root, () => (
         <ul>{each(rows, (r) => (
@@ -468,8 +470,8 @@ describe('Adversarial edge cases', () => {
       expect(document.activeElement).toBe(input);
 
       rows.update(0, (r) => ({ ...r, label: 'A!' }));
-      // Old input was replaced; focus is lost.
-      expect(document.activeElement).not.toBe(input);
+      // Focus is preserved on the original input.
+      expect(document.activeElement).toBe(input);
     });
   });
 
@@ -920,13 +922,13 @@ describe('Round 3: granular path × cross-feature interactions', () => {
 
   it('granular update of a row: data-morph-skip subtree on the row is replaced like any other row', () => {
     // The granular update path uses replaceChild — the old row's entire
-    // subtree is gone. Pinning current behavior: data-morph-skip on a row
-    // does NOT prevent a granular update from replacing the row, because
-    // the morph-skip honored by the diff is for the static-surrounds path,
-    // not the list reconciler.
+    // KF-201: granular update now uses morph() instead of replaceChild,
+    // so `data-morph-skip` on a row is properly honored — the row's subtree
+    // is left verbatim and imperatively-set attributes survive. This is a
+    // behavior fix: pre-KF-201 the granular path replaced the whole row and
+    // ignored data-morph-skip.
     type R = { id: number; v: string };
     const rows = arraySignal<R>([{ id: 1, v: 'a' }]);
-    let imperativePoke = '';
     mount(root, () => (
       <ul>{each(rows, (r) => (
         <li data-key={String(r.id)} data-morph-skip>
@@ -936,23 +938,24 @@ describe('Round 3: granular path × cross-feature interactions', () => {
     ));
     const li = root.querySelector('li')!;
     li.setAttribute('data-imperative', 'sticky');
-    imperativePoke = li.getAttribute('data-imperative') ?? '';
-    expect(imperativePoke).toBe('sticky');
+    expect(li.getAttribute('data-imperative')).toBe('sticky');
 
     rows.update(0, (r) => ({ ...r, v: 'A' }));
-    // Behavior pin: morph-skip does NOT prevent a granular update from
-    // replacing the <li>. The `data-imperative` attribute is gone.
-    const newLi = root.querySelector('li')!;
-    expect(newLi).not.toBe(li);
-    expect(newLi.getAttribute('data-imperative')).toBe(null);
-    expect(newLi.querySelector('span')!.textContent).toBe('A');
+    // KF-201: data-morph-skip on the row is honored. The <li> keeps its
+    // identity, the imperatively-set attribute survives, and the subtree
+    // is left verbatim — the new label "A" is NOT applied to the <span>
+    // because data-morph-skip preserves the subtree.
+    const sameLi = root.querySelector('li')!;
+    expect(sameLi).toBe(li);
+    expect(sameLi.getAttribute('data-imperative')).toBe('sticky');
+    expect(sameLi.querySelector('span')!.textContent).toBe('a');
   });
 
-  it('granular update preserves focused contenteditable behavior: same row → focus lost (documented)', () => {
-    // The focused-contenteditable preservation is implemented in src/morph.ts
-    // (the morph short-circuits the subtree). The granular path uses
-    // replaceChild directly — so a focused contenteditable in the SAME row
-    // that gets updated loses its content. Pinning the gap.
+  it('KF-201: granular update preserves focused contenteditable in the same row', () => {
+    // KF-201: the granular path now uses morph() which short-circuits when
+    // it encounters a focused contenteditable — the user's typed content
+    // and focus are preserved across the update. (Pre-KF-201 the granular
+    // path used replaceChild and dropped both.)
     const rows = arraySignal([{ id: 1, body: 'orig' }]);
     mount(root, () => (
       <ul>{each(rows, (r) => (
@@ -967,13 +970,13 @@ describe('Round 3: granular path × cross-feature interactions', () => {
     ce.innerHTML = 'edited inline';
     expect(document.activeElement).toBe(ce);
 
-    // Granular update of the same row → replaceChild → typed content lost.
+    // Granular update of the same row → morph honors focused-contenteditable
+    // → typed content + focus survive.
     rows.update(0, (r) => ({ ...r, body: 'updated' }));
-    const newCe = root.querySelector('[contenteditable]') as HTMLElement;
-    expect(newCe).not.toBe(ce);
-    expect(newCe.innerHTML).toBe('updated');  // typed content gone
-    // Focus lost too.
-    expect(document.activeElement).not.toBe(ce);
+    const sameCe = root.querySelector('[contenteditable]') as HTMLElement;
+    expect(sameCe).toBe(ce);
+    expect(sameCe.innerHTML).toBe('edited inline');  // typed content preserved
+    expect(document.activeElement).toBe(ce);
   });
 
   it('granular update preserves focused contenteditable behavior: different row → focus survives', () => {
@@ -1000,12 +1003,12 @@ describe('Round 3: granular path × cross-feature interactions', () => {
     expect(firstCe.innerHTML).toBe('edited inline');
   });
 
-  it('granular update of a <details open> row replaces the element — `open` is gone', () => {
-    // `<details open>` user-agent-owned-attr preservation is in src/morph.ts's
-    // morphAttributes (KF-84). The granular path uses replaceChild, so the
-    // browser-set `open` attribute is wiped along with the <details> element.
-    // Pinning the gap — controlled-style users should drive `.open`
-    // imperatively (per docs/4-render.md §4.4.1).
+  it('KF-201: granular update of a <details open> row preserves user-agent-set `open`', () => {
+    // KF-201: the granular path uses morph() which treats `open` on
+    // <details>/<dialog> as user-agent-owned (KF-84) and leaves it alone.
+    // The <details> element keeps its identity and its open state across
+    // an update of the same row. (Pre-KF-201 the granular path called
+    // replaceChild and wiped the browser-set `open` attribute.)
     const rows = arraySignal([{ id: 1, label: 'panel' }]);
     mount(root, () => (
       <ul>{each(rows, (r) => (
@@ -1021,11 +1024,12 @@ describe('Round 3: granular path × cross-feature interactions', () => {
     details.setAttribute('open', '');
     expect(details.hasAttribute('open')).toBe(true);
 
-    // Granular update — replaces <li>, including the <details>.
+    // Granular update — morph preserves <details>'s identity AND its `open`.
     rows.update(0, (r) => ({ ...r, label: 'updated panel' }));
-    const newDetails = root.querySelector('details') as HTMLDetailsElement;
-    expect(newDetails).not.toBe(details);
-    expect(newDetails.hasAttribute('open')).toBe(false);  // gone
+    const sameDetails = root.querySelector('details') as HTMLDetailsElement;
+    expect(sameDetails).toBe(details);
+    expect(sameDetails.hasAttribute('open')).toBe(true);
+    expect(sameDetails.querySelector('p')!.textContent).toBe('updated panel');
   });
 });
 
