@@ -9,10 +9,9 @@
       ]
     },
     "hotsheet-channel-kerf": {
-      "command": "npx",
+      "command": "/Applications/Hot Sheet.app/Contents/MacOS/hotsheet-node",
       "args": [
-        "tsx",
-        "/Users/westphal/Documents/hotsheet/src/channel.ts",
+        "/Applications/Hot Sheet.app/Contents/Resources/server/channel.js",
         "--data-dir",
         "/Users/westphal/Documents/kerf/.hotsheet"
       ]

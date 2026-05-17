@@ -67,6 +67,7 @@
     "test:dist:full": "npm run build && vitest run --config vitest.config.dist-full.ts",
     "test:dist:jsx-typing": "npm run build && tsc -p tests/dist/jsx-typing/tsconfig.json",
     "test:browser": "npm run build && playwright test",
+    "bench:micro": "vitest bench --run --config vitest.config.bench.ts",
     "lint": "eslint src tests",
     "typecheck": "tsc --noEmit",
     "check": "npm run lint && npm run typecheck && node scripts/check-doc-test-inventory.mjs && node scripts/check-doc-api-coverage.mjs && npm test && npm run build && vitest run --config vitest.config.dist.ts && vitest run --config vitest.config.dist-full.ts && tsc -p tests/dist/jsx-typing/tsconfig.json",

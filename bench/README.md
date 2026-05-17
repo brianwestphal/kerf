@@ -129,6 +129,40 @@ frameworks); edit `SUBSET_SCENARIOS` / `SUBSET_FRAMEWORKS` in
 `PerfTable.astro` to change what gets surfaced without re-running the
 bench.
 
+## Micro-benchmarks (`bench/micro/`)
+
+The cross-framework bench above measures end-to-end **click-to-paint** for each krausest scenario. It's the right granularity for "what's kerf's user-visible speed vs the rest of the field?" — but the wrong granularity for "before I commit this primitive-level change, will it move the needle?"
+
+For that, `bench/micro/` runs in seconds (~10s for the whole suite) using Vitest's bench mode (which uses `tinybench` internally). Run it with:
+
+```bash
+npm run bench:micro
+```
+
+Each `*.bench.ts` file targets one hot path:
+
+| File | What it answers |
+| --- | --- |
+| `morph-vs-replace.bench.ts` | Is `morph()` faster than `replaceChild` for a kerf-typical row? (Spoiler: comparable. This is the retrospective KF-201 check that would have predicted the perf nothingburger.) |
+| `parse-row.bench.ts` | What's the cost of `parseRowTemplate` for one row vs 100 bulk-joined? Sets the ceiling for "how much KF-198's parse-skipping fast path could save." |
+| `each-snapshot-classify.bench.ts` | What's the per-row cost in `eachSnapshotById`'s cache-hit and cache-miss loops? Tests KF-199's "alloc reduction is meaningful" premise. |
+| `jsx-string-build.bench.ts` | JSX runtime vs raw string concat. Shows the JSX abstraction's overhead vs the absolute floor. |
+| `attribute-diff-detection.bench.ts` | Placeholder for KF-198 — measures the proposed HTML-string diff heuristic in isolation. |
+
+### When to use
+
+- **Before committing a primitive-level change** (replacing one DOM op with another, changing a hot-path data structure, adding a fast-path detector). Run the relevant `*.bench.ts` first; if the change doesn't move the microbench, don't expect it to move krausest either.
+- **When investigating where time goes** in a hot path — pair with Chrome devtools sampling or `node --prof` runs of the same primitives.
+
+### When NOT to use
+
+- **Don't trust microbench numbers as proxies for end-to-end app perf.** They miss cache effects, batched layouts, paint coalescing, real-world DOM tree sizes, and everything that makes Chrome's click-to-paint different from a synthetic primitive timing. Krausest is still the canonical truth.
+- **Don't gate commits on absolute thresholds.** The numbers are host-dependent and noisy (±2–5% RME on a quiet machine, much higher on a busy one). The output is for human judgment, not CI enforcement. The micro-bench suite is intentionally NOT part of `npm run check`.
+
+### Reading the output
+
+Vitest prints per-bench tables with `hz` (operations per second) and percentile latencies. The Summary block at the end calls out winners per `describe` block as "N.NNx faster than ..." — useful for "did my change actually win?" gut-checks.
+
 ## Caveats
 
 - **Absolute numbers aren't comparable across machines.** Only the

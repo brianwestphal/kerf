@@ -22,6 +22,7 @@
  */
 
 import { type BoundItem, endAnchor, type ListBinding } from './list-binding.js';
+import { tryAttributeOnlyFastPath, tryTextContentFastPath } from './list-reconcile-fast-paths.js';
 import { captureFocus, restoreFocus } from './list-reconcile-focus.js';
 import { _morphElement } from './morph.js';
 import type { ListSegment } from './segment.js';
@@ -145,6 +146,17 @@ function applySingleUpdate(
   const { html } = patch;
   const oldEntry = items[patch.index];
   if (html === oldEntry.html) return;  // no-op (defensive: caller may emit redundant patches)
+  // KF-198 + KF-206: surgical fast paths for the common arraySignal update
+  // shapes — top-level attribute flip (krausest select-row) and one-text-
+  // node content change (krausest partial-update). Both apply the change
+  // directly to the live row, skipping the parse + morph entirely. They
+  // bail conservatively on anything that could be unsafe and fall through
+  // to the existing _morphElement / replaceChild routes below.
+  if (tryAttributeOnlyFastPath(oldEntry.node, oldEntry.html, html)
+      || tryTextContentFastPath(oldEntry.node, oldEntry.html, html)) {
+    items[patch.index] = { ref: patch.item, cacheKey: undefined, html, node: oldEntry.node };
+    return;
+  }
   const newNode = parseSingleRow(html);
   // KF-201: morph the existing live node in place when tags match, so
   // structure-preserving updates (text-node change, attribute flip) apply
@@ -176,25 +188,30 @@ function applyBulkUpdate(
   start: number,
   end: number,
 ): void {
-  // Patches already carry pre-rendered HTML (KF-99). Filter out no-ops where
-  // the new HTML matches the existing entry's html.
+  // Patches already carry pre-rendered HTML (KF-99). One pass over the run:
+  // skip no-ops, try the KF-198 / KF-206 fast paths (apply in place when
+  // they fire), and collect everything else for one bulk parse + morph.
   interface Change { patchIdx: number; html: string }
-  const changes: Change[] = [];
+  const morphChanges: Change[] = [];
   for (let k = start; k < end; k++) {
     const p = patches[k] as { type: 'update'; index: number; item: object; html: string };
-    if (p.html !== items[p.index].html) {
-      changes.push({ patchIdx: k, html: p.html });
+    const oldEntry = items[p.index];
+    if (p.html === oldEntry.html) continue;
+    if (tryAttributeOnlyFastPath(oldEntry.node, oldEntry.html, p.html)
+        || tryTextContentFastPath(oldEntry.node, oldEntry.html, p.html)) {
+      items[p.index] = { ref: p.item, cacheKey: undefined, html: p.html, node: oldEntry.node };
+      continue;
     }
+    morphChanges.push({ patchIdx: k, html: p.html });
   }
-  if (changes.length === 0) return;  // every update was a no-op
+  if (morphChanges.length === 0) return;
 
-  // Bulk-parse all real changes in one innerHTML call.
-  const { tpl, count } = parseRowTemplate(changes.map((c) => c.html).join(''));
-  if (count !== changes.length) {
-    throw findOffendingChange(patches, changes);
+  // Bulk-parse only the rows the fast paths couldn't handle.
+  const { tpl, count } = parseRowTemplate(morphChanges.map((c) => c.html).join(''));
+  if (count !== morphChanges.length) {
+    throw findOffendingChange(patches, morphChanges);
   }
-  // Count matches; walk children unconditionally.
-  const newNodes = new Array<Element>(changes.length);
+  const newNodes = new Array<Element>(morphChanges.length);
   let child = tpl.content.firstElementChild;
   for (let k = 0; k < newNodes.length; k++) {
     newNodes[k] = child as Element;
@@ -205,8 +222,8 @@ function applyBulkUpdate(
   // structure-preserving updates skip the discard-and-reinsert layout cost.
   // Tag-mismatch falls back to explicit replaceChild so we keep a reference
   // to the new live node.
-  for (let k = 0; k < changes.length; k++) {
-    const c = changes[k];
+  for (let k = 0; k < morphChanges.length; k++) {
+    const c = morphChanges[k];
     const p = patches[c.patchIdx] as { type: 'update'; index: number; item: object; html: string };
     const oldEntry = items[p.index];
     if (oldEntry.node.tagName === newNodes[k].tagName) {

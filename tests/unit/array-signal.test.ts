@@ -242,9 +242,22 @@ describe('arraySignal — each() granular integration via mount()', () => {
     // krausest "every 10th row" pattern: updates at indices 0, 10, 20 — non-
     // contiguous, so KF-93's contiguous-run detector wouldn't fire. KF-94's
     // detector (any consecutive update patches, regardless of index) should.
-    const initial = Array.from({ length: 5 }, (_, i) => ({ id: i, label: `row${i}` }));
-    const rows = arraySignal(initial);
-    renderRows(rows);
+    //
+    // Each update flips a `kind: 'plain' | 'wrapped'` flag that conditionally
+    // wraps the label in <strong>. Text-only updates would hit the KF-206
+    // fast path and bypass the parse entirely; the structural change here
+    // ensures the bulk-parse path is exercised.
+    type R = { id: number; label: string; kind: 'plain' | 'wrapped' };
+    const initial: R[] = Array.from({ length: 5 }, (_, i) => ({
+      id: i, label: `row${i}`, kind: 'plain' as const,
+    }));
+    const rows = arraySignal<R>(initial);
+    mount(root, () => jsx('ul', {
+      children: each(rows, (r) => jsx('li', {
+        'data-key': String(r.id),
+        children: r.kind === 'wrapped' ? jsx('strong', { children: r.label }) : r.label,
+      })),
+    }));
     const oldRows = [...root.querySelectorAll('li')];
 
     const tplProto = Object.getPrototypeOf(document.createElement('template'));
@@ -263,9 +276,9 @@ describe('arraySignal — each() granular integration via mount()', () => {
     try {
       const { batch } = await import('../../src/index.js');
       batch(() => {
-        rows.update(0, (r) => ({ ...r, label: 'A' }));
-        rows.update(2, (r) => ({ ...r, label: 'C' }));
-        rows.update(4, (r) => ({ ...r, label: 'E' }));
+        rows.update(0, (r) => ({ ...r, label: 'A', kind: 'wrapped' }));
+        rows.update(2, (r) => ({ ...r, label: 'C', kind: 'wrapped' }));
+        rows.update(4, (r) => ({ ...r, label: 'E', kind: 'wrapped' }));
       });
     } finally {
       Object.defineProperty(tplProto, 'innerHTML', origDescriptor);
@@ -273,6 +286,9 @@ describe('arraySignal — each() granular integration via mount()', () => {
 
     const lis = root.querySelectorAll('li');
     expect([...lis].map((li) => li.textContent)).toEqual(['A', 'row1', 'C', 'row3', 'E']);
+    expect(lis[0].querySelector('strong')).not.toBeNull();
+    expect(lis[2].querySelector('strong')).not.toBeNull();
+    expect(lis[4].querySelector('strong')).not.toBeNull();
     expect(lis[1]).toBe(oldRows[1]);  // unchanged sibling preserved
     expect(lis[3]).toBe(oldRows[3]);  // unchanged sibling preserved
     expect(parseCount).toBe(1);  // bulk parse — one innerHTML write for 3 updates
