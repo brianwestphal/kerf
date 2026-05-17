@@ -13,11 +13,22 @@
  * dependent; gating commits on them would produce false failures. The
  * output is informational, for human judgment, before committing to a
  * primitive-level change.
+ *
+ * KF-208: when CodSpeed is running this suite (CI per-PR via
+ * `CodSpeedHQ/action@v4` with `mode: simulation`), the `@codspeed/vitest-
+ * plugin` swaps tinybench's wall-clock timing for instruction-count
+ * measurement via Valgrind/cachegrind. That makes the numbers deterministic
+ * regardless of the runner's noise and lets CodSpeed flag regressions per-
+ * PR. Outside CodSpeed (`CODSPEED_ENV` unset), the plugin is a no-op and
+ * the suite runs with normal tinybench wall-clock timing — so
+ * `npm run bench:micro` locally is unchanged.
  */
 
+import codspeedPlugin from '@codspeed/vitest-plugin';
 import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
+  plugins: [codspeedPlugin()],
   esbuild: {
     jsx: 'automatic',
     jsxImportSource: '#kerf-self',
