@@ -157,27 +157,11 @@ Each `*.bench.ts` file targets one hot path:
 ### When NOT to use
 
 - **Don't trust microbench numbers as proxies for end-to-end app perf.** They miss cache effects, batched layouts, paint coalescing, real-world DOM tree sizes, and everything that makes Chrome's click-to-paint different from a synthetic primitive timing. Krausest is still the canonical truth.
-- **Don't gate commits on absolute thresholds locally.** Local numbers are host-dependent and noisy (±2–5% RME on a quiet machine, much higher on a busy one). The output is for human judgment, not CI enforcement. The local micro-bench suite is intentionally NOT part of `npm run check`. The CodSpeed CI gate below uses a different measurement (instruction count, not wall-clock) and CAN flag PR regressions deterministically.
+- **Don't gate commits on absolute thresholds.** The numbers are host-dependent and noisy (±2–5% RME on a quiet machine, much higher on a busy one). The output is for human judgment, not CI enforcement. The micro-bench suite is intentionally NOT part of `npm run check`.
 
 ### Reading the output
 
 Vitest prints per-bench tables with `hz` (operations per second) and percentile latencies. The Summary block at the end calls out winners per `describe` block as "N.NNx faster than ..." — useful for "did my change actually win?" gut-checks.
-
-### CodSpeed gate in CI (per-PR)
-
-`.github/workflows/codspeed-micro.yml` runs this same `*.bench.ts` suite under [CodSpeed](https://codspeed.io)'s `mode: simulation` instrument on every PR. Instead of timing wall-clock (which is hopeless on shared CI runners), CodSpeed counts CPU instructions via Valgrind/cachegrind — deterministic regardless of host noise — and posts a comment on the PR when any microbench moves outside its noise band relative to the base commit.
-
-The integration is wired via `@codspeed/vitest-plugin` (registered in `vitest.config.bench.ts`). The plugin is a no-op when `CODSPEED_ENV` is unset, so `npm run bench:micro` locally is unchanged — it still uses tinybench wall-clock timing for the iterate-locally feedback loop.
-
-Instruction-count is a great proxy for "did this change get cheaper / more expensive?" but not for "did this change get faster end-to-end" — paint, layout, batched mutation cost don't show up in the instruction stream. Use the CodSpeed gate as a regression detector for primitive-level changes; use the full krausest run (next section) as the user-visible-speed source of truth.
-
-#### CodSpeed activation (one-time, user-driven)
-
-The workflow file is committed but the gate is dark until the CodSpeed account is linked to this repo. To activate:
-
-1. Sign in at [codspeed.io](https://codspeed.io) with the GitHub account that owns `brianwestphal/kerf`.
-2. Install the CodSpeed GitHub app on the `brianwestphal/kerf` repo.
-3. The next PR to merge into `main` will trigger the workflow. If OIDC auth fails, add a `CODSPEED_TOKEN` repository secret (from the CodSpeed project settings) and set `token: ${{ secrets.CODSPEED_TOKEN }}` on the action step.
 
 ## Caveats
 
