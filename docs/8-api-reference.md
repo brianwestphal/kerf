@@ -84,6 +84,8 @@ defineStore({
 
 Creates a store with `state: ReadonlySignal<TState>`, `actions: TActions`, `reset(): void`. Registers in the global registry consumed by `resetAllStores()`.
 
+`set(next)` REPLACES state; it does NOT merge. Pass the full state object on every call, or use `set({ ...get(), ...patch })` to merge. In dev mode (`NODE_ENV !== 'production'`), `get()` returns a frozen snapshot so that `get().count = 42`-style mutations throw a native `TypeError` (KF-141). Opt in to the runtime narrow-set warning with `KERF_DEV_WARN_NARROW_SET=1` to catch partial-set bugs at the moment they happen (KF-212; see [docs/11-dev-warnings.md](11-dev-warnings.md) for the full dev-warn family).
+
 ### `resetAllStores(): void`
 
 Calls `reset()` on every store registered via `defineStore()`.

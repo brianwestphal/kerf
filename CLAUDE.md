@@ -210,6 +210,7 @@ Numbered docs in `docs/` cover the design. Reading order:
 8. `8-api-reference.md` — every export.
 9. `9-live-demo.md` — the GitHub Pages deploy of `examples/reactivity-demo`.
 10. `10-migrating.md` — the `/kerf/migrating/` comparison hub (coming-from-React/Alpine/Lit/vanjs pages).
+11. `11-dev-warnings.md` — the opt-in dev-warn family (`KERF_DEV_WARN_REBUILT_LISTENERS` / `KERF_DEV_WARN_UNTRACKED_SIGNALS` / `KERF_DEV_WARN_NARROW_SET`) and the rules each new warning must follow.
 
 **Keep these docs up to date.** When adding/removing/changing an API, update the matching doc + `docs/8-api-reference.md` + `CHANGELOG.md` in the same change.
 

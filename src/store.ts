@@ -18,6 +18,7 @@
  * of client state should return to its initial shape.
  */
 
+import { maybeWarnNarrowSet, type NarrowSetWarnContext } from './dev-store-warn.js';
 import type { ReadonlySignal, Signal } from './reactive.js';
 import { signal } from './reactive.js';
 
@@ -46,8 +47,14 @@ export function defineStore<TState, TActions>(
   spec: DefineStoreSpec<TState, TActions>,
 ): Store<TState, TActions> {
   const internal: Signal<TState> = signal(spec.initial());
+  // KF-212: per-store one-shot dedup for the opt-in narrow-set warning.
+  // Default off; consumers opt in via `KERF_DEV_WARN_NARROW_SET=1` in dev.
+  // Production behavior is unchanged — `maybeWarnNarrowSet` short-circuits
+  // on the env-var read before any per-set work runs.
+  const warnCtx: NarrowSetWarnContext = { warned: false };
 
   const set = (next: TState): void => {
+    maybeWarnNarrowSet(internal.value, next, warnCtx);
     internal.value = next;
   };
   // In dev, freeze the snapshot returned to actions so that

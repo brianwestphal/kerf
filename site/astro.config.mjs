@@ -81,6 +81,7 @@ export default defineConfig({
             { label: 'Events', slug: 'docs/events' },
             { label: 'JSX runtime', slug: 'docs/jsx' },
             { label: 'SVG', slug: 'docs/svg' },
+            { label: 'Dev-mode warnings', slug: 'docs/dev-warnings' },
           ],
         },
         {

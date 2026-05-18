@@ -28,6 +28,7 @@ kerf renders JSX to a structured `SafeHtml` (string for static content; tagged "
 - [API reference](docs/8-api-reference.md): every export, every option.
 - [Live demo](docs/9-live-demo.md): the GitHub Pages deploy of `examples/reactivity-demo`.
 - [Migrating](docs/10-migrating.md): the `/kerf/migrating/` comparison hub — coming-from-React/Alpine/Lit/vanjs pages with side-by-side todo-list translations.
+- [Dev-mode warnings](docs/11-dev-warnings.md): the opt-in dev-warn family (`KERF_DEV_WARN_REBUILT_LISTENERS` / `KERF_DEV_WARN_UNTRACKED_SIGNALS` / `KERF_DEV_WARN_NARROW_SET`) and the rules each new warning must follow.
 
 ## Examples
 
