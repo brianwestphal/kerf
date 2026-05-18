@@ -37,7 +37,7 @@ kerf/
 │   │   ├── audit-gap-coverage.test.tsx     ← regression-net for v8-only branches found via coverage gaps
 │   │   ├── delegate.test.ts
 │   │   ├── dev-listener-warn.internal.test.ts ← KF-174 — opt-in `KERF_DEV_WARN_REBUILT_LISTENERS=1` dev-mode MutationObserver-based warning when a node carrying an imperative `addEventListener` listener is removed/rebuilt by the morph; covers the env-var gates, the descendant walk, and the helper-level rowContract `maybeWarnMissingRowKey` branches. `*.internal.test.ts` so dist-full excludes it (the test imports the `_resetWarnedForTests` helper which is not in the public dist barrel).
-│   │   ├── diagnostic-error-audit.test.tsx ← KF-169 — one test per Hard Rule pinning the runtime behavior an AI sees on violation; gates `/kerf/ai-evidence/diagnostics/`
+│   │   ├── diagnostic-error-audit.test.tsx ← KF-169 — one test per Hard Rule pinning the runtime behavior callers see on violation (introduced when the `/ai-evidence/diagnostics/` page existed; that page was removed in KF-211 but the runtime contract these tests pin still matters as a UX gate)
 │   │   ├── morph.internal.test.ts
 │   │   ├── doc-contract-coverage.test.tsx  ← KF-104 — comprehensive contract suite covering every doc-asserted behavior
 │   │   ├── each.test.ts
@@ -58,7 +58,7 @@ kerf/
 │   ├── browser/                  ← Playwright real-browser tests (chromium/firefox/webkit) — run via `npm run test:browser`
 │   │   ├── fixtures/index.html         ← importmap-based page that loads kerf from dist/
 │   │   ├── consumer-app.spec.ts        ← KF-123 — drives `tests/dist/consumer-app/` (real esbuild-bundled app against dist/) across Chromium / Firefox / WebKit
-│   │   ├── example-apps.spec.ts        ← KF-165 — one smoke spec per `site/src/examples/complete/<name>/` app (kanban / markdown-editor / chat / todomvc / dashboard / pomodoro-ai). Kanban drag spec is the regression gate for KF-163 (no visual feedback during drag) and KF-165 (delegateCapture matches() vs. delegate() closest() — pointerdown on `.card-text` missed `.card` until the example switched to `delegate()`).
+│   │   ├── example-apps.spec.ts        ← KF-165 — one smoke spec per `site/src/examples/complete/<name>/` app (kanban / markdown-editor / chat / todomvc / dashboard). Kanban drag spec is the regression gate for KF-163 (no visual feedback during drag) and KF-165 (delegateCapture matches() vs. delegate() closest() — pointerdown on `.card-text` missed `.card` until the example switched to `delegate()`).
 │   │   ├── global-setup.mjs            ← rebuilds `tests/dist/consumer-app/dist/main.js` AND `tests/dist/example-apps/<name>/` before the suite (skipped per-build via `KERF_SKIP_CONSUMER_BUILD=1` / `KERF_SKIP_EXAMPLE_APPS_BUILD=1`)
 │   │   ├── ime-composition.spec.ts     ← IME composition survives a re-render
 │   │   ├── mutation-count.spec.ts      ← LIS-based reorder produces the minimum insertBefore count

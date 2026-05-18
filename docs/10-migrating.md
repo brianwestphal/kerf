@@ -1,6 +1,6 @@
 # 10. Migrating to Kerf — the comparison hub
 
-A pillar page set on the docs site that translates the same reference app from React, Alpine, Lit, and vanjs into kerf, side by side. Lives at `/kerf/migrating/` with one page per source framework underneath.
+A pillar page set on the docs site that translates the same reference app from each popular competing framework (React, Vue, Svelte, Solid, Preact, Alpine, Lit, vanjs, htmx, Angular, jQuery, Redux, Astro) into kerf, side by side. Lives at `/kerf/migrating/` with one page per source framework underneath.
 
 This doc covers **why** the comparison hub exists, **what** each page surfaces, and the constraints that shape the content.
 
@@ -12,15 +12,24 @@ The audience is a developer who has *already* decided to look at alternatives �
 
 ## 10.2 Page set
 
-Five pages under `/kerf/migrating/`:
+Pages under `/kerf/migrating/`:
 
-- `/kerf/migrating/` — index. Comparison matrix + perf snapshot + cards linking to each per-framework page.
+- `/kerf/migrating/` — index. Comparison matrix + cards linking to each per-framework page.
 - `/kerf/migrating/react/` — coming from React 19.
+- `/kerf/migrating/vue/` — coming from Vue 3 Composition API.
+- `/kerf/migrating/svelte/` — coming from Svelte 5 (runes).
+- `/kerf/migrating/solid/` — coming from Solid 1.9. Honest about when Solid stays the better answer (KF-211: kerf does not target Solid's compiler-driven update-path perf).
+- `/kerf/migrating/preact/` — coming from Preact (signals or hooks).
 - `/kerf/migrating/alpine/` — coming from Alpine 3.
 - `/kerf/migrating/lit/` — coming from Lit 3.
 - `/kerf/migrating/vanjs/` — coming from vanjs 1.5.
+- `/kerf/migrating/htmx/` — coming from htmx. Not interchangeable on the same problem; the page explains when each tool wins and how they compose.
+- `/kerf/migrating/angular/` — coming from Angular. Direct about the mismatch (Angular is batteries-included; kerf is a runtime).
+- `/kerf/migrating/jquery/` — coming from jQuery. The closest philosophical analog — delegation, direct DOM ops — plus a reactive state model.
+- `/kerf/migrating/redux/` — coming from Redux. Redux is a state-management library, not a framework; maps reducers/actions/selectors onto `signal` / `defineStore` / `computed`.
+- `/kerf/migrating/astro/` — using kerf with Astro. Astro is the meta-framework; kerf is the island runtime.
 
-Four separate pages (not one long page, not tabs) so each "coming from X" headline matches the actual search query and gets its own indexable URL.
+Separate pages (not one long page, not tabs) so each "coming from X" headline matches the actual search query and gets its own indexable URL.
 
 ## 10.3 The reference app
 
@@ -53,16 +62,11 @@ Two entry points to the hub:
 
 Tabs collapse four URLs into one. The hub's primary delivery vector is search — "alpinejs vs ..." should land on the Alpine page, not the index with a tab pre-selected. Tabs also hide content from crawlers and make external linking unreliable. The cost of four pages is duplicate page chrome; the benefit is four indexable, link-shareable URLs that match real queries.
 
-## 10.7 Per-framework follow-up tickets
+## 10.7 Per-framework history
 
-KF-132 ships the skeleton — the `/migrating/` index page with comparison matrix + perf snapshot, the four per-framework page stubs, the sidebar nav entry, and the hero CTA. The full side-by-side translations land in per-framework follow-ups so each can be reviewed independently:
+KF-132 shipped the skeleton — the `/migrating/` index page with comparison matrix, the four original per-framework page stubs, the sidebar nav entry, and the hero CTA. KF-156 / KF-157 / KF-158 / KF-159 filled in the React / Alpine / Lit / vanjs pages. KF-189 expanded the set to cover Vue / Svelte / Solid / Preact / htmx / Angular / jQuery / Redux / Astro.
 
-- **KF-156** — fill in `/kerf/migrating/react/`.
-- **KF-157** — fill in `/kerf/migrating/alpine/`.
-- **KF-158** — fill in `/kerf/migrating/lit/`.
-- **KF-159** — fill in `/kerf/migrating/vanjs/`.
-
-Each follow-up writes one page's five sections (bundle, primitives, code, gotchas, perf) against the existing TodoMVC reference. The skeleton stays correct regardless of whether 0, 1, or all 4 follow-ups have landed — the stub pages declare their work-in-progress state inline.
+Each per-framework page writes one source framework's five sections (bundle, primitives, code, gotchas, perf) against the existing TodoMVC reference. The shape varies for frameworks where TodoMVC isn't the right reference — htmx, Redux, and Astro lean on conceptual mapping rather than a literal side-by-side; the Solid page is direct about kerf's perf ceiling vs Solid's.
 
 ## 10.8 Maintenance
 

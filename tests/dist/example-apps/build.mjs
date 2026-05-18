@@ -45,7 +45,8 @@ const COMPLETE_APPS = [
   'kanban',
   'chat',
   'dashboard',
-  'pomodoro-ai',
+  'cart-htmx',
+  'counter-store',
 ];
 
 async function buildOne(name) {

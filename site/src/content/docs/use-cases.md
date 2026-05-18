@@ -3,10 +3,6 @@ title: Use cases
 description: Reach for Kerf when… — concrete fits, with the reason each one works.
 ---
 
-## AI-generated apps
-
-Your LLM or coding agent holds the framework in context — there are 15 exports total. No hallucinated APIs, no "wait, does kerf have hooks?", no surface area for the model to invent things. An assistant pointed at [`llms.txt`](https://github.com/brianwestphal/kerf/blob/main/llms.txt) and the [AI usage guide](/kerf/ai/) writes correct kerf code on the first try.
-
 ## Hybrid desktop apps (Tauri / Electron)
 
 The embedded webview is constrained: bundle size matters, debuggability matters, the framework needs to *not* fight the host. kerf gives you a small bundle, a predictable diff that doesn't surprise you in DevTools, and a runtime that doesn't need a separate compiler step.

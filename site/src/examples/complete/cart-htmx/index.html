@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>kerf · htmx + kerf composition</title>
+    <style>
+      body { font-family: system-ui; background: #f5f5f5; margin: 0; padding: 2rem; max-width: 720px; margin-inline: auto; }
+      h1 { font-size: 1.4rem; margin: 0 0 1rem; }
+      p.lede { color: #555; margin: 0 0 1.5rem; }
+      .controls { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
+      button { padding: 0.5rem 0.9rem; border: 1px solid #ccc; background: white; border-radius: 4px; cursor: pointer; font-size: 0.9rem; }
+      button:hover { background: #f0f0f0; }
+      #cart-shell { background: white; border: 1px solid #ddd; border-radius: 6px; padding: 1rem; min-height: 120px; }
+      #cart-shell h2 { font-size: 1.1rem; margin: 0 0 0.75rem; }
+      .cart-items { list-style: none; padding: 0; margin: 0; }
+      .cart-items li { display: flex; align-items: center; justify-content: space-between; padding: 0.4rem 0; border-bottom: 1px solid #eee; }
+      .cart-items li:last-child { border-bottom: none; }
+      .cart-items .remove { background: none; border: none; color: #cc9a9a; font-size: 1.1rem; cursor: pointer; padding: 0 0.25rem; }
+      .total { margin-top: 0.75rem; font-weight: 600; }
+      .empty { color: #999; font-style: italic; }
+      .log { margin-top: 1rem; font-family: ui-monospace, monospace; font-size: 0.8rem; color: #666; max-height: 8rem; overflow-y: auto; }
+    </style>
+  </head>
+  <body>
+    <h1>htmx + kerf — composition demo</h1>
+    <p class="lede">
+      htmx fetches the cart island shell (simulated here by a button-triggered swap to avoid a server); kerf
+      <code>mount()</code> hydrates the swapped shell with reactive state. Both can run on the same page; each owns its layer.
+    </p>
+    <div class="controls">
+      <button id="load-cart" data-action="load-cart">Load cart (simulate htmx swap)</button>
+      <button id="reload-cart" data-action="reload-cart">Re-swap with new initial items</button>
+    </div>
+    <div id="cart-shell" data-cart-shell>
+      <p class="empty">Click "Load cart" to fetch the island shell.</p>
+    </div>
+    <pre class="log" id="log"></pre>
+    <script type="module" src="./main.tsx"></script>
+  </body>
+</html>

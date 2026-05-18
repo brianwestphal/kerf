@@ -3,7 +3,7 @@
 // docs/*.md remains the source of truth; this script generates the Starlight
 // copies on every build (predev / prebuild). Generated files are gitignored.
 
-import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -89,71 +89,6 @@ async function syncOne(srcName, { target, description }) {
   return outPath;
 }
 
-async function syncAiPage() {
-  // Marketing /ai page = preface + verbatim copy of docs/ai/usage-guide.md.
-  // Keep the canonical guide in docs/ai/usage-guide.md; this generates the site copy.
-  const guidePath = resolve(repoRoot, 'docs/ai/usage-guide.md');
-  const raw = await readFile(guidePath, 'utf8');
-  // Strip the leading YAML frontmatter (--- ... ---) and the first H1.
-  const noFm = raw.replace(/^---[\s\S]*?---\n+/, '');
-  const noH1 = noFm.replace(/^#\s+[^\n]*\n+/, '');
-  const rewritten = noH1
-    // Within the guide, links use ../N-name.md / ../../examples/... etc. — make them work on the site.
-    .replace(/\(\.\.\/([0-9]+-[a-z-]+\.md)(#[^)]*)?\)/g, (_, file, anchor) => {
-      const slug = LINK_REWRITE[file];
-      return slug ? `(${slug}${anchor ?? ''})` : `(../${file}${anchor ?? ''})`;
-    })
-    .replace(/\(\.\.\/\.\.\/examples\/reactivity-demo\)/g, '(/kerf/demo/)');
-
-  const frontmatter = [
-    '---',
-    "title: 'For AI assistants'",
-    "description: 'kerf is built for the AI-assisted era. llms.txt, copy-paste system prompt, and the full AI usage guide.'",
-    '---',
-    '',
-    HEADER.replace('{src}', 'ai/usage-guide.md'),
-    '',
-    'kerf is built **for the AI-assisted era**. The whole public surface fits in 15 exports, there is no compiler magic, and there are no hidden lifecycle hooks. An LLM holds the framework in context and predicts behavior — your AI agent generates code that works the first time.',
-    '',
-    '## Resources for AI tools',
-    '',
-    '- [`llms.txt`](https://github.com/brianwestphal/kerf/blob/main/llms.txt) — top-level index in the [llmstxt.org](https://llmstxt.org) format. Point your assistant at this URL.',
-    '- [`docs/ai/usage-guide.md`](https://github.com/brianwestphal/kerf/blob/main/docs/ai/usage-guide.md) — the canonical version of the guide below.',
-    '- [`docs/ai/code-summary.md`](https://github.com/brianwestphal/kerf/blob/main/docs/ai/code-summary.md) — directory tree, public exports, where-to-find-X reverse index.',
-    '- [`docs/ai/requirements-summary.md`](https://github.com/brianwestphal/kerf/blob/main/docs/ai/requirements-summary.md) — synthesized view of every numbered design doc.',
-    '- [AI evidence](/kerf/ai-evidence/) — the four layers of evidence kerf publishes so the AI-friendliness claim is checkable: structural (intrinsic measurements), diagnostic (runtime-error audit), operational (one-shot transcripts), empirical (cross-framework benchmark).',
-    '',
-    '## Copy-paste system prompt',
-    '',
-    'Drop this into your assistant when starting a kerf project:',
-    '',
-    '````',
-    'You are writing a UI in kerf (https://github.com/brianwestphal/kerf), a ~6.5 KB reactive framework: signals + DOM diff + JSX → HTML strings. No virtual DOM, no compiler.',
-    '',
-    'Before writing any kerf code:',
-    '1. Read https://raw.githubusercontent.com/brianwestphal/kerf/main/llms.txt for the doc index.',
-    '2. Read https://raw.githubusercontent.com/brianwestphal/kerf/main/docs/ai/usage-guide.md once for the four core patterns and the hard rules.',
-    '',
-    'Hard rules to never violate:',
-    '- JSX renders to HTML strings, not DOM nodes. Never pass DOM nodes as JSX children.',
-    '- Lists must set `data-key={item.id}` per item, or position-based diffing loses focus on insert/delete.',
-    '- Use `delegate(root, ...)` / `delegateCapture(root, ...)`. Never `addEventListener` on rendered nodes (they vanish on re-render).',
-    '- Read `signal.value` INSIDE the render function — outside reads are not tracked.',
-    '- Components are plain functions returning JSX. No hooks, no lifecycle, no instance state.',
-    '- Wrap library-owned subtrees in `data-morph-skip` so the diff leaves them alone.',
-    '````',
-    '',
-    '---',
-    '',
-    '## The full AI usage guide',
-    '',
-  ].join('\n');
-
-  const outPath = resolve(outDir, 'ai.md');
-  await writeFile(outPath, frontmatter + rewritten, 'utf8');
-  return outPath;
-}
-
 async function main() {
   const written = [];
   for (const [srcName, cfg] of Object.entries(MAP)) {
@@ -161,7 +96,10 @@ async function main() {
     const outPath = await syncOne(srcName, cfg);
     written.push(outPath);
   }
-  written.push(await syncAiPage());
+  // KF-211: the published /ai marketing page was removed along with the
+  // /ai-evidence/ tree. `docs/ai/usage-guide.md` stays as the canonical
+  // AI-tool reference (fetched directly by llms.txt-aware assistants); it
+  // is no longer mirrored as a Starlight page.
   // eslint-disable-next-line no-console
   console.log(`[sync-docs] wrote ${written.length} files`);
 }

@@ -79,12 +79,13 @@ const todos = defineStore({
     add: (text: string) => {
       const t = text.trim();
       if (!t) return;
-      set({ items: [...get().items, { id: crypto.randomUUID(), text: t, done: false }] });
+      set({ ...get(), items: [...get().items, { id: crypto.randomUUID(), text: t, done: false }] });
     },
     toggle: (id: string) => set({
+      ...get(),
       items: get().items.map((it) => (it.id === id ? { ...it, done: !it.done } : it)),
     }),
-    remove: (id: string) => set({ items: get().items.filter((it) => it.id !== id) }),
+    remove: (id: string) => set({ ...get(), items: get().items.filter((it) => it.id !== id) }),
     // ...
   }),
 });

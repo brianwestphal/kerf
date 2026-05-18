@@ -31,19 +31,18 @@ That's it. Your JSX renders to HTML strings, kerf's native diff applies the mini
 
 ## Why Kerf
 
-1. **Built for the AI-assisted era.** Tiny public surface (~16 exports), no compiler magic, no hidden lifecycle. An LLM holds the framework in context and predicts behavior — your AI agent generates code that works the first time. Ships [`llms.txt`](./llms.txt) and a dedicated AI usage guide; the [Built by an AI · Pomodoro](https://brianwestphal.github.io/kerf/examples/complete/built-by-an-ai/) example is a working app one-shotted by Claude with `llms.txt` as its only kerf knowledge.
+1. **Small bundle.** 6.1 KB gzipped including signals (6.5 KB with `arraySignal`). One runtime dependency (`@preact/signals-core`). No virtual DOM, no scheduler, no concurrent-mode machinery. On the [krausest js-framework-benchmark](./bench/results.md) kerf is in the same cluster as Vue, vanjs, and Lit on most operations; Solid wins the compiler-driven `select row` and `partial update` benchmarks.
 
-2. **Smallest cut.** 6.1 KB gzipped including signals (6.5 KB with `arraySignal`). Fine-grained reactivity re-runs only what changed; the diff touches only the DOM nodes that differ. On the [krausest js-framework-benchmark](./bench/results.md) kerf is competitive with Solid and Vue on swap-rows, remove-row, and clear — no compiler required.
+2. **No virtual DOM, no compiler.** JSX → HTML strings → native diff. DevTools shows the real DOM because it *is* the DOM.
 
-3. **No virtual DOM, no compiler.** JSX → HTML strings → native diff. DevTools shows the real DOM because it *is* the DOM.
+3. **Focus, selection, listeners survive re-renders.** The reconciler morphs instead of rebuilding — caret position, selection range, and delegated listeners survive every re-render.
 
-4. **Focus, selection, listeners survive re-renders.** We morph instead of rebuilding — your caret stays where you put it, your in-progress drag keeps moving, your delegated handlers keep firing.
+4. **Small public API.** ~16 exports total. No hooks, no lifecycle, no per-instance state. Components are plain functions that return JSX.
 
 5. **Plain TS, plain JSX, plain ESM.** Drops into anything using esbuild / Vite / tsup. No plugin chain.
 
 ## When to use Kerf
 
-- **AI-generated apps** — your LLM/agent holds the framework in context; no hallucinated APIs.
 - **Hybrid desktop apps (Tauri / Electron)** — small bundle, predictable diff, debuggable runtime; ideal for the embedded webview.
 - **Embedded widgets** — chat bubbles, comment boxes, dashboards dropped into someone else's page.
 - **Server-rendered apps with islands** — Rails / Phoenix / Django / Hono. `mount` per island; `delegate` survives turbo-frame swaps.
@@ -161,9 +160,8 @@ npm install kerfjs
 
 - **Site:** [brianwestphal.github.io/kerf](https://brianwestphal.github.io/kerf/)
 - **Docs:** [`docs/`](./docs/) — overview · reactivity · stores · render · events · jsx · svg · [API reference](./docs/8-api-reference.md)
-- **Migrating:** [coming from React / Alpine / Lit / vanjs?](https://brianwestphal.github.io/kerf/migrating/) — side-by-side TodoMVC translations + per-framework gotchas
-- **AI guide:** [`docs/ai/usage-guide.md`](./docs/ai/usage-guide.md) — read once before writing kerf code with an LLM
-- **AI evidence:** [the four layers of evidence we publish](https://brianwestphal.github.io/kerf/ai-evidence/) — structural (intrinsic measurements), diagnostic (runtime-error audit), operational (one-shot transcripts), empirical (cross-framework benchmark) — so the AI-friendliness claim is checkable
+- **Migrating:** [coming from another framework?](https://brianwestphal.github.io/kerf/migrating/) — side-by-side TodoMVC translations + per-framework gotchas
+- **AI guide:** [`docs/ai/usage-guide.md`](./docs/ai/usage-guide.md) — reference for AI tools fetching kerf docs (linked from `llms.txt`)
 - **Demo:** [live demo](https://brianwestphal.github.io/kerf/demo/) — eight sections exercising every primitive (counter, store-backed cart, focus survival, keyed list, morph-skip, SVG render, Tier-2 capture, `arraySignal` patches)
 - **Repo:** [github.com/brianwestphal/kerf](https://github.com/brianwestphal/kerf)
 

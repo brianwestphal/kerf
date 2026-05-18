@@ -67,7 +67,14 @@ export interface KerfBaseAttrs extends DataAriaAttrs {
   dir?: AttrLike<'ltr' | 'rtl' | 'auto'>;
   hidden?: AttrLike<boolean>;
   draggable?: AttrLike<boolean>;
-  contentEditable?: AttrLike<boolean | 'true' | 'false' | 'inherit'>;
+  contentEditable?: AttrLike<boolean | 'true' | 'false' | 'inherit' | 'plaintext-only'>;
+  /**
+   * Lowercase HTML form accepted alongside `contentEditable` (same shape as
+   * `class` / `tabindex` / `autofocus` / `spellcheck`). The HTML spec defines
+   * `contenteditable` as a string-valued enumerated attribute; an HTML-savvy
+   * developer typing the lowercase form will reach for `contenteditable="false"`.
+   */
+  contenteditable?: AttrLike<boolean | 'true' | 'false' | 'inherit' | 'plaintext-only'>;
   inputMode?: AttrLike<'none' | 'text' | 'tel' | 'url' | 'email' | 'numeric' | 'decimal' | 'search'>;
   spellCheck?: AttrLike<boolean>;
   /**

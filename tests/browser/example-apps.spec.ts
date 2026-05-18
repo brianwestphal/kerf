@@ -164,6 +164,77 @@ test.describe('chat', () => {
   });
 });
 
+test.describe('counter-store', () => {
+  test('sync counter increments, persists, resets; async fetch resolves and rejects', async ({ page }) => {
+    await page.goto(`${BASE}/counter-store/`);
+    await page.evaluate(() => localStorage.removeItem('kerf-counter-store'));
+    await page.reload();
+
+    // Sync actions — covers the increment/decrement/reset pattern.
+    await expect(page.locator('[data-count]')).toHaveText('0');
+    await page.locator('button[data-action="inc"]').click();
+    await page.locator('button[data-action="inc"]').click();
+    await page.locator('button[data-action="inc"]').click();
+    await expect(page.locator('[data-count]')).toHaveText('3');
+    await page.locator('button[data-action="dec"]').click();
+    await expect(page.locator('[data-count]')).toHaveText('2');
+
+    // Reload — persistence via the effect() should restore count = 2.
+    await page.reload();
+    await expect(page.locator('[data-count]')).toHaveText('2');
+
+    // Reset → 0, last-bumped reverts to "never".
+    await page.locator('button[data-action="reset"]').click();
+    await expect(page.locator('[data-count]')).toHaveText('0');
+    await expect(page.locator('[data-meta]')).toContainText('last bumped: never');
+
+    // Async fetch — success branch.
+    await page.locator('button[data-action="fetch-ok"]').click();
+    await expect(page.locator('[data-async-status]')).toHaveText('loading…');
+    await expect(page.locator('[data-async-status]')).toHaveText('ok');
+    await expect(page.locator('[data-async-data]')).toContainText('Kerf store demo');
+
+    // Async fetch — failure branch.
+    await page.locator('button[data-action="fetch-fail"]').click();
+    await expect(page.locator('[data-async-status]')).toHaveText('loading…');
+    await expect(page.locator('[data-async-status]')).toContainText('error: Simulated network failure');
+  });
+});
+
+test.describe('cart-htmx', () => {
+  test('simulated swap → kerf mount; remove reduces total', async ({ page }) => {
+    await page.goto(`${BASE}/cart-htmx/`);
+
+    // Before swap: shell is empty placeholder.
+    await expect(page.locator('#cart-shell .empty')).toBeVisible();
+
+    // Click "Load cart" — simulates htmx fetching the island shell + kerf mount.
+    await page.locator('#load-cart').click();
+
+    const items = page.locator('.cart-items > li');
+    await expect(items).toHaveCount(3);
+    await expect(items.nth(0)).toContainText('Espresso');
+    await expect(page.locator('.total')).toContainText('Total: $19');
+
+    // Remove the first item; total updates.
+    await items.nth(0).locator('.remove').click();
+    await expect(items).toHaveCount(2);
+    await expect(page.locator('.total')).toContainText('Total: $16');
+
+    // Re-swap with a different variant — previous mount is disposed, new mount renders.
+    await page.locator('#reload-cart').click();
+    const itemsAfter = page.locator('.cart-items > li');
+    await expect(itemsAfter).toHaveCount(2);
+    await expect(itemsAfter.nth(0)).toContainText('Tea');
+    await expect(page.locator('.total')).toContainText('Total: $5');
+
+    // Log shows the mount lifecycle messages — verifies the dispose-then-mount path.
+    const log = await page.locator('#log').innerText();
+    expect(log).toContain('kerf mount complete');
+    expect(log).toContain('disposed previous kerf mount');
+  });
+});
+
 test.describe('todomvc', () => {
   test('add / toggle / clear-completed full round-trip', async ({ page }) => {
     await page.goto(`${BASE}/todomvc/`);
@@ -191,6 +262,119 @@ test.describe('todomvc', () => {
     await expect(items).toHaveCount(1);
     await expect(items.first()).toContainText('Ship KF-165');
   });
+
+  test('filter clicks survive across all/active/done (partial-set regression gate)', async ({ page }) => {
+    // The "add / toggle / clear-completed" test above never clicks a filter
+    // because every action only writes `items` and the render gracefully
+    // handles undefined `filter` / `editingId`. The partial-set bug
+    // (an action calling `set({filter})` against a replace-semantics store,
+    // wiping `items`) only crashes when a subsequent action reads `items`.
+    // This spec walks the filter triplet and toggles in between to make sure
+    // every code path that uses `get().items` actually finds items there.
+    //
+    // Page errors are surfaced too — the partial-set bug raised
+    // "TypeError: undefined is not an object (evaluating 't().items.filter')"
+    // in production; this listener fails the test on any such crash.
+    const pageErrors: string[] = [];
+    page.on('pageerror', (err) => pageErrors.push(err.message));
+
+    await page.goto(`${BASE}/todomvc/`);
+    await page.evaluate(() => localStorage.removeItem('kerf-todomvc'));
+    await page.reload();
+
+    const newTodo = page.locator('input.new-todo');
+    await newTodo.click();
+    await newTodo.fill('one');
+    await page.keyboard.press('Enter');
+    await newTodo.fill('two');
+    await page.keyboard.press('Enter');
+    await newTodo.fill('three');
+    await page.keyboard.press('Enter');
+
+    const items = page.locator('ul.todo-list > li');
+    await expect(items).toHaveCount(3);
+
+    // Mark "two" done.
+    await items.nth(1).locator('input[type="checkbox"]').check();
+    await expect(items.nth(1)).toHaveClass(/done/);
+
+    // Switch to Active — only "one" + "three" should be visible.
+    await page.locator('a[data-action="filter"][data-value="active"]').click();
+    await expect(items).toHaveCount(2);
+    await expect(items.nth(0)).toContainText('one');
+    await expect(items.nth(1)).toContainText('three');
+
+    // Switch to Done — only "two".
+    await page.locator('a[data-action="filter"][data-value="done"]').click();
+    await expect(items).toHaveCount(1);
+    await expect(items.first()).toContainText('two');
+
+    // Clear-completed from inside the Done view — exercises clearDone, which
+    // reads get().items.filter(...). Pre-fix this would have thrown
+    // "undefined is not an object" because the prior setFilter wiped items.
+    await page.locator('button.clear-done').click();
+    await expect(items).toHaveCount(0);
+
+    // Back to All — only "one" and "three" should remain (two was cleared).
+    await page.locator('a[data-action="filter"][data-value="all"]').click();
+    await expect(items).toHaveCount(2);
+    for (let i = 0; i < 2; i++) {
+      await expect(items.nth(i)).not.toHaveClass(/done/);
+    }
+
+    // No JS errors thrown during the run. Surfaces the partial-set bug shape
+    // even if some other assertion above happens to pass.
+    expect(pageErrors).toEqual([]);
+  });
+
+  test('edit flow: click → type → Enter commits, Escape cancels', async ({ page }) => {
+    const pageErrors: string[] = [];
+    page.on('pageerror', (err) => pageErrors.push(err.message));
+
+    await page.goto(`${BASE}/todomvc/`);
+    await page.evaluate(() => localStorage.removeItem('kerf-todomvc'));
+    await page.reload();
+
+    const newTodo = page.locator('input.new-todo');
+    await newTodo.click();
+    await newTodo.fill('original');
+    await page.keyboard.press('Enter');
+
+    const items = page.locator('ul.todo-list > li');
+    await expect(items).toHaveCount(1);
+
+    // Click the label → editing mode. The example's `data-action="edit"`
+    // listener swaps the label for an input.edit; we then click into it to
+    // focus (autofocus on a freshly-morphed input isn't reliable across
+    // browsers, so we don't rely on it in the spec).
+    await items.first().locator('label').click();
+    const edit = items.first().locator('input.edit');
+    await expect(edit).toBeVisible();
+    await edit.click();
+
+    // Type a new value, press Enter to commit.
+    await edit.fill('edited via enter');
+    await page.keyboard.press('Enter');
+    await expect(items.first()).toContainText('edited via enter');
+
+    // Enter edit again, type, blur to commit.
+    await items.first().locator('label').click();
+    const edit2 = items.first().locator('input.edit');
+    await edit2.click();
+    await edit2.fill('edited via blur');
+    await newTodo.click(); // blur the edit input
+    await expect(items.first()).toContainText('edited via blur');
+
+    // Enter edit one more time, type, press Escape to cancel.
+    await items.first().locator('label').click();
+    const edit3 = items.first().locator('input.edit');
+    await edit3.click();
+    await edit3.fill('this should not stick');
+    await page.keyboard.press('Escape');
+    await expect(items.first()).toContainText('edited via blur');
+
+    expect(pageErrors).toEqual([]);
+  });
 });
 
 test.describe('dashboard', () => {
@@ -208,18 +392,3 @@ test.describe('dashboard', () => {
   });
 });
 
-test.describe('pomodoro-ai', () => {
-  test('start advances the countdown; reset returns to 25:00', async ({ page }) => {
-    await page.goto(`${BASE}/pomodoro-ai/`);
-    const time = page.locator('.time');
-    await expect(time).toHaveText('25:00');
-
-    await page.locator('button', { hasText: 'Start' }).click();
-    // Wait for the first tick.
-    await expect(time).not.toHaveText('25:00', { timeout: 2000 });
-
-    // Reset returns to focus phase + 25:00.
-    await page.locator('button', { hasText: 'Reset' }).click();
-    await expect(time).toHaveText('25:00');
-  });
-});

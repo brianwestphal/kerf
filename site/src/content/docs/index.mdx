@@ -69,25 +69,25 @@ That's it. Your JSX renders to HTML strings, kerf's native diff applies the mini
 
 <PerfTable />
 
-Kerf sits in the keyed-framework cluster with Solid and Vue on the operations that exercise its smallest-cut path. Solid wins the compiler-driven `select row` / `partial update` benchmarks; kerf's general-purpose reconciler trades that gap for a 6.5 KB runtime, no compiler, and no per-component machinery.
+Numbers from the krausest js-framework-benchmark, run locally on a clean machine — see `bench/results.md` for the full table and methodology. Kerf sits in the same cluster as Vue, vanjs, and Lit on most operations. Solid wins the compiler-driven `select row` and `partial update` benchmarks; kerf's general-purpose runtime trades that gap for a 6.5 KB bundle, no compiler step, and a smaller public API.
 
-## Why Kerf
+## What kerf is good at
 
 <CardGrid>
-  <Card title="Built for AI-assisted coding" icon="seti:html">
-    Tiny public surface (15 exports), no compiler magic, no hidden lifecycle. An LLM holds the framework in context and predicts behavior — your AI agent generates code that works the first time.
-  </Card>
-  <Card title="Smallest cut" icon="approve-check">
-    6.5 KB gzipped including signals. Fine-grained reactivity re-runs only what changed; the diff touches only the DOM nodes that differ.
+  <Card title="Small bundle" icon="approve-check">
+    6.5 KB minified + gzipped including signals. The one runtime dependency is `@preact/signals-core`. No virtual DOM, no scheduler, no concurrent-mode machinery to ship.
   </Card>
   <Card title="No virtual DOM, no compiler" icon="seti:javascript">
-    JSX → HTML strings → native diff. DevTools shows the real DOM because it *is* the DOM.
+    JSX renders to HTML strings; a small reconciler patches the live DOM in place. DevTools shows the real DOM because it *is* the DOM. Standard `tsconfig.json` + Vite / esbuild / tsup — no plugin chain.
   </Card>
   <Card title="Focus, selection, listeners survive re-renders" icon="puzzle">
-    We morph instead of rebuilding. Caret stays put, drag keeps moving, delegated handlers keep firing.
+    The reconciler morphs instead of rebuilding. Caret position, selection range, and delegated listeners survive every re-render.
+  </Card>
+  <Card title="Small public API" icon="seti:html">
+    ~16 exports total. No hooks, no lifecycle, no per-instance state. Components are plain functions returning JSX.
   </Card>
   <Card title="Plain TS, plain JSX, plain ESM" icon="setting">
-    Drops into anything using esbuild / Vite / tsup. No plugin chain.
+    Drops into anything that already builds JSX. No custom file extensions, no DSL, no required compiler plugin.
   </Card>
 </CardGrid>
 
@@ -95,11 +95,10 @@ Kerf sits in the keyed-framework cluster with Solid and Vue on the operations th
 
 ## Reach for Kerf when…
 
-- **AI-generated apps** — your LLM holds the framework in context; no hallucinated APIs.
 - **Hybrid desktop apps (Tauri / Electron)** — small bundle, predictable diff, debuggable runtime.
 - **Embedded widgets** — chat bubbles, comment boxes, dashboards dropped into someone else's page.
-- **Server-rendered apps with islands** — Rails / Phoenix / Django / Hono. `mount` per island; `delegate` survives turbo-frame swaps.
-- **Admin panels & internal tools** — reactivity without 200 KB of framework + state lib + router.
+- **Server-rendered apps with islands** — Rails / Phoenix / Django / Hono / Astro. `mount` per island; `delegate` survives turbo-frame swaps.
+- **Admin panels & internal tools** — reactivity without a 200 KB framework + state lib + router.
 - **Replacing jQuery** — incremental migration; same delegation mental model, modern primitives.
 - **Prototyping** — entire mental model on a postcard.
 

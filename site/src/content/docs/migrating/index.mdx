@@ -1,13 +1,13 @@
 ---
 title: Migrating to Kerf
-description: Side-by-side translations of the same app from React, Alpine, Lit, and vanjs to Kerf. Bundle size, mental model, perf, and gotchas — per source framework.
+description: Side-by-side translations from React, Vue, Svelte, Solid, Preact, Alpine, Lit, vanjs, htmx, Angular, jQuery, Redux, and Astro to Kerf. Bundle size, mental model, and gotchas per source framework.
 ---
 
 import { Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
 
 Kerf doesn't try to replace your framework. But if you've already decided to leave one — or you're building something new and weighing the cluster — these pages show your current code translated, line for line, into kerf.
 
-The reference app is a **classic todo list**: add, toggle, delete, filter. Roughly 150 lines in every framework. Big enough to exercise state, keyed lists, delegated events, and persistence. Small enough that you can read the whole thing.
+The reference app is a **classic todo list**: add, toggle, delete, filter. Roughly 150 lines in every framework. Big enough to exercise state, keyed lists, delegated events, and persistence. Small enough that you can read the whole thing. (A few pages — htmx, Redux, Astro — use a conceptual mapping instead of a literal TodoMVC because the source isn't directly comparable.)
 
 ## Pick your starting point
 
@@ -16,6 +16,26 @@ The reference app is a **classic todo list**: add, toggle, delete, filter. Rough
     title="Coming from React"
     description="useState → signal, useEffect → effect, no JSX components. Bundle delta, hooks → primitives, and the gotchas a React dev hits first."
     href="/kerf/migrating/react/"
+  />
+  <LinkCard
+    title="Coming from Vue"
+    description="ref → signal, reactive → defineStore, no template DSL. What changes when you trade Vue's SFC compiler for plain JSX."
+    href="/kerf/migrating/vue/"
+  />
+  <LinkCard
+    title="Coming from Svelte"
+    description="$state / $derived / $effect → signal / computed / effect. The closest runes-to-signals translation; same model, no .svelte file format."
+    href="/kerf/migrating/svelte/"
+  />
+  <LinkCard
+    title="Coming from Solid"
+    description="Closest philosophical sibling. Honest about when Solid stays the better answer — kerf does not target Solid's compiler-driven update-path perf."
+    href="/kerf/migrating/solid/"
+  />
+  <LinkCard
+    title="Coming from Preact"
+    description="Already React-shaped and already small. The trade is virtual-DOM vs DOM-morph and hooks vs no-hooks; bundle is comparable."
+    href="/kerf/migrating/preact/"
   />
   <LinkCard
     title="Coming from Alpine"
@@ -32,51 +52,80 @@ The reference app is a **classic todo list**: add, toggle, delete, filter. Rough
     description="vanjs → kerf is the smallest jump. Both are ~6 KB, both use signals. The differences are JSX vs hyperscript and how keyed lists reconcile."
     href="/kerf/migrating/vanjs/"
   />
+  <LinkCard
+    title="Coming from htmx"
+    description="Not interchangeable on the same problem — htmx is a network architecture; kerf is a client-side runtime. When each wins, and how they compose."
+    href="/kerf/migrating/htmx/"
+  />
+  <LinkCard
+    title="Coming from Angular"
+    description="Angular is a full framework with router/forms/DI; kerf is a 6.5 KB runtime. When Angular stays right, and when kerf supplants it."
+    href="/kerf/migrating/angular/"
+  />
+  <LinkCard
+    title="Coming from jQuery"
+    description="$(root).on(...) → delegate(). Closest mental analog of any framework here. Modernize without a React-shaped rewrite; migrate one island at a time."
+    href="/kerf/migrating/jquery/"
+  />
+  <LinkCard
+    title="Coming from Redux"
+    description="Redux is state management, not a UI framework. Reducers, actions, selectors, and thunks map onto signal, defineStore, computed, and async actions."
+    href="/kerf/migrating/redux/"
+  />
+  <LinkCard
+    title="Using Kerf with Astro"
+    description="Astro is the meta-framework; kerf is the island runtime. They compose. How to drop kerf into an Astro project as the interactive layer."
+    href="/kerf/migrating/astro/"
+  />
 </CardGrid>
 
 ## At a glance — the comparison matrix
 
 How kerf compares to each source framework on the dimensions developers usually decide on.
 
-| Dimension | React 19 | Alpine 3 | Lit 3 | vanjs 1.5 | **Kerf** |
-| --- | --- | --- | --- | --- | --- |
-| Bundle (min+gz, runtime only) | ~45 KB (react + react-dom) | ~14 KB | ~6 KB (lit-html + lit-element) | ~1.6 KB | **~6.5 KB** (incl. signals) |
-| Reactivity model | hooks + virtual DOM | per-component `x-data` proxies | reactive properties + lit-html | signals + direct DOM | **signals + DOM morph** |
-| Component model | function / class components | HTML directives | web components | hyperscript factories | **plain functions returning JSX** |
-| Templating | JSX → virtual DOM | HTML attributes | tagged-template literals | hyperscript / DOM nodes | **JSX → HTML strings → morph** |
-| Compiler required | no (but `@vitejs/plugin-react`) | no | no | no | **no** |
-| Keyed list reconciliation | `key` prop, virtual-DOM diff | manual via `x-for :key` | `repeat()` directive | manual via signal arrays | **`each(items, render, key)`** |
-| Focus / selection survival across re-render | manual via refs | manual | manual | manual | **automatic in `morph()`** |
-| Event handling | per-node JSX handlers | `@click=` attributes | `@click=` template directives | hyperscript handlers | **`delegate()` once on the root** |
-| Server rendering | first-class | none | declarative shadow DOM | `vanX.replace` story | **`SafeHtml.toString()`** |
-| State sharing across components | Context / Redux / Zustand | `Alpine.store` | global state libs | shared `van.state()` | **`defineStore`** |
+<div class="kerf-compare">
+
+| Dimension | React 19 | Vue 3 | Svelte 5 | Solid | Preact | Alpine 3 | Lit 3 | vanjs 1.5 | **kerf** |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Bundle (min+gz, runtime only) | ~45 KB | ~22 KB | varies (compiled) | ~4.5 KB | ~6 KB (w/ signals) | ~14 KB | ~6 KB | **~1.6 KB** | ~6.5 KB |
+| Reactivity model | hooks + virtual DOM | refs + proxies | runes (compiled) | signals + compiler | hooks + virtual DOM | per-component `x-data` proxies | reactive properties + lit-html | signals + direct DOM | **signals + DOM morph** |
+| Component model | function / class components | composition + SFC | runes inside `.svelte` | function components | function components | HTML directives | web components | hyperscript factories | **plain functions returning JSX** |
+| Templating | JSX → virtual DOM | `<template>` DSL | `.svelte` DSL | JSX (compiled) | JSX → virtual DOM | HTML attributes | tagged-template literals | hyperscript / DOM nodes | **JSX → HTML strings → morph** |
+| Compiler required | no (but `@vitejs/plugin-react`) | yes (`@vue/compiler-sfc`) | yes | yes (`babel-plugin-jsx-dom-expressions`) | no (but plugin) | no | no | no | **no** |
+| Keyed list reconciliation | `key` prop, virtual-DOM diff | `v-for :key` | `{#each ... (id)}` | `<For each>` | `key` prop | manual via `x-for :key` | `repeat()` directive | manual via signal arrays | **`each(items, render, key)`** |
+| Focus / selection survival across re-render | manual via refs | manual | usually automatic | usually automatic | manual via refs | manual | manual | manual | **automatic in `morph()`** |
+| Event handling | per-node JSX handlers | `@click=` attributes | `onclick={fn}` on JSX | per-node JSX handlers | per-node JSX handlers | `@click=` attributes | `@click=` template directives | hyperscript handlers | **`delegate()` once on the root** |
+| Server rendering | first-class | first-class | first-class | first-class | first-class | none | declarative shadow DOM | `vanX.replace` story | **`SafeHtml.toString()`** |
+| State sharing across components | Context / Redux / Zustand | provide/inject + Pinia | Svelte stores | createStore | Context / signals | `Alpine.store` | global state libs | shared `van.state()` | **`defineStore`** |
+
+</div>
+
+(Alpine, htmx, Angular, jQuery, Redux, and Astro aren't directly comparable on every row — see those specific pages for the conceptual mapping.)
 
 ### Perf snapshot
 
-Numbers from [`bench/results.md`](https://github.com/brianwestphal/kerf/blob/main/bench/results.md) (krausest js-framework-benchmark, medians of 3 runs, ms — lower is better).
+Cross-framework perf comparisons are only published from official benchmark runs — clean machine, no background load, results re-generated under controlled conditions. The current committed numbers live at [`bench/results.md`](https://github.com/brianwestphal/kerf/blob/main/bench/results.md). Headline cluster positions (lower is better on the krausest js-framework-benchmark):
 
-| Op | React 19 | Lit 3 | vanjs 1.5 | **Kerf 0.5** |
-| --- | --- | --- | --- | --- |
-| create 1k | 40.9 | 38.5 | 46.6 | 46.1 |
-| partial update | 24.1 | 21.9 | 41.8 | 44.6 |
-| swap rows | 157.3 | 28.9 | 23.7 | 22.3 |
-| select row | 8.0 | 9.3 | 14.3 | 27.6 |
-| remove row | 18.0 | 18.3 | 18.3 | 17.0 |
+- **`create 1k` / `replace 1k` / `append 1k`** — kerf, Vue, Lit, vanjs, Preact, React are all within ~20% of each other; Solid leads.
+- **`partial update`** — Solid and Vue lead; Lit, Preact, React are tightly clustered; kerf and vanjs sit in the next band.
+- **`select row`** — Solid, Vue, React lead a tight cluster; kerf sits at the top of the band with Preact and Lit.
+- **`swap rows`** — kerf, Solid, vanjs, Vue, Lit lead a tight cluster; React is an outlier (much slower).
+- **`remove row`** / **`clear 1k`** — within typical noise across the cluster.
 
-Alpine isn't in the krausest benchmark; it's not designed for keyed-list throughput so the comparison wouldn't be apples-to-apples.
+The deciding factor between most of these frameworks is the architecture / bundle / tooling tradeoff covered in each per-framework page, not row-update latency. Solid and Svelte 5 are the exceptions where compiler-driven update-path performance is a real, measurable lead — if that's your decision driver, those are the right answers.
 
 ## How the per-framework pages are structured
 
-Each page is the same shape so you can scan for what you care about:
+Each page (with adjustments for non-TodoMVC sources) follows the same five-section shape:
 
 1. **Bundle delta** — what the swap costs (or saves) in bytes.
-2. **Mental-model translations** — a table mapping the source framework's primitives to kerf's. React `useState` → kerf `signal`. Lit `@property` → kerf `signal`. Alpine `x-data` → kerf `defineStore`.
-3. **Side-by-side code** — the same todo list, side by side, section by section (state, render, events, list). Click any code block to see it full-width.
-4. **Gotchas** — what trips developers coming from this framework. React devs expect `<Component />` semantics; kerf doesn't have them. Alpine devs expect DOM-attribute reactivity; kerf renders JSX. Lit devs expect Shadow DOM; kerf is light-DOM.
-5. **Perf numbers** — krausest benchmark deltas for the operations that change most when you swap.
+2. **Mental-model translations** — a table mapping the source framework's primitives to kerf's.
+3. **Side-by-side code** — the same todo list, side by side, section by section (state, render, events, list).
+4. **Gotchas** — what trips developers coming from this specific framework.
+5. **Perf numbers** — qualitative or quoting [`bench/results.md`](https://github.com/brianwestphal/kerf/blob/main/bench/results.md) where the framework is in the comparison set.
 
 ## Not your starting point?
 
-If you're coming from Vue, Svelte, Solid, or Preact — the React page is the closest fit in spirit (signals/hooks/keyed lists are the same shape). For framework-free vanilla JS, the vanjs page is closest (no template language, direct DOM).
+If your framework isn't listed, the React page is the closest fit for any hooks-shaped framework, the vanjs page is closest for "no template language, direct DOM," and the jQuery page is closest if you're modernizing from a non-reactive imperative codebase.
 
 If your app is built around heavy component composition (`<DataGrid>`, `<DatePicker>`, deep prop drilling), kerf probably isn't your next stop — see [When to reach for something else](/kerf/alternatives/).

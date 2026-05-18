@@ -24,27 +24,29 @@ const todos = defineStore({
     add: (text: string) => {
       const t = text.trim();
       if (!t) return;
-      set({ items: [...get().items, { id: crypto.randomUUID(), text: t, done: false }] });
+      set({ ...get(), items: [...get().items, { id: crypto.randomUUID(), text: t, done: false }] });
     },
     toggle: (id: string) => set({
+      ...get(),
       items: get().items.map((it) => (it.id === id ? { ...it, done: !it.done } : it)),
     }),
-    remove: (id: string) => set({ items: get().items.filter((it) => it.id !== id) }),
-    clearDone: () => set({ items: get().items.filter((it) => !it.done) }),
-    setFilter: (filter: Filter) => set({ filter }),
-    startEdit: (id: string) => set({ editingId: id }),
+    remove: (id: string) => set({ ...get(), items: get().items.filter((it) => it.id !== id) }),
+    clearDone: () => set({ ...get(), items: get().items.filter((it) => !it.done) }),
+    setFilter: (filter: Filter) => set({ ...get(), filter }),
+    startEdit: (id: string) => set({ ...get(), editingId: id }),
     commitEdit: (id: string, text: string) => {
       const t = text.trim();
       if (!t) {
-        set({ items: get().items.filter((it) => it.id !== id), editingId: null });
+        set({ ...get(), items: get().items.filter((it) => it.id !== id), editingId: null });
         return;
       }
       set({
+        ...get(),
         items: get().items.map((it) => (it.id === id ? { ...it, text: t } : it)),
         editingId: null,
       });
     },
-    cancelEdit: () => set({ editingId: null }),
+    cancelEdit: () => set({ ...get(), editingId: null }),
   }),
 });
 

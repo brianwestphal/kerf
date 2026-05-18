@@ -2,16 +2,15 @@
  * KF-169 — diagnostic-error audit.
  *
  * One test per Hard Rule from `docs/ai/usage-guide.md`. Each test pins the
- * runtime behavior an AI sees when it breaks the rule — either the precise
+ * runtime behavior callers see when they break the rule — either the precise
  * thrown error (high actionability) or the silent-misbehavior outcome (low
  * actionability, motivates a follow-up improvement bug).
  *
- * The accompanying audit page at /kerf/ai-evidence/diagnostics/ scores each
- * rule 0–3 and lists fix-recommendation tickets for any score < 3.
- *
- * This file gates the audit: if a future change degrades any error message
- * (or breaks one of the silent-misbehavior captures), this suite trips
- * before the audit page can drift out of sync.
+ * This file pins the diagnostic contract: if a future change degrades any
+ * error message (or breaks one of the silent-misbehavior captures), this
+ * suite trips. The `/kerf/ai-evidence/diagnostics/` page that originally
+ * scored these rules was removed in KF-211; the runtime contract these
+ * tests pin still matters as a UX gate.
  */
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 

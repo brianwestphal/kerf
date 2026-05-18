@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>kerf · Redux-style counter (defineStore)</title>
+    <style>
+      body { font-family: system-ui; background: #f5f5f5; margin: 0; padding: 2rem; max-width: 720px; margin-inline: auto; }
+      h1 { font-size: 1.4rem; margin: 0 0 0.5rem; }
+      p.lede { color: #555; margin: 0 0 1.5rem; }
+      .panel { background: white; border: 1px solid #ddd; border-radius: 6px; padding: 1rem; margin-bottom: 1rem; }
+      .panel h2 { margin: 0 0 0.5rem; font-size: 1rem; color: #333; }
+      .count { font-size: 2.5rem; font-weight: 600; margin: 0.25rem 0; }
+      .meta { color: #777; font-size: 0.85rem; margin-bottom: 0.5rem; }
+      .row { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+      button { padding: 0.5rem 0.9rem; border: 1px solid #ccc; background: white; border-radius: 4px; cursor: pointer; font-size: 0.9rem; }
+      button:hover { background: #f0f0f0; }
+      .async-status { font-family: ui-monospace, monospace; font-size: 0.85rem; color: #555; min-height: 1.2rem; }
+      .async-data { font-family: ui-monospace, monospace; font-size: 0.85rem; color: #333; margin-top: 0.5rem; max-height: 8rem; overflow-y: auto; background: #fafafa; padding: 0.5rem; border-radius: 4px; border: 1px solid #eee; }
+    </style>
+  </head>
+  <body>
+    <h1>Redux-style counter via <code>defineStore</code></h1>
+    <p class="lede">Counter store with sync increment / decrement / reset, async fetch action, and <code>localStorage</code> persistence — the three patterns the Redux migration page demonstrates, in one runnable example.</p>
+    <div class="panel" data-counter>
+      <h2>Counter</h2>
+      <div class="count" data-count>0</div>
+      <div class="meta" data-meta>last bumped: never</div>
+      <div class="row">
+        <button data-action="inc">+1</button>
+        <button data-action="dec">−1</button>
+        <button data-action="reset">Reset</button>
+      </div>
+    </div>
+    <div class="panel" data-async>
+      <h2>Async action (fetch + load/error states)</h2>
+      <div class="async-status" data-async-status>idle</div>
+      <div class="row">
+        <button data-action="fetch-ok">Fetch (succeeds)</button>
+        <button data-action="fetch-fail">Fetch (fails)</button>
+      </div>
+      <div class="async-data" data-async-data></div>
+    </div>
+    <p class="meta">Counter state persists to <code>localStorage</code>; reload the page to see it survive.</p>
+    <script type="module" src="./main.tsx"></script>
+  </body>
+</html>
