@@ -4,6 +4,16 @@ All notable changes to **kerf** are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.8.0] - 2026-05-18
+
+
+- Add opt-in dev warning `KERF_DEV_WARN_NARROW_SET=1` that fires when `set()` is called with a partial-state object (replace semantics would silently drop missing keys); names the missing keys and points at the `set({ ...get(), ...next })` merge fix
+- Widen `KerfBaseAttrs.contentEditable` to accept `'plaintext-only'` and add the lowercase `contenteditable` alias
+- Expand the `/kerf/migrating/` hub to 13 frameworks — adds Vue 3, Svelte 5, Solid, Preact, htmx, Angular, jQuery, Redux, and Astro pages alongside a refreshed 8-framework comparison matrix
+- New runnable example apps: `cart-htmx` (htmx swap → kerf island mount pattern) and `counter-store` (sync + async + persisted store)
+- Fix TodoMVC example: store actions now spread `get()` into `set()` so filter/edit interactions no longer wipe state
+- Drop AI-evidence pages, the AI marketing page, the blog, and the built-by-an-AI example; remaining docs re-toned to verifiable claims only
+
 ## [0.7.0] - 2026-05-18
 
 
