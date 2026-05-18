@@ -4,6 +4,20 @@ All notable changes to **kerf** are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.7.0] - 2026-05-18
+
+
+- Granular list updates now preserve DOM identity, focus, scroll, IME state, `<details open>`/`<dialog open>`, and `data-morph-skip` subtrees across in-place row updates
+- Two new fast paths in the granular reconciler cut krausest select-row by 71% (27.8 → 8.2 ms) and partial-update by 28% (46.8 → 33.8 ms)
+- `each()`'s third parameter renamed from `key` to `cacheKey` to clarify it's a passive cache-invalidation comparator, not a React-style reconciliation identity; positional callers unaffected
+- JSX types now accept lowercase HTML attribute names (`class`, `for`, `tabindex`, `autofocus`, `autocomplete`, `spellcheck`) alongside the camelCase forms
+- New public `morph(liveRoot, template)` export — kerf's general-purpose DOM reconciler, replacing the prior morphdom dependency
+- `mount()` now throws if called on an element already inside (or containing) a mounted tree
+- New `defineStore` dev-mode safety: `get()` snapshots are frozen so accidental mutations throw a `TypeError` instead of silently desyncing reactive consumers
+- Clearer JSX runtime error for inline `onClick={handler}`-style attributes that points at `delegate()` as the fix
+- Two opt-in dev warnings via env vars: `KERF_DEV_WARN_REBUILT_LISTENERS=1` flags rebuilt listener-bearing nodes; `KERF_DEV_WARN_UNTRACKED_SIGNALS=1` flags signal writes with no subscribers; `each()` now warns once per binding when the first row has no `id` or `data-key`
+- New `kerfjs/jsx-runtime` re-exports of `KerfBaseAttrs`, `KerfCustomElement`, `AttrLike`, `AttrValue`, `DataAriaAttrs` for declaration-merging custom-element types
+
 ## [0.6.0] - 2026-05-11
 
 
