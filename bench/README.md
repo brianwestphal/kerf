@@ -57,12 +57,46 @@ writes per-framework JSON to `bench/.bench-cache/js-framework-benchmark/webdrive
 
 ```bash
 bench/run.sh keyed/kerfjs keyed/solid     # run just two frameworks
-bench/run.sh --count 5                    # run 5 iterations instead of the default
+bench/run.sh --count=5                    # run 5 iterations instead of the default
 ```
 
 Anything starting with `-` is forwarded to webdriver-ts; anything else is
 treated as a framework selector. `--force` is consumed locally (skip the
-pre-flight system check) and is NOT forwarded.
+pre-flight system check) and is NOT forwarded. **Use the `--flag=value` form
+for any webdriver-ts flag that takes a value** (`--count=N`, `--browser=…`,
+`--runner=…`) — the bare `--count 5` two-token form routes the `5` into the
+framework list instead of into webdriver-ts. `run.sh` validates the framework
+list and aborts loudly if any token doesn't resolve to a directory under
+`frameworks/keyed/` so a misuse like that fails fast rather than silently
+running zero frameworks.
+
+### Post-kerf-change verification rerun — kerf-only by default
+
+For verifying that a kerf-side perf change moved the needle (the most common
+reason to re-run the bench), use the kerf-only invocation:
+
+```bash
+bash bench/run.sh keyed/kerfjs --count=10
+```
+
+This re-measures **only kerfjs** in ~10 minutes; the other frameworks'
+results from the last full run are kept as the comparison baseline.
+`bench/aggregate-results.mjs` merges the new kerfjs row with the cached
+other-framework JSONs in `bench/.bench-cache/.../webdriver-ts/results/`, so
+the committable `bench/results.json` stays consistent — only the kerfjs row
+reflects the latest source. The other frameworks' numbers are stable across
+our kerf-side optimization attempts, so re-measuring them every time would
+be ~80 minutes of wall-clock wasted.
+
+Reserve the full cross-framework rerun (`bash bench/run.sh --count=10`,
+~1.5 hr) for re-baselining moments:
+
+- A reference framework version bumps (new Vue / React major).
+- A host-OS or Chrome major upgrade.
+- A ~6-month cadence sanity check for Chrome/V8/macOS perf regressions that
+  affect all frameworks uniformly.
+- A major kerf version release where a freshly-reproduced full baseline is
+  the right artifact to commit.
 
 ### Pre-flight check (KF-139)
 

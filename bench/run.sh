@@ -8,6 +8,11 @@
 #   bench/run.sh keyed/solid           # also include solid only
 #   bench/run.sh --headless=false ...  # forward extra flags to webdriver-ts
 #
+# Use the --flag=value single-token form for any webdriver-ts flag that takes
+# a value (e.g. --count=5, --browser=chrome). The bare two-token form
+# `--count 5` would route the `5` into the framework list — the validation
+# check below catches that and aborts loudly. (KF-207)
+#
 # Results are written to:
 #   bench/.bench-cache/js-framework-benchmark/webdriver-ts/results/
 #
@@ -37,6 +42,11 @@ DEFAULT_FRAMEWORKS=(
 
 # Split args into "framework selectors" (no leading dash) and "passthrough flags".
 # `--force` is consumed by us (skip preflight) and NOT forwarded to webdriver-ts.
+#
+# KF-207: the bare two-token form `--count 5` would route `5` here as a
+# framework selector and silently produce a zero-framework no-op run. The
+# framework-existence check below catches that case loudly; the README directs
+# callers to the canonical `--count=5` single-token form.
 FRAMEWORKS=()
 PASSTHROUGH=()
 for arg in "$@"; do
@@ -51,6 +61,28 @@ done
 
 if [[ ${#FRAMEWORKS[@]} -eq 0 ]]; then
   FRAMEWORKS=("${DEFAULT_FRAMEWORKS[@]}")
+fi
+
+# KF-207: validate each framework selector resolves to a built framework
+# directory under frameworks/<keyed|non-keyed>/<name>. Catches typos and the
+# `--count 5` two-token-form misuse before webdriver-ts silently consumes
+# the bad token as a framework name and produces a no-op run.
+INVALID_FRAMEWORKS=()
+for fw in "${FRAMEWORKS[@]}"; do
+  if [[ ! -d "${UPSTREAM_DIR}/frameworks/${fw}" ]]; then
+    INVALID_FRAMEWORKS+=("${fw}")
+  fi
+done
+if [[ ${#INVALID_FRAMEWORKS[@]} -gt 0 ]]; then
+  echo "Error: unknown framework selector(s): ${INVALID_FRAMEWORKS[*]}" >&2
+  echo "" >&2
+  echo "Expected each selector to match a directory under" >&2
+  echo "  ${UPSTREAM_DIR}/frameworks/{keyed,non-keyed}/<name>" >&2
+  echo "" >&2
+  echo "Common cause: the bare two-token form '--count 5' routes the '5' here" >&2
+  echo "as a framework name. Use the single-token form '--count=5' instead, so" >&2
+  echo "the whole token forwards to webdriver-ts as one passthrough flag." >&2
+  exit 1
 fi
 
 # KF-139: refuse to run when the host is busy — published bench numbers are
