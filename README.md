@@ -156,12 +156,29 @@ npm install kerfjs
 }
 ```
 
+### Optional: `eslint-plugin-kerfjs`
+
+A companion ESLint plugin enforces four of kerf's hard rules at edit time — inline JSX event handlers, missing `data-key` in `each()`, nested `mount()`, and global `JSX.IntrinsicElements` augmentation. The plugin is AST-only (no parser-services dependency), so it works with any TypeScript-ESLint setup.
+
+```bash
+npm install --save-dev eslint-plugin-kerfjs
+```
+
+```js
+// eslint.config.js (flat config, ESLint v9+)
+import kerfjs from 'eslint-plugin-kerfjs';
+export default [kerfjs.configs.recommended];
+```
+
+See [`eslint-plugin/README.md`](./eslint-plugin/README.md) for legacy `.eslintrc` config and per-rule docs.
+
 ## Links
 
 - **Site:** [brianwestphal.github.io/kerf](https://brianwestphal.github.io/kerf/)
 - **Docs:** [`docs/`](./docs/) — overview · reactivity · stores · render · events · jsx · svg · [API reference](./docs/8-api-reference.md)
 - **Migrating:** [coming from another framework?](https://brianwestphal.github.io/kerf/migrating/) — side-by-side TodoMVC translations + per-framework gotchas
 - **AI guide:** [`docs/ai/usage-guide.md`](./docs/ai/usage-guide.md) — reference for AI tools fetching kerf docs (linked from `llms.txt`)
+- **ESLint plugin:** [`eslint-plugin/`](./eslint-plugin/) — `eslint-plugin-kerfjs`; four AST-only rules enforcing kerf hard rules at edit time
 - **Demo:** [live demo](https://brianwestphal.github.io/kerf/demo/) — eight sections exercising every primitive (counter, store-backed cart, focus survival, keyed list, morph-skip, SVG render, Tier-2 capture, `arraySignal` patches)
 - **Repo:** [github.com/brianwestphal/kerf](https://github.com/brianwestphal/kerf)
 

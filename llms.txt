@@ -15,6 +15,7 @@ kerf renders JSX to a structured `SafeHtml` (string for static content; tagged "
 - [Requirements summary](docs/ai/requirements-summary.md): synthesized view of the ten numbered design docs.
 - [`kerf.cursorrules`](kerf.cursorrules): drop-in [Cursor](https://cursor.sh) rules for projects that import `kerfjs`. Copy into your project as `.cursorrules`.
 - [`kerf.claude-skill.md`](kerf.claude-skill.md): drop-in [Claude Code](https://claude.com/claude-code) skill. Copy into `~/.claude/skills/kerf-app/SKILL.md` (or your project's `.claude/skills/kerf-app/SKILL.md`).
+- [`eslint-plugin-kerfjs`](eslint-plugin/README.md): companion ESLint plugin enforcing four hard rules at edit time — `no-inline-jsx-event-handlers`, `require-data-key-in-each`, `no-nested-mount`, `prefer-module-jsx-augmentation`. AST-only, no `parserServices` dependency. Install with `npm install --save-dev eslint-plugin-kerfjs` and add `kerfjs.configs.recommended` to your eslint config. Recommended when authoring kerf code with an AI assistant — eslint feedback surfaces in the IDE before `tsc` or runtime warns ever run.
 
 ## Reference docs
 

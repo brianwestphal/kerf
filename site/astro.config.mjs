@@ -82,6 +82,7 @@ export default defineConfig({
             { label: 'JSX runtime', slug: 'docs/jsx' },
             { label: 'SVG', slug: 'docs/svg' },
             { label: 'Dev-mode warnings', slug: 'docs/dev-warnings' },
+            { label: 'ESLint plugin', slug: 'docs/eslint-plugin' },
           ],
         },
         {

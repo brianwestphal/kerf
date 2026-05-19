@@ -11,6 +11,7 @@ You are writing a UI in kerf — a ~6.1 KB reactive framework (6.5 KB with `arra
 - Install with `npm install kerfjs`.
 - `tsconfig.json`: `"jsx": "react-jsx"`, `"jsxImportSource": "kerfjs"`.
 - Vite / esbuild need no extra config.
+- Recommended: also install `eslint-plugin-kerfjs` (`npm install --save-dev eslint-plugin-kerfjs`) and add `kerfjs.configs.recommended` to the project's eslint config. It enforces four of the hard rules below (no inline JSX event handlers, require `data-key` in `each()`, no nested `mount()`, prefer module JSX augmentation) at edit time so violations surface as IDE squiggles before any code runs.
 
 ## Public API — one import path
 

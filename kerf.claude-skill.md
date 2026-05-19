@@ -16,6 +16,7 @@ kerf is a ~6.1 KB reactive UI framework (6.5 KB with `arraySignal`): signals + D
 - Install: `npm install kerfjs`
 - `tsconfig.json`: `"jsx": "react-jsx"`, `"jsxImportSource": "kerfjs"`
 - Vite / esbuild need no extra config.
+- Recommended companion: `npm install --save-dev eslint-plugin-kerfjs` and add `kerfjs.configs.recommended` to the project's eslint config. Enforces four of the hard rules below (no inline JSX event handlers, require `data-key` in `each()`, no nested `mount()`, prefer module JSX augmentation) at edit time — useful as a self-correction signal when authoring kerf code.
 
 ## Public API — one import path
 
