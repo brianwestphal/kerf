@@ -2,7 +2,10 @@
 
 ESLint rules that enforce kerf's hard rules. Catches AI-shaped bugs at edit time, before they reach `tsc` or the runtime dev-warns.
 
-This plugin sits alongside two other defense layers shipped by [`kerfjs`](https://github.com/brianwestphal/kerf):
+- **Full docs:** [brianwestphal.github.io/kerf/docs/eslint-plugin/](https://brianwestphal.github.io/kerf/docs/eslint-plugin/)
+- **Kerf site:** [brianwestphal.github.io/kerf](https://brianwestphal.github.io/kerf/)
+
+This plugin sits alongside two other defense layers shipped by [`kerfjs`](https://brianwestphal.github.io/kerf/):
 
 | Layer | Catches | When |
 |---|---|---|

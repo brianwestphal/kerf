@@ -5,7 +5,7 @@
   "type": "module",
   "license": "MIT",
   "author": "Brian Westphal <brian.westphal@bleugris.com>",
-  "homepage": "https://github.com/brianwestphal/kerf/tree/main/eslint-plugin",
+  "homepage": "https://brianwestphal.github.io/kerf/docs/eslint-plugin/",
   "repository": {
     "type": "git",
     "url": "https://github.com/brianwestphal/kerf",

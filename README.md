@@ -170,7 +170,7 @@ import kerfjs from 'eslint-plugin-kerfjs';
 export default [kerfjs.configs.recommended];
 ```
 
-See [`eslint-plugin/README.md`](./eslint-plugin/README.md) for legacy `.eslintrc` config and per-rule docs.
+Full docs at [brianwestphal.github.io/kerf/docs/eslint-plugin/](https://brianwestphal.github.io/kerf/docs/eslint-plugin/) — legacy `.eslintrc` config, per-rule examples, and the "why only four rules" framing.
 
 ## Links
 
@@ -178,7 +178,7 @@ See [`eslint-plugin/README.md`](./eslint-plugin/README.md) for legacy `.eslintrc
 - **Docs:** [`docs/`](./docs/) — overview · reactivity · stores · render · events · jsx · svg · [API reference](./docs/8-api-reference.md)
 - **Migrating:** [coming from another framework?](https://brianwestphal.github.io/kerf/migrating/) — side-by-side TodoMVC translations + per-framework gotchas
 - **AI guide:** [`docs/ai/usage-guide.md`](./docs/ai/usage-guide.md) — reference for AI tools fetching kerf docs (linked from `llms.txt`)
-- **ESLint plugin:** [`eslint-plugin/`](./eslint-plugin/) — `eslint-plugin-kerfjs`; four AST-only rules enforcing kerf hard rules at edit time
+- **ESLint plugin:** [brianwestphal.github.io/kerf/docs/eslint-plugin/](https://brianwestphal.github.io/kerf/docs/eslint-plugin/) — `eslint-plugin-kerfjs`; four AST-only rules enforcing kerf hard rules at edit time (source: [`eslint-plugin/`](./eslint-plugin/))
 - **Demo:** [live demo](https://brianwestphal.github.io/kerf/demo/) — eight sections exercising every primitive (counter, store-backed cart, focus survival, keyed list, morph-skip, SVG render, Tier-2 capture, `arraySignal` patches)
 - **Repo:** [github.com/brianwestphal/kerf](https://github.com/brianwestphal/kerf)
 
