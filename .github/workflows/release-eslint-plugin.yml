@@ -1,0 +1,103 @@
+name: Release eslint-plugin-kerfjs
+
+# Triggered by the same `v*` tag patterns as the kerfjs core release workflow.
+# eslint-plugin-kerfjs releases in lockstep with kerfjs — a `v{X}.{Y}.{Z}` tag
+# fires BOTH `release.yml` (publishes kerfjs) and this workflow (publishes
+# eslint-plugin-kerfjs). The npm Trusted Publisher rule for both packages is
+# `v*`, so the OIDC ref pattern accepts the same tags.
+#
+# Lockstep is enforced at tag time by `scripts/release.sh`, which bumps both
+# `package.json` (root) and `eslint-plugin/package.json` to the same version
+# before committing and tagging.
+
+permissions:
+  contents: write
+  id-token: write   # npm OIDC trusted publishing
+
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'
+      - 'v[0-9]+.[0-9]+.[0-9]+-beta.[0-9]+'
+
+concurrency:
+  group: release-eslint-plugin-${{ github.ref_name }}
+  cancel-in-progress: false
+
+env:
+  # Pinned to 22.21.0 — matches release.yml. See the comment there for the
+  # Node 22.22.2 / arborist breakage that motivated the pin.
+  NODE_VERSION: '22.21.0'
+
+jobs:
+  # ─── Phase 1: validate the plugin ───────────────────────────────────
+
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: eslint-plugin
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '${{ env.NODE_VERSION }}'
+          cache: npm
+          cache-dependency-path: eslint-plugin/package-lock.json
+      - run: npm ci
+      - run: npm test
+
+  # ─── Detect: stable or beta? ────────────────────────────────────────
+
+  detect:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.extract.outputs.version }}
+      is_beta: ${{ steps.extract.outputs.is_beta }}
+    steps:
+      - id: extract
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          if [[ "$VERSION" == *-beta.* ]]; then
+            IS_BETA=true
+          else
+            IS_BETA=false
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "is_beta=$IS_BETA" >> "$GITHUB_OUTPUT"
+          echo "Releasing eslint-plugin-kerfjs v$VERSION (beta: $IS_BETA)"
+
+  # ─── Phase 2: npm publish ───────────────────────────────────────────
+  #
+  # No GitHub-release job here — the kerfjs core `release.yml` is the
+  # single source for the GitHub Release on each tag. This workflow only
+  # owns the eslint-plugin-kerfjs npm publish.
+
+  npm-publish:
+    needs: [test, detect]
+    runs-on: ubuntu-latest
+    environment: npm-publish-eslint-plugin
+    defaults:
+      run:
+        working-directory: eslint-plugin
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '${{ env.NODE_VERSION }}'
+          cache: npm
+          cache-dependency-path: eslint-plugin/package-lock.json
+          registry-url: 'https://registry.npmjs.org/'
+      - run: npm install -g npm@latest   # trusted publishing OIDC needs npm ≥ 11.5.1
+      - run: npm ci
+      - name: Bump package.json to beta version (ephemeral, not committed)
+        if: needs.detect.outputs.is_beta == 'true'
+        run: |
+          VERSION="${{ needs.detect.outputs.version }}"
+          npm version "$VERSION" --no-git-tag-version --allow-same-version
+      - name: Publish to npm@latest (stable)
+        if: needs.detect.outputs.is_beta == 'false'
+        run: npm publish --provenance --access public
+      - name: Publish to npm@beta (beta)
+        if: needs.detect.outputs.is_beta == 'true'
+        run: npm publish --tag beta --provenance --access public

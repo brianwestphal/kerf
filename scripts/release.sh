@@ -341,14 +341,20 @@ step_update_version() {
   version=$(get_state "version")
   info "Updating version to ${BOLD}v${version}${RESET}..."
   npm version "$version" --no-git-tag-version --allow-same-version
-  success "package.json updated"
+  # eslint-plugin-kerfjs releases in lockstep with kerfjs — the npm Trusted
+  # Publisher rule for both packages is `v*`, so a single `v{X}.{Y}.{Z}` tag
+  # triggers both release workflows and both package.json versions must match
+  # the tag for `npm publish` to accept the OIDC token.
+  (cd eslint-plugin && npm version "$version" --no-git-tag-version --allow-same-version)
+  success "package.json files updated (root + eslint-plugin)"
 }
 
 step_git_commit() {
   local version
   version=$(get_state "version")
   info "Creating git commit..."
-  git add package.json package-lock.json CHANGELOG.md
+  git add package.json package-lock.json CHANGELOG.md \
+          eslint-plugin/package.json eslint-plugin/package-lock.json
   git commit -m "release: v${version}"
   success "Created release commit"
 }

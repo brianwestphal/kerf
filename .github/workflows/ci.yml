@@ -53,6 +53,18 @@ jobs:
       - run: npx vitest run --config vitest.config.dist-full.ts
       - run: npm pack --dry-run
 
+  eslint-plugin:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: eslint-plugin
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '${{ env.NODE_VERSION }}', cache: npm, cache-dependency-path: eslint-plugin/package-lock.json }
+      - run: npm ci
+      - run: npm test
+
   # KF-118: browser tests run on every push/PR alongside the unit suites.
   # The happy-dom unit tests can't model SVG/MathML namespacing, IME
   # composition, or real mutation counts — Playwright covers those cases

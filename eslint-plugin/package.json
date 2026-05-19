@@ -1,0 +1,48 @@
+{
+  "name": "eslint-plugin-kerfjs",
+  "version": "0.1.0",
+  "description": "ESLint rules that enforce kerf's hard rules — catches AI-shaped bugs at edit time.",
+  "type": "module",
+  "license": "MIT",
+  "author": "Brian Westphal <brian.westphal@bleugris.com>",
+  "homepage": "https://github.com/brianwestphal/kerf/tree/main/eslint-plugin",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/brianwestphal/kerf",
+    "directory": "eslint-plugin"
+  },
+  "bugs": {
+    "url": "https://github.com/brianwestphal/kerf/issues"
+  },
+  "keywords": [
+    "eslint",
+    "eslintplugin",
+    "eslint-plugin",
+    "kerf",
+    "kerfjs"
+  ],
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "main": "./index.js",
+  "exports": {
+    ".": "./index.js"
+  },
+  "files": [
+    "index.js",
+    "lib",
+    "docs",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "test": "node --test tests/rules/*.test.js"
+  },
+  "peerDependencies": {
+    "eslint": ">=8"
+  },
+  "devDependencies": {
+    "@typescript-eslint/parser": "^8.0.0",
+    "eslint": "^9.0.0"
+  }
+}

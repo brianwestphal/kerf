@@ -84,6 +84,10 @@ export default [
       'coverage/**',
       'node_modules/**',
       'examples/**',
+      // eslint-plugin-kerfjs is a separate publishable package with its own
+      // node_modules and lint conventions (plain ESM JS, not TS). It manages
+      // its own test gate via `npm test` in eslint-plugin/.
+      'eslint-plugin/**',
       // KF-123: these directories are compiled by separate `tsc -p` / esbuild
       // invocations against `dist/*.d.ts` (not by the root tsconfig used for
       // the main lint pass), so the root eslint can't resolve their

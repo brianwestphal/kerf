@@ -30,6 +30,26 @@ The opt-in shape also means production bundles can short-circuit before any
 per-call work runs — the env-var read is the first thing each warner does,
 so the production-mode cost is one truthy-check at instantiation.
 
+### Relationship to the static-check layer
+
+The dev-warns are the runtime layer. Two earlier layers catch related misuse
+before the program runs:
+
+- **Strict TS** — `tsc --noEmit` against properly-typed store state catches
+  Hard Rule 8 partial-set bugs as type errors. All complete example apps in
+  this repo are under that gate.
+- **`eslint-plugin-kerfjs`** — a separate publishable package, in
+  [`eslint-plugin/`](../eslint-plugin/README.md), with four AST-only rules
+  that fire at edit time for hard-rule violations the dev-warns can't see
+  syntactically: `no-inline-jsx-event-handlers` (Rule 9),
+  `require-data-key-in-each` (Rule 2), `no-nested-mount` (Rule 5),
+  `prefer-module-jsx-augmentation` (Rule 11).
+
+The three layers are complementary, not redundant. Lint catches AST-shaped
+antipatterns at edit time; tsc catches type-shaped bugs at build time; the
+dev-warns catch the runtime patterns that need flow / call-graph
+information no static checker has.
+
 ## 11.2 The three warnings
 
 ### 11.2.1 `KERF_DEV_WARN_REBUILT_LISTENERS=1` (Rule 4)

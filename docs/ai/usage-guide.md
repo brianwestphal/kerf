@@ -115,6 +115,12 @@ delegate(rootEl, 'click', '[data-action="inc"]', () => { count.value += 1; });
 
 ## Hard rules (every AI gets these wrong at least once)
 
+Four of these rules also have edit-time enforcement via
+[`eslint-plugin-kerfjs`](../../eslint-plugin/README.md) — Rules 2, 5, 9, 11.
+Adding the plugin to a kerf consumer's eslint config surfaces violations as
+IDE squiggles, so the warning lands before `tsc` or the runtime dev-warns
+ever run.
+
 1. **JSX renders to HTML strings, not DOM nodes.** Don't pass DOM nodes as JSX children — the runtime throws. If you need an element ref, build the JSX, then `querySelector` after `toElement()` or after `mount()` runs.
 2. **Diff keys are `id` first, then `data-key`.** Lists must set `data-key={item.id}` per item. Otherwise the diff matches by position and you lose identity, focus, and cursor position on insert/delete.
 3. **`data-morph-skip` is your escape hatch.** Any element with this attribute (any value, even empty) and its entire subtree are preserved verbatim across re-renders — no attribute morphing on the element itself either. Use it for third-party widgets like Monaco, xterm, D3 charts. The narrower variant `data-morph-skip-children` lets the host's attributes morph while leaving its subtree alone — for client-hydrated slots whose loading / state classes need to flow through. A third variant `data-morph-preserve` lets an imperatively-injected child (autoplay video, tooltip overlay, analytics pixel) survive the diff's trailing-removal pass — the element keeps existing across renders even though the JSX template never mentions it; it does NOT block a keyed-match move.
