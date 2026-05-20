@@ -360,8 +360,16 @@ step_git_commit() {
   git add package.json package-lock.json CHANGELOG.md \
           eslint-plugin/package.json eslint-plugin/package-lock.json \
           ai/manifest.json
-  git commit -m "release: v${version}"
-  success "Created release commit"
+  # Idempotent: if a previous run already absorbed these files into a manual
+  # commit (e.g. recovery after the pre-commit hook failed), there's nothing
+  # left to stage. Skip rather than fail under `set -e` so the tag-and-push
+  # step still gets to run against the existing HEAD.
+  if git diff --cached --quiet; then
+    info "No staged changes — release commit already exists; skipping."
+  else
+    git commit -m "release: v${version}"
+    success "Created release commit"
+  fi
 }
 
 step_stable_tag_and_push() {
