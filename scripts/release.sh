@@ -346,7 +346,11 @@ step_update_version() {
   # triggers both release workflows and both package.json versions must match
   # the tag for `npm publish` to accept the OIDC token.
   (cd eslint-plugin && npm version "$version" --no-git-tag-version --allow-same-version)
-  success "package.json files updated (root + eslint-plugin)"
+  # The bundled AI configs at `ai/manifest.json` embed `kerfjsVersion` — re-sync
+  # so the in-sync gate (which the pre-commit hook runs) sees a current bundle
+  # after the version bump. See docs/12-ai-assistant-configs.md §12.2.2.
+  node scripts/sync-ai-bundle.mjs > /dev/null
+  success "package.json files updated (root + eslint-plugin); ai/ bundle re-synced"
 }
 
 step_git_commit() {
@@ -354,7 +358,8 @@ step_git_commit() {
   version=$(get_state "version")
   info "Creating git commit..."
   git add package.json package-lock.json CHANGELOG.md \
-          eslint-plugin/package.json eslint-plugin/package-lock.json
+          eslint-plugin/package.json eslint-plugin/package-lock.json \
+          ai/manifest.json
   git commit -m "release: v${version}"
   success "Created release commit"
 }
