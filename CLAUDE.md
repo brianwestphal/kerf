@@ -222,14 +222,22 @@ Numbered docs in `docs/` cover the design. Reading order:
 
 Update all three whenever the corresponding source / design changes. The repo-root [`llms.txt`](../llms.txt) is the AI-discovery entry point and indexes the docs above — update it when the doc set changes.
 
-### Drop-in AI-tool config (KF-128)
+### Drop-in AI-tool config
 
 Two pre-baked config files at the repo root that condense `docs/ai/usage-guide.md` into the format each tool expects:
 
 - `kerf.cursorrules` — copy into a project as `.cursorrules`; Cursor picks it up automatically.
 - `kerf.claude-skill.md` — copy into `~/.claude/skills/kerf-app/SKILL.md` (or `your-project/.claude/skills/kerf-app/SKILL.md`); Claude Code activates the skill whenever it spots a `kerfjs` import.
 
-Both mirror the hard rules + canonical patterns + common errors from the AI usage guide. Refresh them after API changes by re-summarising `docs/ai/usage-guide.md`.
+Both mirror the hard rules + canonical patterns + common errors from the AI usage guide.
+
+These root files are the **source of truth**. A `npm install kerfjs` lands generated mirrors at `node_modules/kerfjs/ai/skill.md` and `node_modules/kerfjs/ai/cursorrules` (plus an `ai/manifest.json` with per-file `kerf-skill-version` + sha256 — the version that the upcoming `kerfjs/ai-assistant-configs` ESLint rule reads to detect drift). The bundling, the canonical-file contract (version line + `KERF-APP-CANONICAL-END` marker), and the eslint rule are all designed together in [`docs/12-ai-assistant-configs.md`](docs/12-ai-assistant-configs.md).
+
+**Editing workflow.** Only edit the root files. After any change, run `npm run ai-bundle:sync` to regenerate `ai/skill.md` / `ai/cursorrules` / `ai/manifest.json`, then commit the regenerated mirror alongside your edit. `npm run check` runs `check:ai-bundle-in-sync` (`scripts/check-ai-bundle.mjs`) which fails the pre-commit gate if you forgot.
+
+**Versioning the canonical content.** Each root file has a `kerf-skill-version: <semver>` line — inside the YAML frontmatter for `kerf.claude-skill.md`, inside a top-of-file HTML comment for `kerf.cursorrules`. Bump this version whenever the canonical content changes in a way a consumer would benefit from re-syncing (hard-rule additions/renumberings, new canonical patterns, API-surface changes, new common-error rows). Skip bumps for typos, grammar, and comment-only changes. See §12.3.2 of the doc for the full rubric.
+
+**The marker.** The last line of each root file's canonical content is `<!-- KERF-APP-CANONICAL-END · your customizations below -->`. Don't restyle or rephrase it — the eslint rule's parser is a strict-text match. Add or remove content above the marker; the consumer's append zone lives below it in *their* installed copy.
 
 ## Releasing
 

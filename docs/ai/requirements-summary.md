@@ -24,8 +24,10 @@ Status markers:
 | §8 | API reference | Shipped |
 | §9 | Live demo (GitHub Pages deploy of `examples/reactivity-demo`) | Shipped |
 | §10 | Migrating hub (`/kerf/migrating/` — coming-from-React/Alpine/Lit/vanjs pages) | Shipped |
+| §11 | Dev-mode warnings (opt-in env-gated warns for Rules 4 / 7 / 8) | Shipped |
+| §12 | AI-assistant configs (Claude skill + Cursor rules bundled in npm; eslint drift-check rule) | Shipped |
 
-Everything in the v0.1–v0.3 design is shipped (each / native diff / list reconciler / `isSafeHtml` / `Fragment` barrel re-export all landed in 0.2–0.3). No partial / design-only / deferred entries yet — those will accumulate as the project evolves.
+Everything in the v0.1–v0.3 design is shipped (each / native diff / list reconciler / `isSafeHtml` / `Fragment` barrel re-export all landed in 0.2–0.3). No partial / design-only / deferred entries.
 
 ## Per-doc summary
 
@@ -83,6 +85,14 @@ A single GitHub Pages artifact bundles two independent builds: the Astro + Starl
 ### §10 Migrating hub
 
 Pillar page set at `/kerf/migrating/` that translates a single classic-todo-list reference app from React, Alpine, Lit, and vanjs into kerf, side by side. Five pages total: an index with the cross-framework comparison matrix + perf snapshot, plus one page per source framework. Four separate pages (not tabs, not one long page) so each "coming from X" headline matches the real search query and gets its own indexable URL. Each per-framework page has the same five-section shape: bundle delta, mental-model translations table, side-by-side code, gotchas, perf numbers. Linked from the sidebar nav (a `Migrating` section) and from the homepage hero (a `Coming from React?` CTA that links to the index, not framework-detected). KF-132 shipped the skeleton; KF-156/157/158/159 filled in the per-framework page content (React / Alpine / Lit / vanjs respectively).
+
+### §11 Dev-mode warnings
+
+Three opt-in runtime warnings gated by `NODE_ENV !== 'production'` + a per-warning `KERF_DEV_WARN_<NOUN>=1` env var: `KERF_DEV_WARN_REBUILT_LISTENERS` (Rule 4 — MutationObserver-based detection of imperative listeners being discarded by the morph; KF-174), `KERF_DEV_WARN_UNTRACKED_SIGNALS` (Rule 7 — `DevSignal` subclass that fires on writes to signals with no subscribers; KF-176), `KERF_DEV_WARN_NARROW_SET` (Rule 8 — `defineStore.set(next)` is missing keys from the current state; KF-212). All three follow the same family contract: production short-circuit, env-var gate, default off, one-shot dedup per "owner" (mount / signal / store), message ending with the canonical fix + how to silence, and no public-API surface. Lint + strict-TS + the dev-warns form a three-tier defence stack (lint at edit time, tsc at build time, dev-warns at runtime).
+
+### §12 AI-assistant configs
+
+How the drop-in Claude Code skill (`kerf.claude-skill.md`) and Cursor rules (`kerf.cursorrules`) ship to consumers and stay in sync as kerfjs evolves. Three components in one feature: (a) **bundling** — the canonical files ship inside the `kerfjs` npm package at `ai/skill.md` / `ai/cursorrules` / `ai/manifest.json`, regenerated from the repo-root source-of-truth by `scripts/sync-ai-bundle.mjs` and gated by `check:ai-bundle-in-sync`; (b) **canonical-file contract** — each bundled file carries a `kerf-skill-version: <semver>` line (the staleness signal) and a `<!-- KERF-APP-CANONICAL-END · your customizations below -->` marker that delimits kerf's section from the consumer's append zone; (c) **eslint rule** — `kerfjs/ai-assistant-configs` in `eslint-plugin-kerfjs` v0.9.0 (`warn` in `recommended`), once per lint run, resolves `kerfjs/ai/manifest.json` from the consumer's installed kerfjs, reports missing/stale/forked drop-ins, and `eslint --fix` replaces only the section above the marker so customisations below survive. KF-215 shipped (a) + (b); KF-216 shipped (c) with the versioned-section preservation strategy from KF-217 baked into v1.
 
 ## Update triggers
 

@@ -52,6 +52,7 @@
   },
   "files": [
     "dist",
+    "ai",
     "README.md",
     "CHANGELOG.md",
     "LICENSE"
@@ -71,11 +72,13 @@
     "bench:micro": "vitest bench --run --config vitest.config.bench.ts",
     "lint": "eslint src tests",
     "typecheck": "tsc --noEmit",
-    "check": "npm run lint && npm run typecheck && node scripts/check-doc-test-inventory.mjs && node scripts/check-doc-api-coverage.mjs && npm test && npm run build && vitest run --config vitest.config.dist.ts && vitest run --config vitest.config.dist-full.ts && tsc -p tests/dist/jsx-typing/tsconfig.json && tsc -p site/src/examples/complete/tsconfig.json && node scripts/check-docs-examples.mjs",
+    "check": "npm run lint && npm run typecheck && node scripts/check-doc-test-inventory.mjs && node scripts/check-doc-api-coverage.mjs && node scripts/check-ai-bundle.mjs && npm test && npm run build && vitest run --config vitest.config.dist.ts && vitest run --config vitest.config.dist-full.ts && tsc -p tests/dist/jsx-typing/tsconfig.json && tsc -p site/src/examples/complete/tsconfig.json && node scripts/check-docs-examples.mjs",
     "check:docs:examples": "node scripts/check-docs-examples.mjs",
     "check:full": "npm run check && playwright test",
     "check:docs:test-inventory": "node scripts/check-doc-test-inventory.mjs",
     "check:docs:api-coverage": "node scripts/check-doc-api-coverage.mjs",
+    "check:ai-bundle-in-sync": "node scripts/check-ai-bundle.mjs",
+    "ai-bundle:sync": "node scripts/sync-ai-bundle.mjs",
     "clean": "rm -rf dist coverage node_modules/.cache",
     "prepare": "husky",
     "release": "bash scripts/release.sh",

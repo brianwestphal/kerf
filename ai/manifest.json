@@ -1,0 +1,21 @@
+{
+  "kerfjsVersion": "0.8.2",
+  "files": [
+    {
+      "name": "skill",
+      "source": "kerf.claude-skill.md",
+      "bundle": "ai/skill.md",
+      "dest": ".claude/skills/kerf-app/SKILL.md",
+      "version": "1.0.0",
+      "sha256": "bef982cb743fd4c73e666ee5cf774112e57c93ebb13b24bbacbf08577db0930a"
+    },
+    {
+      "name": "cursorrules",
+      "source": "kerf.cursorrules",
+      "bundle": "ai/cursorrules",
+      "dest": ".cursorrules",
+      "version": "1.0.0",
+      "sha256": "98f7faff2b7585ef9cc511add42ea5d9bf0cbae8307b066af090e9281136d2ab"
+    }
+  ]
+}

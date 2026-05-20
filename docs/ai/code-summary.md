@@ -102,11 +102,21 @@ kerf/
 │   ├── 8-api-reference.md
 │   ├── 9-live-demo.md
 │   ├── 10-migrating.md           ← KF-132 — design doc for the /kerf/migrating/ hub (rendered pages live under site/src/content/docs/migrating/)
+│   ├── 11-dev-warnings.md        ← KF-174 / KF-176 / KF-212 — design doc for the opt-in dev-warn family (KERF_DEV_WARN_* env-gated runtime warnings)
+│   ├── 12-ai-assistant-configs.md ← KF-215 + KF-216 + KF-217 — Claude Code skill + Cursor rules bundled in the kerfjs npm package, canonical-file contract (version + KERF-APP-CANONICAL-END marker), and the `kerfjs/ai-assistant-configs` ESLint rule with versioned-section preservation
 │   └── ai/
 │       ├── code-summary.md       ← THIS FILE
 │       ├── requirements-summary.md
 │       └── usage-guide.md        ← consumer-facing cheat sheet for AI assistants writing apps with kerf
+├── ai/                           ← KF-215 — generated mirror of the repo-root drop-in AI configs, shipped inside the npm package at `kerfjs/ai/`. Regenerate with `npm run ai-bundle:sync` after editing root files; kept honest by `check:ai-bundle-in-sync`.
+│   ├── skill.md                  ← copy of kerf.claude-skill.md, canonical section only
+│   ├── cursorrules               ← copy of kerf.cursorrules, canonical section only
+│   └── manifest.json             ← { kerfjsVersion, files: [{ name, source, bundle, dest, version, sha256 }] } — the upcoming eslint rule's entry point
 ├── scripts/
+│   ├── lib/
+│   │   └── ai-bundle.mjs         ← KF-215 — shared logic for sync + check scripts; deterministic `computeBundle()` produces the three `ai/` files in memory from the root source-of-truth files
+│   ├── sync-ai-bundle.mjs        ← KF-215 — regenerates `ai/` from `kerf.claude-skill.md` + `kerf.cursorrules`; run after editing either source
+│   ├── check-ai-bundle.mjs       ← KF-215 — in-sync gate; fails when `ai/` drifts from the root sources or the manifest's `kerfjsVersion` is stale. Wired into `npm run check`
 │   └── release.sh                ← interactive release flow w/ --beta support
 ├── .github/workflows/
 │   ├── ci.yml                    ← test + lint + typecheck on push/PR
@@ -219,7 +229,7 @@ Runtime dep (`@preact/signals-core`) is external — consumers' bundlers pick it
 | GitHub Pages live-demo deploy | `.github/workflows/pages.yml` + `examples/reactivity-demo/vite.config.ts` (`base: '/kerf/demo/'`) + `site/astro.config.mjs` (`base: '/kerf'`) + `docs/9-live-demo.md` |
 | Benchmark harness / perf numbers | `bench/` (`bench/README.md` + `setup.sh` / `run.sh` / `results.sh` / `aggregate-results.mjs`); CHANGELOG perf entries come from runs here. Homepage's `site/src/components/PerfTable.astro` imports `bench/results.json` (KF-138) — refresh it by re-running `aggregate-results.mjs` and committing the regenerated file. |
 | Migrating hub (`/kerf/migrating/`) | `docs/10-migrating.md` (design doc) + `site/src/content/docs/migrating/{index.mdx,react.md,alpine.md,lit.md,vanjs.md}` (rendered pages) — KF-132 + KF-156/157/158/159 |
-| Drop-in AI-tool config | `kerf.cursorrules` + `kerf.claude-skill.md` at repo root (KF-128) — both regenerate from `docs/ai/usage-guide.md` |
+| Drop-in AI-tool config | `kerf.cursorrules` + `kerf.claude-skill.md` at repo root (source of truth) — both regenerate from `docs/ai/usage-guide.md`. KF-215 ships generated mirrors inside the npm package at `ai/skill.md` / `ai/cursorrules` / `ai/manifest.json`; regenerate via `npm run ai-bundle:sync`; design + canonical-file contract in `docs/12-ai-assistant-configs.md` |
 
 ## Update triggers
 
@@ -230,3 +240,4 @@ Update this doc whenever you:
 3. Change the build output shape (`tsup.config.ts`).
 4. Add a new conventional `data-*` attribute that `mount()` recognizes.
 5. Add a new test directory or convention.
+6. Add a new `scripts/` entry or a new gate wired into `npm run check`.
