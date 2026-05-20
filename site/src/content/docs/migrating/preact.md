@@ -125,6 +125,6 @@ What moved:
 
 ## 5. Perf numbers
 
-Cross-framework perf comparisons are only published from official benchmark runs — clean machine, no background load, results re-generated under controlled conditions. On the most recent run committed at [`bench/results.md`](https://github.com/brianwestphal/kerf/blob/main/bench/results.md), kerf and Preact + signals sit in the same performance cluster on most keyed scenarios; Preact is slightly ahead on `partial update` and `select row`, kerf is slightly ahead on `create 1k` and within typical noise elsewhere. The deciding factor between the two frameworks is the virtual-DOM / morph + hooks / no-hooks tradeoff in §1–§4, not row-update latency.
+Cross-framework perf comparisons are only published from official benchmark runs — clean machine, no background load, results re-generated under controlled conditions. On the most recent run committed at [`bench/results.md`](https://github.com/brianwestphal/kerf/blob/main/bench/results.md), kerf and Preact + signals sit in the same performance cluster on most keyed scenarios; Preact is ahead on `partial update`, kerf is ahead on `create 1k` and `select row`, with typical noise elsewhere. The deciding factor between the two frameworks is the virtual-DOM / morph + hooks / no-hooks tradeoff in §1–§4, not row-update latency.
 
 [See the full bench table →](https://github.com/brianwestphal/kerf/blob/main/bench/results.md)

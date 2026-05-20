@@ -281,6 +281,6 @@ What moved: `:host { ... }` becomes a wrapper-class selector. `static styles = c
 
 ## 5. Perf numbers
 
-Cross-framework perf comparisons are only published from official benchmark runs — clean machine, no background load, results re-generated under controlled conditions. The first official run lands once we have substantial framework changes worth measuring against. Until then: in practice Lit 3 and kerf are in the same performance cluster on the [krausest js-framework-benchmark](https://github.com/krausest/js-framework-benchmark) keyed scenarios; the deciding factor between the two frameworks is the Shadow-DOM / web-components question in §4, not raw row-update latency.
+Cross-framework perf comparisons are only published from official benchmark runs — clean machine, no background load, results re-generated under controlled conditions. On the most recent run committed at [`bench/results.md`](https://github.com/brianwestphal/kerf/blob/main/bench/results.md): Lit 3 and kerf are in the same performance cluster on the [krausest js-framework-benchmark](https://github.com/krausest/js-framework-benchmark) keyed scenarios; Lit edges kerf on create-row and partial-update, kerf edges Lit on select-row, swap-rows, and remove-row. The deciding factor between the two frameworks is the Shadow-DOM / web-components question in §4, not raw row-update latency.
 
 [See the full bench table →](https://github.com/brianwestphal/kerf/blob/main/bench/results.md)
