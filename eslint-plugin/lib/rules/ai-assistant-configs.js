@@ -39,6 +39,13 @@ function resolveManifestPath(cwd) {
     const req = createRequire(join(cwd, 'noop.js'));
     return req.resolve('kerfjs/ai/manifest.json');
   } catch {
+    // Fallback: kerfjs versions before the `./ai/*` exports entry landed
+    // block subpath resolution under Node's strict `exports` rules
+    // (ERR_PACKAGE_PATH_NOT_EXPORTED). Look directly at the package on disk —
+    // good enough for the plain-npm layout, and the rule should fire for
+    // those installs too rather than silently no-op.
+    const direct = join(cwd, 'node_modules', 'kerfjs', 'ai', 'manifest.json');
+    if (existsSync(direct)) return direct;
     return null;
   }
 }

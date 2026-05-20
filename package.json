@@ -48,7 +48,8 @@
     "./array-signal": {
       "types": "./dist/array-signal.d.ts",
       "import": "./dist/array-signal.js"
-    }
+    },
+    "./ai/*": "./ai/*"
   },
   "files": [
     "dist",

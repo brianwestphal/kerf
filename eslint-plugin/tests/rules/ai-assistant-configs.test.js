@@ -92,7 +92,10 @@ function setupProject({ skillVersion = '1.0.0', cursorVersion = '1.0.0', withCla
   writeFileSync(join(aiDir, 'manifest.json'), JSON.stringify(manifest, null, 2) + '\n');
 
   // kerfjs needs a package.json so `require.resolve('kerfjs/ai/manifest.json')`
-  // can find it under the node_modules/kerfjs root.
+  // can find it under the node_modules/kerfjs root. Default fixture has no
+  // `exports` field, so all paths are accessible — separate fallback test
+  // installs a fixture with restrictive `exports` to exercise the
+  // ERR_PACKAGE_PATH_NOT_EXPORTED → direct-path-lookup branch.
   writeFileSync(
     join(root, 'node_modules', 'kerfjs', 'package.json'),
     JSON.stringify({ name: 'kerfjs', version: '0.8.2', main: 'index.js' }) + '\n',
@@ -343,6 +346,34 @@ test('applyFix — stale file is updated, append zone preserved verbatim', () =>
 
 // Direct unit test of classifyFile so future refactors don't accidentally
 // change its return shape contract.
+test('fallback — runCheck still resolves manifest when kerfjs package.json has restrictive exports that block `./ai/*`', () => {
+  _resetForTests();
+  const { root } = setupProject({ withClaude: true });
+  // Overwrite the fixture's kerfjs package.json with a restrictive `exports`
+  // field — mirrors the real published kerfjs 0.9.1 layout that triggered
+  // ERR_PACKAGE_PATH_NOT_EXPORTED in glassbox and caused the rule to silently
+  // no-op. The fallback path-lookup should kick in.
+  writeFileSync(
+    join(root, 'node_modules', 'kerfjs', 'package.json'),
+    JSON.stringify({
+      name: 'kerfjs',
+      version: '0.9.1',
+      main: 'index.js',
+      exports: {
+        '.': './index.js',
+      },
+    }) + '\n',
+  );
+  try {
+    const checked = runCheck(root);
+    assert.ok(checked, 'fallback path lookup should resolve the manifest');
+    const skill = checked.results.find((r) => r.file.name === 'skill');
+    assert.equal(skill.result.state, 'missing');
+  } finally {
+    cleanup(root);
+  }
+});
+
 test('classifyFile — direct call returns the documented state shapes', () => {
   _resetForTests();
   const { root, manifest } = setupProject({
