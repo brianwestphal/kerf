@@ -7,7 +7,12 @@
  * preservation observable while you're interacting with the page.
  */
 
-import { delegate, mount, signal } from 'kerfjs';
+import { attr, delegate, mount, signal, type AttrSpec } from 'kerfjs';
+
+const ACTIONS = {
+  setName:       attr('data-action', 'set-name'),
+  toggleLetters: attr('data-action', 'toggle-letters'),
+} as const satisfies Record<string, AttrSpec<'data-action'>>;
 
 export function mountFocusSurvival(root: HTMLElement): void {
   const name = signal('');
@@ -28,13 +33,13 @@ export function mountFocusSurvival(root: HTMLElement): void {
             id="focus-name-input"
             value={name.value}
             placeholder="(focus stays put on every tick)"
-            data-action="set-name"
+            {...ACTIONS.setName.attrs}
             className="demo-input"
             autocomplete="off"
             spellcheck="false"
           />
         </label>
-        <button type="button" data-action="toggle-letters" className="demo-btn demo-btn-ghost">
+        <button type="button" {...ACTIONS.toggleLetters.attrs} className="demo-btn demo-btn-ghost">
           {showLetters.value ? 'hide' : 'show'} letter list
         </button>
       </div>
@@ -63,10 +68,10 @@ export function mountFocusSurvival(root: HTMLElement): void {
     </div>
   ));
 
-  delegate(root, 'input', '[data-action="set-name"]', (_e, target) => {
+  delegate(root, 'input', ACTIONS.setName.selector, (_e, target) => {
     name.value = (target as HTMLInputElement).value;
   });
-  delegate(root, 'click', '[data-action="toggle-letters"]', () => {
+  delegate(root, 'click', ACTIONS.toggleLetters.selector, () => {
     showLetters.value = !showLetters.value;
   });
 }

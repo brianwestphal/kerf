@@ -51,7 +51,14 @@ function rerender() { /* manually rebuild $('.todo-list').html(...) from items *
 
 ```tsx
 // Kerf — state lives in signals; the DOM is a function of state
-import { defineStore, mount, each, delegate, delegateCapture, effect } from 'kerfjs';
+import { defineStore, mount, each, delegate, delegateCapture, effect, attr, type AttrSpec } from 'kerfjs';
+
+const ACTIONS = {
+  toggle: attr('data-action', 'toggle'),
+  remove: attr('data-action', 'remove'),
+  edit:   attr('data-action', 'edit'),
+} as const satisfies Record<string, AttrSpec<'data-action'>>;
+const ITEM = { id: attr('data-id') } as const;
 
 const todos = defineStore({
   initial: () => ({ items: load(), filter: 'all', editingId: null as string | null }),
@@ -108,9 +115,9 @@ mount(root, () => {
               <input class="edit" data-edit data-id={todo.id} value={todo.text} autofocus />
             ) : (
               <>
-                <input type="checkbox" class="toggle" data-action="toggle" data-id={todo.id} checked={todo.done} />
-                <label data-action="edit" data-id={todo.id}>{todo.text}</label>
-                <button class="destroy" data-action="remove" data-id={todo.id}>×</button>
+                <input type="checkbox" class="toggle" {...ACTIONS.toggle.attrs} {...ITEM.id(todo.id)} checked={todo.done} />
+                <label {...ACTIONS.edit.attrs} {...ITEM.id(todo.id)}>{todo.text}</label>
+                <button class="destroy" {...ACTIONS.remove.attrs} {...ITEM.id(todo.id)}>×</button>
               </>
             )}
           </li>
@@ -144,10 +151,10 @@ $('#root').on('blur', '.edit', function () {  // ⚠️ blur doesn't bubble — 
 
 ```tsx
 // Kerf
-delegate(root, 'click', '[data-action="toggle"]', (_e, el) => {
+delegate(root, 'click', ACTIONS.toggle.selector, (_e, el) => {
   todos.actions.toggle((el as HTMLElement).dataset.id!);
 });
-delegate(root, 'click', '[data-action="remove"]', (_e, el) => {
+delegate(root, 'click', ACTIONS.remove.selector, (_e, el) => {
   todos.actions.remove((el as HTMLElement).dataset.id!);
 });
 delegate(root, 'keydown', '[data-new]', (e, el) => {

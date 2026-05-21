@@ -71,8 +71,14 @@ render(<App />, document.getElementById('root')!);
 
 ```tsx
 // Kerf
-import { mount, each, delegate } from 'kerfjs';
+import { mount, each, delegate, attr, type AttrSpec } from 'kerfjs';
 import { signal, computed, effect } from 'kerfjs';
+
+const ACTIONS = {
+  toggle: attr('data-action', 'toggle'),
+  remove: attr('data-action', 'remove'),
+} as const satisfies Record<string, AttrSpec<'data-action'>>;
+const ITEM = { id: attr('data-id') } as const;
 
 const items = signal<Todo[]>(load());
 const filter = signal<Filter>('all');
@@ -88,9 +94,9 @@ mount(root, () => (
         items.value.filter(/* ... */),
         (todo) => (
           <li data-key={todo.id}>
-            <input type="checkbox" class="toggle" data-action="toggle" data-id={todo.id} checked={todo.done} />
+            <input type="checkbox" class="toggle" {...ACTIONS.toggle.attrs} {...ITEM.id(todo.id)} checked={todo.done} />
             <label>{todo.text}</label>
-            <button class="destroy" data-action="remove" data-id={todo.id}>×</button>
+            <button class="destroy" {...ACTIONS.remove.attrs} {...ITEM.id(todo.id)}>×</button>
           </li>
         ),
         (todo) => todo.id,
@@ -99,8 +105,8 @@ mount(root, () => (
   </div>
 ));
 
-delegate(root, 'click', '[data-action="toggle"]', (_e, el) => toggle((el as HTMLElement).dataset.id!));
-delegate(root, 'click', '[data-action="remove"]', (_e, el) => remove((el as HTMLElement).dataset.id!));
+delegate(root, 'click', ACTIONS.toggle.selector, (_e, el) => toggle((el as HTMLElement).dataset.id!));
+delegate(root, 'click', ACTIONS.remove.selector, (_e, el) => remove((el as HTMLElement).dataset.id!));
 ```
 
 What moved:

@@ -9,7 +9,15 @@
  * `defineStore()`.
  */
 
-import { computed, defineStore, delegate, mount, resetAllStores, toElement } from 'kerfjs';
+import { attr, computed, defineStore, delegate, mount, resetAllStores, toElement, type AttrSpec } from 'kerfjs';
+
+const ACTIONS = {
+  add:      attr('data-action', 'add'),
+  remove:   attr('data-action', 'remove'),
+  clear:    attr('data-action', 'clear'),
+  resetAll: attr('data-action', 'reset-all'),
+} as const satisfies Record<string, AttrSpec<'data-action'>>;
+const ITEM = { id: attr('data-id'), idx: attr('data-idx') } as const;
 
 interface CartItem { id: string; name: string; price: number }
 interface CartState { items: CartItem[] }
@@ -67,7 +75,7 @@ export function mountCart(root: HTMLElement): void {
           <li className="demo-cart-row" data-key={item.id}>
             <span className="demo-cart-name">{item.name}</span>
             <span className="demo-cart-price">${item.price.toFixed(2)}</span>
-            <button type="button" data-action="remove" data-id={item.id} className="demo-btn demo-btn-ghost demo-btn-tiny">×</button>
+            <button type="button" {...ACTIONS.remove.attrs} {...ITEM.id(item.id)} className="demo-btn demo-btn-ghost demo-btn-tiny">×</button>
           </li>
         ))}
       </ul>
@@ -81,17 +89,17 @@ export function mountCart(root: HTMLElement): void {
     </div>
   ));
 
-  delegate(root, 'click', '[data-action="add"]', (_e, btn) => {
+  delegate(root, 'click', ACTIONS.add.selector, (_e, btn) => {
     const idx = Number((btn as HTMLElement).dataset.idx);
     const sample = SAMPLES[idx];
     cartStore.actions.add(sample[0], sample[1]);
   });
-  delegate(root, 'click', '[data-action="remove"]', (_e, btn) => {
+  delegate(root, 'click', ACTIONS.remove.selector, (_e, btn) => {
     const id = (btn as HTMLElement).dataset.id;
     if (id !== undefined) cartStore.actions.remove(id);
   });
-  delegate(root, 'click', '[data-action="clear"]', () => { cartStore.actions.clear(); });
-  delegate(root, 'click', '[data-action="reset-all"]', () => { resetAllStores(); });
+  delegate(root, 'click', ACTIONS.clear.selector, () => { cartStore.actions.clear(); });
+  delegate(root, 'click', ACTIONS.resetAll.selector, () => { resetAllStores(); });
 }
 
 function createScaffold(): Element {
@@ -105,10 +113,10 @@ function createScaffold(): Element {
 
       <div className="demo-row demo-cart-add-row">
         {SAMPLES.map(([name, price], i) => (
-          <button type="button" data-action="add" data-idx={i} className="demo-btn">+ {name} (${price.toFixed(2)})</button>
+          <button type="button" {...ACTIONS.add.attrs} {...ITEM.idx(String(i))} className="demo-btn">+ {name} (${price.toFixed(2)})</button>
         ))}
-        <button type="button" data-action="clear" className="demo-btn demo-btn-ghost">clear</button>
-        <button type="button" data-action="reset-all" className="demo-btn demo-btn-warn">resetAllStores()</button>
+        <button type="button" {...ACTIONS.clear.attrs} className="demo-btn demo-btn-ghost">clear</button>
+        <button type="button" {...ACTIONS.resetAll.attrs} className="demo-btn demo-btn-warn">resetAllStores()</button>
       </div>
 
       <div data-region="list"></div>

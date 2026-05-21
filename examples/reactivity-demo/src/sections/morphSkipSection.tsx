@@ -7,7 +7,9 @@
  * morphdom never touches what's inside.
  */
 
-import { delegate, mount, signal } from 'kerfjs';
+import { attr, delegate, mount, signal } from 'kerfjs';
+
+const BUMP = attr('data-action', 'bump');
 
 export function mountMorphSkip(root: HTMLElement): void {
   const tick = signal(0);
@@ -45,7 +47,7 @@ export function mountMorphSkip(root: HTMLElement): void {
       </div>
 
       <div className="demo-row">
-        <button type="button" data-action="bump" className="demo-btn">bump outer state</button>
+        <button type="button" {...BUMP.attrs} className="demo-btn">bump outer state</button>
       </div>
 
       <p className="demo-note">
@@ -60,5 +62,5 @@ export function mountMorphSkip(root: HTMLElement): void {
   const mountEl = root.querySelector<HTMLElement>('#morph-skip-mount');
   if (mountEl !== null) mountEl.appendChild(widgetHost);
 
-  delegate(root, 'click', '[data-action="bump"]', () => { tick.value += 100; });
+  delegate(root, 'click', BUMP.selector, () => { tick.value += 100; });
 }

@@ -2,24 +2,36 @@
 /**
  * Doc/example consistency gate.
  *
- * Two checks, both run on every migration page under
- * `site/src/content/docs/migrating/`:
+ * Three checks:
  *
- * 1. **Run-live links resolve** — every `/kerf/run/<name>/` link in a
- *    migration page must point at an example app that is (a) registered in
+ * 1. **Run-live links resolve** (migrating/) — every `/kerf/run/<name>/` link in
+ *    a migration page must point at an example app that is (a) registered in
  *    `site/scripts/build-examples.mjs` COMPLETE_APPS so it ships with the
  *    site build, and (b) covered by a `test.describe('<name>')` block in
  *    `tests/browser/example-apps.spec.ts` so it has an E2E smoke test.
  *
- * 2. **Self-contained kerf code blocks compile** — every fenced ```tsx /
- *    ```ts code block whose first line starts with `import ... from 'kerfjs'`
- *    is written to a scratch dir and run through `tsc --noEmit` against the
- *    built `dist/` types. Blocks that aren't self-contained (no kerf import,
- *    or contain `// ...` / `/* ... *\/` placeholders) are skipped — they are
- *    pedagogical fragments, not runnable units.
+ * 2. **Self-contained kerf code blocks compile** (migrating/) — every fenced
+ *    ```tsx / ```ts code block whose first line starts with
+ *    `import ... from 'kerfjs'` is written to a scratch dir and run through
+ *    `tsc --noEmit` against the built `dist/` types. Blocks that aren't
+ *    self-contained (no kerf import, or contain `// ...` / `/* ... *\/`
+ *    placeholders) are skipped — they are pedagogical fragments, not runnable
+ *    units.
  *
- * Surfaces the kerf-of-the-shape "doc snippet violates a runtime contract" bug
- * that let the partial-set TodoMVC regression ship. Wired into `npm run check`.
+ * 3. **Example doc excerpts mirror their source's kerfjs imports**
+ *    (examples/complete/) — for every paired
+ *    `site/src/content/docs/examples/complete/<name>.md` ↔
+ *    `site/src/examples/complete/<name>/main.tsx`, every named import the
+ *    source pulls from `'kerfjs'` (or any `'kerfjs/*'` subpath) must also
+ *    appear in at least one kerf-import statement somewhere in the doc page.
+ *    Catches "release introduced a new public API (`attr()`, …) and updated
+ *    the source, but the doc excerpt still uses the pre-release pattern" —
+ *    the v0.11.0 release missed this and shipped doc/source drift.
+ *
+ * Surfaces the kerf-of-the-shape "doc snippet violates a runtime contract"
+ * bug that let the partial-set TodoMVC regression ship plus the "source
+ * moved to attr() but doc excerpts didn't" drift caught after v0.11.0.
+ * Wired into `npm run check`.
  */
 
 import { execSync } from 'node:child_process';
@@ -30,6 +42,8 @@ import { fileURLToPath } from 'node:url';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(__dirname, '..');
 const migratingDir = resolve(repoRoot, 'site/src/content/docs/migrating');
+const exampleDocsDir = resolve(repoRoot, 'site/src/content/docs/examples/complete');
+const exampleSrcDir = resolve(repoRoot, 'site/src/examples/complete');
 const buildExamplesPath = resolve(repoRoot, 'site/scripts/build-examples.mjs');
 const browserSpecPath = resolve(repoRoot, 'tests/browser/example-apps.spec.ts');
 const distTypingTsconfig = resolve(repoRoot, 'tests/dist/jsx-typing/tsconfig.json');
@@ -138,6 +152,51 @@ if (process.exitCode === 1) {
   process.exit(1);
 }
 ok(`${totalLinks} /kerf/run/ links resolve to built+tested examples`);
+
+// --- Check 3: example doc excerpts mirror their source's kerfjs imports ----
+
+/** Pull every named import (including `type` imports) from any
+ *  `import { ... } from 'kerfjs[/subpath]'` statement in `src`. */
+function extractKerfImports(src) {
+  const out = new Set();
+  const re = /import\s*(?:type\s+)?\{\s*([^}]+)\s*\}\s*from\s*['"]kerfjs(?:\/[a-z-]+)?['"]/g;
+  for (const m of src.matchAll(re)) {
+    for (const raw of m[1].split(',')) {
+      const name = raw.trim().replace(/^type\s+/, '').split(/\s+as\s+/)[0].trim();
+      if (name) out.add(name);
+    }
+  }
+  return out;
+}
+
+let totalExamplePairs = 0;
+const exampleDocFiles = existsSync(exampleDocsDir)
+  ? readdirSync(exampleDocsDir).filter((f) => f.endsWith('.md') && f !== 'index.md')
+  : [];
+
+for (const docFile of exampleDocFiles) {
+  const baseName = docFile.replace(/\.md$/, '');
+  const srcPath = resolve(exampleSrcDir, baseName, 'main.tsx');
+  if (!existsSync(srcPath)) continue; // doc has no paired source — skip
+  totalExamplePairs++;
+
+  const srcImports = extractKerfImports(readFileSync(srcPath, 'utf8'));
+  const docImports = extractKerfImports(readFileSync(resolve(exampleDocsDir, docFile), 'utf8'));
+
+  const missing = [...srcImports].filter((i) => !docImports.has(i));
+  if (missing.length > 0) {
+    fail(
+      `${docFile}: paired source examples/complete/${baseName}/main.tsx imports ` +
+      `[${missing.join(', ')}] from kerfjs, but the doc excerpt never mentions ` +
+      `${missing.length === 1 ? 'it' : 'them'}. Update the doc to reflect the canonical pattern.`,
+    );
+  }
+}
+if (process.exitCode === 1) {
+  ok(`${totalExamplePairs} example doc/source pairs — drift detected, see errors above`);
+  process.exit(1);
+}
+ok(`${totalExamplePairs} example doc/source pairs have matching kerfjs imports`);
 
 // --- Compile self-contained blocks via tsc ------------------------------
 

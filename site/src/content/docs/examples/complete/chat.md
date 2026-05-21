@@ -22,14 +22,18 @@ A small streaming chat. Type a question, hit Enter, watch the bot reply type its
 - **One `each()` over the message list.** The keyed list reconciler owns the messages. When a chunk streams in, only the streaming bubble's row re-renders — every other row is cached by its memo key.
 - **Streaming = one signal write per chunk.** `streamReply()` is a plain `setTimeout` loop that mutates the last message's `text`. There's no observable, no async iterator, no special framework hook. kerf's keyed-list memo (`` `${m.id}-${m.text.length}-${m.streaming ? 's' : 'f'}` ``) is what tells the reconciler "the streaming row's content changed, the rest is identical."
 - **`data-morph-skip` on the textarea.** The composer textarea is marked skip so the morph never recurses into it. The user's draft, caret, and selection survive every re-render no matter how often the messages list updates. The Send button sits *outside* the skip boundary so its `disabled` state still tracks `busy.value`.
-- **Delegation, everywhere.** One `delegate(root, 'keydown', '[data-input]', …)` for Enter-to-send. One `delegate(root, 'submit', '[data-composer]', …)` for the button + Enter-when-button-focused path. One `delegate(root, 'click', '.chip', …)` for the quick-prompt chips. One `delegate(root, 'click', '[data-action="copy"]', …)` for the per-bubble copy button. All Tier 1 (bubbling). No per-message listeners.
+- **Delegation, everywhere.** One `delegate(root, 'keydown', '[data-input]', …)` for Enter-to-send. One `delegate(root, 'submit', '[data-composer]', …)` for the button + Enter-when-button-focused path. One `delegate(root, 'click', '.chip', …)` for the quick-prompt chips. One `delegate(root, 'click', ACTIONS.copy.selector, …)` for the per-bubble copy button (the `ACTIONS` map is built from `attr('data-action', 'copy')` so JSX and selector stay in sync). All Tier 1 (bubbling). No per-message listeners.
 - **`effect()` for auto-scroll.** A standalone `effect()` subscribes to `messages.value` and scrolls the messages container to the bottom in a microtask. Decoupled from `mount()` — it's just a reactive side-effect.
 
 [View source on GitHub →](https://github.com/brianwestphal/kerf/tree/main/site/src/examples/complete/chat)
 
 ```tsx
 // site/src/examples/complete/chat/main.tsx (excerpt — full source on GitHub)
-import { signal, mount, each, delegate, effect } from 'kerfjs';
+import { signal, mount, each, delegate, effect, attr, type AttrSpec } from 'kerfjs';
+
+// One typed map of action keys; JSX spreads `.attrs`, delegate uses `.selector`.
+const ACTIONS = { copy: attr('data-action', 'copy') } as const satisfies Record<string, AttrSpec<'data-action'>>;
+const ITEM = { id: attr('data-id') } as const;
 
 interface Message { id: string; role: 'user' | 'bot'; text: string; streaming?: boolean }
 
@@ -48,6 +52,9 @@ mount(root, () => (
               {m.text}
               {m.streaming ? <span class="caret"></span> : null}
             </div>
+            {m.role === 'bot' && !m.streaming
+              ? <button class="copy" {...ACTIONS.copy.attrs} {...ITEM.id(m.id)}>Copy</button>
+              : null}
           </div>
         ),
         // Memo per chunk → only the streaming row re-renders.
@@ -81,6 +88,13 @@ delegate(root, 'keydown', '[data-input]', (e, el) => {
 delegate(root, 'submit', '[data-composer]', (e) => {
   e.preventDefault();
   send((root.querySelector('[data-input]') as HTMLTextAreaElement).value);
+});
+// Copy a finished bot bubble. ACTIONS.copy.selector is pre-escaped at module
+// load — renaming the action key updates JSX and the delegate target together.
+delegate(root, 'click', ACTIONS.copy.selector, (_e, el) => {
+  const id = (el as HTMLElement).dataset.id;
+  const msg = messages.value.find((m) => m.id === id);
+  if (msg) void navigator.clipboard.writeText(msg.text);
 });
 
 function send(text: string) {

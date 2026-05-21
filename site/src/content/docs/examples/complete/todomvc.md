@@ -10,6 +10,7 @@ The classic TodoMVC, implemented in kerf. ~150 lines. Persists across reloads vi
 **What to look at:**
 
 - **One store** holds items, filter, and the in-edit id. All state changes go through named actions.
+- **`attr()` action map** — `ACTIONS.toggle` etc. is defined once; JSX spreads `{...ACTIONS.toggle.attrs}` (rename-safe, no hardcoded attribute name) and the delegate calls pass the pre-escaped `ACTIONS.toggle.selector`. Renaming the action in one place updates JSX + delegate together.
 - **`effect()` round-trips to `localStorage`** — read on startup, write on every state change. No middleware, no plugin.
 - **Memo key includes the edit state** — `\`${todo.id}-${editingId === todo.id ? 'edit' : 'view'}\`` — so the row's HTML is recomputed when it flips between view and edit modes, but cached otherwise.
 - **`delegateCapture('blur', ...)`** for the edit input commits on blur. `blur` doesn't bubble, so capture-phase is required.
@@ -19,7 +20,17 @@ The classic TodoMVC, implemented in kerf. ~150 lines. Persists across reloads vi
 
 ```tsx
 // site/src/examples/complete/todomvc/main.tsx
-import { defineStore, mount, each, delegate, delegateCapture, effect } from 'kerfjs';
+import { defineStore, mount, each, delegate, delegateCapture, effect, attr, type AttrSpec } from 'kerfjs';
+
+const ACTIONS = {
+  toggle:    attr('data-action', 'toggle'),
+  remove:    attr('data-action', 'remove'),
+  edit:      attr('data-action', 'edit'),
+  filter:    attr('data-action', 'filter'),
+  clearDone: attr('data-action', 'clear-done'),
+} as const satisfies Record<string, AttrSpec<'data-action'>>;
+
+const ITEM = { id: attr('data-id') } as const;
 
 interface Todo { id: string; text: string; done: boolean }
 type Filter = 'all' | 'active' | 'done';
@@ -45,27 +56,29 @@ const todos = defineStore({
     add: (text: string) => {
       const t = text.trim();
       if (!t) return;
-      set({ items: [...get().items, { id: crypto.randomUUID(), text: t, done: false }] });
+      set({ ...get(), items: [...get().items, { id: crypto.randomUUID(), text: t, done: false }] });
     },
     toggle: (id: string) => set({
+      ...get(),
       items: get().items.map((it) => (it.id === id ? { ...it, done: !it.done } : it)),
     }),
-    remove: (id: string) => set({ items: get().items.filter((it) => it.id !== id) }),
-    clearDone: () => set({ items: get().items.filter((it) => !it.done) }),
-    setFilter: (filter: Filter) => set({ filter }),
-    startEdit: (id: string) => set({ editingId: id }),
+    remove: (id: string) => set({ ...get(), items: get().items.filter((it) => it.id !== id) }),
+    clearDone: () => set({ ...get(), items: get().items.filter((it) => !it.done) }),
+    setFilter: (filter: Filter) => set({ ...get(), filter }),
+    startEdit: (id: string) => set({ ...get(), editingId: id }),
     commitEdit: (id: string, text: string) => {
       const t = text.trim();
       if (!t) {
-        set({ items: get().items.filter((it) => it.id !== id), editingId: null });
+        set({ ...get(), items: get().items.filter((it) => it.id !== id), editingId: null });
         return;
       }
       set({
+        ...get(),
         items: get().items.map((it) => (it.id === id ? { ...it, text: t } : it)),
         editingId: null,
       });
     },
-    cancelEdit: () => set({ editingId: null }),
+    cancelEdit: () => set({ ...get(), editingId: null }),
   }),
 });
 
@@ -84,17 +97,31 @@ mount(root, () => {
 
   return (
     <div class="todoapp">
-      {/* …header / list / footer JSX (full source on GitHub)… */}
+      <ul class="todo-list">
+        {each(
+          visible,
+          (todo) => (
+            <li data-key={todo.id} class={editingId === todo.id ? 'editing' : ''}>
+              <input type="checkbox" {...ACTIONS.toggle.attrs} {...ITEM.id(todo.id)} checked={todo.done} />
+              <label {...ACTIONS.edit.attrs} {...ITEM.id(todo.id)}>{todo.text}</label>
+              <button {...ACTIONS.remove.attrs} {...ITEM.id(todo.id)}>×</button>
+            </li>
+          ),
+          (todo) => `${todo.id}-${editingId === todo.id ? 'edit' : 'view'}`,
+        )}
+      </ul>
+      <span>{remaining} left</span>
+      <button {...ACTIONS.clearDone.attrs}>Clear completed</button>
     </div>
   );
 });
 
-// Tier 1 click delegations:
-delegate(root, 'click', '[data-action="toggle"]', (_e, el) => todos.actions.toggle((el as HTMLElement).dataset.id!));
-delegate(root, 'click', '[data-action="remove"]', (_e, el) => todos.actions.remove((el as HTMLElement).dataset.id!));
-delegate(root, 'click', '[data-action="edit"]',   (_e, el) => todos.actions.startEdit((el as HTMLElement).dataset.id!));
-delegate(root, 'click', '[data-action="filter"]', (_e, el) => todos.actions.setFilter((el as HTMLElement).dataset.value as Filter));
-delegate(root, 'click', '[data-action="clear-done"]', () => todos.actions.clearDone());
+// Tier 1 click delegations — `.selector` is pre-computed and CSS-escaped:
+delegate(root, 'click', ACTIONS.toggle.selector, (_e, el) => todos.actions.toggle((el as HTMLElement).dataset.id!));
+delegate(root, 'click', ACTIONS.remove.selector, (_e, el) => todos.actions.remove((el as HTMLElement).dataset.id!));
+delegate(root, 'click', ACTIONS.edit.selector,   (_e, el) => todos.actions.startEdit((el as HTMLElement).dataset.id!));
+delegate(root, 'click', ACTIONS.filter.selector, (_e, el) => todos.actions.setFilter((el as HTMLElement).dataset.value as Filter));
+delegate(root, 'click', ACTIONS.clearDone.selector, () => todos.actions.clearDone());
 
 // Enter on the new-todo input.
 delegate(root, 'keydown', '[data-new]', (e, el) => {

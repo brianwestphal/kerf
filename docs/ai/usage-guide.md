@@ -82,10 +82,13 @@ import { arraySignal } from 'kerfjs/array-signal';
 
 ```tsx
 // 1. Signal + mount: re-runs render when count.value changes.
+// `attr()` ties a `data-action` attribute and its CSS selector together so
+// renames stay in sync between JSX and `delegate()`.
+const INC = attr('data-action', 'inc');
 const count = signal(0);
 mount(document.getElementById('app')!, () => (
   <div>
-    <button data-action="inc">+</button>
+    <button {...INC.attrs}>+</button>
     <span>{count.value}</span>
   </div>
 ));
@@ -104,7 +107,7 @@ const cart = defineStore({
 // access: cart.state.value.items, cart.actions.add('x'), cart.reset()
 
 // 4. Delegate: ONE listener at the root, survives every re-render.
-delegate(rootEl, 'click', '[data-action="inc"]', () => { count.value += 1; });
+delegate(rootEl, 'click', INC.selector, () => { count.value += 1; });
 ```
 
 ## Event delegation tiers
@@ -222,9 +225,10 @@ const html = (<div>Hello</div>).toString(); // "<div>Hello</div>"
 ## Mental model in one diagram
 
 ```
+   const INC = attr('data-action', 'inc');
    const count = signal(0);
    mount(rootEl, () => <span>{count.value}</span>);   // effect() wrapper
-   delegate(rootEl, 'click', '[data-action="inc"]', () => count.value++);
+   delegate(rootEl, 'click', INC.selector, () => count.value++);
                            │
                            │  count.value changes
                            ▼

@@ -78,7 +78,10 @@ const initialItems = await fetch('/api/cart').then((r) => r.json());
 
 <!-- 2. Client-side mount script -->
 <script>
-  import { signal, mount, each, delegate } from 'kerfjs';
+  import { signal, mount, each, delegate, attr } from 'kerfjs';
+
+  const REMOVE = attr('data-action', 'remove');
+  const ITEM = { id: attr('data-id') } as const;
 
   const root = document.getElementById('cart')!;
   const initial = JSON.parse(root.dataset.initial!);
@@ -93,7 +96,7 @@ const initialItems = await fetch('/api/cart').then((r) => r.json());
           (it) => (
             <li data-key={it.id}>
               {it.name} — ${it.price}
-              <button data-action="remove" data-id={it.id}>×</button>
+              <button {...REMOVE.attrs} {...ITEM.id(it.id)}>×</button>
             </li>
           ),
           (it) => it.id,
@@ -103,7 +106,7 @@ const initialItems = await fetch('/api/cart').then((r) => r.json());
     </div>
   ));
 
-  delegate(root, 'click', '[data-action="remove"]', (_e, btn) => {
+  delegate(root, 'click', REMOVE.selector, (_e, btn) => {
     const id = (btn as HTMLElement).dataset.id;
     items.value = items.value.filter((it) => it.id !== id);
   });

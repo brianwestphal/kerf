@@ -58,6 +58,7 @@ export default [
 | [`require-data-key-in-each`](docs/rules/require-data-key-in-each.md) | 2 — `data-key` per item | `error` |
 | [`no-nested-mount`](docs/rules/no-nested-mount.md) | 5 — one `mount()` per root | `error` |
 | [`prefer-module-jsx-augmentation`](docs/rules/prefer-module-jsx-augmentation.md) | 11 — augment `kerfjs/jsx-runtime`, not global | `error` |
+| [`prefer-attr-selector`](docs/rules/prefer-attr-selector.md) | — (rename-safety nudge for `delegate()` selectors) | `warn` |
 | [`no-raw-with-dynamic-arg`](docs/rules/no-raw-with-dynamic-arg.md) | — (XSS audit trail) | `warn` |
 | [`ai-assistant-configs`](docs/rules/ai-assistant-configs.md) | — (project hygiene) | `warn` |
 

@@ -36,7 +36,9 @@ A working version of the composition lives at [`site/src/examples/complete/cart-
 </div>
 
 <script type="module">
-  import { mount, signal, delegate } from 'https://esm.sh/kerfjs';
+  import { mount, signal, delegate, attr } from 'https://esm.sh/kerfjs';
+
+  const ADD = attr('data-action', 'add');
 
   document.body.addEventListener('htmx:afterSwap', (e) => {
     const root = e.target.querySelector('[data-kerf-cart]');
@@ -47,11 +49,11 @@ A working version of the composition lives at [`site/src/examples/complete/cart-
     const count = signal(0);
     mount(root, () => (
       <div>
-        <button data-action="add">Add</button>
+        <button {...ADD.attrs}>Add</button>
         <span>{count.value}</span>
       </div>
     ));
-    delegate(root, 'click', '[data-action="add"]', () => count.value += 1);
+    delegate(root, 'click', ADD.selector, () => count.value += 1);
   }
 </script>
 ```

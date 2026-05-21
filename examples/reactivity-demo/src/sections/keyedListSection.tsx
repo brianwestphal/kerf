@@ -8,7 +8,16 @@
  * with the same logical row.
  */
 
-import { delegate, mount, signal } from 'kerfjs';
+import { attr, delegate, mount, signal, type AttrSpec } from 'kerfjs';
+
+const ACTIONS = {
+  add:      attr('data-action', 'add'),
+  remove:   attr('data-action', 'remove'),
+  shuffle:  attr('data-action', 'shuffle'),
+  reverse:  attr('data-action', 'reverse'),
+  rerender: attr('data-action', 'rerender'),
+} as const satisfies Record<string, AttrSpec<'data-action'>>;
+const ITEM = { id: attr('data-id') } as const;
 
 interface Row { id: string; label: string }
 
@@ -33,10 +42,10 @@ export function mountKeyedList(root: HTMLElement): void {
         <h2>4. Keyed list <span className="demo-tag">data-key • identity preserved across reorders</span></h2>
 
         <div className="demo-row">
-          <button type="button" data-action="add" className="demo-btn">+ add row</button>
-          <button type="button" data-action="shuffle" className="demo-btn">shuffle</button>
-          <button type="button" data-action="reverse" className="demo-btn">reverse</button>
-          <button type="button" data-action="rerender" className="demo-btn demo-btn-ghost">force re-render</button>
+          <button type="button" {...ACTIONS.add.attrs} className="demo-btn">+ add row</button>
+          <button type="button" {...ACTIONS.shuffle.attrs} className="demo-btn">shuffle</button>
+          <button type="button" {...ACTIONS.reverse.attrs} className="demo-btn">reverse</button>
+          <button type="button" {...ACTIONS.rerender.attrs} className="demo-btn demo-btn-ghost">force re-render</button>
         </div>
 
         <ul className="demo-keyed-list">
@@ -50,7 +59,7 @@ export function mountKeyedList(root: HTMLElement): void {
                 autocomplete="off"
                 spellcheck="false"
               />
-              <button type="button" data-action="remove" data-id={row.id} className="demo-btn demo-btn-ghost demo-btn-tiny">×</button>
+              <button type="button" {...ACTIONS.remove.attrs} {...ITEM.id(row.id)} className="demo-btn demo-btn-ghost demo-btn-tiny">×</button>
             </li>
           ))}
         </ul>
@@ -64,20 +73,20 @@ export function mountKeyedList(root: HTMLElement): void {
     );
   });
 
-  delegate(root, 'click', '[data-action="add"]', () => {
+  delegate(root, 'click', ACTIONS.add.selector, () => {
     rows.value = [...rows.value, makeRow(`Row ${rows.value.length + 1}`)];
   });
-  delegate(root, 'click', '[data-action="remove"]', (_e, btn) => {
+  delegate(root, 'click', ACTIONS.remove.selector, (_e, btn) => {
     const id = (btn as HTMLElement).dataset.id;
     if (id !== undefined) rows.value = rows.value.filter((r) => r.id !== id);
   });
-  delegate(root, 'click', '[data-action="shuffle"]', () => {
+  delegate(root, 'click', ACTIONS.shuffle.selector, () => {
     rows.value = [...rows.value].sort(() => Math.random() - 0.5);
   });
-  delegate(root, 'click', '[data-action="reverse"]', () => {
+  delegate(root, 'click', ACTIONS.reverse.selector, () => {
     rows.value = [...rows.value].reverse();
   });
-  delegate(root, 'click', '[data-action="rerender"]', () => {
+  delegate(root, 'click', ACTIONS.rerender.selector, () => {
     renderTicks.value += 1;
   });
 }

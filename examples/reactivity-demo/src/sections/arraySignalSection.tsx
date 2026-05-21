@@ -16,8 +16,19 @@
  * in one `template.innerHTML` call.
  */
 
-import { delegate, each, mount, signal } from 'kerfjs';
+import { attr, delegate, each, mount, signal, type AttrSpec } from 'kerfjs';
 import { arraySignal } from 'kerfjs/array-signal';
+
+const ACTIONS = {
+  push:          attr('data-action', 'push'),
+  push100:       attr('data-action', 'push-100'),
+  toggleFirst:   attr('data-action', 'toggle-first'),
+  toggle:        attr('data-action', 'toggle'),
+  moveFirstLast: attr('data-action', 'move-first-last'),
+  removeLast:    attr('data-action', 'remove-last'),
+  reset:         attr('data-action', 'reset'),
+} as const satisfies Record<string, AttrSpec<'data-action'>>;
+const ITEM = { id: attr('data-id') } as const;
 
 interface Row {
   id: string;
@@ -52,12 +63,12 @@ export function mountArraySignalSection(root: HTMLElement): void {
       </h2>
 
       <div className="demo-row">
-        <button type="button" data-action="push" className="demo-btn">push 1</button>
-        <button type="button" data-action="push-100" className="demo-btn">push 100</button>
-        <button type="button" data-action="toggle-first" className="demo-btn">toggle row 0</button>
-        <button type="button" data-action="move-first-last" className="demo-btn">move 0 → end</button>
-        <button type="button" data-action="remove-last" className="demo-btn demo-btn-ghost">pop</button>
-        <button type="button" data-action="reset" className="demo-btn demo-btn-ghost">reset</button>
+        <button type="button" {...ACTIONS.push.attrs} className="demo-btn">push 1</button>
+        <button type="button" {...ACTIONS.push100.attrs} className="demo-btn">push 100</button>
+        <button type="button" {...ACTIONS.toggleFirst.attrs} className="demo-btn">toggle row 0</button>
+        <button type="button" {...ACTIONS.moveFirstLast.attrs} className="demo-btn">move 0 → end</button>
+        <button type="button" {...ACTIONS.removeLast.attrs} className="demo-btn demo-btn-ghost">pop</button>
+        <button type="button" {...ACTIONS.reset.attrs} className="demo-btn demo-btn-ghost">reset</button>
       </div>
 
       <p className="demo-note">
@@ -74,8 +85,8 @@ export function mountArraySignalSection(root: HTMLElement): void {
             <span className="demo-keyed-label">{row.label}</span>
             <button
               type="button"
-              data-action="toggle"
-              data-id={row.id}
+              {...ACTIONS.toggle.attrs}
+              {...ITEM.id(row.id)}
               className="demo-btn demo-btn-ghost demo-btn-tiny"
             >
               {row.selected ? '✓' : '·'}
@@ -95,13 +106,13 @@ export function mountArraySignalSection(root: HTMLElement): void {
     </div>
   ));
 
-  delegate(root, 'click', '[data-action="push"]', () => {
+  delegate(root, 'click', ACTIONS.push.selector, () => {
     const row = makeRow(`Item ${rowSeq + 1}`);
     rows.push(row);
     logPatch('push', `${row.label}`);
   });
 
-  delegate(root, 'click', '[data-action="push-100"]', () => {
+  delegate(root, 'click', ACTIONS.push100.selector, () => {
     const start = rowSeq + 1;
     for (let i = 0; i < 100; i++) {
       rows.push(makeRow(`Item ${start + i}`));
@@ -109,7 +120,7 @@ export function mountArraySignalSection(root: HTMLElement): void {
     logPatch('push×100', `Item ${start}..${start + 99}`);
   });
 
-  delegate(root, 'click', '[data-action="toggle-first"]', () => {
+  delegate(root, 'click', ACTIONS.toggleFirst.selector, () => {
     if (rows.value.length === 0) return;
     rows.update(0, (r) => ({ ...r, selected: !r.selected }));
     // arraySignal mutates _items eagerly, so rows.value[0].selected is
@@ -117,7 +128,7 @@ export function mountArraySignalSection(root: HTMLElement): void {
     logPatch('update', `0 selected→${rows.value[0].selected ? 'true' : 'false'}`);
   });
 
-  delegate(root, 'click', '[data-action="toggle"]', (_e, btn) => {
+  delegate(root, 'click', ACTIONS.toggle.selector, (_e, btn) => {
     const id = (btn as HTMLElement).dataset.id;
     const idx = rows.value.findIndex((r) => r.id === id);
     if (idx === -1) return;
@@ -125,20 +136,20 @@ export function mountArraySignalSection(root: HTMLElement): void {
     logPatch('update', `${idx} selected toggle`);
   });
 
-  delegate(root, 'click', '[data-action="move-first-last"]', () => {
+  delegate(root, 'click', ACTIONS.moveFirstLast.selector, () => {
     if (rows.value.length < 2) return;
     rows.move(0, rows.value.length - 1);
     logPatch('move', `0 → ${rows.value.length - 1}`);
   });
 
-  delegate(root, 'click', '[data-action="remove-last"]', () => {
+  delegate(root, 'click', ACTIONS.removeLast.selector, () => {
     if (rows.value.length === 0) return;
     const idx = rows.value.length - 1;
     const removed = rows.remove(idx);
     logPatch('remove', `${idx} (${removed.label})`);
   });
 
-  delegate(root, 'click', '[data-action="reset"]', () => {
+  delegate(root, 'click', ACTIONS.reset.selector, () => {
     rows.replace([
       makeRow('Apple'),
       makeRow('Banana'),

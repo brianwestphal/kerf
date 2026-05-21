@@ -1,6 +1,6 @@
 ---
 title: ESLint plugin
-description: eslint-plugin-kerfjs — four AST-only rules enforcing kerf's hard rules at edit time.
+description: eslint-plugin-kerfjs — AST-only rules enforcing kerf's hard rules and rename-safety patterns at edit time.
 ---
 
 `eslint-plugin-kerfjs` is a companion ESLint plugin that catches kerf hard-rule violations at edit time, before they reach `tsc` or the runtime dev-warns. It sits alongside two earlier defense layers shipped by kerf:
@@ -50,7 +50,7 @@ export default [
 
 ## Rules
 
-All four rules are `error` severity in the `recommended` preset.
+Most rules ship as `error` in the `recommended` preset (AST-shaped antipatterns are bugs). `prefer-attr-selector`, `no-raw-with-dynamic-arg`, and `ai-assistant-configs` ship as `warn` — they're nudges, audit trails, or project-hygiene checks, not correctness bugs.
 
 ### `kerfjs/no-inline-jsx-event-handlers`
 
@@ -113,7 +113,22 @@ declare module 'kerfjs/jsx-runtime' {
 }
 ```
 
-## Why these four, and not more
+### `kerfjs/prefer-attr-selector`
+
+When `delegate()` / `delegateCapture()` is called with a literal `[name="value"]` selector string, nudge toward defining `attr('name', 'value')` once and passing its `.selector` — so the JSX (`{...spec.attrs}`) and the delegate target stay synchronized through a single typed source. Rename-safety; not a correctness rule. Severity: `warn`.
+
+```tsx
+// ❌ — JSX attribute and selector string are independent literals
+<button data-action="toggle">Toggle</button>
+delegate(root, 'click', '[data-action="toggle"]', handler);
+
+// ✅ — one typed constant drives both
+const TOGGLE = attr('data-action', 'toggle');
+<button {...TOGGLE.attrs}>Toggle</button>
+delegate(root, 'click', TOGGLE.selector, handler);
+```
+
+## Why these rules, and not more
 
 Rules that need flow analysis (signal reads outside render), call-graph analysis (`addEventListener` inside the mount tree), or type information (partial-set against multi-key state) are already covered by the opt-in dev-warns and strict TS. Duplicating them in lint would mean either high false-positive rates without type info, or a `parserServices` dependency that complicates consumer setup.
 

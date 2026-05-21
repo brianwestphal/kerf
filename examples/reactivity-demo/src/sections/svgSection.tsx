@@ -10,7 +10,12 @@
  * orphan fragment doesn't paint standalone.
  */
 
-import { delegate, mount, signal } from 'kerfjs';
+import { attr, delegate, mount, signal, type AttrSpec } from 'kerfjs';
+
+const ACTIONS = {
+  setAngle:  attr('data-action', 'set-angle'),
+  setRadius: attr('data-action', 'set-radius'),
+} as const satisfies Record<string, AttrSpec<'data-action'>>;
 
 export function mountSvgRender(root: HTMLElement): void {
   const angle = signal(45);
@@ -23,12 +28,12 @@ export function mountSvgRender(root: HTMLElement): void {
       <div className="demo-row">
         <label className="demo-label">
           rotation:
-          <input type="range" min="0" max="360" value={String(angle.value)} data-action="set-angle" className="demo-slider" />
+          <input type="range" min="0" max="360" value={String(angle.value)} {...ACTIONS.setAngle.attrs} className="demo-slider" />
           <span className="demo-angle-value">{angle.value}°</span>
         </label>
         <label className="demo-label">
           radius:
-          <input type="range" min="10" max="55" value={String(radius.value)} data-action="set-radius" className="demo-slider" />
+          <input type="range" min="10" max="55" value={String(radius.value)} {...ACTIONS.setRadius.attrs} className="demo-slider" />
           <span className="demo-angle-value">{radius.value}</span>
         </label>
       </div>
@@ -57,10 +62,10 @@ export function mountSvgRender(root: HTMLElement): void {
     </div>
   ));
 
-  delegate(root, 'input', '[data-action="set-angle"]', (_e, target) => {
+  delegate(root, 'input', ACTIONS.setAngle.selector, (_e, target) => {
     angle.value = Number((target as HTMLInputElement).value);
   });
-  delegate(root, 'input', '[data-action="set-radius"]', (_e, target) => {
+  delegate(root, 'input', ACTIONS.setRadius.selector, (_e, target) => {
     radius.value = Number((target as HTMLInputElement).value);
   });
 }

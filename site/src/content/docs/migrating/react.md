@@ -70,7 +70,15 @@ function App() {
 
 ```tsx
 // Kerf
-import { defineStore, mount, each, delegate, delegateCapture, effect } from 'kerfjs';
+import { defineStore, mount, each, delegate, delegateCapture, effect, attr, type AttrSpec } from 'kerfjs';
+
+// Rename-safe action keys: pre-escaped CSS selectors, spreadable JSX attrs.
+const ACTIONS = {
+  toggle: attr('data-action', 'toggle'),
+  remove: attr('data-action', 'remove'),
+  edit:   attr('data-action', 'edit'),
+} as const satisfies Record<string, AttrSpec<'data-action'>>;
+const ITEM = { id: attr('data-id') } as const;
 
 interface Todo { id: string; text: string; done: boolean }
 type Filter = 'all' | 'active' | 'done';
@@ -185,9 +193,9 @@ What moved: `className` → `class`, `autoFocus` → `autofocus` (kerf uses the 
           <input class="edit" data-edit data-id={todo.id} value={todo.text} autofocus />
         ) : (
           <>
-            <input type="checkbox" class="toggle" data-action="toggle" data-id={todo.id} checked={todo.done} />
-            <label data-action="edit" data-id={todo.id}>{todo.text}</label>
-            <button class="destroy" data-action="remove" data-id={todo.id}>×</button>
+            <input type="checkbox" class="toggle" {...ACTIONS.toggle.attrs} {...ITEM.id(todo.id)} checked={todo.done} />
+            <label {...ACTIONS.edit.attrs} {...ITEM.id(todo.id)}>{todo.text}</label>
+            <button class="destroy" {...ACTIONS.remove.attrs} {...ITEM.id(todo.id)}>×</button>
           </>
         )}
       </li>
@@ -199,7 +207,7 @@ What moved: `className` → `class`, `autoFocus` → `autofocus` (kerf uses the 
 
 What moved: `items.map` → `each(items, render, key)`. The third argument — the key function — is what `each` uses to memoize each row's HTML output between renders; rows whose key is unchanged are pulled from cache and never re-rendered. The `data-key={todo.id}` on the `<li>` is the *DOM* key the morph uses to identify the row across renders (so insert/delete don't blur the focused element). React's single `key` prop does both jobs; kerf splits them because the row-cache key sometimes needs to encode mode (e.g. `view` vs `edit`) while the DOM-identity key stays stable.
 
-Inline `onChange`/`onClick`/`onDoubleClick` handlers are replaced by `data-action` attributes; the real handler is registered once on the root in §3d.
+Inline `onChange`/`onClick`/`onDoubleClick` handlers are replaced by `data-action` attributes (here spread from the `ACTIONS` map via `attr()` so renaming an action updates JSX + delegate together); the real handler is registered once on the root in §3d.
 
 ### 3d. Events
 
@@ -213,13 +221,13 @@ Inline `onChange`/`onClick`/`onDoubleClick` handlers are replaced by `data-actio
 
 ```tsx
 // Kerf — handlers register once, at module load, on the root
-delegate(root, 'click', '[data-action="toggle"]', (_e, el) => {
+delegate(root, 'click', ACTIONS.toggle.selector, (_e, el) => {
   todos.actions.toggle((el as HTMLElement).dataset.id!);
 });
-delegate(root, 'click', '[data-action="remove"]', (_e, el) => {
+delegate(root, 'click', ACTIONS.remove.selector, (_e, el) => {
   todos.actions.remove((el as HTMLElement).dataset.id!);
 });
-delegate(root, 'click', '[data-action="edit"]', (_e, el) => {
+delegate(root, 'click', ACTIONS.edit.selector, (_e, el) => {
   todos.actions.startEdit((el as HTMLElement).dataset.id!);
 });
 delegate(root, 'keydown', '[data-new]', (e, el) => {

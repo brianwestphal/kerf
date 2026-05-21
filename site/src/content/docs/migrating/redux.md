@@ -78,8 +78,10 @@ export const counter = defineStore({
 });
 
 // Kerf usage (inside a mount):
-// <span>{counter.state.value.count}</span>
-// delegate(root, 'click', '[data-action="inc"]', () => counter.actions.increment());
+//   const INC = attr('data-action', 'inc');
+//   <span>{counter.state.value.count}</span>
+//   <button {...INC.attrs}>+1</button>
+//   delegate(root, 'click', INC.selector, () => counter.actions.increment());
 ```
 
 What moved:
