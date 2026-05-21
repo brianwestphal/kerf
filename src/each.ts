@@ -38,6 +38,7 @@
  */
 
 import type { ArraySignal } from './array-signal.js';
+import { maybeWarnDuplicateCacheKeys } from './dev-each-warn.js';
 import type { SafeHtml } from './jsx-runtime.js';
 import { granularListSafeHtml, isSafeHtml, listSafeHtml } from './jsx-runtime.js';
 import type { ArrayPatchInternal } from './segment.js';
@@ -279,6 +280,9 @@ function eachSnapshotById<T extends object>(
       if (cache !== null) cache.set(item, { cacheKey: k, html });
     }
     segItems[i] = { ref: item, cacheKey: k, html };
+  }
+  if (cacheKey !== undefined) {
+    maybeWarnDuplicateCacheKeys(id, segItems);
   }
   return listSafeHtml(id, segItems);
 }

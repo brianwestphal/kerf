@@ -112,3 +112,18 @@ If you don't dispose, the listener stays bound for the lifetime of the rootEl �
 - **Don't `addEventListener` on individual rendered elements** unless they're inside a `data-morph-skip` subtree. Listeners attached to nodes the diff rebuilds will silently disappear on the next re-render.
 - **Don't worry about `mouseenter` / `mouseleave` not bubbling** — `delegate()` auto-promotes them to capture phase. The call site is identical to `mouseover`/`mouseout`, but you get the cleaner enter/leave semantics (no fires on internal element transitions).
 - **Don't try to compute "is this fresh DOM or preserved DOM" in a delegated handler** — the handler doesn't care. It just sees an event and a target.
+- **Don't read `e.target` to get the matched element — use the second argument `el`.** `el` is always the element matched by the selector (via `closest()`). `e.target` is the element the event physically landed on. If your `<button>` contains a `<span>`, clicking the span gives `e.target = <span>` — `dataset.id` will be `undefined` and the handler will silently do nothing.
+
+  ```ts
+  // Wrong — e.target can be a child <span>, not the <button>
+  delegate(root, 'click', '[data-action="remove"]', (e) => {
+    const id = (e.target as HTMLElement).dataset.id; // undefined when target is <span>
+    remove(id!); // id is undefined, silent failure
+  });
+
+  // Right — el is always the matched [data-action="remove"] element
+  delegate(root, 'click', '[data-action="remove"]', (_e, el) => {
+    const id = (el as HTMLElement).dataset.id; // always correct
+    remove(id!);
+  });
+  ```

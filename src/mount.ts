@@ -25,6 +25,7 @@
  * position are not destroyed and recreated on each tick.
  */
 
+import { maybeWarnEachInMorphSkip } from './dev-each-warn.js';
 import { installListenerRebuildWarn } from './dev-listener-warn.js';
 import { _setRenderContext, type RenderContext } from './each.js';
 import type { SafeHtml } from './jsx-runtime.js';
@@ -79,12 +80,19 @@ export type MountResult = SafeHtml | string | number | boolean | null | undefine
 // rebuilt bundle against the src test infrastructure).
 const MOUNTED_MARKER = Symbol.for('kerfjs.mounted');
 
+function describeEl(el: HTMLElement): string {
+  const tag = el.tagName.toLowerCase();
+  const id = el.id ? `#${el.id}` : '';
+  return `<${tag}${id}>`;
+}
+
 function assertNotInsideMountedTree(rootEl: HTMLElement): void {
-  // The element itself.
+  // The element itself — same element mounted twice.
   if ((rootEl as unknown as Record<symbol, unknown>)[MOUNTED_MARKER] === true) {
     throw new Error(
-      'mount: rootEl is already inside (or contains) a mounted tree. '
-      + 'kerf supports one mount per tree — compose with plain functions that return JSX instead of nesting mounts.',
+      `mount: ${describeEl(rootEl)} is already mounted. `
+      + 'Call the disposer returned by the first mount() before mounting again. '
+      + 'kerf supports one mount per element — compose with plain functions that return JSX instead of nesting mounts.',
     );
   }
   // Ancestors — walk up.
@@ -323,6 +331,9 @@ function bindListsFromMarkers(
     if (items.length > 0) {
       maybeWarnMissingRowKey(items[0].node, 0, items[0].html, binding);
     }
+    // Dev-mode: warn when an each() list is inside a data-morph-skip subtree
+    // (list rows still update; static reactive siblings are frozen).
+    maybeWarnEachInMorphSkip(id, liveParent, rootEl);
     bindings.set(id, binding);
   }
 }

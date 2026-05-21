@@ -149,6 +149,12 @@ On subsequent re-renders, the diff sees `data-morph-skip` on the host and short-
 - D3 / Plotly / Chart.js mounted regions.
 - Any element with imperative DOM mutations you manage yourself.
 
+> **Warning: `data-morph-skip` freezes all static reactive content inside the element.** The morph never visits a skipped element's children, so any JSX that reads signals directly (e.g. `<p>{count.value}</p>`) inside a `data-morph-skip` ancestor silently stops updating — the effect re-runs, the template is re-built, but the morph short-circuits and the new HTML is never applied.
+>
+> `each()` lists inside a skipped element are a special case: the keyed reconciler operates directly on the live parent and is independent of the morph, so list rows DO still update. This means a `data-morph-skip` element can contain an `each()` list whose rows update while other signal-reactive siblings are frozen — a confusing asymmetry. As a rule: if any direct JSX inside the element reads a signal, don't mark it `data-morph-skip`.
+>
+> Enable `KERF_DEV_WARN_EACH_IN_MORPH_SKIP=1` (see §11 dev-warnings) to get a runtime warning when an `each()` list's parent chain crosses a `data-morph-skip` boundary.
+
 ### `data-morph-skip-children` — client-hydrated slot
 
 Apply this attribute when the *children* are imperatively painted (and must survive the morph) but the element itself is server-rendered and needs its attributes to keep flowing through:

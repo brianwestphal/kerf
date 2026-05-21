@@ -183,6 +183,37 @@ Auto-promotes the well-known non-bubbling event types (`focus`, `blur`, `scroll`
 
 Same shape, but installs on the capture phase and matches via `target.matches(selector)` (direct match, no walk-up). The escape hatch — use it for custom non-bubbling events that aren't in `delegate()`'s auto-promotion list, or when you want capture-phase semantics with strict element-match behavior.
 
+### `attrSelector(attrs: Record<string, string>): string`
+
+Build a CSS attribute-selector string from a plain object map of `name → value` pairs:
+
+```ts
+attrSelector({ 'data-action': 'add-todo' })
+// → '[data-action="add-todo"]'
+
+attrSelector({ 'data-action': 'toggle', 'data-id': itemId })
+// → '[data-action="toggle"][data-id="42"]'
+
+delegate(root, 'click', attrSelector({ 'data-action': 'toggle' }), handler);
+```
+
+Both the attribute name and value are CSS-escaped — the name via `cssEscapeIdent` (identifier safe, SSR-safe), the value as a CSS double-quoted string — so the function is safe for any string value including external input with CSS metacharacters. Throws on an empty attribute name.
+
+Use this when selectors are constructed from data (e.g. `action` keys stored in constants) rather than hand-written string literals. Hand-written string literals like `'[data-action="add"]'` are fine for fixed selectors; `attrSelector` earns its keep when you're building a selector from a variable.
+
+### Generic type parameter: `delegate<T extends Element = Element>()`
+
+Both `delegate()` and `delegateCapture()` accept an optional element-type generic that narrows the `target` argument in the handler, avoiding casts:
+
+```ts
+delegate<HTMLButtonElement>(root, 'click', 'button[data-action]', (e, btn) => {
+  // btn is HTMLButtonElement — no cast needed
+  btn.disabled = true;
+});
+```
+
+The default is `Element` (untyped call sites are unaffected).
+
 ## 8.5 JSX runtime
 
 ### `import 'kerfjs/jsx-runtime'` — TypeScript / esbuild config

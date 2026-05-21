@@ -1,6 +1,7 @@
 import aiAssistantConfigs from './lib/rules/ai-assistant-configs.js';
 import noInlineJsxEventHandlers from './lib/rules/no-inline-jsx-event-handlers.js';
 import noNestedMount from './lib/rules/no-nested-mount.js';
+import noRawWithDynamicArg from './lib/rules/no-raw-with-dynamic-arg.js';
 import preferModuleJsxAugmentation from './lib/rules/prefer-module-jsx-augmentation.js';
 import requireDataKeyInEach from './lib/rules/require-data-key-in-each.js';
 
@@ -8,6 +9,7 @@ const plugin = {
   meta: { name: 'eslint-plugin-kerfjs', version: '0.9.0' },
   rules: {
     'no-inline-jsx-event-handlers': noInlineJsxEventHandlers,
+    'no-raw-with-dynamic-arg': noRawWithDynamicArg,
     'require-data-key-in-each': requireDataKeyInEach,
     'no-nested-mount': noNestedMount,
     'prefer-module-jsx-augmentation': preferModuleJsxAugmentation,
@@ -19,8 +21,12 @@ const plugin = {
 // Most rules ship as `error` in recommended (AST-shaped antipatterns are
 // bugs). `ai-assistant-configs` is `warn` — it's a project-hygiene nudge,
 // not a code defect, and a missing skill file shouldn't fail CI.
+// `no-raw-with-dynamic-arg` is `warn` in recommended — false-positive rate is
+// non-trivial (sanitized pipelines look dynamic to an AST rule), so `error`
+// would block too many legitimate uses without eslint-disable comments.
 const recommendedRules = {
   'kerfjs/no-inline-jsx-event-handlers': 'error',
+  'kerfjs/no-raw-with-dynamic-arg': 'warn',
   'kerfjs/require-data-key-in-each': 'error',
   'kerfjs/no-nested-mount': 'error',
   'kerfjs/prefer-module-jsx-augmentation': 'error',

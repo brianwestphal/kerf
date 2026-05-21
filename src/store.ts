@@ -33,7 +33,7 @@ export interface Store<TState, TActions> {
 
 interface DefineStoreSpec<TState, TActions> {
   initial: () => TState;
-  actions: (set: (next: TState) => void, get: () => TState) => TActions;
+  actions: (set: (next: TState) => void, get: () => Readonly<TState>) => TActions;
 }
 
 const REGISTRY: Array<{ reset: () => void }> = [];
@@ -63,7 +63,7 @@ export function defineStore<TState, TActions>(
   // silently landing on the underlying state without notifying subscribers.
   // Production keeps the bare reference for zero overhead. Read NODE_ENV via
   // globalThis so the source works untouched in browsers (no bare `process`).
-  const get = (): TState => {
+  const get = (): Readonly<TState> => {
     const v = internal.value;
     if (IS_DEV && v !== null && typeof v === 'object') {
       Object.freeze(v);

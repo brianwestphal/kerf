@@ -170,7 +170,25 @@ describe('mount()', () => {
 
     it('throws when mount() is called twice on the same element without dispose', () => {
       mount(root, () => 'first');
-      expect(() => mount(root, () => 'second')).toThrow(/already inside.*mounted tree/);
+      expect(() => mount(root, () => 'second')).toThrow(/is already mounted/);
+    });
+
+    it('includes the element tagName in the same-element double-mount error', () => {
+      mount(root, () => 'first');
+      expect(() => mount(root, () => 'second')).toThrow(/<div>/);
+    });
+
+    it('includes the element id in the double-mount error when the element has one', () => {
+      root.id = 'app';
+      mount(root, () => 'first');
+      try {
+        mount(root, () => 'second');
+        throw new Error('expected throw');
+      } catch (e) {
+        expect((e as Error).message).toContain('<div#app>');
+      } finally {
+        root.id = '';
+      }
     });
 
     it('allows mount() on the same element after the prior mount has been disposed', () => {
