@@ -12,10 +12,10 @@ The kerf side is the exact code shipping at [`site/src/examples/complete/todomvc
 | | Min + gz, runtime only |
 | --- | --- |
 | `vanjs-core` 1.5 | ~1.6 KB |
-| `kerfjs` 0.5 (incl. signals) | ~6.5 KB |
-| **Delta** | **~5 KB heavier** |
+| `kerfjs` (incl. signals) | ~11 KB |
+| **Delta** | **~9 KB heavier** |
 
-Kerf is bigger. What the extra ~5 KB buys you:
+Kerf is bigger. What the extra ~9 KB buys you:
 
 - **A keyed-list reconciler** (`each(items, render, key)`) with LIS-based moves and bulk-parse inserts. vanjs gives you `vanX.list()` but the contract is more limited and the perf profile under reorders is rougher.
 - **`morph()` — focus and selection survive re-render** without your code knowing it. In vanjs you write around this; in kerf you forget it's a problem.

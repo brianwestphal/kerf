@@ -122,7 +122,7 @@ Astro's official integrations (`@astrojs/react`, `@astrojs/preact`, `@astrojs/vu
 
 | | Astro + React island | Astro + kerf island |
 | --- | --- | --- |
-| Per-island runtime cost | ~45 KB (react + react-dom) | ~6.5 KB |
+| Per-island runtime cost | ~45 KB (react + react-dom) | ~11 KB |
 | Component model | React (hooks, lifecycle) | plain functions returning JSX, signals for state |
 | Hydration strategy | `client:load` / `client:idle` / `client:visible` directives | `<script>` runs on parse; you call `mount()` whenever you want |
 | Server-side rendering of the island | yes, automatic | yes, via `SafeHtml.toString()` if you want to SSR the initial HTML yourself |

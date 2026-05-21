@@ -12,10 +12,10 @@ The kerf side is the exact code shipping at [`site/src/examples/complete/todomvc
 | | Min + gz, runtime only |
 | --- | --- |
 | `svelte` 5 runtime (per-app, post-compile) | varies — typically 2–6 KB for a small app, growing with feature surface |
-| `kerfjs` (incl. signals) | ~6.5 KB |
-| **Delta** | **roughly comparable** (depends on Svelte feature usage) |
+| `kerfjs` (incl. signals) | ~11 KB |
+| **Delta** | **kerf is heavier** (Svelte's compiled runtime is typically 2–6 KB for a small app) |
 
-This is the framework comparison where bundle is *not* the decider. Svelte 5's compiler emits a slim runtime per app — small apps can land below kerf. The trade you're making is the compiler itself, the `.svelte` file format, and the implicit reactivity declarations (`$state`, `$derived`, `$effect`) for a small, runtime-only library you can read end-to-end. Same fine-grained reactivity model; no build step beyond the JSX one you already have.
+This is the framework comparison where bundle is *not* the decider. Svelte 5's compiler emits a slim runtime per app — most apps land well below kerf's ~11 KB. The trade you're making is the compiler itself, the `.svelte` file format, and the implicit reactivity declarations (`$state`, `$derived`, `$effect`) for a runtime-only library you can read end-to-end. Same fine-grained reactivity model; no build step beyond the JSX one you already have.
 
 ## 2. Mental-model translations
 

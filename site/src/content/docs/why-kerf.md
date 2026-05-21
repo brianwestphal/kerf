@@ -7,7 +7,7 @@ Four things kerf optimizes for. In order.
 
 ## 1. Smallest cut
 
-**6.5 KB gzipped, signals included.** That's the whole runtime — reactivity, render, diff, list reconciler, JSX runtime, event helpers — minus your app code.
+**~11 KB minified + gzipped, signals included.** That's the whole runtime — reactivity, render, diff, list reconciler, JSX runtime, event helpers — minus your app code.
 
 Fine-grained reactivity (signals from `@preact/signals-core`) means the render fn re-runs only when a value it actually read changed. No tree-walking to detect changes. No "hey, did anything change?" pass.
 

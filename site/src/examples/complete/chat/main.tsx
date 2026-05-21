@@ -1,4 +1,7 @@
-import { signal, mount, each, delegate, effect } from 'kerfjs';
+import { signal, mount, each, delegate, effect, attr, type AttrSpec } from 'kerfjs';
+
+const ACTIONS = { copy: attr('data-action', 'copy') } as const satisfies Record<string, AttrSpec<'data-action'>>;
+const ITEM = { id: attr('data-id') } as const;
 
 interface Message { id: string; role: 'user' | 'bot'; text: string; streaming?: boolean }
 
@@ -50,7 +53,7 @@ mount(root, () => (
                 {m.streaming ? <span class="caret"></span> : null}
               </div>
               {m.role === 'bot' && !m.streaming ? (
-                <div class="meta"><button class="copy" data-action="copy" data-id={m.id}>Copy</button></div>
+                <div class="meta"><button class="copy" {...ACTIONS.copy.attrs} {...ITEM.id(m.id)}>Copy</button></div>
               ) : null}
             </div>
           </div>
@@ -117,7 +120,7 @@ delegate(root, 'click', '.chip', (_e, el) => {
 });
 
 // Tier 1: copy any finished bot message.
-delegate(root, 'click', '[data-action="copy"]', (_e, el) => {
+delegate(root, 'click', ACTIONS.copy.selector, (_e, el) => {
   const id = (el as HTMLElement).dataset.id!;
   const m = messages.value.find((x) => x.id === id);
   if (m) void navigator.clipboard?.writeText(m.text);

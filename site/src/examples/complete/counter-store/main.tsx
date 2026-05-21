@@ -7,7 +7,15 @@
 //
 // Mirrors the worked examples in site/src/content/docs/migrating/redux.md.
 
-import { defineStore, effect, mount, delegate } from 'kerfjs';
+import { defineStore, effect, mount, delegate, attr, type AttrSpec } from 'kerfjs';
+
+const ACTIONS = {
+  inc:       attr('data-action', 'inc'),
+  dec:       attr('data-action', 'dec'),
+  reset:     attr('data-action', 'reset'),
+  fetchOk:   attr('data-action', 'fetch-ok'),
+  fetchFail: attr('data-action', 'fetch-fail'),
+} as const satisfies Record<string, AttrSpec<'data-action'>>;
 
 // --- Counter store -------------------------------------------------------
 
@@ -91,9 +99,9 @@ mount(counterRoot, () => {
         last bumped: {lastBumpedAt ? new Date(lastBumpedAt).toLocaleTimeString() : 'never'}
       </div>
       <div class="row">
-        <button data-action="inc">+1</button>
-        <button data-action="dec">−1</button>
-        <button data-action="reset">Reset</button>
+        <button {...ACTIONS.inc.attrs}>+1</button>
+        <button {...ACTIONS.dec.attrs}>−1</button>
+        <button {...ACTIONS.reset.attrs}>Reset</button>
       </div>
     </div>
   );
@@ -109,8 +117,8 @@ mount(asyncRoot, () => {
         {loading ? 'loading…' : error ? `error: ${error}` : data ? 'ok' : 'idle'}
       </div>
       <div class="row">
-        <button data-action="fetch-ok">Fetch (succeeds)</button>
-        <button data-action="fetch-fail">Fetch (fails)</button>
+        <button {...ACTIONS.fetchOk.attrs}>Fetch (succeeds)</button>
+        <button {...ACTIONS.fetchFail.attrs}>Fetch (fails)</button>
       </div>
       <div class="async-data" data-async-data>
         {data ? JSON.stringify(data, null, 2) : ''}
@@ -121,8 +129,8 @@ mount(asyncRoot, () => {
 
 // --- Events --------------------------------------------------------------
 
-delegate(document.body, 'click', '[data-action="inc"]', () => counter.actions.increment());
-delegate(document.body, 'click', '[data-action="dec"]', () => counter.actions.decrement());
-delegate(document.body, 'click', '[data-action="reset"]', () => counter.actions.reset());
-delegate(document.body, 'click', '[data-action="fetch-ok"]', () => { void remote.actions.fetch(true); });
-delegate(document.body, 'click', '[data-action="fetch-fail"]', () => { void remote.actions.fetch(false); });
+delegate(document.body, 'click', ACTIONS.inc.selector, () => counter.actions.increment());
+delegate(document.body, 'click', ACTIONS.dec.selector, () => counter.actions.decrement());
+delegate(document.body, 'click', ACTIONS.reset.selector, () => counter.actions.reset());
+delegate(document.body, 'click', ACTIONS.fetchOk.selector, () => { void remote.actions.fetch(true); });
+delegate(document.body, 'click', ACTIONS.fetchFail.selector, () => { void remote.actions.fetch(false); });

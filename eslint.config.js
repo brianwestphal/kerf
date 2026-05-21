@@ -48,6 +48,9 @@ export default [
       '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
       '@typescript-eslint/no-explicit-any': 'warn',
       'no-console': ['warn', { allow: ['warn', 'error'] }],
+      // TypeScript function overloads are legitimate redeclarations; tsc --noEmit
+      // catches actual redeclaration bugs, so the JS-only rule is redundant here.
+      'no-redeclare': 'off',
     },
   },
   {

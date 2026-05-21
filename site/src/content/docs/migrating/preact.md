@@ -13,8 +13,8 @@ The kerf side is the exact code shipping at [`site/src/examples/complete/todomvc
 | --- | --- |
 | `preact` 10.x | ~4 KB |
 | `preact` + `@preact/signals` | ~6 KB |
-| `kerfjs` (incl. signals) | ~6.5 KB |
-| **Delta vs Preact** | **kerf is roughly comparable** (with-signals) or ~2 KB larger (without) |
+| `kerfjs` (incl. signals) | ~11 KB |
+| **Delta vs Preact** | **kerf is ~5 KB larger** (vs. Preact + signals) |
 
 Bundle is not the decider between Preact and kerf. The trade you're making is virtual-DOM vs DOM-morph, hooks vs no-hooks, and components-with-instances vs functions-returning-strings. Both ship `@preact/signals-core` (or its wrappers); kerf re-exports it directly under the `signal` / `computed` / `effect` / `batch` names.
 

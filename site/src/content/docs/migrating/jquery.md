@@ -12,8 +12,8 @@ The kerf side is the exact code shipping at [`site/src/examples/complete/todomvc
 | | Min + gz, runtime only |
 | --- | --- |
 | `jquery` 3.x | ~30 KB |
-| `kerfjs` (incl. signals) | ~6.5 KB |
-| **Delta** | **~23 KB lighter** |
+| `kerfjs` (incl. signals) | ~11 KB |
+| **Delta** | **~19 KB lighter** |
 
 The big win is bundle, but the real story is what you're getting in exchange: a state model. jQuery has none — you write `$(el).text(value)` everywhere and the source of truth is wherever you last wrote it. Kerf has `signal()` and `defineStore()`; the source of truth is the signal, and the DOM mirrors it.
 

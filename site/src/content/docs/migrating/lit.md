@@ -3,7 +3,7 @@ title: Coming from Lit
 description: A side-by-side translation of a TodoMVC from Lit 3 to Kerf. Bundle delta, LitElement → mount, reactive properties → signals, and the gotchas a Lit dev hits first.
 ---
 
-Lit and kerf land in similar bundle territory (~6 KB each), so this isn't a "size cliff" migration — it's a "what shape do I want my code to be" decision. The Lit way is web components + tagged templates + Shadow DOM. The kerf way is module-scoped signals + JSX + light DOM. The side-by-side below makes the trade concrete.
+Lit (~6 KB) is lighter than kerf (~11 KB), so this isn't a "size savings" migration — it's a "what shape do I want my code to be" decision. The Lit way is web components + tagged templates + Shadow DOM. The kerf way is module-scoped signals + JSX + light DOM. The side-by-side below makes the trade concrete.
 
 The kerf side is the exact code shipping at [`site/src/examples/complete/todomvc/`](https://github.com/brianwestphal/kerf/tree/main/site/src/examples/complete/todomvc) — [run it live](/kerf/examples/complete/todomvc/).
 
@@ -12,8 +12,8 @@ The kerf side is the exact code shipping at [`site/src/examples/complete/todomvc
 | | Min + gz, runtime only |
 | --- | --- |
 | `lit` 3.2 (lit-html + lit-element) | ~6 KB |
-| `kerfjs` 0.5 (incl. signals) | ~6.5 KB |
-| **Delta** | roughly a wash |
+| `kerfjs` (incl. signals) | ~11 KB |
+| **Delta** | kerf is ~5 KB heavier |
 
 You're not migrating for bytes. You're migrating because:
 

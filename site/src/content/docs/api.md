@@ -82,7 +82,7 @@ Most consumers never touch `ArrayPatch` directly — `each(...)` consumes the qu
 ```ts
 defineStore({
   initial: () => TState,
-  actions: (set: (next: TState) => void, get: () => TState) => TActions,
+  actions: (set: (next: TState) => void, get: () => Readonly<TState>) => TActions,
 });
 ```
 
@@ -186,6 +186,79 @@ Auto-promotes the well-known non-bubbling event types (`focus`, `blur`, `scroll`
 ### `delegateCapture(rootEl, type, selector, handler): () => void`
 
 Same shape, but installs on the capture phase and matches via `target.matches(selector)` (direct match, no walk-up). The escape hatch — use it for custom non-bubbling events that aren't in `delegate()`'s auto-promotion list, or when you want capture-phase semantics with strict element-match behavior.
+
+### `attr(name, value)` — static form
+
+```ts
+attr<N extends string, V extends string>(name: N, value: V): AttrSpec<N, V>
+```
+
+Create a pre-computed attribute descriptor. Escapes name and value once at definition time; the resulting `AttrSpec` is frozen and ready to use in both JSX and `delegate()`.
+
+```ts
+import { attr, type AttrSpec } from 'kerfjs';
+
+const ACTIONS = {
+  toggle: attr('data-action', 'toggle'),
+  remove: attr('data-action', 'remove'),
+} as const satisfies Record<string, AttrSpec<'data-action'>>;
+
+// In JSX — spread .attrs (rename-safe; no hardcoded attribute name at call sites):
+<button {...ACTIONS.toggle.attrs}>Toggle</button>
+
+// In delegate — use the pre-computed selector:
+delegate(root, 'click', ACTIONS.toggle.selector, handler);
+// → '[data-action="toggle"]'
+```
+
+### `attr(name)` — dynamic form
+
+```ts
+attr<N extends string, V extends string = string>(name: N): (value: V) => { readonly [K in N]: V }
+```
+
+Pre-validates and pre-escapes the attribute name, then returns a factory for per-render values. Use for per-row data attributes like `data-id` where the value changes per item. Leaving both generics off infers `N` from the argument and defaults `V` to `string`; specify both explicitly to constrain which values the factory accepts.
+
+```ts
+const ITEM = { id: attr('data-id') } as const;
+
+// In JSX — call the factory inline:
+<li {...ITEM.id(String(item.id))}>…</li>
+```
+
+Both the attribute name (CSS identifier) and value (double-quoted CSS string) are CSS-escaped — SSR-safe, no `CSS.escape` dependency. Throws on an empty attribute name.
+
+For ad-hoc compound selectors, concatenate `.selector` strings:
+
+```ts
+delegate(root, 'click',
+  ACTIONS.toggle.selector + attr('data-id', id).selector,
+  handler);
+```
+
+### `AttrSpec<N, V>` (type)
+
+```ts
+interface AttrSpec<N extends string = string, V extends string = string> {
+  readonly name: N;             // raw attribute name
+  readonly value: V;            // raw attribute value
+  readonly selector: string;    // pre-computed '[name="value"]' selector string
+  readonly attrs: { readonly [K in N]: V };  // spreadable JSX object
+}
+```
+
+### Generic type parameter: `delegate<T extends Element = Element>()`
+
+Both `delegate()` and `delegateCapture()` accept an optional element-type generic that narrows the `target` argument in the handler, avoiding casts:
+
+```ts
+delegate<HTMLButtonElement>(root, 'click', 'button[data-action]', (e, btn) => {
+  // btn is HTMLButtonElement — no cast needed
+  btn.disabled = true;
+});
+```
+
+The default is `Element` (untyped call sites are unaffected).
 
 ## 8.5 JSX runtime
 

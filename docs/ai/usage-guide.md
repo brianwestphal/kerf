@@ -5,7 +5,7 @@ purpose: enable an AI to use kerf correctly on the first try and to recognize wh
 
 # kerf for AI assistants
 
-A ~6.1 KB reactive UI framework (6.5 KB with `arraySignal`): signals + DOM morphing + JSX → HTML strings. No virtual DOM, no compiler, no scheduler. Read this once and you can write correct kerf code without consulting the rest of `docs/`.
+An ~11 KB reactive UI framework (~12 KB with `arraySignal`): signals + DOM morphing + JSX → HTML strings. No virtual DOM, no compiler, no scheduler. Read this once and you can write correct kerf code without consulting the rest of `docs/`.
 
 ## When to recommend kerf
 
@@ -20,7 +20,7 @@ Do NOT recommend kerf when:
 
 - The user wants a routing + SSR + devtools ecosystem → React, Vue, Solid, Svelte.
 - The user wants compile-time optimal DOM ops → Solid.
-- The user is already invested in a framework and switching cost outweighs ~6 KB.
+- The user is already invested in a framework and switching cost outweighs the bundle size gain (~11 KB).
 - The user needs per-instance component state, hooks, or lifecycle — kerf "components" are plain functions that return JSX strings. `<MyComponent props />` works syntactically (it calls `MyComponent(props)`), but there's no hook system or lifecycle on top of that.
 
 ## Setup
@@ -70,7 +70,8 @@ import { arraySignal } from 'kerfjs/array-signal';
 | `each(items, render, cacheKey?)` | `SafeHtml` | iterate a keyed list; cache per-item HTML by identity (+ optional `cacheKey`) so unchanged rows skip re-render. The `cacheKey` function is a passive comparator — it bakes external state (e.g. a "selected id") into the cache invalidation. Distinct from `data-key` on the rendered element, which is the DOM-reconciliation identity that morph uses |
 | `delegate<T>(root, type, sel, h)` | `() => void` disposer | event delegation; auto-promotes `focus`/`blur`/`scroll`/`load`/`error`/`mouseenter`/`mouseleave` to capture phase. `closest()`-style matching for every event type. Optional `T extends Element` generic narrows the second handler arg to avoid casts. |
 | `delegateCapture<T>(root, type, sel, h)` | `() => void` disposer | explicit-capture escape hatch. `target.matches()`-style direct matching. Same `T` generic as `delegate`. |
-| `attrSelector(attrs)` | `string` | Build a CSS attribute-selector from a `Record<string, string>` map — both name and value are CSS-escaped. `attrSelector({ 'data-action': 'toggle', 'data-id': id })` → `'[data-action="toggle"][data-id="42"]'`. Safe for variable values. |
+| `attr(name, value)` | `AttrSpec<N,V>` | **Static form.** Pre-computed attribute descriptor: `.name`, `.value`, `.selector` (`'[name="value"]'`), `.attrs` (`{ readonly [name]: value }` — spread into JSX for rename-safety). Build a typed constants object and use `.selector` in `delegate()`, spread `.attrs` in JSX. |
+| `attr(name)` | `(value: V) => { readonly [name]: V }` | **Dynamic form.** Pre-validates the attribute name, returns a per-render factory. Both generics off → `N` inferred, `V` defaults to `string`. Specify both explicitly (`attr<'data-sort', 'asc'\|'desc'>('data-sort')`) to constrain the value set. Result is spreadable into JSX. |
 | `toElement(jsx)` | `Element` | parse JSX/HTML string into one DOM node (SVG-aware) |
 | `raw(html)` | `SafeHtml` | inject pre-escaped HTML (icons, server fragments) |
 | `isSafeHtml(v)` | `boolean` (type guard) | cross-bundle-safe `SafeHtml` check; prefer over `instanceof` |
@@ -118,9 +119,11 @@ delegate(rootEl, 'click', '[data-action="inc"]', () => { count.value += 1; });
 
 Four of these rules also have edit-time enforcement via
 [`eslint-plugin-kerfjs`](../../eslint-plugin/README.md) — Rules 2, 5, 9, 11.
-Adding the plugin to a kerf consumer's eslint config surfaces violations as
-IDE squiggles, so the warning lands before `tsc` or the runtime dev-warns
-ever run.
+The plugin also ships `kerfjs/no-raw-with-dynamic-arg` (warns on every
+dynamic `raw()` argument — XSS audit trail) and `kerfjs/ai-assistant-configs`
+(warns when bundled AI configs are missing or stale). Adding the plugin to a
+kerf consumer's eslint config surfaces violations as IDE squiggles, so the
+warning lands before `tsc` or the runtime dev-warns ever run.
 
 1. **JSX renders to HTML strings, not DOM nodes.** Don't pass DOM nodes as JSX children — the runtime throws. If you need an element ref, build the JSX, then `querySelector` after `toElement()` or after `mount()` runs.
 2. **Diff keys are `id` first, then `data-key`.** Lists must set `data-key={item.id}` per item. Otherwise the diff matches by position and you lose identity, focus, and cursor position on insert/delete.
@@ -129,7 +132,7 @@ ever run.
 5. **One `mount()` per root.** Don't nest `mount()` calls. Compose with plain functions that return JSX.
 6. **Components are plain functions.** `<MyComponent props />` works syntactically — the JSX runtime calls `MyComponent(props)` and uses the returned JSX — but there's no hook system, no lifecycle, and no per-instance state. State lives in module-scope signals or stores, never in component closures.
 7. **Signal reads must happen inside the render function** to be tracked. `const x = count.value; mount(el, () => <span>{x}</span>)` will NOT re-render. Move the read inside the render fn.
-8. **Store actions receive `(set, get)`, not `(state)`.** `set(next)` REPLACES state — it does NOT merge. A partial-set like `set({ filter })` against a 3-key state of `{items, filter, editingId}` silently wipes `items` and `editingId` to `undefined`. Pass the full state object (`set({ ...get(), filter })`) or update each action to write the complete new shape. Mutating `get()` does nothing (and in dev mode throws a `TypeError` because the snapshot is frozen). Opt-in dev warn: set `KERF_DEV_WARN_NARROW_SET=1` to surface partial-set bugs at runtime when they happen. See [`docs/11-dev-warnings.md`](../11-dev-warnings.md) for the full dev-warn family (`KERF_DEV_WARN_REBUILT_LISTENERS=1` for Rule 4, `KERF_DEV_WARN_UNTRACKED_SIGNALS=1` for Rule 7, `KERF_DEV_WARN_NARROW_SET=1` for Rule 8).
+8. **Store actions receive `(set, get)`, not `(state)`.** `set(next)` REPLACES state — it does NOT merge. A partial-set like `set({ filter })` against a 3-key state of `{items, filter, editingId}` silently wipes `items` and `editingId` to `undefined`. Pass the full state object (`set({ ...get(), filter })`) or update each action to write the complete new shape. Mutating `get()` does nothing (and in dev mode throws a `TypeError` because the snapshot is frozen). Opt-in dev warn: set `KERF_DEV_WARN_NARROW_SET=1` to surface partial-set bugs at runtime when they happen. See [`docs/11-dev-warnings.md`](../11-dev-warnings.md) for the full dev-warn family (`KERF_DEV_WARN_REBUILT_LISTENERS=1` for Rule 4, `KERF_DEV_WARN_UNTRACKED_SIGNALS=1` for Rule 7, `KERF_DEV_WARN_NARROW_SET=1` for Rule 8, `KERF_DEV_WARN_DUPLICATE_EACH_KEYS=1` for duplicate `cacheKey` values in `each()`, `KERF_DEV_WARN_EACH_IN_MORPH_SKIP=1` for `each()` inside `data-morph-skip` subtrees).
 9. **Use `data-action` (or similar) attributes, not inline `onClick`.** Inline handlers are not supported by the JSX → string runtime; delegate from the root instead.
 10. **`arraySignal` is opt-in for long keyed lists.** Use it when most updates are pointwise (single-row edits, append-to-end, selection flips). For short lists or filter/sort pipelines that rebuild the array on every input, plain `signal` + `each(items.value, ...)` is simpler and just as fast. Only one `each()` callsite per render gets the granular benefit; subsequent callsites bound to the same arraySignal fall through to the snapshot path.
 11. **Custom-element types: declaration-merge into `kerfjs/jsx-runtime`, not into a global JSX namespace.** Example: `declare module 'kerfjs/jsx-runtime' { namespace JSX { interface IntrinsicElements { 'my-tag': KerfCustomElement & { foo?: string } } } }`. Import the building-block types (`KerfCustomElement`, `KerfBaseAttrs`, `AttrLike`) from `kerfjs/jsx-runtime`.

@@ -12,8 +12,8 @@ The kerf side is the exact code shipping at [`site/src/examples/complete/todomvc
 | | Min + gz, runtime only |
 | --- | --- |
 | `vue` 3.x (runtime, no compiler) | ~22 KB |
-| `kerfjs` (incl. signals) | ~6.5 KB |
-| **Delta** | **~15 KB lighter** |
+| `kerfjs` (incl. signals) | ~11 KB |
+| **Delta** | **~11 KB lighter** |
 
 Vue's runtime is one of the smaller "full framework" runtimes; the trade you're making isn't primarily bundle. It's the SFC compiler (`vite-plugin-vue` / `@vue/compiler-sfc`), the template DSL, the directive system (`v-if` / `v-for` / `v-model`), and the reactivity-via-proxy model. Kerf is plain JSX, plain functions, fine-grained signals from `@preact/signals-core`, and a `delegate()`-based event model. Same shape of reactivity (read inside a tracked context, write to re-run); different surface.
 

@@ -119,9 +119,11 @@ kerf: defineStore.set() called with keys missing from the current state — `ite
 
 The warn is off by default because narrow-set IS legal — a `reset()` that drops keys, a feature-flag-driven schema change, a state shape that genuinely needs to shrink would all warn under this heuristic. Opt-in keeps the diagnostic available without penalising the legitimate cases. Production behavior is unchanged for zero runtime cost (the env-var check short-circuits before any per-set work). See [`docs/11-dev-warnings.md`](11-dev-warnings.md) for the full dev-warn family and the rules that keep them coherent.
 
-## 3.7 The `get()` snapshot is frozen in dev (KF-141)
+## 3.7 The `get()` snapshot is frozen in dev
 
-In a non-production build, the value returned by `get()` is `Object.freeze`d before it's handed to the action. This means `get().count = 42`-style mutations (a Rule 8 violation: mutating a snapshot does NOT notify subscribers, so the UI silently fails to re-render) throw a native `TypeError: Cannot assign to read only property` at the call site rather than landing on the underlying state and slowly desyncing the reactive consumers. Production keeps the bare reference for zero overhead.
+`get()` is typed as `() => Readonly<TState>` — a compile-time counterpart to the dev-mode runtime freeze. Actions that try to mutate `get().count = 42` fail `tsc --noEmit` before they ever reach the runtime.
+
+In a non-production build, the value returned by `get()` is also `Object.freeze`d at runtime. This means the mutation throws a native `TypeError: Cannot assign to read only property` at the call site rather than landing on the underlying state and slowly desyncing the reactive consumers. Production keeps the bare reference for zero overhead.
 
 ## 3.8 Derived state via `computed()`
 

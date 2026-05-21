@@ -33,7 +33,7 @@ Everything in the v0.1–v0.3 design is shipped (each / native diff / list recon
 
 ### §1 Overview
 
-States kerf's positioning: tiny reactive UI framework, ~6.1 KB (6.5 KB with `arraySignal`), no virtual DOM, no compiler, no component lifecycle, no third-party DOM-diff dependency. Four primitives (signals / stores / render / delegation) plus a JSX runtime and an SVG-aware `toElement`. Rules out: routing, full SSR, styling opinions, ecosystem.
+States kerf's positioning: tiny reactive UI framework, ~11 KB (~12 KB with `arraySignal`), no virtual DOM, no compiler, no component lifecycle, no third-party DOM-diff dependency. Four primitives (signals / stores / render / delegation) plus a JSX runtime and an SVG-aware `toElement`. Rules out: routing, full SSR, styling opinions, ecosystem.
 
 ### §2 Reactivity
 

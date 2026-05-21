@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-kerf is a tiny reactive UI framework: fine-grained signals + a custom DOM diff specialized for keyed lists + a tiny JSX runtime. The whole runtime is roughly 6.1 KB minified + gzipped without `arraySignal`, 6.5 KB with it, including its sole runtime dependency (`@preact/signals-core`).
+kerf is a tiny reactive UI framework: fine-grained signals + a custom DOM diff specialized for keyed lists + a tiny JSX runtime. The whole runtime is roughly 11 KB minified + gzipped without `arraySignal`, 12 KB with it, including its sole runtime dependency (`@preact/signals-core`).
 
 The name *kerf* is a woodworking term — the narrow strip a saw blade removes. The framework's job is the same: apply the smallest possible cut to update your DOM.
 
@@ -212,7 +212,19 @@ Numbered docs in `docs/` cover the design. Reading order:
 10. `10-migrating.md` — the `/kerf/migrating/` comparison hub (coming-from-React/Alpine/Lit/vanjs pages).
 11. `11-dev-warnings.md` — the opt-in dev-warn family (`KERF_DEV_WARN_REBUILT_LISTENERS` / `KERF_DEV_WARN_UNTRACKED_SIGNALS` / `KERF_DEV_WARN_NARROW_SET`) and the rules each new warning must follow.
 
-**Keep these docs up to date.** When adding/removing/changing an API, update the matching doc + `docs/8-api-reference.md` + `CHANGELOG.md` in the same change.
+**Keep every surface up to date — proactively, without being asked.** Any change to source, API, behavior, or examples must be reflected across all affected surfaces in the same diff. Do not wait for a follow-up prompt. The full checklist:
+
+| Surface | What triggers an update |
+| --- | --- |
+| `tests/unit/` or `tests/integration/` | Any new behavior, overload, edge case, or option added to `src/` |
+| `site/src/examples/complete/*/main.tsx` | Any new idiomatic pattern or API shape that the examples should demonstrate |
+| `docs/5-*.md` … `docs/8-api-reference.md` | Any API addition, removal, signature change, or behavioral change |
+| `CHANGELOG.md` (Unreleased section) | Every user-visible change |
+| `docs/ai/code-summary.md` | Any new/renamed/removed file, export, or architectural fact |
+| `docs/ai/usage-guide.md` | Any API addition, signature change, or new pattern |
+| `kerf.cursorrules` + `kerf.claude-skill.md` | Any API addition, signature change, canonical pattern update, or new common-error row — then run `npm run ai-bundle:sync` and bump `kerf-skill-version` per the rubric in §12.3.2 |
+| `eslint-plugin/docs/rules/*.md` | Any change that affects what the lint rules flag or how users fix violations |
+| Run `node site/scripts/sync-docs.mjs` | After editing any `docs/*.md` that the site syncs |
 
 ### AI summaries (`docs/ai/`)
 

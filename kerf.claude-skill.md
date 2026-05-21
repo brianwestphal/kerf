@@ -1,7 +1,7 @@
 ---
 name: kerf-app
 description: Build UIs in the kerf reactive framework (https://github.com/brianwestphal/kerf). Use this skill whenever the user is writing or modifying code that imports `kerfjs`, asks to add a feature to a kerf app, or asks "how do I do X in kerf?". Use it proactively the moment you spot a kerf import in the file you're editing.
-kerf-skill-version: 1.0.0
+kerf-skill-version: 1.1.0
 ---
 
 # Building apps with kerf
@@ -10,7 +10,7 @@ kerf-skill-version: 1.0.0
 > project's `.claude/skills/kerf-app/SKILL.md`) so Claude Code activates
 > it whenever you work on a kerf app.
 
-kerf is a ~6.1 KB reactive UI framework (6.5 KB with `arraySignal`): signals + DOM morphing + JSX → HTML strings. No virtual DOM, no compiler, no scheduler. The whole public surface fits in 15 exports.
+kerf is a ~11 KB reactive UI framework (~12 KB with `arraySignal`): signals + DOM morphing + JSX → HTML strings. No virtual DOM, no compiler, no scheduler. The whole public surface fits in 15 exports.
 
 ## Setup
 
@@ -48,6 +48,8 @@ import { arraySignal } from 'kerfjs/array-signal';
 | `each(items, render, cacheKey?)` | keyed list iteration; per-row memoization on identity (+ optional cacheKey — a passive comparator for external state). Distinct from `data-key` on the rendered element |
 | `delegate(root, type, sel, h)` | one listener at the root; `closest(selector)` walk from target |
 | `delegateCapture(root, type, sel, h)` | capture-phase escape hatch; `target.matches()` strict match |
+| `attr(name, value)` | pre-computed `AttrSpec<N,V>` — `.selector` for `delegate()`, `.attrs` to spread into JSX (rename-safe) |
+| `attr(name)` | dynamic factory — `attr<N,V=string>(name)` returns `(value: V) => { readonly [name]: V }`; both generics off → N inferred, V defaults to string; specify both to constrain values |
 | `toElement(jsx)` | parse JSX into one DOM node (SVG-aware) |
 | `raw(html)` | inject pre-escaped HTML |
 | `arraySignal(initial?)` | granular keyed-list signal (subpath `kerfjs/array-signal`); `each()` reconciles in O(patches) |
@@ -100,13 +102,15 @@ When deciding which primitive to reach for, work down the axes:
 ```tsx
 // Pattern 1: signal + mount + delegate
 const count = signal(0);
+const ACTIONS = { inc: attr('data-action', 'inc') } as const satisfies Record<string, AttrSpec<'data-action'>>;
+
 mount(document.getElementById('app')!, () => (
   <div>
-    <button data-action="inc">+</button>
+    <button {...ACTIONS.inc.attrs}>+</button>
     <span>{count.value}</span>
   </div>
 ));
-delegate(rootEl, 'click', '[data-action="inc"]', () => { count.value += 1; });
+delegate(rootEl, 'click', ACTIONS.inc.selector, () => { count.value += 1; });
 
 // Pattern 2: keyed list with per-row memoization
 mount(listEl, () => (
@@ -135,7 +139,7 @@ morph(liveCard, '<article class="card">…</article>');
 | --- | --- | --- |
 | `JSX: DOM elements cannot be passed as children` | passed a `toElement()` result inside JSX | Build the whole tree in JSX; refs via `querySelector` after rendering |
 | Focus / cursor lost on every keystroke | list items lack `data-key` | Add `data-key` (or `id`) to each list item |
-| Click handler stops firing after re-render | `el.addEventListener` was used | Replace with `delegate(rootEl, 'click', '[data-action="..."]', ...)` |
+| Click handler stops firing after re-render | `el.addEventListener` was used | Replace with `delegate(rootEl, 'click', ACTIONS.foo.selector, ...)` (or a string literal for ad-hoc cases) |
 | Render fn never re-runs | signal was read outside the render fn | Move `signal.value` read inside the render fn |
 | SVG renders as broken / namespaceless markup | `innerHTML` used directly | Use `mount` or `toElement` (SVG-aware) |
 | Library widget destroyed on every render | host reachable by the morph | Wrap host in `data-morph-skip`; mount the library imperatively after first render |

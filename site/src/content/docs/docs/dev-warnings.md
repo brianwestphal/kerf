@@ -47,14 +47,18 @@ before the program runs:
   that fire at edit time for hard-rule violations the dev-warns can't see
   syntactically: `no-inline-jsx-event-handlers` (Rule 9),
   `require-data-key-in-each` (Rule 2), `no-nested-mount` (Rule 5),
-  `prefer-module-jsx-augmentation` (Rule 11).
+  `prefer-module-jsx-augmentation` (Rule 11). Two additional rules cover
+  non-hard-rule patterns: `no-raw-with-dynamic-arg` (XSS audit trail — warns
+  on every dynamic `raw()` argument so the `eslint-disable` suppression
+  becomes the permanent acknowledgment) and `ai-assistant-configs` (project
+  hygiene — checks that the bundled AI configs are installed and current).
 
 The three layers are complementary, not redundant. Lint catches AST-shaped
 antipatterns at edit time; tsc catches type-shaped bugs at build time; the
 dev-warns catch the runtime patterns that need flow / call-graph
 information no static checker has.
 
-## 11.2 The three warnings
+## 11.2 The five warnings
 
 ### 11.2.1 `KERF_DEV_WARN_REBUILT_LISTENERS=1` (Rule 4)
 
@@ -135,6 +139,41 @@ intentionally.
 is missing in next"; key-count is just an implementation detail that
 would have missed same-count-different-keys cases.
 
+### 11.2.4 `KERF_DEV_WARN_DUPLICATE_EACH_KEYS=1`
+
+**Module:** [`src/dev-each-warn.ts`](../src/dev-each-warn.ts).
+**Trigger:** `eachSnapshotById` (the core render path of `each()`) discovers that two or more items in the same list produce the same value from the `cacheKey` function. Only fires when a `cacheKey` function was actually provided (if no third arg is passed to `each()`, the check is skipped entirely).
+
+**What it catches:** a `cacheKey` function that isn't unique per item, which makes the memoization coarser than intended — distinct items share the same invalidation key, so when external state changes and the cacheKey would logically differ for only one of the duplicates, the cached HTML for the other is also invalidated (or not invalidated, depending on state direction). In practice this is not a correctness bug (the per-item HTML cache is a `WeakMap` keyed by object identity, so there's no cross-item cache pollution), but it IS a reliable indicator of a mistake in the cacheKey function — e.g. `(item) => item.category` when the intent was `(item) => \`${item.id}-${selectedId === item.id ? 'on' : 'off'}\``.
+
+**Mechanism.** `maybeWarnDuplicateCacheKeys(id, segItems)` is called at the end of `eachSnapshotById` when `cacheKey !== undefined`. The function: (1) short-circuits on NODE_ENV / env var; (2) checks a module-level `warnedDupIds` Set for dedup; (3) iterates `segItems` collecting `cacheKey` values into a Set, and fires a warning the first time a duplicate is found.
+
+**Dedup scope.** Per list id (same as `KERF_DEV_WARN_EACH_IN_MORPH_SKIP`). One warning per `each()` callsite.
+
+**Why opt-in.** Duplicate cacheKey values are not a correctness bug — they're a code-smell. Projects that intentionally use a coarse cacheKey (e.g. grouping rows by type so a type change invalidates the whole group) would see spurious warnings.
+
+### 11.2.5 `KERF_DEV_WARN_EACH_IN_MORPH_SKIP=1`
+
+**Module:** [`src/dev-each-warn.ts`](../src/dev-each-warn.ts).
+**Trigger:** `bindListsFromMarkers` (called by `mount()` on every first-render or newly-appearing list) discovers that a new list binding's `liveParent` has a `data-morph-skip` ancestor between it and the mount `rootEl`. **What it catches:** the asymmetric-freeze pattern — `each()` rows inside a `data-morph-skip` subtree still update (the keyed reconciler operates directly on the live parent independently of the morph), but static signal-reactive JSX inside the same skipped ancestor is frozen because the morph short-circuits before visiting that element's children.
+
+**Mechanism.** `maybeWarnEachInMorphSkip(id, liveParent, rootEl)` is called after the binding is created. The function: (1) short-circuits on NODE_ENV / env var; (2) checks a module-level `warnedIds` Set for dedup; (3) walks from `liveParent` up to `rootEl` looking for any ancestor with `data-morph-skip`; (4) if found, fires a `console.warn` naming the list id, explaining the asymmetry, and pointing at removing `data-morph-skip` as the fix.
+
+**Dedup scope.** Per list id (the internal sequential id assigned by the render context counter — stable across renders within a mount). One warning per `each()` callsite, not one per render pass.
+
+**Why opt-in.** Placing an `each()` list inside a library-owned `data-morph-skip` element is uncommon but occasionally intentional (e.g., the library provides the host while kerf manages the rows). The warning would fire on every such legitimately-structured mount otherwise.
+
+### 11.2.6 Double-mount guard (always-on, not opt-in)
+
+**Module:** [`src/mount.ts`](../src/mount.ts) (KF-175, KF-225).
+**Trigger:** `mount(el, render)` is called on an element that is already the root of a live mount, or on a descendant or ancestor of such an element. **What it catches:** the "two competing effects" pattern — two `mount()` calls on the same DOM subtree both install `effect()` watchers that fight over the same live nodes, producing conflicting DOM mutations and unpredictable rendering output with no runtime error.
+
+**Mechanism.** `mount()` assigns a non-enumerable `Symbol.for('kerfjs.mounted')` marker to the `rootEl` at mount time. `assertNotInsideMountedTree()` checks the element itself (same-element double-mount), all ancestors (descendant-of-mounted mount), and all descendants (ancestor-of-mounted mount) before allowing the mount to proceed. If any check fires, it throws with a message naming the element (`<tagName>` or `<tagName#id>`) and pointing at the disposer as the fix. The disposer returned by `mount()` deletes the marker, so a legitimate unmount + remount cycle never false-positives.
+
+**This guard is always-on (unconditional), not opt-in.** Double-mounting is almost never intentional — it's a programming error in every realistic scenario (hot-reload teardown missing, copy-paste island setup, conditional `mount()` hitting the same element on re-evaluation). A `console.warn` would let the broken two-effect state continue running, which is harder to debug than an immediate throw. The nested-mount cases (`mount(ancestor)` after `mount(descendant)`) are structural errors that must also fail hard. Unlike the opt-in family, there is no env var to silence this guard.
+
+**Sibling mounts are allowed.** Two `mount()` calls on independent elements (neither is an ancestor or descendant of the other) work correctly — each manages its own subtree. This is the multi-island pattern for apps with independently reactive regions of the page.
+
 ## 11.3 Design rules for the family
 
 Every dev-warning in this family follows the same shape. New warnings
@@ -204,13 +243,13 @@ so production behavior is what's measured.
 
 ## 11.4 Where each warning is referenced
 
-| Surface | KF-174 (rebuilt listeners) | KF-176 (untracked signals) | KF-212 (narrow set) |
-| --- | --- | --- | --- |
-| Source module | `src/dev-listener-warn.ts` | `src/dev-signal.ts` | `src/dev-store-warn.ts` |
-| Wired in | `src/mount.ts` | `src/reactive.ts` | `src/store.ts` |
-| Numbered doc | `docs/5-event-delegation.md` (Rule 4) | `docs/2-reactivity.md` (Rule 7) | `docs/3-stores.md` (Rule 8) |
-| AI usage guide | `docs/ai/usage-guide.md` "Hard rules" | same | same |
-| Test fixture | `tests/unit/dev-listener-warn.internal.test.ts` | covered in `tests/unit/reactive.test.ts` | `tests/unit/dev-store-warn.internal.test.ts` |
+| Surface | KF-174 (rebuilt listeners) | KF-176 (untracked signals) | KF-212 (narrow set) | duplicate cacheKey | each-in-morph-skip |
+| --- | --- | --- | --- | --- | --- |
+| Source module | `src/dev-listener-warn.ts` | `src/dev-signal.ts` | `src/dev-store-warn.ts` | `src/dev-each-warn.ts` | `src/dev-each-warn.ts` |
+| Wired in | `src/mount.ts` | `src/reactive.ts` | `src/store.ts` | `src/each.ts` | `src/mount.ts` |
+| Numbered doc | `docs/5-event-delegation.md` (Rule 4) | `docs/2-reactivity.md` (Rule 7) | `docs/3-stores.md` (Rule 8) | `docs/4-render.md` §4.2 | `docs/4-render.md` §4.3 |
+| AI usage guide | `docs/ai/usage-guide.md` "Hard rules" | same | same | n/a | `docs/ai/usage-guide.md` "Common errors" |
+| Test fixture | `tests/unit/dev-listener-warn.internal.test.ts` | covered in `tests/unit/reactive.test.ts` | `tests/unit/dev-store-warn.internal.test.ts` | `tests/unit/dev-each-warn.internal.test.ts` | same |
 
 ## 11.5 Adding a new warning
 

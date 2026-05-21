@@ -7,7 +7,10 @@
 //
 // Mirrors the worked example in site/src/content/docs/migrating/htmx.md §3.
 
-import { signal, mount, each, delegate } from 'kerfjs';
+import { signal, mount, each, delegate, attr, type AttrSpec } from 'kerfjs';
+
+const ACTIONS = { remove: attr('data-action', 'remove') } as const satisfies Record<string, AttrSpec<'data-action'>>;
+const ITEM = { id: attr('data-id') } as const;
 
 interface CartItem { id: string; name: string; price: number }
 
@@ -69,7 +72,7 @@ function simulateSwap(initial: CartItem[]): void {
             (it) => (
               <li data-key={it.id}>
                 <span>{it.name} — ${it.price}</span>
-                <button class="remove" data-action="remove" data-id={it.id}>×</button>
+                <button class="remove" {...ACTIONS.remove.attrs} {...ITEM.id(it.id)}>×</button>
               </li>
             ),
             (it) => it.id,
@@ -80,7 +83,7 @@ function simulateSwap(initial: CartItem[]): void {
     </div>
   ));
 
-  const stopDelegate = delegate(root, 'click', '[data-action="remove"]', (_e, btn) => {
+  const stopDelegate = delegate(root, 'click', ACTIONS.remove.selector, (_e, btn) => {
     const id = (btn as HTMLElement).dataset.id;
     items.value = items.value.filter((it) => it.id !== id);
     logLine(`removed ${id} — ${items.value.length} items left`);

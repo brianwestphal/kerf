@@ -14,16 +14,34 @@ Maps to **kerf Hard Rule 9** — kerf's JSX runtime renders to HTML strings, so 
 
 ## ✅ Correct
 
-```tsx
-// In the template:
-<button data-action="save">Save</button>
-<input data-action="update" />
-<form data-action="submit">…</form>
+Preferred — use `attr()` so the attribute name lives in one typed constant and
+renames propagate to both JSX and `delegate()` automatically:
 
-// Once, at module init:
+```tsx
+import { attr, delegate, type AttrSpec } from 'kerfjs';
+
+const ACTIONS = {
+  save:   attr('data-action', 'save'),
+  update: attr('data-action', 'update'),
+  submit: attr('data-action', 'submit'),
+} as const satisfies Record<string, AttrSpec<'data-action'>>;
+
+// In the template — spread .attrs (no hardcoded 'data-action' at each call site):
+<button {...ACTIONS.save.attrs}>Save</button>
+<input {...ACTIONS.update.attrs} />
+<form {...ACTIONS.submit.attrs}>…</form>
+
+// Once, at module init — use .selector:
+delegate(rootEl, 'click',  ACTIONS.save.selector,   save);
+delegate(rootEl, 'input',  ACTIONS.update.selector,  update);
+delegate(rootEl, 'submit', ACTIONS.submit.selector,  submit);
+```
+
+String literals still work for ad-hoc fixed selectors:
+
+```tsx
+<button data-action="save">Save</button>
 delegate(rootEl, 'click', '[data-action="save"]', save);
-delegate(rootEl, 'input', '[data-action="update"]', update);
-delegate(rootEl, 'submit', '[data-action="submit"]', submit);
 ```
 
 ## Why this rule is AST-only

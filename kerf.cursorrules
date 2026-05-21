@@ -1,4 +1,4 @@
-<!-- kerf-skill-version: 1.0.0 -->
+<!-- kerf-skill-version: 1.1.0 -->
 # kerf.cursorrules — rules for building apps with kerf
 #
 # Drop this file into your project as `.cursorrules` (Cursor will pick it
@@ -43,6 +43,8 @@ import { arraySignal } from 'kerfjs/array-signal';
 | `each(items, render, cacheKey?)` | keyed list iteration; per-row memoization on object identity (+ optional cacheKey — a passive comparator for external state). Distinct from `data-key` on the rendered element |
 | `delegate(root, type, sel, h)` | one listener at the root, walks `closest(selector)` from target |
 | `delegateCapture(root, type, sel, h)` | capture-phase escape hatch, strict `target.matches()` |
+| `attr(name, value)` | pre-computed `AttrSpec<N,V>` — `.selector` for `delegate()`, `.attrs` to spread into JSX (rename-safe) |
+| `attr(name)` | dynamic factory — `attr<N,V=string>(name)` returns `(value: V) => { readonly [name]: V }`; both generics off → N inferred, V defaults to string; specify both to constrain values |
 | `toElement(jsx)` | parse JSX into one DOM node (SVG-aware) |
 | `raw(html)` | inject pre-escaped HTML |
 | `arraySignal(initial?)` | granular keyed-list signal at `kerfjs/array-signal` subpath; `each()` reconciles in O(patches) |
@@ -92,13 +94,15 @@ When deciding which primitive to reach for, work down the axes:
 ```tsx
 // Signal + mount
 const count = signal(0);
+const ACTIONS = { inc: attr('data-action', 'inc') } as const satisfies Record<string, AttrSpec<'data-action'>>;
+
 mount(document.getElementById('app')!, () => (
   <div>
-    <button data-action="inc">+</button>
+    <button {...ACTIONS.inc.attrs}>+</button>
     <span>{count.value}</span>
   </div>
 ));
-delegate(rootEl, 'click', '[data-action="inc"]', () => { count.value += 1; });
+delegate(rootEl, 'click', ACTIONS.inc.selector, () => { count.value += 1; });
 
 // Keyed list with per-item memoization
 mount(listEl, () => (
@@ -124,7 +128,7 @@ morph(liveCard, '<article class="card">…</article>');
 
 - `JSX: DOM elements cannot be passed as children` → you passed a `toElement()` result inside JSX. Build the whole tree in JSX; get refs via `querySelector` after rendering.
 - Focus / cursor lost on every keystroke → list items lack `data-key`. Add it.
-- Click handler stops firing after re-render → `el.addEventListener` was used. Replace with `delegate(rootEl, 'click', '[data-action="..."]', ...)`.
+- Click handler stops firing after re-render → `el.addEventListener` was used. Replace with `delegate(rootEl, 'click', ACTIONS.foo.selector, ...)` (or a string literal `'[data-action="foo"]'` for ad-hoc cases).
 - Render fn never re-runs → signal was read outside the render fn. Move the `signal.value` read inside.
 - SVG renders as broken / namespaceless markup → use `mount` (HTML path) or `toElement` (SVG-aware), not `innerHTML`.
 - Library widget destroyed on every render → wrap host in `data-morph-skip`; mount the library imperatively after first render.

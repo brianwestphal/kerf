@@ -1,13 +1,13 @@
 ---
 title: Kerf — the smallest cut
-description: Tiny reactive UI framework — fine-grained signals + DOM diff + JSX. 6.5 KB, no virtual DOM, no compiler.
+description: Tiny reactive UI framework — fine-grained signals + DOM diff + JSX. ~11 KB, no virtual DOM, no compiler.
 template: splash
 hero:
   title: Introducing Kerf.
   tagline: |
     The smallest cut.
 
-    6.5 KB. No virtual DOM. No compiler. No magic.
+    ~11 KB. No virtual DOM. No compiler. No magic.
 
     Reactive UI that touches only the bytes that changed.
   image:
@@ -69,13 +69,13 @@ That's it. Your JSX renders to HTML strings, kerf's native diff applies the mini
 
 <PerfTable />
 
-Numbers from the krausest js-framework-benchmark, run locally on a clean machine — see `bench/results.md` for the full table and methodology. Kerf sits in the same cluster as Vue, vanjs, and Lit on most operations. Solid wins the compiler-driven `select row` and `partial update` benchmarks; kerf's general-purpose runtime trades that gap for a 6.5 KB bundle, no compiler step, and a smaller public API.
+Numbers from the krausest js-framework-benchmark, run locally on a clean machine — see `bench/results.md` for the full table and methodology. Kerf sits in the same cluster as Vue, vanjs, and Lit on most operations. Solid wins the compiler-driven `select row` and `partial update` benchmarks; kerf's general-purpose runtime trades that gap for an ~11 KB bundle, no compiler step, and a smaller public API.
 
 ## What kerf is good at
 
 <CardGrid>
   <Card title="Small bundle" icon="approve-check">
-    6.5 KB minified + gzipped including signals. The one runtime dependency is `@preact/signals-core`. No virtual DOM, no scheduler, no concurrent-mode machinery to ship.
+    ~11 KB minified + gzipped including signals. The one runtime dependency is `@preact/signals-core`. No virtual DOM, no scheduler, no concurrent-mode machinery to ship.
   </Card>
   <Card title="No virtual DOM, no compiler" icon="seti:javascript">
     JSX renders to HTML strings; a small reconciler patches the live DOM in place. DevTools shows the real DOM because it *is* the DOM. Standard `tsconfig.json` + Vite / esbuild / tsup — no plugin chain.

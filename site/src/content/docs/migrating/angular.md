@@ -9,7 +9,7 @@ You wrote an Angular app. You're reading this because you're considering a small
 
 **Angular** is a full application framework — components with templates, dependency injection, a router, forms, HTTP, an animations library, a CLI, structural directives, change detection (Zone-based historically, signals-based in modern Angular), and an opinionated TypeScript-first architecture. It's batteries-included by design.
 
-**Kerf** is a 6.5 KB reactive runtime — signals, a DOM morph, JSX, and a delegation-based event system. It has no router, no forms library, no HTTP wrapper, no DI, no CLI, no testing framework. You bring those (or don't, if your app doesn't need them).
+**Kerf** is an ~11 KB reactive runtime — signals, a DOM morph, JSX, and a delegation-based event system. It has no router, no forms library, no HTTP wrapper, no DI, no CLI, no testing framework. You bring those (or don't, if your app doesn't need them).
 
 These two are not the same kind of tool. Kerf doesn't try to be Angular-minus-a-few-features; it's a different category — a runtime, not a framework.
 

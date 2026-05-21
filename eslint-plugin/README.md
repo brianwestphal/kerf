@@ -58,11 +58,12 @@ export default [
 | [`require-data-key-in-each`](docs/rules/require-data-key-in-each.md) | 2 — `data-key` per item | `error` |
 | [`no-nested-mount`](docs/rules/no-nested-mount.md) | 5 — one `mount()` per root | `error` |
 | [`prefer-module-jsx-augmentation`](docs/rules/prefer-module-jsx-augmentation.md) | 11 — augment `kerfjs/jsx-runtime`, not global | `error` |
+| [`no-raw-with-dynamic-arg`](docs/rules/no-raw-with-dynamic-arg.md) | — (XSS audit trail) | `warn` |
 | [`ai-assistant-configs`](docs/rules/ai-assistant-configs.md) | — (project hygiene) | `warn` |
 
-The "Hard Rule" column refers to the numbered rules in [`docs/ai/usage-guide.md`](../docs/ai/usage-guide.md) on the main kerf repo. `ai-assistant-configs` doesn't map to a Hard Rule — it checks that the bundled kerf-app Claude Code skill / Cursor rules drop-ins are installed and current in projects that use those tools. See [`docs/12-ai-assistant-configs.md`](../docs/12-ai-assistant-configs.md) on the main kerf repo for the design.
+The "Hard Rule" column refers to the numbered rules in [`docs/ai/usage-guide.md`](../docs/ai/usage-guide.md) on the main kerf repo. `no-raw-with-dynamic-arg` and `ai-assistant-configs` don't map to numbered Hard Rules — the former creates an audit trail for every dynamic `raw()` call site (potential XSS); the latter checks that the bundled AI-assistant configs are installed and current. See [`docs/12-ai-assistant-configs.md`](../docs/12-ai-assistant-configs.md) on the main kerf repo for the AI-configs design.
 
-## Why these four (and not more)?
+## Why these four Hard-Rule rules (and not more)?
 
 Rules that need flow analysis (signal reads outside render — Rule 7), call-graph analysis (`addEventListener` inside the mount tree — Rule 4), or type information (partial-set against multi-key state — Rule 8) are already covered by the opt-in dev-warns and strict TS. Duplicating them here would mean either high false-positive rates without type info, or a `parserServices` dependency that complicates consumer setup.
 

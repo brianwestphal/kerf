@@ -49,7 +49,7 @@ The reference app is a **classic todo list**: add, toggle, delete, filter. Rough
   />
   <LinkCard
     title="Coming from vanjs"
-    description="vanjs → kerf is the smallest jump. Both are ~6 KB, both use signals. The differences are JSX vs hyperscript and how keyed lists reconcile."
+    description="vanjs → kerf is the smallest conceptual jump. Both use signals and update the DOM directly. The differences are JSX vs hyperscript, structured morph vs manual patching, and how keyed lists reconcile. kerf is heavier (~11 KB vs ~1.6 KB for vanjs-core)."
     href="/kerf/migrating/vanjs/"
   />
   <LinkCard
@@ -59,7 +59,7 @@ The reference app is a **classic todo list**: add, toggle, delete, filter. Rough
   />
   <LinkCard
     title="Coming from Angular"
-    description="Angular is a full framework with router/forms/DI; kerf is a 6.5 KB runtime. When Angular stays right, and when kerf supplants it."
+    description="Angular is a full framework with router/forms/DI; kerf is an ~11 KB runtime. When Angular stays right, and when kerf supplants it."
     href="/kerf/migrating/angular/"
   />
   <LinkCard
@@ -87,7 +87,7 @@ How kerf compares to each source framework on the dimensions developers usually 
 
 | Dimension | React 19 | Vue 3 | Svelte 5 | Solid | Preact | Alpine 3 | Lit 3 | vanjs 1.5 | **kerf** |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Bundle (min+gz, runtime only) | ~45 KB | ~22 KB | varies (compiled) | ~4.5 KB | ~6 KB (w/ signals) | ~14 KB | ~6 KB | **~1.6 KB** | ~6.5 KB |
+| Bundle (min+gz, runtime only) | ~45 KB | ~22 KB | varies (compiled) | ~4.5 KB | ~6 KB (w/ signals) | ~14 KB | ~6 KB | **~1.6 KB** | ~11 KB |
 | Reactivity model | hooks + virtual DOM | refs + proxies | runes (compiled) | signals + compiler | hooks + virtual DOM | per-component `x-data` proxies | reactive properties + lit-html | signals + direct DOM | **signals + DOM morph** |
 | Component model | function / class components | composition + SFC | runes inside `.svelte` | function components | function components | HTML directives | web components | hyperscript factories | **plain functions returning JSX** |
 | Templating | JSX → virtual DOM | `<template>` DSL | `.svelte` DSL | JSX (compiled) | JSX → virtual DOM | HTML attributes | tagged-template literals | hyperscript / DOM nodes | **JSX → HTML strings → morph** |

@@ -26,7 +26,7 @@ kerf/
 │   ├── list-reconcile-granular.ts ← granular reconcile path (KF-92 patch-driven, KF-93/94 bulk parse)
 │   ├── list-reconcile-fast-paths.ts ← KF-198 attribute-only + KF-206 text-content-only fast paths for the granular update path
 │   ├── list-reconcile-focus.ts   ← focus snapshot/restore around the move pass (engine-quirk fix)
-│   ├── attrSelector.ts           ← attrSelector — CSS attribute-selector builder with cssEscapeIdent + escapeCSSString
+│   ├── attrSelector.ts           ← attr / AttrSpec<N,V> — two overloads: static attr(name,value)→AttrSpec (with .attrs spreadable JSX object), dynamic attr(name)→factory; cssEscapeIdent + escapeCSSString internals
 │   ├── delegate.ts               ← delegate<T> + delegateCapture<T> (generic element type for handler arg)
 │   ├── dev-each-warn.ts          ← KERF_DEV_WARN_DUPLICATE_EACH_KEYS + KERF_DEV_WARN_EACH_IN_MORPH_SKIP opt-in warnings
 │   ├── toElement.ts              ← SVG-aware JSX-to-DOM
@@ -39,7 +39,7 @@ kerf/
 │   │   ├── array-signal.test.ts
 │   │   ├── audit-gap-coverage.test.tsx     ← regression-net for v8-only branches found via coverage gaps
 │   │   ├── delegate.test.ts
-│   │   ├── attrSelector.test.ts
+│   │   ├── attr.test.ts
 │   │   ├── dev-each-warn.internal.test.ts ← opt-in `KERF_DEV_WARN_EACH_IN_MORPH_SKIP=1` (each() inside data-morph-skip) and `KERF_DEV_WARN_DUPLICATE_EACH_KEYS=1` (duplicate cacheKey values) warnings; covers env-var gates, dedup, production-mode short-circuit.
 │   │   ├── dev-listener-warn.internal.test.ts ← KF-174 — opt-in `KERF_DEV_WARN_REBUILT_LISTENERS=1` dev-mode MutationObserver-based warning when a node carrying an imperative `addEventListener` listener is removed/rebuilt by the morph; covers the env-var gates, the descendant walk, and the helper-level rowContract `maybeWarnMissingRowKey` branches. `*.internal.test.ts` so dist-full excludes it (the test imports the `_resetWarnedForTests` helper which is not in the public dist barrel).
 │   │   ├── dev-store-warn.internal.test.ts ← KF-212 — opt-in `KERF_DEV_WARN_NARROW_SET=1` dev-mode warning when `defineStore.set(next)` has any key from the current state missing in `next`; covers opt-out (env var unset / =0 / production), opt-in (warns once, names missing keys), per-store dedup, same-count-different-keys, array-skip, null-skip, primitive-skip, and the `_resetWarnContext` test helper. `*.internal.test.ts` so dist-full excludes it.
@@ -162,7 +162,7 @@ Every export reachable via `import { ... } from 'kerfjs'`:
 | `MountResult` | `mount.ts` | Type — what `mount()`'s render function can return (`SafeHtml \| string \| number \| boolean \| null \| undefined`, KF-119) |
 | `morph` | `morph.ts` | KF-150 — one-shot in-place DOM reconciliation; same algorithm `mount()` uses, but doesn't subscribe to signals |
 | `each` | `each.ts` | Keyed list iteration; per-item HTML memo by object identity (+ optional key) |
-| `attrSelector` | `attrSelector.ts` | Build a CSS `[attr="value"]` selector string from `Record<string, string>` — both name (cssEscapeIdent) and value (escapeCSSString) are CSS-escaped; safe for variable values |
+| `attr`, `AttrSpec<N,V>` | `attrSelector.ts` | Two overloads. **Static** `attr(name, value)` → `AttrSpec<N,V>` with `.name`, `.value`, `.selector`, `.attrs` (`{ readonly [name]: value }` — spreadable into JSX). **Dynamic** `attr<N,V=string>(name)` → factory `(value: V) => { readonly [name]: V }` for per-row data attributes; `V` defaults to `string`, specify both generics to constrain the value set. Both CSS-escape at creation time. |
 | `delegate<T>` | `delegate.ts` | Event delegation; auto-promotes known non-bubblers (focus/blur/scroll/load/error/mouseenter/mouseleave) to capture, keeps `closest()` matching; generic `T extends Element` narrows the `target` arg |
 | `delegateCapture<T>` | `delegate.ts` | Explicit-capture escape hatch; `target.matches()`-style direct matching; same `T` generic |
 | `toElement` | `toElement.ts` | JSX → DOM (SVG-aware) |
@@ -202,7 +202,7 @@ The JSX runtime is a separate subpath export at `kerfjs/jsx-runtime`. It's refer
 
 `npm run build` → `tsup` → `dist/`:
 
-- `dist/index.js` (ESM bundle, ~6.1 KB min+gz including `@preact/signals-core`; ~6.5 KB if a consumer also imports `arraySignal` from `kerfjs/array-signal`. See `bench/results.md` for the per-shape numbers.)
+- `dist/index.js` (ESM bundle, ~11 KB min+gz including `@preact/signals-core`; ~12 KB if a consumer also imports `arraySignal` from `kerfjs/array-signal`. See `bench/results.md` for the per-shape numbers.)
 - `dist/index.d.ts` (types)
 - `dist/jsx-runtime.js`
 - `dist/jsx-runtime.d.ts`

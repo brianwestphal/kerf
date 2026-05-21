@@ -14,8 +14,8 @@ The kerf side is the exact code shipping at [`site/src/examples/complete/todomvc
 | | Min + gz, runtime only |
 | --- | --- |
 | `solid-js` 1.9 | ~4.5 KB |
-| `kerfjs` (incl. signals) | ~6.5 KB |
-| **Delta** | **kerf is ~2 KB larger** |
+| `kerfjs` (incl. signals) | ~11 KB |
+| **Delta** | **kerf is ~7 KB larger** |
 
 Solid is smaller. The trade you're making in either direction isn't bundle — it's the compiler. Solid relies on `babel-plugin-jsx-dom-expressions` (via `vite-plugin-solid`) to transform JSX into fine-grained reactive DOM operations at build time. Kerf has no such plugin: JSX renders to HTML strings at runtime, and a small reconciler patches the live DOM in place. Same JSX surface for the developer; different machinery underneath.
 

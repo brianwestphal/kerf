@@ -111,8 +111,96 @@ offClick();
 
 If you don't dispose, the listener stays bound for the lifetime of the rootEl — which is usually fine, since the root element typically lives as long as the page does.
 
-## 5.4 What you should NOT do
+## 5.4 `attr()` — building selectors from typed constants
+
+When your `data-action` names live in a typed constant object, hand-writing the selector string as a literal is fragile — a rename of the action key doesn't update the string. `attr()` creates a pre-computed descriptor that keeps the attribute name, value, selector, and a spreadable JSX object together.
+
+### Static form — fixed action names
+
+```ts
+import { delegate, attr, type AttrSpec } from 'kerfjs';
+
+const ACTIONS = {
+  add:    attr('data-action', 'add-todo'),
+  remove: attr('data-action', 'remove-todo'),
+  toggle: attr('data-action', 'toggle-todo'),
+} as const satisfies Record<string, AttrSpec<'data-action'>>;
+
+// In JSX — spread .attrs (rename-safe; no hardcoded 'data-action' at call sites):
+// <button {...ACTIONS.toggle.attrs}>Toggle</button>
+
+// In delegate — use the pre-computed selector:
+delegate(root, 'click', ACTIONS.toggle.selector, handler);
+// → '[data-action="toggle-todo"]'
+```
+
+`.attrs` is `{ readonly 'data-action': 'toggle-todo' }` — spreading it into JSX is type-safe and keeps the attribute name out of every call site. A rename of the action value propagates automatically through both the JSX and the delegate selector.
+
+### Dynamic form — per-row data attributes
+
+For attributes whose value changes per item (like `data-id`), use the single-argument overload. The name is validated once; calling the returned factory is cheap.
+
+```ts
+const ITEM = { id: attr('data-id') } as const;
+
+// In JSX — call the factory inline:
+// <li {...ITEM.id(String(item.id))}>…</li>
+
+// Combine with a static action in one spread:
+// <button {...ACTIONS.toggle.attrs} {...ITEM.id(String(item.id))}>Toggle</button>
+```
+
+The optional `V` generic constrains which values the factory accepts. Leaving both generics off infers `N` from the argument and defaults `V` to `string`; specify both explicitly when you want the type system to enforce the value set:
+
+```ts
+// Both generics off — N inferred as 'data-id', V defaults to string:
+const idFactory = attr('data-id');
+
+// Both generics explicit — factory only accepts 'asc' | 'desc':
+const sortFactory = attr<'data-sort', 'asc' | 'desc'>('data-sort');
+```
+
+The dynamic factory result is a plain frozen object `{ 'data-id': value }`. It has no `.selector` (the value is unknown at definition time), so ad-hoc compound selectors still use string concatenation:
+
+```ts
+delegate(root, 'click',
+  ACTIONS.toggle.selector + attr('data-id', id).selector,
+  handler);
+// → '[data-action="toggle-todo"][data-id="42"]'
+```
+
+Both forms CSS-escape at creation time (SSR-safe; no `CSS.escape` dependency). Hand-written string literals like `'[data-action="add"]'` are still fine for one-off selectors. `attr()` earns its keep when the attribute name and value both live in a typed constant that's also referenced in JSX.
+
+### Generic type parameter
+
+Both `delegate()` and `delegateCapture()` accept an optional element-type generic that narrows the matched element in the handler, avoiding casts:
+
+```ts
+delegate<HTMLButtonElement>(root, 'click', 'button[data-action]', (_e, btn) => {
+  // btn is HTMLButtonElement — no cast needed
+  btn.disabled = true;
+});
+```
+
+The default is `Element`, so untyped call sites are unaffected.
+
+## 5.5 What you should NOT do
 
 - **Don't `addEventListener` on individual rendered elements** unless they're inside a `data-morph-skip` subtree. Listeners attached to nodes the diff rebuilds will silently disappear on the next re-render.
 - **Don't worry about `mouseenter` / `mouseleave` not bubbling** — `delegate()` auto-promotes them to capture phase. The call site is identical to `mouseover`/`mouseout`, but you get the cleaner enter/leave semantics (no fires on internal element transitions).
 - **Don't try to compute "is this fresh DOM or preserved DOM" in a delegated handler** — the handler doesn't care. It just sees an event and a target.
+- **Don't read `e.target` to get the matched element — use the second argument `el`.** `el` is always the element matched by the selector (via `closest()`). `e.target` is the element the event physically landed on. If your `<button>` contains a `<span>`, clicking the span gives `e.target = <span>` — `dataset.id` will be `undefined` and the handler will silently do nothing.
+
+  ```ts
+  // Wrong — e.target can be a child <span>, not the <button>
+  delegate(root, 'click', '[data-action="remove"]', (e) => {
+    const id = (e.target as HTMLElement).dataset.id; // undefined when target is <span>
+    remove(id!); // id is undefined, silent failure
+  });
+
+  // Right — el is always the matched [data-action="remove"] element
+  delegate(root, 'click', '[data-action="remove"]', (_e, el) => {
+    const id = (el as HTMLElement).dataset.id; // always correct
+    remove(id!);
+  });
+  ```

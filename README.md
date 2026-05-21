@@ -11,7 +11,7 @@
 > Introducing Kerf.
 > The smallest cut.
 >
-> 6.1 KB. No virtual DOM. No compiler. No magic.
+> ~11 KB. No virtual DOM. No compiler. No magic.
 > Reactive UI that touches only the bytes that changed.
 
 ```ts
@@ -31,7 +31,7 @@ That's it. Your JSX renders to HTML strings, kerf's native diff applies the mini
 
 ## Why Kerf
 
-1. **Small bundle.** 6.1 KB gzipped including signals (6.5 KB with `arraySignal`). One runtime dependency (`@preact/signals-core`). No virtual DOM, no scheduler, no concurrent-mode machinery. On the [krausest js-framework-benchmark](./bench/results.md) kerf is in the same cluster as Vue, vanjs, and Lit on most operations; Solid wins the compiler-driven `select row` and `partial update` benchmarks.
+1. **Small bundle.** ~11 KB minified + gzipped including `@preact/signals-core` (~12 KB with `arraySignal`). One runtime dependency. No virtual DOM, no scheduler, no concurrent-mode machinery. On the [krausest js-framework-benchmark](./bench/results.md) kerf is in the same cluster as Vue, vanjs, and Lit on most operations; Solid wins the compiler-driven `select row` and `partial update` benchmarks.
 
 2. **No virtual DOM, no compiler.** JSX → HTML strings → native diff. DevTools shows the real DOM because it *is* the DOM.
 
@@ -56,7 +56,7 @@ That's it. Your JSX renders to HTML strings, kerf's native diff applies the mini
 - Building a deeply componentised design-system app → **React / Solid / Svelte**.
 - Need React Native / cross-platform mobile → **React** (Kerf + Tauri/Electron also covers many of these cases).
 - Building a static site → **Astro** (we use it for *this* project's site).
-- Already invested in a framework where switching cost outweighs the ~6 KB win.
+- Already invested in a framework where switching cost outweighs the bundle size gain.
 
 ## Quick tour
 
@@ -158,7 +158,7 @@ npm install kerfjs
 
 ### Optional: `eslint-plugin-kerfjs`
 
-A companion ESLint plugin enforces four of kerf's hard rules at edit time — inline JSX event handlers, missing `data-key` in `each()`, nested `mount()`, and global `JSX.IntrinsicElements` augmentation. The plugin is AST-only (no parser-services dependency), so it works with any TypeScript-ESLint setup.
+A companion ESLint plugin enforces kerf's hard rules at edit time. Four AST rules catch hard-rule violations — inline JSX event handlers, missing `data-key` in `each()`, nested `mount()`, and global `JSX.IntrinsicElements` augmentation. Two additional rules cover `raw()` XSS audit trails and AI-assistant config hygiene. The plugin is AST-only (no parser-services dependency), so it works with any TypeScript-ESLint setup.
 
 ```bash
 npm install --save-dev eslint-plugin-kerfjs
@@ -170,7 +170,7 @@ import kerfjs from 'eslint-plugin-kerfjs';
 export default [kerfjs.configs.recommended];
 ```
 
-Full docs at [brianwestphal.github.io/kerf/docs/eslint-plugin/](https://brianwestphal.github.io/kerf/docs/eslint-plugin/) — legacy `.eslintrc` config, per-rule examples, and the "why only four rules" framing.
+Full docs at [brianwestphal.github.io/kerf/docs/eslint-plugin/](https://brianwestphal.github.io/kerf/docs/eslint-plugin/) — legacy `.eslintrc` config, per-rule examples, and the rationale for which violations get lint rules vs. dev-warns vs. strict TS.
 
 ## Links
 
@@ -178,7 +178,7 @@ Full docs at [brianwestphal.github.io/kerf/docs/eslint-plugin/](https://brianwes
 - **Docs:** [`docs/`](./docs/) — overview · reactivity · stores · render · events · jsx · svg · [API reference](./docs/8-api-reference.md)
 - **Migrating:** [coming from another framework?](https://brianwestphal.github.io/kerf/migrating/) — side-by-side TodoMVC translations + per-framework gotchas
 - **AI guide:** [`docs/ai/usage-guide.md`](./docs/ai/usage-guide.md) — reference for AI tools fetching kerf docs (linked from `llms.txt`)
-- **ESLint plugin:** [brianwestphal.github.io/kerf/docs/eslint-plugin/](https://brianwestphal.github.io/kerf/docs/eslint-plugin/) — `eslint-plugin-kerfjs`; four AST-only rules enforcing kerf hard rules at edit time (source: [`eslint-plugin/`](./eslint-plugin/))
+- **ESLint plugin:** [brianwestphal.github.io/kerf/docs/eslint-plugin/](https://brianwestphal.github.io/kerf/docs/eslint-plugin/) — `eslint-plugin-kerfjs`; six rules (four hard-rule errors + `no-raw-with-dynamic-arg` warn + `ai-assistant-configs` warn) at edit time (source: [`eslint-plugin/`](./eslint-plugin/))
 - **Demo:** [live demo](https://brianwestphal.github.io/kerf/demo/) — eight sections exercising every primitive (counter, store-backed cart, focus survival, keyed list, morph-skip, SVG render, Tier-2 capture, `arraySignal` patches)
 - **Repo:** [github.com/brianwestphal/kerf](https://github.com/brianwestphal/kerf)
 

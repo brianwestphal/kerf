@@ -43,7 +43,11 @@ before the program runs:
   that fire at edit time for hard-rule violations the dev-warns can't see
   syntactically: `no-inline-jsx-event-handlers` (Rule 9),
   `require-data-key-in-each` (Rule 2), `no-nested-mount` (Rule 5),
-  `prefer-module-jsx-augmentation` (Rule 11).
+  `prefer-module-jsx-augmentation` (Rule 11). Two additional rules cover
+  non-hard-rule patterns: `no-raw-with-dynamic-arg` (XSS audit trail — warns
+  on every dynamic `raw()` argument so the `eslint-disable` suppression
+  becomes the permanent acknowledgment) and `ai-assistant-configs` (project
+  hygiene — checks that the bundled AI configs are installed and current).
 
 The three layers are complementary, not redundant. Lint catches AST-shaped
 antipatterns at edit time; tsc catches type-shaped bugs at build time; the

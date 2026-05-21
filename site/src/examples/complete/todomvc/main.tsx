@@ -1,4 +1,14 @@
-import { defineStore, mount, each, delegate, delegateCapture, effect } from 'kerfjs';
+import { defineStore, mount, each, delegate, delegateCapture, effect, attr, type AttrSpec } from 'kerfjs';
+
+const ACTIONS = {
+  toggle:    attr('data-action', 'toggle'),
+  remove:    attr('data-action', 'remove'),
+  edit:      attr('data-action', 'edit'),
+  filter:    attr('data-action', 'filter'),
+  clearDone: attr('data-action', 'clear-done'),
+} as const satisfies Record<string, AttrSpec<'data-action'>>;
+
+const ITEM = { id: attr('data-id') } as const;
 
 interface Todo { id: string; text: string; done: boolean }
 type Filter = 'all' | 'active' | 'done';
@@ -90,12 +100,12 @@ mount(root, () => {
                   <input
                     type="checkbox"
                     class="toggle"
-                    data-action="toggle"
-                    data-id={todo.id}
+                    {...ACTIONS.toggle.attrs}
+                    {...ITEM.id(todo.id)}
                     checked={todo.done}
                   />
-                  <label data-action="edit" data-id={todo.id}>{todo.text}</label>
-                  <button class="destroy" data-action="remove" data-id={todo.id}>×</button>
+                  <label {...ACTIONS.edit.attrs} {...ITEM.id(todo.id)}>{todo.text}</label>
+                  <button class="destroy" {...ACTIONS.remove.attrs} {...ITEM.id(todo.id)}>×</button>
                 </>
               )}
             </li>
@@ -106,30 +116,30 @@ mount(root, () => {
       <footer class="footer">
         <span class="count">{remaining} item{remaining === 1 ? '' : 's'} left</span>
         <ul class="filters">
-          <li><a data-action="filter" data-value="all" class={filter === 'all' ? 'selected' : ''}>All</a></li>
-          <li><a data-action="filter" data-value="active" class={filter === 'active' ? 'selected' : ''}>Active</a></li>
-          <li><a data-action="filter" data-value="done" class={filter === 'done' ? 'selected' : ''}>Done</a></li>
+          <li><a {...ACTIONS.filter.attrs} data-value="all" class={filter === 'all' ? 'selected' : ''}>All</a></li>
+          <li><a {...ACTIONS.filter.attrs} data-value="active" class={filter === 'active' ? 'selected' : ''}>Active</a></li>
+          <li><a {...ACTIONS.filter.attrs} data-value="done" class={filter === 'done' ? 'selected' : ''}>Done</a></li>
         </ul>
-        <button class="clear-done" data-action="clear-done">Clear completed</button>
+        <button class="clear-done" {...ACTIONS.clearDone.attrs}>Clear completed</button>
       </footer>
     </div>
   );
 });
 
 // Tier 1: clicks bubble.
-delegate(root, 'click', '[data-action="toggle"]', (_e, el) => {
+delegate(root, 'click', ACTIONS.toggle.selector, (_e, el) => {
   todos.actions.toggle((el as HTMLElement).dataset.id!);
 });
-delegate(root, 'click', '[data-action="remove"]', (_e, el) => {
+delegate(root, 'click', ACTIONS.remove.selector, (_e, el) => {
   todos.actions.remove((el as HTMLElement).dataset.id!);
 });
-delegate(root, 'click', '[data-action="edit"]', (_e, el) => {
+delegate(root, 'click', ACTIONS.edit.selector, (_e, el) => {
   todos.actions.startEdit((el as HTMLElement).dataset.id!);
 });
-delegate(root, 'click', '[data-action="filter"]', (_e, el) => {
+delegate(root, 'click', ACTIONS.filter.selector, (_e, el) => {
   todos.actions.setFilter((el as HTMLElement).dataset.value as Filter);
 });
-delegate(root, 'click', '[data-action="clear-done"]', () => todos.actions.clearDone());
+delegate(root, 'click', ACTIONS.clearDone.selector, () => todos.actions.clearDone());
 
 // Enter on the new-todo input.
 delegate(root, 'keydown', '[data-new]', (e, el) => {

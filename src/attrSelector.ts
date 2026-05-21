@@ -1,17 +1,37 @@
 /**
- * `attrSelector(attrs)` — build a CSS attribute-selector string from an
- * object map of attribute name → value pairs.
+ * `attr(name, value)` — create a pre-computed attribute descriptor (static form).
+ * `attr(name)` — create a per-render factory for dynamic attribute values (dynamic form).
  *
- *   attrSelector({ 'data-action': 'add-todo' })
- *   // → '[data-action="add-todo"]'
+ * **Static form** — best for fixed action names, filter keys, role values, etc.
+ * Escapes once at module-load time; produces a full {@link AttrSpec} with
+ * `.name`, `.value`, `.selector`, and `.attrs`.
  *
- *   attrSelector({ 'data-action': 'toggle', 'data-id': '42' })
- *   // → '[data-action="toggle"][data-id="42"]'
+ *   const ACTIONS = {
+ *     toggle: attr('data-action', 'toggle'),
+ *     remove: attr('data-action', 'remove'),
+ *   } as const satisfies Record<string, AttrSpec<'data-action'>>;
  *
- * The result is safe to pass directly to `delegate(root, type, selector, fn)`.
- * Both the attribute name and value are escaped so injection via unusual
- * characters (whitespace, CSS metacharacters, non-ASCII) can't produce a
- * syntactically invalid or misinterpreted selector.
+ *   // In JSX — spread .attrs (rename-safe; no hardcoded attribute name):
+ *   <button {...ACTIONS.toggle.attrs}>Toggle</button>
+ *
+ *   // In delegate — use the pre-computed selector:
+ *   delegate(root, 'click', ACTIONS.toggle.selector, handler);
+ *
+ * **Dynamic form** — best for per-row data like `data-id`, where the value
+ * changes per item but the attribute name is constant.
+ * The name is validated and pre-escaped at definition time; calling the
+ * returned factory is cheap (just escape the value and freeze the object).
+ *
+ *   const ITEM = { id: attr('data-id') } as const;
+ *
+ *   // In JSX — call the factory inline:
+ *   <li {...ITEM.id(String(item.id))}>…</li>
+ *
+ * For ad-hoc compound selectors, concatenate `.selector` strings:
+ *
+ *   delegate(root, 'click',
+ *     ACTIONS.toggle.selector + attr('data-id', id).selector,
+ *     handler);
  *
  * Escaping:
  * - Attribute name: escaped as a CSS identifier via `cssEscapeIdent`, which is
@@ -25,13 +45,25 @@
  * Throws on an empty attribute name (not a valid CSS identifier).
  */
 
+/** Descriptor created by the static {@link attr} overload. */
+export interface AttrSpec<N extends string = string, V extends string = string> {
+  /** The raw attribute name passed to `attr()`. */
+  readonly name: N;
+  /** The raw attribute value passed to `attr()`. */
+  readonly value: V;
+  /** Pre-computed `[name="value"]` CSS selector string, safe to pass to `delegate()`. */
+  readonly selector: string;
+  /** Spreadable JSX object — `{ [name]: value }` — keeps the attribute name out of JSX literals. */
+  readonly attrs: { readonly [K in N]: V };
+}
+
 /**
  * Escape `value` as a CSS identifier (for attribute names, id fragments, etc.).
  * Adapted from the CSS.escape polyfill by Mathias Bynens (MIT).
  */
 function cssEscapeIdent(value: string): string {
   if (value === '') {
-    throw new Error('attrSelector: attribute name must not be empty');
+    throw new Error('attr: attribute name must not be empty');
   }
   const str = String(value);
   let result = '';
@@ -109,23 +141,35 @@ function escapeCSSString(value: string): string {
 }
 
 /**
- * Build a CSS attribute-selector string from an object whose keys are
- * attribute names and whose values are the expected attribute values.
- *
- * ```ts
- * attrSelector({ 'data-action': 'add-todo' })
- * // → '[data-action="add-todo"]'
- *
- * delegate(root, 'click', attrSelector({ 'data-action': 'toggle', 'data-id': itemId }), handler);
- * ```
- *
- * Both names and values are escaped, so this function is safe for any
- * string value — including external input with CSS metacharacters.
+ * Static overload — pre-computes the full descriptor at definition time.
+ * Returns an {@link AttrSpec} with `.name`, `.value`, `.selector`, and `.attrs`.
  */
-export function attrSelector(attrs: Record<string, string>): string {
-  let result = '';
-  for (const [name, value] of Object.entries(attrs)) {
-    result += `[${cssEscapeIdent(name)}="${escapeCSSString(value)}"]`;
+export function attr<N extends string, V extends string>(name: N, value: V): AttrSpec<N, V>;
+
+/**
+ * Dynamic overload — pre-validates and pre-escapes the attribute name, returns a
+ * factory that accepts a per-render value and produces a frozen spreadable object.
+ * Use for per-row attributes like `data-id` where the value changes per item.
+ * The optional `V` generic constrains which values the factory accepts:
+ * `attr<'data-id', 'a'|'b'>('data-id')` → `(value: 'a'|'b') => { 'data-id': 'a'|'b' }`.
+ * Leaving both generics off infers `N` from the argument and defaults `V` to `string`.
+ */
+export function attr<N extends string, V extends string = string>(name: N): (value: V) => { readonly [K in N]: V };
+
+export function attr<N extends string, V extends string>(
+  name: N,
+  value?: V,
+): AttrSpec<N, V> | ((value: string) => { readonly [K in N]: string }) {
+  const escapedName = cssEscapeIdent(name); // validates + pre-escapes name in both paths
+  if (value !== undefined) {
+    const selector = `[${escapedName}="${escapeCSSString(value)}"]`;
+    return Object.freeze({
+      name,
+      value,
+      selector,
+      attrs: Object.freeze({ [name]: value }) as { readonly [K in N]: V },
+    }) as AttrSpec<N, V>;
   }
-  return result;
+  return (v: string): { readonly [K in N]: string } =>
+    Object.freeze({ [name]: v }) as { readonly [K in N]: string };
 }

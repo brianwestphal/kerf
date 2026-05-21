@@ -23,7 +23,7 @@ export default defineConfig({
     starlight({
       title: 'Kerf — the smallest cut',
       description:
-        'Tiny reactive UI framework — fine-grained signals + DOM diff + JSX. 6.5 KB, no virtual DOM, no compiler.',
+        'Tiny reactive UI framework — fine-grained signals + DOM diff + JSX. ~11 KB, no virtual DOM, no compiler.',
       customCss: ['./src/styles/live-example.css', './src/styles/kerf-compare.css'],
       head: [
         {
