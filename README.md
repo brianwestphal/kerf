@@ -192,6 +192,10 @@ A *kerf* is the narrow strip of material a saw blade removes when cutting — th
 
 Pre-1.0 — API may evolve. See [CHANGELOG.md](./CHANGELOG.md) for the current version and what's shipped.
 
+## Sponsor
+
+If kerf saves you time on a project you ship, [sponsoring on GitHub](https://github.com/sponsors/brianwestphal) keeps it actively maintained. Any amount is appreciated.
+
 ## License
 
 MIT
