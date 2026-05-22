@@ -1,4 +1,4 @@
-<!-- kerf-skill-version: 1.1.0 -->
+<!-- kerf-skill-version: 1.1.1 -->
 # kerf.cursorrules — rules for building apps with kerf
 #
 # Drop this file into your project as `.cursorrules` (Cursor will pick it
@@ -22,7 +22,7 @@ import {
   defineStore, resetAllStores,        // stores
   mount, morph, each,                 // render (reactive + one-shot) + keyed list
   delegate, delegateCapture,          // events
-  toElement,                          // direct JSX → DOM Element
+  toElement,                          // direct JSX → DOM Element (or DocumentFragment for multi-root)
   SafeHtml, isSafeHtml, raw, Fragment,
 } from 'kerfjs';
 
@@ -45,7 +45,7 @@ import { arraySignal } from 'kerfjs/array-signal';
 | `delegateCapture(root, type, sel, h)` | capture-phase escape hatch, strict `target.matches()` |
 | `attr(name, value)` | pre-computed `AttrSpec<N,V>` — `.selector` for `delegate()`, `.attrs` to spread into JSX (rename-safe) |
 | `attr(name)` | dynamic factory — `attr<N,V=string>(name)` returns `(value: V) => { readonly [name]: V }`; both generics off → N inferred, V defaults to string; specify both to constrain values |
-| `toElement(jsx)` | parse JSX into one DOM node (SVG-aware) |
+| `toElement(jsx)` | parse JSX into a DOM node (SVG-aware). Single-root → `Element`; multi-root (`<><svg/> label</>`, two icons side by side) → `DocumentFragment` that `appendChild`/`replaceChildren`/`append` inlines into the parent. |
 | `raw(html)` | inject pre-escaped HTML |
 | `arraySignal(initial?)` | granular keyed-list signal at `kerfjs/array-signal` subpath; `each()` reconciles in O(patches) |
 

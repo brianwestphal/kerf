@@ -1,7 +1,7 @@
 ---
 name: kerf-app
 description: Build UIs in the kerf reactive framework (https://github.com/brianwestphal/kerf). Use this skill whenever the user is writing or modifying code that imports `kerfjs`, asks to add a feature to a kerf app, or asks "how do I do X in kerf?". Use it proactively the moment you spot a kerf import in the file you're editing.
-kerf-skill-version: 1.1.0
+kerf-skill-version: 1.1.1
 ---
 
 # Building apps with kerf
@@ -27,7 +27,7 @@ import {
   defineStore, resetAllStores,        // stores
   mount, morph, each,                 // render (reactive + one-shot) + keyed list
   delegate, delegateCapture,          // events
-  toElement,                          // direct JSX → DOM Element
+  toElement,                          // direct JSX → DOM Element (or DocumentFragment for multi-root)
   SafeHtml, isSafeHtml, raw, Fragment,
 } from 'kerfjs';
 
@@ -50,7 +50,7 @@ import { arraySignal } from 'kerfjs/array-signal';
 | `delegateCapture(root, type, sel, h)` | capture-phase escape hatch; `target.matches()` strict match |
 | `attr(name, value)` | pre-computed `AttrSpec<N,V>` — `.selector` for `delegate()`, `.attrs` to spread into JSX (rename-safe) |
 | `attr(name)` | dynamic factory — `attr<N,V=string>(name)` returns `(value: V) => { readonly [name]: V }`; both generics off → N inferred, V defaults to string; specify both to constrain values |
-| `toElement(jsx)` | parse JSX into one DOM node (SVG-aware) |
+| `toElement(jsx)` | parse JSX into a DOM node (SVG-aware). Single-root → `Element`; multi-root (`<><svg/> label</>`, two icons side by side) → `DocumentFragment` that `appendChild`/`replaceChildren`/`append` inlines into the parent. |
 | `raw(html)` | inject pre-escaped HTML |
 | `arraySignal(initial?)` | granular keyed-list signal (subpath `kerfjs/array-signal`); `each()` reconciles in O(patches) |
 

@@ -49,7 +49,7 @@ import {
   defineStore, resetAllStores,        // stores
   mount, morph, each,                 // render (reactive + one-shot) + keyed list memoization
   delegate, delegateCapture,          // events
-  toElement,                          // direct JSX → DOM Element
+  toElement,                          // direct JSX → DOM Element (or DocumentFragment for multi-root inputs)
   SafeHtml, isSafeHtml, raw, Fragment, // JSX value type + cross-bundle guard + escape hatch + JSX <>...</> tag
 } from 'kerfjs';
 
@@ -72,7 +72,7 @@ import { arraySignal } from 'kerfjs/array-signal';
 | `delegateCapture<T>(root, type, sel, h)` | `() => void` disposer | explicit-capture escape hatch. `target.matches()`-style direct matching. Same `T` generic as `delegate`. |
 | `attr(name, value)` | `AttrSpec<N,V>` | **Static form.** Pre-computed attribute descriptor: `.name`, `.value`, `.selector` (`'[name="value"]'`), `.attrs` (`{ readonly [name]: value }` — spread into JSX for rename-safety). Build a typed constants object and use `.selector` in `delegate()`, spread `.attrs` in JSX. |
 | `attr(name)` | `(value: V) => { readonly [name]: V }` | **Dynamic form.** Pre-validates the attribute name, returns a per-render factory. Both generics off → `N` inferred, `V` defaults to `string`. Specify both explicitly (`attr<'data-sort', 'asc'\|'desc'>('data-sort')`) to constrain the value set. Result is spreadable into JSX. |
-| `toElement(jsx)` | `Element` | parse JSX/HTML string into one DOM node (SVG-aware) |
+| `toElement(jsx)` | `Element \| DocumentFragment` | parse JSX/HTML string into a DOM node (SVG-aware). Single-root inputs return an `Element`; multi-root (`<><svg/> label</>`, two icons side by side) returns a `DocumentFragment` that DOM insertion APIs (`appendChild` / `replaceChildren` / `append`) inline into the parent. |
 | `raw(html)` | `SafeHtml` | inject pre-escaped HTML (icons, server fragments) |
 | `isSafeHtml(v)` | `boolean` (type guard) | cross-bundle-safe `SafeHtml` check; prefer over `instanceof` |
 | `Fragment` | `(props) => SafeHtml` | JSX `<>...</>` tag; useful when composing `Fragment` manually |

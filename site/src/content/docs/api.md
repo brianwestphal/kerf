@@ -323,11 +323,14 @@ Plain-string values passed to `href`, `src`, `xlink:href`, `formaction`, or `act
 
 ## 8.6 Direct JSX → DOM
 
-### `toElement(jsx: SafeHtml | string): Element`
+### `toElement(jsx: SafeHtml | string): Element | DocumentFragment`
 
-Parses a JSX/SafeHtml/string and returns a single DOM element. Detects SVG content (root `<svg>` or orphan SVG fragment) and routes through `DOMParser('image/svg+xml')` for correct namespacing. HTML takes the `<template>.innerHTML` path.
+Parses a JSX/SafeHtml/string and returns a DOM node ready to insert into a parent.
 
-Throws if the input produces zero elements OR if `DOMParser` returns a `parsererror`.
+- **Single-root input** (one element child, surrounding whitespace OK) → returns the `Element`. For `<svg>` roots and orphan SVG fragments (`<path>`, `<g>`, `<circle>`, …) the input is XML-parsed through `DOMParser('image/svg+xml')` so the returned element is namespaced correctly and malformed SVG markup is rejected with a parse error.
+- **Multi-root input** (multiple elements, or any non-whitespace text alongside an element — `<><svg/> label</>`, `<>icon<text>icon</>`, two icons side by side) → returns a `DocumentFragment` containing every top-level node, including text nodes. Pass the result straight to `parent.appendChild(...)` / `parent.replaceChildren(...)` / `parent.append(...)` — the DOM insertion APIs inline a `DocumentFragment`'s children on insert and empty the fragment, so the caller never sees the wrapper. Nothing is silently dropped.
+
+Throws if the input produces zero element children OR if `DOMParser` rejects an SVG input.
 
 ## 8.7 Conventions used by `mount`
 

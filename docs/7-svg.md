@@ -48,10 +48,12 @@ svgRoot.appendChild(path);   // paints correctly
 
 ## 7.3 What `toElement` does in detail
 
-1. Looks at the leading tag of the input.
-2. **`<svg>` root** → parses via `new DOMParser().parseFromString(html, 'image/svg+xml')` and returns the document element. All descendants inherit the SVG namespace.
-3. **SVG fragment without `<svg>` wrapper** (any of `g`, `path`, `circle`, `rect`, `line`, `polygon`, `polyline`, `ellipse`, `text`, `tspan`, `defs`, `use`, `symbol`, `clipPath`, `mask`, `pattern`, `filter`, `marker`, `linearGradient`, `radialGradient`, `stop`, `image`, `foreignObject`) → wraps in `<svg xmlns="...">`, parses, and returns the first child. Caller is responsible for parenting it inside an existing `<svg>` to render.
-4. **HTML** → uses the standard `<template>.innerHTML` path.
+1. Parses the input through a `<template>.innerHTML` (HTML5 parser, which already handles `<svg>` as foreign content with correct namespacing).
+2. **Single-root input** (one element with optional surrounding whitespace):
+   - If the element is `<svg>` → re-parse the input via `new DOMParser().parseFromString(html, 'image/svg+xml')` and return the document element. The XML re-parse is strict, so malformed SVG (`<svg><unclosed</svg>`) throws instead of being silently auto-corrected.
+   - If the element is an orphan SVG-namespace tag (any of `g`, `path`, `circle`, `rect`, `line`, `polygon`, `polyline`, `ellipse`, `text`, `tspan`, `defs`, `use`, `symbol`, `clipPath`, `mask`, `pattern`, `filter`, `marker`, `linearGradient`, `radialGradient`, `stop`, `image`, `foreignObject`) → wrap in `<svg xmlns="...">`, XML-parse, return the first child. The caller is responsible for parenting it inside an existing `<svg>` to render.
+   - Otherwise (plain HTML) → return the parsed element directly.
+3. **Multi-root input** (multiple elements, or any non-whitespace text alongside an element — `<svg/> label`, two icons side by side, `text<svg/>`) → return the parsed `DocumentFragment` as-is. The HTML5 parser already gave any `<svg>` children the right namespace; the DOM insertion APIs splat the fragment's children into the parent on insert. Nothing is dropped.
 
 ## 7.4 When you need `toElement` vs. when `mount` is enough
 

@@ -269,8 +269,10 @@ describe('Doc contract coverage (KF-104)', () => {
   describe('toElement contracts (docs/7-svg.md)', () => {
     it('parses HTML through the html path', () => {
       const el = toElement('<button id="x">click</button>');
-      expect(el.tagName).toBe('BUTTON');
-      expect(el.id).toBe('x');
+      expect(el).toBeInstanceOf(Element);
+      const button = el as Element;
+      expect(button.tagName).toBe('BUTTON');
+      expect(button.id).toBe('x');
     });
 
     it('parses SVG via the DOMParser path (namespace verified in toElement.test.ts under jsdom)', () => {
@@ -280,8 +282,10 @@ describe('Doc contract coverage (KF-104)', () => {
       // for that reason — see CLAUDE.md "tech stack" notes. Here we assert
       // basic structural integrity.
       const el = toElement('<svg viewBox="0 0 10 10"><circle cx="5" cy="5" r="4"/></svg>');
-      expect(el.tagName.toLowerCase()).toBe('svg');
-      expect(el.querySelector('circle')).not.toBe(null);
+      expect(el).toBeInstanceOf(Element);
+      const svg = el as Element;
+      expect(svg.tagName.toLowerCase()).toBe('svg');
+      expect(svg.querySelector('circle')).not.toBe(null);
     });
 
     it('throws on input that produces no element', () => {
