@@ -54,19 +54,20 @@ export default [
 
 | Rule | Hard Rule | Severity (recommended) |
 |---|---|---|
-| [`no-inline-jsx-event-handlers`](docs/rules/no-inline-jsx-event-handlers.md) | 9 — use `data-action` + `delegate()` | `error` |
+| [`no-inline-jsx-event-handlers`](docs/rules/no-inline-jsx-event-handlers.md) | 10 — use `data-action` + `delegate()` | `error` |
 | [`require-data-key-in-each`](docs/rules/require-data-key-in-each.md) | 2 — `data-key` per item | `error` |
-| [`no-nested-mount`](docs/rules/no-nested-mount.md) | 5 — one `mount()` per root | `error` |
-| [`prefer-module-jsx-augmentation`](docs/rules/prefer-module-jsx-augmentation.md) | 11 — augment `kerfjs/jsx-runtime`, not global | `error` |
+| [`require-delegate-disposer`](docs/rules/require-delegate-disposer.md) | 5 — capture `delegate()` disposers when scope < page | `warn` |
+| [`no-nested-mount`](docs/rules/no-nested-mount.md) | 6 — one `mount()` per root | `error` |
+| [`prefer-module-jsx-augmentation`](docs/rules/prefer-module-jsx-augmentation.md) | 12 — augment `kerfjs/jsx-runtime`, not global | `error` |
 | [`prefer-attr-selector`](docs/rules/prefer-attr-selector.md) | — (rename-safety nudge for `delegate()` selectors) | `warn` |
 | [`no-raw-with-dynamic-arg`](docs/rules/no-raw-with-dynamic-arg.md) | — (XSS audit trail) | `warn` |
 | [`ai-assistant-configs`](docs/rules/ai-assistant-configs.md) | — (project hygiene) | `warn` |
 
 The "Hard Rule" column refers to the numbered rules in [`docs/ai/usage-guide.md`](../docs/ai/usage-guide.md) on the main kerf repo. `no-raw-with-dynamic-arg` and `ai-assistant-configs` don't map to numbered Hard Rules — the former creates an audit trail for every dynamic `raw()` call site (potential XSS); the latter checks that the bundled AI-assistant configs are installed and current. See [`docs/12-ai-assistant-configs.md`](../docs/12-ai-assistant-configs.md) on the main kerf repo for the AI-configs design.
 
-## Why these four Hard-Rule rules (and not more)?
+## Why these five Hard-Rule rules (and not more)?
 
-Rules that need flow analysis (signal reads outside render — Rule 7), call-graph analysis (`addEventListener` inside the mount tree — Rule 4), or type information (partial-set against multi-key state — Rule 8) are already covered by the opt-in dev-warns and strict TS. Duplicating them here would mean either high false-positive rates without type info, or a `parserServices` dependency that complicates consumer setup.
+Rules that need flow analysis (signal reads outside render — Rule 8), call-graph analysis (`addEventListener` inside the mount tree — Rule 4), or type information (partial-set against multi-key state — Rule 9) are already covered by the opt-in dev-warns and strict TS. Duplicating them here would mean either high false-positive rates without type info, or a `parserServices` dependency that complicates consumer setup.
 
 When a real bug ships that the existing defense stack misses AND a new lint rule would not false-positive on legitimate code, file an issue on the main kerf repo.
 

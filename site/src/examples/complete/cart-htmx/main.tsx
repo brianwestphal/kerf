@@ -83,6 +83,10 @@ function simulateSwap(initial: CartItem[]): void {
     </div>
   ));
 
+  // Transient root (the cart shell is swapped on every htmx response), so we
+  // CAPTURE the delegate disposer and call it alongside stopMount() on the next
+  // swap. Discarding the disposer here would leak a listener (and its closure
+  // over `items`) per swap. See docs/5-event-delegation.md §5.3.
   const stopDelegate = delegate(root, 'click', ACTIONS.remove.selector, (_e, btn) => {
     const id = (btn as HTMLElement).dataset.id;
     items.value = items.value.filter((it) => it.id !== id);

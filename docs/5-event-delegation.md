@@ -97,15 +97,67 @@ A click on an icon inside a button should fire the button's handler, not the ico
 
 ## 5.3 Disposers
 
-Both helpers return a `() => void` disposer. Call it when the host element leaves the DOM:
+Both helpers return a `() => void` disposer. **Capture it and call it when the delegate's scope ends** — the default rule, with exactly one narrow exception (described at the bottom of this section).
 
 ```ts
 const offClick = delegate(rootEl, 'click', '[data-action]', handler);
-// later:
+// later, when this scope is done:
 offClick();
 ```
 
-If you don't dispose, the listener stays bound for the lifetime of the rootEl — which is usually fine, since the root element typically lives as long as the page does.
+### Why "capture by default"
+
+A `delegate()` call installs a listener on `rootEl` and returns a disposer that's the *only* way to remove it. If you discard the disposer, four things can go wrong:
+
+1. **Transient roots leak.** Modals, route-level views, dynamically mounted widgets, popovers, micro-frontend slots — anything mounted and later torn down. The listener closure captures `rootEl`, `selector`, and `handler`. While that closure is alive, the detached `rootEl` is reachable, the handler is reachable, and *everything the handler closes over* (stores, signals, app state) is reachable. The listener doesn't go away just because the element was removed from the DOM.
+2. **Re-mount cycles stack listeners.** If you tear down the old root and mount a new one in its place without disposing, the previous listener stays on the now-detached element AND a fresh one attaches to the new element. Repeat the cycle and the leak grows linearly.
+3. **GC timing isn't a property you can design around.** Even if the detached element is eventually collectable, you can't predict when. Until it is, the listener — and everything in its closure — is still wired up. If the element ever re-enters the document (re-parented, held by a cache, referenced from a Map), the handler fires against state the rest of the app considers gone.
+4. **`mount()` does NOT clean up delegates for you.** The disposer returned by `mount()` only stops the reactive effect and clears the mount marker. Any `delegate()` you registered alongside the mount keeps its listener attached. If you re-`mount()` on the same root without first disposing the prior delegates, you stack listeners.
+
+### Canonical patterns
+
+For a transient root — store the disposers alongside the mount disposer and call both when the scope ends:
+
+```ts
+function openModal(host: HTMLElement) {
+  const stopMount = mount(host, () => <ModalView />);
+  const stopClick = delegate(host, 'click', '[data-action]', handleAction);
+  const stopFocus = delegate(host, 'focus',  'input',         handleFocus);
+
+  return function closeModal() {
+    stopMount();
+    stopClick();
+    stopFocus();
+    host.remove();
+  };
+}
+```
+
+Collecting into an array is fine too — whatever fits the surrounding code:
+
+```ts
+const disposers: Array<() => void> = [];
+disposers.push(mount(host, render));
+disposers.push(delegate(host, 'click',  '[data-action]', onAction));
+disposers.push(delegate(host, 'keydown', '[data-edit]', onEdit));
+
+function teardown() {
+  for (const off of disposers) off();
+  disposers.length = 0;
+}
+```
+
+See `cart-htmx/main.tsx` for a live example: its mount swap captures `stopMount` and `stopDelegate` and calls both before the next mount.
+
+### The narrow exception: genuinely page-lifetime registrations
+
+If — and only if — *all three* of these are true, discarding the disposer is safe:
+
+- The registration runs once at module top-level (or once during app bootstrap).
+- `rootEl` is `document.body` or another element that lives for the page's lifetime.
+- Nothing about the app's design will ever tear it down and re-mount it.
+
+In that case the listener is page-scoped by intent, and discarding the disposer mirrors that intent. The `counter-store` and `chat` example apps fall into this bucket — single mount at startup, no teardown, no re-mount. **Everything else captures the disposer.** When in doubt, capture; the cost of capturing a disposer you never need to call is zero, and the cost of not capturing one you did need is a leak that grows with use.
 
 ## 5.4 `attr()` — building selectors from typed constants
 

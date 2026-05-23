@@ -179,13 +179,13 @@ delegate(rootEl, 'click', '[data-action="add"]', (event, matched) => { ... });
 delegate(rootEl, 'focus', '.field-row',          (event, row)     => { ... });
 ```
 
-One root listener with `closest(selector)`-style walk-up matching; fires `handler(event, matched)` if the match is inside `rootEl`. Returns a disposer.
+One root listener with `closest(selector)`-style walk-up matching; fires `handler(event, matched)` if the match is inside `rootEl`. Returns a `() => void` disposer — **capture it and call it when the delegate's scope ends** (closing a modal, leaving a route, tearing down a widget). Discarding the disposer is only safe for genuinely page-lifetime registrations: top-level mount on a root that never tears down. Everywhere else the closure pins `rootEl`, `handler`, and everything the handler closes over, so an undisposed listener leaks the app graph and re-mounts stack listeners. `mount()`'s disposer does NOT remove delegates for you. See `docs/5-event-delegation.md` §5.3.
 
 Auto-promotes the well-known non-bubbling event types (`focus`, `blur`, `scroll`, `load`, `error`, `mouseenter`, `mouseleave`) to capture phase under the hood, so the call site looks identical regardless of whether the event bubbles. Selector matching stays `closest()`-style for every event type — wrapper selectors still match when the event lands on a descendant.
 
 ### `delegateCapture(rootEl, type, selector, handler): () => void`
 
-Same shape, but installs on the capture phase and matches via `target.matches(selector)` (direct match, no walk-up). The escape hatch — use it for custom non-bubbling events that aren't in `delegate()`'s auto-promotion list, or when you want capture-phase semantics with strict element-match behavior.
+Same shape, but installs on the capture phase and matches via `target.matches(selector)` (direct match, no walk-up). The escape hatch — use it for custom non-bubbling events that aren't in `delegate()`'s auto-promotion list, or when you want capture-phase semantics with strict element-match behavior. Same disposer-capture rule as `delegate()`.
 
 ### `attr(name, value)` — static form
 

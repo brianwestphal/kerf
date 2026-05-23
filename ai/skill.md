@@ -1,7 +1,7 @@
 ---
 name: kerf-app
 description: Build UIs in the kerf reactive framework (https://github.com/brianwestphal/kerf). Use this skill whenever the user is writing or modifying code that imports `kerfjs`, asks to add a feature to a kerf app, or asks "how do I do X in kerf?". Use it proactively the moment you spot a kerf import in the file you're editing.
-kerf-skill-version: 1.1.1
+kerf-skill-version: 1.2.0
 ---
 
 # Building apps with kerf
@@ -17,7 +17,7 @@ kerf is a ~11 KB reactive UI framework (~12 KB with `arraySignal`): signals + DO
 - Install: `npm install kerfjs`
 - `tsconfig.json`: `"jsx": "react-jsx"`, `"jsxImportSource": "kerfjs"`
 - Vite / esbuild need no extra config.
-- Recommended companion: `npm install --save-dev eslint-plugin-kerfjs` and add `kerfjs.configs.recommended` to the project's eslint config. Enforces four of the hard rules below (no inline JSX event handlers, require `data-key` in `each()`, no nested `mount()`, prefer module JSX augmentation) at edit time — useful as a self-correction signal when authoring kerf code.
+- Recommended companion: `npm install --save-dev eslint-plugin-kerfjs` and add `kerfjs.configs.recommended` to the project's eslint config. Enforces five of the hard rules below (no inline JSX event handlers, require `data-key` in `each()`, capture `delegate()` disposers, no nested `mount()`, prefer module JSX augmentation) at edit time — useful as a self-correction signal when authoring kerf code.
 
 ## Public API — one import path
 
@@ -63,15 +63,16 @@ import { arraySignal } from 'kerfjs/array-signal';
    - `data-morph-skip-children` — attrs on the host morph, subtree preserved. For client-hydrated slots whose loading/state classes need to flow through.
    - `data-morph-preserve` — element survives the trailing-removal pass even when the new template doesn't emit it. For imperatively-injected children (autoplay video, tooltip overlay, analytics pixel). Does NOT block a keyed-match move.
 4. **Never `addEventListener` inside a `mount()`-managed tree** unless under `data-morph-skip`. A morph re-render may discard the node. Use `delegate` / `delegateCapture` instead.
-5. **One `mount()` per root.** Don't nest `mount()` calls. Compose with plain functions returning JSX.
-6. **Components are plain functions.** `<MyComponent props />` works — the JSX runtime calls `MyComponent(props)` and uses the returned JSX — but there's no hook system, no lifecycle, and no per-instance state. State lives in module-scope signals or stores, never in component closures.
-7. **Signal reads must happen INSIDE the render function** to be tracked. `const x = count.value; mount(el, () => <span>{x}</span>)` does NOT re-render. Move the read inside.
-8. **Store actions take `(set, get)`, not `(state)`.** `set(next)` replaces state; mutating `get()` does nothing.
-9. **Use `data-action` attributes, not inline `onClick`.** Inline handlers are NOT supported by the JSX → string runtime; delegate from the root.
-10. **`arraySignal` is opt-in for long keyed lists** where most updates are pointwise. For short lists / filter+sort pipelines, plain `signal` + `each(items.value, ...)` is simpler and equally fast.
-11. **Custom-element types: declaration-merge into `kerfjs/jsx-runtime`**, NOT into a global JSX namespace. Pattern: `declare module 'kerfjs/jsx-runtime' { namespace JSX { interface IntrinsicElements { 'my-tag': KerfCustomElement & { foo?: string } } } }`.
-12. **Each `each()` row must produce exactly one top-level element.** Multi-root or empty rows throw a row-precise error. Wrap multiple roots in one parent.
-13. **`each()` is for DYNAMIC lists. Use `.map()` for static structural arrays** (constant `COLUMNS` / `TABS` / settings sections) whose row render reads signals. `each()` memoizes per-item HTML by object identity; constant items never change identity, so the cache hits forever, the row render is never re-invoked, and signal reads inside it silently stop tracking. Outer `.map()` for the static frame + inner `each()` for the dynamic sub-list is the idiomatic shape.
+5. **Capture the `delegate()` / `delegateCapture()` disposer** whenever the registration's scope is shorter than the page. Both helpers return `() => void`; the listener closure pins `rootEl`, `handler`, and everything the handler closes over (stores, signals, app state). Discarding the disposer on a transient root (modal, route view, mount swap, dynamic widget) leaks the listener AND the app graph it captures; re-mount cycles stack listeners linearly. `mount()`'s own disposer does NOT remove delegates for you. Safe to discard only when the registration is truly page-lifetime (root is `document.body` or equivalent, attached once at startup, never torn down).
+6. **One `mount()` per root.** Don't nest `mount()` calls. Compose with plain functions returning JSX.
+7. **Components are plain functions.** `<MyComponent props />` works — the JSX runtime calls `MyComponent(props)` and uses the returned JSX — but there's no hook system, no lifecycle, and no per-instance state. State lives in module-scope signals or stores, never in component closures.
+8. **Signal reads must happen INSIDE the render function** to be tracked. `const x = count.value; mount(el, () => <span>{x}</span>)` does NOT re-render. Move the read inside.
+9. **Store actions take `(set, get)`, not `(state)`.** `set(next)` replaces state; mutating `get()` does nothing.
+10. **Use `data-action` attributes, not inline `onClick`.** Inline handlers are NOT supported by the JSX → string runtime; delegate from the root.
+11. **`arraySignal` is opt-in for long keyed lists** where most updates are pointwise. For short lists / filter+sort pipelines, plain `signal` + `each(items.value, ...)` is simpler and equally fast.
+12. **Custom-element types: declaration-merge into `kerfjs/jsx-runtime`**, NOT into a global JSX namespace. Pattern: `declare module 'kerfjs/jsx-runtime' { namespace JSX { interface IntrinsicElements { 'my-tag': KerfCustomElement & { foo?: string } } } }`.
+13. **Each `each()` row must produce exactly one top-level element.** Multi-root or empty rows throw a row-precise error. Wrap multiple roots in one parent.
+14. **`each()` is for DYNAMIC lists. Use `.map()` for static structural arrays** (constant `COLUMNS` / `TABS` / settings sections) whose row render reads signals. `each()` memoizes per-item HTML by object identity; constant items never change identity, so the cache hits forever, the row render is never re-invoked, and signal reads inside it silently stop tracking. Outer `.map()` for the static frame + inner `each()` for the dynamic sub-list is the idiomatic shape.
 
 ## Decision-making axes
 
@@ -145,7 +146,7 @@ morph(liveCard, '<article class="card">…</article>');
 | Library widget destroyed on every render | host reachable by the morph | Wrap host in `data-morph-skip`; mount the library imperatively after first render |
 | `<my-tag>` fails to typecheck | declaration merging targeted global JSX | Use `declare module 'kerfjs/jsx-runtime' { namespace JSX { … } }` instead |
 | `each(): row render at index N produced K top-level elements` | row returned multiple sibling elements or zero | Wrap them in one parent so the row renders exactly one element |
-| Drag/drop / state change has no visible effect; only elements *outside* `each()` update | Used `each(STATIC_ARRAY, …)` whose row render reads signals. Items never change identity → cache hits forever → row render never re-invoked → signal reads stop tracking | Replace outer with `STATIC_ARRAY.map(...)`; keep inner `each()` for the dynamic sub-list. See Hard Rule 13 |
+| Drag/drop / state change has no visible effect; only elements *outside* `each()` update | Used `each(STATIC_ARRAY, …)` whose row render reads signals. Items never change identity → cache hits forever → row render never re-invoked → signal reads stop tracking | Replace outer with `STATIC_ARRAY.map(...)`; keep inner `each()` for the dynamic sub-list. See Hard Rule 14 |
 
 ## Workflow guidance
 

@@ -17,6 +17,7 @@ test-results/
 .claude/
 .glassbox/
 .hotsheet/
+.cursor/
 .mcp.json
 
 # Editor

@@ -129,8 +129,15 @@ mount(asyncRoot, () => {
 
 // --- Events --------------------------------------------------------------
 
-delegate(document.body, 'click', ACTIONS.inc.selector, () => counter.actions.increment());
-delegate(document.body, 'click', ACTIONS.dec.selector, () => counter.actions.decrement());
-delegate(document.body, 'click', ACTIONS.reset.selector, () => counter.actions.reset());
-delegate(document.body, 'click', ACTIONS.fetchOk.selector, () => { void remote.actions.fetch(true); });
-delegate(document.body, 'click', ACTIONS.fetchFail.selector, () => { void remote.actions.fetch(false); });
+// Page-lifetime registrations: root is `document.body`, attached once at module
+// load, never torn down. The leading `void` is the explicit-discard sigil for
+// `kerfjs/require-delegate-disposer` — it signals "I know this is page-lifetime
+// and intentionally discarded the disposer" instead of leaving the call looking
+// like an accidental discard. For transient roots (modals, route views, mount
+// swaps) capture and call the disposer — see docs/5-event-delegation.md §5.3
+// and the `cart-htmx` example.
+void delegate(document.body, 'click', ACTIONS.inc.selector, () => counter.actions.increment());
+void delegate(document.body, 'click', ACTIONS.dec.selector, () => counter.actions.decrement());
+void delegate(document.body, 'click', ACTIONS.reset.selector, () => counter.actions.reset());
+void delegate(document.body, 'click', ACTIONS.fetchOk.selector, () => { void remote.actions.fetch(true); });
+void delegate(document.body, 'click', ACTIONS.fetchFail.selector, () => { void remote.actions.fetch(false); });
