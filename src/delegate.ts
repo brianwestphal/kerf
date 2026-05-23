@@ -28,6 +28,8 @@
  *     lifecycle directly. No delegation helper applies.
  */
 
+import { warnIfInsideEffect } from './dev-delegate-warn.js';
+
 /**
  * Event types that don't bubble and so wouldn't reach a root-level
  * bubble-phase listener. `delegate()` flips to capture for these; the
@@ -89,6 +91,7 @@ export function delegate<T extends Element = Element>(
   handler: (event: Event, target: T) => void,
 ): () => void {
   assertValidSelector(selector, 'delegate');
+  warnIfInsideEffect('delegate');
   const listener = (event: Event): void => {
     const target = event.target;
     if (!(target instanceof Element)) return;
@@ -122,6 +125,7 @@ export function delegateCapture<T extends Element = Element>(
   handler: (event: Event, target: T) => void,
 ): () => void {
   assertValidSelector(selector, 'delegateCapture');
+  warnIfInsideEffect('delegateCapture');
   const listener = (event: Event): void => {
     const target = event.target;
     if (!(target instanceof Element)) return;

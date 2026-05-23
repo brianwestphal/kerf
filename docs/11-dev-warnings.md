@@ -36,25 +36,26 @@ The dev-warns are the runtime layer. Two earlier layers catch related misuse
 before the program runs:
 
 - **Strict TS** — `tsc --noEmit` against properly-typed store state catches
-  Hard Rule 8 partial-set bugs as type errors. All complete example apps in
+  Hard Rule 9 partial-set bugs as type errors. All complete example apps in
   this repo are under that gate.
 - **`eslint-plugin-kerfjs`** — a separate publishable package, in
-  [`eslint-plugin/`](../eslint-plugin/README.md), with four AST-only rules
+  [`eslint-plugin/`](../eslint-plugin/README.md), with five AST-only rules
   that fire at edit time for hard-rule violations the dev-warns can't see
-  syntactically: `no-inline-jsx-event-handlers` (Rule 9),
-  `require-data-key-in-each` (Rule 2), `no-nested-mount` (Rule 5),
-  `prefer-module-jsx-augmentation` (Rule 11). Two additional rules cover
-  non-hard-rule patterns: `no-raw-with-dynamic-arg` (XSS audit trail — warns
-  on every dynamic `raw()` argument so the `eslint-disable` suppression
-  becomes the permanent acknowledgment) and `ai-assistant-configs` (project
-  hygiene — checks that the bundled AI configs are installed and current).
+  syntactically: `no-inline-jsx-event-handlers` (Rule 10),
+  `require-data-key-in-each` (Rule 2), `require-delegate-disposer` (Rule 5),
+  `no-nested-mount` (Rule 6), `prefer-module-jsx-augmentation` (Rule 12).
+  Two additional rules cover non-hard-rule patterns:
+  `no-raw-with-dynamic-arg` (XSS audit trail — warns on every dynamic `raw()`
+  argument so the `eslint-disable` suppression becomes the permanent
+  acknowledgment) and `ai-assistant-configs` (project hygiene — checks that
+  the bundled AI configs are installed and current).
 
 The three layers are complementary, not redundant. Lint catches AST-shaped
 antipatterns at edit time; tsc catches type-shaped bugs at build time; the
 dev-warns catch the runtime patterns that need flow / call-graph
 information no static checker has.
 
-## 11.2 The five warnings
+## 11.2 The six warnings
 
 ### 11.2.1 `KERF_DEV_WARN_REBUILT_LISTENERS=1` (Rule 4)
 
@@ -79,11 +80,11 @@ correctly. False-positive surface includes custom elements that attach
 listeners in their constructor and library-owned subtrees the consumer
 forgot to wrap in `data-morph-skip`.
 
-### 11.2.2 `KERF_DEV_WARN_UNTRACKED_SIGNALS=1` (Rule 7)
+### 11.2.2 `KERF_DEV_WARN_UNTRACKED_SIGNALS=1` (Rule 8)
 
 **Module:** [`src/dev-signal.ts`](../src/dev-signal.ts) (KF-176).
 **Trigger:** a signal's `.value` is written when no subscriber has ever
-attached to that signal. **What it catches:** Rule 7 violations — reading
+attached to that signal. **What it catches:** Rule 8 violations — reading
 `signal.value` outside a render fn or `effect()` callback (so the read
 doesn't subscribe), then writing to it later and being surprised the UI
 doesn't update.
@@ -102,11 +103,11 @@ UI consumer) are legitimate and would always warn under this heuristic.
 The opt-in keeps the diagnostic available for UI-shaped projects without
 penalising data-pipeline-shaped projects.
 
-### 11.2.3 `KERF_DEV_WARN_NARROW_SET=1` (Rule 8)
+### 11.2.3 `KERF_DEV_WARN_NARROW_SET=1` (Rule 9)
 
 **Module:** [`src/dev-store-warn.ts`](../src/dev-store-warn.ts) (KF-212).
 **Trigger:** `defineStore.set(next)` is called with at least one key from
-the current state missing in `next`. **What it catches:** Rule 8
+the current state missing in `next`. **What it catches:** Rule 9
 violations — `set()` REPLACES state, so a partial-set call wipes any keys
 not in `next`. The canonical bug shape is `set({ filter })` against a
 3-key state of `{items, filter, editingId}` — the next read of `items`
@@ -159,7 +160,18 @@ would have missed same-count-different-keys cases.
 
 **Why opt-in.** Placing an `each()` list inside a library-owned `data-morph-skip` element is uncommon but occasionally intentional (e.g., the library provides the host while kerf manages the rows). The warning would fire on every such legitimately-structured mount otherwise.
 
-### 11.2.6 Double-mount guard (always-on, not opt-in)
+### 11.2.6 `KERF_DEV_WARN_DELEGATE_IN_EFFECT=1`
+
+**Module:** [`src/dev-delegate-warn.ts`](../src/dev-delegate-warn.ts) (KF-238).
+**Trigger:** `delegate()` or `delegateCapture()` is called while the call stack is inside an `effect()` body. **What it catches:** the listener-stacking pattern documented in `docs/5-event-delegation.md` §5.3 "When capturing the disposer still isn't enough" — every effect re-run executes its body fresh, so a `delegate()` call inside the body installs a NEW root listener on each re-run. The effect's disposer cleans up the reactive subscription but not the side-effects the body produced, so previous listeners stay attached, the per-listener closures pin `rootEl` / `handler` / everything the handler closes over, and listener count grows linearly with signal churn.
+
+**Mechanism.** With the env var set, `reactive.ts`'s `effect()` factory wraps the user body in `enterEffect()` / `exitEffect()` calls that increment and decrement a module-level depth counter in `dev-delegate-warn.ts`. Both `delegate()` and `delegateCapture()` call `warnIfInsideEffect()` at the top of their bodies; the function checks the env-var gate, then the depth counter; if depth > 0 it fires a one-shot `console.warn` naming the caller (`delegate` vs `delegateCapture`) and pointing at "register once at module / setup scope and gate behavior on the signal inside the handler" as the fix. The wrap also uses `try` / `finally` so a body that throws still decrements the counter — a thrown effect doesn't leave the depth permanently incremented.
+
+**Dedup scope.** One warning per process. Structurally identical to KF-174 (rebuilt listeners) — the signal is "your code has this antipattern"; firing once is enough to direct attention. A consumer who fixes the first instance and has another won't be told twice in the same process, but they'll see it on the next run.
+
+**Why opt-in.** No realistic kerf code legitimately calls `delegate()` inside an `effect()` body — but the wrap of `effect()` itself adds a microscopic call-frame overhead, so the bare `coreEffect` re-export stays the default path when the env var is unset. Production NODE_ENV short-circuits before the wrap decision; production bundles see the bare re-export with zero overhead.
+
+### 11.2.7 Double-mount guard (always-on, not opt-in)
 
 **Module:** [`src/mount.ts`](../src/mount.ts) (KF-175, KF-225).
 **Trigger:** `mount(el, render)` is called on an element that is already the root of a live mount, or on a descendant or ancestor of such an element. **What it catches:** the "two competing effects" pattern — two `mount()` calls on the same DOM subtree both install `effect()` watchers that fight over the same live nodes, producing conflicting DOM mutations and unpredictable rendering output with no runtime error.
@@ -183,7 +195,7 @@ added to the family must too.
 2. **Per-warning env var.** Each warning has its own
    `KERF_DEV_WARN_<NOUN>=1` env var. There is intentionally no umbrella
    `KERF_DEV_WARN=1` flag — opt-in is per-warning, so a consumer can
-   enable the Rule 4 warner while leaving the Rule 8 warner off.
+   enable the Rule 4 warner while leaving the Rule 9 warner off.
 3. **Default off.** Every warning is off by default. The env-var
    `=0` and the unset state both mean off.
 
@@ -239,13 +251,13 @@ so production behavior is what's measured.
 
 ## 11.4 Where each warning is referenced
 
-| Surface | KF-174 (rebuilt listeners) | KF-176 (untracked signals) | KF-212 (narrow set) | duplicate cacheKey | each-in-morph-skip |
-| --- | --- | --- | --- | --- | --- |
-| Source module | `src/dev-listener-warn.ts` | `src/dev-signal.ts` | `src/dev-store-warn.ts` | `src/dev-each-warn.ts` | `src/dev-each-warn.ts` |
-| Wired in | `src/mount.ts` | `src/reactive.ts` | `src/store.ts` | `src/each.ts` | `src/mount.ts` |
-| Numbered doc | `docs/5-event-delegation.md` (Rule 4) | `docs/2-reactivity.md` (Rule 7) | `docs/3-stores.md` (Rule 8) | `docs/4-render.md` §4.2 | `docs/4-render.md` §4.3 |
-| AI usage guide | `docs/ai/usage-guide.md` "Hard rules" | same | same | n/a | `docs/ai/usage-guide.md` "Common errors" |
-| Test fixture | `tests/unit/dev-listener-warn.internal.test.ts` | covered in `tests/unit/reactive.test.ts` | `tests/unit/dev-store-warn.internal.test.ts` | `tests/unit/dev-each-warn.internal.test.ts` | same |
+| Surface | KF-174 (rebuilt listeners) | KF-176 (untracked signals) | KF-212 (narrow set) | duplicate cacheKey | each-in-morph-skip | KF-238 (delegate-in-effect) |
+| --- | --- | --- | --- | --- | --- | --- |
+| Source module | `src/dev-listener-warn.ts` | `src/dev-signal.ts` | `src/dev-store-warn.ts` | `src/dev-each-warn.ts` | `src/dev-each-warn.ts` | `src/dev-delegate-warn.ts` |
+| Wired in | `src/mount.ts` | `src/reactive.ts` | `src/store.ts` | `src/each.ts` | `src/mount.ts` | `src/reactive.ts` (effect wrap) + `src/delegate.ts` (check) |
+| Numbered doc | `docs/5-event-delegation.md` (Rule 4) | `docs/2-reactivity.md` (Rule 8) | `docs/3-stores.md` (Rule 9) | `docs/4-render.md` §4.2 | `docs/4-render.md` §4.3 | `docs/5-event-delegation.md` §5.3 |
+| AI usage guide | `docs/ai/usage-guide.md` "Hard rules" | same | same | n/a | `docs/ai/usage-guide.md` "Common errors" | `docs/ai/usage-guide.md` Hard Rule 5 + "Common errors" |
+| Test fixture | `tests/unit/dev-listener-warn.internal.test.ts` | covered in `tests/unit/reactive.test.ts` | `tests/unit/dev-store-warn.internal.test.ts` | `tests/unit/dev-each-warn.internal.test.ts` | same | `tests/unit/dev-delegate-warn.internal.test.ts` |
 
 ## 11.5 Adding a new warning
 

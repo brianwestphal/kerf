@@ -126,23 +126,31 @@ mount(root, () => {
   );
 });
 
+// Page-lifetime registrations: `root` is the TodoMVC mount root, attached
+// once at module load and never torn down. The leading `void` is the
+// explicit-discard sigil for `kerfjs/require-delegate-disposer` — it signals
+// "I know this is page-lifetime and intentionally discarded the disposer"
+// instead of leaving the call looking like an accidental discard. For
+// transient roots (modals, route views, mount swaps) capture and call the
+// disposer — see docs/5-event-delegation.md §5.3.
+
 // Tier 1: clicks bubble.
-delegate(root, 'click', ACTIONS.toggle.selector, (_e, el) => {
+void delegate(root, 'click', ACTIONS.toggle.selector, (_e, el) => {
   todos.actions.toggle((el as HTMLElement).dataset.id!);
 });
-delegate(root, 'click', ACTIONS.remove.selector, (_e, el) => {
+void delegate(root, 'click', ACTIONS.remove.selector, (_e, el) => {
   todos.actions.remove((el as HTMLElement).dataset.id!);
 });
-delegate(root, 'click', ACTIONS.edit.selector, (_e, el) => {
+void delegate(root, 'click', ACTIONS.edit.selector, (_e, el) => {
   todos.actions.startEdit((el as HTMLElement).dataset.id!);
 });
-delegate(root, 'click', ACTIONS.filter.selector, (_e, el) => {
+void delegate(root, 'click', ACTIONS.filter.selector, (_e, el) => {
   todos.actions.setFilter((el as HTMLElement).dataset.value as Filter);
 });
-delegate(root, 'click', ACTIONS.clearDone.selector, () => todos.actions.clearDone());
+void delegate(root, 'click', ACTIONS.clearDone.selector, () => todos.actions.clearDone());
 
 // Enter on the new-todo input.
-delegate(root, 'keydown', '[data-new]', (e, el) => {
+void delegate(root, 'keydown', '[data-new]', (e, el) => {
   const ev = e as KeyboardEvent;
   if (ev.key !== 'Enter') return;
   const input = el as HTMLInputElement;
@@ -151,7 +159,7 @@ delegate(root, 'keydown', '[data-new]', (e, el) => {
 });
 
 // Enter / Esc on the edit input.
-delegate(root, 'keydown', '[data-edit]', (e, el) => {
+void delegate(root, 'keydown', '[data-edit]', (e, el) => {
   const ev = e as KeyboardEvent;
   const input = el as HTMLInputElement;
   if (ev.key === 'Enter') {
@@ -162,7 +170,7 @@ delegate(root, 'keydown', '[data-edit]', (e, el) => {
 });
 
 // Tier 2: blur is a non-bubbler — must use delegateCapture.
-delegateCapture(root, 'blur', '[data-edit]', (_e, el) => {
+void delegateCapture(root, 'blur', '[data-edit]', (_e, el) => {
   const input = el as HTMLInputElement;
   if (todos.state.value.editingId === input.dataset.id) {
     todos.actions.commitEdit(input.dataset.id!, input.value);

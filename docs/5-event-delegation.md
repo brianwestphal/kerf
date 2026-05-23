@@ -159,6 +159,142 @@ If — and only if — *all three* of these are true, discarding the disposer is
 
 In that case the listener is page-scoped by intent, and discarding the disposer mirrors that intent. The `counter-store` and `chat` example apps fall into this bucket — single mount at startup, no teardown, no re-mount. **Everything else captures the disposer.** When in doubt, capture; the cost of capturing a disposer you never need to call is zero, and the cost of not capturing one you did need is a leak that grows with use.
 
+### When capturing the disposer still isn't enough
+
+Capturing the disposer is necessary but not always sufficient. Because kerf has no formal mount/unmount lifecycle by design — the call site is the only signal — a handful of patterns capture the disposer in a way that *looks* right and still leaks. Each scenario below has the same root cause: the lifetime the disposer is tied to is shorter than the lifetime of the variable holding it.
+
+#### `delegate()` rooted on a node inside a morph-managed tree
+
+`delegate()` attaches its single listener to the root element you pass it. If that root is itself inside another tree that the morph reconciles, the parent re-render can detach the root from the DOM without you knowing. The disposer reference you captured is still alive (held by the surrounding scope's closure), but the element it points at is gone — and there's no signal to tell you to call it.
+
+```ts
+// ❌ Wrong — `rowEl` lives inside an each() row. When the row is removed,
+// the listener is on a detached element and the disposer reference is stale.
+each(items.value, (item) => {
+  const view = <li data-key={item.id}>…</li>;
+  const rowEl = toElement(view) as HTMLElement;
+  const off = delegate(rowEl, 'click', '.action', handleAction);
+  // off is captured but the caller has no idea when to call it
+  return view;
+});
+```
+
+```ts
+// ✅ Right — one delegate at the stable mount() root; closest()-style matching
+// dispatches to the right row. No per-row disposer to manage.
+mount(appRoot, () => (
+  <ul>
+    {each(items.value, (item) => <li data-key={item.id}>…</li>, (i) => i.id)}
+  </ul>
+));
+delegate(appRoot, 'click', '[data-row] .action', handleAction);
+```
+
+Rule of thumb: root `delegate()` at the *outermost* stable element — the `mount()` root, or a `data-morph-skip` host — and let `closest()` matching reach inner targets.
+
+#### `delegate()` called inside an `effect()`
+
+`effect()` re-runs its body every time a tracked signal changes. The effect's disposer tears down the *reactive subscription* but not whatever side-effects the body produced. Every re-run installs a fresh delegate listener on the root; nothing removes the previous one.
+
+```ts
+// ❌ Wrong — every signal change adds another listener. The effect disposer
+// stops the subscription but the listeners stay attached forever.
+effect(() => {
+  if (mode.value === 'edit') {
+    delegate(root, 'keydown', '[data-edit]', commitOnEnter);
+  }
+});
+```
+
+```ts
+// ✅ Right — register the delegate once at module / setup scope. Gate the
+// behavior on the signal inside the handler, where it's free.
+delegate(root, 'keydown', '[data-edit]', (e, el) => {
+  if (mode.value !== 'edit') return;
+  commitOnEnter(e, el);
+});
+```
+
+This is the same shape as the addEventListener-inside-mount foot-gun (Hard Rule 4) wearing different clothes. Opt-in dev warn: set `KERF_DEV_WARN_DELEGATE_IN_EFFECT=1` to surface this at runtime when it happens.
+
+#### `delegate()` on a `toElement()` node that gets replaced
+
+`toElement()` returns a live DOM node you can `appendChild` / `replaceChildren` anywhere. If you attach a delegate to that node and later swap it out, the node is detached but the listener — and the disposer's closure — are still in memory. This case doesn't *look* like a transient root (there's no `mount()`), so it's easy to miss.
+
+```ts
+// ❌ Wrong — `card` is detached on the next replaceChildren(), but `off` is
+// either lost or stale. Listener and handler closure leak.
+const card = toElement(<div class="card">…</div>) as HTMLElement;
+delegate(card, 'click', '.btn', onBtn);
+host.replaceChildren(card);
+// …later…
+host.replaceChildren(toElement(<div class="card">…</div>));
+```
+
+```ts
+// ✅ Right — track the disposer alongside the node and call it before swapping.
+let off: (() => void) | null = null;
+function swapCard(jsx: SafeHtml): void {
+  off?.();
+  const card = toElement(jsx) as HTMLElement;
+  off = delegate(card, 'click', '.btn', onBtn);
+  host.replaceChildren(card);
+}
+```
+
+#### Disposer variables overwritten by reassignment
+
+A captured disposer that gets reassigned without being called first leaks the prior listener. The `kerfjs/require-delegate-disposer` lint rule passes — the call's return value *is* assigned — but the leak is in the next statement after the rule's window.
+
+```ts
+// ❌ Wrong — every store change overwrites `off` without calling the prior one.
+let off: () => void = () => {};
+store.subscribe(() => {
+  off = delegate(root, 'click', currentSelector(), handler);
+});
+```
+
+```ts
+// ✅ Right — dispose the previous registration before reassigning.
+let off: () => void = () => {};
+store.subscribe(() => {
+  off();
+  off = delegate(root, 'click', currentSelector(), handler);
+});
+```
+
+If the reason you're re-registering is "the selector changed," consider whether one root-level delegate with a wider selector and an in-handler check fits — that pattern avoids the reassignment dance entirely.
+
+#### Nested-root confusion: stable parent, transient child
+
+"Page-lifetime" is a property of the *root element you pass to `delegate()`*, not the surrounding app. A stable outer mount doesn't make every descendant safe to ignore.
+
+```ts
+// ❌ Wrong — #app is page-lifetime, but `modalInstanceEl` is not. The modal
+// is created and removed on each open/close; discarding the disposer leaks
+// a listener per modal lifecycle.
+function openModal() {
+  const modalInstanceEl = toElement(<div class="modal">…</div>) as HTMLElement;
+  document.getElementById('modal-host')!.appendChild(modalInstanceEl);
+  delegate(modalInstanceEl, 'click', '.close', () => closeModal(modalInstanceEl));
+  // disposer discarded — looks safe because the surrounding app is stable
+}
+```
+
+```ts
+// ✅ Right — the modal is transient. Capture the disposer and call it on close.
+function openModal() {
+  const modalInstanceEl = toElement(<div class="modal">…</div>) as HTMLElement;
+  document.getElementById('modal-host')!.appendChild(modalInstanceEl);
+  const off = delegate(modalInstanceEl, 'click', '.close', () => {
+    off();
+    modalInstanceEl.remove();
+  });
+}
+```
+
+When deciding whether a `delegate()` is page-lifetime, ask: "is *this specific element* attached once and never removed?" If you can construct a code path that removes it, the disposer must be captured.
+
 ## 5.4 `attr()` — building selectors from typed constants
 
 When your `data-action` names live in a typed constant object, hand-writing the selector string as a literal is fragile — a rename of the action key doesn't update the string. `attr()` creates a pre-computed descriptor that keeps the attribute name, value, selector, and a spreadable JSX object together.

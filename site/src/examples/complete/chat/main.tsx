@@ -99,8 +99,16 @@ effect(() => {
   });
 });
 
+// Page-lifetime registrations: `root` is the chat app's mount root, attached
+// once at module load and never torn down. The leading `void` is the
+// explicit-discard sigil for `kerfjs/require-delegate-disposer` — it signals
+// "I know this is page-lifetime and intentionally discarded the disposer"
+// instead of leaving the call looking like an accidental discard. For
+// transient roots (modals, route views, mount swaps) capture and call the
+// disposer — see docs/5-event-delegation.md §5.3.
+
 // Tier 1: Enter sends, Shift+Enter inserts a newline. keydown bubbles.
-delegate(root, 'keydown', '[data-input]', (e, el) => {
+void delegate(root, 'keydown', '[data-input]', (e, el) => {
   const ev = e as KeyboardEvent;
   if (ev.key !== 'Enter' || ev.shiftKey) return;
   ev.preventDefault();
@@ -108,19 +116,19 @@ delegate(root, 'keydown', '[data-input]', (e, el) => {
 });
 
 // Tier 1: form submit covers the Send button + Enter-when-button-focused.
-delegate(root, 'submit', '[data-composer]', (e) => {
+void delegate(root, 'submit', '[data-composer]', (e) => {
   e.preventDefault();
   const ta = root.querySelector('[data-input]') as HTMLTextAreaElement | null;
   send(ta?.value ?? '');
 });
 
 // Tier 1: prompt chips prefill + send.
-delegate(root, 'click', '.chip', (_e, el) => {
+void delegate(root, 'click', '.chip', (_e, el) => {
   send((el as HTMLElement).dataset.prompt ?? '');
 });
 
 // Tier 1: copy any finished bot message.
-delegate(root, 'click', ACTIONS.copy.selector, (_e, el) => {
+void delegate(root, 'click', ACTIONS.copy.selector, (_e, el) => {
   const id = (el as HTMLElement).dataset.id!;
   const m = messages.value.find((x) => x.id === id);
   if (m) void navigator.clipboard?.writeText(m.text);

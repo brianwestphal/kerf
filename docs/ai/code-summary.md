@@ -10,7 +10,7 @@ kerf/
 │   ├── index.ts                  ← public entry — re-exports everything users import
 │   ├── jsx-runtime.ts            ← JSX → SafeHtml string emitter
 │   ├── jsx-types.ts              ← typed IntrinsicElements (KF-75) — per-tag attribute contracts, catches JSX typos at compile time
-│   ├── reactive.ts               ← signal/computed/effect/batch (re-export) — `signal()` is dev-gated through `dev-signal.ts` when KF-176's opt-in env var is set
+│   ├── reactive.ts               ← signal/computed/effect/batch (re-export) — `signal()` is dev-gated through `dev-signal.ts` when KF-176's opt-in env var is set; `effect()` is dev-gated through `dev-delegate-warn.ts` (KF-238) when its opt-in env var is set (wraps the body in enter/exit calls so `delegate()` can detect inside-effect callsites)
 │   ├── dev-signal.ts             ← KF-176 — `DevSignal<T> extends Signal<T>` subclass that warns once on writes to signals with no subscribers (Rule 7 helper). Opt-in via `KERF_DEV_WARN_UNTRACKED_SIGNALS=1` in dev; production unchanged.
 │   ├── dev-listener-warn.ts      ← KF-174 — opt-in dev `MutationObserver` + `addEventListener` prototype patch that warns when a node carrying an imperative listener is removed/rebuilt by the morph (Rule 4 helper). Opt-in via `KERF_DEV_WARN_REBUILT_LISTENERS=1` in dev; production unchanged.
 │   ├── dev-store-warn.ts         ← KF-212 — opt-in dev warn when `defineStore.set(next)` has any key from the current state missing in `next` (Rule 8 partial-set helper). Per-store one-shot dedup; opt-in via `KERF_DEV_WARN_NARROW_SET=1` in dev; production unchanged.
@@ -27,7 +27,8 @@ kerf/
 │   ├── list-reconcile-fast-paths.ts ← KF-198 attribute-only + KF-206 text-content-only fast paths for the granular update path
 │   ├── list-reconcile-focus.ts   ← focus snapshot/restore around the move pass (engine-quirk fix)
 │   ├── attrSelector.ts           ← attr / AttrSpec<N,V> — two overloads: static attr(name,value)→AttrSpec (with .attrs spreadable JSX object), dynamic attr(name)→factory; cssEscapeIdent + escapeCSSString internals
-│   ├── delegate.ts               ← delegate<T> + delegateCapture<T> (generic element type for handler arg)
+│   ├── delegate.ts               ← delegate<T> + delegateCapture<T> (generic element type for handler arg); calls warnIfInsideEffect() at the top of both helpers when KF-238's gate is on
+│   ├── dev-delegate-warn.ts      ← KF-238 — opt-in dev warn when `delegate()` / `delegateCapture()` is called inside an `effect()` body (each effect re-run installs a fresh listener; effect disposer cleans only the subscription). `reactive.ts`'s `effect()` wrap increments/decrements a depth counter when the gate is on; `delegate.ts` checks it. Opt-in via `KERF_DEV_WARN_DELEGATE_IN_EFFECT=1` in dev; production unchanged.
 │   ├── dev-each-warn.ts          ← KERF_DEV_WARN_DUPLICATE_EACH_KEYS + KERF_DEV_WARN_EACH_IN_MORPH_SKIP opt-in warnings
 │   ├── toElement.ts              ← SVG-aware JSX-to-DOM
 │   └── utils/
@@ -40,6 +41,7 @@ kerf/
 │   │   ├── audit-gap-coverage.test.tsx     ← regression-net for v8-only branches found via coverage gaps
 │   │   ├── delegate.test.ts
 │   │   ├── attr.test.ts
+│   │   ├── dev-delegate-warn.internal.test.ts ← KF-238 — opt-in `KERF_DEV_WARN_DELEGATE_IN_EFFECT=1` dev-mode warning when `delegate()` / `delegateCapture()` is called inside an `effect()` body; covers depth tracking, throw-still-decrements, env-var gate off, production-mode short-circuit, nested effects, one-shot dedup. `.internal.test.ts` so dist-full excludes it.
 │   │   ├── dev-each-warn.internal.test.ts ← opt-in `KERF_DEV_WARN_EACH_IN_MORPH_SKIP=1` (each() inside data-morph-skip) and `KERF_DEV_WARN_DUPLICATE_EACH_KEYS=1` (duplicate cacheKey values) warnings; covers env-var gates, dedup, production-mode short-circuit.
 │   │   ├── dev-listener-warn.internal.test.ts ← KF-174 — opt-in `KERF_DEV_WARN_REBUILT_LISTENERS=1` dev-mode MutationObserver-based warning when a node carrying an imperative `addEventListener` listener is removed/rebuilt by the morph; covers the env-var gates, the descendant walk, and the helper-level rowContract `maybeWarnMissingRowKey` branches. `*.internal.test.ts` so dist-full excludes it (the test imports the `_resetWarnedForTests` helper which is not in the public dist barrel).
 │   │   ├── dev-store-warn.internal.test.ts ← KF-212 — opt-in `KERF_DEV_WARN_NARROW_SET=1` dev-mode warning when `defineStore.set(next)` has any key from the current state missing in `next`; covers opt-out (env var unset / =0 / production), opt-in (warns once, names missing keys), per-store dedup, same-count-different-keys, array-skip, null-skip, primitive-skip, and the `_resetWarnContext` test helper. `*.internal.test.ts` so dist-full excludes it.

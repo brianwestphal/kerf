@@ -58,7 +58,14 @@ mount(root, () => (
   </div>
 ));
 
+// Page-lifetime registration: `root` is the markdown-editor mount root,
+// attached once at module load and never torn down. The leading `void` is the
+// explicit-discard sigil for `kerfjs/require-delegate-disposer` — it signals
+// "I know this is page-lifetime and intentionally discarded the disposer."
+// For transient roots (modals, route views, mount swaps) capture and call the
+// disposer — see docs/5-event-delegation.md §5.3.
+//
 // Tier 1: input bubbles. Sync from contenteditable into the source signal.
-delegate(root, 'input', '.editor-input', (_e, el) => {
+void delegate(root, 'input', '.editor-input', (_e, el) => {
   source.value = (el as HTMLElement).innerText;
 });

@@ -4,20 +4,27 @@
  * later (or fronting it with a hand-rolled implementation) is a one-file
  * change.
  *
- * The `signal()` factory is dev-gated: when `NODE_ENV !== 'production'` and
- * `KERF_DEV_WARN_UNTRACKED_SIGNALS === '1'`, it returns a `DevSignal` that
- * warns on writes to signals with no subscribers (KF-176). Off by default;
- * production always returns the bare `@preact/signals-core` signal.
+ * Two dev-gated wrappers sit in front of the bare re-exports:
+ *
+ * - `signal()` returns a `DevSignal` when `KERF_DEV_WARN_UNTRACKED_SIGNALS=1`
+ *   (KF-176) — warns on writes to signals with no subscribers.
+ *
+ * - `effect()` wraps the user body in `enterEffect()` / `exitEffect()` calls
+ *   when `KERF_DEV_WARN_DELEGATE_IN_EFFECT=1` so `delegate()` can detect when
+ *   it's running inside an effect body and fire the appropriate warning.
+ *
+ * Both gates short-circuit on `NODE_ENV === 'production'` — production
+ * always sees the bare `@preact/signals-core` exports with zero overhead.
  */
 
-import { type Signal,signal as coreSignal } from '@preact/signals-core';
+import { effect as coreEffect,type Signal,signal as coreSignal } from '@preact/signals-core';
 
+import { enterEffect, exitEffect, isDevWarnDelegateInEffectEnabled } from './dev-delegate-warn.js';
 import { DevSignal, isDevWarnUntrackedEnabled } from './dev-signal.js';
 
 export {
   batch,
   computed,
-  effect,
   type ReadonlySignal,
   type Signal,
 } from '@preact/signals-core';
@@ -25,4 +32,16 @@ export {
 export function signal<T>(value?: T): Signal<T> {
   if (isDevWarnUntrackedEnabled()) return new DevSignal<T>(value as T) as Signal<T>;
   return coreSignal(value as T);
+}
+
+export function effect(fn: () => void | (() => void)): () => void {
+  if (!isDevWarnDelegateInEffectEnabled()) return coreEffect(fn);
+  return coreEffect(() => {
+    enterEffect();
+    try {
+      return fn();
+    } finally {
+      exitEffect();
+    }
+  });
 }

@@ -119,7 +119,14 @@ let dragEl: HTMLElement | null = null;
 // (the tag span, the text div, the meta row) climbs up to the card itself.
 // `delegateCapture` would use `target.matches()` — exact-match only — and miss
 // children entirely. (Surfaced by KF-165's regression spec.)
-delegate(root, 'pointerdown', '.card', (e, el) => {
+//
+// Page-lifetime registration: `root` is the kanban mount root, attached once at
+// module load and never torn down. The leading `void` is the explicit-discard
+// sigil for `kerfjs/require-delegate-disposer` — it signals "I know this is
+// page-lifetime and intentionally discarded the disposer." For transient roots
+// (modals, route views, mount swaps) capture and call the disposer — see
+// docs/5-event-delegation.md §5.3.
+void delegate(root, 'pointerdown', '.card', (e, el) => {
   if (drag.value) return;
   const ev = e as PointerEvent;
   if (ev.button !== 0) return;
