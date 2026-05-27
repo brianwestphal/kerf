@@ -154,6 +154,33 @@ describe('mount()', () => {
       .toThrow(/mount: rootEl is null\/undefined/);
   });
 
+  it('adopts an inert-document root into the live document before rendering (KF-243)', () => {
+    // A consumer can hand mount() an element from an inert document (no
+    // browsing context) — here via document.implementation.createHTMLDocument().
+    // mount() must adopt it into the live document first; otherwise its
+    // first-render innerHTML write runs against an inert-document element,
+    // which trips the WebKit fragment-parse bug fixed in KF-240.
+    const inert = document.implementation.createHTMLDocument('');
+    const el = inert.createElement('div');
+    expect(el.ownerDocument).not.toBe(document); // sanity: starts inert
+    expect(inert.defaultView).toBeNull(); // sanity: no browsing context
+    const dispose = mount(el, () => jsx('p', { children: 'hi' }));
+    expect(el.ownerDocument).toBe(document); // adopted into the live document
+    expect(el.innerHTML).toBe('<p>hi</p>'); // renders correctly post-adopt
+    dispose();
+  });
+
+  it('does NOT adopt (or detach) a normal live-document root', () => {
+    // The common case: a live element already in document. mount() must leave
+    // its ownerDocument and its place in the tree untouched.
+    expect(root.ownerDocument).toBe(document);
+    const parent = root.parentNode;
+    const dispose = mount(root, () => jsx('p', { children: 'x' }));
+    expect(root.ownerDocument).toBe(document);
+    expect(root.parentNode).toBe(parent); // not detached
+    dispose();
+  });
+
   describe('one-mount-per-tree precondition (KF-175)', () => {
     it('throws when mount() is called on a descendant of an already-mounted element', () => {
       mount(root, () => jsx('div', { children: jsx('span', { id: 'inner', children: 'x' }) }));

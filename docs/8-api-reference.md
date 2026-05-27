@@ -118,6 +118,8 @@ type MountResult = SafeHtml | string | number | boolean | null | undefined;
 
 Bind `render()` to `rootEl`'s children. Wraps `effect()` with kerf's segment-aware diff. Returns a disposer.
 
+If `rootEl` belongs to an *inert* document (no browsing context — e.g. a `DOMParser` result, a `<template>.content` child, or `document.implementation.createHTMLDocument()` output), `mount()` adopts it into the live `document` first, so its first-render `innerHTML` write is safe on every engine (some engines mis-parse `innerHTML` on inert-document elements under rapid bursts). Roots that are already in the live document — the normal case — are untouched, and a live element in another realm (e.g. an iframe) is left in place. `toElement()` output is already adopted, so this only matters for hand-rolled roots.
+
 `MountResult` is wide enough that consumers can write `() => cond ? <jsx/> : null` and `() => cond && <jsx/>` without a sentinel — matching the React / Solid convention. `null` / `undefined` / `false` / `true` coerce to "render nothing" (empty string); numbers stringify; everything else falls through `String(...)`. See `docs/4-render.md` §4.4 for the rationale and the equivalent fallback patterns. The `MountResult` type alias is exported from the main barrel for consumers that want to annotate their render functions explicitly.
 
 The diff:

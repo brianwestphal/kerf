@@ -128,6 +128,23 @@ export function mount(rootEl: HTMLElement, render: () => MountResult): () => voi
       + 'A common cause is a typo in the id or selector that returns null at runtime even though the TypeScript types say HTMLElement.',
     );
   }
+  // KF-243: defense-in-depth for inert-document roots. `toElement()` already
+  // adopts its output into the live document, but a consumer can hand `mount()`
+  // an element built some other way — their own `DOMParser`, a detached
+  // `<template>.content` child, `document.implementation.createHTMLDocument()`
+  // — whose `ownerDocument` has no browsing context. `mount()`'s first-render
+  // `rootEl.innerHTML = …` on such an inert-document element trips the WebKit
+  // fragment-parsing bug fixed in KF-240, so adopt it into the live document
+  // first. Only genuinely inert owners (`defaultView === null`) are adopted; a
+  // live element in another realm (e.g. an iframe, `defaultView !== null`) is
+  // left in place — `mount()` works on it as-is, and we must never yank a node
+  // out of its own window.
+  const owner = rootEl.ownerDocument as Document;
+  if (owner !== document) {
+    /* c8 ignore start -- the defaultView!==null arm needs a second live browsing context (iframe element); not constructible in the unit environment */
+    if (owner.defaultView === null) document.adoptNode(rootEl);
+    /* c8 ignore stop */
+  }
   assertNotInsideMountedTree(rootEl);
   (rootEl as unknown as Record<symbol, unknown>)[MOUNTED_MARKER] = true;
   // KF-174: opt-in dev MutationObserver that warns when a node carrying an

@@ -16,7 +16,7 @@ kerf/
 │   ├── dev-store-warn.ts         ← KF-212 — opt-in dev warn when `defineStore.set(next)` has any key from the current state missing in `next` (Rule 8 partial-set helper). Per-store one-shot dedup; opt-in via `KERF_DEV_WARN_NARROW_SET=1` in dev; production unchanged.
 │   ├── array-signal.ts           ← arraySignal (KF-92) — granular collection signal; lives at the kerfjs/array-signal subpath (KF-95) so non-users shed ~1 KB
 │   ├── store.ts                  ← defineStore + resetAllStores + REGISTRY
-│   ├── mount.ts                  ← mount() — segment-aware render bound to effect()
+│   ├── mount.ts                  ← mount() — segment-aware render bound to effect(); adopts an inert-document rootEl (defaultView === null) into the live document before first render (KF-243 defense-in-depth for the KF-240 WebKit inert-doc parse bug)
 │   ├── morph.ts                  ← native general-purpose DOM reconciler (replaces morphdom); exported publicly as morph() (KF-150)
 │   ├── segment.ts                ← Segment types (static/list/mixed) + flatten helpers
 │   ├── each.ts                   ← each() — keyed list iteration with per-item memo
