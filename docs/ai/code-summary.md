@@ -30,7 +30,7 @@ kerf/
 │   ├── delegate.ts               ← delegate<T> + delegateCapture<T> (generic element type for handler arg); calls warnIfInsideEffect() at the top of both helpers when KF-238's gate is on
 │   ├── dev-delegate-warn.ts      ← KF-238 — opt-in dev warn when `delegate()` / `delegateCapture()` is called inside an `effect()` body (each effect re-run installs a fresh listener; effect disposer cleans only the subscription). `reactive.ts`'s `effect()` wrap increments/decrements a depth counter when the gate is on; `delegate.ts` checks it. Opt-in via `KERF_DEV_WARN_DELEGATE_IN_EFFECT=1` in dev; production unchanged.
 │   ├── dev-each-warn.ts          ← KERF_DEV_WARN_DUPLICATE_EACH_KEYS + KERF_DEV_WARN_EACH_IN_MORPH_SKIP opt-in warnings
-│   ├── toElement.ts              ← SVG-aware JSX-to-DOM
+│   ├── toElement.ts              ← SVG-aware JSX-to-DOM; adopts the result into the live `document` (KF-240) so inert-template/DOMParser-document nodes aren't returned (WebKit mis-parses innerHTML on inert-doc elements under bursts)
 │   └── utils/
 │       ├── escapeHtml.ts         ← used by jsx-runtime
 │       ├── jsx-attr-aliases.ts   ← camelCase → HTML/SVG attribute name table (KF-21)
@@ -72,7 +72,8 @@ kerf/
 │   │   ├── mutation-count.spec.ts      ← LIS-based reorder produces the minimum insertBefore count
 │   │   ├── perf-1k.spec.ts             ← 1k-row stress (real-browser sanity check on the bench app)
 │   │   ├── stateful-attrs.spec.ts      ← `<details open>` / `<dialog open>` user-agent-owned attribute survival
-│   │   └── svg-mathml.spec.ts          ← KF-83 — SVG/MathML namespacing across real browsers
+│   │   ├── svg-mathml.spec.ts          ← KF-83 — SVG/MathML namespacing across real browsers
+│   │   └── toelement-adopt.spec.ts     ← KF-240 — toElement() returns live-document nodes (ownerDocument === document, every shape) + mount-before-insert burst across Chromium/Firefox/WebKit
 │   └── dist/                     ← run via `npm run test:dist`, against the built bundles
 │       ├── barrel-completeness.test.ts    ← KF-24 — pins the public-API list
 │       ├── consumer-app/                  ← KF-123 — esbuild-bundled downstream-style app; main.tsx exercises every public primitive (counter/store/each/arraySignal/delegateCapture/focus/morph-skip/SVG/Fragment/declaration-merged custom element). Driven by `tests/browser/consumer-app.spec.ts`

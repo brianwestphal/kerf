@@ -8,6 +8,11 @@
  * insert, so `parent.replaceChildren(toElement(<>{ICON} label</>))` does the
  * obvious thing — parent gets the svg AND the text, no silent loss.
  *
+ * The returned node is always adopted into the live `document` before it's
+ * handed back (see `adopt()` below) — never left owned by the inert
+ * `<template>`/`DOMParser` document it was parsed in, which is unsafe to mutate
+ * before insertion on some engines.
+ *
  * SVG namespacing: the HTML5 parser handles `<svg>` as foreign content
  * correctly even when wrapped in a fragment, so multi-root inputs containing
  * SVGs come out namespaced correctly via the `<template>.innerHTML` path. For
@@ -33,6 +38,28 @@ const EXCERPT_MAX_LEN = 100;
 function excerpt(html: string): string {
   const trimmed = html.trim();
   return trimmed.length > EXCERPT_MAX_LEN ? `${trimmed.slice(0, EXCERPT_MAX_LEN)}…` : trimmed;
+}
+
+/**
+ * Adopt `node` into the live `document` before returning it.
+ *
+ * Both parse paths produce nodes that belong to an *inert* document, not the
+ * one the caller renders into: the `<template>.content` path yields nodes
+ * owned by the template-contents owner document, and the `DOMParser` path
+ * yields nodes owned by the parser's document. Returning such a node is a
+ * footgun — operating on it before it's inserted (most notably `mount()`'s
+ * first-render `rootEl.innerHTML = …`) runs against an inert-document element,
+ * which on WebKit trips a fragment-parsing bug: under rapid bursts the parser
+ * can hand back a *previous* parse's nodes, so a freshly-built element silently
+ * inherits unrelated DOM. (Chromium never reproduces it; the originating
+ * report was Safari-only — a feed mounting many `toElement(<div/>)` cards in
+ * one flush, each painting a stale sibling's state.) `adoptNode` moves the node
+ * into the live document (preserving identity and namespaces), so the returned
+ * node is always safe to mutate before insertion.
+ */
+function adopt<T extends Node>(node: T): T {
+  document.adoptNode(node);
+  return node;
 }
 
 function parseSvgOrThrow(html: string, label: string, originalHtml: string): Document {
@@ -84,7 +111,7 @@ export function toElement(jsx: SafeHtml | string): Element | DocumentFragment {
     // which is worse than throwing. Trim so trailing whitespace in the input
     // doesn't trip up the XML parser.
     if (tag === 'svg') {
-      return parseSvgOrThrow(html.trim(), 'SVG', html).documentElement;
+      return adopt(parseSvgOrThrow(html.trim(), 'SVG', html).documentElement);
     }
 
     // Single orphan SVG-namespace fragment (`<path/>`, `<g>`, …) — the HTML5
@@ -96,10 +123,10 @@ export function toElement(jsx: SafeHtml | string): Element | DocumentFragment {
       const first = doc.documentElement.firstElementChild;
       /* c8 ignore next 2 — defensive: a successful XML parse of a wrapped svg always yields ≥1 child. */
       if (first === null) throw new Error(`toElement: SVG fragment produced no element\n  input: ${excerpt(html)}`);
-      return first;
+      return adopt(first);
     }
 
-    return single;
+    return adopt(single);
   }
 
   // Multi-root (or no roots): return the parsed DocumentFragment so the caller
@@ -115,5 +142,5 @@ export function toElement(jsx: SafeHtml | string): Element | DocumentFragment {
     // element somewhere.
     throw new Error(`toElement: produced no element\n  input: ${excerpt(html)}`);
   }
-  return content;
+  return adopt(content);
 }

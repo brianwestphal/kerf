@@ -332,6 +332,8 @@ Parses a JSX/SafeHtml/string and returns a DOM node ready to insert into a paren
 
 Throws if the input produces zero element children OR if `DOMParser` rejects an SVG input.
 
+The returned node is always adopted into the live `document` (`node.ownerDocument === document`), never left owned by the inert `<template>` / `DOMParser` document it was parsed in. This matters when you operate on the node **before inserting it** — e.g. `mount(toElement(<div/>), …)`, which sets `innerHTML` on first render. An inert-document element is unsafe to mutate that way on some engines (WebKit can mis-parse `innerHTML` on it under rapid bursts), so kerf moves the node into the live document up front. Identity and SVG/MathML namespaces are preserved by the adoption.
+
 ## 8.7 Conventions used by `mount`
 
 | Attribute | Effect |

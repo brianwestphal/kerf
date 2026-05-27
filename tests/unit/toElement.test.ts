@@ -11,7 +11,7 @@
 
 import { afterEach, describe, expect, it } from 'vitest';
 
-import { jsx } from '../../src/jsx-runtime.js';
+import { Fragment,jsx } from '../../src/jsx-runtime.js';
 import { toElement } from '../../src/toElement.js';
 
 afterEach(() => {
@@ -234,5 +234,51 @@ describe('toElement() — fragments with <svg> and siblings (KF-232)', () => {
     expect(host.children.length).toBe(1);
     expect(host.children[0].namespaceURI).toBe(SVG_NS);
     expect(host.textContent).toBe(' working');
+  });
+});
+
+describe('toElement() — returned node is adopted into the live document (KF-240)', () => {
+  // Both parse paths (`<template>.content`, `DOMParser`) produce nodes owned by
+  // an INERT document, not `document`. Returning such a node is unsafe to
+  // mutate before insertion: `mount()`'s first-render `rootEl.innerHTML = …`
+  // against an inert-document element trips a WebKit fragment-parsing bug under
+  // rapid bursts (a fresh card inheriting a prior parse's DOM). `toElement`
+  // adopts into the live document so `ownerDocument === document` always holds.
+  it('single HTML root is owned by the live document', () => {
+    const el = toElement(jsx('div', { className: 'card' })) as Element;
+    expect(el.ownerDocument).toBe(document);
+    expect(el.parentNode).toBeNull(); // detached, but in the live document
+  });
+
+  it('the adopted element can be mounted/innerHTML-written safely before insertion', () => {
+    // Direct regression for the LingoGist repro shape: build a detached card,
+    // then write its innerHTML BEFORE it's inserted. The content must match
+    // exactly what was written (no inert-document parse anomaly).
+    const card = toElement(jsx('div', { className: 'probe-card' })) as HTMLElement;
+    expect(card.ownerDocument).toBe(document);
+    card.innerHTML = '<button class="opt">Yes</button>';
+    expect(card.querySelectorAll('.selected, button[disabled]').length).toBe(0);
+    expect(card.innerHTML).toBe('<button class="opt">Yes</button>');
+  });
+
+  it('SVG root is owned by the live document (and adoption preserves namespace)', () => {
+    const el = toElement('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1"><circle r="1"/></svg>') as Element;
+    expect(el.ownerDocument).toBe(document);
+    expect(el.namespaceURI).toBe('http://www.w3.org/2000/svg'); // namespace survives adoption
+    expect(el.firstElementChild!.namespaceURI).toBe('http://www.w3.org/2000/svg');
+  });
+
+  it('orphan SVG fragment is owned by the live document', () => {
+    const el = toElement('<path d="M0 0"/>') as Element;
+    expect(el.ownerDocument).toBe(document);
+    expect(el.namespaceURI).toBe('http://www.w3.org/2000/svg');
+  });
+
+  it('multi-root DocumentFragment is owned by the live document', () => {
+    const frag = toElement(jsx(Fragment, { children: [jsx('span', { children: 'a' }), jsx('span', { children: 'b' })] })) as DocumentFragment;
+    expect(frag.ownerDocument).toBe(document);
+    for (const child of Array.from(frag.children)) {
+      expect(child.ownerDocument).toBe(document);
+    }
   });
 });
