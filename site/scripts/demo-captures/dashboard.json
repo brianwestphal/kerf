@@ -1,0 +1,31 @@
+{
+  "width": 900,
+  "height": 420,
+  "output": "site/public/demos/dashboard.svg",
+  "optimize": true,
+  "colorScheme": "dark",
+  "vars": { "base": "http://localhost:4188" },
+  "frames": [
+    {
+      "input": "${base}/dashboard/",
+      "waitFor": ".dash",
+      "wait": 300,
+      "actions": [
+        { "type": "evaluate", "script": "document.head.insertAdjacentHTML('beforeend','<style>.tickers tbody tr:nth-child(n+11){display:none}</style>')" }
+      ],
+      "duration": 900
+    },
+    {
+      "continue": true,
+      "actions": [ { "type": "wait", "ms": 550 } ],
+      "transition": { "type": "crossfade", "duration": 160 },
+      "duration": 900
+    },
+    {
+      "continue": true,
+      "actions": [ { "type": "wait", "ms": 550 } ],
+      "transition": { "type": "crossfade", "duration": 160 },
+      "duration": 1100
+    }
+  ]
+}

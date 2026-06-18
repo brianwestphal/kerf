@@ -28,6 +28,8 @@ The high-leverage pattern is **htmx as the navigation / partial-page layer, kerf
 
 A working version of the composition lives at [`site/src/examples/complete/cart-htmx/`](https://github.com/brianwestphal/kerf/tree/main/site/src/examples/complete/cart-htmx) — [**▶ Run live**](/kerf/run/cart-htmx/). The runnable demo simulates the htmx swap with a button trigger (so the page works against a static server with no backend); the production-shape sketch below mirrors what you'd write in a real htmx-driven app.
 
+[![Animated preview: swapping in the cart island, kerf mounting it, then removing an item](/kerf/demos/cart-htmx.svg)](/kerf/run/cart-htmx/)
+
 
 ```html
 <!-- Server-rendered page -->

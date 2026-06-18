@@ -5,6 +5,8 @@ description: Split-pane editor — contenteditable on the left, sanitized HTML p
 
 **[▶ Run live](/kerf/run/markdown-editor/)** · [View source on GitHub](https://github.com/brianwestphal/kerf/tree/main/site/src/examples/complete/markdown-editor)
 
+[![Animated preview: editing the Markdown source and the sanitized preview updating live](/kerf/demos/markdown-editor.svg)](/kerf/run/markdown-editor/)
+
 A live Markdown editor. ~30 lines of kerf, plus `marked` for parsing and `DOMPurify` for sanitization.
 
 **Try typing fast — your cursor stays where you put it. That's the morph at work.**

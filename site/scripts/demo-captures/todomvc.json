@@ -1,0 +1,59 @@
+{
+  "width": 760,
+  "height": 470,
+  "output": "site/public/demos/todomvc.svg",
+  "optimize": true,
+  "vars": { "base": "http://localhost:4188" },
+  "cursor": "auto",
+  "frames": [
+    {
+      "input": "${base}/todomvc/",
+      "waitFor": ".todoapp",
+      "wait": 300,
+      "actions": [
+        { "type": "evaluate", "script": "localStorage.removeItem('kerf-todomvc')" }
+      ],
+      "duration": 1000
+    },
+    {
+      "continue": true,
+      "actions": [
+        { "type": "click", "selector": ".new-todo" },
+        { "type": "fill", "selector": ".new-todo", "value": "Buy oat milk" },
+        { "type": "press", "key": "Enter" },
+        { "type": "wait", "ms": 150 }
+      ],
+      "transition": { "type": "crossfade", "duration": 220 },
+      "duration": 700
+    },
+    {
+      "continue": true,
+      "actions": [
+        { "type": "fill", "selector": ".new-todo", "value": "Read the kerf docs" },
+        { "type": "press", "key": "Enter" },
+        { "type": "wait", "ms": 150 }
+      ],
+      "transition": { "type": "crossfade", "duration": 220 },
+      "duration": 700
+    },
+    {
+      "continue": true,
+      "actions": [
+        { "type": "fill", "selector": ".new-todo", "value": "Ship the animated demos" },
+        { "type": "press", "key": "Enter" },
+        { "type": "wait", "ms": 150 }
+      ],
+      "transition": { "type": "crossfade", "duration": 220 },
+      "duration": 800
+    },
+    {
+      "continue": true,
+      "actions": [
+        { "type": "click", "selector": ".todo-list > li:first-child input.toggle" },
+        { "type": "wait", "ms": 200 }
+      ],
+      "transition": { "type": "crossfade", "duration": 220 },
+      "duration": 1400
+    }
+  ]
+}

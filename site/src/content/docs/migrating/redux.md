@@ -32,6 +32,8 @@ If you're using Redux with React: also read [Coming from React](/kerf/migrating/
 
 A small counter slice in Redux Toolkit vs. kerf. The kerf side runs at [`site/src/examples/complete/counter-store/`](https://github.com/brianwestphal/kerf/tree/main/site/src/examples/complete/counter-store) — [**▶ Run live**](/kerf/run/counter-store/) — covering all three patterns (sync, async, persistence) in one runnable app.
 
+[![Animated preview: incrementing the counter, decrementing, then an async fetch resolving](/kerf/demos/counter-store.svg)](/kerf/run/counter-store/)
+
 ```ts
 // Redux Toolkit (RTK)
 import { createSlice, configureStore } from '@reduxjs/toolkit';

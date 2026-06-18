@@ -5,6 +5,8 @@ description: 500 ticker rows updating at 30 Hz. each() perf at scale, batch() to
 
 **[▶ Run live](/kerf/run/dashboard/)** · [View source on GitHub](https://github.com/brianwestphal/kerf/tree/main/site/src/examples/complete/dashboard)
 
+[![Animated preview: the live ticker table updating at 30 Hz with a sparkline in the header](/kerf/demos/dashboard.svg)](/kerf/run/dashboard/)
+
 A simulated live ticker dashboard. 500 rows, ~60 of them update per "WebSocket message" at 30 Hz. There's a tiny imperatively-drawn canvas in the header to prove the morph leaves library-owned subtrees alone.
 
 **What to look at:**

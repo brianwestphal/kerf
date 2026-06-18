@@ -124,7 +124,7 @@ kerf/
 │   │   └── ai-bundle.mjs         ← KF-215 — shared logic for sync + check scripts; deterministic `computeBundle()` produces the three `ai/` files in memory from the root source-of-truth files
 │   ├── sync-ai-bundle.mjs        ← KF-215 — regenerates `ai/` from `kerf.claude-skill.md` + `kerf.cursorrules`; run after editing either source
 │   ├── check-ai-bundle.mjs       ← KF-215 — in-sync gate; fails when `ai/` drifts from the root sources or the manifest's `kerfjsVersion` is stale. Wired into `npm run check`
-│   └── release.sh                ← interactive release flow w/ --beta support
+│   └── release.sh                ← interactive release flow w/ --beta support; drafts release notes via gitgist (`npx gitgist <last-tag>..HEAD`)
 ├── .github/workflows/
 │   ├── ci.yml                    ← test + lint + typecheck on push/PR
 │   ├── pages.yml                 ← build + deploy reactivity-demo to GitHub Pages on push to main
@@ -233,7 +233,8 @@ Runtime dep (`@preact/signals-core`) is external — consumers' bundlers pick it
 | Store reset semantics | `src/store.ts` (`REGISTRY`, `resetAllStores`) |
 | Delegation tier docs | `docs/5-event-delegation.md` |
 | Test coverage thresholds | `vitest.config.ts` |
-| Release flow / version bumping | `scripts/release.sh` |
+| Release flow / version bumping | `scripts/release.sh` (release notes drafted via gitgist) |
+| Commit-message drafting | `npm run commit:msg` → `npx gitgist --staged --commit-message` |
 | GitHub Pages live-demo deploy | `.github/workflows/pages.yml` + `examples/reactivity-demo/vite.config.ts` (`base: '/kerf/demo/'`) + `site/astro.config.mjs` (`base: '/kerf'`) + `docs/9-live-demo.md` |
 | Benchmark harness / perf numbers | `bench/` (`bench/README.md` + `setup.sh` / `run.sh` / `results.sh` / `aggregate-results.mjs`); CHANGELOG perf entries come from runs here. Homepage's `site/src/components/PerfTable.astro` imports `bench/results.json` (KF-138) — refresh it by re-running `aggregate-results.mjs` and committing the regenerated file. |
 | Migrating hub (`/kerf/migrating/`) | `docs/10-migrating.md` (design doc) + `site/src/content/docs/migrating/{index.mdx,react.md,alpine.md,lit.md,vanjs.md}` (rendered pages) — KF-132 + KF-156/157/158/159 |

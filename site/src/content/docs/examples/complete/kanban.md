@@ -5,6 +5,8 @@ description: Three columns, ten cards, drag-to-reorder across columns. Pointer e
 
 **[▶ Run live](/kerf/run/kanban/)** · [View source on GitHub](https://github.com/brianwestphal/kerf/tree/main/site/src/examples/complete/kanban)
 
+[![Animated preview: dragging cards across columns, with the per-column counts updating](/kerf/demos/kanban.svg)](/kerf/run/kanban/)
+
 A mini Kanban board. Three columns (`To do` / `Doing` / `Done`), drag any card across columns or within a column. Not a full Trello — three columns, ~10 cards, drag works, that's it.
 
 <!--

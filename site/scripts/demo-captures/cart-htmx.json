@@ -1,0 +1,43 @@
+{
+  "width": 720,
+  "height": 500,
+  "output": "site/public/demos/cart-htmx.svg",
+  "optimize": true,
+  "vars": { "base": "http://localhost:4188" },
+  "cursor": "auto",
+  "frames": [
+    {
+      "input": "${base}/cart-htmx/",
+      "waitFor": "#cart-shell",
+      "wait": 250,
+      "duration": 1000
+    },
+    {
+      "continue": true,
+      "actions": [
+        { "type": "click", "selector": "#load-cart" },
+        { "type": "wait", "ms": 200 }
+      ],
+      "transition": { "type": "crossfade", "duration": 220 },
+      "duration": 1100
+    },
+    {
+      "continue": true,
+      "actions": [
+        { "type": "click", "selector": ".cart-items > li:first-child .remove" },
+        { "type": "wait", "ms": 200 }
+      ],
+      "transition": { "type": "crossfade", "duration": 220 },
+      "duration": 1100
+    },
+    {
+      "continue": true,
+      "actions": [
+        { "type": "click", "selector": "#reload-cart" },
+        { "type": "wait", "ms": 250 }
+      ],
+      "transition": { "type": "crossfade", "duration": 220 },
+      "duration": 1300
+    }
+  ]
+}

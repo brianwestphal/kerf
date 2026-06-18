@@ -5,6 +5,8 @@ description: The standard reference app, done well in kerf — store, keyed list
 
 **[▶ Run live](/kerf/run/todomvc/)** · [View source on GitHub](https://github.com/brianwestphal/kerf/tree/main/site/src/examples/complete/todomvc)
 
+[![Animated preview: adding three todos and toggling one complete](/kerf/demos/todomvc.svg)](/kerf/run/todomvc/)
+
 The classic TodoMVC, implemented in kerf. ~150 lines. Persists across reloads via `localStorage`. Editing a todo by double-click; **Esc** cancels, **Enter** or blur commits. The new-todo input keeps focus and cursor position even when the list reorders around it.
 
 **What to look at:**

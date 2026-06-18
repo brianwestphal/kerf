@@ -1,0 +1,50 @@
+{
+  "width": 720,
+  "height": 560,
+  "output": "site/public/demos/counter-store.svg",
+  "optimize": true,
+  "vars": { "base": "http://localhost:4188" },
+  "cursor": "auto",
+  "frames": [
+    {
+      "input": "${base}/counter-store/",
+      "waitFor": "[data-counter]",
+      "wait": 250,
+      "actions": [
+        { "type": "evaluate", "script": "localStorage.removeItem('kerf-counter-store')" }
+      ],
+      "duration": 900
+    },
+    {
+      "continue": true,
+      "actions": [
+        { "type": "click", "selector": "button[data-action='inc']" },
+        { "type": "wait", "ms": 130 },
+        { "type": "click", "selector": "button[data-action='inc']" },
+        { "type": "wait", "ms": 130 },
+        { "type": "click", "selector": "button[data-action='inc']" },
+        { "type": "wait", "ms": 160 }
+      ],
+      "transition": { "type": "crossfade", "duration": 200 },
+      "duration": 800
+    },
+    {
+      "continue": true,
+      "actions": [
+        { "type": "click", "selector": "button[data-action='dec']" },
+        { "type": "wait", "ms": 160 }
+      ],
+      "transition": { "type": "crossfade", "duration": 200 },
+      "duration": 800
+    },
+    {
+      "continue": true,
+      "actions": [
+        { "type": "click", "selector": "button[data-action='fetch-ok']" },
+        { "type": "wait", "ms": 350 }
+      ],
+      "transition": { "type": "crossfade", "duration": 200 },
+      "duration": 1400
+    }
+  ]
+}

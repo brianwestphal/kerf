@@ -232,42 +232,29 @@ step_release_notes() {
   last_tag=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
   local log_range="${last_tag:+${last_tag}..HEAD}"
 
-  local commit_log
-  commit_log=$(git log ${log_range:-"-30"} --format="%s" --no-decorate)
-
+  # gitgist (https://github.com/brianwestphal/gitgist) turns the commit range
+  # into themed release notes. It reads git itself and drives the signed-in
+  # `claude` CLI by default, so we gate on `claude` being available and fall
+  # back to manual entry otherwise. No range arg = latest tag → HEAD, which is
+  # exactly what we want; we pass the explicit range when a tag exists so the
+  # boundary is unambiguous.
   local generated=""
   if command -v claude &>/dev/null; then
-    info "Drafting release notes with Claude (commits since ${last_tag:-last 30})..."
-    local prompt
-    prompt=$(cat <<EOF
-Draft release notes for kerf, a tiny reactive UI framework, from the commit subjects below.
-
-Rules:
-- Output ONLY markdown bullets — no heading, no preamble, no closing remarks.
-- Each bullet is ONE short line (~80 chars max), user-facing.
-- Group related changes into single bullets.
-- INCLUDE: new features, bug fixes, breaking changes — anything a user upgrading would notice.
-- EXCLUDE: ticket IDs, internal refactors, test additions, doc-only changes, build/CI tweaks, implementation rationale.
-- Aim for 5–10 bullets total. Fewer is better.
-
-Commits:
-${commit_log}
-EOF
-)
-    generated=$(claude -p "$prompt" 2>/dev/null || true)
+    info "Drafting release notes with gitgist (commits since ${last_tag:-the start})..."
+    generated=$(npx --yes gitgist ${log_range:+"$log_range"} 2>/dev/null || true)
     generated=$(echo "$generated" | sed -e '/^```/d' -e :a -e '/^[[:space:]]*$/{$d;N;ba' -e '}')
   fi
 
   local initial
   if [[ -n "$generated" ]]; then
     success "Draft ready — review and edit in the editor."
-    initial="# Release notes — Claude draft below. Edit freely.
+    initial="# Release notes — gitgist draft below. Edit freely.
 # Lines starting with '#' are removed on save.
 
 ${generated}"
   else
     initial="# Release notes — keep it SHORT and USER-FACING.
-# Bullets only. Skip ticket IDs, refactors, tests, docs, internals.
+# Skip ticket IDs, refactors, tests, docs, internals.
 # Lines starting with '#' are removed on save.
 
 - "

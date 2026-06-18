@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+# Regenerate the animated SVG previews under site/public/demos/.
+#
+# Each complete example app is captured with domotion-svg (a DOM-to-animated-SVG
+# renderer that drives the real app in Chromium and serializes the result to a
+# self-contained, CSS-animated SVG). The per-app capture scripts live alongside
+# this file as <name>.json; each drives the app through the same headline
+# interaction its browser smoke spec exercises (todomvc add/toggle, kanban drag,
+# chat streaming, dashboard tick, counter-store inc/fetch, cart-htmx swap,
+# markdown live preview).
+#
+# Prereqs: Playwright Chromium installed (the repo's browser tests already need
+# it). domotion-svg is fetched on demand via npx.
+#
+# Run from the repo root:  bash site/scripts/demo-captures/capture-demos.sh
+
+set -euo pipefail
+
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
+cd "$REPO_ROOT"
+
+DOMOTION_VERSION="0.13.3"
+SERVE_DIR="$(mktemp -d)"
+SERVE_PORT=4188
+CONFIG_DIR="site/scripts/demo-captures"
+APPS=(todomvc counter-store cart-htmx chat dashboard markdown-editor kanban)
+
+cleanup() {
+  [[ -n "${SERVE_PID:-}" ]] && kill "$SERVE_PID" 2>/dev/null || true
+  rm -rf "$SERVE_DIR"
+}
+trap cleanup EXIT
+
+# 1. Build each app with a per-app base into the temp serve root so a single
+#    static server can host them all at http://localhost:$SERVE_PORT/<name>/.
+echo "[demos] building example apps → $SERVE_DIR"
+( cd site && node scripts/build-demos-for-capture.mjs "$SERVE_DIR" )
+
+# 2. Serve the build output.
+npx --yes serve -l "$SERVE_PORT" "$SERVE_DIR" >/dev/null 2>&1 &
+SERVE_PID=$!
+sleep 2
+
+# 3. Capture each app.
+mkdir -p site/public/demos
+for app in "${APPS[@]}"; do
+  echo "[demos] capturing $app"
+  npx --yes -p "domotion-svg@$DOMOTION_VERSION" domotion animate "$CONFIG_DIR/$app.json" --quiet
+done
+
+echo "[demos] done → site/public/demos/"

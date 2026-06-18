@@ -5,6 +5,8 @@ description: Streaming chat — token-by-token bot reply, delegation everywhere,
 
 **[▶ Run live](/kerf/run/chat/)** · [View source on GitHub](https://github.com/brianwestphal/kerf/tree/main/site/src/examples/complete/chat)
 
+[![Animated preview: sending a prompt and watching the bot reply stream in token-by-token](/kerf/demos/chat.svg)](/kerf/run/chat/)
+
 A small streaming chat. Type a question, hit Enter, watch the bot reply type itself out token-by-token while your textarea caret stays exactly where you left it. ~110 lines of kerf, no other runtime dependencies.
 
 <!--
