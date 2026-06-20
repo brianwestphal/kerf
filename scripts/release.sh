@@ -241,7 +241,7 @@ step_release_notes() {
   local generated=""
   if command -v claude &>/dev/null; then
     info "Drafting release notes with gitgist (commits since ${last_tag:-the start})..."
-    generated=$(npx --yes gitgist ${log_range:+"$log_range"} 2>/dev/null || true)
+    generated=$(gitgist ${log_range:+"$log_range"} 2>/dev/null || true)
     generated=$(echo "$generated" | sed -e '/^```/d' -e :a -e '/^[[:space:]]*$/{$d;N;ba' -e '}')
   fi
 
