@@ -188,6 +188,8 @@ function Counter() {
 
 The `mount()` that hosts `<Counter />` will re-render when `count` changes, which re-runs the component function.
 
+To ship reusable components as npm packages — including the per-instance-state, event, and packaging considerations — see [13-component-packages.md](/kerf/docs/component-packages/).
+
 ## 6.9 Server-side use
 
 `SafeHtml.toString()` works in any JS environment — Node, Deno, Bun, edge runtimes. There's no DOM dependency. Build your page server-side, write the string into the response, then call `mount()` on the same root in the browser to wire up reactivity.

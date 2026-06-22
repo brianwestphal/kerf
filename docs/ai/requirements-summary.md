@@ -26,6 +26,7 @@ Status markers:
 | §10 | Migrating hub (`/kerf/migrating/` — coming-from-React/Alpine/Lit/vanjs pages) | Shipped |
 | §11 | Dev-mode warnings (opt-in env-gated warns for Rules 4 / 7 / 8) | Shipped |
 | §12 | AI-assistant configs (Claude skill + Cursor rules bundled in npm; eslint drift-check rule) | Shipped |
+| §13 | Component packages (authoring/publishing reusable kerf components as npm packages) | Doc only — no first-party component packages shipped yet |
 
 Everything in the v0.1–v0.3 design is shipped (each / native diff / list reconciler / `isSafeHtml` / `Fragment` barrel re-export all landed in 0.2–0.3). No partial / design-only / deferred entries.
 
@@ -93,6 +94,10 @@ Three opt-in runtime warnings gated by `NODE_ENV !== 'production'` + a per-warni
 ### §12 AI-assistant configs
 
 How the drop-in Claude Code skill (`kerf.claude-skill.md`) and Cursor rules (`kerf.cursorrules`) ship to consumers and stay in sync as kerfjs evolves. Three components in one feature: (a) **bundling** — the canonical files ship inside the `kerfjs` npm package at `ai/skill.md` / `ai/cursorrules` / `ai/manifest.json`, regenerated from the repo-root source-of-truth by `scripts/sync-ai-bundle.mjs` and gated by `check:ai-bundle-in-sync`; (b) **canonical-file contract** — each bundled file carries a `kerf-skill-version: <semver>` line (the staleness signal) and a `<!-- KERF-APP-CANONICAL-END · your customizations below -->` marker that delimits kerf's section from the consumer's append zone; (c) **eslint rule** — `kerfjs/ai-assistant-configs` in `eslint-plugin-kerfjs` v0.9.0 (`warn` in `recommended`), once per lint run, resolves `kerfjs/ai/manifest.json` from the consumer's installed kerfjs, reports missing/stale/forked drop-ins, and `eslint --fix` replaces only the section above the marker so customisations below survive. KF-215 shipped (a) + (b); KF-216 shipped (c) with the versioned-section preservation strategy from KF-217 baked into v1.
+
+### §13 Component packages
+
+KF-254 investigation outcome: shipping reusable kerf components as npm packages is **already fully doable** with no runtime changes. A component is a plain `(props) => SafeHtml` function (the JSX runtime invokes function-valued tags directly), so a package just exports such functions and the consumer renders them with no extra toolchain. The doc records the kerf-specific considerations: (a) **state** — components have no per-instance state, so module-scope signals are singletons shared across all instances; per-instance state must come from a factory + props; (b) **events/cleanup** — components are pure builders with no lifecycle, so wire events via `delegate()` at the host root (or a companion `wire(root)` disposer) and wrap library-owned DOM with `data-morph-skip` + a create/dispose pair; (c) **packaging** — `kerfjs` MUST be a `peerDependency` and `external` in the build (never bundled, to avoid the SafeHtml/signals cross-bundle duplication hazard the `tests/dist/safe-html-cross-bundle.test.ts` gate guards), modeled on the sibling `eslint-plugin-kerfjs` package. **Doc only** — no first-party component packages are shipped yet; candidate packages are tracked as follow-up tickets.
 
 ## Update triggers
 

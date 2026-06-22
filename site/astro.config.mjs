@@ -81,6 +81,7 @@ export default defineConfig({
             { label: 'Events', slug: 'docs/events' },
             { label: 'JSX runtime', slug: 'docs/jsx' },
             { label: 'SVG', slug: 'docs/svg' },
+            { label: 'Component packages', slug: 'docs/component-packages' },
             { label: 'Dev-mode warnings', slug: 'docs/dev-warnings' },
             { label: 'ESLint plugin', slug: 'docs/eslint-plugin' },
           ],
