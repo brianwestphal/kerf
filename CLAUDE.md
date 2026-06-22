@@ -125,8 +125,7 @@ Coverage thresholds (`vitest.config.ts`): **100% lines / functions / statements,
 
 - **Always fix lint and type errors before finishing work.** Run `npx tsc --noEmit` and `npm run lint` before handing work back. Both must pass with zero errors.
 - **Prefer editing existing files** to creating new ones. The runtime is small on purpose.
-- **One primary export per file.**
-- **Files should not be excessively long.** The largest file in `src/` should stay under ~200 LOC.
+- **Files should not be excessively long.** The largest file in `src/` should stay under ~200 LOC. (One primary export per file — Design rule 4.)
 
 ## Git
 
@@ -259,3 +258,64 @@ npm run release:beta   # tag-only: tags v{ver}-beta.{N}, publishes with --tag be
 ```
 
 The release scripts mirror Hot Sheet's flow. Beta releases skip the version-file bump and changelog write — CI bumps the version ephemerally at publish time.
+
+<!-- hotsheet:begin section=ticket-driven-work v=1 -->
+## Ticket-Driven Work
+
+When the user gives you work directly (not via the Hot Sheet channel or events), create Hot Sheet tickets before starting implementation — especially for substantial or multi-step work.
+
+- **Do create tickets** for: features, bug fixes, refactoring, multi-step tasks, anything changing code. **Don't** for: simple questions, git commits, quick lookups, trivial one-liners. **When in doubt, create them.**
+- Create via the Hot Sheet API (prefer the `hotsheet_*` MCP tools), mark Up Next, then work through them: set status `started` → implement → set `completed` with notes.
+- **Always create follow-up tickets** for incomplete work (unfinished steps, open design questions, known gaps, designed-but-unbuilt features). If it's not in a ticket, it's forgotten.
+- **Incomplete-work checklist** — before marking a ticket `completed`, file follow-ups for any: (1) UI placeholder text ("coming soon"), (2) TODO/FIXME comments, (3) documented-but-unimplemented requirements, (4) empty/stub functions returning mock data.
+- **Use FEEDBACK NEEDED before deferring or asking about follow-ups.** When about to (a) defer a ticket needing more work, (b) ask whether to file follow-ups, or (c) close with a question buried in notes — DON'T. Leave the ticket `started`, add a `FEEDBACK NEEDED:` note (per `.hotsheet/worklist.md`), signal channel done, and wait. It's the only reliable way to surface a question.
+<!-- hotsheet:end section=ticket-driven-work -->
+
+<!-- hotsheet:begin section=testing-philosophy v=1 -->
+## Testing Philosophy
+
+- **Double coverage**: every feature covered by both unit tests AND E2E tests. Unit = logic in isolation; E2E = real user flows through the running app with minimal mocking.
+- **Unit tests**: Mock external deps (filesystem, network), test real logic.
+- **E2E tests**: As much as possible, use test automation tools to run realistic, user-facing flows. Minimize mocks.
+- **Coverage**: Merge all test coverage (e.g. unit, E2E server, E2E browser) into one report. Low-coverage files should get more of both test types. Aim for 100% coverage of code lines, 100% coverage of branches, and 100% of features described in the requirements documentation.
+- **Manual test plan**: keep a manual test plan doc (e.g. `docs/manual-test-plan.md`) for features that can't be reliably automated. **Keep it up to date** — add such features there; when you add automated coverage for a previously-manual item, remove it and note it in an "Automated Coverage Summary".
+- **Always fix lint and type errors before finishing**: Fix as you go, don't batch.
+
+<!-- hotsheet:begin specifics=testing-philosophy v=1 -->
+### This project's test setup
+
+Fully documented in the **Testing** section above; in brief:
+
+- **Unit** (`tests/unit/`): vitest + `happy-dom`. Use `clearStoreRegistry` from `kerfjs/testing` for store isolation.
+- **Integration** (`tests/integration/`): vitest, full pipeline (signals + stores + mount + delegate) against a real DOM.
+- **Browser / E2E** (`tests/browser/`): Playwright across Chromium / Firefox / WebKit; builds `dist/` first. Covers the consumer-app and example-apps specs.
+- **Dist regression** (`tests/dist/`): targeted suite + the `.d.ts` typing gate against built `dist/`.
+- **Commands**: `npm run check` (pre-commit gate) and `npm run check:full` (pre-push, adds Playwright) run everything; see the **Testing** section for the granular `test:*` scripts and the coverage thresholds.
+<!-- hotsheet:end specifics=testing-philosophy -->
+<!-- hotsheet:end section=testing-philosophy -->
+
+<!-- hotsheet:begin section=requirements-documentation v=1 -->
+## Requirements Documentation
+
+Keep human-readable requirements documents as the source of truth for what the project does, and **keep them up to date in the same change as the code** (add/remove/modify a requirement → update its doc). Create new docs for major new functional areas. Cross-reference related docs with relative links.
+
+### AI Summaries
+
+Maintain two synthesis docs an AI assistant reads at the start of a fresh session — keep them in sync with reality (source doc/code wins on conflict), and prefer small targeted edits over rewrites:
+
+- A **codebase map** — directory tree, entry points, data schema, build, tests, settings, and a "where do I look for X" index. Update it in the same change when you add a file or directory, add a route/endpoint, change the schema, add a client module, or add a setting key.
+- A **requirements summary** — a synthesized view of every requirements doc with status markers (e.g. Shipped / Partial / Design only / Deferred). Update it in the same change when you add a requirements doc, ship a design-only feature, or defer/regress a shipped one.
+
+<!-- hotsheet:begin specifics=requirements-documentation v=1 -->
+### This project's docs layout
+
+Fully documented in the **Requirements Documentation** section above; in brief:
+
+- **Requirements docs**: numbered, kebab-case, in `docs/` (`docs/1-overview.md` … `docs/11-dev-warnings.md`). New contributors start with `docs/orientation.md`.
+- **Codebase map**: `docs/ai/code-summary.md`.
+- **Requirements summary**: `docs/ai/requirements-summary.md`.
+- **Consumer-facing AI cheat sheet**: `docs/ai/usage-guide.md`.
+
+Keep all three `docs/ai/` summaries in sync whenever source or design changes — see the surface checklist above.
+<!-- hotsheet:end specifics=requirements-documentation -->
+<!-- hotsheet:end section=requirements-documentation -->
