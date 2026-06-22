@@ -20,6 +20,18 @@ kerf ships its own JSX runtime at `kerfjs/jsx-runtime`. JSX renders to `SafeHtml
 
 That's the entire setup. The TypeScript / esbuild / vitest JSX transform looks for `kerfjs/jsx-runtime` and finds the `jsx`, `jsxs`, `jsxDEV`, and `Fragment` exports there.
 
+**Mixing kerf with another JSX runtime (e.g. React).** A project can only set one `jsxImportSource` default, so when kerf coexists with React in the same codebase, override per file with the standard TypeScript pragma — a block comment on the first line:
+
+```tsx
+/** @jsxImportSource kerfjs */   // top of a kerf file
+```
+
+```tsx
+/** @jsxImportSource react */    // top of a React file
+```
+
+The pragma is honored by tsc, esbuild, Vite, and swc. Set the tsconfig default to whichever runtime owns more files and pragma the rest. This is the foundation of incremental migration — see [10-migrating.md](/kerf/migrating/) and the `/kerf/migrating/incremental/` guide.
+
 ## 6.2 What JSX produces
 
 ```tsx

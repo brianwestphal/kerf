@@ -131,6 +131,17 @@ for (const docFile of docFiles) {
       totalSkippedBlocks++;
       continue;
     }
+    // Self-contained = imports ONLY from kerfjs. A block that also pulls in
+    // react / react-dom / relative modules (e.g. the framework-interop examples
+    // on the incremental-adoption page) can't compile in the kerfjs-only scratch
+    // sandbox — it's a multi-runtime fragment, not a runnable unit. Skip it.
+    const importsOutsideKerf = [...body.matchAll(/from\s+['"]([^'"]+)['"]/g)]
+      .map((mm) => mm[1])
+      .some((s) => !/^kerfjs(?:\/[a-z-]+)?$/.test(s));
+    if (importsOutsideKerf) {
+      totalSkippedBlocks++;
+      continue;
+    }
     if (/\/\*\s*\.\.\.\s*\*\/|\/\/\s*\.\.\./.test(body)) {
       // Block has explicit "rest of code omitted" placeholders — pedagogical
       // fragment, not a runnable unit. Skip.

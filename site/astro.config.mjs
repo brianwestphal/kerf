@@ -109,6 +109,7 @@ export default defineConfig({
           label: 'Migrating',
           items: [
             { label: 'Pick your starting point', slug: 'migrating' },
+            { label: 'Adopting kerf incrementally', slug: 'migrating/incremental' },
             { label: 'Coming from React', slug: 'migrating/react' },
             { label: 'Coming from Vue', slug: 'migrating/vue' },
             { label: 'Coming from Svelte', slug: 'migrating/svelte' },

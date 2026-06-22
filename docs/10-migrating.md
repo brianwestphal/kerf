@@ -16,6 +16,7 @@ Pages under `/kerf/migrating/`:
 
 - `/kerf/migrating/` — index. Comparison matrix + cards linking to each per-framework page.
 - `/kerf/migrating/react/` — coming from React 19.
+- `/kerf/migrating/incremental/` — framework-agnostic incremental-adoption guide. Does NOT follow the five-section per-framework shape; covers coexistence (a kerf island inside React via an empty host, and a foreign island inside kerf via `data-morph-skip`), the per-file `jsxImportSource` pragma, `mount()` teardown on unmount, and signal/store state bridging. Linked from the index callout and the per-framework pages.
 - `/kerf/migrating/vue/` — coming from Vue 3 Composition API.
 - `/kerf/migrating/svelte/` — coming from Svelte 5 (runes).
 - `/kerf/migrating/solid/` — coming from Solid 1.9. Honest about when Solid stays the better answer (KF-211: kerf does not target Solid's compiler-driven update-path perf).

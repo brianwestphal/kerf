@@ -7,6 +7,8 @@ You wrote a React app. You're reading this because the bundle is bigger than you
 
 The kerf side is the exact code shipping at [`site/src/examples/complete/todomvc/`](https://github.com/brianwestphal/kerf/tree/main/site/src/examples/complete/todomvc) — [run it live](/kerf/examples/complete/todomvc/) and you're looking at the same bytes the snippets below show.
 
+**You don't have to convert the whole app at once.** kerf and React run side by side on the same page — mount a kerf island inside a React component (or vice versa) and migrate one widget at a time. The per-file `jsxImportSource` pragma, teardown, and state bridging are covered in [Adopting kerf incrementally](/kerf/migrating/incremental/).
+
 ## 1. Bundle delta
 
 | | Min + gz, runtime only |
