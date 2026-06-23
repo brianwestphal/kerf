@@ -25,6 +25,7 @@
 
 import { type BoundItem, endAnchor, type ListBinding } from './list-binding.js';
 import { captureFocus, restoreFocus } from './list-reconcile-focus.js';
+import { tryInPlaceContentUpdate } from './list-reconcile-inplace.js';
 import type { ListSegment } from './segment.js';
 import { maybeWarnMissingRowKey,parseRowTemplate, rowContractError } from './utils/rowContract.js';
 
@@ -46,25 +47,19 @@ interface Classification {
  * those engines and is a no-op on engines that already preserve focus.
  */
 export function reconcileSnapshot(binding: ListBinding, listSeg: ListSegment): void {
+  // In-place fast path: same refs in the same order (no inserts/removes/moves)
+  // → only content changed, so morph changed rows in place instead of swapping
+  // their DOM nodes. Avoids the table-relayout cost of node replacement for
+  // external-state-driven row changes (e.g. a single selectedId + cacheKey).
+  if (tryInPlaceContentUpdate(binding, listSeg)) return;
+
+  // Anything reaching here has a structural change (insert, remove, or move);
+  // the pure "same refs in same order" case — including the no-op re-render
+  // where nothing changed — is handled earlier by tryInPlaceContentUpdate,
+  // which keeps every surviving node and morphs only changed rows in place.
   const { liveParent } = binding;
   const { newRecord, prevIdx, replacedNodes, freshIndices, freshHtmls }
     = classifyItems(binding.items, listSeg);
-
-  // KF-89 fast path: if no items were replaced, none are fresh, and every
-  // surviving item kept its original position, the live tree already matches
-  // the new segment. Skip buildFreshNodes (nothing to build), removeOldNodes
-  // (nothing to remove), the LIS pass (no reorder possible), and applyMoves'
-  // reverse walk (no moves). For a 1k-row list whose only change is a signal
-  // re-read with no item-array delta, this collapses ~10–15 ms of per-render
-  // bookkeeping into a single classification pass + the binding update.
-  if (replacedNodes.length === 0 && freshIndices.length === 0
-      && isInOrder(prevIdx)) {
-    binding.items = newRecord;
-    if (newRecord.length > 0) {
-      maybeWarnMissingRowKey(newRecord[0].node, 0, newRecord[0].html, binding);
-    }
-    return;
-  }
 
   // Compute tail anchor BEFORE removing old nodes: once an item is
   // detached, its `.nextElementSibling` is null and we lose the
@@ -250,16 +245,4 @@ function lis(arr: ReadonlyArray<number>): ReadonlySet<number> {
     k = prev[k];
   }
   return out;
-}
-
-/**
- * True iff `prevIdx` is `[0, 1, 2, …, n-1]` — every item kept the position it
- * had in the previous render. Used by `reconcileSnapshot` to short-circuit
- * the LIS + move pass when nothing structural changed.
- */
-function isInOrder(prevIdx: number[]): boolean {
-  for (let i = 0; i < prevIdx.length; i++) {
-    if (prevIdx[i] !== i) return false;
-  }
-  return true;
 }

@@ -23,6 +23,7 @@ kerf/
 │   ├── list-reconcile.ts         ← top-level dispatcher (KF-112) — re-exports BoundItem / ListBinding / endAnchor and defines reconcileList
 │   ├── list-binding.ts           ← BoundItem / ListBinding shape + endAnchor() (KF-116) — extracted to break the circular import between list-reconcile.ts and its sibling reconcilers
 │   ├── list-reconcile-snapshot.ts ← snapshot reconcile path (classify / bulk-parse / LIS / move)
+│   ├── list-reconcile-inplace.ts ← snapshot fast path: when refs are unchanged in order, morph changed rows in place (reusing the granular surgical/morph ladder) instead of node-replacing them — avoids table relayout for external-state-driven row changes
 │   ├── list-reconcile-granular.ts ← granular reconcile path (KF-92 patch-driven, KF-93/94 bulk parse)
 │   ├── list-reconcile-fast-paths.ts ← KF-198 attribute-only + KF-206 text-content-only fast paths for the granular update path
 │   ├── list-reconcile-focus.ts   ← focus snapshot/restore around the move pass (engine-quirk fix)
@@ -53,6 +54,7 @@ kerf/
 │   │   ├── jsx-runtime.test.ts
 │   │   ├── jsx-types.test.tsx
 │   │   ├── kf102-each-after-transition.test.tsx ← KF-102 round 2 — each() reconcile after sibling-introduction transitions
+│   │   ├── list-reconcile-inplace.test.ts ← snapshot in-place content-update fast path: same-refs-in-order updates morph in place (node identity preserved, no parse) vs replaceChild on tag change; bail cases (length change, reorder, empty/clear, moved+changed) and the row-contract throw
 │   │   ├── list-reconcile-fast-paths.test.ts ← KF-198 + KF-206 — attribute-only + text-content-only fast paths in the granular update path; firing/bailing cases and parse-count assertions (public-API tests via mount/arraySignal)
 │   │   ├── list-reconcile-fast-paths.internal.test.ts ← direct-function bail-branch coverage for the same fast paths; calls the non-public helpers with crafted HTML; `.internal.test.ts` so dist-full excludes it
 │   │   ├── mount.test.ts

@@ -894,9 +894,11 @@ describe('mount() — focus and selection preservation', () => {
       // Rows 1 and 3 kept their nodes (key didn't flip for them).
       expect(after[0]).toBe(before[0]);
       expect(after[2]).toBe(before[2]);
-      // Row 2 got rebuilt with the new class.
+      // Row 2's class flipped. With the snapshot in-place fast path, the row
+      // is updated on its existing node (same refs in same order → no node
+      // swap), so identity is preserved while the class reflects new state.
       expect(after[1].getAttribute('class')).toBe('on');
-      expect(after[1]).not.toBe(before[1]);
+      expect(after[1]).toBe(before[1]);
     });
 
     it('replaces the whole list when every item is a new object', () => {
