@@ -128,9 +128,16 @@ Coverage thresholds (`vitest.config.ts`): **100% lines / functions / statements,
 - **Prefer editing existing files** to creating new ones. The runtime is small on purpose.
 - **Files should not be excessively long.** The largest file in `src/` should stay under ~200 LOC. (One primary export per file — Design rule 4.)
 
+### Code search (prefer ast-grep for structure)
+
+For **structural / syntax-aware** searches over source (`.ts` / `.tsx`), use **ast-grep** (the `ast-grep` skill, or the CLI: `ast-grep run --lang <ts|tsx> -p '<pattern>' <path>`) rather than text grep — it matches the AST, so it skips comments/strings and catches multi-line/nested shapes. kerf is TypeScript-only (no Rust), so `--lang` is always `ts` or `tsx`. Good fits in this codebase: `$A as $B` / `$A as const` casts, `$X.innerHTML = $Y` assignments, `document.createElement($T)`, `DOMParser(...)` usage, `signal($X)` / `computed(...)` / `effect(...)` call shapes, JSX shapes like `<$TAG data-morph-skip />`, `c8 ignore` defensive returns, the `each(...)` / `mount(...)` / `morph(...)` call sites, and codemod-style rewrites when changing an API signature across the runtime + tests + examples. **`--lang` matters: `tsx` ≠ `ts`** — pick per file extension (`.tsx` for JSX-bearing files like the examples and `tests/dist/**/*.tsx`, `.ts` for everything in `src/`).
+
+Keep **text search** (ripgrep / the editor's grep / the Explore agent) for what it's best at: literal strings (e.g. `FEEDBACK NEEDED`, `KERF-APP-CANONICAL-END`, `KF-` ticket markers), identifier/symbol lookups, **filenames**, and **non-code files** (the numbered `docs/*.md`, `CHANGELOG.md`, JSON, the `site/` content) — there AST has nothing to match and text is simpler + faster.
+
 ## Git
 
-- **NEVER create git commits unless the user explicitly asks.** Same rule as Hot Sheet.
+- **Commit as needed.** You may create git commits without asking when it helps the work (e.g. checkpointing completed, verified changes).
+- **NEVER `git push` without explicit user permission.** Committing locally is fine; publishing to the remote requires the user to ask.
 
 ## Hot Sheet integration
 

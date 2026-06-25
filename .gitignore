@@ -14,11 +14,12 @@ test-results/
 *.log
 *.tsbuildinfo
 .DS_Store
-.claude/
-.glassbox/
-.hotsheet/
-.cursor/
 .mcp.json
+.claude/settings.local.json
+/.hotsheet/*
+!/.hotsheet/settings.json
+/.glassbox/*
+!/.glassbox/settings.json
 
 # Editor
 .vscode/*
