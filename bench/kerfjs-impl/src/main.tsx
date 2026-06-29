@@ -1,28 +1,30 @@
 /**
  * kerfjs entry for krausest js-framework-benchmark — keyed.
  *
- * KF-92 update: rows live in an `arraySignal`, and the selected-row state is
- * stored on each row's `selected` flag rather than in a separate signal.
- * This lets every interactive scenario produce granular patch events the
- * keyed-list reconciler can apply in O(changes) instead of iterating all N
- * items on every render:
+ * Rows live in an `arraySignal`, so the structural scenarios produce granular
+ * patch events the keyed-list reconciler applies in O(changes) rather than
+ * iterating all N items on every render:
  *
  *   - Append:   N inserts (no full re-render).
  *   - Update:   N updates (touches only the changed rows).
- *   - Select:   2 updates (deselect old + select new) — no closure re-run on
- *               the surrounds, no full each() iteration.
  *   - Swap:     1 move (1 insertBefore).
  *   - Remove:   1 remove.
  *   - Create:   first render, no granular wins available — same speed as before.
+ *
+ * Selection is tracked as a single `selectedId` signal (the upstream-preferred
+ * shape — one id for the whole table, not a per-row flag). `each()`'s `cacheKey`
+ * reads `selectedId` so only the two rows whose selected-ness flipped are
+ * re-rendered; the snapshot reconciler's in-place fast path then morphs just
+ * those two rows in their existing DOM nodes (no node replacement, no table
+ * relayout), matching the select-row cost of every other framework.
  */
 
 import { arraySignal } from 'kerfjs/array-signal';
-import { batch, delegate, each, mount } from 'kerfjs';
+import { batch, delegate, each, mount, signal } from 'kerfjs';
 
 interface Row {
   id: number;
   label: string;
-  selected: boolean;
 }
 
 const ADJECTIVES = [
@@ -52,14 +54,13 @@ function buildData(count: number): Row[] {
     data[i] = {
       id: nextId++,
       label: `${pick(ADJECTIVES)} ${pick(COLOURS)} ${pick(NOUNS)}`,
-      selected: false,
     };
   }
   return data;
 }
 
 const rows = arraySignal<Row>([]);
-let selectedIndex = -1;  // index into rows for fast deselect (no array scan)
+const selectedId = signal(-1);
 
 const root = document.getElementById('main')!;
 
@@ -94,14 +95,20 @@ mount(root, () => (
     </div>
     <table className="table table-hover table-striped test-data">
       <tbody id="tbody">
-        {each(rows, (row) => (
-          <tr data-key={row.id} className={row.selected ? 'danger' : ''}>
-            <td className="col-md-1">{String(row.id)}</td>
-            <td className="col-md-4"><a className="lbl" data-id={String(row.id)}>{row.label}</a></td>
-            <td className="col-md-1"><a className="remove" data-id={String(row.id)}><span className="glyphicon glyphicon-remove" aria-hidden="true"></span></a></td>
-            <td className="col-md-6"></td>
-          </tr>
-        ))}
+        {each(
+          rows,
+          (row) => (
+            <tr data-key={row.id} className={row.id === selectedId.value ? 'danger' : ''}>
+              <td className="col-md-1">{String(row.id)}</td>
+              <td className="col-md-4"><a className="lbl" data-id={String(row.id)}>{row.label}</a></td>
+              <td className="col-md-1"><a className="remove" data-id={String(row.id)}><span className="glyphicon glyphicon-remove" aria-hidden="true"></span></a></td>
+              <td className="col-md-6"></td>
+            </tr>
+          ),
+          // cacheKey: re-render a row only when its selected-ness flips. The
+          // in-place fast path then morphs just the two affected rows.
+          (row) => row.id === selectedId.value,
+        )}
       </tbody>
     </table>
     <span className="preloadicon glyphicon glyphicon-remove" aria-hidden="true"></span>
@@ -109,12 +116,16 @@ mount(root, () => (
 ));
 
 delegate(root, 'click', '#run', () => {
-  selectedIndex = -1;
-  rows.replace(buildData(1000));
+  batch(() => {
+    selectedId.value = -1;
+    rows.replace(buildData(1000));
+  });
 });
 delegate(root, 'click', '#runlots', () => {
-  selectedIndex = -1;
-  rows.replace(buildData(10000));
+  batch(() => {
+    selectedId.value = -1;
+    rows.replace(buildData(10000));
+  });
 });
 delegate(root, 'click', '#add', () => {
   // Append 1k rows via individual insert events. Wrap in batch() so all
@@ -138,8 +149,10 @@ delegate(root, 'click', '#update', () => {
   });
 });
 delegate(root, 'click', '#clear', () => {
-  selectedIndex = -1;
-  rows.replace([]);
+  batch(() => {
+    selectedId.value = -1;
+    rows.replace([]);
+  });
 });
 delegate(root, 'click', '#swaprows', () => {
   if (rows.value.length <= 998) return;
@@ -152,22 +165,9 @@ delegate(root, 'click', '#swaprows', () => {
 delegate(root, 'click', 'a.lbl', (_e, el) => {
   const id = (el as HTMLElement).dataset.id;
   if (id === undefined) return;
-  const target = Number(id);
-  // Deselect previous + select new in one batched re-render.
-  batch(() => {
-    if (selectedIndex !== -1) {
-      rows.update(selectedIndex, (r) => ({ ...r, selected: false }));
-      selectedIndex = -1;
-    }
-    const items = rows.value;
-    for (let i = 0; i < items.length; i++) {
-      if (items[i].id === target) {
-        rows.update(i, (r) => ({ ...r, selected: true }));
-        selectedIndex = i;
-        break;
-      }
-    }
-  });
+  // Single signal write — the cacheKey + in-place fast path re-render only the
+  // previously- and newly-selected rows.
+  selectedId.value = Number(id);
 });
 delegate(root, 'click', 'a.remove', (_e, el) => {
   const id = (el as HTMLElement).dataset.id;
@@ -177,8 +177,6 @@ delegate(root, 'click', 'a.remove', (_e, el) => {
   for (let i = 0; i < items.length; i++) {
     if (items[i].id === target) {
       rows.remove(i);
-      if (selectedIndex === i) selectedIndex = -1;
-      else if (selectedIndex > i) selectedIndex -= 1;
       break;
     }
   }

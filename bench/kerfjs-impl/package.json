@@ -19,6 +19,6 @@
     "frameworkHomeURL": "https://github.com/brianwestphal/kerf",
     "customURL": "/dist",
     "language": "JavaScript",
-    "issues": []
+    "issues": [801]
   }
 }
