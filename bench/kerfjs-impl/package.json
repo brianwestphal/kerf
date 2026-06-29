@@ -18,7 +18,7 @@
     "frameworkVersionFromPackage": "kerfjs",
     "frameworkHomeURL": "https://github.com/brianwestphal/kerf",
     "customURL": "/dist",
-    "language": "JavaScript",
+    "language": "TypeScript",
     "issues": [801]
   }
 }
