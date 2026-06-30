@@ -13,8 +13,9 @@ npm install
 npm run build
 ```
 
-Pass `.` to scaffold into the current directory. The target directory's basename
-is used as the package name.
+Run it with **no argument** (`npm create kerf-component`) and it prompts for the
+directory. Pass `.` to scaffold into the current directory. The target
+directory's basename is used as the package name.
 
 ## What you get
 

@@ -124,8 +124,34 @@ test('prints next-steps guidance on success', () => {
   });
 });
 
-test('rejects a missing directory argument', () => {
-  assert.throws(() => execFileSync('node', [CLI], { stdio: 'pipe' }), /Command failed/);
+test('non-interactive (no TTY) missing-arg run prints usage to stderr and exits 1', () => {
+  // With no dir arg and no TTY (piped stdin, as in CI), there's nothing to
+  // prompt, so it must usage+fail rather than hang.
+  try {
+    execFileSync('node', [CLI], { stdio: 'pipe' });
+    assert.fail('should have exited non-zero');
+  } catch (err) {
+    assert.equal(err.status, 1);
+    assert.match(String(err.stderr), /Usage: npm create kerf-component/);
+  }
+});
+
+test('--help prints usage and exits 0', () => {
+  const out = execFileSync('node', [CLI, '--help'], { encoding: 'utf8' });
+  assert.match(out, /Usage: npm create kerf-component/);
+});
+
+test('with no arg, takes the target from piped stdin (the prompt fallback)', () => {
+  // Mirrors a TTY user typing a name at the prompt: no dir arg, the name comes
+  // from stdin. Run from a temp cwd so the scaffold lands there.
+  const dir = mkdtempSync(join(tmpdir(), 'ckc-'));
+  try {
+    const stdout = execFileSync('node', [CLI], { cwd: dir, input: 'piped-widget\n', encoding: 'utf8' });
+    assert.match(stdout, /Scaffolded kerf component package "piped-widget"/);
+    assert.equal(JSON.parse(readFileSync(join(dir, 'piped-widget', 'package.json'), 'utf8')).name, 'piped-widget');
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
 });
 
 test('rejects an existing non-empty target directory', () => {

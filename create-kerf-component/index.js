@@ -12,19 +12,52 @@
 //   npx create-kerf-component <dir>
 //
 // <dir> is the target directory; its basename is the default package name (pass
-// `.` to scaffold into the current directory). No third-party dependencies — the
+// `.` to scaffold into the current directory). Run with NO argument and it
+// prompts for the directory (or reads it from piped stdin) — `npm create
+// kerf-component` alone just works. No third-party dependencies — the
 // initializer is plain Node so `npm create` runs it with zero install latency.
 
 import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
 import { basename, dirname, join, resolve } from 'node:path';
+import { createInterface } from 'node:readline/promises';
 import { fileURLToPath } from 'node:url';
 
 const TEMPLATE_DIR = join(dirname(fileURLToPath(import.meta.url)), 'template');
 const TOKEN = /__PKG_NAME__/g;
+const DEFAULT_NAME = 'my-kerf-component';
 
 function fail(msg) {
   process.stderr.write(`create-kerf-component: ${msg}\n`);
   process.exit(1);
+}
+
+const USAGE =
+  'Usage: npm create kerf-component@latest <dir>\n' +
+  '       (or: npx create-kerf-component <dir>)\n\n' +
+  'Scaffolds a kerf component package into <dir>. Pass `.` for the current directory.\n';
+
+// Ask for the target directory when none was passed. `npm create kerf-component`
+// (no arg) is the most natural invocation, so prompt rather than error.
+async function promptForTarget() {
+  const rl = createInterface({ input: process.stdin, output: process.stdout });
+  try {
+    const answer = await rl.question(`Directory (\`.\` for current) [${DEFAULT_NAME}]: `);
+    return answer.trim() || DEFAULT_NAME;
+  } finally {
+    rl.close();
+  }
+}
+
+// Non-TTY fallback: read the first line of piped stdin (scripted/test input).
+// Resolves null if the stream closes without a line.
+async function readFirstLine() {
+  const rl = createInterface({ input: process.stdin });
+  try {
+    for await (const line of rl) return line;
+    return null;
+  } finally {
+    rl.close();
+  }
 }
 
 // npm package name rules, trimmed to what we actually need to guard: no spaces,
@@ -45,15 +78,27 @@ function walk(dir) {
   return out;
 }
 
-function main(argv) {
-  const target = argv[2];
-  if (target == null || target === '' || target === '--help' || target === '-h') {
-    process.stdout.write(
-      'Usage: npm create kerf-component@latest <dir>\n' +
-        '       (or: npx create-kerf-component <dir>)\n\n' +
-        'Scaffolds a kerf component package into <dir>. Pass `.` for the current directory.\n',
-    );
-    process.exit(target == null || target === '' ? 1 : 0);
+async function main(argv) {
+  let target = argv[2];
+
+  if (target === '--help' || target === '-h') {
+    process.stdout.write(USAGE);
+    process.exit(0);
+  }
+
+  if (target == null || target === '') {
+    // No directory given. Prompt interactively when attached to a terminal (the
+    // `npm create kerf-component` happy path); when stdin is piped (scripts/CI),
+    // take the first piped line; if there's nothing to read, print usage + fail.
+    if (process.stdin.isTTY) {
+      target = await promptForTarget();
+    } else {
+      target = ((await readFirstLine()) ?? '').trim();
+    }
+    if (target === '') {
+      process.stderr.write(USAGE);
+      process.exit(1);
+    }
   }
 
   const targetDir = resolve(process.cwd(), target);
@@ -96,4 +141,4 @@ function main(argv) {
   );
 }
 
-main(process.argv);
+main(process.argv).catch((err) => fail(err?.message ?? String(err)));
