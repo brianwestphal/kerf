@@ -3,48 +3,83 @@
   "height": 560,
   "output": "site/public/demos/counter-store.svg",
   "optimize": true,
-  "vars": { "base": "http://localhost:4188" },
+  "vars": {
+    "base": "http://localhost:4188",
+    "easeOut": "cubic-bezier(0.215,0.61,0.355,1)",
+    "easeInOut": "cubic-bezier(0.645,0.045,0.355,1)",
+    "pop": "cubic-bezier(0.175,0.885,0.32,1.275)"
+  },
   "cursor": "auto",
   "frames": [
     {
+      "transition": { "type": "cut", "duration": 0 },
       "input": "${base}/counter-store/",
       "waitFor": "[data-counter]",
       "wait": 250,
       "actions": [
         { "type": "evaluate", "script": "localStorage.removeItem('kerf-counter-store')" }
       ],
-      "duration": 900
-    },
-    {
-      "continue": true,
-      "actions": [
-        { "type": "click", "selector": "button[data-action='inc']" },
-        { "type": "wait", "ms": 130 },
-        { "type": "click", "selector": "button[data-action='inc']" },
-        { "type": "wait", "ms": 130 },
-        { "type": "click", "selector": "button[data-action='inc']" },
-        { "type": "wait", "ms": 160 }
-      ],
-      "transition": { "type": "crossfade", "duration": 200 },
       "duration": 800
     },
     {
       "continue": true,
+      "transition": { "type": "cut", "duration": 0 },
+      "actions": [
+        { "type": "click", "selector": "button[data-action='inc']" },
+        { "type": "wait", "ms": 150 }
+      ],
+      "animations": [
+        { "selector": "[data-count]", "property": "scale", "from": "0.7", "to": "1", "duration": 300, "easing": "${pop}", "transformOrigin": "center" }
+      ],
+      "duration": 600
+    },
+    {
+      "continue": true,
+      "transition": { "type": "cut", "duration": 0 },
+      "actions": [
+        { "type": "click", "selector": "button[data-action='inc']" },
+        { "type": "wait", "ms": 150 }
+      ],
+      "animations": [
+        { "selector": "[data-count]", "property": "scale", "from": "0.7", "to": "1", "duration": 300, "easing": "${pop}", "transformOrigin": "center" }
+      ],
+      "duration": 600
+    },
+    {
+      "continue": true,
+      "transition": { "type": "cut", "duration": 0 },
+      "actions": [
+        { "type": "click", "selector": "button[data-action='inc']" },
+        { "type": "wait", "ms": 150 }
+      ],
+      "animations": [
+        { "selector": "[data-count]", "property": "scale", "from": "0.7", "to": "1", "duration": 300, "easing": "${pop}", "transformOrigin": "center" }
+      ],
+      "duration": 700
+    },
+    {
+      "continue": true,
+      "transition": { "type": "cut", "duration": 0 },
       "actions": [
         { "type": "click", "selector": "button[data-action='dec']" },
         { "type": "wait", "ms": 160 }
       ],
-      "transition": { "type": "crossfade", "duration": 200 },
-      "duration": 800
+      "animations": [
+        { "selector": "[data-count]", "property": "scale", "from": "1.18", "to": "1", "duration": 280, "easing": "${easeInOut}", "transformOrigin": "center" }
+      ],
+      "duration": 650
     },
     {
       "continue": true,
+      "transition": { "type": "cut", "duration": 0 },
       "actions": [
         { "type": "click", "selector": "button[data-action='fetch-ok']" },
         { "type": "wait", "ms": 350 }
       ],
-      "transition": { "type": "crossfade", "duration": 200 },
-      "duration": 1400
+      "animations": [
+        { "selector": "[data-async-data]", "property": "translateY", "from": "10px", "to": "0px", "duration": 320, "easing": "${easeOut}" }
+      ],
+      "duration": 3000
     }
   ]
 }

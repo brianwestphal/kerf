@@ -10,7 +10,8 @@
 # markdown live preview).
 #
 # Prereqs: Playwright Chromium installed (the repo's browser tests already need
-# it). domotion-svg is fetched on demand via npx.
+# it). domotion-svg is a root devDependency — its version is pinned in the
+# package.json / lockfile, and `npx domotion` resolves the local install.
 #
 # Run from the repo root:  bash site/scripts/demo-captures/capture-demos.sh
 
@@ -19,7 +20,6 @@ set -euo pipefail
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
 cd "$REPO_ROOT"
 
-DOMOTION_VERSION="0.13.3"
 SERVE_DIR="$(mktemp -d)"
 SERVE_PORT=4188
 CONFIG_DIR="site/scripts/demo-captures"
@@ -45,7 +45,14 @@ sleep 2
 mkdir -p site/public/demos
 for app in "${APPS[@]}"; do
   echo "[demos] capturing $app"
-  npx --yes -p "domotion-svg@$DOMOTION_VERSION" domotion animate "$CONFIG_DIR/$app.json" --quiet
+  npx domotion animate "$CONFIG_DIR/$app.json" --quiet
 done
+
+# 4. Restore step-end timing on cut-frame opacity tracks. SVGO (optimize:true)
+#    reorders domotion's `animation` shorthand after its `step-end` override,
+#    clobbering it — which makes each demo's LAST frame fade to black over its
+#    whole duration instead of holding then hard-cutting. See fix-cut-timing.mjs.
+echo "[demos] restoring cut-frame timing"
+node "$CONFIG_DIR/fix-cut-timing.mjs" site/public/demos/*.svg
 
 echo "[demos] done → site/public/demos/"

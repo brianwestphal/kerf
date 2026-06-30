@@ -3,41 +3,55 @@
   "height": 500,
   "output": "site/public/demos/cart-htmx.svg",
   "optimize": true,
-  "vars": { "base": "http://localhost:4188" },
+  "vars": {
+    "base": "http://localhost:4188",
+    "easeOut": "cubic-bezier(0.215,0.61,0.355,1)",
+    "easeInOut": "cubic-bezier(0.645,0.045,0.355,1)"
+  },
   "cursor": "auto",
   "frames": [
     {
+      "transition": { "type": "cut", "duration": 0 },
       "input": "${base}/cart-htmx/",
       "waitFor": "#cart-shell",
       "wait": 250,
-      "duration": 1000
+      "duration": 900
     },
     {
       "continue": true,
+      "transition": { "type": "cut", "duration": 0 },
       "actions": [
         { "type": "click", "selector": "#load-cart" },
         { "type": "wait", "ms": 200 }
       ],
-      "transition": { "type": "crossfade", "duration": 220 },
-      "duration": 1100
+      "animations": [
+        { "selector": ".cart-items", "property": "translateY", "from": "12px", "to": "0px", "duration": 340, "easing": "${easeOut}" }
+      ],
+      "duration": 1200
     },
     {
       "continue": true,
+      "transition": { "type": "cut", "duration": 0 },
       "actions": [
         { "type": "click", "selector": ".cart-items > li:first-child .remove" },
         { "type": "wait", "ms": 200 }
       ],
-      "transition": { "type": "crossfade", "duration": 220 },
-      "duration": 1100
+      "animations": [
+        { "selector": ".cart-items", "property": "translateY", "from": "-6px", "to": "0px", "duration": 280, "easing": "${easeInOut}" }
+      ],
+      "duration": 1200
     },
     {
       "continue": true,
+      "transition": { "type": "cut", "duration": 0 },
       "actions": [
         { "type": "click", "selector": "#reload-cart" },
         { "type": "wait", "ms": 250 }
       ],
-      "transition": { "type": "crossfade", "duration": 220 },
-      "duration": 1300
+      "animations": [
+        { "selector": ".cart-items", "property": "translateY", "from": "12px", "to": "0px", "duration": 340, "easing": "${easeOut}" }
+      ],
+      "duration": 2900
     }
   ]
 }

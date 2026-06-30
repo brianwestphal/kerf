@@ -3,31 +3,40 @@
   "height": 600,
   "output": "site/public/demos/kanban.svg",
   "optimize": true,
-  "vars": { "base": "http://localhost:4188" },
+  "vars": {
+    "base": "http://localhost:4188",
+    "setKeys": "document.querySelectorAll('.card').forEach(function(c){c.setAttribute('data-magic-key', c.getAttribute('data-card'))});document.querySelectorAll('.col').forEach(function(col){var n=col.querySelector('.count');if(n)n.setAttribute('data-magic-key', 'count-' + col.getAttribute('data-col'))})"
+  },
   "frames": [
     {
+      "transition": { "type": "magic-move", "duration": 560 },
       "input": "${base}/kanban/",
       "waitFor": ".board",
       "wait": 350,
+      "actions": [
+        { "type": "evaluate", "script": "${setKeys}" }
+      ],
       "duration": 1100
     },
     {
       "continue": true,
+      "transition": { "type": "magic-move", "duration": 560 },
       "actions": [
         { "type": "evaluate", "script": "(()=>{const card=document.querySelector('.col[data-col=\"todo\"] .card[data-card=\"c\"]');const dest=document.querySelector('.col[data-col=\"doing\"]');const cb=card.getBoundingClientRect();const db=dest.getBoundingClientRect();const sx=cb.x+cb.width/2,sy=cb.y+cb.height/2;const tx=db.x+db.width/2,ty=db.y+170;card.dispatchEvent(new PointerEvent('pointerdown',{button:0,clientX:sx,clientY:sy,bubbles:true}));window.dispatchEvent(new PointerEvent('pointermove',{clientX:tx,clientY:ty,bubbles:true}));window.dispatchEvent(new PointerEvent('pointerup',{clientX:tx,clientY:ty,bubbles:true}));})()" },
-        { "type": "wait", "ms": 250 }
+        { "type": "wait", "ms": 250 },
+        { "type": "evaluate", "script": "${setKeys}" }
       ],
-      "transition": { "type": "crossfade", "duration": 260 },
-      "duration": 1200
+      "duration": 1400
     },
     {
       "continue": true,
+      "transition": { "type": "cut", "duration": 0 },
       "actions": [
         { "type": "evaluate", "script": "(()=>{const card=document.querySelector('.col[data-col=\"todo\"] .card[data-card=\"a\"]');const dest=document.querySelector('.col[data-col=\"done\"]');const cb=card.getBoundingClientRect();const db=dest.getBoundingClientRect();const sx=cb.x+cb.width/2,sy=cb.y+cb.height/2;const tx=db.x+db.width/2,ty=db.y+120;card.dispatchEvent(new PointerEvent('pointerdown',{button:0,clientX:sx,clientY:sy,bubbles:true}));window.dispatchEvent(new PointerEvent('pointermove',{clientX:tx,clientY:ty,bubbles:true}));window.dispatchEvent(new PointerEvent('pointerup',{clientX:tx,clientY:ty,bubbles:true}));})()" },
-        { "type": "wait", "ms": 250 }
+        { "type": "wait", "ms": 250 },
+        { "type": "evaluate", "script": "${setKeys}" }
       ],
-      "transition": { "type": "crossfade", "duration": 260 },
-      "duration": 1400
+      "duration": 3000
     }
   ]
 }

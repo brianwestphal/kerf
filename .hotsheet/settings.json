@@ -97,6 +97,14 @@
       "icon": "wand",
       "color": "#14b8a6",
       "id": "230dbc94-a233-4e93-a399-1dec45bc3ac8"
+    },
+    {
+      "name": "Site",
+      "prompt": "npm run site:dev",
+      "target": "shell",
+      "icon": "globe",
+      "launchInNewTerminal": true,
+      "color": "#3b82f6"
     }
   ],
   "terminals": [

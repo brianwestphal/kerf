@@ -4,30 +4,53 @@
   "output": "site/public/demos/chat.svg",
   "optimize": true,
   "colorScheme": "dark",
-  "vars": { "base": "http://localhost:4188" },
+  "vars": {
+    "base": "http://localhost:4188",
+    "easeOut": "cubic-bezier(0.215,0.61,0.355,1)"
+  },
   "cursor": "auto",
   "frames": [
     {
+      "transition": { "type": "cut", "duration": 0 },
       "input": "${base}/chat/",
       "waitFor": ".composer",
       "wait": 300,
-      "duration": 1000
+      "duration": 900
     },
     {
       "continue": true,
+      "transition": { "type": "cut", "duration": 0 },
+      "overlays": [
+        { "kind": "typing", "text": "How does streaming work?", "anchor": { "selector": ".composer textarea", "at": "left", "dx": 14 }, "fontSize": 16, "color": "#e8ecff", "caret": true, "bgColor": "#1a2142", "bgWidth": 470, "bgHeight": 24, "speed": 24 }
+      ],
+      "duration": 1500
+    },
+    {
+      "continue": true,
+      "transition": { "type": "cut", "duration": 0 },
       "actions": [
         { "type": "click", "selector": ".chips button:nth-of-type(2)" },
-        { "type": "wait", "ms": 1100 }
+        { "type": "wait", "ms": 600 }
       ],
-      "transition": { "type": "crossfade", "duration": 220 },
-      "duration": 1100
+      "animations": [
+        { "selector": ".msg.user:last-child", "property": "translateX", "from": "18px", "to": "0px", "duration": 280, "easing": "${easeOut}" }
+      ],
+      "duration": 800
     },
     {
       "continue": true,
+      "transition": { "type": "cut", "duration": 0 },
+      "actions": [
+        { "type": "wait", "ms": 900 }
+      ],
+      "duration": 800
+    },
+    {
+      "continue": true,
+      "transition": { "type": "cut", "duration": 0 },
       "waitForGone": ".caret",
       "wait": 250,
-      "transition": { "type": "crossfade", "duration": 220 },
-      "duration": 1600
+      "duration": 3100
     }
   ]
 }

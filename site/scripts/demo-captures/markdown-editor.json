@@ -1,25 +1,410 @@
 {
   "width": 1000,
-  "height": 560,
+  "height": 300,
   "output": "site/public/demos/markdown-editor.svg",
   "optimize": true,
   "colorScheme": "dark",
-  "vars": { "base": "http://localhost:4188" },
+  "vars": {
+    "base": "http://localhost:4188"
+  },
   "frames": [
     {
+      "transition": {
+        "type": "cut",
+        "duration": 0
+      },
       "input": "${base}/markdown-editor/",
       "waitFor": ".editor-input",
       "wait": 350,
-      "duration": 1200
+      "actions": [
+        {
+          "type": "evaluate",
+          "script": "(()=>{const ed=document.querySelector('.editor-input');ed.focus();ed.innerText=\"\";ed.dispatchEvent(new InputEvent('input',{bubbles:true}));})()"
+        },
+        {
+          "type": "wait",
+          "ms": 120
+        }
+      ],
+      "duration": 650
     },
     {
       "continue": true,
+      "transition": {
+        "type": "cut",
+        "duration": 0
+      },
       "actions": [
-        { "type": "evaluate", "script": "(()=>{const ed=document.querySelector('.editor-input');ed.focus();ed.innerText=ed.innerText.replace('# Type fast. The cursor stays put.','# Edited live — caret never jumps\\n\\nType in the **middle** of a line and keep going.');ed.dispatchEvent(new InputEvent('input',{bubbles:true}));})()" },
-        { "type": "wait", "ms": 250 }
+        {
+          "type": "evaluate",
+          "script": "(()=>{const ed=document.querySelector('.editor-input');ed.focus();ed.innerText=\"# \";ed.dispatchEvent(new InputEvent('input',{bubbles:true}));})()"
+        },
+        {
+          "type": "wait",
+          "ms": 45
+        }
       ],
-      "transition": { "type": "crossfade", "duration": 260 },
-      "duration": 1600
+      "duration": 110
+    },
+    {
+      "continue": true,
+      "transition": {
+        "type": "cut",
+        "duration": 0
+      },
+      "actions": [
+        {
+          "type": "evaluate",
+          "script": "(()=>{const ed=document.querySelector('.editor-input');ed.focus();ed.innerText=\"# Li\";ed.dispatchEvent(new InputEvent('input',{bubbles:true}));})()"
+        },
+        {
+          "type": "wait",
+          "ms": 45
+        }
+      ],
+      "duration": 110
+    },
+    {
+      "continue": true,
+      "transition": {
+        "type": "cut",
+        "duration": 0
+      },
+      "actions": [
+        {
+          "type": "evaluate",
+          "script": "(()=>{const ed=document.querySelector('.editor-input');ed.focus();ed.innerText=\"# Live\";ed.dispatchEvent(new InputEvent('input',{bubbles:true}));})()"
+        },
+        {
+          "type": "wait",
+          "ms": 45
+        }
+      ],
+      "duration": 110
+    },
+    {
+      "continue": true,
+      "transition": {
+        "type": "cut",
+        "duration": 0
+      },
+      "actions": [
+        {
+          "type": "evaluate",
+          "script": "(()=>{const ed=document.querySelector('.editor-input');ed.focus();ed.innerText=\"# Live\\n\\n\";ed.dispatchEvent(new InputEvent('input',{bubbles:true}));})()"
+        },
+        {
+          "type": "wait",
+          "ms": 45
+        }
+      ],
+      "duration": 110
+    },
+    {
+      "continue": true,
+      "transition": {
+        "type": "cut",
+        "duration": 0
+      },
+      "actions": [
+        {
+          "type": "evaluate",
+          "script": "(()=>{const ed=document.querySelector('.editor-input');ed.focus();ed.innerText=\"# Live\\n\\nMa\";ed.dispatchEvent(new InputEvent('input',{bubbles:true}));})()"
+        },
+        {
+          "type": "wait",
+          "ms": 45
+        }
+      ],
+      "duration": 110
+    },
+    {
+      "continue": true,
+      "transition": {
+        "type": "cut",
+        "duration": 0
+      },
+      "actions": [
+        {
+          "type": "evaluate",
+          "script": "(()=>{const ed=document.querySelector('.editor-input');ed.focus();ed.innerText=\"# Live\\n\\nMark\";ed.dispatchEvent(new InputEvent('input',{bubbles:true}));})()"
+        },
+        {
+          "type": "wait",
+          "ms": 45
+        }
+      ],
+      "duration": 110
+    },
+    {
+      "continue": true,
+      "transition": {
+        "type": "cut",
+        "duration": 0
+      },
+      "actions": [
+        {
+          "type": "evaluate",
+          "script": "(()=>{const ed=document.querySelector('.editor-input');ed.focus();ed.innerText=\"# Live\\n\\nMarkdo\";ed.dispatchEvent(new InputEvent('input',{bubbles:true}));})()"
+        },
+        {
+          "type": "wait",
+          "ms": 45
+        }
+      ],
+      "duration": 110
+    },
+    {
+      "continue": true,
+      "transition": {
+        "type": "cut",
+        "duration": 0
+      },
+      "actions": [
+        {
+          "type": "evaluate",
+          "script": "(()=>{const ed=document.querySelector('.editor-input');ed.focus();ed.innerText=\"# Live\\n\\nMarkdown\";ed.dispatchEvent(new InputEvent('input',{bubbles:true}));})()"
+        },
+        {
+          "type": "wait",
+          "ms": 45
+        }
+      ],
+      "duration": 110
+    },
+    {
+      "continue": true,
+      "transition": {
+        "type": "cut",
+        "duration": 0
+      },
+      "actions": [
+        {
+          "type": "evaluate",
+          "script": "(()=>{const ed=document.querySelector('.editor-input');ed.focus();ed.innerText=\"# Live\\n\\nMarkdown *\";ed.dispatchEvent(new InputEvent('input',{bubbles:true}));})()"
+        },
+        {
+          "type": "wait",
+          "ms": 45
+        }
+      ],
+      "duration": 110
+    },
+    {
+      "continue": true,
+      "transition": {
+        "type": "cut",
+        "duration": 0
+      },
+      "actions": [
+        {
+          "type": "evaluate",
+          "script": "(()=>{const ed=document.querySelector('.editor-input');ed.focus();ed.innerText=\"# Live\\n\\nMarkdown **r\";ed.dispatchEvent(new InputEvent('input',{bubbles:true}));})()"
+        },
+        {
+          "type": "wait",
+          "ms": 45
+        }
+      ],
+      "duration": 110
+    },
+    {
+      "continue": true,
+      "transition": {
+        "type": "cut",
+        "duration": 0
+      },
+      "actions": [
+        {
+          "type": "evaluate",
+          "script": "(()=>{const ed=document.querySelector('.editor-input');ed.focus();ed.innerText=\"# Live\\n\\nMarkdown **ren\";ed.dispatchEvent(new InputEvent('input',{bubbles:true}));})()"
+        },
+        {
+          "type": "wait",
+          "ms": 45
+        }
+      ],
+      "duration": 110
+    },
+    {
+      "continue": true,
+      "transition": {
+        "type": "cut",
+        "duration": 0
+      },
+      "actions": [
+        {
+          "type": "evaluate",
+          "script": "(()=>{const ed=document.querySelector('.editor-input');ed.focus();ed.innerText=\"# Live\\n\\nMarkdown **rende\";ed.dispatchEvent(new InputEvent('input',{bubbles:true}));})()"
+        },
+        {
+          "type": "wait",
+          "ms": 45
+        }
+      ],
+      "duration": 110
+    },
+    {
+      "continue": true,
+      "transition": {
+        "type": "cut",
+        "duration": 0
+      },
+      "actions": [
+        {
+          "type": "evaluate",
+          "script": "(()=>{const ed=document.querySelector('.editor-input');ed.focus();ed.innerText=\"# Live\\n\\nMarkdown **renders\";ed.dispatchEvent(new InputEvent('input',{bubbles:true}));})()"
+        },
+        {
+          "type": "wait",
+          "ms": 45
+        }
+      ],
+      "duration": 110
+    },
+    {
+      "continue": true,
+      "transition": {
+        "type": "cut",
+        "duration": 0
+      },
+      "actions": [
+        {
+          "type": "evaluate",
+          "script": "(()=>{const ed=document.querySelector('.editor-input');ed.focus();ed.innerText=\"# Live\\n\\nMarkdown **renders**\";ed.dispatchEvent(new InputEvent('input',{bubbles:true}));})()"
+        },
+        {
+          "type": "wait",
+          "ms": 45
+        }
+      ],
+      "duration": 110
+    },
+    {
+      "continue": true,
+      "transition": {
+        "type": "cut",
+        "duration": 0
+      },
+      "actions": [
+        {
+          "type": "evaluate",
+          "script": "(()=>{const ed=document.querySelector('.editor-input');ed.focus();ed.innerText=\"# Live\\n\\nMarkdown **renders** a\";ed.dispatchEvent(new InputEvent('input',{bubbles:true}));})()"
+        },
+        {
+          "type": "wait",
+          "ms": 45
+        }
+      ],
+      "duration": 110
+    },
+    {
+      "continue": true,
+      "transition": {
+        "type": "cut",
+        "duration": 0
+      },
+      "actions": [
+        {
+          "type": "evaluate",
+          "script": "(()=>{const ed=document.querySelector('.editor-input');ed.focus();ed.innerText=\"# Live\\n\\nMarkdown **renders** as \";ed.dispatchEvent(new InputEvent('input',{bubbles:true}));})()"
+        },
+        {
+          "type": "wait",
+          "ms": 45
+        }
+      ],
+      "duration": 110
+    },
+    {
+      "continue": true,
+      "transition": {
+        "type": "cut",
+        "duration": 0
+      },
+      "actions": [
+        {
+          "type": "evaluate",
+          "script": "(()=>{const ed=document.querySelector('.editor-input');ed.focus();ed.innerText=\"# Live\\n\\nMarkdown **renders** as yo\";ed.dispatchEvent(new InputEvent('input',{bubbles:true}));})()"
+        },
+        {
+          "type": "wait",
+          "ms": 45
+        }
+      ],
+      "duration": 110
+    },
+    {
+      "continue": true,
+      "transition": {
+        "type": "cut",
+        "duration": 0
+      },
+      "actions": [
+        {
+          "type": "evaluate",
+          "script": "(()=>{const ed=document.querySelector('.editor-input');ed.focus();ed.innerText=\"# Live\\n\\nMarkdown **renders** as you \";ed.dispatchEvent(new InputEvent('input',{bubbles:true}));})()"
+        },
+        {
+          "type": "wait",
+          "ms": 45
+        }
+      ],
+      "duration": 110
+    },
+    {
+      "continue": true,
+      "transition": {
+        "type": "cut",
+        "duration": 0
+      },
+      "actions": [
+        {
+          "type": "evaluate",
+          "script": "(()=>{const ed=document.querySelector('.editor-input');ed.focus();ed.innerText=\"# Live\\n\\nMarkdown **renders** as you ty\";ed.dispatchEvent(new InputEvent('input',{bubbles:true}));})()"
+        },
+        {
+          "type": "wait",
+          "ms": 45
+        }
+      ],
+      "duration": 110
+    },
+    {
+      "continue": true,
+      "transition": {
+        "type": "cut",
+        "duration": 0
+      },
+      "actions": [
+        {
+          "type": "evaluate",
+          "script": "(()=>{const ed=document.querySelector('.editor-input');ed.focus();ed.innerText=\"# Live\\n\\nMarkdown **renders** as you type\";ed.dispatchEvent(new InputEvent('input',{bubbles:true}));})()"
+        },
+        {
+          "type": "wait",
+          "ms": 45
+        }
+      ],
+      "duration": 110
+    },
+    {
+      "continue": true,
+      "transition": {
+        "type": "cut",
+        "duration": 0
+      },
+      "actions": [
+        {
+          "type": "evaluate",
+          "script": "(()=>{const ed=document.querySelector('.editor-input');ed.focus();ed.innerText=\"# Live\\n\\nMarkdown **renders** as you type.\";ed.dispatchEvent(new InputEvent('input',{bubbles:true}));})()"
+        },
+        {
+          "type": "wait",
+          "ms": 45
+        }
+      ],
+      "duration": 3000
     }
   ]
 }
