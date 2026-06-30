@@ -12,6 +12,25 @@ to kerf's no-instance model (state, events, cleanup, library-owned DOM), and how
 to set up and publish the package — using the in-repo `eslint-plugin-kerfjs`
 package as the sibling-package model.
 
+## 13.0 Quick start: scaffold with `create-kerf-component`
+
+The fastest way to a correctly-configured package is the `create-kerf-component`
+initializer — it generates a package that already follows every rule below
+(`kerfjs` as a peer dependency and `external` in the build, ESM + `.d.ts` output,
+`jsxImportSource: "kerfjs"`, subpath exports) plus an example component that shows
+the per-instance-state and `wire(root)`-disposer patterns:
+
+```bash
+npm create kerf-component@latest my-widgets
+cd my-widgets
+npm install
+npm run build      # tsup → ESM + .d.ts; kerfjs stays external
+```
+
+Pass `.` to scaffold into the current directory. The rest of this doc explains
+*why* the generated package is shaped the way it is — read on if you're authoring
+by hand or want to understand the rules the scaffold encodes.
+
 ## 13.1 What a component is
 
 A component is a function `(props) => SafeHtml`. The JSX runtime calls it directly
@@ -72,17 +91,19 @@ wrong for anything that should be per-instance. For per-instance state, export a
 **factory** that creates the state and have the component read it from props:
 
 ```tsx
-import { defineStore, type Store, type SafeHtml } from 'kerfjs';
+import { defineStore, type SafeHtml } from 'kerfjs';
 
 export function createCounter(start = 0) {
   return defineStore({
     initial: () => ({ count: start }),
-    actions: { inc: (s) => ({ count: s.count + 1 }) },
+    // `actions` is a builder `(set, get) => ({...})` — not an object of reducers.
+    actions: (set, get) => ({ inc: () => set({ count: get().count + 1 }) }),
   });
 }
 
 export function Counter({ store }: { store: ReturnType<typeof createCounter> }): SafeHtml {
-  return <span data-action="counter:inc">{store.state.count.value}</span>;
+  // `state` is one ReadonlySignal<TState>, so read `state.value.count`.
+  return <span data-action="counter:inc">{store.state.value.count}</span>;
 }
 ```
 
@@ -116,7 +137,7 @@ Two patterns cover the cases:
    ```ts
    import { delegate } from 'kerfjs';
    /** Returns a disposer — call it on teardown. */
-   export function wireButtons(root: Element, onAction: (a: string) => void) {
+   export function wireButtons(root: HTMLElement, onAction: (a: string) => void) {
      return delegate(root, 'click', '[data-action]', (e, el) =>
        onAction(el.getAttribute('data-action')!));
    }
@@ -181,13 +202,14 @@ and use it immediately — there's no component-specific toolchain to install.
 
 ## 13.5 Publishing
 
-The repo publishes `kerfjs` and `eslint-plugin-kerfjs` from a single git tag in
-lockstep — not a workspace monorepo, just sibling directories each with their own
-`package.json`, `package-lock.json`, and a dedicated CI workflow
-(`.github/workflows/release-eslint-plugin.yml`) gated on an npm Trusted-Publisher
+The repo publishes `kerfjs`, `eslint-plugin-kerfjs`, and `create-kerf-component`
+from a single git tag in lockstep — not a workspace monorepo, just sibling
+directories each with their own `package.json`, `package-lock.json`, and a
+dedicated CI workflow (e.g. `.github/workflows/release-eslint-plugin.yml`,
+`release-create-kerf-component.yml`) gated on an npm Trusted-Publisher
 environment. A third-party component package follows the same shape: build with
 `tsup`, emit ESM + `.d.ts`, publish with npm provenance. There is no npm org/scope
-requirement — `eslint-plugin-kerfjs` and `kerfjs` both publish unscoped.
+requirement — all three publish unscoped.
 
 ## 13.6 Checklist
 

@@ -47,6 +47,7 @@
     "coverage",
     "examples",
     "tests/dist/jsx-typing",
-    "tests/dist/consumer-app"
+    "tests/dist/consumer-app",
+    "tests/dist/scaffold-typing"
   ]
 }

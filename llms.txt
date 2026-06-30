@@ -16,6 +16,7 @@ kerf renders JSX to a structured `SafeHtml` (string for static content; tagged "
 - [`kerf.cursorrules`](kerf.cursorrules): drop-in [Cursor](https://cursor.sh) rules for projects that import `kerfjs`. Copy into your project as `.cursorrules` — or use the bundled mirror at `node_modules/kerfjs/ai/cursorrules` once you've `npm install`ed kerfjs.
 - [`kerf.claude-skill.md`](kerf.claude-skill.md): drop-in [Claude Code](https://claude.com/claude-code) skill. Copy into `~/.claude/skills/kerf-app/SKILL.md` (or your project's `.claude/skills/kerf-app/SKILL.md`) — or use the bundled mirror at `node_modules/kerfjs/ai/skill.md` once you've `npm install`ed kerfjs.
 - [`eslint-plugin-kerfjs`](eslint-plugin/README.md): companion ESLint plugin enforcing four hard rules at edit time — `no-inline-jsx-event-handlers`, `require-data-key-in-each`, `no-nested-mount`, `prefer-module-jsx-augmentation`. AST-only, no `parserServices` dependency. Install with `npm install --save-dev eslint-plugin-kerfjs` and add `kerfjs.configs.recommended` to your eslint config. Recommended when authoring kerf code with an AI assistant — eslint feedback surfaces in the IDE before `tsc` or runtime warns ever run.
+- [`create-kerf-component`](create-kerf-component/README.md): companion initializer that scaffolds a publishable kerf component package with the hard packaging rules already wired (kerfjs as a peer dependency + `external` in the build, ESM + `.d.ts`, `jsxImportSource: "kerfjs"`, subpath exports) plus an example component (per-instance state via a factory, a `wire(root)` delegation disposer). Run `npm create kerf-component@latest <dir>`.
 
 ## Reference docs
 
@@ -31,7 +32,7 @@ kerf renders JSX to a structured `SafeHtml` (string for static content; tagged "
 - [Migrating](docs/10-migrating.md): the `/kerf/migrating/` comparison hub — coming-from-React/Alpine/Lit/vanjs pages with side-by-side todo-list translations.
 - [Dev-mode warnings](docs/11-dev-warnings.md): the opt-in dev-warn family (`KERF_DEV_WARN_REBUILT_LISTENERS` / `KERF_DEV_WARN_UNTRACKED_SIGNALS` / `KERF_DEV_WARN_NARROW_SET`) and the rules each new warning must follow.
 - [AI-assistant configs](docs/12-ai-assistant-configs.md): how the drop-in Claude Code skill + Cursor rules ship inside the `kerfjs` npm package at `ai/skill.md` / `ai/cursorrules` / `ai/manifest.json`, the version + marker contract for customisation preservation, and the (upcoming) `kerfjs/ai-assistant-configs` ESLint rule that surfaces drift on every lint pass.
-- [Component packages](docs/13-component-packages.md): building and publishing reusable kerf components as npm packages — the no-instance component model, per-instance state via factories, event/cleanup patterns, and `kerfjs`-as-peer-dependency packaging modeled on `eslint-plugin-kerfjs`.
+- [Component packages](docs/13-component-packages.md): building and publishing reusable kerf components as npm packages — the no-instance component model, per-instance state via factories, event/cleanup patterns, and `kerfjs`-as-peer-dependency packaging modeled on `eslint-plugin-kerfjs`. Scaffold one with `npm create kerf-component@latest <dir>` (the `create-kerf-component` initializer).
 
 ## Examples
 

@@ -1,0 +1,35 @@
+{
+  "name": "__PKG_NAME__",
+  "version": "0.1.0",
+  "description": "A reusable kerf component package.",
+  "type": "module",
+  "license": "MIT",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./counter": {
+      "types": "./dist/counter.d.ts",
+      "import": "./dist/counter.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run build"
+  },
+  "peerDependencies": {
+    "kerfjs": ">=0.14.0"
+  },
+  "devDependencies": {
+    "kerfjs": "^0.15.0",
+    "tsup": "^8",
+    "typescript": "^5"
+  }
+}

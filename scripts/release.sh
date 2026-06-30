@@ -333,11 +333,14 @@ step_update_version() {
   # triggers both release workflows and both package.json versions must match
   # the tag for `npm publish` to accept the OIDC token.
   (cd eslint-plugin && npm version "$version" --no-git-tag-version --allow-same-version)
+  # create-kerf-component also releases in lockstep on the same `v*` tag, so its
+  # package.json must match the tag for `npm publish`'s OIDC token to be accepted.
+  (cd create-kerf-component && npm version "$version" --no-git-tag-version --allow-same-version)
   # The bundled AI configs at `ai/manifest.json` embed `kerfjsVersion` — re-sync
   # so the in-sync gate (which the pre-commit hook runs) sees a current bundle
   # after the version bump. See docs/12-ai-assistant-configs.md §12.2.2.
   node scripts/sync-ai-bundle.mjs > /dev/null
-  success "package.json files updated (root + eslint-plugin); ai/ bundle re-synced"
+  success "package.json files updated (root + eslint-plugin + create-kerf-component); ai/ bundle re-synced"
 }
 
 step_git_commit() {
@@ -346,6 +349,7 @@ step_git_commit() {
   info "Creating git commit..."
   git add package.json package-lock.json CHANGELOG.md \
           eslint-plugin/package.json eslint-plugin/package-lock.json \
+          create-kerf-component/package.json create-kerf-component/package-lock.json \
           ai/manifest.json
   # Idempotent: if a previous run already absorbed these files into a manual
   # commit (e.g. recovery after the pre-commit hook failed), there's nothing

@@ -1,0 +1,31 @@
+{
+  "//": "Living proof for create-kerf-component (KF-255): typecheck the scaffolded template's component source against the REAL built dist/*.d.ts, with the same compiler settings the scaffold ships (jsxImportSource kerfjs, verbatimModuleSyntax, strict, noUnused*). If the template's example component ever drifts from kerf's public API or JSX runtime, this gate fails. Run via `npm run test:dist:scaffold-typing`.",
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "skipLibCheck": true,
+    "isolatedModules": true,
+    "verbatimModuleSyntax": true,
+    "noEmit": true,
+
+    "jsx": "react-jsx",
+    "jsxImportSource": "kerfjs",
+
+    "paths": {
+      "kerfjs": ["../../../dist/index.d.ts"],
+      "kerfjs/jsx-runtime": ["../../../dist/jsx-runtime.d.ts"],
+      "kerfjs/array-signal": ["../../../dist/array-signal.d.ts"],
+      "kerfjs/testing": ["../../../dist/testing.d.ts"]
+    },
+
+    "types": []
+  },
+  "include": ["../../../create-kerf-component/template/src/**/*"],
+  "exclude": ["node_modules"]
+}

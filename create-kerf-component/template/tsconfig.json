@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "skipLibCheck": true,
+    "isolatedModules": true,
+    "verbatimModuleSyntax": true,
+    "declaration": true,
+    "noEmit": true,
+
+    // The one piece of kerf-specific wiring: author .tsx compiles against kerf's
+    // JSX runtime. Consumers need no extra setup — your package ships compiled JS
+    // whose JSX is already lowered to `kerfjs/jsx-runtime` calls.
+    "jsx": "react-jsx",
+    "jsxImportSource": "kerfjs"
+  },
+  "include": ["src"]
+}

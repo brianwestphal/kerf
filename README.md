@@ -172,6 +172,16 @@ export default [kerfjs.configs.recommended];
 
 Full docs at [brianwestphal.github.io/kerf/docs/eslint-plugin/](https://brianwestphal.github.io/kerf/docs/eslint-plugin/) — legacy `.eslintrc` config, per-rule examples, and the rationale for which violations get lint rules vs. dev-warns vs. strict TS.
 
+### Optional: `create-kerf-component`
+
+Building a reusable component package? Scaffold one that already follows kerf's hard packaging rules (kerfjs as a peer dependency and `external` in the build, ESM + `.d.ts`, `jsxImportSource: "kerfjs"`, subpath exports) plus an example component showing per-instance state via a factory and a `wire(root)` delegation disposer:
+
+```bash
+npm create kerf-component@latest my-widgets
+```
+
+See [`docs/13-component-packages.md`](./docs/13-component-packages.md) for the full authoring guide.
+
 ## Links
 
 - **Site:** [brianwestphal.github.io/kerf](https://brianwestphal.github.io/kerf/)
@@ -179,6 +189,7 @@ Full docs at [brianwestphal.github.io/kerf/docs/eslint-plugin/](https://brianwes
 - **Migrating:** [coming from another framework?](https://brianwestphal.github.io/kerf/migrating/) — side-by-side TodoMVC translations + per-framework gotchas
 - **AI guide:** [`docs/ai/usage-guide.md`](./docs/ai/usage-guide.md) — reference for AI tools fetching kerf docs (linked from `llms.txt`)
 - **ESLint plugin:** [brianwestphal.github.io/kerf/docs/eslint-plugin/](https://brianwestphal.github.io/kerf/docs/eslint-plugin/) — `eslint-plugin-kerfjs`; eight rules (four hard-rule errors + four warns: `require-delegate-disposer`, `prefer-attr-selector`, `no-raw-with-dynamic-arg`, `ai-assistant-configs`) at edit time (source: [`eslint-plugin/`](./eslint-plugin/))
+- **Component scaffold:** `npm create kerf-component@latest <dir>` — `create-kerf-component`; generates a publishable component package with the hard packaging rules pre-wired (source: [`create-kerf-component/`](./create-kerf-component/))
 - **Demo:** [live demo](https://brianwestphal.github.io/kerf/demo/) — eight sections exercising every primitive (counter, store-backed cart, focus survival, keyed list, morph-skip, SVG render, Tier-2 capture, `arraySignal` patches)
 - **Repo:** [github.com/brianwestphal/kerf](https://github.com/brianwestphal/kerf)
 

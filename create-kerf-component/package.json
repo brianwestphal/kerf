@@ -1,0 +1,40 @@
+{
+  "name": "create-kerf-component",
+  "version": "0.15.1",
+  "description": "Scaffold a publishable kerf component package that already follows kerf's hard packaging rules.",
+  "type": "module",
+  "license": "MIT",
+  "author": "Brian Westphal <brian.westphal@bleugris.com>",
+  "homepage": "https://brianwestphal.github.io/kerf/docs/13-component-packages/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/brianwestphal/kerf",
+    "directory": "create-kerf-component"
+  },
+  "bugs": {
+    "url": "https://github.com/brianwestphal/kerf/issues"
+  },
+  "keywords": [
+    "kerf",
+    "kerfjs",
+    "create",
+    "scaffold",
+    "initializer",
+    "component"
+  ],
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "bin": {
+    "create-kerf-component": "index.js"
+  },
+  "files": [
+    "index.js",
+    "template",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "test": "node --test tests/*.test.js"
+  }
+}
