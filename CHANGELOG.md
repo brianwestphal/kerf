@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.15.5] - 2026-06-30
+
+
+
+- Corrected the advertised bundle size in `llms.txt` to ~11 KB minified + gzipped (including the `@preact/signals-core` runtime dependency; ~12 KB with `arraySignal`), matching the README.
+
 ## [0.15.4] - 2026-06-30
 
 
