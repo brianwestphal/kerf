@@ -11,9 +11,9 @@ This plugin sits alongside two other defense layers shipped by [`kerfjs`](https:
 |---|---|---|
 | `tsc --noEmit` with strict typings | Hard Rules 8 (partial-set), most type errors | Build time |
 | Opt-in dev-warns (`KERF_DEV_WARN_*`) | Hard Rules 4 (rebuilt listeners), 7 (untracked signals), 8 (narrow set) | Runtime |
-| **This plugin** | Hard Rules 2, 5, 9, 11 — AST-shaped antipatterns; plus a project-hygiene nudge for the bundled AI-assistant configs | **Edit time** |
+| **This plugin** | Hard Rules 2, 5, 6, 10, 12 — AST-shaped antipatterns; plus rename-safety / `raw()`-audit nudges and a project-hygiene check for the bundled AI-assistant configs | **Edit time** |
 
-The four Hard-Rule rules are AST-only — no `@typescript-eslint/parser` *service* dependency is required by the plugin (consumers configure their own parser). The fifth rule, `ai-assistant-configs`, reads the filesystem instead of the AST and runs once per lint pass.
+All but one rule are AST-only — no `@typescript-eslint/parser` *service* dependency is required by the plugin (consumers configure their own parser). The exception, `ai-assistant-configs`, reads the filesystem instead of the AST and runs once per lint pass.
 
 ## Install
 

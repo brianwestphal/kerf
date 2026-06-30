@@ -37,7 +37,7 @@ That's it. Your JSX renders to HTML strings, kerf's native diff applies the mini
 
 3. **Focus, selection, listeners survive re-renders.** The reconciler morphs instead of rebuilding — caret position, selection range, and delegated listeners survive every re-render.
 
-4. **Small public API.** ~16 exports total. No hooks, no lifecycle, no per-instance state. Components are plain functions that return JSX.
+4. **Small public API.** ~17 exports from the main barrel (plus `arraySignal` on its own subpath). No hooks, no lifecycle, no per-instance state. Components are plain functions that return JSX.
 
 5. **Plain TS, plain JSX, plain ESM.** Drops into anything using esbuild / Vite / tsup. No plugin chain.
 
@@ -158,7 +158,7 @@ npm install kerfjs
 
 ### Optional: `eslint-plugin-kerfjs`
 
-A companion ESLint plugin enforces kerf's hard rules at edit time. Four AST rules catch hard-rule violations — inline JSX event handlers, missing `data-key` in `each()`, nested `mount()`, and global `JSX.IntrinsicElements` augmentation. Two additional rules cover `raw()` XSS audit trails and AI-assistant config hygiene. The plugin is AST-only (no parser-services dependency), so it works with any TypeScript-ESLint setup.
+A companion ESLint plugin enforces kerf's hard rules at edit time. Eight rules total: four `error`-level AST rules catch hard-rule violations — inline JSX event handlers, missing `data-key` in `each()`, nested `mount()`, and global `JSX.IntrinsicElements` augmentation — and four `warn`-level rules cover delegate-disposer capture, `attr()` selector rename-safety, `raw()` XSS audit trails, and AI-assistant config hygiene. The plugin is AST-only (no parser-services dependency), so it works with any TypeScript-ESLint setup.
 
 ```bash
 npm install --save-dev eslint-plugin-kerfjs
@@ -178,7 +178,7 @@ Full docs at [brianwestphal.github.io/kerf/docs/eslint-plugin/](https://brianwes
 - **Docs:** [`docs/`](./docs/) — overview · reactivity · stores · render · events · jsx · svg · [API reference](./docs/8-api-reference.md)
 - **Migrating:** [coming from another framework?](https://brianwestphal.github.io/kerf/migrating/) — side-by-side TodoMVC translations + per-framework gotchas
 - **AI guide:** [`docs/ai/usage-guide.md`](./docs/ai/usage-guide.md) — reference for AI tools fetching kerf docs (linked from `llms.txt`)
-- **ESLint plugin:** [brianwestphal.github.io/kerf/docs/eslint-plugin/](https://brianwestphal.github.io/kerf/docs/eslint-plugin/) — `eslint-plugin-kerfjs`; six rules (four hard-rule errors + `no-raw-with-dynamic-arg` warn + `ai-assistant-configs` warn) at edit time (source: [`eslint-plugin/`](./eslint-plugin/))
+- **ESLint plugin:** [brianwestphal.github.io/kerf/docs/eslint-plugin/](https://brianwestphal.github.io/kerf/docs/eslint-plugin/) — `eslint-plugin-kerfjs`; eight rules (four hard-rule errors + four warns: `require-delegate-disposer`, `prefer-attr-selector`, `no-raw-with-dynamic-arg`, `ai-assistant-configs`) at edit time (source: [`eslint-plugin/`](./eslint-plugin/))
 - **Demo:** [live demo](https://brianwestphal.github.io/kerf/demo/) — eight sections exercising every primitive (counter, store-backed cart, focus survival, keyed list, morph-skip, SVG render, Tier-2 capture, `arraySignal` patches)
 - **Repo:** [github.com/brianwestphal/kerf](https://github.com/brianwestphal/kerf)
 

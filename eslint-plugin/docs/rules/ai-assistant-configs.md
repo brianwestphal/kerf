@@ -2,7 +2,7 @@
 
 Check that the [kerf-app Claude Code skill](https://github.com/brianwestphal/kerf/blob/main/kerf.claude-skill.md) and [Cursor rules](https://github.com/brianwestphal/kerf/blob/main/kerf.cursorrules) drop-ins are installed in the project and up-to-date with the canonical files bundled inside the consumer's installed `kerfjs` package.
 
-Unlike the four AST-only rules in this plugin, this rule reads the **filesystem**, not source code. It runs once per lint pass and reports project-level hygiene issues rather than per-file code defects. Severity in `kerfjs.configs.recommended` is `warn`, not `error` — a missing skill file shouldn't fail CI.
+Unlike the other AST-based rules in this plugin, this rule reads the **filesystem**, not source code. It runs once per lint pass and reports project-level hygiene issues rather than per-file code defects. Severity in `kerfjs.configs.recommended` is `warn`, not `error` — a missing skill file shouldn't fail CI.
 
 Maps to design doc [`docs/12-ai-assistant-configs.md`](https://github.com/brianwestphal/kerf/blob/main/docs/12-ai-assistant-configs.md) §12.4.
 

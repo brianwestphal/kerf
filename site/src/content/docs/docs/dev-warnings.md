@@ -43,15 +43,16 @@ before the program runs:
   Hard Rule 9 partial-set bugs as type errors. All complete example apps in
   this repo are under that gate.
 - **`eslint-plugin-kerfjs`** — a separate publishable package, in
-  [`eslint-plugin/`](../eslint-plugin/README.md), with five AST-only rules
+  [`eslint-plugin/`](../eslint-plugin/README.md), with five rules
   that fire at edit time for hard-rule violations the dev-warns can't see
   syntactically: `no-inline-jsx-event-handlers` (Rule 10),
   `require-data-key-in-each` (Rule 2), `require-delegate-disposer` (Rule 5),
   `no-nested-mount` (Rule 6), `prefer-module-jsx-augmentation` (Rule 12).
-  Two additional rules cover non-hard-rule patterns:
+  Three additional rules cover non-hard-rule patterns:
   `no-raw-with-dynamic-arg` (XSS audit trail — warns on every dynamic `raw()`
   argument so the `eslint-disable` suppression becomes the permanent
-  acknowledgment) and `ai-assistant-configs` (project hygiene — checks that
+  acknowledgment), `prefer-attr-selector` (rename-safety nudge for `delegate()`
+  literal selectors), and `ai-assistant-configs` (project hygiene — checks that
   the bundled AI configs are installed and current).
 
 The three layers are complementary, not redundant. Lint catches AST-shaped
