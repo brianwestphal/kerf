@@ -58,6 +58,7 @@
   "files": [
     "dist",
     "ai",
+    "llms.txt",
     "README.md",
     "CHANGELOG.md",
     "LICENSE"

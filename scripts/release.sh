@@ -260,6 +260,25 @@ ${generated}"
 - "
   fi
 
+  # Surface any hand-curated `## [Unreleased]` bullets into the editor seed so
+  # they're carried into the curated notes — step_update_changelog resets
+  # [Unreleased] to empty on release, so anything left only there would be lost.
+  local carried
+  carried=$(node -e "
+    const fs = require('fs');
+    const c = fs.readFileSync('CHANGELOG.md', 'utf8');
+    const m = c.match(/## \[Unreleased\]([\s\S]*?)(?=\n## \[)/);
+    if (m === null) process.exit(0);
+    const body = m[1].split('\n').filter((l) => l.trim().startsWith('- ')).join('\n');
+    process.stdout.write(body);
+  " 2>/dev/null || true)
+  if [[ -n "$carried" ]]; then
+    initial="${initial}
+
+# Carried over from [Unreleased] — dedupe against the draft above:
+${carried}"
+  fi
+
   ask_multiline "release_notes" "Release notes" "$initial"
 }
 
@@ -275,16 +294,27 @@ step_update_changelog() {
 
   node -e "
     const fs = require('fs');
-    const changelog = fs.readFileSync('CHANGELOG.md', 'utf8');
-    const marker = changelog.indexOf('\n## [');
-    if (marker === -1) {
-      const headerEnd = changelog.lastIndexOf('\n\n') + 2;
-      const updated = changelog.slice(0, headerEnd) + process.argv[1] + '\n\n';
-      fs.writeFileSync('CHANGELOG.md', updated);
+    let c = fs.readFileSync('CHANGELOG.md', 'utf8');
+    const entry = process.argv[1];
+    // Keep '## [Unreleased]' pinned at the top and reset it to empty, inserting
+    // the new version block immediately below it. (Its accumulated entries were
+    // surfaced into the release-notes editor seed, so they live on in the curated
+    // notes — see step_release_notes.) Without this, inserting before the first
+    // '## [' heading would strand [Unreleased] below each new release. Falls back
+    // to the first release heading / header end when there's no [Unreleased].
+    const unrel = /## \[Unreleased\][\s\S]*?(?=\n## \[)/;
+    if (unrel.test(c)) {
+      c = c.replace(unrel, '## [Unreleased]\n\n' + entry + '\n');
     } else {
-      const updated = changelog.slice(0, marker) + '\n' + process.argv[1] + '\n' + changelog.slice(marker);
-      fs.writeFileSync('CHANGELOG.md', updated);
+      const marker = c.indexOf('\n## [');
+      if (marker === -1) {
+        const headerEnd = c.lastIndexOf('\n\n') + 2;
+        c = c.slice(0, headerEnd) + entry + '\n\n';
+      } else {
+        c = c.slice(0, marker) + '\n' + entry + '\n' + c.slice(marker);
+      }
     }
+    fs.writeFileSync('CHANGELOG.md', c);
   " "$(echo -e "$entry")"
 
   success "CHANGELOG.md updated"

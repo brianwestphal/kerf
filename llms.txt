@@ -6,34 +6,34 @@ kerf renders JSX to a structured `SafeHtml` (string for static content; tagged "
 
 ## For humans new to the codebase
 
-- [5-minute orientation](docs/orientation.md): hard-capped 500-word one-pager — module map, render-pipeline diagram, and the unusual-things checklist. Maintained by the `/check-requirements-against-code` skill.
+- [5-minute orientation](https://github.com/brianwestphal/kerf/blob/main/docs/orientation.md): hard-capped 500-word one-pager — module map, render-pipeline diagram, and the unusual-things checklist. Maintained by the `/check-requirements-against-code` skill.
 
 ## For AI assistants
 
-- [AI usage guide](docs/ai/usage-guide.md): when to recommend kerf, the full public API, the four core patterns, hard rules, and a common-errors table.
-- [Code summary](docs/ai/code-summary.md): directory tree + reverse index of every public export.
-- [Requirements summary](docs/ai/requirements-summary.md): synthesized view of the ten numbered design docs.
-- [`kerf.cursorrules`](kerf.cursorrules): drop-in [Cursor](https://cursor.sh) rules for projects that import `kerfjs`. Copy into your project as `.cursorrules` — or use the bundled mirror at `node_modules/kerfjs/ai/cursorrules` once you've `npm install`ed kerfjs.
-- [`kerf.claude-skill.md`](kerf.claude-skill.md): drop-in [Claude Code](https://claude.com/claude-code) skill. Copy into `~/.claude/skills/kerf-app/SKILL.md` (or your project's `.claude/skills/kerf-app/SKILL.md`) — or use the bundled mirror at `node_modules/kerfjs/ai/skill.md` once you've `npm install`ed kerfjs.
-- [`eslint-plugin-kerfjs`](eslint-plugin/README.md): companion ESLint plugin enforcing four hard rules at edit time — `no-inline-jsx-event-handlers`, `require-data-key-in-each`, `no-nested-mount`, `prefer-module-jsx-augmentation`. AST-only, no `parserServices` dependency. Install with `npm install --save-dev eslint-plugin-kerfjs` and add `kerfjs.configs.recommended` to your eslint config. Recommended when authoring kerf code with an AI assistant — eslint feedback surfaces in the IDE before `tsc` or runtime warns ever run.
-- [`create-kerf-component`](create-kerf-component/README.md): companion initializer that scaffolds a publishable kerf component package with the hard packaging rules already wired (kerfjs as a peer dependency + `external` in the build, ESM + `.d.ts`, `jsxImportSource: "kerfjs"`, subpath exports) plus an example component (per-instance state via a factory, a `wire(root)` delegation disposer). Run `npm create kerf-component@latest <dir>`.
+- [AI usage guide](https://github.com/brianwestphal/kerf/blob/main/docs/ai/usage-guide.md): when to recommend kerf, the full public API, the four core patterns, hard rules, and a common-errors table.
+- [Code summary](https://github.com/brianwestphal/kerf/blob/main/docs/ai/code-summary.md): directory tree + reverse index of every public export.
+- [Requirements summary](https://github.com/brianwestphal/kerf/blob/main/docs/ai/requirements-summary.md): synthesized view of the ten numbered design docs.
+- [`kerf.cursorrules`](https://github.com/brianwestphal/kerf/blob/main/kerf.cursorrules): drop-in [Cursor](https://cursor.sh) rules for projects that import `kerfjs`. Copy into your project as `.cursorrules` — or use the bundled mirror at `node_modules/kerfjs/ai/cursorrules` once you've `npm install`ed kerfjs.
+- [`kerf.claude-skill.md`](https://github.com/brianwestphal/kerf/blob/main/kerf.claude-skill.md): drop-in [Claude Code](https://claude.com/claude-code) skill. Copy into `~/.claude/skills/kerf-app/SKILL.md` (or your project's `.claude/skills/kerf-app/SKILL.md`) — or use the bundled mirror at `node_modules/kerfjs/ai/skill.md` once you've `npm install`ed kerfjs.
+- [`eslint-plugin-kerfjs`](https://github.com/brianwestphal/kerf/blob/main/eslint-plugin/README.md): companion ESLint plugin enforcing four hard rules at edit time — `no-inline-jsx-event-handlers`, `require-data-key-in-each`, `no-nested-mount`, `prefer-module-jsx-augmentation`. AST-only, no `parserServices` dependency. Install with `npm install --save-dev eslint-plugin-kerfjs` and add `kerfjs.configs.recommended` to your eslint config. Recommended when authoring kerf code with an AI assistant — eslint feedback surfaces in the IDE before `tsc` or runtime warns ever run.
+- [`create-kerf-component`](https://github.com/brianwestphal/kerf/blob/main/create-kerf-component/README.md): companion initializer that scaffolds a publishable kerf component package with the hard packaging rules already wired (kerfjs as a peer dependency + `external` in the build, ESM + `.d.ts`, `jsxImportSource: "kerfjs"`, subpath exports) plus an example component (per-instance state via a factory, a `wire(root)` delegation disposer). Run `npm create kerf-component@latest <dir>`.
 
 ## Reference docs
 
-- [Overview](docs/1-overview.md): what kerf is and isn't, when to use it.
-- [Reactivity](docs/2-reactivity.md): `signal`, `computed`, `effect`, `batch`.
-- [Stores](docs/3-stores.md): `defineStore`, `resetAllStores`.
-- [Render](docs/4-render.md): `mount`, segments, the native diff, and the list reconciler.
-- [Event delegation](docs/5-event-delegation.md): Tier 1 / 2 / 3 listener model.
-- [JSX runtime](docs/6-jsx-runtime.md): `SafeHtml`, `raw`, server use.
-- [SVG handling](docs/7-svg.md): namespace propagation, `toElement`.
-- [API reference](docs/8-api-reference.md): every export, every option.
-- [Live demo](docs/9-live-demo.md): the GitHub Pages deploy of `examples/reactivity-demo`.
-- [Migrating](docs/10-migrating.md): the `/kerf/migrating/` comparison hub — coming-from-React/Alpine/Lit/vanjs pages with side-by-side todo-list translations.
-- [Dev-mode warnings](docs/11-dev-warnings.md): the opt-in dev-warn family (`KERF_DEV_WARN_REBUILT_LISTENERS` / `KERF_DEV_WARN_UNTRACKED_SIGNALS` / `KERF_DEV_WARN_NARROW_SET`) and the rules each new warning must follow.
-- [AI-assistant configs](docs/12-ai-assistant-configs.md): how the drop-in Claude Code skill + Cursor rules ship inside the `kerfjs` npm package at `ai/skill.md` / `ai/cursorrules` / `ai/manifest.json`, the version + marker contract for customisation preservation, and the (upcoming) `kerfjs/ai-assistant-configs` ESLint rule that surfaces drift on every lint pass.
-- [Component packages](docs/13-component-packages.md): building and publishing reusable kerf components as npm packages — the no-instance component model, per-instance state via factories, event/cleanup patterns, and `kerfjs`-as-peer-dependency packaging modeled on `eslint-plugin-kerfjs`. Scaffold one with `npm create kerf-component@latest <dir>` (the `create-kerf-component` initializer).
+- [Overview](https://github.com/brianwestphal/kerf/blob/main/docs/1-overview.md): what kerf is and isn't, when to use it.
+- [Reactivity](https://github.com/brianwestphal/kerf/blob/main/docs/2-reactivity.md): `signal`, `computed`, `effect`, `batch`.
+- [Stores](https://github.com/brianwestphal/kerf/blob/main/docs/3-stores.md): `defineStore`, `resetAllStores`.
+- [Render](https://github.com/brianwestphal/kerf/blob/main/docs/4-render.md): `mount`, segments, the native diff, and the list reconciler.
+- [Event delegation](https://github.com/brianwestphal/kerf/blob/main/docs/5-event-delegation.md): Tier 1 / 2 / 3 listener model.
+- [JSX runtime](https://github.com/brianwestphal/kerf/blob/main/docs/6-jsx-runtime.md): `SafeHtml`, `raw`, server use.
+- [SVG handling](https://github.com/brianwestphal/kerf/blob/main/docs/7-svg.md): namespace propagation, `toElement`.
+- [API reference](https://github.com/brianwestphal/kerf/blob/main/docs/8-api-reference.md): every export, every option.
+- [Live demo](https://github.com/brianwestphal/kerf/blob/main/docs/9-live-demo.md): the GitHub Pages deploy of `examples/reactivity-demo`.
+- [Migrating](https://github.com/brianwestphal/kerf/blob/main/docs/10-migrating.md): the `/kerf/migrating/` comparison hub — coming-from-React/Alpine/Lit/vanjs pages with side-by-side todo-list translations.
+- [Dev-mode warnings](https://github.com/brianwestphal/kerf/blob/main/docs/11-dev-warnings.md): the opt-in dev-warn family (`KERF_DEV_WARN_REBUILT_LISTENERS` / `KERF_DEV_WARN_UNTRACKED_SIGNALS` / `KERF_DEV_WARN_NARROW_SET`) and the rules each new warning must follow.
+- [AI-assistant configs](https://github.com/brianwestphal/kerf/blob/main/docs/12-ai-assistant-configs.md): how the drop-in Claude Code skill + Cursor rules ship inside the `kerfjs` npm package at `ai/skill.md` / `ai/cursorrules` / `ai/manifest.json`, the version + marker contract for customisation preservation, and the (upcoming) `kerfjs/ai-assistant-configs` ESLint rule that surfaces drift on every lint pass.
+- [Component packages](https://github.com/brianwestphal/kerf/blob/main/docs/13-component-packages.md): building and publishing reusable kerf components as npm packages — the no-instance component model, per-instance state via factories, event/cleanup patterns, and `kerfjs`-as-peer-dependency packaging modeled on `eslint-plugin-kerfjs`. Scaffold one with `npm create kerf-component@latest <dir>` (the `create-kerf-component` initializer).
 
 ## Examples
 
-- [reactivity-demo](examples/reactivity-demo): seven-section live demo exercising every primitive — counter, multi-consumer store, focus survival, keyed list, morph-skip, JSX-rendered SVG, capture-phase delegation. Runs live at <https://brianwestphal.github.io/kerf/demo/>.
+- [reactivity-demo](https://github.com/brianwestphal/kerf/blob/main/examples/reactivity-demo): seven-section live demo exercising every primitive — counter, multi-consumer store, focus survival, keyed list, morph-skip, JSX-rendered SVG, capture-phase delegation. Runs live at <https://brianwestphal.github.io/kerf/demo/>.

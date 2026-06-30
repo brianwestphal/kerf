@@ -4,6 +4,12 @@ All notable changes to **kerf** are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- The `kerfjs` package now bundles `llms.txt` (the AI-discovery index) at the package root, and the docs site serves it at `https://brianwestphal.github.io/kerf/llms.txt`. Its links are now absolute GitHub URLs so the file is portable across GitHub, the site, and the installed package.
+
 ## [0.15.3] - 2026-06-30
 
 
@@ -15,12 +21,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 
 - Added the `create-kerf-component` initializer — scaffold a ready-to-publish kerf component package with `npm create kerf-component@latest <dir>`, no need to reverse-engineer the packaging rules.
-
-## [Unreleased]
-
-### Added
-
-- New `create-kerf-component` initializer (`npm create kerf-component@latest <dir>`) — scaffolds a publishable kerf component package that already follows the hard packaging rules (kerfjs as a peer dependency and `external` in the build, ESM + `.d.ts` output, `jsxImportSource: "kerfjs"`, subpath exports) plus an example component demonstrating per-instance state via a factory and a `wire(root)` delegation disposer. Releases in lockstep with kerfjs.
 
 ## [0.15.1] - 2026-06-30
 
