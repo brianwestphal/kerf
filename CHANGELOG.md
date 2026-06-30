@@ -6,7 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
-### Added
+## [0.15.4] - 2026-06-30
+
+
+
+- `llms.txt` is now published at a public docs-site URL and bundled in the npm package, making kerf's AI-assistant documentation index discoverable to llms.txt directories and tooling.
 
 - The `kerfjs` package now bundles `llms.txt` (the AI-discovery index) at the package root, and the docs site serves it at `https://brianwestphal.github.io/kerf/llms.txt`. Its links are now absolute GitHub URLs so the file is portable across GitHub, the site, and the installed package.
 
