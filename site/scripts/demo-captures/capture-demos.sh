@@ -41,18 +41,16 @@ npx --yes serve -l "$SERVE_PORT" "$SERVE_DIR" >/dev/null 2>&1 &
 SERVE_PID=$!
 sleep 2
 
-# 3. Capture each app.
+# 3. Capture each app. domotion-svg ≥ 0.18.0 emits `step-end` directly on every
+#    hard-cut opacity track and keeps it through SVGO (`optimize: true`), so cut
+#    frames hold-then-snap with no post-processing. (Earlier versions needed a
+#    fix-cut-timing pass to re-fold `step-end` the optimizer had clobbered — that
+#    workaround is gone now that the fix lives upstream. tests/unit/demo-configs.test.ts
+#    still asserts every committed SVG's fv-N track carries `step-end`.)
 mkdir -p site/public/demos
 for app in "${APPS[@]}"; do
   echo "[demos] capturing $app"
   npx domotion animate "$CONFIG_DIR/$app.json" --quiet
 done
-
-# 4. Restore step-end timing on cut-frame opacity tracks. SVGO (optimize:true)
-#    reorders domotion's `animation` shorthand after its `step-end` override,
-#    clobbering it — which makes each demo's LAST frame fade to black over its
-#    whole duration instead of holding then hard-cutting. See fix-cut-timing.mjs.
-echo "[demos] restoring cut-frame timing"
-node "$CONFIG_DIR/fix-cut-timing.mjs" site/public/demos/*.svg
 
 echo "[demos] done → site/public/demos/"

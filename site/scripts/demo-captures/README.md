@@ -62,19 +62,19 @@ just use a short trailing `wait`; the dashboard trims to 10 rows via an injected
   the interaction demos) so the result doesn't snap away mid-read. For an ambient
   demo with no static payoff (the dashboard), extend the *continuous motion* at
   the tail instead of freezing a still frame.
-- **A `cut`'s last frame fades out unless you re-fix `step-end` after SVGO.**
-  domotion emits each cut frame's opacity track as `animation: fv-N <t>s infinite;
-  animation-timing-function: step-end` (the override after the shorthand is
-  deliberate — the shorthand resets timing-function to `ease`). But `optimize:
-  true` runs SVGO, whose CSS minifier reorders the declarations so the shorthand
-  lands last and clobbers `step-end`. Interior frames are unaffected (their
-  opacity 1→0 span is an instant sliver), but the LAST frame's visible window runs
-  to 100% with opacity 1→0, so under `ease` it interpolates — the whole final
-  frame **fades to black** over its duration (this is what "they fade out while
-  the user is absorbing it" was). `fix-cut-timing.mjs` runs after capture and
-  folds `step-end` back into every `fv-N` shorthand; `capture-demos.sh` invokes
-  it automatically. `tests/unit/demo-configs.test.ts` guards the committed SVGs
-  (every `fv-N` track must carry `step-end`).
+- **Cut frames hold-then-snap; `step-end` is now handled upstream.** domotion
+  emits each cut frame's opacity track as `animation: fv-N <t>s step-end infinite`
+  — the `step-end` timing-function makes the visible window hold at full opacity
+  and snap off (no interpolation). Under domotion **≤ 0.17.x**, `optimize: true`
+  (SVGO) reordered the declarations so the `animation` shorthand reset the
+  timing-function to `ease`, and the LAST frame's opacity-1→0 span then
+  interpolated — the whole final frame **faded to black** over its duration. That
+  required a post-capture `fix-cut-timing.mjs` pass to re-fold `step-end`.
+  domotion **≥ 0.18.0 fixes this at the source** (SVGO no longer factors out the
+  cut's timing-function), so cuts stay crisp through optimization and the
+  workaround has been removed from `capture-demos.sh`. `tests/unit/demo-configs.test.ts`
+  still guards the committed SVGs (every `fv-N` track must carry `step-end`) — a
+  regression tripwire if a future domotion ever reintroduces the clobber.
 - **Show entry/motion, don't teleport.** Text-entry demos (todomvc, chat) use a
   `typing` overlay (anchored to the input, with a `bgColor` mask over the
   placeholder) so the text is visibly typed; markdown types its source character

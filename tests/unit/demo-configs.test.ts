@@ -75,12 +75,13 @@ describe('demo-capture configs', () => {
     });
   }
 
-  // KF-280: guard the committed SVGs against the "last frame fades to black"
-  // regression. domotion emits `step-end` on every cut frame's opacity track,
-  // but SVGO (optimize:true) reorders the declarations so the `animation`
-  // shorthand resets timing-function to `ease`, which makes the last frame
-  // interpolate opacity 1->0 over its whole duration (a fade-out). The capture
-  // pipeline re-folds `step-end` via fix-cut-timing.mjs; this asserts it stuck.
+  // Guard the committed SVGs against the "last frame fades to black" regression:
+  // every hard-cut frame's opacity track must carry `step-end` so its visible
+  // window holds then snaps, rather than interpolating opacity 1->0 over its whole
+  // duration (a fade-out). domotion >= 0.18.0 emits `step-end` directly and keeps
+  // it through SVGO (`optimize: true`), so no post-processing is needed — earlier
+  // versions clobbered it during optimization and required a fix-cut-timing pass.
+  // This assertion is the tripwire if a future domotion ever reintroduces the clobber.
   describe('rendered SVGs', () => {
     it('finds the committed demo SVGs', () => {
       expect(svgFiles.length).toBeGreaterThan(0);
