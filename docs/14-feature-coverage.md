@@ -73,6 +73,13 @@ axis (`cacheKey` reading an external signal) crosses all of them.
 | FC-T4 | Adversarial transition-matrix suite walks multi-step sequences across reconciler states | `src/each.ts`, `src/list-reconcile*.ts` | `tests/unit/array-signal.test.ts` › "arraySignal — reconciler transition matrix (adversarial)" |
 | FC-T5 | `each()` introduced by a re-render (not present on first render) reconciles with trailing siblings intact | `src/mount.ts`, `src/each.ts` | `tests/unit/kf102-each-after-transition.test.tsx` › "KF-102: each() introduced via re-render with trailing siblings" |
 
+### `arraySignal` collection signal (`kerfjs/array-signal`)
+
+| ID | Behavior | Implements | Guarding test(s) |
+| --- | --- | --- | --- |
+| FC-AS1 | `arraySignal()` standalone API — `update`/`insert`/`push`/`remove`/`move`/`replace` mutators + tracked `.value` | `src/array-signal.ts` | `tests/unit/array-signal.test.ts` › "arraySignal — standalone API" |
+| FC-AS2 | `ArraySignal` class exposed for `instanceof` checks | `src/array-signal.ts` | `tests/unit/array-signal.test.ts` › "exposes ArraySignal class for instanceof checks" |
+
 ### §2 Reactivity
 
 | ID | Behavior | Implements | Guarding test(s) |
@@ -137,6 +144,7 @@ axis (`cacheKey` reading an external signal) crosses all of them.
 | FC-JX4 | `isSafeHtml()` recognizes SafeHtml, including cross-bundle by brand | `src/jsx-runtime.ts` | `tests/unit/jsx-runtime.test.ts` › "recognizes an instance from a separate SafeHtml class that uses the same brand symbol" |
 | FC-JX5 | `null` / `undefined` / boolean children are omitted | `src/jsx-runtime.ts` | `tests/unit/jsx-runtime.test.ts` › "omits null / undefined / boolean children" |
 | FC-JX6 | `attr()` static + dynamic overloads (camelCase → HTML/SVG aliasing) | `src/jsx-runtime.ts`, `src/utils/jsx-attr-aliases.ts` | `tests/unit/attr.test.ts` › "attr — static overload", `tests/unit/attr.test.ts` › "attr — dynamic overload" |
+| FC-JX7 | `Fragment` groups children with no wrapper element | `src/jsx-runtime.ts` | `tests/unit/jsx-runtime.test.ts` › "Fragment" |
 
 ### §7 SVG
 
@@ -183,6 +191,34 @@ paint, real-consumer bundling). Guarded by Playwright specs under `tests/browser
 | FC-BR7 | The six complete example apps run their headline interaction | (all) | `tests/browser/example-apps.spec.ts` › "drag updates the card transform during pointermove (KF-163 regression)" |
 | FC-BR8 | krausest-style 1k-row perf scenarios (create/update/select/swap/clear) | `src/list-reconcile*.ts` | `tests/browser/perf-1k.spec.ts` › "1000-row keyed list — create / partial-update / select / swap / clear timings" |
 
+## Completeness — two directions, two mechanisms
+
+The index can be under-covered in two ways. They are guarded differently on
+purpose (KF-289 investigation outcome):
+
+1. **A row points at a test that no longer exists.** Fully scripted —
+   `check-feature-coverage.mjs` fails on any broken file/title mapping. Load-bearing.
+2. **A behavior exists but has no row at all.** This is the hard direction,
+   because "every documented behavior" has no clean machine-readable boundary —
+   prose describes behaviors at wildly varying granularity. It is split:
+   - **Public *value* exports → automated.** Every user-facing export from
+     `kerfjs` / `kerfjs/array-signal` must be named by at least one index row
+     (the same script enforces this). Adding a public export therefore forces a
+     behavior row. This is the tractable, high-value slice — a new API can't ship
+     un-indexed.
+   - **Prose-level behaviors → the periodic audit exercise, deliberately not a
+     script.** Tagging every documented behavior with a stable ID (or deriving
+     one from headings) was evaluated and rejected: the marker set would *be* the
+     index (circular + duplicative), the maintenance cost is high, and
+     heading-derived sets are too coarse to be trustworthy. Instead, behavior
+     completeness is owned by (a) the `/analyze-code-quality` **behavioral /
+     state-transition audit** step, which walks the stateful modules and flags
+     untested transitions; (b) `/check-requirements-against-code`, which diffs
+     the numbered docs against the implementation; and (c) the **"Adding to the
+     index" discipline** below, applied in the same diff as any behavior change.
+     A brittle "did you document a behavior without indexing it" script would be
+     noisy and low-value; the human/AI audit is the right tool for the fuzzy half.
+
 ## How this complements the existing guards
 
 - **`scripts/check-doc-api-coverage.mjs`** asserts the *public export surface*
@@ -193,7 +229,8 @@ paint, real-consumer bundling). Guarded by Playwright specs under `tests/browser
   express: the barrel exports exactly the documented surface, no accidental
   default export, and the `each()` one-top-level-element-per-row contract.
 - **This report** adds the missing axis: every *behavior* (and *transition*) in
-  the index maps to a live guarding test.
+  the index maps to a live guarding test, and every public value export is
+  represented by at least one index row.
 
 ## Adding to the index
 

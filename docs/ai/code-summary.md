@@ -130,7 +130,7 @@ kerf/
 │   │   └── ai-bundle.mjs         ← KF-215 — shared logic for sync + check scripts; deterministic `computeBundle()` produces the three `ai/` files in memory from the root source-of-truth files
 │   ├── sync-ai-bundle.mjs        ← KF-215 — regenerates `ai/` from `kerf.claude-skill.md` + `kerf.cursorrules`; run after editing either source
 │   ├── check-ai-bundle.mjs       ← KF-215 — in-sync gate; fails when `ai/` drifts from the root sources or the manifest's `kerfjsVersion` is stale. Wired into `npm run check`
-│   ├── check-feature-coverage.mjs ← KF-284 — parses the feature index in docs/14-feature-coverage.md and fails if any behavior row's guarding test (file + title) no longer resolves; the behavior/transition coverage axis that line coverage can't express. Wired into `npm run check` (`npm run check:features`)
+│   ├── check-feature-coverage.mjs ← KF-284/286/289 — parses the feature index in docs/14-feature-coverage.md and fails if any behavior row's guarding test (file + title) no longer resolves; ALSO fails if any public value export (src/index.ts + src/array-signal.ts, minus type-only + EXPORT_EXEMPT) has no index row (export-representation completeness). The behavior/transition coverage axis line coverage can't express. Wired into `npm run check` (`npm run check:features`)
 │   └── release.sh                ← interactive release flow w/ --beta support; drafts release notes via gitgist (`gitgist <last-tag>..HEAD`; gitgist is a devDependency)
 ├── .github/workflows/
 │   ├── ci.yml                    ← test + lint + typecheck on push/PR

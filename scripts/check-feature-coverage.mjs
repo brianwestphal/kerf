@@ -21,6 +21,12 @@
  *    missing, or if a referenced title no longer appears in any of the row's
  *    referenced files (backslash-normalized so escaped quotes/apostrophes in
  *    the source match the plain title in the doc).
+ *  - **Export-representation completeness (KF-289):** also fails if any
+ *    user-facing *value* export (from `src/index.ts` / `src/array-signal.ts`,
+ *    minus type-only and `EXPORT_EXEMPT` names) is not named by any index row —
+ *    so adding a public export forces adding a behavior row. Behavior-level
+ *    completeness (every documented prose behavior) is intentionally NOT
+ *    scripted; see the "Completeness" section of docs/14 for the reasoning.
  *  - On success prints a one-line OK with the row count.
  *
  * Run via:  node scripts/check-feature-coverage.mjs   (wired into `npm run check`)
@@ -32,8 +38,35 @@ import { fileURLToPath } from 'node:url';
 const REPO_ROOT = dirname(dirname(fileURLToPath(import.meta.url)));
 const INDEX_DOC = resolve(REPO_ROOT, 'docs/14-feature-coverage.md');
 
+// Export-representation completeness (KF-289): every user-facing *value* export
+// must be named by at least one index row, so adding a public export forces a
+// behavior row. Type-only exports have no behavior; internal/JSX-transform
+// symbols are exempt.
+const EXPORT_SOURCES = ['src/index.ts', 'src/array-signal.ts'];
+const EXPORT_EXEMPT = new Set([
+  'ARRAY_SIGNAL_BRAND', // internal cross-bundle brand symbol, not a user behavior
+  'jsx', 'jsxs', 'jsxDEV', // JSX-transform entry points, not called by hand
+]);
+
 /** Normalize so `today\'s` in a source string matches `today's` in the doc. */
 const norm = (s) => s.replace(/\\/g, '');
+
+/** Value (non-type) exports from a source file: `export { a, type B }` + `export const/function/class`. */
+function collectValueExports(relPath) {
+  const src = readFileSync(resolve(REPO_ROOT, relPath), 'utf8');
+  const names = new Set();
+  for (const m of src.matchAll(/export\s*\{([^}]+)\}/g)) {
+    for (const piece of m[1].split(',').map((p) => p.trim()).filter(Boolean)) {
+      if (/^type\s/.test(piece)) continue; // type-only export — no runtime behavior
+      const name = piece.includes(' as ') ? piece.split(' as ')[1].trim() : piece;
+      names.add(name);
+    }
+  }
+  for (const m of src.matchAll(/^export\s+(?:const|function|class)\s+([A-Za-z_$][\w$]*)/gm)) {
+    names.add(m[1]);
+  }
+  return names;
+}
 
 /** Split a Markdown table row into trimmed cells (drops the outer empties). */
 function cells(line) {
@@ -121,13 +154,34 @@ function main() {
     }
   }
 
-  if (errors.length === 0) {
-    console.log(`[check-feature-coverage] OK — ${rows.length} feature-index rows all map to live guarding tests.`);
+  // Export-representation completeness: every user-facing value export appears
+  // by name in the index. (Behavior-level completeness — every documented prose
+  // behavior — is intentionally NOT scripted; see docs/14 "Completeness".)
+  const docText = readFileSync(INDEX_DOC, 'utf8');
+  const missingExports = [];
+  for (const source of EXPORT_SOURCES) {
+    for (const name of collectValueExports(source)) {
+      if (EXPORT_EXEMPT.has(name)) continue;
+      if (!new RegExp(`\\b${name}\\b`).test(docText)) {
+        missingExports.push(`${name} (exported from ${source})`);
+      }
+    }
+  }
+
+  if (errors.length === 0 && missingExports.length === 0) {
+    console.log(`[check-feature-coverage] OK — ${rows.length} feature-index rows all map to live guarding tests; every public value export is represented.`);
     return;
   }
-  console.error('[check-feature-coverage] feature index has broken mappings:');
-  for (const e of errors) console.error(`  - ${e}`);
-  console.error('\nUpdate docs/14-feature-coverage.md (fix the row) or restore/rename the guarding test, then re-run.');
+  if (errors.length > 0) {
+    console.error('[check-feature-coverage] feature index has broken mappings:');
+    for (const e of errors) console.error(`  - ${e}`);
+    console.error('Update docs/14-feature-coverage.md (fix the row) or restore/rename the guarding test.');
+  }
+  if (missingExports.length > 0) {
+    console.error('[check-feature-coverage] public value exports with NO index row:');
+    for (const e of missingExports) console.error(`  - ${e}`);
+    console.error('Add a behavior row for each to docs/14-feature-coverage.md (or EXPORT_EXEMPT it if genuinely internal).');
+  }
   process.exit(1);
 }
 
