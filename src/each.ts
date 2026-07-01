@@ -231,11 +231,29 @@ function eachGranular<T extends object>(
   if (cacheKey !== undefined) {
     // The cache is always populated here: the first render of any list takes
     // the snapshot path (previousBindingCount === undefined, handled above),
-    // which creates the cache for `id`. So a granular render always has it.
+    // which creates the cache for `id`. So a granular render always has it. The
+    // `as` cast asserts that instead of an `if (cache === undefined)` guard,
+    // whose else-branch would be unreachable — and would drop us below the 99%
+    // branch-coverage threshold.
     const cache = ctx.caches.get(id) as WeakMap<object, CacheEntry>;
+    // Plain indexed loop (not `for..of`): `cacheKey` needs the row index, and
+    // this runs over every row on every granular render (up to 10k rows), so we
+    // keep it allocation-free. `item` is read once to avoid a double `snapshot[i]`.
     for (let i = 0; i < snapshot.length; i++) {
-      const k = cacheKey(snapshot[i], i);
-      const cached = cache.get(snapshot[i]);
+      const item = snapshot[i];
+      // Evaluate `cacheKey` for EVERY row unconditionally: that read is what
+      // keeps an external signal (e.g. `selectedId`) in the mount effect's
+      // dependency set. It must NOT move inside the `cached` check below — rows
+      // with no cache entry (fresh refs after a granular update) would then
+      // never read it and the dependency could silently drop.
+      const k = cacheKey(item, i);
+      const cached = cache.get(item);
+      // Fall back to snapshot ONLY on real drift — a bound row whose `cacheKey`
+      // changed. We can't just `return eachSnapshotById(...)` unconditionally
+      // whenever a `cacheKey` exists: that would forfeit the granular fast path
+      // for every structural op (append/remove/update/move) on a selectable
+      // list — the whole reason the arraySignal path exists. The common case, a
+      // structural change with no selection change, stays granular.
       if (cached !== undefined && cached.cacheKey !== k) {
         return eachSnapshotById(snapshot, render, cacheKey, id);
       }
