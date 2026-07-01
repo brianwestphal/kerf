@@ -1,6 +1,6 @@
 {
   "name": "create-kerf-component",
-  "version": "0.15.5",
+  "version": "0.16.0",
   "description": "Scaffold a publishable kerf component package that already follows kerf's hard packaging rules.",
   "type": "module",
   "license": "MIT",
