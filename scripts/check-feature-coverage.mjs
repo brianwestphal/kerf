@@ -95,7 +95,13 @@ function main() {
 
   for (const row of rows) {
     const files = [...row.guarding.matchAll(/`([^`]+\.tsx?)`/g)].map((m) => m[1]);
-    const titles = [...row.guarding.matchAll(/"([^"]+)"/g)].map((m) => m[1]);
+    // Titles: double-quoted strings, plus backtick spans that are NOT file
+    // paths (so a title containing `<svg>`/`<details>` can be written in a
+    // code span and won't be mangled by Markdown's HTML parsing).
+    const titles = [
+      ...[...row.guarding.matchAll(/"([^"]+)"/g)].map((m) => m[1]),
+      ...[...row.guarding.matchAll(/`([^`]+)`/g)].map((m) => m[1]).filter((t) => !/\.tsx?$/.test(t)),
+    ];
     const where = `${row.id || '(no id)'} @ docs/14-feature-coverage.md:${row.line}`;
 
     if (files.length === 0) { errors.push(`${where}: no guarding test file referenced`); continue; }
