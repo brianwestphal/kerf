@@ -22,9 +22,28 @@ bench/
   setup.sh             builds local kerfjs, clones upstream, builds frameworks
   preflight.sh         system-busy pre-check (KF-139) — sourced by run.sh
   run.sh               runs the benchmark against kerfjs + reference frameworks
+  site.sh              interactive: serve the kerfjs bench app + open the browser
   results.sh           builds the aggregated table and serves the viewer
   .bench-cache/        gitignored — upstream clone + build outputs
 ```
+
+## Interactive playground — `npm run bench:serve`
+
+Want to poke at kerf by hand rather than measure it? `npm run bench:serve`
+(a.k.a. `bench/site.sh`) rebuilds the kerfjs entry from your **current working
+tree**, starts the upstream static server on `http://localhost:8080`, and opens
+the kerfjs page — the standard 1k-rows app with the Create / Append / Update /
+Swap / Clear buttons plus row select + remove. Ctrl-C stops the server.
+
+```bash
+npm run bench:serve                 # rebuild from the working tree, then serve + open
+npm run bench:serve -- --no-build   # skip the rebuild; serve what's already built (fast)
+```
+
+The first run bootstraps the cache via `setup.sh` (one-time clone + reference
+builds); after that it only rebuilds the kerfjs entry, so it's quick. This is
+the measurement-free sibling of `run.sh`; for Chrome-devtools profiling of a hot
+path use `dev-server.sh` (serve-only, no auto-open) instead.
 
 ## First-time setup
 
