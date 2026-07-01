@@ -188,7 +188,7 @@ paint, real-consumer bundling). Guarded by Playwright specs under `tests/browser
 | FC-BR4 | Imperatively-set `<details open>` survives a morph in real engines | `src/morph.ts` | `tests/browser/stateful-attrs.spec.ts` › `<details open> set imperatively survives a morph (KF-84)` |
 | FC-BR5 | `toElement()` nodes are owned by the live document (WebKit adoption) | `src/toElement.ts` | `tests/browser/toelement-adopt.spec.ts` › `toElement() returns nodes owned by the live document, not a <template>/DOMParser inert doc` |
 | FC-BR6 | Real-consumer bundle exercises each public primitive end-to-end | (all, via `dist/`) | `tests/browser/consumer-app.spec.ts` › "counter — signal + computed + delegate increments and re-renders" |
-| FC-BR7 | The six complete example apps run their headline interaction | (all) | `tests/browser/example-apps.spec.ts` › "drag updates the card transform during pointermove (KF-163 regression)" |
+| FC-BR7 | The seven complete example apps run their headline interaction | (all) | `tests/browser/example-apps.spec.ts` › "drag updates the card transform during pointermove (KF-163 regression)" |
 | FC-BR8 | krausest-style 1k-row perf scenarios (create/update/select/swap/clear) | `src/list-reconcile*.ts` | `tests/browser/perf-1k.spec.ts` › "1000-row keyed list — create / partial-update / select / swap / clear timings" |
 
 ## Completeness — two directions, two mechanisms

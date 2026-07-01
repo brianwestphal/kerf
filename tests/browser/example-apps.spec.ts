@@ -1,5 +1,5 @@
 /**
- * KF-165 — smoke specs for the six complete example apps under
+ * KF-165 — smoke specs for the seven complete example apps under
  * `site/src/examples/complete/`. Each test exercises the app's headline
  * interaction end-to-end against the latest `dist/` via the test build at
  * `tests/dist/example-apps/<name>/` (see `tests/browser/global-setup.mjs`).
