@@ -35,11 +35,13 @@ That's it. Your JSX renders to HTML strings, kerf's native diff applies the mini
 
 2. **No virtual DOM, no compiler.** JSX → HTML strings → native diff. DevTools shows the real DOM because it *is* the DOM.
 
-3. **Focus, selection, listeners survive re-renders.** The reconciler morphs instead of rebuilding — caret position, selection range, and delegated listeners survive every re-render.
+3. **Focus, selection, listeners survive re-renders — even mid-list.** The reconciler morphs instead of rebuilding, so caret position, selection range, IME composition, and delegated listeners survive every re-render. Keyed lists get the same treatment: same-identity rows are updated *in place* rather than recreated, so a row reorder or a single-cell edit no longer blows away focus, scroll, or an in-flight animation the way node replacement does.
 
 4. **Small public API.** ~17 exports from the main barrel (plus `arraySignal` on its own subpath). No hooks, no lifecycle, no per-instance state. Components are plain functions that return JSX.
 
 5. **Plain TS, plain JSX, plain ESM.** Drops into anything using esbuild / Vite / tsup. No plugin chain.
+
+6. **Grown-up tooling around a tiny core.** An [ESLint plugin](https://brianwestphal.github.io/kerf/docs/eslint-plugin/) that enforces the hard rules at edit time, a `create-kerf-component` scaffold for publishable component packages, drop-in AI-assistant configs, and side-by-side migration guides for a dozen-plus frameworks — none of which grows the core runtime past ~11 KB.
 
 ## When to use Kerf
 
