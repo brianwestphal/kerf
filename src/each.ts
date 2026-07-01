@@ -167,11 +167,19 @@ function eachGranular<T extends object>(
   const patches = sig._consumePatches();
   const snapshot = sig.value as readonly T[];
 
-  // First render of this list, no patches, or any 'replace' patch → snapshot.
+  // First render, empty binding, no patches, or any 'replace' patch → snapshot.
+  // First render (count === undefined): the granular reconciler has no binding
+  // to apply patches to yet.
+  // Empty binding (count === 0): the list was emptied by a prior clear/replace.
+  // Repopulating it is effectively a first render again — the granular path
+  // would emit a segment with an empty `items` array that `reconcileList`
+  // routes to the snapshot path (its dispatch requires a non-empty binding for
+  // the granular path), and the snapshot path would then reconcile against
+  // those empty `items` and render nothing. Snapshot-build from scratch instead.
   // No patches: typical re-render triggered by a non-arraySignal signal change.
   // 'replace': wholesale reset — granular can't help; the snapshot already
   // reflects the post-replace state (and any subsequent granular ops).
-  if (previousBindingCount === undefined || patches.length === 0) {
+  if (previousBindingCount === undefined || previousBindingCount === 0 || patches.length === 0) {
     return eachSnapshotById(snapshot, render, cacheKey, id);
   }
   // KF-99: detect drift between the live binding and the arraySignal. After
@@ -195,6 +203,43 @@ function eachGranular<T extends object>(
   /* c8 ignore next 3 */
   if (previousBindingCount + netDelta !== snapshot.length) {
     return eachSnapshotById(snapshot, render, cacheKey, id);
+  }
+
+  // The granular path applies arraySignal patches but never evaluates
+  // `cacheKey` (or `render`) for the rows the patches don't touch. That has
+  // two consequences this loop fixes:
+  //
+  // 1. Dependency tracking. A signal read ONLY inside `cacheKey` — the
+  //    documented "external state drives the row" pattern, e.g. a `selectedId`
+  //    flipping a row class — would drop out of the mount effect's dependency
+  //    set after a granular-only render, because nothing read it. A later
+  //    change to that signal would then silently fail to re-render. Concretely:
+  //    select a row, delete a *different* row (a granular remove), then row
+  //    selection stops working entirely. Re-reading every item's `cacheKey`
+  //    here keeps those signals tracked.
+  //
+  // 2. Drift the patches don't cover. If an already-bound row's `cacheKey`
+  //    changed, external state moved a row that this batch's structural
+  //    patches won't fix (e.g. a selection flip batched together with a
+  //    remove). Hand the whole render to the snapshot path, which reconciles
+  //    structure + content together. The patches are already drained and the
+  //    snapshot reflects every mutation, so the snapshot classify rebuilds the
+  //    binding correctly from the pre-render DOM.
+  //
+  // Only lists that pass `cacheKey` pay this O(N) scan, and they already pay
+  // the same O(N) `cacheKey` evaluation on every snapshot render.
+  if (cacheKey !== undefined) {
+    // The cache is always populated here: the first render of any list takes
+    // the snapshot path (previousBindingCount === undefined, handled above),
+    // which creates the cache for `id`. So a granular render always has it.
+    const cache = ctx.caches.get(id) as WeakMap<object, CacheEntry>;
+    for (let i = 0; i < snapshot.length; i++) {
+      const k = cacheKey(snapshot[i], i);
+      const cached = cache.get(snapshot[i]);
+      if (cached !== undefined && cached.cacheKey !== k) {
+        return eachSnapshotById(snapshot, render, cacheKey, id);
+      }
+    }
   }
 
   // Granular path: pre-render every insert/update HTML at JSX-eval time so

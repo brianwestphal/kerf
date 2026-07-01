@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Fixed
+
+- `each()` on an `arraySignal`: appending rows to a list that was just emptied (e.g. **Clear** then **Append**) now renders the new rows immediately, instead of showing nothing until a second append. After the list was emptied its binding was empty but no longer in its first-render state, so the granular insert path emitted a segment the reconciler rendered as empty; repopulating an emptied list now takes the snapshot (build-from-scratch) path, the same as a first render.
+
+- `each()` on an `arraySignal`: a signal read only inside the `cacheKey` comparator (the "external state drives the row" pattern — e.g. a `selectedId` flipping a row's class) now stays tracked across a granular structural update. Previously, after a granular insert/remove/update/move, that signal dropped out of the `mount()` effect's dependency set (the granular path never re-evaluates `cacheKey` for untouched rows), so a later change to it silently failed to re-render — e.g. row selection stopped working after a row was deleted. The granular path now re-reads every row's `cacheKey`, which both keeps those signals tracked and detects content drift the patches can't express (a selection flip batched together with a structural change), falling back to the snapshot path when it does.
+
 ## [0.15.5] - 2026-06-30
 
 

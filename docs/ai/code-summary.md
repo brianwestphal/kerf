@@ -115,6 +115,7 @@ kerf/
 │   ├── 11-dev-warnings.md        ← KF-174 / KF-176 / KF-212 — design doc for the opt-in dev-warn family (KERF_DEV_WARN_* env-gated runtime warnings)
 │   ├── 12-ai-assistant-configs.md ← KF-215 + KF-216 + KF-217 — Claude Code skill + Cursor rules bundled in the kerfjs npm package, canonical-file contract (version + KERF-APP-CANONICAL-END marker), and the `kerfjs/ai-assistant-configs` ESLint rule with versioned-section preservation
 │   ├── 13-component-packages.md   ← KF-254 — guide to building/publishing reusable kerf components as npm packages (no-instance model, per-instance state via factories, event/cleanup patterns, kerfjs-as-peer-dependency packaging modeled on eslint-plugin-kerfjs)
+│   ├── 14-feature-coverage.md     ← KF-284 — feature/behavior coverage axis (orthogonal to line coverage): per-behavior index mapping each behavior (esp. reconciler state transitions) → its guarding test; enforced by scripts/check-feature-coverage.mjs (npm run check:features)
 │   └── ai/
 │       ├── code-summary.md       ← THIS FILE
 │       ├── requirements-summary.md
@@ -128,6 +129,7 @@ kerf/
 │   │   └── ai-bundle.mjs         ← KF-215 — shared logic for sync + check scripts; deterministic `computeBundle()` produces the three `ai/` files in memory from the root source-of-truth files
 │   ├── sync-ai-bundle.mjs        ← KF-215 — regenerates `ai/` from `kerf.claude-skill.md` + `kerf.cursorrules`; run after editing either source
 │   ├── check-ai-bundle.mjs       ← KF-215 — in-sync gate; fails when `ai/` drifts from the root sources or the manifest's `kerfjsVersion` is stale. Wired into `npm run check`
+│   ├── check-feature-coverage.mjs ← KF-284 — parses the feature index in docs/14-feature-coverage.md and fails if any behavior row's guarding test (file + title) no longer resolves; the behavior/transition coverage axis that line coverage can't express. Wired into `npm run check` (`npm run check:features`)
 │   └── release.sh                ← interactive release flow w/ --beta support; drafts release notes via gitgist (`gitgist <last-tag>..HEAD`; gitgist is a devDependency)
 ├── .github/workflows/
 │   ├── ci.yml                    ← test + lint + typecheck on push/PR
