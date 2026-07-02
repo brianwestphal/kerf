@@ -81,6 +81,55 @@ still tells the best story for this release — i.e. whether new / different / f
 screenshots are needed — and to update the *configs* accordingly. You do **not**
 run the capture.
 
+### Step 0 — upgrade `domotion-svg` to the latest before anything captures
+
+`domotion-svg` is the renderer that turns each app into its animated SVG, and it's
+pinned as a root devDependency (`package.json` / lockfile; `npx domotion` resolves
+the local install). A major release should capture with the **latest** domotion so
+the committed SVGs reflect the current renderer — do this bump *before* the
+maintainer re-captures.
+
+1. **Compare versions.** Read the pinned range in `package.json` (`domotion-svg`)
+   and check the latest published version:
+
+   ```bash
+   npm view domotion-svg version
+   ```
+
+   (If npm complains about a root-owned cache, retry with `--cache "$TMPDIR/npm-cache"`.)
+
+2. **If it's out of date, upgrade it:**
+
+   ```bash
+   npm install --save-dev domotion-svg@latest
+   ```
+
+   Commit the resulting `package.json` + `package-lock.json` bump. This is a
+   dependency change the skill *does* make — it's separate from running the
+   capture, which stays the maintainer's step.
+
+3. **Re-check the version-dependent capture machinery.** domotion's cut/optimize
+   behavior has changed across versions, and the pipeline encodes assumptions about
+   it. After a bump, read domotion's changelog/release notes for the span you
+   crossed and re-verify:
+   - `capture-demos.sh` — historically a `fix-cut-timing.mjs` post-pass was needed
+     for domotion ≤ 0.17.x (SVGO clobbered the hard-cut `step-end` timing-function);
+     ≥ 0.18.0 fixed it upstream and the workaround was removed. If a new version
+     reintroduces a clobber (or needs a different post-pass), restore/adjust it here.
+   - `tests/unit/demo-configs.test.ts` — asserts every committed SVG's `fv-N`
+     opacity track keeps `step-end` (the fade-to-black tripwire) and that every
+     frame carries an explicit `cut` transition. If the new domotion changes the
+     emitted CSS shape, update this guard to match the new truth (don't loosen it
+     to paper over a real regression).
+   - `site/scripts/demo-captures/README.md` — update the "learned the hard way"
+     notes that cite specific version thresholds so they stay accurate.
+
+   If a domotion upgrade breaks the pipeline in a way you can't cleanly resolve in
+   scope, stop and surface it (a Hot Sheet ticket + a note in the handoff) rather
+   than shipping a degraded capture path.
+
+### Review the demo set and configs
+
 Review:
 
 - **Coverage** — is there an example app with no capture config (needs a new
@@ -104,7 +153,10 @@ Make the config edits. Then **do not capture** — hand off to the maintainer.
 When Parts 1 and 2 are done, finish with an explicit handoff that lists, precisely:
 
 1. **README** — a one-paragraph summary of what you changed and why.
-2. **Demos to (re)capture** — the exact list of `<name>` apps whose `.svg` needs
+2. **domotion-svg** — whether you bumped it, and from/to which version (so the
+   maintainer knows the re-capture will exercise a new renderer, and can eyeball
+   the SVGs for any cut/optimize regression the version-check step flagged).
+3. **Demos to (re)capture** — the exact list of `<name>` apps whose `.svg` needs
    regenerating (new flow, new app, fidelity fix), and the one command to do it:
 
    ```bash
@@ -113,7 +165,7 @@ When Parts 1 and 2 are done, finish with an explicit handoff that lists, precise
 
    Note that the script re-renders **all** apps in its `APPS=` array; if only a
    subset changed, say so explicitly so the maintainer knows what to eyeball after.
-3. **Anything you couldn't decide** — surface it as a question rather than guessing.
+4. **Anything you couldn't decide** — surface it as a question rather than guessing.
 
 ## Hard rules
 
@@ -138,6 +190,7 @@ When Parts 1 and 2 are done, finish with an explicit handoff that lists, precise
 - Demo capture mechanism + per-app flow table: `site/scripts/demo-captures/README.md`
 - Capture configs: `site/scripts/demo-captures/<name>.json`
 - Capture script: `site/scripts/demo-captures/capture-demos.sh`
+- domotion-svg pin (bump target): `package.json` / `package-lock.json`; version-dependent capture guard: `tests/unit/demo-configs.test.ts`
 - Example apps: `site/src/examples/complete/<name>/`
 - Public API: `docs/8-api-reference.md`, `src/index.ts`
 - What changed: `CHANGELOG.md`
