@@ -25,6 +25,12 @@
  * position are not destroyed and recreated on each tick.
  */
 
+import {
+  _setBindingContext,
+  type BindingContext,
+  newBindingContext,
+  wireBindings,
+} from './bindings.js';
 import { maybeWarnEachInMorphSkip } from './dev-each-warn.js';
 import { installListenerRebuildWarn } from './dev-listener-warn.js';
 import { _setRenderContext, type RenderContext } from './each.js';
@@ -161,6 +167,11 @@ export function mount(rootEl: HTMLElement, render: () => MountResult): () => voi
     caches: new Map(),
     bindingCounts: new Map(),
   };
+  // KF-294: per-mount fine-grained binding context + live-effect disposers.
+  // `bindingCtx` is reset and repopulated each render; `bindingDisposers`
+  // holds the per-hole effects so they're torn down on unmount.
+  const bindingCtx: BindingContext = newBindingContext();
+  let bindingDisposers: Array<() => void> = [];
   let isFirst = true;
   // KF-88: the static-surrounds HTML string from the previous render. If a
   // re-render produces the same string (the common case when a signal flips
@@ -172,12 +183,17 @@ export function mount(rootEl: HTMLElement, render: () => MountResult): () => voi
 
   const disposeEffect = effect(() => {
     renderCtx.counter = 0;
+    bindingCtx.counter = 0;
+    bindingCtx.list = [];
+    bindingCtx.suppressed = false;
     _setRenderContext(renderCtx);
+    _setBindingContext(bindingCtx);
     let result: MountResult;
     try {
       result = render();
     } finally {
       _setRenderContext(null);
+      _setBindingContext(null);
     }
 
     // The `MountResult` union covers `null`, `undefined`, `false`, `true`,
@@ -191,9 +207,20 @@ export function mount(rootEl: HTMLElement, render: () => MountResult): () => voi
     if (isFirst) {
       runFirstRender(rootEl, segment, bindings);
       prevStaticHtml = flattenWithoutListItems(segment);
+      bindingDisposers = wireBindings(rootEl, bindingCtx, bindingDisposers);
       isFirst = false;
     } else {
-      prevStaticHtml = runSubsequentRender(rootEl, segment, bindings, renderCtx, prevStaticHtml);
+      const nextStaticHtml = runSubsequentRender(rootEl, segment, bindings, renderCtx, prevStaticHtml);
+      // A changed static-surrounds string means morph() ran, which strips
+      // bound attributes (absent from the template) and removes inserted text
+      // nodes. Re-wire against the post-morph DOM. When the surrounds are
+      // unchanged (KF-88 fast path — the select-row / partial-update case),
+      // morph is skipped and the existing binding effects stay live, so we
+      // leave them untouched.
+      if (nextStaticHtml !== prevStaticHtml) {
+        bindingDisposers = wireBindings(rootEl, bindingCtx, bindingDisposers);
+      }
+      prevStaticHtml = nextStaticHtml;
     }
 
     for (const listSeg of collectLists(segment).values()) {
@@ -208,6 +235,8 @@ export function mount(rootEl: HTMLElement, render: () => MountResult): () => voi
 
   return () => {
     disposeEffect();
+    for (const d of bindingDisposers) d();
+    bindingDisposers = [];
     listenerWarnObserver?.disconnect();
     // Clear the mounted marker so `mount(sameEl, ...)` after dispose works.
     delete (rootEl as unknown as Record<symbol, unknown>)[MOUNTED_MARKER];

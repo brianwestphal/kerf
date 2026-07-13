@@ -33,12 +33,19 @@
  */
 
 import type { SafeHtml } from './jsx-runtime.js';
+import type { ReadonlySignal } from './reactive.js';
 
-/** Every kerf attribute value resolves to one of these. */
-export type AttrValue = string | number | boolean | null | undefined | SafeHtml;
+/**
+ * Every kerf attribute value resolves to one of these. A `ReadonlySignal`
+ * (covariant — accepts both `signal()` and `computed()` of any T) is a
+ * KF-294 fine-grained attribute binding: handed a signal, the runtime updates
+ * that attribute directly on change instead of re-running the render.
+ */
+export type AttrValue = string | number | boolean | null | undefined | SafeHtml
+  | ReadonlySignal<unknown>;
 
 /** A typed-narrowing helper: `AttrLike<'a'|'b'>` accepts the literals plus the runtime fall-throughs. */
-export type AttrLike<T = string> = T | SafeHtml | null | undefined;
+export type AttrLike<T = string> = T | SafeHtml | null | undefined | ReadonlySignal<unknown>;
 
 /**
  * `data-*` and `aria-*` index signatures. Applied via `KerfBaseAttrs` so

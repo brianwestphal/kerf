@@ -17,7 +17,7 @@
  * always sees the bare `@preact/signals-core` exports with zero overhead.
  */
 
-import { effect as coreEffect,type Signal,signal as coreSignal } from '@preact/signals-core';
+import { effect as coreEffect,Signal,signal as coreSignal } from '@preact/signals-core';
 
 import { enterEffect, exitEffect, isDevWarnDelegateInEffectEnabled } from './dev-delegate-warn.js';
 import { DevSignal, isDevWarnUntrackedEnabled } from './dev-signal.js';
@@ -26,8 +26,19 @@ export {
   batch,
   computed,
   type ReadonlySignal,
-  type Signal,
+  Signal,
 } from '@preact/signals-core';
+
+/**
+ * Runtime type guard for a `@preact/signals-core` signal (both `signal()`
+ * values and `computed()` values are `Signal` instances). Used by the JSX
+ * runtime (KF-294) to detect a signal handed straight into an attribute or
+ * text hole — the trigger for a fine-grained binding rather than a snapshot
+ * stringify.
+ */
+export function isSignal(value: unknown): value is Signal<unknown> {
+  return value instanceof Signal;
+}
 
 export function signal<T>(value?: T): Signal<T> {
   if (isDevWarnUntrackedEnabled()) return new DevSignal<T>(value as T) as Signal<T>;

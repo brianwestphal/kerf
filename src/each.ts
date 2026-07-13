@@ -38,6 +38,7 @@
  */
 
 import type { ArraySignal } from './array-signal.js';
+import { _setBindingsSuppressed } from './bindings.js';
 import { maybeWarnDuplicateCacheKeys } from './dev-each-warn.js';
 import type { SafeHtml } from './jsx-runtime.js';
 import { granularListSafeHtml, isSafeHtml, listSafeHtml } from './jsx-runtime.js';
@@ -266,8 +267,17 @@ function eachGranular<T extends object>(
   // (already done above), the signal mutated, and the live DOM unchanged —
   // permanent divergence with no recovery.
   const renderFnInternal = (item: object, index: number): string => {
-    const out = render(item as T, index);
-    return isSafeHtml(out) ? out.toString() : out;
+    // KF-294: signals inside a list row snapshot in this spike (list-row
+    // fine-grained binding is a follow-up). Suppress binding registration so
+    // a raw signal in a row stringifies its current value instead of leaking
+    // a `data-kfb` marker into the cached, reconciled row HTML.
+    const prevSuppressed = _setBindingsSuppressed(true);
+    try {
+      const out = render(item as T, index);
+      return isSafeHtml(out) ? out.toString() : out;
+    } finally {
+      _setBindingsSuppressed(prevSuppressed);
+    }
   };
   const internalPatches = new Array<ArrayPatchInternal>(patches.length);
   try {
@@ -338,7 +348,15 @@ function eachSnapshotById<T extends object>(
     if (cached !== undefined && cached.cacheKey === k) {
       html = cached.html;
     } else {
-      const out = render(item, i);
+      // KF-294: suppress binding registration for row renders (see the
+      // granular path's note) so list rows stay on the snapshot path.
+      const prevSuppressed = _setBindingsSuppressed(true);
+      let out: SafeHtml | string;
+      try {
+        out = render(item, i);
+      } finally {
+        _setBindingsSuppressed(prevSuppressed);
+      }
       html = isSafeHtml(out) ? out.toString() : out;
       if (cache !== null) cache.set(item, { cacheKey: k, html });
     }

@@ -20,6 +20,7 @@ kerf/
 │   ├── morph.ts                  ← native general-purpose DOM reconciler (replaces morphdom); exported publicly as morph() (KF-150)
 │   ├── segment.ts                ← Segment types (static/list/mixed) + flatten helpers
 │   ├── each.ts                   ← each() — keyed list iteration with per-item memo
+│   ├── bindings.ts               ← KF-294 (spike, perf/fine-grained-bindings branch) — fine-grained signal bindings. A `Signal` handed straight into a JSX attr (`class={sig}`) or text hole (`{sig}`) inside a mount() emits a marker (`data-kfb` attr / `<!--kfb:id-->` comment) instead of stringifying; wireBindings() attaches one effect per hole after parse so the node updates without a render re-run. Suppressed inside each() rows for now (list-row integration is a follow-up). SSR/toString snapshots the value.
 │   ├── list-reconcile.ts         ← top-level dispatcher (KF-112) — re-exports BoundItem / ListBinding / endAnchor and defines reconcileList
 │   ├── list-binding.ts           ← BoundItem / ListBinding shape + endAnchor() (KF-116) — extracted to break the circular import between list-reconcile.ts and its sibling reconcilers
 │   ├── list-reconcile-snapshot.ts ← snapshot reconcile path (classify / bulk-parse / LIS / move)
@@ -51,6 +52,7 @@ kerf/
 │   │   ├── diagnostic-error-audit.test.tsx ← KF-169 — one test per Hard Rule pinning the runtime behavior callers see on violation (introduced when the `/ai-evidence/diagnostics/` page existed; that page was removed in KF-211 but the runtime contract these tests pin still matters as a UX gate)
 │   │   ├── morph.internal.test.ts
 │   │   ├── doc-contract-coverage.test.tsx  ← KF-104 — comprehensive contract suite covering every doc-asserted behavior
+│   │   ├── bindings.test.ts
 │   │   ├── each.test.ts
 │   │   ├── edge-case-coverage.test.tsx     ← adversarial probes for mount-lifecycle / shape-transitions / focus-on-granular-path / fast-path corners / 1000-row stress
 │   │   ├── jsx-runtime.test.ts

@@ -23,7 +23,16 @@
  * `jsxs` / `jsxDEV` / `Fragment` exports the JSX transform looks for.
  */
 
+import {
+  BIND_ATTR,
+  bindingsEnabled,
+  isSignal,
+  registerAttrBinding,
+  registerTextBinding,
+  TEXT_MARKER_PREFIX,
+} from './bindings.js';
 import type { KerfBuiltinIntrinsicElements } from './jsx-types.js';
+import type { ReadonlySignal, Signal } from './reactive.js';
 import {
   flatten,
   type ListSegment,
@@ -105,7 +114,10 @@ export function granularListSafeHtml(
   return new SafeHtml({ kind: 'list', id, items, patches });
 }
 
-type Child = SafeHtml | string | number | boolean | null | undefined;
+// KF-294: `ReadonlySignal<unknown>` (covariant) accepts both `signal()` and
+// `computed()` values of any T handed straight into a text hole — the runtime
+// binds them fine-grained instead of stringifying.
+type Child = SafeHtml | string | number | boolean | null | undefined | ReadonlySignal<unknown>;
 type Children = Child | Children[];
 
 interface Props {
@@ -125,6 +137,17 @@ const VOID_TAGS = new Set([
  */
 function toSegment(child: Children): Segment {
   if (child == null || typeof child === 'boolean') return { kind: 'static', html: '' };
+  // KF-294: a signal handed straight into a text position. Inside a mount
+  // render, emit a comment marker and record a binding so the text node
+  // updates fine-grained (no render re-run). Outside a mount (SSR/toString),
+  // snapshot the current value as escaped text.
+  if (isSignal(child)) {
+    if (bindingsEnabled()) {
+      return { kind: 'static', html: `<!--${TEXT_MARKER_PREFIX}${registerTextBinding(child)}-->` };
+    }
+    const v = (child as Signal<unknown>).value;
+    return { kind: 'static', html: v == null || typeof v === 'boolean' ? '' : escapeHtml(String(v)) };
+  }
   if (isSafeHtml(child)) {
     // Cross-bundle SafeHtml shims (KF-14 case) may have only `__html`.
     return child.__segment ?? { kind: 'static', html: child.__html };
@@ -212,9 +235,24 @@ export function jsx(tag: string | ((props: Props) => SafeHtml), props: Props): S
   if (typeof tag === 'function') return tag(props);
 
   const { children, ...attrs } = props;
-  const attrStr = Object.entries(attrs)
-    .map(([k, v]) => renderAttr(k, v))
-    .join('');
+  let attrStr = '';
+  let bindIds: string[] | null = null;
+  for (const [k, v] of Object.entries(attrs)) {
+    // KF-294: a signal handed straight into an attribute. Inside a mount
+    // render, register a binding and mark the element (via `data-kfb`) instead
+    // of emitting the attribute — `wireBindings()` sets it after parse and
+    // keeps it fine-grained. Outside a mount, snapshot the current value.
+    if (isSignal(v)) {
+      if (bindingsEnabled()) {
+        (bindIds ??= []).push(registerAttrBinding(ATTR_ALIASES[k] ?? k, v));
+        continue;
+      }
+      attrStr += renderAttr(k, (v as Signal<unknown>).value);
+      continue;
+    }
+    attrStr += renderAttr(k, v);
+  }
+  if (bindIds !== null) attrStr += ` ${BIND_ATTR}="${bindIds.join(',')}"`;
 
   if (VOID_TAGS.has(tag)) return new SafeHtml(`<${tag}${attrStr}>`);
 
