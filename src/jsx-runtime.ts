@@ -23,7 +23,7 @@
  * `jsxs` / `jsxDEV` / `Fragment` exports the JSX transform looks for.
  */
 
-import { bindAttr, bindText, isSignal } from './bindings.js';
+import { bindAttr, bindMarkerAttr, bindText, isSignal } from './bindings.js';
 import type { KerfBuiltinIntrinsicElements } from './jsx-types.js';
 import type { ReadonlySignal, Signal } from './reactive.js';
 import {
@@ -229,7 +229,6 @@ export function jsx(tag: string | ((props: Props) => SafeHtml), props: Props): S
   const { children, ...attrs } = props;
   let attrStr = '';
   let bindIds: string[] | null = null;
-  let bindAttrName = '';
   for (const [k, v] of Object.entries(attrs)) {
     // KF-294: a signal handed straight into an attribute. Inside a mount
     // render, register a binding and mark the element (via `data-kfb` for
@@ -237,10 +236,9 @@ export function jsx(tag: string | ((props: Props) => SafeHtml), props: Props): S
     // emitting the attribute — the wiring pass sets it after parse and keeps
     // it fine-grained. Outside a mount, snapshot the current value.
     if (isSignal(v)) {
-      const marker = bindAttr(ATTR_ALIASES[k] ?? k, v);
-      if (marker !== null) {
-        (bindIds ??= []).push(marker.id);
-        bindAttrName = marker.markerAttr;
+      const id = bindAttr(ATTR_ALIASES[k] ?? k, v);
+      if (id !== null) {
+        (bindIds ??= []).push(id);
         continue;
       }
       attrStr += renderAttr(k, (v as Signal<unknown>).value);
@@ -248,7 +246,9 @@ export function jsx(tag: string | ((props: Props) => SafeHtml), props: Props): S
     }
     attrStr += renderAttr(k, v);
   }
-  if (bindIds !== null) attrStr += ` ${bindAttrName}="${bindIds.join(',')}"`;
+  // All signal attrs on one element share a scope, so the marker attr name is
+  // fetched once (avoids a per-attr object alloc from bindAttr).
+  if (bindIds !== null) attrStr += ` ${bindMarkerAttr()}="${bindIds.join(',')}"`;
 
   if (VOID_TAGS.has(tag)) return new SafeHtml(`<${tag}${attrStr}>`);
 

@@ -62,12 +62,6 @@ interface TextBinding {
 }
 export type Binding = AttrBinding | TextBinding;
 
-/** What `bindAttr()` returns so the JSX runtime knows which marker attr to emit. */
-export interface AttrMarker {
-  id: string;
-  markerAttr: string;
-}
-
 /**
  * Per-render GLOBAL binding sink. `counter` assigns ids by registration order
  * (stable across renders since the JSX render is deterministic); `list`
@@ -132,21 +126,32 @@ export function captureRowBindings(renderRow: () => string): { html: string; bin
 
 /**
  * Register a signal attribute. Routes to the row sink when a row capture is
- * active, else the global context (unless suppressed). Returns the marker id +
- * which marker attribute the JSX runtime should emit, or null to snapshot.
+ * active, else the global context (unless suppressed). Returns the marker id,
+ * or null to snapshot. The marker attribute NAME (`data-kfb` vs `data-kfbrow`)
+ * is fetched once per element via `bindMarkerAttr()` — all of an element's
+ * signal attrs share the same scope — so this avoids a per-attr object alloc.
  */
-export function bindAttr(attr: string, signal: Signal<unknown>): AttrMarker | null {
+export function bindAttr(attr: string, signal: Signal<unknown>): string | null {
   if (rowSink !== null) {
     const id = `a${rowCounter++}`;
     rowSink.push({ kind: 'attr', id, attr, signal });
-    return { id, markerAttr: BIND_ATTR_ROW };
+    return id;
   }
   if (context !== null && !context.suppressed) {
     const id = `a${context.counter++}`;
     context.list.push({ kind: 'attr', id, attr, signal });
-    return { id, markerAttr: BIND_ATTR };
+    return id;
   }
   return null;
+}
+
+/**
+ * The marker attribute name for the currently-active binding scope — row holes
+ * use `data-kfbrow`, global holes `data-kfb`. Called once per element by the
+ * JSX runtime after collecting the element's signal-attr ids.
+ */
+export function bindMarkerAttr(): string {
+  return rowSink !== null ? BIND_ATTR_ROW : BIND_ATTR;
 }
 
 /**
@@ -181,7 +186,7 @@ export function wireBindings(
   for (const d of prevDisposers) d();
   if (ctx.list.length === 0) return NO_DISPOSERS;
   const disposers: Array<() => void> = [];
-  wireInto(rootEl, false, BIND_ATTR, TEXT_MARKER_PREFIX, ctx.list, disposers);
+  wireInto(rootEl, BIND_ATTR, TEXT_MARKER_PREFIX, ctx.list, disposers);
   return disposers;
 }
 
@@ -194,8 +199,53 @@ export function wireBindings(
 export function wireRowBindings(rowNode: Element, bindings: Binding[]): Array<() => void> {
   // Callers (snapshot buildFreshNodes, mount first-render inline) only invoke
   // this for rows with at least one binding, so no empty-guard is needed.
-  const disposers: Array<() => void> = [];
-  wireInto(rowNode, true, BIND_ATTR_ROW, ROW_TEXT_PREFIX, bindings, disposers);
+  //
+  // Hot path: most row holes are an attribute on the row's ROOT element (e.g.
+  // `<tr class={sig}>`). For those we resolve the node with a single
+  // `getAttribute` + allocation-free id membership check — no `querySelectorAll`,
+  // no `collectComments` walk, no Map. The descendant-attr index and the
+  // text-comment index are built lazily, only if a hole actually needs them.
+  const disposers: Array<() => void> = new Array(bindings.length);
+  const rootIds = rowNode.getAttribute(BIND_ATTR_ROW);
+  // For the common single-root-binding row, `rootIds === b.id` resolves the
+  // node with zero allocation. Only a row with 2+ root bindings builds the Set.
+  let rootIdSet: Set<string> | null = null;
+  let descIndex: Map<string, Element> | null = null;
+  let textMarkers: Map<string, Comment> | null = null;
+
+  for (let i = 0; i < bindings.length; i++) {
+    const b = bindings[i];
+    if (b.kind === 'attr') {
+      let onRoot = false;
+      if (rootIds !== null) {
+        if (rootIds === b.id) {
+          onRoot = true;
+        } else if (rootIds.indexOf(',') !== -1) {
+          rootIdSet ??= new Set(rootIds.split(','));
+          onRoot = rootIdSet.has(b.id);
+        }
+      }
+      let el: Element | undefined;
+      if (onRoot) {
+        el = rowNode;
+      } else {
+        descIndex ??= indexAttrEls(rowNode, BIND_ATTR_ROW);
+        el = descIndex.get(b.id);
+      }
+      /* c8 ignore next -- defensive: a registered binding always emits its marker into the row. */
+      if (el === undefined) continue;
+      disposers[i] = attachAttrEffect(el, b.attr, b.signal);
+    } else {
+      if (textMarkers === null) {
+        textMarkers = new Map();
+        collectComments(rowNode, ROW_TEXT_PREFIX, textMarkers);
+      }
+      const marker = textMarkers.get(b.id);
+      /* c8 ignore next -- defensive: same invariant as the attr branch. */
+      if (marker === undefined) continue;
+      disposers[i] = attachTextEffect(marker, b.signal);
+    }
+  }
   return disposers;
 }
 
@@ -212,19 +262,12 @@ export function disposeRowBindings(disposers: Array<() => void> | undefined): vo
  */
 function wireInto(
   scope: Element,
-  includeRoot: boolean,
   attrName: string,
   textPrefix: string,
   bindings: Binding[],
   disposers: Array<() => void>,
 ): void {
-  const attrEls = new Map<string, Element>();
-  if (includeRoot && scope.hasAttribute(attrName)) {
-    for (const id of (scope.getAttribute(attrName) as string).split(',')) attrEls.set(id, scope);
-  }
-  for (const el of scope.querySelectorAll(`[${attrName}]`)) {
-    for (const id of (el.getAttribute(attrName) as string).split(',')) attrEls.set(id, el);
-  }
+  const attrEls = indexAttrEls(scope, attrName);
   const textMarkers = new Map<string, Comment>();
   collectComments(scope, textPrefix, textMarkers);
 
@@ -233,17 +276,39 @@ function wireInto(
       const el = attrEls.get(b.id);
       /* c8 ignore next -- defensive: a registered binding always emits its marker into `scope`. */
       if (el === undefined) continue;
-      disposers.push(effect(() => setBoundAttr(el, b.attr, b.signal.value)));
+      disposers.push(attachAttrEffect(el, b.attr, b.signal));
     } else {
       const marker = textMarkers.get(b.id);
       /* c8 ignore next -- defensive: same invariant as the attr branch. */
       if (marker === undefined) continue;
-      const parent = marker.parentNode as Node;
-      const text = (marker.ownerDocument as Document).createTextNode('');
-      parent.insertBefore(text, marker.nextSibling);
-      disposers.push(effect(() => { text.data = coerceText(b.signal.value); }));
+      disposers.push(attachTextEffect(marker, b.signal));
     }
   }
+}
+
+/**
+ * Index every DESCENDANT element under `scope` carrying `attrName` by binding
+ * id. Callers that also need the scope root itself check it separately (row
+ * roots via the `rootIds` fast path; global holes are never on the mount root).
+ */
+function indexAttrEls(scope: Element, attrName: string): Map<string, Element> {
+  const map = new Map<string, Element>();
+  for (const el of scope.querySelectorAll(`[${attrName}]`)) {
+    for (const id of (el.getAttribute(attrName) as string).split(',')) map.set(id, el);
+  }
+  return map;
+}
+
+/** Attach a fine-grained attribute effect; returns its disposer. */
+function attachAttrEffect(el: Element, attr: string, signal: Signal<unknown>): () => void {
+  return effect(() => setBoundAttr(el, attr, signal.value));
+}
+
+/** Insert a live text node after `marker` and bind it to `signal`; returns disposer. */
+function attachTextEffect(marker: Comment, signal: Signal<unknown>): () => void {
+  const text = (marker.ownerDocument as Document).createTextNode('');
+  (marker.parentNode as Node).insertBefore(text, marker.nextSibling);
+  return effect(() => { text.data = coerceText(signal.value); });
 }
 
 /**

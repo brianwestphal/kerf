@@ -285,6 +285,67 @@ describe('fine-grained bindings — inside each() rows (the select-row win)', ()
     dispose();
   });
 
+  it('binds multiple attr holes on a row root (comma-joined marker)', () => {
+    const cls = signal('a');
+    const role = signal('row');
+    const rows = signal<Row[]>([{ id: 1 }]);
+    const dispose = mount(root, () =>
+      jsx('ul', {
+        children: each(rows.value, (r) =>
+          jsx('li', { 'data-key': r.id, class: cls, 'data-role': role, children: 'x' }),
+          (r) => r.id),
+      }),
+    );
+    const li = root.querySelector('li[data-key="1"]') as HTMLElement;
+    expect(li.getAttribute('class')).toBe('a');
+    expect(li.getAttribute('data-role')).toBe('row');
+    cls.value = 'b';
+    role.value = 'listitem';
+    expect(li.getAttribute('class')).toBe('b');
+    expect(li.getAttribute('data-role')).toBe('listitem');
+    dispose();
+  });
+
+  it('binds an attr hole on a row DESCENDANT (root carries no binding)', () => {
+    const tdCls = signal('c1');
+    const rows = signal<Row[]>([{ id: 1 }]);
+    const dispose = mount(root, () =>
+      jsx('table', { children: jsx('tbody', { children:
+        each(rows.value, (r) =>
+          jsx('tr', { 'data-key': r.id, children: jsx('td', { class: tdCls, children: 'x' }) }),
+          (r) => r.id),
+      }) }),
+    );
+    const td = root.querySelector('tr[data-key="1"] td') as HTMLElement;
+    expect(td.getAttribute('class')).toBe('c1');
+    tdCls.value = 'c2';
+    expect(td.getAttribute('class')).toBe('c2');
+    dispose();
+  });
+
+  it('binds root AND descendant attr holes on the same row', () => {
+    const trCls = signal('t1');
+    const tdCls = signal('d1');
+    const rows = signal<Row[]>([{ id: 1 }]);
+    const dispose = mount(root, () =>
+      jsx('table', { children: jsx('tbody', { children:
+        each(rows.value, (r) =>
+          jsx('tr', { 'data-key': r.id, class: trCls,
+            children: jsx('td', { class: tdCls, children: 'x' }) }),
+          (r) => r.id),
+      }) }),
+    );
+    const tr = root.querySelector('tr[data-key="1"]') as HTMLElement;
+    const td = tr.querySelector('td') as HTMLElement;
+    expect(tr.getAttribute('class')).toBe('t1');
+    expect(td.getAttribute('class')).toBe('d1');
+    trCls.value = 't2';
+    tdCls.value = 'd2';
+    expect(tr.getAttribute('class')).toBe('t2');
+    expect(td.getAttribute('class')).toBe('d2');
+    dispose();
+  });
+
   it('binds text holes inside rows fine-grained', () => {
     const tick = signal(0);
     const rows = signal<Row[]>([{ id: 1 }, { id: 2 }]);
