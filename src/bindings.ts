@@ -4,40 +4,50 @@
  * When a `Signal` is interpolated straight into a JSX attribute
  * (`class={sig}`) or a text child (`{sig}`) INSIDE a `mount()` render, the
  * JSX runtime stops stringifying it. Instead it emits a marker into the HTML
- * string and records a binding here; after `mount()` parses the string to
- * DOM, `wireBindings()` attaches one `effect` per binding that writes straight
- * to the live node. A later change to that signal then updates the node
- * WITHOUT re-running the render function or walking the list reconciler — the
- * coarse `mount()` effect never subscribed to the signal, because `render()`
- * never read its `.value`.
+ * string and records a binding here; after the string is parsed to DOM, a
+ * wiring pass attaches one `effect` per binding that writes straight to the
+ * live node. A later change to that signal then updates the node WITHOUT
+ * re-running the render function or walking the list reconciler.
  *
- * This is the same "emit marker in string, wire up after parse" mechanism the
+ * This reuses the "marker in string, wire up after parse" mechanism the
  * keyed-list reconciler already uses for `<!--kf-list:{id}-->` markers.
  *
- * Two marker shapes:
- *   - attribute: a `data-kfb="a0,a3"` marker attribute on the element,
- *     listing the binding ids whose attributes this element owns.
- *   - text:      a `<!--kfb:t2-->` comment node at the interpolation point;
- *     wiring inserts a live text node right after it.
+ * TWO SCOPES of binding, with disjoint marker namespaces so their wiring
+ * passes never collide:
  *
- * Outside a `mount()` render (SSR / `SafeHtml.toString()`) there is no active
- * binding context: the runtime falls back to reading `signal.value` and
- * stringifying it (a static snapshot), so server output is correct and
- * marker-free, and legacy `.toString()` callers are unaffected.
+ *   - GLOBAL holes — signals in the static surrounds (outside any `each()`
+ *     row). Markers: `data-kfb` attribute / `<!--kfb:{id}-->` comment. Ids come
+ *     from the mount render context's counter; wired by `wireBindings()` over
+ *     the whole mount root; disposed/re-wired by `mount()` each render.
  *
- * Module-level mutable state note: `context` here is a third sanctioned
- * module-level mutable reference (alongside `store.ts:REGISTRY` and
- * `each.ts:context`). It holds the current render's binding sink and is set /
- * cleared by `mount()` around each `render()` call, exactly like the each()
- * render context. Everything else flows through arguments.
+ *   - ROW holes — signals inside an `each()` row. Markers: `data-kfbrow`
+ *     attribute / `<!--kfbr:{id}-->` comment. Ids are row-LOCAL (reset per row)
+ *     so they stay stable and collision-free as rows are inserted/removed/moved.
+ *     Captured per row by `captureRowBindings()`, carried on the list segment
+ *     item, and wired/disposed by the list reconciler at each row node's
+ *     create/remove — so a binding's lifetime tracks its row node's lifetime,
+ *     and row reorders (which reuse the same node) are free.
+ *
+ * Outside a `mount()` render (SSR / `SafeHtml.toString()`) neither scope is
+ * active: the runtime snapshots `signal.value` and emits no markers, so server
+ * output is correct and legacy `.toString()` callers are unaffected.
+ *
+ * Module-level mutable state note: `context` / `rowSink` here are a third
+ * sanctioned module-level mutable location (alongside `store.ts:REGISTRY` and
+ * `each.ts:context`). They hold the current render's binding sinks and are set
+ * / cleared by `mount()` and `each()` around the render calls.
  */
 
 import { effect, isSignal, type Signal } from './reactive.js';
 
-/** Marker attribute listing the binding ids whose attrs an element owns. */
+/** Marker attribute for GLOBAL (static-surround) attribute bindings. */
 export const BIND_ATTR = 'data-kfb';
-/** Comment-marker prefix for a text-position binding: `<!--kfb:{id}-->`. */
+/** Comment-marker prefix for a GLOBAL text binding: `<!--kfb:{id}-->`. */
 export const TEXT_MARKER_PREFIX = 'kfb:';
+/** Marker attribute for ROW (each()-scoped) attribute bindings. */
+export const BIND_ATTR_ROW = 'data-kfbrow';
+/** Comment-marker prefix for a ROW text binding: `<!--kfbr:{id}-->`. */
+export const ROW_TEXT_PREFIX = 'kfbr:';
 
 interface AttrBinding {
   kind: 'attr';
@@ -50,15 +60,19 @@ interface TextBinding {
   id: string;
   signal: Signal<unknown>;
 }
-type Binding = AttrBinding | TextBinding;
+export type Binding = AttrBinding | TextBinding;
+
+/** What `bindAttr()` returns so the JSX runtime knows which marker attr to emit. */
+export interface AttrMarker {
+  id: string;
+  markerAttr: string;
+}
 
 /**
- * Per-render binding sink. `counter` assigns stable ids by registration order
- * (like the each() list-id counter, ids are stable across renders because the
- * JSX render is deterministic). `list` accumulates this render's bindings.
- * `suppressed` is toggled true by `each()` around row renders so signals
- * inside list rows fall back to the snapshot path in this spike (the list-row
- * integration is a follow-up — see KF-294 friction #3).
+ * Per-render GLOBAL binding sink. `counter` assigns ids by registration order
+ * (stable across renders since the JSX render is deterministic); `list`
+ * accumulates this render's global holes; `suppressed` is set by the granular
+ * (`arraySignal`) `each()` path, which snapshots row signals in this spike.
  */
 export interface BindingContext {
   counter: number;
@@ -67,6 +81,13 @@ export interface BindingContext {
 }
 
 let context: BindingContext | null = null;
+
+// Active row-capture sink + its row-local id counter. Non-null only while
+// `each()` renders a single row through `captureRowBindings()`.
+let rowSink: Binding[] | null = null;
+let rowCounter = 0;
+
+const NO_DISPOSERS: Array<() => void> = [];
 
 export function newBindingContext(): BindingContext {
   return { counter: 0, list: [], suppressed: false };
@@ -77,50 +98,80 @@ export function _setBindingContext(c: BindingContext | null): void {
 }
 
 /**
- * True when the JSX runtime should emit a binding marker for a signal it sees
- * (a mount render is active and row-render suppression is off). False for
- * SSR / `.toString()` and inside `each()` rows, where signals snapshot their
- * current value instead.
- */
-export function bindingsEnabled(): boolean {
-  return context !== null && !context.suppressed;
-}
-
-/**
- * Toggle row-render suppression, returning the prior value so the caller can
- * restore it (supports nested `each()`). No-op when no context is active.
+ * Toggle GLOBAL-scope suppression (used by the granular `each()` path so its
+ * row signals snapshot for now). Returns the prior value for restore. No-op
+ * when no context is active.
  */
 export function _setBindingsSuppressed(v: boolean): boolean {
+  /* c8 ignore next -- defensive: only called from each() inside an active mount context. */
   if (context === null) return false;
   const prev = context.suppressed;
   context.suppressed = v;
   return prev;
 }
 
-/** Register an attribute binding; returns its marker id. Caller pre-checks `bindingsEnabled()`. */
-export function registerAttrBinding(attr: string, signal: Signal<unknown>): string {
-  const c = context as BindingContext;
-  const id = `a${c.counter++}`;
-  c.list.push({ kind: 'attr', id, attr, signal });
-  return id;
-}
-
-/** Register a text binding; returns its marker id. Caller pre-checks `bindingsEnabled()`. */
-export function registerTextBinding(signal: Signal<unknown>): string {
-  const c = context as BindingContext;
-  const id = `t${c.counter++}`;
-  c.list.push({ kind: 'text', id, signal });
-  return id;
+/**
+ * Render one `each()` row while capturing the row-scoped bindings it emits.
+ * Row ids are local (reset to 0) so they're stable + collision-free per row.
+ * Returns the row HTML and its captured bindings (empty when the row has no
+ * signal holes). Restores the prior capture state (supports nested `each()`).
+ */
+export function captureRowBindings(renderRow: () => string): { html: string; bindings: Binding[] } {
+  const prevSink = rowSink;
+  const prevCounter = rowCounter;
+  rowSink = [];
+  rowCounter = 0;
+  try {
+    const html = renderRow();
+    return { html, bindings: rowSink };
+  } finally {
+    rowSink = prevSink;
+    rowCounter = prevCounter;
+  }
 }
 
 /**
- * Wire this render's bindings against the freshly-built live DOM. Disposes
- * `prevDisposers` first (a surrounds-changed morph strips bound attrs and
- * removes inserted text nodes, so we re-establish them from scratch), then
- * creates one `effect` per binding whose node is present. Returns the new
- * disposer list for the caller to hold and tear down on unmount.
- *
- * Zero-cost for renders with no bindings: returns immediately.
+ * Register a signal attribute. Routes to the row sink when a row capture is
+ * active, else the global context (unless suppressed). Returns the marker id +
+ * which marker attribute the JSX runtime should emit, or null to snapshot.
+ */
+export function bindAttr(attr: string, signal: Signal<unknown>): AttrMarker | null {
+  if (rowSink !== null) {
+    const id = `a${rowCounter++}`;
+    rowSink.push({ kind: 'attr', id, attr, signal });
+    return { id, markerAttr: BIND_ATTR_ROW };
+  }
+  if (context !== null && !context.suppressed) {
+    const id = `a${context.counter++}`;
+    context.list.push({ kind: 'attr', id, attr, signal });
+    return { id, markerAttr: BIND_ATTR };
+  }
+  return null;
+}
+
+/**
+ * Register a signal text hole. Returns the comment-marker HTML to emit, or
+ * null to snapshot. Same routing as `bindAttr()`.
+ */
+export function bindText(signal: Signal<unknown>): string | null {
+  if (rowSink !== null) {
+    const id = `t${rowCounter++}`;
+    rowSink.push({ kind: 'text', id, signal });
+    return `<!--${ROW_TEXT_PREFIX}${id}-->`;
+  }
+  if (context !== null && !context.suppressed) {
+    const id = `t${context.counter++}`;
+    context.list.push({ kind: 'text', id, signal });
+    return `<!--${TEXT_MARKER_PREFIX}${id}-->`;
+  }
+  return null;
+}
+
+/**
+ * Wire this render's GLOBAL bindings against the freshly-built live DOM.
+ * Disposes `prevDisposers` first (a surrounds-changed morph strips bound attrs
+ * and removes inserted text nodes, so we re-establish them), then attaches one
+ * effect per hole. Zero-cost when there are no global holes.
  */
 export function wireBindings(
   rootEl: Element,
@@ -128,33 +179,64 @@ export function wireBindings(
   prevDisposers: Array<() => void>,
 ): Array<() => void> {
   for (const d of prevDisposers) d();
-  if (ctx.list.length === 0) return [];
+  if (ctx.list.length === 0) return NO_DISPOSERS;
+  const disposers: Array<() => void> = [];
+  wireInto(rootEl, false, BIND_ATTR, TEXT_MARKER_PREFIX, ctx.list, disposers);
+  return disposers;
+}
 
-  // Index attr-marked elements + text markers by binding id in one pass each.
+/**
+ * Wire one row's ROW-scoped bindings against its freshly-built row node
+ * (including the node itself, since a row's top-level element may carry the
+ * marker, e.g. `<tr data-kfbrow>`). Returns the row's disposers for the
+ * reconciler to store on the bound item and call when the row node is removed.
+ */
+export function wireRowBindings(rowNode: Element, bindings: Binding[]): Array<() => void> {
+  // Callers (snapshot buildFreshNodes, mount first-render inline) only invoke
+  // this for rows with at least one binding, so no empty-guard is needed.
+  const disposers: Array<() => void> = [];
+  wireInto(rowNode, true, BIND_ATTR_ROW, ROW_TEXT_PREFIX, bindings, disposers);
+  return disposers;
+}
+
+/** Dispose a row's binding effects (called when its node leaves the DOM). */
+export function disposeRowBindings(disposers: Array<() => void> | undefined): void {
+  if (disposers === undefined) return;
+  for (const d of disposers) d();
+}
+
+/**
+ * Shared wiring core. Indexes marked elements + comment markers under `scope`
+ * by binding id, then attaches an effect per binding. `includeRoot` also
+ * indexes `scope` itself (row roots carry their own marker).
+ */
+function wireInto(
+  scope: Element,
+  includeRoot: boolean,
+  attrName: string,
+  textPrefix: string,
+  bindings: Binding[],
+  disposers: Array<() => void>,
+): void {
   const attrEls = new Map<string, Element>();
-  for (const el of rootEl.querySelectorAll(`[${BIND_ATTR}]`)) {
-    for (const id of (el.getAttribute(BIND_ATTR) as string).split(',')) {
-      attrEls.set(id, el);
-    }
+  if (includeRoot && scope.hasAttribute(attrName)) {
+    for (const id of (scope.getAttribute(attrName) as string).split(',')) attrEls.set(id, scope);
+  }
+  for (const el of scope.querySelectorAll(`[${attrName}]`)) {
+    for (const id of (el.getAttribute(attrName) as string).split(',')) attrEls.set(id, el);
   }
   const textMarkers = new Map<string, Comment>();
-  collectBindComments(rootEl, textMarkers);
+  collectComments(scope, textPrefix, textMarkers);
 
-  const disposers: Array<() => void> = [];
-  for (const b of ctx.list) {
+  for (const b of bindings) {
     if (b.kind === 'attr') {
       const el = attrEls.get(b.id);
-      // Defensive: a registered binding always emits its `data-kfb` marker
-      // into rootEl, so the element is present by construction. This guards a
-      // future path where a bound hole lives in un-mounted/suppressed content.
-      /* c8 ignore next */
+      /* c8 ignore next -- defensive: a registered binding always emits its marker into `scope`. */
       if (el === undefined) continue;
       disposers.push(effect(() => setBoundAttr(el, b.attr, b.signal.value)));
     } else {
       const marker = textMarkers.get(b.id);
-      // Defensive: same invariant as the attr branch — the comment marker is
-      // always parsed into rootEl for a registered text binding.
-      /* c8 ignore next */
+      /* c8 ignore next -- defensive: same invariant as the attr branch. */
       if (marker === undefined) continue;
       const parent = marker.parentNode as Node;
       const text = (marker.ownerDocument as Document).createTextNode('');
@@ -162,7 +244,6 @@ export function wireBindings(
       disposers.push(effect(() => { text.data = coerceText(b.signal.value); }));
     }
   }
-  return disposers;
 }
 
 /**
@@ -189,20 +270,18 @@ function coerceText(value: unknown): string {
   return String(value);
 }
 
-/** Collect `<!--kfb:{id}-->` comment markers into `out`, keyed by id. */
-function collectBindComments(node: Node, out: Map<string, Comment>): void {
+/** Collect comment markers with the given prefix under `node`, keyed by id. */
+function collectComments(node: Node, prefix: string, out: Map<string, Comment>): void {
   for (let c: Node | null = node.firstChild; c !== null; c = c.nextSibling) {
     if (c.nodeType === Node.COMMENT_NODE) {
       const data = (c as Comment).data;
-      if (data.startsWith(TEXT_MARKER_PREFIX)) {
-        out.set(data.slice(TEXT_MARKER_PREFIX.length), c as Comment);
-      }
+      if (data.startsWith(prefix)) out.set(data.slice(prefix.length), c as Comment);
     } else if (c.nodeType === Node.ELEMENT_NODE) {
-      collectBindComments(c, out);
+      collectComments(c, prefix, out);
     }
   }
 }
 
-// `isSignal` is re-exported here so the JSX runtime imports its signal-detection
-// and its binding registration from one place.
+// Re-exported so the JSX runtime imports signal-detection + binding
+// registration from one place.
 export { isSignal };

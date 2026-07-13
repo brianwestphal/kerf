@@ -23,6 +23,7 @@
  * Internal to kerf — re-exported via `list-reconcile.ts`'s `reconcileList`.
  */
 
+import { disposeRowBindings, wireRowBindings } from './bindings.js';
 import { type BoundItem, endAnchor, type ListBinding } from './list-binding.js';
 import { captureFocus, restoreFocus } from './list-reconcile-focus.js';
 import { tryInPlaceContentUpdate } from './list-reconcile-inplace.js';
@@ -32,7 +33,7 @@ import { maybeWarnMissingRowKey,parseRowTemplate, rowContractError } from './uti
 interface Classification {
   newRecord: BoundItem[];
   prevIdx: number[];
-  replacedNodes: Element[];
+  removedItems: BoundItem[];
   freshIndices: number[];
   freshHtmls: string[];
 }
@@ -58,7 +59,7 @@ export function reconcileSnapshot(binding: ListBinding, listSeg: ListSegment): v
   // where nothing changed — is handled earlier by tryInPlaceContentUpdate,
   // which keeps every surviving node and morphs only changed rows in place.
   const { liveParent } = binding;
-  const { newRecord, prevIdx, replacedNodes, freshIndices, freshHtmls }
+  const { newRecord, prevIdx, removedItems, freshIndices, freshHtmls }
     = classifyItems(binding.items, listSeg);
 
   // Compute tail anchor BEFORE removing old nodes: once an item is
@@ -68,7 +69,7 @@ export function reconcileSnapshot(binding: ListBinding, listSeg: ListSegment): v
   const tailAnchor = endAnchor(binding);
   buildFreshNodes(newRecord, freshIndices, freshHtmls);
   const focusSnap = captureFocus(liveParent);
-  removeOldNodes(liveParent, replacedNodes);
+  removeOldNodes(liveParent, removedItems);
   applyMoves(liveParent, newRecord, prevIdx, lis(prevIdx), tailAnchor);
   if (focusSnap !== null) restoreFocus(focusSnap);
   binding.items = newRecord;
@@ -94,7 +95,7 @@ function classifyItems(oldItems: BoundItem[], listSeg: ListSegment): Classificat
 
   const newRecord: BoundItem[] = new Array(listSeg.items.length);
   const prevIdx = new Array<number>(listSeg.items.length);
-  const replacedNodes: Element[] = [];
+  const removedItems: BoundItem[] = [];
   const freshIndices: number[] = [];
   const freshHtmls: string[] = [];
 
@@ -108,10 +109,13 @@ function classifyItems(oldItems: BoundItem[], listSeg: ListSegment): Classificat
         prevIdx[i] = oi[1];
         continue;
       }
-      replacedNodes.push(oi[0].node);
+      // Same ref, new html → the old node is replaced. Its bound effects go
+      // with it (KF-294); `removeOldNodes` disposes them.
+      removedItems.push(oi[0]);
     }
     newRecord[i] = {
       ref: ni.ref, cacheKey: ni.cacheKey, html: ni.html, node: null as unknown as Element,
+      bindings: ni.bindings,
     };
     prevIdx[i] = -1;
     freshIndices.push(i);
@@ -120,9 +124,9 @@ function classifyItems(oldItems: BoundItem[], listSeg: ListSegment): Classificat
 
   // Whatever's left in oldByRef is an orphan ref that disappeared from the
   // new list. The caller removes those nodes alongside the replaced ones.
-  for (const [, orphan] of oldByRef) replacedNodes.push(orphan[0].node);
+  for (const [, orphan] of oldByRef) removedItems.push(orphan[0]);
 
-  return { newRecord, prevIdx, replacedNodes, freshIndices, freshHtmls };
+  return { newRecord, prevIdx, removedItems, freshIndices, freshHtmls };
 }
 
 /**
@@ -150,7 +154,12 @@ function buildFreshNodes(
   let node = tpl.content.firstElementChild;
   for (const idx of freshIndices) {
     const next = (node as Element).nextElementSibling;
-    newRecord[idx].node = node as Element;
+    const item = newRecord[idx];
+    item.node = node as Element;
+    // KF-294: wire this fresh row's fine-grained bindings to its new node.
+    if (item.bindings !== undefined && item.bindings.length > 0) {
+      item.bindingDisposers = wireRowBindings(item.node, item.bindings);
+    }
     node = next;
   }
 }
@@ -176,11 +185,14 @@ function findOffendingRow(
 }
 
 /**
- * Remove every replaced/orphan node still attached to the live parent.
+ * Remove every replaced/orphan node still attached to the live parent, and
+ * dispose each removed row's fine-grained binding effects (KF-294) so they
+ * don't leak subscriptions to now-detached nodes.
  */
-function removeOldNodes(liveParent: Element, replacedNodes: Element[]): void {
-  for (const node of replacedNodes) {
-    if (node.parentElement === liveParent) liveParent.removeChild(node);
+function removeOldNodes(liveParent: Element, removedItems: BoundItem[]): void {
+  for (const item of removedItems) {
+    disposeRowBindings(item.bindingDisposers);
+    if (item.node.parentElement === liveParent) liveParent.removeChild(item.node);
   }
 }
 

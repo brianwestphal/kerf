@@ -10,11 +10,21 @@
  * dependency graph acyclic.
  */
 
+import type { Binding } from './bindings.js';
+
 export interface BoundItem {
   ref: object;
   cacheKey: unknown;
   html: string;
   node: Element;
+  /** KF-294: this row's fine-grained binding specs (undefined/empty if none). */
+  bindings?: Binding[];
+  /**
+   * KF-294: live disposers for this row's bound effects. Set when the row node
+   * is wired (first-render inline in `mount()`, or `buildFreshNodes` during a
+   * reconcile) and called when the node is removed / the mount is torn down.
+   */
+  bindingDisposers?: Array<() => void>;
 }
 
 export interface ListBinding {

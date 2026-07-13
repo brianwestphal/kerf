@@ -23,14 +23,7 @@
  * `jsxs` / `jsxDEV` / `Fragment` exports the JSX transform looks for.
  */
 
-import {
-  BIND_ATTR,
-  bindingsEnabled,
-  isSignal,
-  registerAttrBinding,
-  registerTextBinding,
-  TEXT_MARKER_PREFIX,
-} from './bindings.js';
+import { bindAttr, bindText, isSignal } from './bindings.js';
 import type { KerfBuiltinIntrinsicElements } from './jsx-types.js';
 import type { ReadonlySignal, Signal } from './reactive.js';
 import {
@@ -142,9 +135,8 @@ function toSegment(child: Children): Segment {
   // updates fine-grained (no render re-run). Outside a mount (SSR/toString),
   // snapshot the current value as escaped text.
   if (isSignal(child)) {
-    if (bindingsEnabled()) {
-      return { kind: 'static', html: `<!--${TEXT_MARKER_PREFIX}${registerTextBinding(child)}-->` };
-    }
+    const marker = bindText(child);
+    if (marker !== null) return { kind: 'static', html: marker };
     const v = (child as Signal<unknown>).value;
     return { kind: 'static', html: v == null || typeof v === 'boolean' ? '' : escapeHtml(String(v)) };
   }
@@ -237,14 +229,18 @@ export function jsx(tag: string | ((props: Props) => SafeHtml), props: Props): S
   const { children, ...attrs } = props;
   let attrStr = '';
   let bindIds: string[] | null = null;
+  let bindAttrName = '';
   for (const [k, v] of Object.entries(attrs)) {
     // KF-294: a signal handed straight into an attribute. Inside a mount
-    // render, register a binding and mark the element (via `data-kfb`) instead
-    // of emitting the attribute — `wireBindings()` sets it after parse and
-    // keeps it fine-grained. Outside a mount, snapshot the current value.
+    // render, register a binding and mark the element (via `data-kfb` for
+    // static-surround holes / `data-kfbrow` for each()-row holes) instead of
+    // emitting the attribute — the wiring pass sets it after parse and keeps
+    // it fine-grained. Outside a mount, snapshot the current value.
     if (isSignal(v)) {
-      if (bindingsEnabled()) {
-        (bindIds ??= []).push(registerAttrBinding(ATTR_ALIASES[k] ?? k, v));
+      const marker = bindAttr(ATTR_ALIASES[k] ?? k, v);
+      if (marker !== null) {
+        (bindIds ??= []).push(marker.id);
+        bindAttrName = marker.markerAttr;
         continue;
       }
       attrStr += renderAttr(k, (v as Signal<unknown>).value);
@@ -252,7 +248,7 @@ export function jsx(tag: string | ((props: Props) => SafeHtml), props: Props): S
     }
     attrStr += renderAttr(k, v);
   }
-  if (bindIds !== null) attrStr += ` ${BIND_ATTR}="${bindIds.join(',')}"`;
+  if (bindIds !== null) attrStr += ` ${bindAttrName}="${bindIds.join(',')}"`;
 
   if (VOID_TAGS.has(tag)) return new SafeHtml(`<${tag}${attrStr}>`);
 

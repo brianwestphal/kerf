@@ -24,6 +24,7 @@
  * Internal to kerf — invoked from `reconcileSnapshot`.
  */
 
+import { disposeRowBindings } from './bindings.js';
 import { type BoundItem, type ListBinding } from './list-binding.js';
 import { tryAttributeOnlyFastPath, tryTextContentFastPath } from './list-reconcile-fast-paths.js';
 import { captureFocus, restoreFocus } from './list-reconcile-focus.js';
@@ -78,13 +79,22 @@ function updateRowInPlace(
   if (old.html === ni.html
       || tryAttributeOnlyFastPath(old.node, old.html, ni.html)
       || tryTextContentFastPath(old.node, old.html, ni.html)) {
-    return { ref: ni.ref, cacheKey: ni.cacheKey, html: ni.html, node: old.node };
+    // KF-294: node reused → its bound effects stay live; carry them forward.
+    return {
+      ref: ni.ref, cacheKey: ni.cacheKey, html: ni.html, node: old.node,
+      bindings: old.bindings, bindingDisposers: old.bindingDisposers,
+    };
   }
   const newNode = parseSingleRow(ni.html, index);
   if (old.node.tagName === newNode.tagName) {
     _morphElement(old.node, newNode);
-    return { ref: ni.ref, cacheKey: ni.cacheKey, html: ni.html, node: old.node };
+    return {
+      ref: ni.ref, cacheKey: ni.cacheKey, html: ni.html, node: old.node,
+      bindings: old.bindings, bindingDisposers: old.bindingDisposers,
+    };
   }
+  // Tag changed → old node (and its bound effects) is discarded.
+  disposeRowBindings(old.bindingDisposers);
   liveParent.replaceChild(newNode, old.node);
   return { ref: ni.ref, cacheKey: ni.cacheKey, html: ni.html, node: newNode };
 }

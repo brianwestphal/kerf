@@ -17,6 +17,8 @@
  * skip both for the list parts.
  */
 
+import type { Binding } from './bindings.js';
+
 export type Segment = StaticSegment | ListSegment | MixedSegment;
 
 export interface StaticSegment {
@@ -31,6 +33,13 @@ export interface ListItem {
    * existing live node; replaced ref → build a fresh node.
    */
   ref: object;
+  /**
+   * KF-294: the row's fine-grained binding specs (signals in row attrs/text).
+   * Undefined for granular-path rows (which snapshot in this spike). The
+   * snapshot reconciler wires these to the fresh row node and disposes them
+   * when the row is removed.
+   */
+  bindings?: Binding[];
   /**
    * Optional cache-invalidation key that captures external state affecting
    * this row's render (e.g. selection class). Different cacheKey on the

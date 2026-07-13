@@ -38,7 +38,7 @@
  */
 
 import type { ArraySignal } from './array-signal.js';
-import { _setBindingsSuppressed } from './bindings.js';
+import { _setBindingsSuppressed,type Binding, captureRowBindings } from './bindings.js';
 import { maybeWarnDuplicateCacheKeys } from './dev-each-warn.js';
 import type { SafeHtml } from './jsx-runtime.js';
 import { granularListSafeHtml, isSafeHtml, listSafeHtml } from './jsx-runtime.js';
@@ -63,6 +63,7 @@ function isArraySignal<T extends object>(value: unknown): value is ArraySignal<T
 interface CacheEntry {
   cacheKey: unknown;
   html: string;
+  bindings: Binding[];
 }
 
 /**
@@ -324,7 +325,7 @@ function eachSnapshotById<T extends object>(
     }
     cache = c;
   }
-  const segItems = new Array<{ ref: object; cacheKey: unknown; html: string }>(items.length);
+  const segItems = new Array<{ ref: object; cacheKey: unknown; html: string; bindings: Binding[] }>(items.length);
   const seen = new Set<object>();
   for (let i = 0; i < items.length; i++) {
     const item = items[i];
@@ -344,23 +345,25 @@ function eachSnapshotById<T extends object>(
     seen.add(item);
     const k = cacheKey ? cacheKey(item, i) : undefined;
     let html: string;
+    let bindings: Binding[];
     const cached = cache !== null ? cache.get(item) : undefined;
     if (cached !== undefined && cached.cacheKey === k) {
       html = cached.html;
+      bindings = cached.bindings;
     } else {
-      // KF-294: suppress binding registration for row renders (see the
-      // granular path's note) so list rows stay on the snapshot path.
-      const prevSuppressed = _setBindingsSuppressed(true);
-      let out: SafeHtml | string;
-      try {
-        out = render(item, i);
-      } finally {
-        _setBindingsSuppressed(prevSuppressed);
-      }
-      html = isSafeHtml(out) ? out.toString() : out;
-      if (cache !== null) cache.set(item, { cacheKey: k, html });
+      // KF-294: capture the row's fine-grained bindings (signals in row attrs
+      // / text). The snapshot reconciler wires them to the row node on create
+      // and disposes on remove, so a bound signal updates the row without a
+      // render re-run. Cached by row identity alongside the html.
+      const captured = captureRowBindings(() => {
+        const out = render(item, i);
+        return isSafeHtml(out) ? out.toString() : out;
+      });
+      html = captured.html;
+      bindings = captured.bindings;
+      if (cache !== null) cache.set(item, { cacheKey: k, html, bindings });
     }
-    segItems[i] = { ref: item, cacheKey: k, html };
+    segItems[i] = { ref: item, cacheKey: k, html, bindings };
   }
   if (cacheKey !== undefined) {
     maybeWarnDuplicateCacheKeys(id, segItems);

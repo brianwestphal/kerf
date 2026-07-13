@@ -28,8 +28,10 @@
 import {
   _setBindingContext,
   type BindingContext,
+  disposeRowBindings,
   newBindingContext,
   wireBindings,
+  wireRowBindings,
 } from './bindings.js';
 import { maybeWarnEachInMorphSkip } from './dev-each-warn.js';
 import { installListenerRebuildWarn } from './dev-listener-warn.js';
@@ -237,6 +239,10 @@ export function mount(rootEl: HTMLElement, render: () => MountResult): () => voi
     disposeEffect();
     for (const d of bindingDisposers) d();
     bindingDisposers = [];
+    // KF-294: tear down every list row's fine-grained binding effects too.
+    for (const b of bindings.values()) {
+      for (const item of b.items) disposeRowBindings(item.bindingDisposers);
+    }
     listenerWarnObserver?.disconnect();
     // Clear the mounted marker so `mount(sameEl, ...)` after dispose works.
     delete (rootEl as unknown as Record<symbol, unknown>)[MOUNTED_MARKER];
@@ -363,12 +369,19 @@ function bindListsFromMarkers(
       let next: Element | null = marker.nextElementSibling;
       for (let i = 0; i < listSeg.items.length && next !== null; i++) {
         validateInlinedRowMatch(listSeg.items[i].html, i, next);
-        items.push({
+        const rowBindings = listSeg.items[i].bindings;
+        const bound: BoundItem = {
           ref: listSeg.items[i].ref,
           cacheKey: listSeg.items[i].cacheKey,
           html: listSeg.items[i].html,
           node: next,
-        });
+          bindings: rowBindings,
+        };
+        // KF-294: wire this inlined first-render row's fine-grained bindings.
+        if (rowBindings !== undefined && rowBindings.length > 0) {
+          bound.bindingDisposers = wireRowBindings(next, rowBindings);
+        }
+        items.push(bound);
         next = next.nextElementSibling;
       }
     }
@@ -441,6 +454,8 @@ function cleanupOrphanBindings(
   for (const [id, binding] of bindings) {
     if (liveIds.has(id)) continue;
     for (const item of binding.items) {
+      // KF-294: dispose the removed list's row binding effects.
+      disposeRowBindings(item.bindingDisposers);
       if (item.node.parentElement !== null) {
         item.node.parentElement.removeChild(item.node);
       }

@@ -10,6 +10,7 @@
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { each } from '../../src/each.js';
 import { jsx } from '../../src/jsx-runtime.js';
 import { mount } from '../../src/mount.js';
 import { computed, signal } from '../../src/reactive.js';
@@ -166,6 +167,158 @@ describe('fine-grained bindings — SSR / toString fallback', () => {
   it('snapshots a nullish / boolean signal text child to empty', () => {
     expect(jsx('div', { children: signal(null) }).toString()).toBe('<div></div>');
     expect(jsx('div', { children: signal(true) }).toString()).toBe('<div></div>');
+  });
+});
+
+describe('fine-grained bindings — inside each() rows (the select-row win)', () => {
+  interface Row { id: number }
+
+  // Build a keyed table whose rows carry a fine-grained `class` binding driven
+  // by an external `selectedId` — the krausest select-row shape.
+  function mountTable(rows: { value: Row[] }, selectedId: { value: number | null }) {
+    const render = vi.fn(() =>
+      jsx('table', {
+        children: jsx('tbody', {
+          children: each(
+            rows.value,
+            (r) =>
+              jsx('tr', {
+                'data-key': r.id,
+                class: computed(() => (r.id === selectedId.value ? 'danger' : '')),
+                children: jsx('td', { children: String(r.id) }),
+              }),
+            (r) => r.id,
+          ),
+        }),
+      }),
+    );
+    const dispose = mount(root, render);
+    return { render, dispose };
+  }
+
+  const classOf = (id: number) =>
+    (root.querySelector(`tr[data-key="${id}"]`) as HTMLElement).getAttribute('class');
+
+  it('selects a row without re-running render or reconciling the list', () => {
+    const rows = signal<Row[]>([{ id: 1 }, { id: 2 }, { id: 3 }]);
+    const selectedId = signal<number | null>(null);
+    const { render, dispose } = mountTable(rows, selectedId);
+
+    expect(root.querySelectorAll('tr')).toHaveLength(3);
+    expect(classOf(1)).toBe('');
+    expect(render).toHaveBeenCalledTimes(1);
+
+    const row2 = root.querySelector('tr[data-key="2"]') as HTMLElement;
+    selectedId.value = 2;
+    expect(classOf(2)).toBe('danger');
+    // The whole point: no render re-run, and the node identity is preserved.
+    expect(render).toHaveBeenCalledTimes(1);
+    expect(root.querySelector('tr[data-key="2"]')).toBe(row2);
+
+    // Move the selection: old row clears, new row highlights — still no render.
+    selectedId.value = 3;
+    expect(classOf(2)).toBe('');
+    expect(classOf(3)).toBe('danger');
+    expect(render).toHaveBeenCalledTimes(1);
+
+    dispose();
+  });
+
+  it('binds a fresh row appended after first render', () => {
+    const rows = signal<Row[]>([{ id: 1 }, { id: 2 }]);
+    const selectedId = signal<number | null>(null);
+    const { render, dispose } = mountTable(rows, selectedId);
+
+    // Append (new array, existing refs reused) → render re-runs, row 3 is fresh.
+    rows.value = [...rows.value, { id: 3 }];
+    expect(render).toHaveBeenCalledTimes(2);
+    expect(root.querySelectorAll('tr')).toHaveLength(3);
+
+    // The appended row's binding is live.
+    selectedId.value = 3;
+    expect(classOf(3)).toBe('danger');
+    // Selecting doesn't re-render (still 2 render calls from the append).
+    expect(render).toHaveBeenCalledTimes(2);
+    dispose();
+  });
+
+  it('adversarial: create → select → remove selected → select another', () => {
+    const r1 = { id: 1 };
+    const r2 = { id: 2 };
+    const r3 = { id: 3 };
+    const rows = signal<Row[]>([r1, r2, r3]);
+    const selectedId = signal<number | null>(null);
+    const { dispose } = mountTable(rows, selectedId);
+
+    selectedId.value = 2;
+    expect(classOf(2)).toBe('danger');
+
+    // Remove the selected row.
+    rows.value = [r1, r3];
+    expect(root.querySelectorAll('tr')).toHaveLength(2);
+    expect(root.querySelector('tr[data-key="2"]')).toBeNull();
+
+    // Select a surviving row — its binding still works after the structural op.
+    selectedId.value = 3;
+    expect(classOf(3)).toBe('danger');
+    expect(classOf(1)).toBe('');
+    dispose();
+  });
+
+  it('adversarial: clear → repopulate → select rebinds fresh rows', () => {
+    const rows = signal<Row[]>([{ id: 1 }, { id: 2 }]);
+    const selectedId = signal<number | null>(null);
+    const { dispose } = mountTable(rows, selectedId);
+
+    selectedId.value = 1;
+    expect(classOf(1)).toBe('danger');
+
+    rows.value = []; // clear
+    expect(root.querySelectorAll('tr')).toHaveLength(0);
+
+    rows.value = [{ id: 10 }, { id: 11 }]; // repopulate with fresh refs
+    expect(root.querySelectorAll('tr')).toHaveLength(2);
+
+    selectedId.value = 11;
+    expect(classOf(11)).toBe('danger');
+    expect(classOf(10)).toBe('');
+    dispose();
+  });
+
+  it('binds text holes inside rows fine-grained', () => {
+    const tick = signal(0);
+    const rows = signal<Row[]>([{ id: 1 }, { id: 2 }]);
+    const render = vi.fn(() =>
+      jsx('ul', {
+        children: each(
+          rows.value,
+          (r) =>
+            jsx('li', {
+              'data-key': r.id,
+              children: computed(() => `${r.id}:${tick.value}`),
+            }),
+          (r) => r.id,
+        ),
+      }),
+    );
+    const dispose = mount(root, render);
+    expect((root.querySelector('li[data-key="1"]') as HTMLElement).textContent).toBe('1:0');
+    tick.value = 5;
+    expect((root.querySelector('li[data-key="1"]') as HTMLElement).textContent).toBe('1:5');
+    expect((root.querySelector('li[data-key="2"]') as HTMLElement).textContent).toBe('2:5');
+    expect(render).toHaveBeenCalledTimes(1);
+    dispose();
+  });
+
+  it('tears down row bindings on unmount (no update to detached rows)', () => {
+    const rows = signal<Row[]>([{ id: 1 }]);
+    const selectedId = signal<number | null>(null);
+    const { dispose } = mountTable(rows, selectedId);
+    const row1 = root.querySelector('tr[data-key="1"]') as HTMLElement;
+    dispose();
+    selectedId.value = 1;
+    // Effect torn down → detached node must not update.
+    expect(row1.getAttribute('class')).toBe('');
   });
 });
 
