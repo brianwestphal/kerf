@@ -65,13 +65,11 @@ export type Binding = AttrBinding | TextBinding;
 /**
  * Per-render GLOBAL binding sink. `counter` assigns ids by registration order
  * (stable across renders since the JSX render is deterministic); `list`
- * accumulates this render's global holes; `suppressed` is set by the granular
- * (`arraySignal`) `each()` path, which snapshots row signals in this spike.
+ * accumulates this render's global (static-surround) holes.
  */
 export interface BindingContext {
   counter: number;
   list: Binding[];
-  suppressed: boolean;
 }
 
 let context: BindingContext | null = null;
@@ -84,24 +82,11 @@ let rowCounter = 0;
 const NO_DISPOSERS: Array<() => void> = [];
 
 export function newBindingContext(): BindingContext {
-  return { counter: 0, list: [], suppressed: false };
+  return { counter: 0, list: [] };
 }
 
 export function _setBindingContext(c: BindingContext | null): void {
   context = c;
-}
-
-/**
- * Toggle GLOBAL-scope suppression (used by the granular `each()` path so its
- * row signals snapshot for now). Returns the prior value for restore. No-op
- * when no context is active.
- */
-export function _setBindingsSuppressed(v: boolean): boolean {
-  /* c8 ignore next -- defensive: only called from each() inside an active mount context. */
-  if (context === null) return false;
-  const prev = context.suppressed;
-  context.suppressed = v;
-  return prev;
 }
 
 /**
@@ -126,7 +111,7 @@ export function captureRowBindings(renderRow: () => string): { html: string; bin
 
 /**
  * Register a signal attribute. Routes to the row sink when a row capture is
- * active, else the global context (unless suppressed). Returns the marker id,
+ * active, else the global context. Returns the marker id,
  * or null to snapshot. The marker attribute NAME (`data-kfb` vs `data-kfbrow`)
  * is fetched once per element via `bindMarkerAttr()` — all of an element's
  * signal attrs share the same scope — so this avoids a per-attr object alloc.
@@ -137,7 +122,7 @@ export function bindAttr(attr: string, signal: Signal<unknown>): string | null {
     rowSink.push({ kind: 'attr', id, attr, signal });
     return id;
   }
-  if (context !== null && !context.suppressed) {
+  if (context !== null) {
     const id = `a${context.counter++}`;
     context.list.push({ kind: 'attr', id, attr, signal });
     return id;
@@ -164,7 +149,7 @@ export function bindText(signal: Signal<unknown>): string | null {
     rowSink.push({ kind: 'text', id, signal });
     return `<!--${ROW_TEXT_PREFIX}${id}-->`;
   }
-  if (context !== null && !context.suppressed) {
+  if (context !== null) {
     const id = `t${context.counter++}`;
     context.list.push({ kind: 'text', id, signal });
     return `<!--${TEXT_MARKER_PREFIX}${id}-->`;

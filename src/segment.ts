@@ -74,8 +74,8 @@ export interface ListSegment {
  * instead of leaving the signal and DOM divergent.
  */
 export type ArrayPatchInternal =
-  | { type: 'update'; index: number; item: object; html: string }
-  | { type: 'insert'; index: number; item: object; html: string }
+  | { type: 'update'; index: number; item: object; html: string; bindings?: Binding[] }
+  | { type: 'insert'; index: number; item: object; html: string; bindings?: Binding[] }
   | { type: 'remove'; index: number }
   | { type: 'move'; from: number; to: number }
   | { type: 'replace'; items: readonly object[] };

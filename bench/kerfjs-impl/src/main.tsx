@@ -12,15 +12,16 @@
  *   - Create:   first render, no granular wins available — same speed as before.
  *
  * Selection is tracked as a single `selectedId` signal (the upstream-preferred
- * shape — one id for the whole table, not a per-row flag). `each()`'s `cacheKey`
- * reads `selectedId` so only the two rows whose selected-ness flipped are
- * re-rendered; the snapshot reconciler's in-place fast path then morphs just
- * those two rows in their existing DOM nodes (no node replacement, no table
- * relayout), matching the select-row cost of every other framework.
+ * shape — one id for the whole table, not a per-row flag). KF-294 spike: the
+ * row's `class` is a FINE-GRAINED BINDING — `computed(() => id === selectedId.value ...)`
+ * handed straight to the attribute. A selection flip re-runs NEITHER the mount
+ * render NOR the list reconciler; only the ~2 bound effects whose value changed
+ * fire, writing `class` directly on their two `<tr>` nodes. (Contrast the
+ * cacheKey approach on `main`, which re-renders + reconciles the 2 changed rows.)
  */
 
 import { arraySignal } from 'kerfjs/array-signal';
-import { batch, delegate, each, mount, signal } from 'kerfjs';
+import { batch, computed, delegate, each, mount, signal } from 'kerfjs';
 
 interface Row {
   id: number;
@@ -98,16 +99,15 @@ mount(root, () => (
         {each(
           rows,
           (row) => (
-            <tr data-key={row.id} className={row.id === selectedId.value ? 'danger' : ''}>
+            <tr data-key={row.id} className={computed(() => (row.id === selectedId.value ? 'danger' : ''))}>
               <td className="col-md-1">{String(row.id)}</td>
               <td className="col-md-4"><a className="lbl" data-id={String(row.id)}>{row.label}</a></td>
               <td className="col-md-1"><a className="remove" data-id={String(row.id)}><span className="glyphicon glyphicon-remove" aria-hidden="true"></span></a></td>
               <td className="col-md-6"></td>
             </tr>
           ),
-          // cacheKey: re-render a row only when its selected-ness flips. The
-          // in-place fast path then morphs just the two affected rows.
-          (row) => row.id === selectedId.value,
+          // No cacheKey: the fine-grained `class` binding drives selection now,
+          // so `each()` never needs to re-render a row when `selectedId` flips.
         )}
       </tbody>
     </table>

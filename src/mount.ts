@@ -187,7 +187,6 @@ export function mount(rootEl: HTMLElement, render: () => MountResult): () => voi
     renderCtx.counter = 0;
     bindingCtx.counter = 0;
     bindingCtx.list = [];
-    bindingCtx.suppressed = false;
     _setRenderContext(renderCtx);
     _setBindingContext(bindingCtx);
     let result: MountResult;

@@ -38,7 +38,7 @@
  */
 
 import type { ArraySignal } from './array-signal.js';
-import { _setBindingsSuppressed,type Binding, captureRowBindings } from './bindings.js';
+import { type Binding, captureRowBindings } from './bindings.js';
 import { maybeWarnDuplicateCacheKeys } from './dev-each-warn.js';
 import type { SafeHtml } from './jsx-runtime.js';
 import { granularListSafeHtml, isSafeHtml, listSafeHtml } from './jsx-runtime.js';
@@ -267,27 +267,22 @@ function eachGranular<T extends object>(
   // path (KF-99). Without this, a throw mid-batch would leave patches drained
   // (already done above), the signal mutated, and the live DOM unchanged —
   // permanent divergence with no recovery.
-  const renderFnInternal = (item: object, index: number): string => {
-    // KF-294: signals inside a list row snapshot in this spike (list-row
-    // fine-grained binding is a follow-up). Suppress binding registration so
-    // a raw signal in a row stringifies its current value instead of leaking
-    // a `data-kfb` marker into the cached, reconciled row HTML.
-    const prevSuppressed = _setBindingsSuppressed(true);
-    try {
+  // KF-294: capture each insert/update row's fine-grained bindings (signals
+  // in row attrs/text) so the granular reconciler can wire them to the fresh
+  // row node and dispose them on removal — same lifecycle as the snapshot path.
+  const renderRow = (item: object, index: number): { html: string; bindings: Binding[] } =>
+    captureRowBindings(() => {
       const out = render(item as T, index);
       return isSafeHtml(out) ? out.toString() : out;
-    } finally {
-      _setBindingsSuppressed(prevSuppressed);
-    }
-  };
+    });
   const internalPatches = new Array<ArrayPatchInternal>(patches.length);
   try {
     for (let i = 0; i < patches.length; i++) {
       const p = patches[i];
       if (p.type === 'insert' || p.type === 'update') {
+        const { html, bindings } = renderRow(p.item as object, p.index);
         internalPatches[i] = {
-          type: p.type, index: p.index, item: p.item as object,
-          html: renderFnInternal(p.item as object, p.index),
+          type: p.type, index: p.index, item: p.item as object, html, bindings,
         };
       } else {
         internalPatches[i] = p as ArrayPatchInternal;

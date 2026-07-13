@@ -21,6 +21,7 @@
  * Internal to kerf — re-exported via `list-reconcile.ts`'s `reconcileList`.
  */
 
+import { type Binding, disposeRowBindings, wireRowBindings } from './bindings.js';
 import { type BoundItem, endAnchor, type ListBinding } from './list-binding.js';
 import { tryAttributeOnlyFastPath, tryTextContentFastPath } from './list-reconcile-fast-paths.js';
 import { captureFocus, restoreFocus } from './list-reconcile-focus.js';
@@ -96,6 +97,7 @@ export function reconcileGranular(
     }
     if (patch.type === 'remove') {
       const entry = items[patch.index];
+      disposeRowBindings(entry.bindingDisposers);  // KF-294
       liveParent.removeChild(entry.node);
       items.splice(patch.index, 1);
       i += 1;
@@ -126,7 +128,7 @@ export function reconcileGranular(
 function applySingleInsert(
   liveParent: Element,
   items: BoundItem[],
-  patch: { type: 'insert'; index: number; item: object; html: string },
+  patch: { type: 'insert'; index: number; item: object; html: string; bindings?: Binding[] },
   tailAnchor: Element | null,
 ): void {
   const { html } = patch;
@@ -135,13 +137,21 @@ function applySingleInsert(
   liveParent.insertBefore(newNode, anchor);
   items.splice(patch.index, 0, {
     ref: patch.item, cacheKey: undefined, html, node: newNode,
+    bindings: patch.bindings,
+    // KF-294: wire the inserted row's fine-grained bindings to its new node.
+    bindingDisposers: wireRowIfBound(newNode, patch.bindings),
   });
+}
+
+/** Wire a fresh row's bindings if it has any; undefined otherwise. */
+function wireRowIfBound(node: Element, bindings: Binding[] | undefined): Array<() => void> | undefined {
+  return bindings !== undefined && bindings.length > 0 ? wireRowBindings(node, bindings) : undefined;
 }
 
 function applySingleUpdate(
   liveParent: Element,
   items: BoundItem[],
-  patch: { type: 'update'; index: number; item: object; html: string },
+  patch: { type: 'update'; index: number; item: object; html: string; bindings?: Binding[] },
 ): void {
   const { html } = patch;
   const oldEntry = items[patch.index];
@@ -154,7 +164,7 @@ function applySingleUpdate(
   // to the existing _morphElement / replaceChild routes below.
   if (tryAttributeOnlyFastPath(oldEntry.node, oldEntry.html, html)
       || tryTextContentFastPath(oldEntry.node, oldEntry.html, html)) {
-    items[patch.index] = { ref: patch.item, cacheKey: undefined, html, node: oldEntry.node };
+    items[patch.index] = reuseBound(patch, html, oldEntry);
     return;
   }
   const newNode = parseSingleRow(html);
@@ -167,11 +177,34 @@ function applySingleUpdate(
   // so we keep a reference to the new live node.
   if (oldEntry.node.tagName === newNode.tagName) {
     _morphElement(oldEntry.node, newNode);
-    items[patch.index] = { ref: patch.item, cacheKey: undefined, html, node: oldEntry.node };
+    items[patch.index] = reuseBound(patch, html, oldEntry);
   } else {
+    disposeRowBindings(oldEntry.bindingDisposers);  // KF-294: old node discarded
     liveParent.replaceChild(newNode, oldEntry.node);
-    items[patch.index] = { ref: patch.item, cacheKey: undefined, html, node: newNode };
+    items[patch.index] = {
+      ref: patch.item, cacheKey: undefined, html, node: newNode,
+      bindings: patch.bindings, bindingDisposers: wireRowIfBound(newNode, patch.bindings),
+    };
   }
+}
+
+/**
+ * KF-294: build the updated `BoundItem` for an in-place update (node reused
+ * via a fast path or `_morphElement`). The row's DOM node — and thus its live
+ * bound effects — survive, so we carry the existing disposers forward rather
+ * than re-wiring. (Known spike limitation: a bound hole whose value depends on
+ * the row's own mutated data goes stale here, since the original effect closed
+ * over the pre-update row object; id-based bindings like select-row are fine.)
+ */
+function reuseBound(
+  patch: { item: object; bindings?: Binding[] },
+  html: string,
+  oldEntry: BoundItem,
+): BoundItem {
+  return {
+    ref: patch.item, cacheKey: undefined, html, node: oldEntry.node,
+    bindings: oldEntry.bindings, bindingDisposers: oldEntry.bindingDisposers,
+  };
 }
 
 /**
@@ -194,12 +227,12 @@ function applyBulkUpdate(
   interface Change { patchIdx: number; html: string }
   const morphChanges: Change[] = [];
   for (let k = start; k < end; k++) {
-    const p = patches[k] as { type: 'update'; index: number; item: object; html: string };
+    const p = patches[k] as { type: 'update'; index: number; item: object; html: string; bindings?: Binding[] };
     const oldEntry = items[p.index];
     if (p.html === oldEntry.html) continue;
     if (tryAttributeOnlyFastPath(oldEntry.node, oldEntry.html, p.html)
         || tryTextContentFastPath(oldEntry.node, oldEntry.html, p.html)) {
-      items[p.index] = { ref: p.item, cacheKey: undefined, html: p.html, node: oldEntry.node };
+      items[p.index] = reuseBound(p, p.html, oldEntry);  // KF-294: node reused
       continue;
     }
     morphChanges.push({ patchIdx: k, html: p.html });
@@ -224,14 +257,18 @@ function applyBulkUpdate(
   // to the new live node.
   for (let k = 0; k < morphChanges.length; k++) {
     const c = morphChanges[k];
-    const p = patches[c.patchIdx] as { type: 'update'; index: number; item: object; html: string };
+    const p = patches[c.patchIdx] as { type: 'update'; index: number; item: object; html: string; bindings?: Binding[] };
     const oldEntry = items[p.index];
     if (oldEntry.node.tagName === newNodes[k].tagName) {
       _morphElement(oldEntry.node, newNodes[k]);
-      items[p.index] = { ref: p.item, cacheKey: undefined, html: c.html, node: oldEntry.node };
+      items[p.index] = reuseBound(p, c.html, oldEntry);  // KF-294: node reused
     } else {
+      disposeRowBindings(oldEntry.bindingDisposers);  // KF-294: old node discarded
       liveParent.replaceChild(newNodes[k], oldEntry.node);
-      items[p.index] = { ref: p.item, cacheKey: undefined, html: c.html, node: newNodes[k] };
+      items[p.index] = {
+        ref: p.item, cacheKey: undefined, html: c.html, node: newNodes[k],
+        bindings: p.bindings, bindingDisposers: wireRowIfBound(newNodes[k], p.bindings),
+      };
     }
   }
 }
@@ -276,9 +313,11 @@ function applyBulkInsert(
   // Splice all new entries into binding.items at the run's start index.
   const newEntries = new Array<BoundItem>(end - start);
   for (let k = 0; k < newEntries.length; k++) {
-    const p = patches[start + k] as { type: 'insert'; index: number; item: object; html: string };
+    const p = patches[start + k] as { type: 'insert'; index: number; item: object; html: string; bindings?: Binding[] };
     newEntries[k] = {
       ref: p.item, cacheKey: undefined, html: htmls[k], node: newNodes[k],
+      bindings: p.bindings,
+      bindingDisposers: wireRowIfBound(newNodes[k], p.bindings),  // KF-294
     };
   }
   items.splice(startIdx, 0, ...newEntries);

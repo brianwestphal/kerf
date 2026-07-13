@@ -10,6 +10,7 @@
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { arraySignal } from '../../src/array-signal.js';
 import { each } from '../../src/each.js';
 import { jsx } from '../../src/jsx-runtime.js';
 import { mount } from '../../src/mount.js';
@@ -380,6 +381,90 @@ describe('fine-grained bindings — inside each() rows (the select-row win)', ()
     selectedId.value = 1;
     // Effect torn down → detached node must not update.
     expect(row1.getAttribute('class')).toBe('');
+  });
+});
+
+describe('fine-grained bindings — inside arraySignal (granular) rows', () => {
+  interface Row { id: number; label: string }
+
+  function mountArrayTable(rows: ReturnType<typeof arraySignal<Row>>, selectedId: { value: number | null }) {
+    const render = vi.fn(() =>
+      jsx('table', { children: jsx('tbody', { children:
+        each(
+          rows,
+          (r) => jsx('tr', {
+            'data-key': r.id,
+            class: computed(() => (r.id === selectedId.value ? 'danger' : '')),
+            children: jsx('td', { children: r.label }),
+          }),
+          (r) => r.id,
+        ),
+      }) }),
+    );
+    return { render, dispose: mount(root, render) };
+  }
+  const classOf = (id: number) =>
+    (root.querySelector(`tr[data-key="${id}"]`) as HTMLElement).getAttribute('class');
+
+  it('selects a row (first render goes through the snapshot path)', () => {
+    const rows = arraySignal<Row>([{ id: 1, label: 'a' }, { id: 2, label: 'b' }]);
+    const selectedId = signal<number | null>(null);
+    const { render, dispose } = mountArrayTable(rows, selectedId);
+    selectedId.value = 2;
+    expect(classOf(2)).toBe('danger');
+    expect(render).toHaveBeenCalledTimes(1);   // selection did not re-render
+    dispose();
+  });
+
+  it('wires a row appended via a granular insert patch', () => {
+    const rows = arraySignal<Row>([{ id: 1, label: 'a' }]);
+    const selectedId = signal<number | null>(null);
+    const { dispose } = mountArrayTable(rows, selectedId);
+    rows.push({ id: 2, label: 'b' });              // granular insert
+    expect(root.querySelectorAll('tr')).toHaveLength(2);
+    selectedId.value = 2;                          // the fresh row's binding is live
+    expect(classOf(2)).toBe('danger');
+    dispose();
+  });
+
+  it('preserves a bound class across a granular label update', () => {
+    const rows = arraySignal<Row>([{ id: 1, label: 'a' }]);
+    const selectedId = signal<number | null>(null);
+    const { dispose } = mountArrayTable(rows, selectedId);
+    selectedId.value = 1;
+    expect(classOf(1)).toBe('danger');
+    rows.update(0, (r) => ({ ...r, label: 'a!' }));   // granular text update
+    expect((root.querySelector('tr[data-key="1"] td') as HTMLElement).textContent).toBe('a!');
+    expect(classOf(1)).toBe('danger');                // binding survived the update
+    dispose();
+  });
+
+  it('disposes a bound row removed via a granular remove patch', () => {
+    const rows = arraySignal<Row>([{ id: 1, label: 'a' }, { id: 2, label: 'b' }]);
+    const selectedId = signal<number | null>(null);
+    const { dispose } = mountArrayTable(rows, selectedId);
+    const row1 = root.querySelector('tr[data-key="1"]') as HTMLElement;
+    rows.remove(0);                                // granular remove of id 1
+    expect(root.querySelector('tr[data-key="1"]')).toBeNull();
+    selectedId.value = 1;                          // detached node must not update
+    expect(row1.getAttribute('class')).toBe('');
+    dispose();
+  });
+
+  it('keeps bindings across a granular move (swap)', () => {
+    const rows = arraySignal<Row>([
+      { id: 1, label: 'a' }, { id: 2, label: 'b' }, { id: 3, label: 'c' },
+    ]);
+    const selectedId = signal<number | null>(null);
+    const { dispose } = mountArrayTable(rows, selectedId);
+    selectedId.value = 1;
+    rows.move(0, 2);                               // move id 1 to the end
+    // Row 1's node moved but its binding effect is intact.
+    expect(classOf(1)).toBe('danger');
+    selectedId.value = 3;
+    expect(classOf(1)).toBe('');
+    expect(classOf(3)).toBe('danger');
+    dispose();
   });
 });
 
