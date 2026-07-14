@@ -315,9 +315,13 @@ declare module 'kerfjs/jsx-runtime' {
 
 `IntrinsicElements` is exported as an `interface` (not a `type` alias) precisely to make this pattern work — type aliases can't be merged. `KerfCustomElement`, `KerfBaseAttrs`, `AttrLike`, `AttrValue`, and `DataAriaAttrs` are all re-exported from `kerfjs/jsx-runtime` so apps can compose attribute types without reaching into the internal `kerfjs/jsx-types` path.
 
+### Fine-grained signal bindings
+
+`AttrValue` / `AttrLike` (attribute values) and the JSX child type accept a `ReadonlySignal<unknown>` in addition to the usual `string | number | boolean | null | undefined | SafeHtml`. Passing a `signal`/`computed` *itself* into a JSX attribute (`class={someSignal}`) or text hole (`{someSignal}`) inside a `mount()` binds that hole fine-grained — the node updates on signal change without re-running `render()` or walking the reconciler. `ReadonlySignal` is used (covariant) so both `signal(...)` and `computed(...)` of any `T` are accepted. Outside a `mount()` (SSR / `.toString()`) the signal snapshots its current value. Full semantics, the "use `computed()` not a bare closure" rule, and the row-mutation staleness limitation are in [`docs/2-reactivity.md`](2-reactivity.md) §2.9.
+
 ### Dangerous URL filter
 
-Plain-string values passed to `href`, `src`, `xlink:href`, `formaction`, or `action` are screened against `/^\s*(?:(?:java|vb)script:|data:text\/html[;,])/i`. Matching values cause the attribute to be **dropped entirely** and a `console.warn` to be emitted. The screen is bypassed for `SafeHtml` (i.e. `raw(...)`) values — that's the documented opt-out for legitimate cases (bookmarklet builders, sanitized-upstream URLs). Non-URL attributes are not screened. See `docs/6-jsx-runtime.md` §6.4.1 for the full rationale and examples.
+Plain-string values passed to `href`, `src`, `xlink:href`, `formaction`, or `action` are screened against `/^\s*(?:(?:java|vb)script:|data:text\/html[;,])/i`. Matching values cause the attribute to be **dropped entirely** and a `console.warn` to be emitted. The screen is bypassed for `SafeHtml` (i.e. `raw(...)`) values — that's the documented opt-out for legitimate cases (bookmarklet builders, sanitized-upstream URLs). Non-URL attributes are not screened. The same screen applies to **fine-grained bound** URL attributes (a `href={sig}` whose signal resolves to a dangerous value is dropped + warned). See `docs/6-jsx-runtime.md` §6.4.1 for the full rationale and examples.
 
 ## 8.6 Direct JSX → DOM
 

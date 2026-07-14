@@ -78,7 +78,7 @@ import { arraySignal } from 'kerfjs/array-signal';
 | `Fragment` | `(props) => SafeHtml` | JSX `<>...</>` tag; useful when composing `Fragment` manually |
 | `arraySignal<T>(initial?)` *(subpath: `kerfjs/array-signal`)* | `ArraySignal<T>` (`.value` snapshot, `update`/`insert`/`push`/`remove`/`move`/`replace` mutators) | granular keyed-list signal — `each(arraySig, ...)` reconciles in O(patches) instead of O(N) |
 
-## The four patterns
+## The core patterns
 
 ```tsx
 // 1. Signal + mount: re-runs render when count.value changes.
@@ -108,6 +108,19 @@ const cart = defineStore({
 
 // 4. Delegate: ONE listener at the root, survives every re-render.
 delegate(rootEl, 'click', INC.selector, () => { count.value += 1; });
+
+// 5. Fine-grained binding (opt-in): pass a signal/computed ITSELF into a hole
+//    so it updates that node without re-running render(). For a hot spot
+//    driven by an external signal (e.g. a selection class), not everywhere.
+const selectedId = signal<number | null>(null);
+mount(rootEl, () => (
+  <ul>
+    {each(items.value, (it) => (
+      <li class={computed(() => (it.id === selectedId.value ? 'sel' : ''))}>{it.label}</li>
+    ), (it) => it.id)}
+  </ul>
+));
+// selectedId.value = 3  → only the ~2 affected <li> class attrs update; no re-render.
 ```
 
 ## Event delegation tiers
@@ -215,6 +228,8 @@ Worked example: markdown-editor renders user input via marked + DOMPurify + raw 
 | Signal-reactive JSX inside `data-morph-skip` never updates | `data-morph-skip` makes the morph short-circuit before visiting the element's children, so `<p>{count.value}</p>` inside a skipped ancestor is rendered once and then frozen. Note: `each()` rows inside the same skipped element DO still update (the reconciler runs independently), creating a confusing asymmetry. | Remove `data-morph-skip` from any element that has reactive JSX content. Reserve it for truly library-owned hosts (Monaco, xterm, D3). Enable `KERF_DEV_WARN_EACH_IN_MORPH_SKIP=1` to catch `each()` inside skipped subtrees at runtime. |
 | `arraySignal` mutated before mount renders empty | First render of a list always takes the snapshot path; this is by design — but if you've drained patches via something other than `each()` first, the snapshot still reflects the truth so you'll get a correct render |
 | TypeScript complains about `mount(el, () => cond ? <jsx/> : null)` returning a non-`SafeHtml` | Should not happen on current kerf — `mount()`'s `render` is typed `() => MountResult` where `MountResult = SafeHtml \| string \| number \| boolean \| null \| undefined`. If you still see the error, your `kerfjs` install predates the widening; upgrade or, as a stop-gap, return `''` / `raw('')` from the falsy branch. |
+| Want a hot spot (e.g. a selection class) to update without re-running the whole render | That's a fine-grained binding: pass the signal/`computed` ITSELF into the attribute/text hole (`class={computed(() => …)}`), not its `.value`. Use `computed()` (or a plain signal), NOT a bare `() => …` closure — the memoization keeps a shared-signal flip to ~O(changed nodes). Opt-in per hole; see [`docs/2-reactivity.md`](../2-reactivity.md) §2.9. |
+| A fine-grained bound hole shows stale data after mutating that row | A row binding's effect closes over the row object as of render time; if the bound value depends on the row's OWN data and you mutate the row in place via `arraySignal.update`, the hole can go stale. Bindings keyed on the row's stable `id` + an external signal (select-row) are unaffected. For a hole that depends on the row's own mutable data, use plain interpolation (which re-renders the row) instead of a binding. |
 
 ## Server / SSR
 

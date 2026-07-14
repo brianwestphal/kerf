@@ -149,3 +149,60 @@ Read-side semantics match a regular signal: `arraySig.value` is a snapshot, and 
 
 - **One consumer reads it = signal.** Local UI state (this dialog's open/closed, this counter's value, this slider's position) belongs in a signal scoped to the component that owns it.
 - **Two+ consumers / multi-step mutations / cross-route lifetime = store.** See [§3 Stores](/kerf/docs/stores/).
+
+## 2.9 Fine-grained bindings — signals in JSX
+
+Normally you read a signal's `.value` inside a `mount()` render, and any change re-runs the whole render function (kerf then applies the smallest DOM cut). That "coarse" model is the default and is fine for most updates.
+
+For a hole that a hot, external signal drives — the classic case is a `selectedId` flipping one row's `class` — you can go **fine-grained**: hand the signal *itself* (not its `.value`) straight into a JSX attribute or text position. kerf binds that one hole to the signal, so a change updates only that attribute or text node — **`render()` does not re-run, and `each()`'s reconciler does not walk.**
+
+```tsx
+const selectedId = signal<number | null>(null);
+
+mount(root, () => (
+  <ul>
+    {each(items.value, (item) => (
+      // Pass the computed itself — kerf binds `class` to it.
+      <li class={computed(() => (item.id === selectedId.value ? 'selected' : ''))}>
+        {item.label}
+      </li>
+    ), (item) => item.id)}
+  </ul>
+));
+
+selectedId.value = 3; // updates only the 2 affected <li> class attrs — no re-render, no reconcile
+```
+
+Text holes work the same way:
+
+```tsx
+const count = signal(0);
+mount(root, () => <span>{count}</span>); // pass the signal, not count.value
+count.value++;                            // updates only that text node
+```
+
+### When to reach for it
+
+- **A single external/shared signal drives one attribute or text spot, and it changes often.** Selection classes, a live connection-status attribute, a ticking value in an otherwise-static row.
+- Reach for it **per hole**, not everywhere. It's opt-in: bind the hot spot, leave everything else as plain interpolation.
+
+### When NOT to
+
+- **Static or one-shot values** — just write `class={cond ? 'a' : 'b'}` (a string). Binding adds a per-hole effect for no benefit.
+- **Whole-list structural changes** (add/remove/move rows) — that's [`arraySignal`](#26-arraysignal-initial-granular-collection-signal)'s job, not a per-attribute binding.
+
+### Use `computed()`, not a bare closure
+
+Wrap the expression in `computed(() => …)` (or pass a plain `signal`). The memoization matters: when a *shared* signal like `selectedId` changes, every row's `computed` re-evaluates cheaply, but only the ones whose value actually changed re-run their bound effect — so a selection flip touches ~2 DOM nodes, not N. (kerf has no compiler, so it can't auto-lift a bare `{expr}` into a tracked closure the way Solid does — the signal/`computed` must be explicit.)
+
+### How it works (and why it's safe)
+
+The JSX runtime renders to HTML strings. When it sees a signal in a hole it emits a **marker** into the string instead of stringifying, records the binding, and — after the one `innerHTML` parse — wires a tiny `effect` per marker that writes straight to the node. So the string-render model is preserved:
+
+- **SSR / `SafeHtml.toString()`**: outside a `mount()` there's nothing to wire, so a bound signal **snapshots its current value** and emits no markers — server output is correct and marker-free.
+- **Non-breaking**: passing a raw signal into JSX used to throw (`"Did you mean to read .value off a Signal?"`), so this only lights up input that couldn't run before.
+- **Bound URL attributes** (`href`/`src`/`formaction`/`action`/`xlink:href`) get the same dangerous-URL screening as static attributes — a bound value resolving to `javascript:`/`vbscript:`/`data:text/html` is dropped; `raw()` opts out.
+
+### Limitation — bound values that depend on the row's own mutable data
+
+A row binding's effect closes over the row object as it was when the row rendered. If the bound value depends on the **row's own** data and you later mutate that row in place through an `arraySignal` update, the bound hole can go **stale** (the effect still sees the pre-update object). The common case — a binding keyed on the row's stable `id` and an *external* signal (select-row) — is unaffected. If a bound hole depends on data the row itself mutates, prefer plain interpolation (which re-renders the row) over a binding for that hole.

@@ -1,7 +1,7 @@
 ---
 name: kerf-app
 description: Build UIs in the kerf reactive framework (https://github.com/brianwestphal/kerf). Use this skill whenever the user is writing or modifying code that imports `kerfjs`, asks to add a feature to a kerf app, or asks "how do I do X in kerf?". Use it proactively the moment you spot a kerf import in the file you're editing.
-kerf-skill-version: 1.2.1
+kerf-skill-version: 1.3.0
 ---
 
 # Building apps with kerf
@@ -132,6 +132,20 @@ const cart = defineStore({
 
 // Pattern 4: one-shot reconcile (no signals, no effect)
 morph(liveCard, '<article class="card">…</article>');
+
+// Pattern 5: fine-grained binding (opt-in) — pass the signal/computed ITSELF
+// into a hole so a change updates ONLY that node (no render re-run, no
+// reconcile). For a hot spot driven by an external signal (selection class,
+// live status attr) — not everywhere. Use computed(), never a bare () => ….
+const selectedId = signal<number | null>(null);
+mount(listEl, () => (
+  <ul>
+    {each(rows.value, (row) => (
+      <li class={computed(() => (row.id === selectedId.value ? 'sel' : ''))}>{row.label}</li>
+    ), (row) => row.id)}
+  </ul>
+));
+// selectedId.value = 3  → only the ~2 affected <li> class attrs update.
 ```
 
 ## Diagnosing common errors
@@ -148,6 +162,7 @@ morph(liveCard, '<article class="card">…</article>');
 | `each(): row render at index N produced K top-level elements` | row returned multiple sibling elements or zero | Wrap them in one parent so the row renders exactly one element |
 | Drag/drop / state change has no visible effect; only elements *outside* `each()` update | Used `each(STATIC_ARRAY, …)` whose row render reads signals. Items never change identity → cache hits forever → row render never re-invoked → signal reads stop tracking | Replace outer with `STATIC_ARRAY.map(...)`; keep inner `each()` for the dynamic sub-list. See Hard Rule 14 |
 | Row-enter CSS animation no longer replays when only a row's *content* changed (kerf ≥ 0.15.0) | 0.15.0+ morphs a same-identity, same-position row *in place* instead of recreating its node, so a mount-keyed `@keyframes` never re-triggers on a content-only update (≤ 0.14.x recreated the node, so it fired). Intentional flip side: focus, scroll, IME, and in-progress transitions now survive | Key the animation on a state-class toggle, not element creation. To force a remount, churn the row's identity (new object ref / `data-key`) so the reconciler replaces the node |
+| Want a hot spot to update without re-running the whole render | Fine-grained binding: pass the signal/`computed` ITSELF into the attr/text hole (`class={computed(() => …)}`), not `.value`. Use `computed()` not a bare `() => …` (memoization keeps a shared-signal flip to ~O(changed nodes)). Opt-in per hole. Limit: a bound hole depending on the row's OWN mutated data goes stale on a granular in-place update — use plain interpolation there |
 
 ## Workflow guidance
 

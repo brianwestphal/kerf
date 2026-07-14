@@ -25,6 +25,8 @@ const dispose = mount(document.getElementById('app')!, () => (
 
 The structural payoff: a thousand-row list where 100 rows changed runs ~100 cache misses, one bulk parse for those 100 rows, ~100 `insertBefore` calls, and zero work for the 900 unchanged rows. The static surrounds (which are usually small) go through the general-purpose diff.
 
+Everything above is the **coarse** update path: a signal change re-runs `render()`, then kerf diffs down to the changed nodes. For a hot hole driven by an external signal (a `selectedId` flipping one row's class), you can opt that hole into a **fine-grained binding** — pass the signal itself into the attribute/text and the update skips both the re-render and the reconcile, touching only that node. See [`docs/2-reactivity.md`](2-reactivity.md) §2.9.
+
 ## 4.2 Morph keys
 
 `morph()` matches elements across the reconciliation by:

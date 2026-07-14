@@ -90,6 +90,23 @@ axis (`cacheKey` reading an external signal) crosses all of them.
 | FC-RE4 | `batch()` coalesces writes into one effect run | `src/reactive.ts` | `tests/unit/reactive.test.ts` › "batch()" |
 | FC-RE5 | Signals are shallow (not deep-reactive) | `src/reactive.ts` | `tests/unit/reactive.test.ts` › "signals are NOT deep-reactive" |
 
+### §2.9 Fine-grained signal bindings
+
+| ID | Behavior | Implements | Guarding test(s) |
+| --- | --- | --- | --- |
+| FC-B1 | Signal in a text hole updates the node without re-running render | `src/bindings.ts`, `src/jsx-runtime.ts`, `src/mount.ts` | `tests/unit/bindings.test.ts` › "updates a bound text node without re-running render" |
+| FC-B2 | Signal in an attribute updates the node without re-running render | `src/bindings.ts`, `src/jsx-runtime.ts` | `tests/unit/bindings.test.ts` › "updates a bound class without re-running render" |
+| FC-B3 | Select-row: a selection flip fires only the bound effects (no render, no reconcile) | `src/bindings.ts`, `src/each.ts` | `tests/unit/bindings.test.ts` › "selects a row without re-running render or reconciling the list" |
+| FC-B4 | Row binding wired on a granular (`arraySignal`) append | `src/list-reconcile-granular.ts`, `src/bindings.ts` | `tests/unit/bindings.test.ts` › "wires a row appended via a granular insert patch" |
+| FC-B5 | Row binding disposed on a granular remove | `src/list-reconcile-granular.ts` | `tests/unit/bindings.test.ts` › "disposes a bound row removed via a granular remove patch" |
+| FC-B6 | Row binding survives a granular move (node reused) | `src/list-reconcile-granular.ts` | `tests/unit/bindings.test.ts` › "keeps bindings across a granular move (swap)" |
+| FC-B7 | Bound class survives a granular in-place update (reuseBound) | `src/list-reconcile-granular.ts` | `tests/unit/bindings.test.ts` › "preserves a bound class across a granular label update" |
+| FC-B8 | Bound URL attribute is screened (javascript: dropped + warns) | `src/bindings.ts`, `src/utils/urlScreen.ts` | `tests/unit/bindings.test.ts` › "drops a bound href that resolves to a javascript: URL, and warns" |
+| FC-B9 | SSR / `.toString()` snapshots a bound signal, no markers | `src/jsx-runtime.ts`, `src/bindings.ts` | `tests/unit/bindings.test.ts` › "snapshots a signal text child to its current value with no marker" |
+| FC-B10 | Bindings torn down on unmount (detached node stops updating) | `src/mount.ts`, `src/bindings.ts` | `tests/unit/bindings.test.ts` › "tears down row bindings on unmount (no update to detached rows)" |
+| FC-B11 | Transition: create → select → remove-selected → select | `src/bindings.ts`, `src/list-reconcile-snapshot.ts` | `tests/unit/bindings.test.ts` › "adversarial: create → select → remove selected → select another" |
+| FC-B12 | Transition: clear → repopulate → select rebinds fresh rows | `src/bindings.ts`, `src/list-reconcile-snapshot.ts` | `tests/unit/bindings.test.ts` › "adversarial: clear → repopulate → select rebinds fresh rows" |
+
 ### §3 Stores
 
 | ID | Behavior | Implements | Guarding test(s) |

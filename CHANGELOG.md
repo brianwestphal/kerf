@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **Fine-grained signal bindings.** Hand a `Signal`/`computed` *itself* (not its `.value`) into a JSX attribute (`class={someSignal}`) or a text hole (`{someSignal}`) inside a `mount()`, and kerf binds that hole directly to the signal: when the signal changes, only that attribute/text node updates — the render function does **not** re-run and the list reconciler does **not** walk. This is kerf's fine-grained update tier, sitting below the coarse `mount()` effect, for the "external state drives one spot" pattern (a `selectedId` flipping a row's class, a live status attribute, etc.). Works in static content and inside `each()` rows on both the snapshot and `arraySignal` (granular) paths, and row bindings' lifetimes track their row node (a row reorder is free; a removed row's binding is torn down). Opt-in and non-breaking: passing a raw signal into JSX previously threw, so existing apps are unchanged, and any hole that isn't a signal stringifies exactly as before. Bound URL attributes (`href`/`src`/`formaction`/`action`/`xlink:href`) get the same `javascript:`/`vbscript:`/`data:text/html` screening as static attributes (`raw()` opts out). Outside a `mount()` (SSR / `SafeHtml.toString()`) a bound signal snapshots its current value and emits no markers. See [`docs/2-reactivity.md`](docs/2-reactivity.md) §2.9.
+
 ## [0.16.0] - 2026-07-01
 
 
