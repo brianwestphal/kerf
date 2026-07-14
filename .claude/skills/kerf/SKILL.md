@@ -19,7 +19,7 @@ This skill is the kerf-specific equivalent of Hot Sheet's stock `/hotsheet` skil
 
 ## Hard rules
 
-- Never create git commits unless the user asks. Same rule as Hot Sheet.
+- Commit completed, verified work as needed (e.g. one commit per finished ticket, after the gates pass) — no need to ask first. **Never `git push` without the maintainer's explicit permission.**
 - Never modify code under `dist/`, `node_modules/`, or `coverage/` — those are build outputs.
 - Run `npm test` (NOT individual `npx vitest` calls) before marking anything complete — the coverage thresholds in `vitest.config.ts` are enforcement, not suggestion.
 - Update the relevant `docs/N-foo.md` file whenever you change the API surface, AND `docs/8-api-reference.md`, AND `CHANGELOG.md`'s `[Unreleased]` section.
