@@ -37,7 +37,7 @@ kerf/
 │       ├── escapeHtml.ts         ← used by jsx-runtime
 │       ├── jsx-attr-aliases.ts   ← camelCase → HTML/SVG attribute name table (KF-21)
 │       ├── rowContract.ts        ← KF-103 row-contract helpers — ROW_HTML_SNIPPET_MAX, parseRowTemplate, rowContractError, truncateRowHtml
-│       └── urlScreen.ts          ← KF-297 shared URL-attr screening (isDangerousUrlValue / dangerousUrlWarning) used by BOTH jsx-runtime's renderAttr (static attrs) and bindings' setBoundAttr (bound attrs) — drops javascript:/vbscript:/data:text/html on href/src/formaction/action/xlink:href; raw() opts out
+│       └── urlScreen.ts          ← KF-297 shared URL-attr screening (isDangerousUrlValue / dangerousUrlWarning) used by BOTH jsx-runtime's renderAttr (static attrs) and bindings' setBoundAttr (bound attrs) — scheme-based: drops javascript:/vbscript: + script-executing data: subtypes (text/html, image/svg+xml, xml; inert media allowlisted) on href/src/formaction/action/xlink:href/data(<object>); normalizes control-char/whitespace scheme obfuscation before matching; raw() opts out
 ├── tests/
 │   ├── conventions.test.ts       ← KF-286 — API-surface + no-default-export + row-contract invariants (the in-suite complement to check-doc-api-coverage.mjs / check-feature-coverage.mjs); pins facts line coverage can't express
 │   ├── unit/

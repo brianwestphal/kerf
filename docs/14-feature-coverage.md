@@ -164,6 +164,10 @@ axis (`cacheKey` reading an external signal) crosses all of them.
 | FC-JX5 | `null` / `undefined` / boolean children are omitted | `src/jsx-runtime.ts` | `tests/unit/jsx-runtime.test.ts` › "omits null / undefined / boolean children" |
 | FC-JX6 | `attr()` static + dynamic overloads (camelCase → HTML/SVG aliasing) | `src/jsx-runtime.ts`, `src/utils/jsx-attr-aliases.ts` | `tests/unit/attr.test.ts` › "attr — static overload", `tests/unit/attr.test.ts` › "attr — dynamic overload" |
 | FC-JX7 | `Fragment` groups children with no wrapper element | `src/jsx-runtime.ts` | `tests/unit/jsx-runtime.test.ts` › "Fragment" |
+| FC-JX8 | Static URL attribute is screened (`javascript:` dropped + warns) | `src/jsx-runtime.ts`, `src/utils/urlScreen.ts` | `tests/unit/jsx-runtime.test.ts` › "drops javascript: in href and warns" |
+| FC-JX9 | URL screen sees through control-char / whitespace scheme obfuscation | `src/utils/urlScreen.ts` | `tests/unit/jsx-runtime.test.ts` › "drops javascript: with a TAB inside the scheme" |
+| FC-JX10 | URL screen is `data:`-subtype-specific (svg/xml dropped, image kept) | `src/utils/urlScreen.ts` | `tests/unit/jsx-runtime.test.ts` › "drops data:image/svg+xml (SVG can carry <script>)" |
+| FC-JX11 | `<object data>` document URL is screened | `src/utils/urlScreen.ts` | `tests/unit/jsx-runtime.test.ts` › "screens the data attribute on <object> (data:text/html XSS)" |
 
 ### §7 SVG
 

@@ -197,6 +197,29 @@ describe('fine-grained bindings — bound-attribute security (KF-297)', () => {
     dispose();
   });
 
+  it('applies the hardened screen on the live writer (control-char + data: subtype + <object data>)', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    // KF-304: control-char-obfuscated javascript: dropped even on the bound path.
+    const tabbed = signal('java\tscript:alert(1)');
+    // KF-311: script-executing data: subtype dropped; KF-312: <object data> screened.
+    const svg = signal('data:image/svg+xml,<svg onload=alert(1)/>');
+    const obj = signal('data:text/html,<script>alert(1)</script>');
+    const dispose = mount(root, () =>
+      jsx('div', {
+        children: [
+          jsx('a', { id: 'a', href: tabbed, children: 'x' }),
+          jsx('iframe', { id: 'i', src: svg }),
+          jsx('object', { id: 'o', data: obj }),
+        ],
+      }),
+    );
+    expect((root.querySelector('#a') as HTMLElement).hasAttribute('href')).toBe(false);
+    expect((root.querySelector('#i') as HTMLElement).hasAttribute('src')).toBe(false);
+    expect((root.querySelector('#o') as HTMLElement).hasAttribute('data')).toBe(false);
+    warn.mockRestore();
+    dispose();
+  });
+
   it('lets a SafeHtml (raw()) bound value bypass the screen — the opt-out', () => {
     const href = signal(raw('javascript:void(0)'));
     const dispose = mount(root, () => jsx('a', { id: 'a', href, children: 'bookmarklet' }));

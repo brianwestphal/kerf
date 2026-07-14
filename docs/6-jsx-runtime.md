@@ -73,7 +73,11 @@ This matches HTML semantics — a boolean attribute is "on" by being present, re
 
 ### 6.4.1 Dangerous URL filter
 
-Plain-string values written to URL-bearing attributes are screened against a small allow-list. If a value starts with `javascript:`, `vbscript:`, or `data:text/html` (case-insensitive, leading whitespace tolerated), kerf **drops the attribute entirely** and `console.warn`s. The screen runs only on these attribute names: `href`, `src`, `xlink:href`, `formaction`, `action`.
+Plain-string values written to URL-bearing attributes are screened by scheme. If a value resolves to a `javascript:` or `vbscript:` scheme, or a script-executing `data:` document type (`data:text/html`, `data:image/svg+xml`, XHTML/XML), kerf **drops the attribute entirely** and `console.warn`s. The screen runs on these attribute names: `href`, `src`, `xlink:href`, `formaction`, `action`, and `data` (the `<object data>` attribute).
+
+Inert `data:` media — raster images (`data:image/png`, …), fonts, audio, video, and plain text/CSS — pass through, so `<img src="data:image/png;base64,…">` still works. Every other `data:` subtype (including unknown ones) fails closed.
+
+The scheme match sees through the obfuscations a browser sees through: leading/trailing C0 control characters and spaces, and `TAB`/`LF`/`CR` anywhere in the value, are stripped before the scheme is read — so `java&#9;script:`, a leading `\x01`, or `javascript\x00:` are all recognized and dropped, not just a clean `javascript:`.
 
 ```tsx
 <a href={userInput}>click</a>
@@ -81,7 +85,7 @@ Plain-string values written to URL-bearing attributes are screened against a sma
 // userInput === 'https://example.com'  →  rendered as <a href="https://example.com">click</a>
 ```
 
-The screen exists so a stored-XSS payload reaching a `href={...}` interpolation cannot turn into a clickable script vector. It is **not** a general sanitizer — `javascript:`/`vbscript:` URLs at non-URL attributes (`data-action`, custom attributes, etc.) pass through unchanged because they aren't an attack surface there.
+The screen exists so a stored-XSS payload reaching a `href={...}` interpolation cannot turn into a clickable script vector. It is **not** a general sanitizer — dangerous schemes at non-URL attributes (`data-action`, custom attributes, etc.) pass through unchanged because they aren't an attack surface there, and it does not cover HTML-bearing attributes like `<iframe srcdoc>` (which is HTML, not a URL — treat it like `raw()`).
 
 `SafeHtml` (i.e. `raw()`) values bypass the screen — that's the documented escape hatch:
 

@@ -271,6 +271,85 @@ describe('jsx — dangerous URL attribute filter', () => {
     expect(out.toString()).toBe('<a href="javascript:alert(1)">bookmarklet</a>');
     expect(warnSpy).not.toHaveBeenCalled();
   });
+
+  // KF-304: control-character / whitespace obfuscation of the scheme. Browsers
+  // strip C0 controls and remove TAB/LF/CR from anywhere before resolving the
+  // scheme, so these all still resolve to javascript: — the screen must too.
+  it('drops javascript: obfuscated with a leading C0 control char', () => {
+    const out = jsx('a', { href: 'javascript:alert(1)', children: 'x' });
+    expect(out.toString()).toBe('<a>x</a>');
+  });
+
+  it('drops javascript: obfuscated with a leading NUL', () => {
+    const out = jsx('a', { href: ' javascript:alert(1)', children: 'x' });
+    expect(out.toString()).toBe('<a>x</a>');
+  });
+
+  it('drops javascript: with a TAB inside the scheme', () => {
+    const out = jsx('a', { href: 'java\tscript:alert(1)', children: 'x' });
+    expect(out.toString()).toBe('<a>x</a>');
+  });
+
+  it('drops javascript: with a newline inside the scheme', () => {
+    const out = jsx('a', { href: 'java\nscript:alert(1)', children: 'x' });
+    expect(out.toString()).toBe('<a>x</a>');
+  });
+
+  it('drops javascript: with a NUL before the colon', () => {
+    const out = jsx('a', { href: 'javascript :alert(1)', children: 'x' });
+    expect(out.toString()).toBe('<a>x</a>');
+  });
+
+  it('keeps a scheme with a real internal space (browser treats as relative URL)', () => {
+    // `java script:` is NOT the javascript: scheme in a browser — a space isn't
+    // a valid scheme char — so the screen must not "repair" it into a block.
+    const out = jsx('a', { href: 'java script:alert(1)', children: 'x' });
+    expect(out.toString()).toBe('<a href="java script:alert(1)">x</a>');
+  });
+
+  // KF-311: the data: denylist is subtype-specific. Document-loading subtypes
+  // that run script are blocked; inert media families stay allowed.
+  it('drops data:image/svg+xml (SVG can carry <script>)', () => {
+    const out = jsx('iframe', { src: 'data:image/svg+xml,<svg onload=alert(1)/>' });
+    expect(out.toString()).toBe('<iframe></iframe>');
+  });
+
+  it('drops data:application/xhtml+xml', () => {
+    const out = jsx('iframe', { src: 'data:application/xhtml+xml,<html/>' });
+    expect(out.toString()).toBe('<iframe></iframe>');
+  });
+
+  it('drops an unknown data: subtype (fails closed)', () => {
+    const out = jsx('object', { data: 'data:application/x-evil,payload' });
+    expect(out.toString()).toBe('<object></object>');
+  });
+
+  it('preserves inert data: media (empty, plain text, css, image, font, audio, video)', () => {
+    const inert = [
+      'data:,just some text',
+      'data:text/plain,hi',
+      'data:text/css,body{}',
+      'data:image/png;base64,iVBORw0K',
+      'data:font/woff2;base64,d09GMg',
+      'data:audio/mpeg;base64,SUQz',
+      'data:video/mp4;base64,AAAA',
+    ];
+    for (const href of inert) {
+      expect(jsx('a', { href, children: 'x' }).toString()).toBe(`<a href="${href}">x</a>`);
+    }
+    expect(warnSpy).not.toHaveBeenCalled();
+  });
+
+  // KF-312: <object data> is a URL-bearing, document-loading attribute.
+  it('screens the data attribute on <object> (data:text/html XSS)', () => {
+    const out = jsx('object', { data: 'data:text/html,<script>alert(1)</script>' });
+    expect(out.toString()).toBe('<object></object>');
+  });
+
+  it('screens javascript: in the data attribute on <object>', () => {
+    const out = jsx('object', { data: 'javascript:alert(1)' });
+    expect(out.toString()).toBe('<object></object>');
+  });
 });
 
 describe('Fragment', () => {
