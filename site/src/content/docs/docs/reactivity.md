@@ -210,7 +210,7 @@ Because the wiring pass finds its markers by scanning the mounted subtree and ma
 - the `data-kfb` and `data-kfbrow` attributes (fine-grained attribute bindings), and
 - HTML comments beginning `kfb:`, `kfbr:`, or `kf-list:` (text bindings and `each()` list boundaries).
 
-A consumer element that carries one of these can collide with a real binding's id and **steal its update** — the effect wires to the wrong node, silently. These names are an internal detail you'll never need in normal use; the only way to hit this is to hand-write one of them or render user-authored HTML that contains one (sanitize such HTML upstream, as always).
+A marker that collides with a real binding's id **is not contained to where it appears** — the wiring pass scans the whole mounted subtree, so a stray marker can reach across it: a duplicate `kfb:`/`kfbr:` comment steals a *sibling* text binding's update (the effect wires to the wrong node, silently), and a duplicate `kf-list:` comment can bind a real `each()` list to the *wrong parent element* so its rows render into the wrong place. These names are an internal detail you'll never need in normal use; the only way to hit this is to hand-write one of them or emit one through `raw()` (e.g. rendering user-authored HTML that happens to contain one — sanitize such HTML upstream, as always).
 
 ### Limitations
 

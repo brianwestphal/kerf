@@ -68,6 +68,21 @@ export class SafeHtml {
  * Type guard for `SafeHtml`. Prefer this over `instanceof SafeHtml` — it works
  * across module copies (e.g. when the consumer's bundler loads kerf's barrel
  * and JSX-runtime entries as independent modules).
+ *
+ * Security note (KF-321): this is a duck-check on the global `Symbol.for` brand,
+ * so same-realm code *can* forge a "trusted" value — `{ [SAFE_HTML_BRAND]: true,
+ * __html: '<img onerror=…>' }` passes and bypasses escaping + the URL screen.
+ * This is intentional and not a vulnerability: minting the brand requires a
+ * Symbol key, which no data channel (JSON.parse, form/query/localStorage,
+ * structuredClone, JSON-based prototype-pollution) can produce — those all yield
+ * string keys. The only way to forge it is to run JS that writes the symbol, and
+ * such code can equally `import { raw }`. Forgery therefore grants no capability
+ * an attacker with code execution lacks — the same posture as React's
+ * `$$typeof: Symbol.for('react.element')`. The global `Symbol.for` (vs a
+ * module-private symbol) is a deliberate cross-bundle-recognition tradeoff (see
+ * the `SAFE_HTML_BRAND` note above); a private symbol would additionally block
+ * same-realm forgery, but only closes a non-threat at the cost of that
+ * recognition, so it's kept global by design.
  */
 export function isSafeHtml(value: unknown): value is SafeHtml {
   return typeof value === 'object'
