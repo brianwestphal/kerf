@@ -218,6 +218,18 @@ export function mount(rootEl: HTMLElement, render: () => MountResult): () => voi
       // unchanged (KF-88 fast path — the select-row / partial-update case),
       // morph is skipped and the existing binding effects stay live, so we
       // leave them untouched.
+      //
+      // KF-299 staleness note: leaving the effects untouched on the fast path
+      // is correct for the canonical pattern — `class={computed(() => sig.value)}`
+      // re-creates the `computed` each render, but the live effect stays bound
+      // to the FIRST computed, which reads the SAME underlying signal(s), so
+      // later changes still fire. It goes stale only if a render switches which
+      // signal INSTANCE it binds (e.g. `class={cond ? sigA : sigB}` where the
+      // surrounds byte-string is unchanged) — an anti-pattern; bind one
+      // `computed` that switches internally instead. Same "bound signal must be
+      // stable across renders" constraint as row bindings (see docs 2-reactivity
+      // §2.9). Re-wiring here would need fast-path text-node reuse to avoid
+      // duplicating inserted text nodes, so it's not worth it for an anti-pattern.
       if (nextStaticHtml !== prevStaticHtml) {
         bindingDisposers = wireBindings(rootEl, bindingCtx, bindingDisposers);
       }

@@ -106,6 +106,8 @@ axis (`cacheKey` reading an external signal) crosses all of them.
 | FC-B10 | Bindings torn down on unmount (detached node stops updating) | `src/mount.ts`, `src/bindings.ts` | `tests/unit/bindings.test.ts` › "tears down row bindings on unmount (no update to detached rows)" |
 | FC-B11 | Transition: create → select → remove-selected → select | `src/bindings.ts`, `src/list-reconcile-snapshot.ts` | `tests/unit/bindings.test.ts` › "adversarial: create → select → remove selected → select another" |
 | FC-B12 | Transition: clear → repopulate → select rebinds fresh rows | `src/bindings.ts`, `src/list-reconcile-snapshot.ts` | `tests/unit/bindings.test.ts` › "adversarial: clear → repopulate → select rebinds fresh rows" |
+| FC-B13 | Global hole: a re-created `computed` reading a stable source survives a fast-path re-render (no staleness) | `src/mount.ts`, `src/bindings.ts` | `tests/unit/bindings.test.ts` › "global hole: a re-created computed reading a stable source survives a fast-path re-render" |
+| FC-B14 | Adversarial: full binding × reconcile transition walk (first-render / granular insert+update+remove+move / replace → snapshot rebuild) | `src/bindings.ts`, `src/list-reconcile-granular.ts`, `src/list-reconcile-snapshot.ts` | `tests/unit/bindings.test.ts` › "adversarial: full binding × reconcile transition walk (arraySignal + select-binding)" |
 
 ### §3 Stores
 
