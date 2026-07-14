@@ -41,6 +41,20 @@
 import { effect, isSignal, type Signal } from './reactive.js';
 import { dangerousUrlWarning, isDangerousUrlValue } from './utils/urlScreen.js';
 
+// RESERVED NAMESPACE (consumer contract, KF-314). The wiring pass finds these
+// markers by scanning the mounted subtree and matching by id, and resolves an
+// id collision by document order (last/first wins) with no ownership check — so
+// a consumer element that carries `data-kfb`/`data-kfbrow`, or a comment
+// beginning `kfb:`/`kfbr:`/`kf-list:`, can collide with a real binding's id and
+// steal its effect (the update wires to the wrong node). These names are
+// therefore reserved: consumers must not emit them (documented in
+// docs/2-reactivity.md § "Reserved marker names"). Kerf's own escaping already
+// prevents a plain text/attribute *value* from forging one; the remaining ways
+// in are a hand-written attribute or a `raw()` payload — i.e. the consumer's
+// own trust boundary. A dev-mode collision warning is a possible future
+// enhancement (fix direction (a) on KF-314) if silent mis-wiring proves easy to
+// hit in practice.
+
 /** Marker attribute for GLOBAL (static-surround) attribute bindings. */
 export const BIND_ATTR = 'data-kfb';
 /** Comment-marker prefix for a GLOBAL text binding: `<!--kfb:{id}-->`. */

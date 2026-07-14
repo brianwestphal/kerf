@@ -199,6 +199,15 @@ The JSX runtime renders to HTML strings. When it sees a signal in a hole it emit
 - **Non-breaking**: passing a raw signal into JSX used to throw (`"Did you mean to read .value off a Signal?"`), so this only lights up input that couldn't run before.
 - **Bound URL attributes** (`href`/`src`/`formaction`/`action`/`xlink:href`/`data`) get the same dangerous-URL screening as static attributes — a bound value resolving to `javascript:`/`vbscript:` or a script-executing `data:` document type (`text/html`, `image/svg+xml`, XHTML/XML) is dropped, including control-character-obfuscated schemes; `raw()` opts out.
 
+### Reserved marker names
+
+Because the wiring pass finds its markers by scanning the mounted subtree and matching by id, a small set of attribute and comment names is **reserved for kerf** — don't put them on your own elements or emit them through `raw()`:
+
+- the `data-kfb` and `data-kfbrow` attributes (fine-grained attribute bindings), and
+- HTML comments beginning `kfb:`, `kfbr:`, or `kf-list:` (text bindings and `each()` list boundaries).
+
+A consumer element that carries one of these can collide with a real binding's id and **steal its update** — the effect wires to the wrong node, silently. These names are an internal detail you'll never need in normal use; the only way to hit this is to hand-write one of them or render user-authored HTML that contains one (sanitize such HTML upstream, as always).
+
 ### Limitations
 
 **Bind a stable signal source; don't switch which signal *instance* you bind.** Wrapping in `computed(() => …)` creates a fresh instance every render — that's fine, because the live effect stays bound to the first one and it reads the same underlying signals, so later changes still fire. What you must *not* do is bind a *different signal instance* across renders (`class={cond ? sigA : sigB}`): on a re-render that leaves the surrounds unchanged, kerf keeps the original effect and doesn't re-bind, so the hole goes stale. Bind one `computed` that switches internally instead (`class={computed(() => cond.value ? sigA.value : sigB.value)}`).

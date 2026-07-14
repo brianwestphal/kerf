@@ -700,3 +700,42 @@ describe('fine-grained bindings — lifecycle', () => {
     dispose();
   });
 });
+
+describe('reserved marker namespace (KF-314)', () => {
+  // The wiring pass matches markers by id across the mounted subtree, so these
+  // attribute/comment names are a reserved consumer contract (see
+  // docs/2-reactivity.md § "Reserved marker names"). Pin the ACTUAL emitted
+  // markers to the documented reserved names — via the public mount()/each()
+  // API, so it holds against dist too — so the docs can't silently drift from
+  // what the runtime produces. If a marker is ever renamed, this fails and the
+  // docs listing the reserved names must be updated in lockstep.
+  it('emits exactly the documented reserved marker names', () => {
+    const cls = signal('x');
+    const txt = signal('y');
+    const rows = signal([{ id: 1 }]);
+    const dispose = mount(root, () =>
+      jsx('div', {
+        children: [
+          jsx('span', { id: 'g', class: cls, children: txt }),
+          jsx('ul', {
+            children: each(
+              rows.value,
+              (r) => jsx('li', { 'data-key': r.id, class: cls, children: txt }),
+              (r) => r.id,
+            ),
+          }),
+        ],
+      }),
+    );
+    const html = root.innerHTML;
+    // GLOBAL scope: `data-kfb` attribute + `<!--kfb:*-->` text marker.
+    expect((root.querySelector('#g') as HTMLElement).hasAttribute('data-kfb')).toBe(true);
+    expect(html).toContain('<!--kfb:');
+    // ROW scope: `data-kfbrow` attribute + `<!--kfbr:*-->` text marker.
+    expect(root.querySelector('[data-kfbrow]')).not.toBeNull();
+    expect(html).toContain('<!--kfbr:');
+    // each() list boundary marker.
+    expect(html).toContain('<!--kf-list:');
+    dispose();
+  });
+});
