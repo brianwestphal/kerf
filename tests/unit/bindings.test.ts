@@ -12,7 +12,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { arraySignal } from '../../src/array-signal.js';
 import { each } from '../../src/each.js';
-import { jsx } from '../../src/jsx-runtime.js';
+import { jsx, raw } from '../../src/jsx-runtime.js';
 import { mount } from '../../src/mount.js';
 import { computed, signal } from '../../src/reactive.js';
 
@@ -141,6 +141,74 @@ describe('fine-grained bindings — attribute holes', () => {
     expect(el.getAttribute('class')).toBe('sel');
     cls.value = 'sel active';
     expect(el.getAttribute('class')).toBe('sel active');
+    dispose();
+  });
+});
+
+describe('fine-grained bindings — bound-attribute security (KF-297)', () => {
+  it('drops a bound href that resolves to a javascript: URL, and warns', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const url = signal('javascript:alert(1)');
+    const dispose = mount(root, () => jsx('a', { id: 'a', href: url, children: 'x' }));
+    const a = root.querySelector('#a') as HTMLElement;
+    expect(a.hasAttribute('href')).toBe(false);
+    expect(warn).toHaveBeenCalledWith(expect.stringMatching(/dropped dangerous URL value for href/));
+    warn.mockRestore();
+    dispose();
+  });
+
+  it('screens every URL-bearing attribute (src / formaction / action / xlink:href)', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const s = signal('javascript:alert(1)');
+    const dispose = mount(root, () =>
+      jsx('div', {
+        children: [
+          jsx('img', { id: 'img', src: s }),
+          jsx('button', { id: 'b', formaction: s, children: 'go' }),
+          jsx('form', { id: 'f', action: s, children: 'x' }),
+        ],
+      }),
+    );
+    expect((root.querySelector('#img') as HTMLElement).hasAttribute('src')).toBe(false);
+    expect((root.querySelector('#b') as HTMLElement).hasAttribute('formaction')).toBe(false);
+    expect((root.querySelector('#f') as HTMLElement).hasAttribute('action')).toBe(false);
+    warn.mockRestore();
+    dispose();
+  });
+
+  it('toggles the attribute as the bound URL goes safe → dangerous → safe', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const url = signal('/safe');
+    const dispose = mount(root, () => jsx('a', { id: 'a', href: url, children: 'x' }));
+    const a = root.querySelector('#a') as HTMLElement;
+    expect(a.getAttribute('href')).toBe('/safe');
+    url.value = 'javascript:alert(1)';
+    expect(a.hasAttribute('href')).toBe(false);      // dropped
+    url.value = '/also-safe';
+    expect(a.getAttribute('href')).toBe('/also-safe'); // restored
+    warn.mockRestore();
+    dispose();
+  });
+
+  it('does NOT screen non-URL attributes', () => {
+    const v = signal('javascript:alert(1)');
+    const dispose = mount(root, () => jsx('div', { id: 'd', 'data-action': v }));
+    expect((root.querySelector('#d') as HTMLElement).getAttribute('data-action')).toBe('javascript:alert(1)');
+    dispose();
+  });
+
+  it('lets a SafeHtml (raw()) bound value bypass the screen — the opt-out', () => {
+    const href = signal(raw('javascript:void(0)'));
+    const dispose = mount(root, () => jsx('a', { id: 'a', href, children: 'bookmarklet' }));
+    // raw() opts out: the value is written verbatim (its __html).
+    expect((root.querySelector('#a') as HTMLElement).getAttribute('href')).toBe('javascript:void(0)');
+    dispose();
+  });
+
+  it('writes a SafeHtml bound attribute value as its __html', () => {
+    const v = signal(raw('a&amp;b'));
+    const dispose = mount(root, () => jsx('div', { id: 'd', 'data-x': v }));
+    expect((root.querySelector('#d') as HTMLElement).getAttribute('data-x')).toBe('a&amp;b');
     dispose();
   });
 });

@@ -35,6 +35,7 @@ import {
 } from './segment.js';
 import { escapeAttr, escapeHtml } from './utils/escapeHtml.js';
 import { ATTR_ALIASES } from './utils/jsx-attr-aliases.js';
+import { dangerousUrlWarning, isDangerousUrlValue } from './utils/urlScreen.js';
 
 // Cross-realm/cross-bundle brand. Using `Symbol.for` (the global registry)
 // means two `SafeHtml` classes from different module copies still recognize
@@ -176,16 +177,6 @@ function describeValue(v: unknown): string {
   return typeof v;
 }
 
-// URL-bearing HTML/SVG attributes. Plain-string values written here are
-// screened against `DANGEROUS_URL_RE` so a stored-XSS payload like
-// `<a href={userInput}>` with `userInput === 'javascript:alert(1)'` produces
-// a dropped attribute (and a console.warn) rather than a clickable script
-// vector. `SafeHtml` values (i.e. `raw(...)`) bypass the screen — that's the
-// documented opt-out for legitimate cases (bookmarklet builders, sanitized
-// inputs from a separate trust layer).
-const URL_ATTRS = new Set(['href', 'src', 'xlink:href', 'formaction', 'action']);
-const DANGEROUS_URL_RE = /^\s*(?:(?:java|vb)script:|data:text\/html[;,])/i;
-
 function renderAttr(key: string, value: unknown): string {
   const name = ATTR_ALIASES[key] ?? key;
   if (value == null || value === false) return '';
@@ -196,12 +187,10 @@ function renderAttr(key: string, value: unknown): string {
   } else if (typeof value === 'number') {
     strValue = String(value);
   } else if (typeof value === 'string') {
-    if (URL_ATTRS.has(name) && DANGEROUS_URL_RE.test(value)) {
-      console.warn(
-        `JSX: dropped dangerous URL value for ${name}=${JSON.stringify(value.slice(0, 80))}. `
-        + 'kerf blocks javascript:, vbscript:, and data:text/html URLs in href/src/formaction/action/xlink:href by default. '
-        + 'Wrap in raw() if this is intentional (e.g. bookmarklets), or sanitize upstream.',
-      );
+    // URL-screening shared with the fine-grained binding writer (KF-297).
+    // `SafeHtml` values (raw()) skip this — they hit the branch above.
+    if (isDangerousUrlValue(name, value)) {
+      console.warn(`JSX: ${dangerousUrlWarning(name, value)}`);
       return '';
     }
     strValue = escapeAttr(value);

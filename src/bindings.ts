@@ -39,6 +39,7 @@
  */
 
 import { effect, isSignal, type Signal } from './reactive.js';
+import { dangerousUrlWarning, isDangerousUrlValue } from './utils/urlScreen.js';
 
 /** Marker attribute for GLOBAL (static-surround) attribute bindings. */
 export const BIND_ATTR = 'data-kfb';
@@ -298,9 +299,13 @@ function attachTextEffect(marker: Comment, signal: Signal<unknown>): () => void 
 
 /**
  * Apply a bound value to a live attribute, mirroring the JSX runtime's
- * boolean/nullish attribute rules. Spike scope: string/number/boolean values
- * (the common `class`/`aria-*`/`disabled` cases). URL screening and
- * `SafeHtml` attr values are deferred follow-ups.
+ * `renderAttr` rules: boolean/nullish toggling, `SafeHtml` (raw()) unwrapping,
+ * and the KF-297 URL-screening that drops `javascript:` / `vbscript:` /
+ * `data:text/html` on `href`/`src`/`formaction`/`action`/`xlink:href`.
+ *
+ * Unlike `renderAttr` (which builds an HTML string, so escapes with
+ * `escapeAttr`), this writes the RAW value via `setAttribute` — the DOM stores
+ * attribute values verbatim, so no HTML-escaping is applied here.
  */
 function setBoundAttr(el: Element, name: string, value: unknown): void {
   if (value == null || value === false) {
@@ -311,7 +316,29 @@ function setBoundAttr(el: Element, name: string, value: unknown): void {
     el.setAttribute(name, '');
     return;
   }
-  el.setAttribute(name, String(value));
+  // SafeHtml (raw()) is the documented opt-out — bypasses URL screening and is
+  // written verbatim, matching renderAttr's SafeHtml branch.
+  if (isSafeHtmlValue(value)) {
+    el.setAttribute(name, value.__html);
+    return;
+  }
+  const str = String(value);
+  if (isDangerousUrlValue(name, str)) {
+    console.warn(`kerf binding: ${dangerousUrlWarning(name, str)}`);
+    el.removeAttribute(name);
+    return;
+  }
+  el.setAttribute(name, str);
+}
+
+// Cross-bundle SafeHtml brand check (mirrors jsx-runtime's `isSafeHtml`).
+// Duplicated here — rather than importing `isSafeHtml` from jsx-runtime — to
+// keep the bindings ← jsx-runtime dependency acyclic. `Symbol.for` makes it
+// recognize SafeHtml instances from any copy of the module.
+const SAFE_HTML_BRAND = Symbol.for('kerfjs.SafeHtml');
+function isSafeHtmlValue(v: unknown): v is { __html: string } {
+  return typeof v === 'object' && v !== null
+    && (v as Record<symbol, unknown>)[SAFE_HTML_BRAND] === true;
 }
 
 /** Coerce a bound text value: nullish + boolean render nothing (React-style). */
