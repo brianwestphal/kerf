@@ -1,6 +1,6 @@
 ---
+name: hs-investigation
 description: Create a new investigation ticket in Hot Sheet
-alwaysApply: false
 ---
 <!-- hotsheet-skill-version: 22 -->
 
