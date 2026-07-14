@@ -168,6 +168,8 @@ axis (`cacheKey` reading an external signal) crosses all of them.
 | FC-JX9 | URL screen sees through control-char / whitespace scheme obfuscation | `src/utils/urlScreen.ts` | `tests/unit/jsx-runtime.test.ts` › "drops javascript: with a TAB inside the scheme" |
 | FC-JX10 | URL screen is `data:`-subtype-specific (svg/xml dropped, image kept) | `src/utils/urlScreen.ts` | `tests/unit/jsx-runtime.test.ts` › "drops data:image/svg+xml (SVG can carry <script>)" |
 | FC-JX11 | `<object data>` document URL is screened | `src/utils/urlScreen.ts` | `tests/unit/jsx-runtime.test.ts` › "screens the data attribute on <object> (data:text/html XSS)" |
+| FC-JX12 | Attribute names are validated — a malformed name (spread injection) throws | `src/jsx-runtime.ts` | `tests/unit/jsx-runtime.test.ts` › "throws on an attribute name that would break out of the tag" |
+| FC-JX13 | Inline event-handler attributes (`on*`, string or function, any case) are rejected | `src/jsx-runtime.ts` | `tests/unit/jsx-runtime.test.ts` › "rejects a string-valued on* attribute (would be a live inline handler)" |
 
 ### §7 SVG
 

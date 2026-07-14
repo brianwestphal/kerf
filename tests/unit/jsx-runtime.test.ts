@@ -352,6 +352,39 @@ describe('jsx — dangerous URL attribute filter', () => {
   });
 });
 
+describe('attribute name safety (KF-306)', () => {
+  // Spreading an object with attacker-controlled KEYS into JSX must not let a
+  // key break out of the open tag. The name is validated, not just the value.
+  type AttrBag = Parameters<typeof jsx>[1];
+
+  it('throws on an attribute name that would break out of the tag', () => {
+    const evil = { 'x><img src=q onerror=alert(1)>': 'y', children: 'z' } as unknown as AttrBag;
+    expect(() => jsx('div', evil).toString()).toThrow(/invalid attribute name/);
+  });
+
+  it('throws on an attribute name carrying an injected handler (no > needed)', () => {
+    const evil = { 'x onmouseover=alert(1)': '', children: 'z' } as unknown as AttrBag;
+    expect(() => jsx('div', evil).toString()).toThrow(/invalid attribute name/);
+  });
+
+  it('rejects a string-valued on* attribute (would be a live inline handler)', () => {
+    const bag = { onclick: 'alert(1)', children: 'go' } as unknown as AttrBag;
+    expect(() => jsx('button', bag).toString()).toThrow(/event-handler attribute/);
+  });
+
+  it('rejects a lowercase-keyed function handler the old /^on[A-Z]/ guard missed', () => {
+    const bag = { onclick: () => {}, children: 'go' } as unknown as AttrBag;
+    expect(() => jsx('button', bag).toString()).toThrow(/inline event handlers/);
+  });
+
+  it('still accepts valid namespaced / data / aria attribute names', () => {
+    expect(jsx('use', { 'xlink:href': '#icon' } as unknown as AttrBag).toString())
+      .toBe('<use xlink:href="#icon"></use>');
+    expect(jsx('div', { 'data-id': '1', 'aria-label': 'ok', children: 'z' }).toString())
+      .toBe('<div data-id="1" aria-label="ok">z</div>');
+  });
+});
+
 describe('Fragment', () => {
   it('renders without a wrapper tag', () => {
     const out = Fragment({ children: [

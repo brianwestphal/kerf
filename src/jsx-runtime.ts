@@ -177,9 +177,54 @@ function describeValue(v: unknown): string {
   return typeof v;
 }
 
+/**
+ * A well-formed HTML/SVG attribute name: a letter/underscore/colon, then
+ * letters, digits, or `_.:-` — covers `class`, `data-id`, `aria-label`,
+ * `xlink:href`, `xmlns:xlink`, `stroke-width`, `viewBox`, etc. A name outside
+ * this shape can only come from spreading untrusted KEYS into JSX
+ * (`<div {...obj}>`), and is exactly the shape that could carry the whitespace,
+ * `>`, `=`, quotes, or control chars needed to break out of the open tag and
+ * inject markup — so `renderAttr` rejects it (KF-306).
+ */
+const SAFE_ATTR_NAME = /^[A-Za-z_:][\w.:-]*$/;
+
 function renderAttr(key: string, value: unknown): string {
   const name = ATTR_ALIASES[key] ?? key;
   if (value == null || value === false) return '';
+  // Inline event-handler attributes are rejected regardless of value type or
+  // case (KF-306). kerf's model is event delegation; a string like
+  // `onclick="alert(1)"` emitted into the HTML becomes a LIVE handler in the
+  // browser — an XSS vector when the key/value is attacker-controlled. (The old
+  // guard only caught function values whose key matched `/^on[A-Z]/`, so a
+  // string `onclick`, or any lowercase-keyed handler, slipped through.)
+  if (/^on[a-z]/i.test(name)) {
+    if (typeof value === 'function') {
+      throw new Error(
+        `JSX: inline event handlers like ${key}={fn} are not supported by kerf's JSX → HTML-string runtime. `
+        + 'Use event delegation from the mount root instead:\n\n'
+        + '  delegate(rootEl, \'click\', \'[data-action="..."]\', (evt, target) => { ... });\n'
+        + '  <button data-action="...">click</button>\n\n'
+        + 'See docs/5-event-delegation.md for the tier-1/tier-2/tier-3 model.',
+      );
+    }
+    throw new Error(
+      `JSX: event-handler attribute ${JSON.stringify(key)} is not allowed — a string like `
+      + '`onclick="..."` becomes a live inline handler (an XSS vector) once emitted into HTML. '
+      + 'kerf uses event delegation: delegate(rootEl, \'click\', \'[data-action="..."]\', handler). '
+      + 'See docs/5-event-delegation.md.',
+    );
+  }
+  // Reject malformed attribute names so a spread of untrusted keys can't break
+  // out of the open tag and inject markup (KF-306). Validated post-alias; every
+  // ATTR_ALIASES value is itself a valid name, so aliasing is safe.
+  if (!SAFE_ATTR_NAME.test(name)) {
+    throw new Error(
+      `JSX: invalid attribute name ${JSON.stringify(key)}. Attribute names must be a `
+      + 'letter/underscore/colon followed by letters, digits, or "_.:-" (e.g. class, '
+      + 'data-id, aria-label, xlink:href). This usually means an untrusted object was '
+      + 'spread into JSX ({...obj}) with attacker-controlled keys — validate keys first.',
+    );
+  }
   if (value === true) return ` ${name}`;
   let strValue: string;
   if (isSafeHtml(value)) {
@@ -194,14 +239,6 @@ function renderAttr(key: string, value: unknown): string {
       return '';
     }
     strValue = escapeAttr(value);
-  } else if (typeof value === 'function' && /^on[A-Z]/.test(key)) {
-    throw new Error(
-      `JSX: inline event handlers like ${key}={fn} are not supported by kerf's JSX → HTML-string runtime. `
-      + 'Use event delegation from the mount root instead:\n\n'
-      + '  delegate(rootEl, \'click\', \'[data-action="..."]\', (evt, target) => { ... });\n'
-      + '  <button data-action="...">click</button>\n\n'
-      + 'See docs/5-event-delegation.md for the tier-1/tier-2/tier-3 model.',
-    );
   } else {
     throw new Error(
       `JSX: unsupported value for attribute "${key}" — got ${describeValue(value)}. `

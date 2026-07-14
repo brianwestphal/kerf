@@ -61,7 +61,7 @@ JSX attributes use camelCase (React convention). The runtime translates the comm
 | `xlinkHref` | `xlink:href` |
 | ...many more in `src/jsx-runtime.ts` | |
 
-Anything not in the alias table is passed through verbatim. So `data-action`, `aria-label`, `data-key` all work as expected (JSX-to-HTML uses the literal attribute name).
+Anything not in the alias table is passed through verbatim. So `data-action`, `aria-label`, `data-key` all work as expected (JSX-to-HTML uses the literal attribute name) — as long as the name is well-formed (see [§6.4.2](#642-attribute-name-validation)).
 
 ## 6.4 Boolean attributes
 
@@ -101,6 +101,26 @@ import { raw } from 'kerfjs';
 ```
 
 If you find yourself reaching for `raw()` on URLs that came from users, route them through a real sanitizer (DOMPurify, Linkify, etc.) first; `raw()` is "I take responsibility for this string", not "skip the safety net."
+
+### 6.4.2 Attribute name validation
+
+Attribute *values* are escaped, but so are attribute *names* checked. The runtime validates every attribute name against a safe shape — a letter/underscore/colon followed by letters, digits, or `_ . : -` (which covers `class`, `data-id`, `aria-label`, `xlink:href`, `stroke-width`, `viewBox`, …). A name outside that shape **throws**:
+
+```tsx
+const attrs = JSON.parse(untrustedConfig);   // attacker controls the KEYS
+<div {...attrs}>…</div>                       // a key like 'x><img onerror=…>' throws, not injects
+```
+
+This matters when you **spread an object with untrusted keys** into JSX (`<div {...obj}>`). Without the check, a malicious key could carry the `>`, `=`, quotes, or whitespace needed to break out of the open tag and inject markup — the attribute *value* being escaped doesn't help if the *name* is the payload. Validate keys before spreading if they come from user data.
+
+Inline event-handler attributes are also rejected — any `on*` name, whether the value is a function or a string, in any case:
+
+```tsx
+<button onClick={fn}>…</button>              // throws — use delegate() instead
+<button onclick="doThing()">…</button>       // throws — a string here becomes a LIVE handler in the browser
+```
+
+kerf's model is [event delegation](/kerf/docs/events/), not inline handlers. A string like `onclick="…"` emitted into the HTML would become a real handler when parsed — an XSS vector if the value is attacker-controlled — so the runtime refuses it and points you at `delegate()`.
 
 ## 6.5 Children
 
