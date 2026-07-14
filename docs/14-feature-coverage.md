@@ -62,6 +62,7 @@ axis (`cacheKey` reading an external signal) crosses all of them.
 | FC-R10 | Pre-mount mutations render correctly on first mount | `src/each.ts`, `src/array-signal.ts` | `tests/unit/array-signal.test.ts` › "KF-98: pre-mount push mutations render correctly on first mount" |
 | FC-R11 | Granular attribute-only update fast path (class flip, no parse) | `src/list-reconcile-fast-paths.ts` | `tests/unit/list-reconcile-fast-paths.test.ts` › "class flip on top-level element: fast path fires, no parse, identity preserved" |
 | FC-R12 | Granular text-content-only update fast path (no parse) | `src/list-reconcile-fast-paths.ts` | `tests/unit/list-reconcile-fast-paths.test.ts` › "text node inside a child element: fast path fires, no parse, text node identity preserved" |
+| FC-R13 | URL screen holds through the granular fast path (a `javascript:` href set via a row update stays dropped) | `src/list-reconcile-fast-paths.ts`, `src/utils/urlScreen.ts` | `tests/unit/list-reconcile-fast-paths.test.ts` › "a dangerous URL set via a granular row update stays dropped through the fast path" |
 
 ### §4 Reconciler transitions — the gap line coverage can't see
 
@@ -180,6 +181,7 @@ axis (`cacheKey` reading an external signal) crosses all of them.
 | FC-SV2 | `toElement()` routes SVG through `DOMParser('image/svg+xml')` | `src/toElement.ts` | `tests/unit/toElement.test.ts` › "toElement() — SVG" |
 | FC-SV3 | `toElement()` handles fragments mixing `<svg>` and siblings | `src/toElement.ts` | `tests/unit/toElement.test.ts` › "toElement() — fragments with <svg> and siblings (KF-232)" |
 | FC-SV4 | `toElement()` returns nodes adopted into the live document | `src/toElement.ts` | `tests/unit/toElement.test.ts` › "toElement() — returned node is adopted into the live document (KF-240)" |
+| FC-SV5 | `toElement()`/`morph()` are trusted-input bridges — SVG input is not sanitized (`<script>` survives), and the real-browser execution boundary is pinned | `src/toElement.ts`, `src/morph.ts` | `tests/unit/toElement.test.ts` › "keeps a <script> in SVG input (does not sanitize)"; `tests/browser/trusted-html-bridges.spec.ts` |
 
 ### §11 Dev-mode warnings (opt-in, env-gated)
 

@@ -7,7 +7,7 @@
  * (the parse + morph path didn't run).
  */
 
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { type ArraySignal,arraySignal } from '../../src/array-signal.js';
 import { batch, each, mount } from '../../src/index.js';
@@ -465,3 +465,49 @@ describe('granular update fast paths — KF-206 text-content-only', () => {
   });
 });
 
+
+describe('granular fast path — URL screen invariant (KF-305)', () => {
+  let root: HTMLElement;
+
+  beforeEach(() => {
+    root = document.createElement('div');
+    document.body.appendChild(root);
+  });
+
+  afterEach(() => {
+    document.body.innerHTML = '';
+  });
+
+  it('a dangerous URL set via a granular row update stays dropped through the fast path', () => {
+    // KF-305 defense-in-depth: the attribute-only fast path (unescapeAttrValue →
+    // setAttribute) trusts that the row HTML was already URL-screened by
+    // renderAttr at string-build. Pin that end-to-end: an arraySignal row whose
+    // href flips to `javascript:` re-renders through renderAttr (which drops it),
+    // so the dangerous value never reaches the fast path's setAttribute — and the
+    // change still travels the granular fast path (no `<template>.innerHTML` parse).
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    type R = { id: number; url: string };
+    const rows = arraySignal<R>([{ id: 1, url: '/safe' }]);
+    mount(root, () => jsx('div', {
+      children: each(rows, (r) => jsx('a', {
+        'data-key': String(r.id),
+        href: r.url,
+        children: 'x',
+      })),
+    }));
+    const a = root.querySelector('a')!;
+    expect(a.getAttribute('href')).toBe('/safe');
+
+    const spy = spyTemplateInnerHTML();
+    try {
+      rows.update(0, (r) => ({ ...r, url: 'javascript:alert(1)' }));
+    } finally {
+      spy.restore();
+    }
+
+    expect(a.hasAttribute('href')).toBe(false);   // dropped, never written
+    expect(root.querySelector('a')).toBe(a);       // same node — fast path, not a rebuild
+    expect(spy.count).toBe(0);                     // no innerHTML parse: the granular fast path ran
+    warn.mockRestore();
+  });
+});

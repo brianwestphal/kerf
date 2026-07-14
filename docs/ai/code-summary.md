@@ -80,7 +80,8 @@ kerf/
 │   │   ├── perf-1k.spec.ts             ← 1k-row stress (real-browser sanity check on the bench app)
 │   │   ├── stateful-attrs.spec.ts      ← `<details open>` / `<dialog open>` user-agent-owned attribute survival
 │   │   ├── svg-mathml.spec.ts          ← KF-83 — SVG/MathML namespacing across real browsers
-│   │   └── toelement-adopt.spec.ts     ← KF-240 — toElement() returns live-document nodes (ownerDocument === document, every shape) + mount-before-insert burst across Chromium/Firefox/WebKit
+│   │   ├── toelement-adopt.spec.ts     ← KF-240 — toElement() returns live-document nodes (ownerDocument === document, every shape) + mount-before-insert burst across Chromium/Firefox/WebKit
+│   │   └── trusted-html-bridges.spec.ts ← KF-305/313/316 — the raw HTML/SVG→DOM bridges are trusted-input only: toElement() HTML-string <script> is inert, SVG <script> survives the parse, and <iframe srcdoc> executes (real-browser trust boundary across Chromium/Firefox/WebKit)
 │   └── dist/                     ← run via `npm run test:dist`, against the built bundles
 │       ├── barrel-completeness.test.ts    ← KF-24 — pins the public-API list
 │       ├── consumer-app/                  ← KF-123 — esbuild-bundled downstream-style app; main.tsx exercises every public primitive (counter/store/each/arraySignal/delegateCapture/focus/morph-skip/SVG/Fragment/declaration-merged custom element). Driven by `tests/browser/consumer-app.spec.ts`

@@ -62,6 +62,12 @@ svgRoot.appendChild(path);   // paints correctly
 
 If you're not sure which you need, default to `mount()`. The vast majority of SVG icon and chart use cases work fine without `toElement`.
 
+### Security: `toElement`/`morph` on SVG strings run trusted markup only
+
+`toElement()` (and `morph()` with a string template) parse their input into live DOM with **no escaping and no sanitization** — the same trust model as `innerHTML` / `raw()`. For SVG this bites harder than for HTML: SVG is **active content**. A top-level `<svg><script>…</script></svg>`, an SVG event attribute (`onload`, `<animate onbegin="…">`), an `xlink:href="javascript:…"` on `<a>`/`<use>`, and HTML inside `<foreignObject>` all **execute** once the parsed node is inserted into the live document — whereas an HTML-string `<script>` you pass to `toElement()` is inert (the HTML path parses through `<template>.innerHTML`, which never runs scripts). The strict XML re-parse rejects *malformed* SVG, but well-formed malicious SVG passes through untouched.
+
+So: only pass `toElement()`/`morph()` SVG (or HTML) markup you trust — authored in your own JSX, or sanitized upstream with an **SVG-aware** sanitizer (e.g. DOMPurify with SVG profiles). Never hand it unsanitized user input. If you need to render user-supplied SVG, sanitize first, then `raw()` it.
+
 ## 7.5 Other namespacing quirks (HTML5 parser oddities)
 
 A handful of theoretical edge cases that the AST-based approach in some other reactive libs handles but kerf doesn't, in exchange for a simpler runtime:

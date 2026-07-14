@@ -118,6 +118,16 @@ Inline event-handler attributes are also rejected — any `on*` name, whether th
 
 kerf's model is [event delegation](5-event-delegation.md), not inline handlers. A string like `onclick="…"` emitted into the HTML would become a real handler when parsed — an XSS vector if the value is attacker-controlled — so the runtime refuses it and points you at `delegate()`.
 
+### 6.4.3 HTML-bearing attributes (`srcdoc`) are not URLs
+
+The dangerous-URL filter (§6.4.1) only covers attributes whose value is a **URL**. A few attributes instead hold **HTML that a browser re-parses as a document** — most notably `<iframe srcdoc>`. kerf escapes the *attribute value* correctly (so it's well-formed markup, not a way to break out of the tag), but the iframe then decodes that value once and runs it as a document, so `srcdoc={userString}` executes attacker `<script>` even though the value was "escaped":
+
+```tsx
+<iframe srcdoc={userHtml} />   // ⚠️ userHtml is parsed as a document — like innerHTML, not like text
+```
+
+This is by design (it's what `srcdoc` is *for*), the same footgun as React's `srcDoc`. kerf does **not** reject `srcdoc` — trusted, app-generated `srcdoc` is a legitimate sandboxing pattern — so treat it like [`raw()`](8-api-reference.md): pass only markup you trust, and sanitize any user-supplied HTML upstream (DOMPurify) before it reaches `srcdoc`.
+
 ## 6.5 Children
 
 ```tsx

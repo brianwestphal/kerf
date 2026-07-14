@@ -159,6 +159,8 @@ Every short-circuit `mount()`'s morph honors carries over: `data-morph-skip` (el
 
 `morph()` does NOT subscribe to signals. If you want re-renders, use `mount()`. If you want a one-shot reconciliation against a tree you own, this is the primitive. See `docs/4-render.md` §4.4.3.
 
+> **Security — trusted templates only.** A `string` / `SafeHtml` template is parsed as HTML with **no escaping and no URL screening** — the same trust model as `innerHTML` / `raw()`. An `Element` template's attributes are copied to the live tree **verbatim**, including `on*` inline handlers and `javascript:` URLs. So a `morph()` template must be markup you trust: built via JSX, or sanitized upstream (DOMPurify). Never pass unsanitized user input as a `morph()` template. (This is distinct from the `mount()` render path, where JSX escapes values and screens dangerous URLs — `morph()` bypasses that because its template is already-built markup.)
+
 ### `each<T>(items, render, cacheKey?): SafeHtml`
 
 ```ts
@@ -339,6 +341,8 @@ Parses a JSX/SafeHtml/string and returns a DOM node ready to insert into a paren
 Throws if the input produces zero element children OR if `DOMParser` rejects an SVG input.
 
 The returned node is always adopted into the live `document` (`node.ownerDocument === document`), never left owned by the inert `<template>` / `DOMParser` document it was parsed in. This matters when you operate on the node **before inserting it** — e.g. `mount(toElement(<div/>), …)`, which sets `innerHTML` on first render. An inert-document element is unsafe to mutate that way on some engines (WebKit can mis-parse `innerHTML` on it under rapid bursts), so kerf moves the node into the live document up front. Identity and SVG/MathML namespaces are preserved by the adoption.
+
+> **Security — trusted input only.** `toElement()` parses its input into live DOM with **no escaping and no URL screening** — the same trust model as `innerHTML` / `raw()`. The **SVG path is more dangerous than the HTML path**: a top-level `<svg><script>…</script></svg>`, an SVG event attribute (`onload`, `<animate onbegin>`), `xlink:href="javascript:"`, or `<foreignObject>` HTML all **execute** once the returned node is inserted into the live document — whereas an HTML-string `<script>` is inert (it's parsed via `<template>.innerHTML`, which never runs scripts). Pass only markup you trust: built via JSX, or sanitized upstream with an SVG-aware sanitizer (DOMPurify). Never pass unsanitized user input.
 
 ## 8.7 Conventions used by `mount`
 

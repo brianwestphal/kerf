@@ -282,3 +282,25 @@ describe('toElement() — returned node is adopted into the live document (KF-24
     }
   });
 });
+
+describe('toElement() — trusted-input surface (KF-316)', () => {
+  // toElement() does NOT sanitize. The SVG path (DOMParser image/svg+xml) keeps
+  // a <script> that the HTML `<template>.innerHTML` path renders inert — which
+  // is why SVG input must be trusted (it executes once inserted live; the
+  // real-browser execution proof lives in tests/browser/trusted-html-bridges).
+  // Pin the structural fact in the fast gate so a regression (accidental
+  // sanitization, or a change that drops the script) is caught here too.
+  it('keeps a <script> in SVG input (does not sanitize)', () => {
+    const svg = toElement(
+      '<svg xmlns="http://www.w3.org/2000/svg"><script>void 0</script></svg>',
+    ) as Element;
+    expect(svg.querySelector('script')).not.toBeNull();
+  });
+
+  it('keeps an event attribute in SVG input (does not sanitize)', () => {
+    const svg = toElement(
+      '<svg xmlns="http://www.w3.org/2000/svg" onload="void 0"><rect/></svg>',
+    ) as Element;
+    expect(svg.getAttribute('onload')).toBe('void 0');
+  });
+});
