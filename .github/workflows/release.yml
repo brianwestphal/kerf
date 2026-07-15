@@ -180,10 +180,34 @@ jobs:
           prerelease: true
           make_latest: 'false'  # defence-in-depth
 
-  # ─── Phase 3: npm publish ───────────────────────────────────────────
+  # ─── Phase 3: build dist/ (no token) → publish (token) ──────────────
+  #
+  # KF-318 defense-in-depth: the OIDC-token-holding publish job must NOT run
+  # build tools or dependency install scripts. The `build` job runs `npm ci`
+  # (which executes esbuild/fsevents/etc. install scripts) and `npm run build`
+  # (tsup/esbuild) but holds NO `id-token`, so a compromised build tool or
+  # install script there can't mint a publishing token or push a tarball. It
+  # hands the built `dist/` to `npm-publish` as an artifact.
+
+  build:
+    needs: [create-release, detect]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '${{ env.NODE_VERSION }}', cache: npm }
+      - run: npm ci
+      - run: npm run build
+      - name: Upload built dist/ for the publish job
+        uses: actions/upload-artifact@v4
+        with:
+          name: kerfjs-dist
+          path: dist/
+          retention-days: 1
+          if-no-files-found: error
 
   npm-publish:
-    needs: [create-release, detect]
+    needs: [build, detect]
     runs-on: ubuntu-latest
     environment: npm-publish
     permissions:
@@ -191,22 +215,30 @@ jobs:
       id-token: write   # npm OIDC trusted publishing
     steps:
       - uses: actions/checkout@v4
+      # No `cache: npm` — this job installs nothing (no `npm ci`, no build).
       - uses: actions/setup-node@v4
         with:
           node-version: '${{ env.NODE_VERSION }}'
-          cache: npm
           registry-url: 'https://registry.npmjs.org/'
       - run: npm install -g npm@latest   # trusted publishing OIDC needs npm ≥ 11.5.1
-      - run: npm ci
+      - name: Download the built dist/ (produced by the token-less build job)
+        uses: actions/download-artifact@v4
+        with:
+          name: kerfjs-dist
+          path: dist/
       - name: Bump package.json to beta version (ephemeral, not committed)
         if: needs.detect.outputs.is_beta == 'true'
         run: |
           VERSION="${{ needs.detect.outputs.version }}"
           npm version "$VERSION" --no-git-tag-version --allow-same-version
-      - run: npm run build
+      # `--ignore-scripts`: dist/ is already built + downloaded, so skip the
+      # `prepublishOnly: npm run build` rebuild — and, more importantly, run NO
+      # scripts at all in the token-holding job. The published `files`
+      # (dist from the artifact; ai/llms.txt/README/CHANGELOG/LICENSE from
+      # checkout) are all present without a dependency install.
       - name: Publish to npm@latest (stable)
         if: needs.detect.outputs.is_beta == 'false'
-        run: npm publish --provenance --access public
+        run: npm publish --ignore-scripts --provenance --access public
       - name: Publish to npm@beta (beta)
         if: needs.detect.outputs.is_beta == 'true'
-        run: npm publish --tag beta --provenance --access public
+        run: npm publish --ignore-scripts --tag beta --provenance --access public

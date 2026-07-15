@@ -87,15 +87,18 @@ jobs:
       run:
         working-directory: create-kerf-component
     steps:
+      # KF-318 defense-in-depth: create-kerf-component publishes source directly
+      # (no build step), so the token-holding job needs no `npm ci` at all — the
+      # published `files` come straight from the checkout. Dropping `npm ci`
+      # removes dependency-install-script execution from the OIDC-token job; the
+      # `test` job above still runs `npm ci` + `npm test` (with no id-token) so
+      # the deps are validated. `--ignore-scripts` on publish runs nothing else.
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '${{ env.NODE_VERSION }}'
-          cache: npm
-          cache-dependency-path: create-kerf-component/package-lock.json
           registry-url: 'https://registry.npmjs.org/'
       - run: npm install -g npm@latest   # trusted publishing OIDC needs npm ≥ 11.5.1
-      - run: npm ci
       - name: Bump package.json to beta version (ephemeral, not committed)
         if: needs.detect.outputs.is_beta == 'true'
         run: |
@@ -103,7 +106,7 @@ jobs:
           npm version "$VERSION" --no-git-tag-version --allow-same-version
       - name: Publish to npm@latest (stable)
         if: needs.detect.outputs.is_beta == 'false'
-        run: npm publish --provenance --access public
+        run: npm publish --ignore-scripts --provenance --access public
       - name: Publish to npm@beta (beta)
         if: needs.detect.outputs.is_beta == 'true'
-        run: npm publish --tag beta --provenance --access public
+        run: npm publish --ignore-scripts --tag beta --provenance --access public
