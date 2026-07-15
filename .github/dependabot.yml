@@ -1,0 +1,23 @@
+# Dependabot keeps the SHA-pinned GitHub Actions fresh (KF-323). The workflows
+# pin every action to a full commit SHA (immutable — safe from a tag being
+# re-pointed at malicious code); without an automated bumper those pins would
+# silently miss security patches, so this config opens a weekly PR whenever a
+# pinned action has a newer release. All action bumps are grouped into one PR to
+# keep the noise down.
+#
+# Scope note: only the `github-actions` ecosystem is enabled. The `npm`
+# ecosystem is intentionally left out for now — the dev-dependency tree carries
+# transitive advisories with no fix available (see KF-320), so npm updates would
+# open recurring no-op PRs. Enable an `npm` entry here if/when that changes.
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    groups:
+      github-actions:
+        patterns:
+          - "*"
+    commit-message:
+      prefix: "ci"

@@ -41,8 +41,8 @@ jobs:
       run:
         working-directory: create-kerf-component
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: '${{ env.NODE_VERSION }}'
           cache: npm
@@ -93,8 +93,8 @@ jobs:
       # removes dependency-install-script execution from the OIDC-token job; the
       # `test` job above still runs `npm ci` + `npm test` (with no id-token) so
       # the deps are validated. `--ignore-scripts` on publish runs nothing else.
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: '${{ env.NODE_VERSION }}'
           registry-url: 'https://registry.npmjs.org/'
