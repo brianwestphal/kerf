@@ -114,9 +114,12 @@ Inline event-handler attributes are also rejected — any `on*` name, whether th
 ```tsx
 <button onClick={fn}>…</button>              // throws — use delegate() instead
 <button onclick="doThing()">…</button>       // throws — a string here becomes a LIVE handler in the browser
+<button onclick={someSignal}>…</button>      // throws — a bound signal would setAttribute('onclick', …) → live handler
 ```
 
 kerf's model is [event delegation](5-event-delegation.md), not inline handlers. A string like `onclick="…"` emitted into the HTML would become a real handler when parsed — an XSS vector if the value is attacker-controlled — so the runtime refuses it and points you at `delegate()`.
+
+Both name checks apply to **every** attribute path, not just static string values. A [signal bound straight into an attribute](2-reactivity.md) (`class={sig}`) is written to the live element with `setAttribute`, and `setAttribute('onclick', …)` installs a real inline handler just as a parsed string would — so an `on*` (or malformed) name bound as a signal is rejected at binding time, before it can reach the DOM.
 
 ### 6.4.3 HTML-bearing attributes (`srcdoc`) are not URLs
 

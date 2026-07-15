@@ -203,17 +203,32 @@ function describeValue(v: unknown): string {
  */
 const SAFE_ATTR_NAME = /^[A-Za-z_:][\w.:-]*$/;
 
-function renderAttr(key: string, value: unknown): string {
-  const name = ATTR_ALIASES[key] ?? key;
-  if (value == null || value === false) return '';
-  // Inline event-handler attributes are rejected regardless of value type or
-  // case (KF-306). kerf's model is event delegation; a string like
-  // `onclick="alert(1)"` emitted into the HTML becomes a LIVE handler in the
-  // browser — an XSS vector when the key/value is attacker-controlled. (The old
-  // guard only caught function values whose key matched `/^on[A-Z]/`, so a
-  // string `onclick`, or any lowercase-keyed handler, slipped through.)
+/**
+ * Reject an attribute NAME that kerf must never route into HTML or the DOM.
+ * Shared by BOTH attribute paths so they enforce one contract (KF-306, KF-322):
+ *
+ *   - the static string path (`renderAttr`) — a name is emitted verbatim into
+ *     the open tag, and `on*` values become live inline handlers once parsed;
+ *   - the fine-grained bound path (`jsx()` signal branch → `bindAttr` →
+ *     `setBoundAttr` → `el.setAttribute(name, …)`) — `setAttribute('onclick', …)`
+ *     installs a LIVE handler in the browser, an XSS vector that would otherwise
+ *     bypass the static guard entirely.
+ *
+ * Two rejections:
+ *   1. `on*` (any case) — kerf's model is event delegation, never inline
+ *      handlers. `isFn` tailors the message: function values get the
+ *      delegate() migration pointer; string/signal/other values get the
+ *      XSS-aware message.
+ *   2. a malformed name (spread of untrusted keys, `<div {...obj}>`) that could
+ *      break out of the open tag. The bound path can't actually inject markup
+ *      this way — `setAttribute` throws `InvalidCharacterError` rather than
+ *      parsing — but the same guard runs on both paths for one consistent
+ *      contract. Validated post-alias; every `ATTR_ALIASES` value is itself a
+ *      valid name, so aliasing is unaffected.
+ */
+function assertEmittableAttrName(key: string, name: string, isFn: boolean): void {
   if (/^on[a-z]/i.test(name)) {
-    if (typeof value === 'function') {
+    if (isFn) {
       throw new Error(
         `JSX: inline event handlers like ${key}={fn} are not supported by kerf's JSX → HTML-string runtime. `
         + 'Use event delegation from the mount root instead:\n\n'
@@ -223,15 +238,13 @@ function renderAttr(key: string, value: unknown): string {
       );
     }
     throw new Error(
-      `JSX: event-handler attribute ${JSON.stringify(key)} is not allowed — a string like `
-      + '`onclick="..."` becomes a live inline handler (an XSS vector) once emitted into HTML. '
+      `JSX: event-handler attribute ${JSON.stringify(key)} is not allowed — an `
+      + '`on*` attribute (whether a string emitted into HTML or a signal bound via '
+      + 'setAttribute) installs a live inline handler, an XSS vector. '
       + 'kerf uses event delegation: delegate(rootEl, \'click\', \'[data-action="..."]\', handler). '
       + 'See docs/5-event-delegation.md.',
     );
   }
-  // Reject malformed attribute names so a spread of untrusted keys can't break
-  // out of the open tag and inject markup (KF-306). Validated post-alias; every
-  // ATTR_ALIASES value is itself a valid name, so aliasing is safe.
   if (!SAFE_ATTR_NAME.test(name)) {
     throw new Error(
       `JSX: invalid attribute name ${JSON.stringify(key)}. Attribute names must be a `
@@ -240,6 +253,12 @@ function renderAttr(key: string, value: unknown): string {
       + 'spread into JSX ({...obj}) with attacker-controlled keys — validate keys first.',
     );
   }
+}
+
+function renderAttr(key: string, value: unknown): string {
+  const name = ATTR_ALIASES[key] ?? key;
+  if (value == null || value === false) return '';
+  assertEmittableAttrName(key, name, typeof value === 'function');
   if (value === true) return ` ${name}`;
   let strValue: string;
   if (isSafeHtml(value)) {
@@ -277,7 +296,15 @@ export function jsx(tag: string | ((props: Props) => SafeHtml), props: Props): S
     // emitting the attribute — the wiring pass sets it after parse and keeps
     // it fine-grained. Outside a mount, snapshot the current value.
     if (isSignal(v)) {
-      const id = bindAttr(ATTR_ALIASES[k] ?? k, v);
+      const name = ATTR_ALIASES[k] ?? k;
+      // Reject `on*` / malformed names on the bound path too (KF-322 completes
+      // KF-306). Unconditional: a signal's value can change over time, so we
+      // can't gate on the current value — an `onclick={signal}` binding would
+      // otherwise install a live inline handler via setAttribute, bypassing the
+      // static renderAttr guard entirely. `isFn` is false: a signal is not a
+      // function value, so this routes to the XSS-aware message.
+      assertEmittableAttrName(k, name, false);
+      const id = bindAttr(name, v);
       if (id !== null) {
         (bindIds ??= []).push(id);
         continue;

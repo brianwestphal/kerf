@@ -236,6 +236,62 @@ describe('fine-grained bindings — bound-attribute security (KF-297)', () => {
   });
 });
 
+describe('fine-grained bindings — on* / malformed-name rejection on the bound path (KF-322)', () => {
+  // KF-306 hardened the STATIC renderAttr path; KF-322 closes the same hole on
+  // the fine-grained bound path. `jsx('button', { onclick: signal })` used to
+  // reach setBoundAttr → el.setAttribute('onclick', …), which installs a LIVE
+  // inline handler in a browser — an XSS vector that bypassed the static guard.
+  // The shared `assertEmittableAttrName` now rejects the on* NAME (and malformed
+  // names) at binding registration, before bindAttr ever records the hole.
+  //
+  // `onclick`/`onMouseOver`/etc. are not in kerf's JSX types (kerf exposes no
+  // inline-handler props), so these bags are cast — the runtime throw is the
+  // subject, the type system blocking it earlier is a bonus.
+  type AttrBag = Parameters<typeof jsx>[1];
+
+  it('throws when a signal is bound to onclick inside a mount — no handler installed', () => {
+    const handler = signal('alert(1)');
+    const bag = { id: 'b', onclick: handler, children: 'go' } as unknown as AttrBag;
+    expect(() => mount(root, () => jsx('button', bag))).toThrow(/event-handler attribute/);
+    // The render threw before registering the binding, so nothing mounted and —
+    // critically — no live inline onclick handler was written to the DOM.
+    expect(root.querySelector('#b')).toBeNull();
+  });
+
+  it('rejects an on* signal attribute case-insensitively (onMouseOver)', () => {
+    const sig = signal('x');
+    const bag = { onMouseOver: sig, children: 'x' } as unknown as AttrBag;
+    expect(() => mount(root, () => jsx('div', bag))).toThrow(/event-handler attribute/);
+  });
+
+  it('rejects an on* signal attribute inside an each() row (row-scoped binding path)', () => {
+    const sig = signal('alert(1)');
+    const items = signal([{ id: 'r1' }]);
+    const rowBag = (item: { id: string }) =>
+      ({ 'data-key': item.id, onclick: sig, children: item.id }) as unknown as AttrBag;
+    expect(() =>
+      mount(root, () => jsx('ul', { children: each(items.value, (item) => jsx('li', rowBag(item))) })),
+    ).toThrow(/event-handler attribute/);
+  });
+
+  it('rejects the on* NAME regardless of the signal\'s current value (value null)', () => {
+    // Proves the guard keys on the attribute NAME, not the value: a null-valued
+    // signal (which would otherwise emit/write nothing) is still rejected, so
+    // the vector can't be smuggled in behind a currently-empty signal.
+    const empty = signal<string | null>(null);
+    const bag = { onclick: empty, children: 'x' } as unknown as AttrBag;
+    expect(() => jsx('button', bag).toString()).toThrow(/event-handler attribute/);
+  });
+
+  it('rejects a signal bound to a malformed attribute name', () => {
+    // Not injectable on the bound path (setAttribute throws InvalidCharacterError
+    // rather than parsing markup), but rejected for one consistent contract.
+    const sig = signal('y');
+    const bag = { 'x><img src=q onerror=alert(1)>': sig, children: 'z' } as unknown as AttrBag;
+    expect(() => jsx('div', bag).toString()).toThrow(/invalid attribute name/);
+  });
+});
+
 describe('fine-grained bindings — SSR / toString fallback', () => {
   it('snapshots a signal text child to its current value with no marker', () => {
     const s = signal('hello');

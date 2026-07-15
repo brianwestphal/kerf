@@ -320,6 +320,11 @@ function attachTextEffect(marker: Comment, signal: Signal<unknown>): () => void 
  * Unlike `renderAttr` (which builds an HTML string, so escapes with
  * `escapeAttr`), this writes the RAW value via `setAttribute` — the DOM stores
  * attribute values verbatim, so no HTML-escaping is applied here.
+ *
+ * The attribute NAME is trusted here: `on*` and malformed names are rejected at
+ * binding-registration time in the JSX runtime's `jsx()` signal branch (shared
+ * `assertEmittableAttrName`, KF-322), so `setAttribute('onclick', …)` — which
+ * would install a live inline handler — can never reach this writer.
  */
 function setBoundAttr(el: Element, name: string, value: unknown): void {
   if (value == null || value === false) {

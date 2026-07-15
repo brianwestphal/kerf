@@ -110,6 +110,7 @@ axis (`cacheKey` reading an external signal) crosses all of them.
 | FC-B13 | Global hole: a re-created `computed` reading a stable source survives a fast-path re-render (no staleness) | `src/mount.ts`, `src/bindings.ts` | `tests/unit/bindings.test.ts` › "global hole: a re-created computed reading a stable source survives a fast-path re-render" |
 | FC-B14 | Adversarial: full binding × reconcile transition walk (first-render / granular insert+update+remove+move / replace → snapshot rebuild) | `src/bindings.ts`, `src/list-reconcile-granular.ts`, `src/list-reconcile-snapshot.ts` | `tests/unit/bindings.test.ts` › "adversarial: full binding × reconcile transition walk (arraySignal + select-binding)" |
 | FC-B15 | Reserved marker namespace is pinned to its documented names (`data-kfb`/`data-kfbrow`/`kfb:`/`kfbr:`/`kf-list:`) | `src/bindings.ts`, `src/mount.ts` | `tests/unit/bindings.test.ts` › "emits exactly the documented reserved marker names" |
+| FC-B16 | `on*` / malformed attribute names are rejected on the bound (signal) path too — no `setAttribute('onclick', …)` live handler | `src/jsx-runtime.ts`, `src/bindings.ts` | `tests/unit/bindings.test.ts` › "throws when a signal is bound to onclick inside a mount — no handler installed", `tests/unit/bindings.test.ts` › "rejects a signal bound to a malformed attribute name" |
 
 ### §3 Stores
 
