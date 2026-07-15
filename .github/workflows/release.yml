@@ -79,6 +79,27 @@ jobs:
       - run: npm run build
       - run: npm pack --dry-run
 
+  # KF-319: the dist-regression + repo-hygiene gates that otherwise run only in
+  # ci.yml (push/PR) and the local pre-commit hook. A tag pushed directly —
+  # bypassing a green PR — would otherwise publish without them. Runs the
+  # built-dist suites against a fresh build, plus the feature-coverage /
+  # ai-bundle-in-sync / doc-inventory checks. `create-release` gates on it, so
+  # npm-publish (which needs create-release) can't run until this passes.
+  dist-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '${{ env.NODE_VERSION }}', cache: npm }
+      - run: npm ci
+      - run: npm run build
+      - run: npx vitest run --config vitest.config.dist.ts
+      - run: npx vitest run --config vitest.config.dist-full.ts
+      - run: node scripts/check-doc-test-inventory.mjs
+      - run: node scripts/check-doc-api-coverage.mjs
+      - run: node scripts/check-feature-coverage.mjs
+      - run: node scripts/check-ai-bundle.mjs
+
   # ─── Detect: is this a stable tag or a beta tag? ────────────────────
 
   detect:
@@ -103,7 +124,7 @@ jobs:
   # ─── Phase 2: GitHub Release ────────────────────────────────────────
 
   create-release:
-    needs: [test, lint, typecheck, npm-dry-run, detect]
+    needs: [test, lint, typecheck, npm-dry-run, dist-gate, detect]
     runs-on: ubuntu-latest
     permissions:
       contents: write   # softprops/action-gh-release creates the GitHub Release
@@ -138,7 +159,10 @@ jobs:
           } > release-notes.md
       - name: Create GitHub Release (stable)
         if: needs.detect.outputs.is_beta == 'false'
-        uses: softprops/action-gh-release@v2
+        # SHA-pinned (not @v2) so a retag/compromise of this third-party action
+        # can't run arbitrary code in the release flow. Bump the SHA + comment
+        # together when upgrading.
+        uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65 # v2.6.2
         with:
           tag_name: ${{ github.ref_name }}
           name: v${{ needs.detect.outputs.version }}
@@ -147,7 +171,8 @@ jobs:
           make_latest: 'true'
       - name: Create GitHub Release (beta)
         if: needs.detect.outputs.is_beta == 'true'
-        uses: softprops/action-gh-release@v2
+        # SHA-pinned — see the stable-release step above.
+        uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65 # v2.6.2
         with:
           tag_name: ${{ github.ref_name }}
           name: v${{ needs.detect.outputs.version }}
