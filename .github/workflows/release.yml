@@ -13,9 +13,14 @@ name: Release
 # from the same workflow filename. The `detect` job sets `is_beta` and every
 # downstream job/step branches on it.
 
+# Least-privilege baseline for every job: read-only contents, no OIDC token.
+# `id-token: write` (npm OIDC trusted publishing) is granted ONLY to the
+# `npm-publish` job, and `contents: write` (create the GitHub Release) ONLY to
+# `create-release`. This keeps the OIDC-mintable token out of the validation
+# jobs (test / lint / typecheck / npm-dry-run) that run untrusted install
+# scripts and test code via `npm ci` / `npm test`.
 permissions:
-  contents: write
-  id-token: write   # npm OIDC trusted publishing
+  contents: read
 
 on:
   push:
@@ -100,6 +105,8 @@ jobs:
   create-release:
     needs: [test, lint, typecheck, npm-dry-run, detect]
     runs-on: ubuntu-latest
+    permissions:
+      contents: write   # softprops/action-gh-release creates the GitHub Release
     steps:
       - uses: actions/checkout@v4
       - name: Extract release notes from CHANGELOG (stable)
@@ -154,6 +161,9 @@ jobs:
     needs: [create-release, detect]
     runs-on: ubuntu-latest
     environment: npm-publish
+    permissions:
+      contents: read    # checkout
+      id-token: write   # npm OIDC trusted publishing
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

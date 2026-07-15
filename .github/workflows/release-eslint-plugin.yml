@@ -10,9 +10,12 @@ name: Release eslint-plugin-kerfjs
 # `package.json` (root) and `eslint-plugin/package.json` to the same version
 # before committing and tagging.
 
+# Least-privilege baseline: read-only contents, no OIDC token for any job.
+# `id-token: write` (npm OIDC trusted publishing) is granted ONLY to the
+# `npm-publish` job, keeping the OIDC-mintable token out of the `test` job that
+# runs untrusted install scripts / test code via `npm ci` / `npm test`.
 permissions:
-  contents: write
-  id-token: write   # npm OIDC trusted publishing
+  contents: read
 
 on:
   push:
@@ -77,6 +80,9 @@ jobs:
     needs: [test, detect]
     runs-on: ubuntu-latest
     environment: npm-publish-eslint-plugin
+    permissions:
+      contents: read    # checkout
+      id-token: write   # npm OIDC trusted publishing
     defaults:
       run:
         working-directory: eslint-plugin
