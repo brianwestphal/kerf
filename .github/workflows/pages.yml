@@ -9,10 +9,13 @@ concurrency:
   group: pages
   cancel-in-progress: true
 
+# Least-privilege baseline: read-only contents, no Pages/OIDC token for any job.
+# `pages: write` + `id-token: write` are granted ONLY to the `deploy` job (which
+# runs actions/deploy-pages), so the `build` job — which runs `npm ci` install
+# scripts + `npm run build` + `npm run site:build` — can't use a Pages OIDC
+# token to deploy arbitrary content to the site.
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 env:
   NODE_VERSION: '22'
@@ -39,6 +42,9 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
+    permissions:
+      pages: write      # deploy the built site
+      id-token: write   # OIDC attestation for actions/deploy-pages
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
