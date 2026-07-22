@@ -145,7 +145,81 @@ describe('fine-grained bindings — attribute holes', () => {
   });
 });
 
-describe('fine-grained bindings — bound-attribute security (KF-297)', () => {
+// KF-340: the URL screen throws in dev (fail loudly at the developer's desk),
+// warns + drops in prod (never crash a shipped app on attacker-influenced data).
+// These bound-writer tests run under the ambient NODE_ENV=test (dev) and assert
+// the throw; the prod block below forces `KERF_DEV = false` and asserts warn+drop.
+describe('fine-grained bindings — bound-attribute security: throws in dev (KF-297 / KF-340)', () => {
+  beforeEach(() => { (globalThis as Record<string, unknown>).KERF_DEV = true; });
+  afterEach(() => { delete (globalThis as Record<string, unknown>).KERF_DEV; });
+
+  it('throws when a bound href resolves to a javascript: URL', () => {
+    const url = signal('javascript:alert(1)');
+    expect(() => mount(root, () => jsx('a', { id: 'a', href: url, children: 'x' })))
+      .toThrow(/dropped dangerous URL value for href/);
+  });
+
+  it('throws for a bound src URL-bearing attribute', () => {
+    expect(() => mount(root, () => jsx('img', { id: 'img', src: signal('javascript:alert(1)') })))
+      .toThrow(/dropped dangerous URL value for src/);
+  });
+
+  it('throws for a bound formaction URL-bearing attribute', () => {
+    const host = document.createElement('div');
+    document.body.appendChild(host);
+    expect(() => mount(host, () => jsx('button', { id: 'b', formaction: signal('javascript:alert(1)'), children: 'go' })))
+      .toThrow(/dropped dangerous URL value for formaction/);
+    host.remove();
+  });
+
+  it('throws when a live update flips the bound URL from safe to dangerous', () => {
+    const url = signal('/safe');
+    const dispose = mount(root, () => jsx('a', { id: 'a', href: url, children: 'x' }));
+    expect((root.querySelector('#a') as HTMLElement).getAttribute('href')).toBe('/safe');
+    expect(() => { url.value = 'javascript:alert(1)'; }).toThrow(/dropped dangerous URL value for href/);
+    dispose();
+  });
+
+  it('throws on the hardened screen — control-char-obfuscated javascript:', () => {
+    // KF-304: control-char-obfuscated javascript: caught even on the bound path.
+    expect(() => mount(root, () => jsx('a', { id: 'a', href: signal('java\tscript:alert(1)'), children: 'x' })))
+      .toThrow(/dropped dangerous URL value for href/);
+  });
+
+  it('throws on the hardened screen — script-executing data: subtype', () => {
+    // KF-311: script-executing data: subtype dropped.
+    expect(() => mount(root, () => jsx('iframe', { id: 'i', src: signal('data:image/svg+xml,<svg onload=alert(1)/>') })))
+      .toThrow(/dropped dangerous URL value for src/);
+  });
+
+  it('throws on the hardened screen — <object data> document load', () => {
+    // KF-312: <object data> screened (loads its target as a document).
+    expect(() => mount(root, () => jsx('object', { id: 'o', data: signal('data:text/html,<script>alert(1)</script>') })))
+      .toThrow(/dropped dangerous URL value for data/);
+  });
+
+  it('does NOT throw for non-URL attributes (screen not triggered)', () => {
+    const v = signal('javascript:alert(1)');
+    const dispose = mount(root, () => jsx('div', { id: 'd', 'data-action': v }));
+    expect((root.querySelector('#d') as HTMLElement).getAttribute('data-action')).toBe('javascript:alert(1)');
+    dispose();
+  });
+
+  it('lets a SafeHtml (raw()) bound value bypass the screen in dev — the opt-out is unchanged', () => {
+    const href = signal(raw('javascript:void(0)'));
+    const dispose = mount(root, () => jsx('a', { id: 'a', href, children: 'bookmarklet' }));
+    // raw() opts out in BOTH modes: written verbatim, never throws.
+    expect((root.querySelector('#a') as HTMLElement).getAttribute('href')).toBe('javascript:void(0)');
+    dispose();
+  });
+});
+
+describe('fine-grained bindings — bound-attribute security: warn+drop in production (KF-297 / KF-340)', () => {
+  // Force production mode so the screen warns + drops instead of throwing. The
+  // override wins over the ambient NODE_ENV=test; restore it after each test.
+  beforeEach(() => { (globalThis as Record<string, unknown>).KERF_DEV = false; });
+  afterEach(() => { delete (globalThis as Record<string, unknown>).KERF_DEV; });
+
   it('drops a bound href that resolves to a javascript: URL, and warns', () => {
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
     const url = signal('javascript:alert(1)');

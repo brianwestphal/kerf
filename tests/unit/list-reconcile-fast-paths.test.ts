@@ -485,29 +485,39 @@ describe('granular fast path — URL screen invariant (KF-305)', () => {
     // href flips to `javascript:` re-renders through renderAttr (which drops it),
     // so the dangerous value never reaches the fast path's setAttribute — and the
     // change still travels the granular fast path (no `<template>.innerHTML` parse).
+    //
+    // KF-340: force production mode so renderAttr WARNS+DROPS on the re-render
+    // instead of throwing. This test is inherently a prod-behavior invariant (the
+    // fast-path setAttribute never sees the dangerous value); in dev the re-render
+    // throws — that dev throw is covered by the renderAttr dev-throw tests.
+    (globalThis as Record<string, unknown>).KERF_DEV = false;
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
-    type R = { id: number; url: string };
-    const rows = arraySignal<R>([{ id: 1, url: '/safe' }]);
-    mount(root, () => jsx('div', {
-      children: each(rows, (r) => jsx('a', {
-        'data-key': String(r.id),
-        href: r.url,
-        children: 'x',
-      })),
-    }));
-    const a = root.querySelector('a')!;
-    expect(a.getAttribute('href')).toBe('/safe');
-
-    const spy = spyTemplateInnerHTML();
     try {
-      rows.update(0, (r) => ({ ...r, url: 'javascript:alert(1)' }));
-    } finally {
-      spy.restore();
-    }
+      type R = { id: number; url: string };
+      const rows = arraySignal<R>([{ id: 1, url: '/safe' }]);
+      mount(root, () => jsx('div', {
+        children: each(rows, (r) => jsx('a', {
+          'data-key': String(r.id),
+          href: r.url,
+          children: 'x',
+        })),
+      }));
+      const a = root.querySelector('a')!;
+      expect(a.getAttribute('href')).toBe('/safe');
 
-    expect(a.hasAttribute('href')).toBe(false);   // dropped, never written
-    expect(root.querySelector('a')).toBe(a);       // same node — fast path, not a rebuild
-    expect(spy.count).toBe(0);                     // no innerHTML parse: the granular fast path ran
-    warn.mockRestore();
+      const spy = spyTemplateInnerHTML();
+      try {
+        rows.update(0, (r) => ({ ...r, url: 'javascript:alert(1)' }));
+      } finally {
+        spy.restore();
+      }
+
+      expect(a.hasAttribute('href')).toBe(false);   // dropped, never written
+      expect(root.querySelector('a')).toBe(a);       // same node — fast path, not a rebuild
+      expect(spy.count).toBe(0);                     // no innerHTML parse: the granular fast path ran
+    } finally {
+      warn.mockRestore();
+      delete (globalThis as Record<string, unknown>).KERF_DEV;
+    }
   });
 });

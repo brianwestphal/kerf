@@ -103,7 +103,7 @@ axis (`cacheKey` reading an external signal) crosses all of them.
 | FC-B5 | Row binding disposed on a granular remove | `src/list-reconcile-granular.ts` | `tests/unit/bindings.test.ts` › "disposes a bound row removed via a granular remove patch" |
 | FC-B6 | Row binding survives a granular move (node reused) | `src/list-reconcile-granular.ts` | `tests/unit/bindings.test.ts` › "keeps bindings across a granular move (swap)" |
 | FC-B7 | Bound class survives a granular in-place update (reuseBound) | `src/list-reconcile-granular.ts` | `tests/unit/bindings.test.ts` › "preserves a bound class across a granular label update" |
-| FC-B8 | Bound URL attribute is screened (javascript: dropped + warns) | `src/bindings.ts`, `src/utils/urlScreen.ts` | `tests/unit/bindings.test.ts` › "drops a bound href that resolves to a javascript: URL, and warns" |
+| FC-B8 | Bound URL attribute is screened (javascript: dropped; warns in prod, throws in dev) | `src/bindings.ts`, `src/utils/urlScreen.ts`, `src/utils/devMode.ts` | `tests/unit/bindings.test.ts` › "drops a bound href that resolves to a javascript: URL, and warns"; `tests/unit/bindings.test.ts` › "throws when a bound href resolves to a javascript: URL" |
 | FC-B9 | SSR / `.toString()` snapshots a bound signal, no markers | `src/jsx-runtime.ts`, `src/bindings.ts` | `tests/unit/bindings.test.ts` › "snapshots a signal text child to its current value with no marker" |
 | FC-B10 | Bindings torn down on unmount (detached node stops updating) | `src/mount.ts`, `src/bindings.ts` | `tests/unit/bindings.test.ts` › "tears down row bindings on unmount (no update to detached rows)" |
 | FC-B11 | Transition: create → select → remove-selected → select | `src/bindings.ts`, `src/list-reconcile-snapshot.ts` | `tests/unit/bindings.test.ts` › "adversarial: create → select → remove selected → select another" |
@@ -176,12 +176,13 @@ axis (`cacheKey` reading an external signal) crosses all of them.
 | FC-JX5 | `null` / `undefined` / boolean children are omitted | `src/jsx-runtime.ts` | `tests/unit/jsx-runtime.test.ts` › "omits null / undefined / boolean children" |
 | FC-JX6 | `attr()` static + dynamic overloads (camelCase → HTML/SVG aliasing) | `src/jsx-runtime.ts`, `src/utils/jsx-attr-aliases.ts` | `tests/unit/attr.test.ts` › "attr — static overload", `tests/unit/attr.test.ts` › "attr — dynamic overload" |
 | FC-JX7 | `Fragment` groups children with no wrapper element | `src/jsx-runtime.ts` | `tests/unit/jsx-runtime.test.ts` › "Fragment" |
-| FC-JX8 | Static URL attribute is screened (`javascript:` dropped + warns) | `src/jsx-runtime.ts`, `src/utils/urlScreen.ts` | `tests/unit/jsx-runtime.test.ts` › "drops javascript: in href and warns" |
+| FC-JX8 | Static URL attribute is screened (`javascript:` dropped; warns in prod) | `src/jsx-runtime.ts`, `src/utils/urlScreen.ts` | `tests/unit/jsx-runtime.test.ts` › "drops javascript: in href and warns" |
 | FC-JX9 | URL screen sees through control-char / whitespace scheme obfuscation | `src/utils/urlScreen.ts` | `tests/unit/jsx-runtime.test.ts` › "drops javascript: with a TAB inside the scheme" |
 | FC-JX10 | URL screen is `data:`-subtype-specific (svg/xml dropped, image kept) | `src/utils/urlScreen.ts` | `tests/unit/jsx-runtime.test.ts` › "drops data:image/svg+xml (SVG can carry <script>)" |
 | FC-JX11 | `<object data>` document URL is screened | `src/utils/urlScreen.ts` | `tests/unit/jsx-runtime.test.ts` › "screens the data attribute on <object> (data:text/html XSS)" |
 | FC-JX12 | Attribute names are validated — a malformed name (spread injection) throws | `src/jsx-runtime.ts` | `tests/unit/jsx-runtime.test.ts` › "throws on an attribute name that would break out of the tag" |
 | FC-JX13 | Inline event-handler attributes (`on*`, string or function, any case) are rejected | `src/jsx-runtime.ts` | `tests/unit/jsx-runtime.test.ts` › "rejects a string-valued on* attribute (would be a live inline handler)" |
+| FC-JX14 | URL screen throws in dev, warns+drops in prod (dev/prod split) | `src/jsx-runtime.ts`, `src/utils/urlScreen.ts`, `src/utils/devMode.ts` | `tests/unit/jsx-runtime.test.ts` › "throws on a javascript: href"; `tests/unit/jsx-runtime.test.ts` › "falls back to NODE_ENV when no KERF_DEV override is set (ambient dev throws)" |
 
 ### §7 SVG
 
