@@ -74,7 +74,7 @@ const REPO_ROOT = dirname(dirname(fileURLToPath(import.meta.url)));
 const DIST = resolve(REPO_ROOT, 'dist');
 const API_DOC = resolve(REPO_ROOT, 'docs/8-api-reference.md');
 
-const ENTRY_DTS = ['index.d.ts', 'array-signal.d.ts', 'jsx-runtime.d.ts', 'testing.d.ts'];
+const ENTRY_DTS = ['index.d.ts', 'array-signal.d.ts', 'jsx-runtime.d.ts', 'testing.d.ts', 'html.d.ts'];
 
 // Internal function exports the JSX transform consumes but users never call by
 // hand, plus JSX sugar with no user-facing parameter signature. Presence of
@@ -302,8 +302,15 @@ function collectDocCandidates(doc) {
     else proseLines.push(line);
   }
   const candidates = [...fenceLines];
-  for (const m of proseLines.join('\n').matchAll(/`([^`]+)`/g)) {
-    candidates.push(m[1].trim());
+  // Per-line, delimiter-length-aware span matching: markdown allows n-backtick
+  // delimiters (`` … `` wraps content that itself contains single backticks —
+  // e.g. the `` html`…` `` heading). A naive /`([^`]+)`/ pairs the backticks
+  // of a double-backtick span wrongly and desyncs every span extracted after
+  // it on the joined text, silently losing later signatures.
+  for (const line of proseLines) {
+    for (const m of line.matchAll(/(`+)(.+?)\1/g)) {
+      candidates.push(m[2].trim());
+    }
   }
   return candidates;
 }
@@ -314,7 +321,9 @@ function collectDocCandidates(doc) {
  * parameter is a valid declaration; otherwise null.
  */
 function parseDocSignature(candidate, name) {
-  const s = candidate.trim().replace(/^declare function\s+/, '');
+  // Accept `declare function name(…)`, `function name(…)` (how a fenced doc
+  // block quotes a .d.ts declaration), and bare `name(…)` heading spans alike.
+  const s = candidate.trim().replace(/^(?:declare\s+)?function\s+/, '');
   if (!s.startsWith(name)) return null;
   let i = name.length;
   // Reject `nameOther(` — the name must be followed by `<` or `(`.
@@ -392,6 +401,10 @@ function main() {
     for (const spec of parseExportStatements(src)) {
       if (spec.isType) continue;
       if (EXEMPT_FUNCS.has(spec.exported)) continue;
+      // Underscore-prefixed exports are internal by repo convention (e.g.
+      // morph's _morphElement, jsx-runtime's _toSegment) — deliberately
+      // undocumented in the API reference, so the gate skips them.
+      if (spec.exported.startsWith('_')) continue;
       if (targets.has(spec.exported)) continue;
       const resolved = resolveFunction(entry, spec.exported);
       if (resolved) targets.set(spec.exported, resolved);
