@@ -214,7 +214,19 @@ without penalising projects that pass a fresh inline computed into a global
 hole. (Row holes inside `each()` are wired per-row-node and disposed on row
 removal, so they never reach this warner.)
 
-### 11.2.8 Double-mount guard (always-on, not opt-in)
+### 11.2.8 `KERF_DEV_WARN_VALUE_ONLY_RERENDER=1`
+
+**Module:** [`src/dev-rerender-warn.ts`](../src/dev-rerender-warn.ts).
+**Trigger:** a `mount()` re-render whose static-surrounds HTML *changed* (the byte-compare failed, so the full morph pass runs) but where every difference is confined to **text content and attribute values** — no element added, removed, moved, or retagged.
+**What it catches:** value holes written as `.value` reads that could have been fine-grained bindings. Under the "values bind, structure re-renders" idiom (`docs/2-reactivity.md` §2.9), a value-only re-render means the whole render + parse + morph pass was avoidable: passing the signal/computed itself (`{count}`, `class={sig}`) updates just the changed nodes — and a mount whose render reads no `.value` never re-renders at all.
+
+**Mechanism.** On a surrounds-changed render with the gate open, `mount()` calls `maybeWarnValueOnlyRerender(prevHtml, nextHtml, ctx)`, which parses both strings into detached `<template>`s and walks the two trees in lockstep. Text data and element attributes (names *and* values — a boolean attribute appearing/disappearing is a value change, since falsy attributes are omitted) may differ; any change of child count, node type, tag name, or comment data classifies the render as structural and nothing fires. Conservative by construction: false negatives are acceptable, false positives would erode trust in the guidance.
+
+**Dedup scope.** Once per mount (a per-mount context object), not per render.
+
+**Why opt-in.** Re-rendering on `.value` reads is *correct* — this is a migration aid for adopting the bound-first idiom, not a lint on broken code. The parse-and-compare also has real (dev-only) cost, so it runs only when asked, and only on the already-slow surrounds-changed path; the env read short-circuits everything else.
+
+### 11.2.9 Double-mount guard (always-on, not opt-in)
 
 **Module:** [`src/mount.ts`](../src/mount.ts) (KF-175, KF-225).
 **Trigger:** `mount(el, render)` is called on an element that is already the root of a live mount, or on a descendant or ancestor of such an element. **What it catches:** the "two competing effects" pattern — two `mount()` calls on the same DOM subtree both install `effect()` watchers that fight over the same live nodes, producing conflicting DOM mutations and unpredictable rendering output with no runtime error.
@@ -225,7 +237,7 @@ removal, so they never reach this warner.)
 
 **Sibling mounts are allowed.** Two `mount()` calls on independent elements (neither is an ancestor or descendant of the other) work correctly — each manages its own subtree. This is the multi-island pattern for apps with independently reactive regions of the page.
 
-### 11.2.9 Dangerous-URL screen (throws in dev, warns in prod)
+### 11.2.10 Dangerous-URL screen (throws in dev, warns in prod)
 
 **Module:** [`src/utils/urlScreen.ts`](../src/utils/urlScreen.ts), applied in [`src/jsx-runtime.ts`](../src/jsx-runtime.ts) (`renderAttr`) and [`src/bindings.ts`](../src/bindings.ts) (`setBoundAttr`).
 **Trigger:** a plain-string URL value that resolves to a `javascript:` / `vbscript:` scheme or a script-executing `data:` document type is written to a URL-bearing attribute (`href`, `src`, `xlink:href`, `formaction`, `action`, `data`). **What it catches:** a stored-XSS payload reaching a `href={...}` interpolation that would otherwise turn into a clickable script vector. See [`docs/6-jsx-runtime.md`](/kerf/docs/jsx/) §6.4.1 for the screening details.
@@ -350,13 +362,13 @@ the hot path stays a bare boolean read rather than a per-call env probe.
 
 ## 11.4 Where each warning is referenced
 
-| Surface | KF-174 (rebuilt listeners) | KF-176 (untracked signals) | KF-212 (narrow set) | duplicate cacheKey | each-in-morph-skip | KF-238 (delegate-in-effect) | KF-338 (stale binding) |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| Source module | `src/dev-listener-warn.ts` | `src/dev-signal.ts` | `src/dev-store-warn.ts` | `src/dev-each-warn.ts` | `src/dev-each-warn.ts` | `src/dev-delegate-warn.ts` | `src/dev-binding-warn.ts` |
-| Wired in | `src/mount.ts` | `src/reactive.ts` | `src/store.ts` | `src/each.ts` | `src/mount.ts` | `src/reactive.ts` (effect wrap) + `src/delegate.ts` (check) | `src/mount.ts` (fast path) |
-| Numbered doc | `docs/5-event-delegation.md` (Rule 4) | `docs/2-reactivity.md` (Rule 8) | `docs/3-stores.md` (Rule 9) | `docs/4-render.md` §4.2 | `docs/4-render.md` §4.3 | `docs/5-event-delegation.md` §5.3 | `docs/2-reactivity.md` §2.9 |
-| AI usage guide | `docs/ai/usage-guide.md` "Hard rules" | same | same | n/a | `docs/ai/usage-guide.md` "Common errors" | `docs/ai/usage-guide.md` Hard Rule 5 + "Common errors" | `docs/ai/usage-guide.md` "Common errors" |
-| Test fixture | `tests/unit/dev-listener-warn.internal.test.ts` | covered in `tests/unit/reactive.test.ts` | `tests/unit/dev-store-warn.internal.test.ts` | `tests/unit/dev-each-warn.internal.test.ts` | same | `tests/unit/dev-delegate-warn.internal.test.ts` | `tests/unit/dev-binding-warn.internal.test.ts` |
+| Surface | KF-174 (rebuilt listeners) | KF-176 (untracked signals) | KF-212 (narrow set) | duplicate cacheKey | each-in-morph-skip | KF-238 (delegate-in-effect) | KF-338 (stale binding) | value-only re-render |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Source module | `src/dev-listener-warn.ts` | `src/dev-signal.ts` | `src/dev-store-warn.ts` | `src/dev-each-warn.ts` | `src/dev-each-warn.ts` | `src/dev-delegate-warn.ts` | `src/dev-binding-warn.ts` | `src/dev-rerender-warn.ts` |
+| Wired in | `src/mount.ts` | `src/reactive.ts` | `src/store.ts` | `src/each.ts` | `src/mount.ts` | `src/reactive.ts` (effect wrap) + `src/delegate.ts` (check) | `src/mount.ts` (fast path) | `src/mount.ts` (surrounds-changed path) |
+| Numbered doc | `docs/5-event-delegation.md` (Rule 4) | `docs/2-reactivity.md` (Rule 8) | `docs/3-stores.md` (Rule 9) | `docs/4-render.md` §4.2 | `docs/4-render.md` §4.3 | `docs/5-event-delegation.md` §5.3 | `docs/2-reactivity.md` §2.9 | `docs/2-reactivity.md` §2.9 |
+| AI usage guide | `docs/ai/usage-guide.md` "Hard rules" | same | same | n/a | `docs/ai/usage-guide.md` "Common errors" | `docs/ai/usage-guide.md` Hard Rule 5 + "Common errors" | `docs/ai/usage-guide.md` "Common errors" | `docs/ai/usage-guide.md` Hard Rule 9 family list |
+| Test fixture | `tests/unit/dev-listener-warn.internal.test.ts` | covered in `tests/unit/reactive.test.ts` | `tests/unit/dev-store-warn.internal.test.ts` | `tests/unit/dev-each-warn.internal.test.ts` | same | `tests/unit/dev-delegate-warn.internal.test.ts` | `tests/unit/dev-binding-warn.internal.test.ts` | `tests/unit/dev-rerender-warn.internal.test.ts` |
 
 ## 11.5 Adding a new warning
 

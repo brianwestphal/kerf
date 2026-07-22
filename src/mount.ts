@@ -37,6 +37,7 @@ import {
 import { isOptedIn as isStaleBindingWarnOptedIn, maybeWarnStaleBinding } from './dev-binding-warn.js';
 import { maybeWarnEachInMorphSkip } from './dev-each-warn.js';
 import { installListenerRebuildWarn } from './dev-listener-warn.js';
+import { maybeWarnValueOnlyRerender, type ValueOnlyWarnContext } from './dev-rerender-warn.js';
 import { _setRenderContext, type RenderContext } from './each.js';
 import type { SafeHtml } from './jsx-runtime.js';
 import { isSafeHtml } from './jsx-runtime.js';
@@ -191,6 +192,8 @@ export function mount(rootEl: HTMLElement, render: () => MountResult): () => voi
   // and go straight to the per-list reconcilers. Saves ~8 ms per update-
   // path render against the krausest harness.
   let prevStaticHtml = '';
+  // Per-mount one-shot context for the opt-in value-only-re-render warning.
+  const valueOnlyWarnCtx: ValueOnlyWarnContext = { warned: false };
 
   const disposeEffect = effect(() => {
     renderCtx.counter = 0;
@@ -221,7 +224,9 @@ export function mount(rootEl: HTMLElement, render: () => MountResult): () => voi
       if (isStaleBindingWarnOptedIn()) prevWiredBindings = bindingCtx.list;
       isFirst = false;
     } else {
-      const nextStaticHtml = runSubsequentRender(rootEl, segment, bindings, renderCtx, prevStaticHtml);
+      const nextStaticHtml = runSubsequentRender(
+        rootEl, segment, bindings, renderCtx, prevStaticHtml, valueOnlyWarnCtx,
+      );
       // A changed static-surrounds string means morph() ran, which strips
       // bound attributes (absent from the template) and removes inserted text
       // nodes. Re-wire against the post-morph DOM. When the surrounds are
@@ -326,11 +331,17 @@ function runSubsequentRender(
   bindings: Map<string, ListBinding>,
   renderCtx: RenderContext,
   prevStaticHtml: string,
+  valueOnlyWarnCtx: ValueOnlyWarnContext,
 ): string {
   const currentStaticHtml = flattenWithoutListItems(segment);
   if (currentStaticHtml === prevStaticHtml) {
     return prevStaticHtml;
   }
+  // Opt-in dev diagnostic (KERF_DEV_WARN_VALUE_ONLY_RERENDER=1): if this
+  // changed render is confined to text/attribute values, every changed hole
+  // could have been a fine-grained binding — surface the bound-first guidance
+  // once per mount. Gate short-circuits before any parsing.
+  maybeWarnValueOnlyRerender(prevStaticHtml, currentStaticHtml, valueOnlyWarnCtx);
   cleanupOrphanBindings(segment, bindings, renderCtx);
   const template = rootEl.cloneNode(false) as HTMLElement;
   template.innerHTML = currentStaticHtml;

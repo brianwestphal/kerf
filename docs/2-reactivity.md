@@ -153,7 +153,7 @@ A signal can reach JSX two ways, and the difference is the single most important
 - **Pass the signal itself** (`{count}`, `class={sig}`) — kerf **binds** that one hole to the signal, so a change updates only that attribute or text node. **`render()` does not re-run, and `each()`'s reconciler does not walk.** This is the *canonical* form for a **value** hole: whenever a hole's content is "this signal's (or computed's) current value," pass the signal.
 - **Read `.value`** (`{count.value}`, `cond ? <a/> : <b/>`) — the read is tracked by `mount()`'s effect, so a change re-runs the whole render function and kerf applies the smallest DOM cut. This is the tool for **structural** changes: conditionals that swap elements, list shape, anything where what *exists* — not just a value — depends on the signal.
 
-Rule of thumb: **values bind, structure re-renders.** The bound form is both the fastest path kerf has and the one with the simplest cost model (one effect, one node write), so reach for it first; fall back to `.value` when the JSX structure itself depends on the signal.
+Rule of thumb: **values bind, structure re-renders.** The bound form is both the fastest path kerf has and the one with the simplest cost model (one effect, one node write), so reach for it first; fall back to `.value` when the JSX structure itself depends on the signal. To find `.value` holes worth migrating, the opt-in dev warning `KERF_DEV_WARN_VALUE_ONLY_RERENDER=1` flags re-renders whose only differences were text/attribute values (see the dev-warnings doc).
 
 The classic bound-value case — a `selectedId` flipping one row's `class`:
 
