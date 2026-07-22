@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [1.0.1] - 2026-07-22
+
+
+
+- KF-329: pin release-workflow npm upgrade to npm@11 — npm@12 needs Node ≥ 22.22.2, above the 22.21.0 pin (`c54559f`)
+
 ## [1.0.0] - 2026-07-22
 
 

@@ -1,6 +1,6 @@
 {
   "name": "eslint-plugin-kerfjs",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "ESLint rules that enforce kerf's hard rules — catches AI-shaped bugs at edit time.",
   "type": "module",
   "license": "MIT",
