@@ -37,7 +37,7 @@ const SUBPATH_ENTRIES: Record<string, string> = {
   'array-signal': resolve(DIST, 'array-signal.js'),
 };
 
-function srcToDistPlugin(): Plugin {
+export function srcToDistPlugin(): Plugin {
   return {
     name: 'kerf-src-to-dist',
     enforce: 'pre',
@@ -58,7 +58,17 @@ function srcToDistPlugin(): Plugin {
       // the test suite shouldn't be reaching them in the first place.
       // If this fires, the test imports something not exposed by the
       // published package and dist-full mode can't honestly verify it.
-      if (moduleName.includes('/utils/') || moduleName === 'utils') {
+      //
+      // `moduleName` has NO leading slash (it's `src/`-relative, e.g.
+      // `utils/syncFormProp`), so an `.includes('/utils/')` check never
+      // matches the top-level `src/utils/*` case. Match `utils/` at the
+      // start for those, keep the bare-directory (`utils`) import, and
+      // still catch any hypothetical nested `.../utils/*` dir.
+      if (
+        moduleName === 'utils'
+        || moduleName.startsWith('utils/')
+        || moduleName.includes('/utils/')
+      ) {
         throw new Error(
           `dist-full mode: refused to remap private helper "${source}" `
           + `imported by ${importer}. Tests run against dist must use `
