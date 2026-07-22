@@ -159,6 +159,8 @@ A signal can reach JSX two ways, and the difference is the single most important
 
 Rule of thumb: **values bind, structure re-renders.** The bound form is both the fastest path kerf has and the one with the simplest cost model (one effect, one node write), so reach for it first; fall back to `.value` when the JSX structure itself depends on the signal. To find `.value` holes worth migrating, the opt-in dev warning `KERF_DEV_WARN_VALUE_ONLY_RERENDER=1` flags re-renders whose only differences were text/attribute values (see the dev-warnings doc).
 
+The idiom's logical endpoint: **a fully bound mount never re-renders at all.** A render function that reads no `.value` registers zero dependencies on `mount()`'s wrapped effect, so it runs exactly once — every subsequent update flows through the per-hole binding effects, with no string rebuild, no byte-compare, and no morph. There's no flag to set; it falls out of the dependency tracking.
+
 The classic bound-value case — a `selectedId` flipping one row's `class`:
 
 ```tsx

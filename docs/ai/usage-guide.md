@@ -131,6 +131,10 @@ mount(rootEl, () => (
   </ul>
 ));
 // selectedId.value = 3  → only the ~2 affected <li> class attrs update; no re-render.
+
+// 6. The endpoint of "values bind, structure re-renders": a render that reads
+//    NO .value registers zero effect dependencies, so it runs exactly ONCE —
+//    a fully bound mount never re-renders; every update is a direct node write.
 ```
 
 ## Event delegation tiers

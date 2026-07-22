@@ -869,3 +869,49 @@ describe('reserved marker namespace (KF-314)', () => {
     dispose();
   });
 });
+
+describe('the fully-bound-mount guarantee (KF-348)', () => {
+  // The logical endpoint of "values bind, structure re-renders": a render
+  // function that reads no `.value` registers ZERO dependencies on mount()'s
+  // wrapped effect, so it runs exactly once, forever — every update flows
+  // through the per-hole binding effects. No byte-compare, no morph, no
+  // reconcile. Verified in the binding-coverage audit and pinned here.
+
+  it('a single bound text hole: the render fn runs exactly once across writes', () => {
+    const count = signal(0);
+    let renders = 0;
+    const dispose = mount(root, () => {
+      renders++;
+      return jsx('span', { children: count });
+    });
+    expect(renders).toBe(1);
+    count.value = 1;
+    count.value = 2;
+    expect(renders).toBe(1);
+    expect(root.querySelector('span')!.textContent).toBe('2');
+    dispose();
+  });
+
+  it('several bound holes in a static frame: still one render, all holes live', () => {
+    const label = signal('a');
+    const cls = signal('x');
+    const n = computed(() => `${label.value}!`);
+    let renders = 0;
+    const dispose = mount(root, () => {
+      renders++;
+      return jsx('div', {
+        children: [
+          jsx('h1', { class: cls, children: 'Static title' }),
+          jsx('p', { children: [label, ' / ', n] }),
+        ],
+      });
+    });
+    expect(renders).toBe(1);
+    label.value = 'b';
+    cls.value = 'y';
+    expect(renders).toBe(1);
+    expect(root.querySelector('h1')!.getAttribute('class')).toBe('y');
+    expect(root.querySelector('p')!.textContent).toBe('b / b!');
+    dispose();
+  });
+});
