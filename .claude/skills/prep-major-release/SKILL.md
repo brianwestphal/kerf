@@ -25,12 +25,14 @@ Before touching anything, build an accurate picture of what actually changed:
    `kerfjs/jsx-runtime`). The README's "small API / N exports" claims must match.
 3. **The pitch** — re-read `docs/1-overview.md` (what kerf is / when to use it)
    and the current `README.md` end to end so your edits stay in kerf's voice.
-4. **The numbers** — bundle-size and perf claims. Perf numbers come **only from an
-   official bench run** (`bench/results.json` / `bench/results.md`); never paste a
-   number from an ad-hoc local run. If the perf story changed but no official run
-   has produced fresh numbers, keep the qualitative framing ("same cluster as Vue /
-   Lit / vanjs; Solid wins the compiler-driven benchmarks") rather than inventing
-   figures. See the **Performance comparison numbers** rules in `CLAUDE.md`.
+4. **The numbers** — bundle-size and perf claims. Perf numbers come **only from the
+   official upstream krausest benchmark**, imported into `bench/results.json` /
+   `bench/results.md` via `node bench/import-krausest.mjs` (kerf is a merged upstream
+   entry). Never paste a number from an ad-hoc local run. To refresh before a major
+   release, run the importer + commit; if the perf story changed but krausest hasn't
+   re-run with the new kerf version yet, keep the qualitative framing ("same cluster
+   as Vue / Lit / vanjs; Solid wins the compiler-driven benchmarks") rather than
+   inventing figures. See the **Performance comparison numbers** rules in `CLAUDE.md`.
 
 ## Part 1 — README
 

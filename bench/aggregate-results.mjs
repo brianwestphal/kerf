@@ -1,25 +1,28 @@
 /**
- * Aggregate webdriver-ts result JSON files into a markdown table for kerfjs +
- * the reference frameworks. Run after `bench/run.sh` completes:
+ * Aggregate LOCAL webdriver-ts result JSON files into a markdown table for
+ * kerfjs + the reference frameworks. Run after `bench/run.sh` completes:
  *
- *   node bench/aggregate-results.mjs
+ *   node bench/aggregate-results.mjs > bench/results.local.md
  *
  * Produces a table per benchmark category (CPU / memory / size) ranked by
- * median, with kerfjs highlighted. Output is stdout — pipe to a file, or
- * paste into bench/results.md.
+ * median, with kerfjs highlighted. Output is stdout.
  *
- * Side effect (KF-138): also writes `bench/results.json` — a structured
- * snapshot the site's homepage `PerfTable.astro` imports at build time.
- * Keeping the snapshot tracked in-repo means the GitHub Pages build doesn't
- * need a bench cache; the JSON refreshes whenever a developer reruns the
- * benchmark and commits the regenerated file alongside `bench/results.md`.
+ * DEV-ONLY (KF-291): this reads the LOCAL M1-Pro bench cache and is for
+ * "did my change move the needle?" verification/profiling. It is NOT the
+ * source of the site's published numbers — those come from the official
+ * upstream krausest run via `bench/import-krausest.mjs`, which writes the
+ * git-tracked `bench/results.json` + `bench/results.md`. To avoid clobbering
+ * that published snapshot, this script's JSON side effect writes the
+ * gitignored `bench/results.local.json` instead.
  */
 
 import { readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 const RESULTS_DIR = new URL('./.bench-cache/js-framework-benchmark/webdriver-ts/results/', import.meta.url).pathname;
-const JSON_OUT = new URL('./results.json', import.meta.url).pathname;
+// DEV-ONLY output path — the PUBLISHED bench/results.json comes from
+// import-krausest.mjs. See the header note (KF-291).
+const JSON_OUT = new URL('./results.local.json', import.meta.url).pathname;
 
 // CPU benchmarks in display order with friendly labels.
 const CPU_BENCHMARKS = [

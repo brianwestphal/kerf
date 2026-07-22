@@ -35,3 +35,8 @@ test-results/
 
 # Local benchmark cache (cloned upstream + generated artifacts)
 bench/.bench-cache/
+# Local-harness snapshots from aggregate-results.mjs (dev-only; the PUBLISHED
+# numbers live in the git-tracked bench/results.{json,md}, generated from
+# krausest by bench/import-krausest.mjs).
+bench/results.local.json
+bench/results.local.md

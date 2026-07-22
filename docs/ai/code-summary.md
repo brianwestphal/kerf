@@ -98,9 +98,10 @@ kerf/
 │   ├── preflight.sh              ← KF-139 — system-busy pre-check (sourced by run.sh; `--force` / `KERF_BENCH_FORCE=1` to skip)
 │   ├── run.sh                    ← runs the benchmark against kerfjs + reference frameworks
 │   ├── results.sh                ← aggregates results into the viewer (CHANGELOG perf numbers come from here)
-│   ├── aggregate-results.mjs     ← KF-138 — writes both `results.md` (stdout) and `results.json` (structured snapshot the homepage `PerfTable.astro` imports at build time)
-│   ├── results.json              ← KF-138 — in-repo snapshot tracked in git; the Pages build has no bench-cache so this IS the source of truth at site-build time
-│   ├── results.md                ← markdown tables consumed by docs
+│   ├── import-krausest.mjs       ← KF-291 — PUBLISHED-numbers source: fetches the official upstream krausest results (kerf is a merged entry at frameworks/keyed/kerfjs) and writes git-tracked `results.json` + `results.md`. Run `node bench/import-krausest.mjs` + commit to refresh.
+│   ├── aggregate-results.mjs     ← KF-138 / KF-291 — DEV-ONLY now: tabulates the LOCAL M1-Pro cache into the gitignored `results.local.{md,json}` (won't clobber the published krausest snapshot). Not the site source.
+│   ├── results.json              ← KF-138 / KF-291 — in-repo snapshot tracked in git (from import-krausest.mjs); the Pages build has no network so this IS the source of truth at site-build time
+│   ├── results.md                ← markdown tables (from import-krausest.mjs) consumed by docs
 │   └── results-table.mjs         ← helper for the perf-comparison renderer
 ├── site/                         ← Astro + Starlight marketing/docs site, deployed to /kerf/ on GitHub Pages
 ├── docs/

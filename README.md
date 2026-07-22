@@ -31,7 +31,7 @@ That's it. Your JSX renders to HTML strings, kerf's native diff applies the mini
 
 ## Why Kerf
 
-1. **Small bundle.** ~11 KB minified + gzipped including `@preact/signals-core` (~12 KB with `arraySignal`). One runtime dependency. No virtual DOM, no scheduler, no concurrent-mode machinery. On the [krausest js-framework-benchmark](./bench/results.md) kerf is in the same cluster as Vue, vanjs, and Lit on most operations; Solid's compiler leads the update-path benchmarks (notably `partial update`), which kerf doesn't try to match by design — no compiler.
+1. **Small bundle.** ~11 KB minified + gzipped including `@preact/signals-core` (~12 KB with `arraySignal`). One runtime dependency. No virtual DOM, no scheduler, no concurrent-mode machinery. On the official [krausest js-framework-benchmark](https://krausest.github.io/js-framework-benchmark/current.html) — where kerf is a listed entry, measured on the same reference machine as every competitor ([local mirror](./bench/results.md)) — kerf is in the same cluster as Vue, vanjs, and Lit on most operations; Solid's compiler leads the update-path benchmarks (notably `partial update`), which kerf doesn't try to match by design — no compiler.
 
 2. **No virtual DOM, no compiler.** JSX → HTML strings → native diff. DevTools shows the real DOM because it *is* the DOM.
 

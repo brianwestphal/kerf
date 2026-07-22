@@ -1,13 +1,25 @@
 # bench/
 
-Local performance comparison against [krausest/js-framework-benchmark][upstream]
-— the de-facto standard "1k/10k rows" suite that Solid, Svelte, Vue, Inferno,
-etc. all cite.
+Performance tooling for [krausest/js-framework-benchmark][upstream] — the
+de-facto standard "1k/10k rows" suite that Solid, Svelte, Vue, Inferno, etc.
+all cite.
 
-The implementation in `kerfjs-impl/` is the kerfjs entry, written so it can be
-copied verbatim into an upstream PR at `frameworks/keyed/kerfjs/`. The harness
-itself is **not** vendored — `bench/setup.sh` shallow-clones it into a
-gitignored cache (`bench/.bench-cache/`) and copies our entry in.
+**The published numbers come from upstream krausest, not this local harness.**
+`kerfjs-impl/` is the kerf entry and it is **merged upstream** at
+`frameworks/keyed/kerfjs/`, so krausest measures kerf on the same reference
+machine as every competitor. `bench/import-krausest.mjs` pulls those official
+numbers into the git-tracked `bench/results.{json,md}` that the site publishes
+(`node bench/import-krausest.mjs`; re-run + commit to refresh — see
+[Importing the official numbers](#importing-the-official-numbers-published-source)).
+Keep `kerfjs-impl/` in sync with the upstream entry, and open a follow-up
+upstream PR to bump the pinned kerfjs version on each release.
+
+Everything else here is the **local dev-only harness** — for "did my change
+move the needle?" profiling on your own machine. `bench/setup.sh` shallow-clones
+the upstream suite into a gitignored cache (`bench/.bench-cache/`) and copies our
+entry in; `run.sh` measures; `aggregate-results.mjs` tabulates into the
+gitignored `bench/results.local.*`. These local numbers are iteration signal
+only — **never publish them.**
 
 ## Layout
 
@@ -160,27 +172,44 @@ framework, `Nx` is the ratio to that fastest. The header line surfaces the
 mtime of the newest results file so you can tell at a glance how stale the
 data is.
 
-## Refreshing the homepage perf widget (KF-138)
+## Importing the official numbers (published source)
+
+The numbers the site publishes come from **upstream krausest**, not this local
+harness (see the top of this file for why). Refresh them with:
 
 ```bash
-node bench/aggregate-results.mjs > bench/results.md
+node bench/import-krausest.mjs        # fetch krausest's live published results
+node bench/import-krausest.mjs FILE   # or parse a local results.ts copy offline
 ```
 
-`aggregate-results.mjs` writes two outputs every run:
+It fetches krausest's published `webdriver-ts-results` data, extracts the
+tracked frameworks' medians, and writes two git-tracked files:
 
-- **`bench/results.md`** (stdout, redirect to the file) — the markdown
-  tables published in the repo.
-- **`bench/results.json`** (side effect, fixed path) — a structured
-  snapshot the homepage's `site/src/components/PerfTable.astro` imports
-  at build time.
+- **`bench/results.json`** — a structured snapshot the homepage's
+  `site/src/components/PerfTable.astro` imports at build time.
+- **`bench/results.md`** — the full CPU / memory / size markdown tables.
 
-Both files are tracked in git. Commit the regenerated pair whenever you
-publish new numbers — the GitHub Pages build doesn't have access to
-`bench/.bench-cache/`, so `bench/results.json` IS the source of truth at
-site-build time. The homepage table is a subset (5 scenarios × 4
-frameworks); edit `SUBSET_SCENARIOS` / `SUBSET_FRAMEWORKS` in
-`PerfTable.astro` to change what gets surfaced without re-running the
-bench.
+Commit both whenever krausest republishes (most importantly after a kerf
+release, once krausest re-runs with the bumped upstream `frameworks/keyed/kerfjs`
+pin — the GitHub Pages build doesn't fetch krausest at build time, so
+`bench/results.json` IS the source of truth then). Edit `TRACKED_DIRS` in the
+importer to change which frameworks appear; the homepage table is a further
+subset (5 scenarios × 4 frameworks) controlled by `SUBSET_SCENARIOS` /
+`SUBSET_FRAMEWORKS` in `PerfTable.astro`.
+
+### Local dev snapshot (not published)
+
+`bench/aggregate-results.mjs` tabulates the **local** M1-Pro cache for
+"did my change move the needle?" profiling:
+
+```bash
+node bench/aggregate-results.mjs > bench/results.local.md
+```
+
+It writes the **gitignored** `bench/results.local.md` (stdout) +
+`bench/results.local.json` (side effect) — deliberately NOT the published
+`bench/results.json`, so a local run can't clobber the krausest snapshot.
+These numbers are iteration signal only; never publish them.
 
 ## Micro-benchmarks (`bench/micro/`)
 
