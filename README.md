@@ -35,13 +35,17 @@ That's it. Your JSX renders to HTML strings, kerf's native diff applies the mini
 
 2. **No virtual DOM, no compiler.** JSX → HTML strings → native diff. DevTools shows the real DOM because it *is* the DOM.
 
-3. **Focus, selection, listeners survive re-renders — even mid-list.** The reconciler morphs instead of rebuilding, so caret position, selection range, IME composition, and delegated listeners survive every re-render. Keyed lists get the same treatment: same-identity rows are updated *in place* rather than recreated, so a row reorder or a single-cell edit no longer blows away focus, scroll, or an in-flight animation the way node replacement does.
+3. **Fine-grained updates, opt-in.** Hand a signal *itself* into a JSX hole — `class={selectedId}` or `{status}` — and kerf binds that one node directly: when the signal changes, only that attribute or text node updates, with no render re-run and no list reconcile. It's a surgical tier beneath the coarse render effect, for the *external-state-drives-one-spot* pattern — a selection flip on a 10,000-row table touches exactly one class.
 
-4. **Small public API.** ~17 exports from the main barrel (plus `arraySignal` on its own subpath). No hooks, no lifecycle, no per-instance state. Components are plain functions that return JSX.
+4. **Focus, selection, listeners survive re-renders — even mid-list.** The reconciler morphs instead of rebuilding, so caret position, selection range, IME composition, and delegated listeners survive every re-render. Keyed lists get the same treatment: same-identity rows are updated *in place* rather than recreated, so a row reorder or a single-cell edit no longer blows away focus, scroll, or an in-flight animation the way node replacement does.
 
-5. **Plain TS, plain JSX, plain ESM.** Drops into anything using esbuild / Vite / tsup. No plugin chain.
+5. **Safe by default.** Text and attribute values are HTML-escaped automatically, URL attributes are scheme-screened (`javascript:` / script-carrying `data:` dropped), inline `on*` handlers are rejected outright, and the same screening covers the fine-grained bound path — so untrusted data stays inert even when kerf is dropped into someone else's page. `raw()` is the explicit, auditable opt-out.
 
-6. **Grown-up tooling around a tiny core.** An [ESLint plugin](https://brianwestphal.github.io/kerf/docs/eslint-plugin/) that enforces the hard rules at edit time, a `create-kerf-component` scaffold for publishable component packages, drop-in AI-assistant configs, and side-by-side migration guides for a dozen-plus frameworks — none of which grows the core runtime past ~11 KB.
+6. **Small public API.** ~17 exports from the main barrel (plus `arraySignal` on its own subpath). No hooks, no lifecycle, no per-instance state. Components are plain functions that return JSX.
+
+7. **Plain TS, plain JSX, plain ESM.** Drops into anything using esbuild / Vite / tsup. No plugin chain.
+
+8. **Grown-up tooling around a tiny core.** An [ESLint plugin](https://brianwestphal.github.io/kerf/docs/eslint-plugin/) that enforces the hard rules at edit time, a `create-kerf-component` scaffold for publishable component packages, drop-in AI-assistant configs, and side-by-side migration guides for a dozen-plus frameworks — none of which grows the core runtime past ~11 KB.
 
 ## When to use Kerf
 
@@ -107,6 +111,24 @@ delegate(root, 'click', '[data-action="remove"]', (_e, btn) => {
   cart.actions.remove((btn as HTMLElement).dataset.id!);
 });
 ```
+
+### Fine-grained updates: bind a signal into a hole
+
+Inside a `mount()`, hand a signal *itself* (not its `.value`) into an attribute or text position and kerf wires that hole straight to the signal — the render function never re-runs and the list reconciler never walks:
+
+```ts
+const status = signal('idle');
+
+mount(root, () => (
+  <div class={status}>       {/* class attribute bound to the signal */}
+    Status: {status}         {/* text node bound to the signal */}
+  </div>
+));
+
+status.value = 'saving';     // updates the class + the text node directly — no re-render
+```
+
+The headline use is external state driving one spot: a `selectedId` flipping a single row's class inside a 10,000-row `each()` list touches exactly that one node, no reconcile. Works in static content and inside `each()` rows (a row's binding is torn down with the row); outside a `mount()` (SSR / `SafeHtml.toString()`) a bound signal just snapshots its current value. See [`docs/2-reactivity.md`](./docs/2-reactivity.md) §2.9.
 
 ### Long keyed lists: `arraySignal`
 
@@ -203,7 +225,7 @@ A *kerf* is the narrow strip of material a saw blade removes when cutting — th
 
 ## Status
 
-Pre-1.0 — API may evolve. See [CHANGELOG.md](./CHANGELOG.md) for the current version and what's shipped.
+1.0 — the public API is stable and follows semver from here. See [CHANGELOG.md](./CHANGELOG.md) for the current version and what's shipped.
 
 ## Sponsor
 
