@@ -41,9 +41,9 @@ It's a poor fit when:
 
 The runtime answers two questions:
 
-1. **WHEN do we re-render?** Answered by signals: an `effect()` re-runs whenever any signal it read during its last run changes. `mount()` wraps `effect()` so that re-renders happen automatically when the JSX you return depends on a signal that changes.
+1. **WHEN do we update?** Answered by signals — and by the single most important idiom choice in kerf: **values bind, structure re-renders.** Pass a signal *itself* into a JSX hole (`{count}`, `class={sig}`) and kerf binds that one hole — a change writes straight to that text node or attribute with **no render re-run at all**. Read `.value` inside the render function (`cond ? <a/> : <b/>`) and the read is tracked by `mount()`'s wrapped `effect()`, so a change re-runs the render — the tool for *structural* changes, where what exists depends on the signal.
 
-2. **HOW do we re-render?** Answered by kerf's morph: render JSX to a `SafeHtml` (which is a string for static content and a structured tree where lists or list-containing parents appear), then walk the live DOM in lock-step. Static surrounds go through a general-purpose tree-morph (`src/morph.ts`, also exported as `morph()` for one-shot consumer use); list contents go through a keyed reconciler (`each(...)`'s side of `mount`) that operates directly on live children — no parse-the-whole-list step. Element identity is preserved wherever the morph matches by key (`id`, `data-key`) or position.
+2. **HOW do we re-render (when structure changes)?** Answered by kerf's morph: render JSX to a `SafeHtml` (which is a string for static content and a structured tree where lists or list-containing parents appear), then walk the live DOM in lock-step. Static surrounds go through a general-purpose tree-morph (`src/morph.ts`, also exported as `morph()` for one-shot consumer use); list contents go through a keyed reconciler (`each(...)`'s side of `mount`) that operates directly on live children — no parse-the-whole-list step. Element identity is preserved wherever the morph matches by key (`id`, `data-key`) or position.
 
 Everything else is detail.
 
@@ -57,19 +57,26 @@ Everything else is detail.
    mount(rootEl, () => (                        ← effect() wrapper
      <div>
        <button data-action="inc">+</button>     ← Tier 1 delegation target
-       <span>{count.value}</span>               ← signal read tracked
+       <span>{count}</span>                     ← BOUND: signal passed, not read
      </div>
    ));
 
    delegate(rootEl, 'click', '[data-action="inc"]', () => {
-     count.value += 1;                           ← signal write triggers re-run
+     count.value += 1;                           ← signal write
    });
    ─────────────────────────────────────────────
                       │
                       │  count.value++
                       ▼
    ┌─────────────────────────────────────────┐
-   │ effect() fires the render fn             │
+   │ bound hole ({count}, class={sig}):       │
+   │   → one effect writes the text node /    │
+   │     attribute directly — NO render       │
+   │     re-run, NO morph, NO reconcile       │
+   ├─────────────────────────────────────────┤
+   │ .value read in the render fn             │
+   │ (structural: cond ? <a/> : <b/>):        │
+   │   effect() re-fires the render fn        │
    │   → SafeHtml (segment tree)              │
    │   → morph(live, template, ownedItems)    │
    │   → each() reconciler patches each list  │

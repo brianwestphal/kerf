@@ -152,9 +152,14 @@ Read-side semantics match a regular signal: `arraySig.value` is a snapshot, and 
 
 ## 2.9 Fine-grained bindings — signals in JSX
 
-Normally you read a signal's `.value` inside a `mount()` render, and any change re-runs the whole render function (kerf then applies the smallest DOM cut). That "coarse" model is the default and is fine for most updates.
+A signal can reach JSX two ways, and the difference is the single most important idiom choice in kerf:
 
-For a hole that a hot, external signal drives — the classic case is a `selectedId` flipping one row's `class` — you can go **fine-grained**: hand the signal *itself* (not its `.value`) straight into a JSX attribute or text position. kerf binds that one hole to the signal, so a change updates only that attribute or text node — **`render()` does not re-run, and `each()`'s reconciler does not walk.**
+- **Pass the signal itself** (`{count}`, `class={sig}`) — kerf **binds** that one hole to the signal, so a change updates only that attribute or text node. **`render()` does not re-run, and `each()`'s reconciler does not walk.** This is the *canonical* form for a **value** hole: whenever a hole's content is "this signal's (or computed's) current value," pass the signal.
+- **Read `.value`** (`{count.value}`, `cond ? <a/> : <b/>`) — the read is tracked by `mount()`'s effect, so a change re-runs the whole render function and kerf applies the smallest DOM cut. This is the tool for **structural** changes: conditionals that swap elements, list shape, anything where what *exists* — not just a value — depends on the signal.
+
+Rule of thumb: **values bind, structure re-renders.** The bound form is both the fastest path kerf has and the one with the simplest cost model (one effect, one node write), so reach for it first; fall back to `.value` when the JSX structure itself depends on the signal.
+
+The classic bound-value case — a `selectedId` flipping one row's `class`:
 
 ```tsx
 const selectedId = signal<number | null>(null);
@@ -181,14 +186,15 @@ mount(root, () => <span>{count}</span>); // pass the signal, not count.value
 count.value++;                            // updates only that text node
 ```
 
-### When to reach for it
+### When to bind (the default for values)
 
-- **A single external/shared signal drives one attribute or text spot, and it changes often.** Selection classes, a live connection-status attribute, a ticking value in an otherwise-static row.
-- Reach for it **per hole**, not everywhere. It's opt-in: bind the hot spot, leave everything else as plain interpolation.
+- **Any hole whose content is a signal's or computed's current value.** Counters, labels, status attributes, selection classes, ticking values. Derived text composes with `computed`: `{computed(() => \`${n.value} items\`)}`.
+- It scales down gracefully: a binding on a rarely-changing value costs one idle effect — there is no cliff that makes binding "wrong" for cold holes.
 
-### When NOT to
+### When to read `.value` instead
 
-- **Static or one-shot values** — just write `class={cond ? 'a' : 'b'}` (a string). Binding adds a per-hole effect for no benefit.
+- **The JSX structure depends on the signal** — `cond ? <EditForm/> : <Summary/>`, showing/hiding subtrees, choosing which list to render. A binding can only write one attribute or text node; structure needs the render fn.
+- **Truly static one-shot values** — just write `class={cond ? 'a' : 'b'}` (a plain string) when nothing reactive drives the hole.
 - **Whole-list structural changes** (add/remove/move rows) — that's [`arraySignal`](#26-arraysignal-initial-granular-collection-signal)'s job, not a per-attribute binding.
 
 ### Use `computed()`, not a bare closure

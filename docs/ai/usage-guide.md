@@ -87,19 +87,23 @@ import { html } from 'kerfjs/html';
 ## The core patterns
 
 ```tsx
-// 1. Signal + mount: re-runs render when count.value changes.
-// `attr()` ties a `data-action` attribute and its CSS selector together so
-// renames stay in sync between JSX and `delegate()`.
+// 1. Signal + mount. THE core idiom: values bind, structure re-renders.
+// Pass the signal ITSELF into a value hole ({count}, not {count.value}) —
+// kerf binds that one text node/attribute and updates it directly on change,
+// with NO render re-run. Read `.value` only when the JSX *structure* depends
+// on the signal (conditionals, list shape). `attr()` ties a `data-action`
+// attribute and its CSS selector together so renames stay in sync.
 const INC = attr('data-action', 'inc');
 const count = signal(0);
 mount(document.getElementById('app')!, () => (
   <div>
     <button {...INC.attrs}>+</button>
-    <span>{count.value}</span>
+    <span>{count}</span>
   </div>
 ));
 
-// 2. Computed: derived value, read-only.
+// 2. Computed: derived value, read-only. Bind it into holes the same way:
+// <span>{doubled}</span>, or inline: {computed(() => `${count.value} items`)}.
 const doubled = computed(() => count.value * 2);
 
 // 3. Store: named state with actions and reset.
@@ -115,9 +119,9 @@ const cart = defineStore({
 // 4. Delegate: ONE listener at the root, survives every re-render.
 delegate(rootEl, 'click', INC.selector, () => { count.value += 1; });
 
-// 5. Fine-grained binding (opt-in): pass a signal/computed ITSELF into a hole
-//    so it updates that node without re-running render(). For a hot spot
-//    driven by an external signal (e.g. a selection class), not everywhere.
+// 5. Bindings inside each() rows work the same way — the canonical
+//    selection pattern: a shared signal drives one row attribute, and a
+//    selection flip touches ~2 DOM nodes with no render and no reconcile.
 const selectedId = signal<number | null>(null);
 mount(rootEl, () => (
   <ul>
@@ -154,7 +158,7 @@ warning lands before `tsc` or the runtime dev-warns ever run.
 5. **Capture the `delegate()` / `delegateCapture()` disposer** whenever the registration's scope is shorter than the page. Both helpers return a `() => void` disposer; the listener closure pins `rootEl`, `handler`, and everything the handler closes over (stores, signals, app state). Discarding the disposer on a transient root (modal, route view, mount swap, dynamic widget) leaks the listener AND the app graph it captures; re-mount cycles stack listeners linearly. `mount()`'s own disposer does NOT remove delegates for you. Discarding the disposer is safe only when the registration is truly page-lifetime (root is `document.body` or another never-torn-down element, attached once at startup). See [`docs/5-event-delegation.md`](../5-event-delegation.md) §5.3 — and §5.3's "When capturing the disposer still isn't enough" for the cluster of cases where capturing alone isn't sufficient: `delegate()` rooted on a morph-managed descendant (root the delegate at the outer `mount()` root instead), `delegate()` called inside `effect()` (every effect re-run stacks a listener — opt-in dev warn `KERF_DEV_WARN_DELEGATE_IN_EFFECT=1`), `delegate()` on `toElement()` output that's later replaced, disposer variables overwritten by reassignment without calling the prior `off()`, and nested-root confusion (stable parent ≠ stable child).
 6. **One `mount()` per root.** Don't nest `mount()` calls. Compose with plain functions that return JSX.
 7. **Components are plain functions.** `<MyComponent props />` works syntactically — the JSX runtime calls `MyComponent(props)` and uses the returned JSX — but there's no hook system, no lifecycle, and no per-instance state. State lives in module-scope signals or stores, never in component closures.
-8. **Signal reads must happen inside the render function** to be tracked. `const x = count.value; mount(el, () => <span>{x}</span>)` will NOT re-render. Move the read inside the render fn.
+8. **Values bind, structure re-renders.** For a value hole, pass the signal/computed *itself* (`<span>{count}</span>`, `class={sig}`) — kerf updates that one node directly with no render re-run. Read `.value` only when the JSX *structure* depends on the signal — and then the read must happen inside the render function to be tracked: `const x = count.value; mount(el, () => <span>{x}</span>)` will NOT re-render. Bind a stable signal/computed instance per hole (a `computed` that switches internally), never `class={cond ? sigA : sigB}` — switching instances can go silently stale on the fast path (`KERF_DEV_WARN_STALE_BINDING=1` detects it).
 9. **Store actions receive `(set, get)`, not `(state)`.** `set(next)` REPLACES state — it does NOT merge. A partial-set like `set({ filter })` against a 3-key state of `{items, filter, editingId}` silently wipes `items` and `editingId` to `undefined`. Pass the full state object (`set({ ...get(), filter })`) or update each action to write the complete new shape. Mutating `get()` does nothing (and in dev mode throws a `TypeError` because `get()` returns a deep read-only proxy — even a nested `get().a.b = 1` throws; the live state object is never frozen). Opt-in dev warn: set `KERF_DEV_WARN_NARROW_SET=1` to surface partial-set bugs at runtime when they happen. See [`docs/11-dev-warnings.md`](../11-dev-warnings.md) for the full dev-warn family (`KERF_DEV_WARN_REBUILT_LISTENERS=1` for Rule 4, `KERF_DEV_WARN_UNTRACKED_SIGNALS=1` for Rule 8, `KERF_DEV_WARN_NARROW_SET=1` for Rule 9, `KERF_DEV_WARN_DUPLICATE_EACH_KEYS=1` for duplicate `cacheKey` values in `each()`, `KERF_DEV_WARN_EACH_IN_MORPH_SKIP=1` for `each()` inside `data-morph-skip` subtrees, `KERF_DEV_WARN_STALE_BINDING=1` for a fine-grained binding that silently goes stale by switching signal instances on the fast path). No-build / CDN-importmap apps have no `process`, so they default to dev-mode ON (the `get()` read-only proxy, and any opted-in warnings) — set `globalThis.KERF_DEV = false` before your first `mount()` to force production behavior in that setup; `globalThis.KERF_DEV` (a boolean) always wins over `NODE_ENV`.
 10. **Use `data-action` (or similar) attributes, not inline `onClick`.** Inline handlers are not supported by the JSX → string runtime; delegate from the root instead.
 11. **`arraySignal` is opt-in for long keyed lists.** Use it when most updates are pointwise (single-row edits, append-to-end, selection flips). For short lists or filter/sort pipelines that rebuild the array on every input, plain `signal` + `each(items.value, ...)` is simpler and just as fast. Only one `each()` callsite per render gets the granular benefit; subsequent callsites bound to the same arraySignal fall through to the snapshot path.

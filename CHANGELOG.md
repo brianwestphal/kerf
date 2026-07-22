@@ -18,6 +18,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - New opt-in dev warning `KERF_DEV_WARN_STALE_BINDING=1`: warns (once per hole, in dev only) when a fine-grained binding silently goes stale by switching which signal *instance* it binds (`class={cond ? sigA : sigB}`) on `mount()`'s byte-equal-surrounds fast path, where the effect is never re-wired so the hole stops updating with no error. Off by default and free in production, like the rest of the dev-warn family. Fix: bind one `computed` that switches internally.
 
+### Changed
+
+- **Documentation: fine-grained bindings are now the documented primary idiom for value holes** — "values bind, structure re-renders." Pass the signal/computed itself into a text or attribute hole (`{count}`, `class={sig}`) as the canonical form; read `.value` inside the render function when the JSX *structure* depends on the signal (conditionals, list shape). No runtime behavior changed — `.value`-in-JSX keeps working exactly as before — this repositions the guidance across the overview, reactivity docs, AI usage guide, and the drop-in Cursor/Claude configs so the fastest, simplest-cost-model path is the one the docs teach first.
+
 ### Fixed
 
 - **Controlled form state now survives user interaction** — `morph()` (and the fine-grained binding writer) sync the `checked` / `value` / `selected` DOM properties whenever they mutate those attributes. Previously, the browser's dirty-value/dirty-checked flags detached the live property from the attribute after the user touched a control, so a controlled `checked={sig.value}` checkbox the user had clicked (or a non-focused `value={...}` input the user had typed into, or a `<select>` with `selected` options, or a controlled `<textarea>`) updated its attribute while the visible state stayed stale. Uncontrolled usage — JSX that never mentions the attribute — is untouched, and a focused text input/textarea still keeps the user's in-progress edit. Pinned by a real-browser regression suite (`tests/browser/form-state-sync.spec.ts`) across Chromium/Firefox/WebKit.
