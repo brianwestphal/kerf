@@ -194,6 +194,7 @@ axis (`cacheKey` reading an external signal) crosses all of them.
 | FC-DW4 | `KERF_DEV_WARN_EACH_IN_MORPH_SKIP` each()-in-morph-skip warning | `src/dev-each-warn.ts` | `tests/unit/dev-each-warn.internal.test.ts` › "dev-each-warn (KERF_DEV_WARN_EACH_IN_MORPH_SKIP=1)" |
 | FC-DW5 | `KERF_DEV_WARN_DUPLICATE_EACH_KEYS` duplicate-cacheKey warning | `src/dev-each-warn.ts` | `tests/unit/dev-each-warn.internal.test.ts` › "dev-each-warn duplicate cacheKey (KERF_DEV_WARN_DUPLICATE_EACH_KEYS=1)" |
 | FC-DW6 | `delegate()` dev warning (opt-in) | `src/dev-delegate-warn.ts` | `tests/unit/dev-delegate-warn.internal.test.ts` › "dev-delegate-warn (KF-238, opt-in)" |
+| FC-DW7 | `KERF_DEV_WARN_STALE_BINDING` stale-fine-grained-binding warning (fast-path signal-instance switch) | `src/dev-binding-warn.ts` | `tests/unit/dev-binding-warn.internal.test.ts` › "dev-binding-warn (KERF_DEV_WARN_STALE_BINDING=1, opt-in)" |
 
 ### Integration (full pipeline)
 

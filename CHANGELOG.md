@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- New opt-in dev warning `KERF_DEV_WARN_STALE_BINDING=1`: warns (once per hole, in dev only) when a fine-grained binding silently goes stale by switching which signal *instance* it binds (`class={cond ? sigA : sigB}`) on `mount()`'s byte-equal-surrounds fast path, where the effect is never re-wired so the hole stops updating with no error. Off by default and free in production, like the rest of the dev-warn family. Fix: bind one `computed` that switches internally.
+
 ## [1.0.2] - 2026-07-22
 
 
