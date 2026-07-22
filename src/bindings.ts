@@ -257,6 +257,51 @@ export function disposeRowBindings(disposers: Array<() => void> | undefined): vo
 }
 
 /**
+ * KF-347 — decide, for a row whose DOM node survives an in-place update,
+ * whether the live binding effects can be carried forward or must be
+ * re-wired. The old effects closed over the signal INSTANCES captured at the
+ * previous render; if this render's bindings reference the same instances
+ * per hole (the cache-hit case, and rows binding stable external signals),
+ * the old effects remain correct and re-wiring would be wasted work — the
+ * select-row hot path stays free. If any hole's instance changed — the
+ * typical shape after `arraySignal.update()` swaps the row object and the
+ * row re-renders fresh `computed`s closing over the NEW item — the old
+ * effects are stale (they'd keep reading the pre-update row), so dispose
+ * them and wire the fresh bindings against the surviving node. Marker
+ * alignment holds across every in-place route: row-local binding ids are
+ * deterministic per render, the surgical fast paths leave marker attrs and
+ * comments untouched, and `_morphElement` syncs them.
+ *
+ * Also covers the from-scratch case (`oldBindings` undefined with fresh
+ * `newBindings`): the length mismatch routes to the wire branch, so a
+ * replaceChild caller can hand its brand-new node straight here.
+ */
+export function carryOrRewireRowBindings(
+  node: Element,
+  oldBindings: Binding[] | undefined,
+  oldDisposers: Array<() => void> | undefined,
+  newBindings: Binding[] | undefined,
+): { bindings: Binding[] | undefined; bindingDisposers: Array<() => void> | undefined } {
+  const oldLen = oldBindings === undefined ? 0 : oldBindings.length;
+  const newLen = newBindings === undefined ? 0 : newBindings.length;
+  if (oldLen === newLen) {
+    let same = true;
+    for (let i = 0; i < newLen; i++) {
+      if ((oldBindings as Binding[])[i].signal !== (newBindings as Binding[])[i].signal) {
+        same = false;
+        break;
+      }
+    }
+    if (same) return { bindings: oldBindings, bindingDisposers: oldDisposers };
+  }
+  disposeRowBindings(oldDisposers);
+  return {
+    bindings: newBindings,
+    bindingDisposers: newLen > 0 ? wireRowBindings(node, newBindings as Binding[]) : undefined,
+  };
+}
+
+/**
  * Shared wiring core. Indexes marked elements + comment markers under `scope`
  * by binding id, then attaches an effect per binding. `includeRoot` also
  * indexes `scope` itself (row roots carry their own marker).
@@ -305,11 +350,34 @@ function attachAttrEffect(el: Element, attr: string, signal: Signal<unknown>): (
   return effect(() => setBoundAttr(el, attr, signal.value));
 }
 
-/** Insert a live text node after `marker` and bind it to `signal`; returns disposer. */
+/**
+ * Tracks the live text node each text-hole marker owns, so RE-wiring a hole
+ * (KF-347 — an in-place row update whose binding instances changed) reuses
+ * the node it inserted the first time instead of stacking a second one next
+ * to it. Keyed on the marker comment: markers persist exactly as long as
+ * their row/surround nodes do, so the WeakMap entries die with them.
+ */
+const insertedTextNodes = new WeakMap<Comment, Text>();
+
+/**
+ * Bind a live text node after `marker` to `signal`; returns the effect
+ * disposer. Reuses the marker's previously-inserted node when it is still
+ * exactly where we put it (`marker.nextSibling`) — a rewire then just
+ * retargets the write, preserving node identity. Anything else (fresh parse,
+ * node removed by a morph) inserts anew. The reuse check is deliberately
+ * position-strict so a static text node that legitimately follows the marker
+ * in template output can never be hijacked: static content sits at
+ * `nextSibling` only until the FIRST wiring inserts our node in front of it.
+ */
 function attachTextEffect(marker: Comment, signal: Signal<unknown>): () => void {
-  const text = (marker.ownerDocument as Document).createTextNode('');
-  (marker.parentNode as Node).insertBefore(text, marker.nextSibling);
-  return effect(() => { text.data = coerceText(signal.value); });
+  let text = insertedTextNodes.get(marker);
+  if (text === undefined || marker.nextSibling !== text) {
+    text = (marker.ownerDocument as Document).createTextNode('');
+    (marker.parentNode as Node).insertBefore(text, marker.nextSibling);
+    insertedTextNodes.set(marker, text);
+  }
+  const node = text;
+  return effect(() => { node.data = coerceText(signal.value); });
 }
 
 /**

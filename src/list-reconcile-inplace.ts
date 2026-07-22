@@ -24,7 +24,7 @@
  * Internal to kerf — invoked from `reconcileSnapshot`.
  */
 
-import { disposeRowBindings } from './bindings.js';
+import { carryOrRewireRowBindings, disposeRowBindings } from './bindings.js';
 import { type BoundItem, type ListBinding } from './list-binding.js';
 import { tryAttributeOnlyFastPath, tryTextContentFastPath } from './list-reconcile-fast-paths.js';
 import { captureFocus, restoreFocus } from './list-reconcile-focus.js';
@@ -79,24 +79,38 @@ function updateRowInPlace(
   if (old.html === ni.html
       || tryAttributeOnlyFastPath(old.node, old.html, ni.html)
       || tryTextContentFastPath(old.node, old.html, ni.html)) {
-    // KF-294: node reused → its bound effects stay live; carry them forward.
+    // KF-294: node reused. Whether the bound effects survive with it is
+    // per-hole (KF-347): same signal instances → carried for free (the
+    // cache-hit / stable-external-signal case); any changed instance —
+    // fresh computeds closing over a replaced row object — → dispose +
+    // re-wire against the surviving node so self-reading holes don't stale.
+    const kept = carryOrRewireRowBindings(old.node, old.bindings, old.bindingDisposers, ni.bindings);
     return {
       ref: ni.ref, cacheKey: ni.cacheKey, html: ni.html, node: old.node,
-      bindings: old.bindings, bindingDisposers: old.bindingDisposers,
+      bindings: kept.bindings, bindingDisposers: kept.bindingDisposers,
     };
   }
   const newNode = parseSingleRow(ni.html, index);
   if (old.node.tagName === newNode.tagName) {
     _morphElement(old.node, newNode);
+    // Same carry-or-rewire decision as the fast-path arm above (KF-347).
+    const kept = carryOrRewireRowBindings(old.node, old.bindings, old.bindingDisposers, ni.bindings);
     return {
       ref: ni.ref, cacheKey: ni.cacheKey, html: ni.html, node: old.node,
-      bindings: old.bindings, bindingDisposers: old.bindingDisposers,
+      bindings: kept.bindings, bindingDisposers: kept.bindingDisposers,
     };
   }
-  // Tag changed → old node (and its bound effects) is discarded.
+  // Tag changed → old node (and its bound effects) is discarded. KF-347 also
+  // fixed a gap here: the fresh row's bindings were previously dropped
+  // unwired, so a bound hole on a tag-changed row died silently — the helper
+  // wires them against the brand-new node (old side empty → wire branch).
   disposeRowBindings(old.bindingDisposers);
   liveParent.replaceChild(newNode, old.node);
-  return { ref: ni.ref, cacheKey: ni.cacheKey, html: ni.html, node: newNode };
+  const fresh = carryOrRewireRowBindings(newNode, undefined, undefined, ni.bindings);
+  return {
+    ref: ni.ref, cacheKey: ni.cacheKey, html: ni.html, node: newNode,
+    bindings: fresh.bindings, bindingDisposers: fresh.bindingDisposers,
+  };
 }
 
 /** Parse one row's HTML to its single top-level element (row contract). */

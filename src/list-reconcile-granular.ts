@@ -21,7 +21,7 @@
  * Internal to kerf — re-exported via `list-reconcile.ts`'s `reconcileList`.
  */
 
-import { type Binding, disposeRowBindings, wireRowBindings } from './bindings.js';
+import { type Binding, carryOrRewireRowBindings, disposeRowBindings, wireRowBindings } from './bindings.js';
 import { type BoundItem, endAnchor, type ListBinding } from './list-binding.js';
 import { tryAttributeOnlyFastPath, tryTextContentFastPath } from './list-reconcile-fast-paths.js';
 import { captureFocus, restoreFocus } from './list-reconcile-focus.js';
@@ -155,7 +155,15 @@ function applySingleUpdate(
 ): void {
   const { html } = patch;
   const oldEntry = items[patch.index];
-  if (html === oldEntry.html) return;  // no-op (defensive: caller may emit redundant patches)
+  if (html === oldEntry.html) {
+    // Identical HTML is NOT a full no-op when the row has bound holes: a
+    // self-reading hole's value lives behind a marker, so the string never
+    // changes while the binding instances do (KF-347). Route through
+    // reuseBound so instance drift re-wires; binding-free rows exit as
+    // cheaply as the old early-return.
+    items[patch.index] = reuseBound(patch, html, oldEntry);
+    return;
+  }
   // KF-198 + KF-206: surgical fast paths for the common arraySignal update
   // shapes — top-level attribute flip (krausest select-row) and one-text-
   // node content change (krausest partial-update). Both apply the change
@@ -190,20 +198,26 @@ function applySingleUpdate(
 
 /**
  * KF-294: build the updated `BoundItem` for an in-place update (node reused
- * via a fast path or `_morphElement`). The row's DOM node — and thus its live
- * bound effects — survive, so we carry the existing disposers forward rather
- * than re-wiring. (Known spike limitation: a bound hole whose value depends on
- * the row's own mutated data goes stale here, since the original effect closed
- * over the pre-update row object; id-based bindings like select-row are fine.)
+ * via a fast path, `_morphElement`, or an html-identical no-op). The row's
+ * DOM node survives; whether its live bound effects survive with it is
+ * decided per hole by `carryOrRewireRowBindings` (KF-347): same signal
+ * instances → carry the existing disposers forward for free; any changed
+ * instance — the shape after `arraySignal.update()` swaps the row object and
+ * fresh `computed`s close over the NEW item — → dispose + re-wire against
+ * the surviving node, so self-reading bound holes update instead of going
+ * silently stale.
  */
 function reuseBound(
   patch: { item: object; bindings?: Binding[] },
   html: string,
   oldEntry: BoundItem,
 ): BoundItem {
+  const kept = carryOrRewireRowBindings(
+    oldEntry.node, oldEntry.bindings, oldEntry.bindingDisposers, patch.bindings,
+  );
   return {
     ref: patch.item, cacheKey: undefined, html, node: oldEntry.node,
-    bindings: oldEntry.bindings, bindingDisposers: oldEntry.bindingDisposers,
+    bindings: kept.bindings, bindingDisposers: kept.bindingDisposers,
   };
 }
 
@@ -229,7 +243,13 @@ function applyBulkUpdate(
   for (let k = start; k < end; k++) {
     const p = patches[k] as { type: 'update'; index: number; item: object; html: string; bindings?: Binding[] };
     const oldEntry = items[p.index];
-    if (p.html === oldEntry.html) continue;
+    if (p.html === oldEntry.html) {
+      // Same as applySingleUpdate's no-op arm: identical HTML can still carry
+      // changed binding instances (self-reading holes render as markers) —
+      // reuseBound re-wires on instance drift (KF-347).
+      items[p.index] = reuseBound(p, p.html, oldEntry);
+      continue;
+    }
     if (tryAttributeOnlyFastPath(oldEntry.node, oldEntry.html, p.html)
         || tryTextContentFastPath(oldEntry.node, oldEntry.html, p.html)) {
       items[p.index] = reuseBound(p, p.html, oldEntry);  // KF-294: node reused

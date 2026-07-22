@@ -915,3 +915,157 @@ describe('the fully-bound-mount guarantee (KF-348)', () => {
     dispose();
   });
 });
+
+describe('in-place updates re-wire changed binding instances (KF-347)', () => {
+  // The audit-confirmed gap: an in-place row update (surgical fast path,
+  // _morphElement, or an html-identical no-op — a self-reading hole's value
+  // lives behind a marker, so the string never changes) used to carry the OLD
+  // effects forward and drop the fresh render's bindings. The old effects
+  // closed over the pre-update row object → self-reading holes went silently
+  // stale. carryOrRewireRowBindings now re-wires on any per-hole signal
+  // instance change and carries for free when instances match (cache hits /
+  // stable external signals).
+
+  interface Row { id: number; label: string; done?: boolean; big?: boolean }
+
+  it('granular update(): self-reading bound TEXT hole updates (html-identical no-op arm)', () => {
+    const rows = arraySignal<Row>([{ id: 1, label: 'a' }, { id: 2, label: 'b' }]);
+    const dispose = mount(root, () =>
+      jsx('ul', {
+        children: each(rows, (item) =>
+          jsx('li', { 'data-key': String(item.id), children: computed(() => item.label) })),
+      }));
+    expect(root.querySelectorAll('li')[0].textContent).toBe('a');
+    rows.update(0, (r) => ({ ...r, label: 'A!' }));
+    expect(root.querySelectorAll('li')[0].textContent).toBe('A!');
+    // Sibling untouched, and its hole is still live-wired.
+    expect(root.querySelectorAll('li')[1].textContent).toBe('b');
+    rows.update(1, (r) => ({ ...r, label: 'B!' }));
+    expect(root.querySelectorAll('li')[1].textContent).toBe('B!');
+    dispose();
+  });
+
+  it('granular update(): self-reading bound ATTR hole updates (html-identical no-op arm)', () => {
+    const rows = arraySignal<Row>([{ id: 1, label: 'a', done: false }]);
+    const dispose = mount(root, () =>
+      jsx('ul', {
+        children: each(rows, (item) =>
+          jsx('li', {
+            'data-key': String(item.id),
+            class: computed(() => (item.done ? 'done' : '')),
+            children: item.label,
+          })),
+      }));
+    const li = (): Element => root.querySelector('li') as Element;
+    expect(li().getAttribute('class')).toBe('');
+    rows.update(0, (r) => ({ ...r, done: true }));
+    expect(li().getAttribute('class')).toBe('done');
+    rows.update(0, (r) => ({ ...r, done: false }));
+    expect(li().getAttribute('class')).toBe('');
+    dispose();
+  });
+
+  it('granular update(): bound hole stays correct when static content changes too (morph/fast-path arm)', () => {
+    const rows = arraySignal<Row>([{ id: 1, label: 'x', done: false }]);
+    const dispose = mount(root, () =>
+      jsx('ul', {
+        children: each(rows, (item) =>
+          jsx('li', {
+            'data-key': String(item.id),
+            children: [item.label, ' ', jsx('em', { children: computed(() => (item.done ? 'yes' : 'no')) })],
+          })),
+      }));
+    expect(root.querySelector('li')!.textContent).toBe('x no');
+    // Static text AND the self-read hole change in one update.
+    rows.update(0, (r) => ({ ...r, label: 'y', done: true }));
+    expect(root.querySelector('li')!.textContent).toBe('y yes');
+    dispose();
+  });
+
+  it('granular update(): a mixed row keeps its external-signal hole live after re-wire', () => {
+    const ext = signal('one');
+    const rows = arraySignal<Row>([{ id: 1, label: 'a' }]);
+    const dispose = mount(root, () =>
+      jsx('ul', {
+        children: each(rows, (item) =>
+          jsx('li', {
+            'data-key': String(item.id),
+            children: [computed(() => item.label), '/', computed(() => ext.value)],
+          })),
+      }));
+    expect(root.querySelector('li')!.textContent).toBe('a/one');
+    rows.update(0, (r) => ({ ...r, label: 'b' }));
+    expect(root.querySelector('li')!.textContent).toBe('b/one');
+    ext.value = 'two';   // the re-wired external hole must still track
+    expect(root.querySelector('li')!.textContent).toBe('b/two');
+    dispose();
+  });
+
+  it('snapshot in-place: a cacheKey re-render re-wires the changed row; untouched rows carry for free and stay live', () => {
+    const ext = signal('E');
+    const sel = signal<number | null>(null);
+    const items = signal<Row[]>([{ id: 1, label: 'a' }, { id: 2, label: 'b' }]);
+    const dispose = mount(root, () =>
+      jsx('ul', {
+        children: each(items.value, (item) =>
+          jsx('li', {
+            'data-key': String(item.id),
+            class: computed(() => (item.id === sel.value ? 'sel' : '')),
+            children: [item.label, ':', computed(() => ext.value)],
+          }), (item) => (item.id === sel.value ? 'sel' : '')),
+      }));
+    const lis = (): NodeListOf<Element> => root.querySelectorAll('li');
+    sel.value = 1;  // cacheKey drift → snapshot in-place: row 1 re-renders, row 2 cache-hits
+    expect(lis()[0].getAttribute('class')).toBe('sel');
+    // Row 1's fresh (re-wired) holes AND row 2's carried holes both track ext.
+    ext.value = 'F';
+    expect(lis()[0].textContent).toBe('a:F');
+    expect(lis()[1].textContent).toBe('b:F');
+    // And selection keeps working afterwards (new instances live).
+    sel.value = 2;
+    expect(lis()[0].getAttribute('class')).toBe('');
+    expect(lis()[1].getAttribute('class')).toBe('sel');
+    dispose();
+  });
+
+  it('granular update(): a row that LOSES its bound hole disposes the old effect and wires nothing', () => {
+    const rows = arraySignal<Row>([{ id: 1, label: 'a', done: true }]);
+    const dispose = mount(root, () =>
+      jsx('ul', {
+        children: each(rows, (item) =>
+          jsx('li', {
+            'data-key': String(item.id),
+            children: item.done ? computed(() => item.label) : item.label,
+          })),
+      }));
+    expect(root.querySelector('li')!.textContent).toBe('a');
+    // The update swaps the bound hole for plain static text (newLen === 0):
+    // the old effect must be disposed, nothing re-wired, content correct.
+    rows.update(0, (r) => ({ ...r, label: 'plain', done: false }));
+    expect(root.querySelector('li')!.textContent).toBe('plain');
+    // And a later update keeps working through the binding-free shape.
+    rows.update(0, (r) => ({ ...r, label: 'still-plain' }));
+    expect(root.querySelector('li')!.textContent).toBe('still-plain');
+    dispose();
+  });
+
+  it('snapshot in-place: a tag-changed row gets its fresh bindings WIRED (previously dropped unwired)', () => {
+    const ext = signal('v1');
+    const sel = signal(false);
+    const items = signal<Row[]>([{ id: 1, label: 'a' }]);
+    const dispose = mount(root, () =>
+      jsx('ul', {
+        children: each(items.value, (item) =>
+          jsx('li', {
+            'data-key': String(item.id),
+            children: jsx(sel.value ? 'strong' : 'span', { children: computed(() => ext.value) }),
+          }), () => String(sel.value)),
+      }));
+    expect(root.querySelector('li span')).not.toBeNull();
+    sel.value = true;  // cacheKey drift → in-place re-render → nested tag changes
+    expect(root.querySelector('li strong')).not.toBeNull();
+    ext.value = 'v2';  // the re-rendered row's bound hole must be live
+    expect(root.querySelector('li')!.textContent).toBe('v2');
+    dispose();
+  });
+});
