@@ -197,15 +197,22 @@ describe('jsx()', () => {
 });
 
 
-describe('jsx — dangerous URL attribute filter', () => {
+// KF-340: the URL screen throws in dev, warns + drops in prod. This block pins
+// the PRODUCTION warn+drop behavior across the full obfuscation/subtype matrix;
+// it forces `KERF_DEV = false` (the override wins over the ambient NODE_ENV=test)
+// so the screen warns instead of throwing. The matching dev-throw behavior is
+// covered by the 'throws in dev' block below.
+describe('jsx — dangerous URL attribute filter (production warn+drop)', () => {
   let warnSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
+    (globalThis as Record<string, unknown>).KERF_DEV = false;
     warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
   });
 
   afterEach(() => {
     warnSpy.mockRestore();
+    delete (globalThis as Record<string, unknown>).KERF_DEV;
   });
 
   it('drops javascript: in href and warns', () => {
@@ -396,5 +403,48 @@ describe('Fragment', () => {
 
   it('renders empty when given no children', () => {
     expect(Fragment({}).toString()).toBe('');
+  });
+});
+
+// The static string serializer (`renderAttr`) shares the URL screen with the
+// bound writer. KF-340: it THROWS in dev (fail loudly at the developer's desk),
+// warns + drops the attribute in prod. `renderAttr` runs eagerly inside `jsx()`,
+// so the dev throw surfaces at the `jsx(...)` call, not at `.toString()`.
+describe('static renderAttr URL screen — throws in dev (KF-297 / KF-340)', () => {
+  beforeEach(() => { (globalThis as Record<string, unknown>).KERF_DEV = true; });
+  afterEach(() => { delete (globalThis as Record<string, unknown>).KERF_DEV; });
+
+  it('throws on a javascript: href', () => {
+    expect(() => jsx('a', { href: 'javascript:alert(1)', children: 'x' }))
+      .toThrow(/dropped dangerous URL value for href/);
+  });
+
+  it('throws on a script-executing data: src (hardened subtype screen)', () => {
+    expect(() => jsx('iframe', { src: 'data:text/html,<script>alert(1)</script>' }))
+      .toThrow(/dropped dangerous URL value for src/);
+  });
+
+  it('does NOT throw for a safe URL', () => {
+    expect(jsx('a', { href: '/safe', children: 'x' }).toString()).toBe('<a href="/safe">x</a>');
+  });
+
+  it('lets a raw()/SafeHtml href bypass the screen in dev — no throw', () => {
+    expect(jsx('a', { href: raw('javascript:void(0)'), children: 'go' }).toString())
+      .toBe('<a href="javascript:void(0)">go</a>');
+  });
+
+  it('emits a JSX-prefixed diagnostic identical to the prod warn body', () => {
+    // The thrown Error message matches the prod console.warn text byte-for-byte
+    // (same `dangerousUrlWarning` body, same `JSX:` prefix).
+    expect(() => jsx('a', { href: 'vbscript:msgbox(1)', children: 'x' }))
+      .toThrow(/^JSX: dropped dangerous URL value for href/);
+  });
+
+  it('falls back to NODE_ENV when no KERF_DEV override is set (ambient dev throws)', () => {
+    // With the override cleared, isDevMode() reads NODE_ENV; the suite runs under
+    // NODE_ENV=test (≠ 'production'), so dev mode is active and the screen throws.
+    delete (globalThis as Record<string, unknown>).KERF_DEV;
+    expect(() => jsx('a', { href: 'javascript:alert(1)', children: 'x' }))
+      .toThrow(/dropped dangerous URL value for href/);
   });
 });

@@ -187,6 +187,15 @@ would have missed same-count-different-keys cases.
 
 **Sibling mounts are allowed.** Two `mount()` calls on independent elements (neither is an ancestor or descendant of the other) work correctly — each manages its own subtree. This is the multi-island pattern for apps with independently reactive regions of the page.
 
+### 11.2.8 Dangerous-URL screen (throws in dev, warns in prod)
+
+**Module:** [`src/utils/urlScreen.ts`](../src/utils/urlScreen.ts), applied in [`src/jsx-runtime.ts`](../src/jsx-runtime.ts) (`renderAttr`) and [`src/bindings.ts`](../src/bindings.ts) (`setBoundAttr`).
+**Trigger:** a plain-string URL value that resolves to a `javascript:` / `vbscript:` scheme or a script-executing `data:` document type is written to a URL-bearing attribute (`href`, `src`, `xlink:href`, `formaction`, `action`, `data`). **What it catches:** a stored-XSS payload reaching a `href={...}` interpolation that would otherwise turn into a clickable script vector. See [`docs/6-jsx-runtime.md`](/kerf/docs/jsx/) §6.4.1 for the screening details.
+
+**Mechanism.** The attribute is always **dropped** (omitted from the string / removed from the live node). How the drop is reported depends on the mode: in **dev** the screen **throws an `Error`** with the diagnostic; in **prod** it `console.warn`s and drops. Mode comes from the shared [`src/utils/devMode.ts`](../src/utils/devMode.ts) `isDevMode()` probe — `globalThis.KERF_DEV` (boolean) wins when set, otherwise `NODE_ENV !== 'production'` is dev. `raw()` / `SafeHtml` values are the documented bypass in both modes.
+
+**Like the double-mount guard, this is always-on (unconditional), not opt-in** — there is no env var to silence it, only the mode split. A dropped-but-silent dangerous URL in dev is the exact failure mode the throw fixes (nobody reads the console; the attribute just quietly vanishes). Production keeps the non-crashing warn+drop so attacker-influenced data can never take down a shipped app — **production output is byte-identical to before this split.** This is the one place kerf changes behavior between dev and prod for the *same* input; it's justified because the dev throw only ever fires on input a correct app would never produce (a dangerous URL that isn't wrapped in `raw()`).
+
 ## 11.3 Design rules for the family
 
 Every dev-warning in this family follows the same shape. New warnings

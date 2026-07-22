@@ -1,4 +1,4 @@
-<!-- kerf-skill-version: 1.3.0 -->
+<!-- kerf-skill-version: 1.4.0 -->
 # kerf.cursorrules — rules for building apps with kerf
 #
 # Drop this file into your project as `.cursorrules` (Cursor will pick it
@@ -89,6 +89,7 @@ When deciding which primitive to reach for, work down the axes:
 **Raw HTML.**
 - User-controlled HTML → sanitize first (DOMPurify) then `raw(sanitized)`.
 - Author-controlled trusted HTML → `raw(html)` directly.
+- Dangerous URLs (`javascript:`/`vbscript:`/script-executing `data:`) on `href`/`src`/`xlink:href`/`formaction`/`action`/`data` are dropped — kerf THROWS in dev, WARNS + drops in prod. Sanitize user URLs upstream; wrap an intentional trusted one in `raw(url)` to bypass the screen in both modes.
 
 ## Canonical patterns
 

@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Breaking
+
+- **Dangerous-URL screening now throws in development (DEV-ONLY change — production is byte-identical).** When a `javascript:` / `vbscript:` / script-executing `data:` URL is written to a URL-bearing attribute (`href`, `src`, `xlink:href`, `formaction`, `action`, `data`) — on both the JSX string path and the fine-grained bound-attribute path — kerf now **throws an `Error`** in development instead of only `console.warn`ing, so the mistake fails loudly at the developer's desk. **Production behavior is unchanged**: it still `console.warn`s and drops the attribute, never crashing a shipped app on attacker-influenced data. The attribute is dropped in both modes; only how the drop surfaces differs. Mode is detected via the shared `globalThis.KERF_DEV` (boolean, wins when set) else `NODE_ENV !== 'production'` probe. `raw()` / `SafeHtml` values remain the documented bypass in both modes. This is breaking only for dev/test setups that relied on the previous warn-and-continue behavior on a dangerous URL.
+
 ## [1.0.2] - 2026-07-22
 
 

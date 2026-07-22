@@ -77,7 +77,9 @@ This matches HTML semantics — a boolean attribute is "on" by being present, re
 
 ### 6.4.1 Dangerous URL filter
 
-Plain-string values written to URL-bearing attributes are screened by scheme. If a value resolves to a `javascript:` or `vbscript:` scheme, or a script-executing `data:` document type (`data:text/html`, `data:image/svg+xml`, XHTML/XML), kerf **drops the attribute entirely** and `console.warn`s. The screen runs on these attribute names: `href`, `src`, `xlink:href`, `formaction`, `action`, and `data` (the `<object data>` attribute).
+Plain-string values written to URL-bearing attributes are screened by scheme. If a value resolves to a `javascript:` or `vbscript:` scheme, or a script-executing `data:` document type (`data:text/html`, `data:image/svg+xml`, XHTML/XML), kerf **drops the attribute entirely**. The screen runs on these attribute names: `href`, `src`, `xlink:href`, `formaction`, `action`, and `data` (the `<object data>` attribute).
+
+**How a drop surfaces depends on the build mode.** In **development** the screen **throws an `Error`** with the full diagnostic, so a mistyped or unsafe URL fails loudly at your desk instead of vanishing into a console nobody reads. In **production** it does exactly what it always did — `console.warn`s and drops the attribute — because a shipped app must never crash on attacker-influenced data. The attribute is dropped either way; only how the drop is reported differs. Mode is detected the same way as the rest of kerf's dev diagnostics: `globalThis.KERF_DEV` (a boolean) wins when set, otherwise `NODE_ENV !== 'production'` is dev. This is a dev-only change — production output is byte-identical to before.
 
 Inert `data:` media — raster images (`data:image/png`, …), fonts, audio, video, and plain text/CSS — pass through, so `<img src="data:image/png;base64,…">` still works. Every other `data:` subtype (including unknown ones) fails closed.
 
@@ -85,7 +87,7 @@ The scheme match sees through the obfuscations a browser sees through: leading/t
 
 ```tsx
 <a href={userInput}>click</a>
-// userInput === 'javascript:alert(1)'  →  rendered as <a>click</a>, warning logged
+// userInput === 'javascript:alert(1)'  →  dev: throws; prod: rendered as <a>click</a>, warning logged
 // userInput === 'https://example.com'  →  rendered as <a href="https://example.com">click</a>
 ```
 

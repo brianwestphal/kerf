@@ -39,7 +39,7 @@
  */
 
 import { effect, isSignal, type Signal } from './reactive.js';
-import { dangerousUrlWarning, isDangerousUrlValue } from './utils/urlScreen.js';
+import { isDangerousUrlValue, reportDangerousUrl } from './utils/urlScreen.js';
 
 // RESERVED NAMESPACE (consumer contract, KF-314). The wiring pass finds these
 // markers by scanning the mounted subtree and matching by id, and resolves an
@@ -343,7 +343,8 @@ function setBoundAttr(el: Element, name: string, value: unknown): void {
   }
   const str = String(value);
   if (isDangerousUrlValue(name, str)) {
-    console.warn(`kerf binding: ${dangerousUrlWarning(name, str)}`);
+    // KF-340: throw in dev (fail loudly), warn+drop in prod.
+    reportDangerousUrl('kerf binding', name, str);
     el.removeAttribute(name);
     return;
   }

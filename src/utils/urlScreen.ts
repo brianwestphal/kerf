@@ -27,6 +27,8 @@
  *     subtype fails closed.
  */
 
+import { isDevMode } from './devMode.js';
+
 /**
  * URL-bearing HTML/SVG attributes whose plain-string values are screened.
  * `data` covers `<object data>` (loads its target as a document, so
@@ -99,4 +101,27 @@ export function dangerousUrlWarning(name: string, value: string): string {
     + 'kerf blocks javascript:, vbscript:, and script-executing data: URLs '
     + '(text/html, image/svg+xml, xml) in href/src/data/formaction/action/xlink:href by default. '
     + 'Wrap in raw() if this is intentional (e.g. bookmarklets), or sanitize upstream.';
+}
+
+/**
+ * Report a screened dangerous URL, with the dev-vs-prod split (KF-340). Both
+ * call sites (the JSX string serializer's `renderAttr` and the live-attribute
+ * writer's `setBoundAttr`) still DROP the attribute; this only chooses how the
+ * screen surfaces the diagnostic:
+ *
+ *   - **DEV** (`isDevMode()` — default under `NODE_ENV !== 'production'`, or a
+ *     `globalThis.KERF_DEV === true` override): THROW an `Error` with the
+ *     diagnostic, failing loudly at the developer's desk so a mistyped/unsafe
+ *     URL can't slip by unnoticed (nobody reads the console).
+ *   - **PRODUCTION** (`globalThis.KERF_DEV === false`, or `NODE_ENV ===
+ *     'production'`): `console.warn` and let the caller drop — never crash a
+ *     shipped app on attacker-influenced data.
+ *
+ * `context` is the caller's prefix (`JSX`/`kerf binding`); the composed message
+ * is byte-identical to the pre-KF-340 warn text in production.
+ */
+export function reportDangerousUrl(context: string, name: string, value: string): void {
+  const message = `${context}: ${dangerousUrlWarning(name, value)}`;
+  if (isDevMode()) throw new Error(message);
+  console.warn(message);
 }

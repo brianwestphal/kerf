@@ -36,8 +36,9 @@ kerf/
 │   └── utils/
 │       ├── escapeHtml.ts         ← used by jsx-runtime
 │       ├── jsx-attr-aliases.ts   ← camelCase → HTML/SVG attribute name table (KF-21)
+│       ├── devMode.ts            ← KF-340 shared dev-mode probe: isDevMode() — globalThis.KERF_DEV boolean override wins, else NODE_ENV !== 'production'. Single probe used by urlScreen's dev-throw/prod-warn split (do not re-derive NODE_ENV inline elsewhere)
 │       ├── rowContract.ts        ← KF-103 row-contract helpers — ROW_HTML_SNIPPET_MAX, parseRowTemplate, rowContractError, truncateRowHtml
-│       └── urlScreen.ts          ← KF-297 shared URL-attr screening (isDangerousUrlValue / dangerousUrlWarning) used by BOTH jsx-runtime's renderAttr (static attrs) and bindings' setBoundAttr (bound attrs) — scheme-based: drops javascript:/vbscript: + script-executing data: subtypes (text/html, image/svg+xml, xml; inert media allowlisted) on href/src/formaction/action/xlink:href/data(<object>); normalizes control-char/whitespace scheme obfuscation before matching; raw() opts out
+│       └── urlScreen.ts          ← KF-297 shared URL-attr screening (isDangerousUrlValue / dangerousUrlWarning / reportDangerousUrl) used by BOTH jsx-runtime's renderAttr (static attrs) and bindings' setBoundAttr (bound attrs) — scheme-based: drops javascript:/vbscript: + script-executing data: subtypes (text/html, image/svg+xml, xml; inert media allowlisted) on href/src/formaction/action/xlink:href/data(<object>); normalizes control-char/whitespace scheme obfuscation before matching; raw() opts out. KF-340: reportDangerousUrl THROWS in dev (isDevMode()), console.warns + drops in prod (byte-identical) — the drop happens in both modes, only the reporting differs
 ├── tests/
 │   ├── conventions.test.ts       ← KF-286 — API-surface + no-default-export + row-contract invariants (the in-suite complement to check-doc-api-coverage.mjs / check-feature-coverage.mjs); pins facts line coverage can't express
 │   ├── unit/

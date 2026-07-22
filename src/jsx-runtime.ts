@@ -35,7 +35,7 @@ import {
 } from './segment.js';
 import { escapeAttr, escapeHtml } from './utils/escapeHtml.js';
 import { ATTR_ALIASES } from './utils/jsx-attr-aliases.js';
-import { dangerousUrlWarning, isDangerousUrlValue } from './utils/urlScreen.js';
+import { isDangerousUrlValue, reportDangerousUrl } from './utils/urlScreen.js';
 
 // Cross-realm/cross-bundle brand. Using `Symbol.for` (the global registry)
 // means two `SafeHtml` classes from different module copies still recognize
@@ -268,8 +268,9 @@ function renderAttr(key: string, value: unknown): string {
   } else if (typeof value === 'string') {
     // URL-screening shared with the fine-grained binding writer (KF-297).
     // `SafeHtml` values (raw()) skip this — they hit the branch above.
+    // KF-340: throw in dev (fail loudly), warn+drop in prod.
     if (isDangerousUrlValue(name, value)) {
-      console.warn(`JSX: ${dangerousUrlWarning(name, value)}`);
+      reportDangerousUrl('JSX', name, value);
       return '';
     }
     strValue = escapeAttr(value);

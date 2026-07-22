@@ -1,7 +1,7 @@
 ---
 name: kerf-app
 description: Build UIs in the kerf reactive framework (https://github.com/brianwestphal/kerf). Use this skill whenever the user is writing or modifying code that imports `kerfjs`, asks to add a feature to a kerf app, or asks "how do I do X in kerf?". Use it proactively the moment you spot a kerf import in the file you're editing.
-kerf-skill-version: 1.3.0
+kerf-skill-version: 1.4.0
 ---
 
 # Building apps with kerf
@@ -97,6 +97,8 @@ When deciding which primitive to reach for, work down the axes:
 **Raw HTML.**
 - User-controlled HTML → sanitize first (DOMPurify) then `raw(sanitized)`.
 - Author-controlled trusted HTML → `raw(html)` directly.
+
+**Dangerous URLs.** `javascript:`/`vbscript:`/script-executing `data:` values on `href`/`src`/`xlink:href`/`formaction`/`action`/`data` are dropped — kerf **throws in dev**, **warns + drops in prod**. Sanitize user URLs upstream; wrap an intentional trusted one in `raw(url)` (bypasses the screen in both modes).
 
 ## Canonical patterns
 
