@@ -8,9 +8,9 @@
  * focus across DOM moves see a no-op; engines that don't get a transparent
  * fix.
  *
- * Lives in its own file (rather than inside `list-reconcile.ts`) to keep that
- * file under the 200-LOC project guideline and to isolate the engine-quirk
- * handling described in `docs/4-render.md` §4.4.
+ * Lives in its own file (rather than inside `list-reconcile.ts`) to isolate
+ * the engine-quirk handling — a concern separable from the reconcile
+ * algorithm — described in `docs/4-render.md` §4.4.
  */
 
 export interface FocusSnapshot {

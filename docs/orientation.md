@@ -35,7 +35,7 @@ If you need to **opt a subtree out of the diff** (third-party widget, imperative
 
 ## Conventions
 
-One primary export per file, files under ~200 LOC, ESM-only, kebab-case filenames. `npm run check` is the fast gate (lint + typecheck + tests + build + dist suite); `npm run check:full` adds Playwright. Coverage is enforced at 100% lines/functions/statements, 99% branches on `src/`. Ticket numbers (`KF-NN`) are local-only — always include a self-contained summary when referencing them. See `CLAUDE.md` § Hot Sheet integration.
+One coherent concern per file (split on concerns, not line count), one primary export per file, ESM-only, kebab-case filenames. `npm run check` is the fast gate (lint + typecheck + tests + build + dist suite); `npm run check:full` adds Playwright. Coverage is enforced at 100% lines/functions/statements, 99% branches on `src/`. Ticket numbers (`KF-NN`) are local-only — always include a self-contained summary when referencing them. See `CLAUDE.md` § Hot Sheet integration.
 
 ## Deeper reading
 

@@ -6,8 +6,9 @@
  * not in this map is passed through verbatim — `data-*`, `aria-*`, and
  * any custom attribute work without ceremony.
  *
- * Lives in its own module so `src/jsx-runtime.ts` can stay under the
- * 200-LOC project guideline; the bulk of `jsx-runtime.ts` was this table.
+ * Lives in its own module so the alias data stays a separable concern from
+ * `src/jsx-runtime.ts`'s runtime logic; the bulk of `jsx-runtime.ts` was this
+ * table.
  */
 
 export const ATTR_ALIASES: Record<string, string> = {
