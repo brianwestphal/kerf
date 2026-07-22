@@ -9,7 +9,7 @@
 // arraySignal moved to its own subpath in KF-95 — `import { arraySignal } from 'kerfjs/array-signal'`.
 // Apps that don't use granular collection signals shed ~1 KB from the main barrel as a result.
 export { attr, type AttrSpec } from './attrSelector.js';
-export { delegate, delegateCapture } from './delegate.js';
+export { delegate, delegateCapture, type DelegateOptions } from './delegate.js';
 export { each } from './each.js';
 export { Fragment, isSafeHtml, raw, SafeHtml } from './jsx-runtime.js';
 export { morph } from './morph.js';

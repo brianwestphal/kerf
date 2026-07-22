@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Breaking
+
+- **`delegateCapture()` now uses `closest()`-style walk-up matching by default**, unifying it with `delegate()`. Previously it matched only via `target.matches()` (the exact element the event landed on) and passed the raw target to the handler; now it walks up from `event.target` via `closest(selector)`, applies the same `rootEl.contains()` containment check as `delegate()`, and passes the matched ancestor to the handler. This removes a long-standing asymmetry between the two helpers (a click on a descendant of the selected element now climbs to it, as with `delegate()`). **Migration:** if you relied on the old direct-match behavior, pass `{ match: 'direct' }` as the new optional final options argument — e.g. `delegateCapture(root, 'click', '.exact', handler, { match: 'direct' })`. Both `delegate()` and `delegateCapture()` accept `{ match?: 'closest' | 'direct' }` (default `'closest'`), exposed as the new `DelegateOptions` type.
+
 ### Fixed
 
 - **Controlled form state now survives user interaction** — `morph()` (and the fine-grained binding writer) sync the `checked` / `value` / `selected` DOM properties whenever they mutate those attributes. Previously, the browser's dirty-value/dirty-checked flags detached the live property from the attribute after the user touched a control, so a controlled `checked={sig.value}` checkbox the user had clicked (or a non-focused `value={...}` input the user had typed into, or a `<select>` with `selected` options, or a controlled `<textarea>`) updated its attribute while the visible state stayed stale. Uncontrolled usage — JSX that never mentions the attribute — is untouched, and a focused text input/textarea still keeps the user's in-progress edit. Pinned by a real-browser regression suite (`tests/browser/form-state-sync.spec.ts`) across Chromium/Firefox/WebKit.
