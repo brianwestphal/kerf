@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Fixed
+
+- **`defineStore` dev-mode read-only guard is now deep and no longer freezes the live state object.** In development builds, `get()` returns a lazy deep read-only `Proxy` instead of `Object.freeze`-ing the live snapshot. Two dev-behavior deltas: (1) **deep** — a nested mutation such as `get().nested.x = 1` now throws a `TypeError` (previously the shallow freeze let nested writes through silently); (2) **no collateral freezing** — the underlying state object is never frozen, so an external reference that legitimately mutates it later stays writable in dev (it previously threw in dev but not prod). Reads are transparent (spread, `JSON.stringify`, `Object.keys`, iteration, `instanceof` all behave as on a plain object). This is **non-breaking for production**: prod returns the bare reference with no proxy, byte-identical to before. The guard is gated through the shared `isDevMode()` helper, so setting `globalThis.KERF_DEV = false` before mount opts out (for no-bundler / CDN consumers with no `process`).
+
 ## [1.0.2] - 2026-07-22
 
 

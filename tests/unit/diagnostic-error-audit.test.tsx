@@ -219,17 +219,17 @@ describe('Diagnostic-error audit (KF-169) — Hard Rules 1–12', () => {
     expect(host.textContent).toBe('0');
   });
 
-  it('Rule 8 — store action mutates get() instead of calling set(): throws a native TypeError naming the property (score 3, KF-177)', () => {
-    // KF-177: in dev, defineStore's `get` parameter freezes the snapshot
-    // before returning it, so a Rule 8 violation throws V8's native
-    // `TypeError: Cannot assign to read only property 'count' …` — score 3
-    // because the error names the property and the object. Previously this
+  it('Rule 8 — store action mutates get() instead of calling set(): throws a read-only TypeError (score 3)', () => {
+    // In dev, defineStore's `get()` returns a deep read-only Proxy, so a Rule 8
+    // violation throws a store-specific `TypeError` naming the rule — score 3
+    // because the error explains the violation and the fix. Previously this
     // landed silently (mutation hit the underlying state without notifying
     // subscribers; direct .value reads saw the new value but effects stayed
     // stale — the worst silent-misbehavior of all the rules).
     //
-    // Production keeps the bare reference for zero overhead — the freeze
-    // gate is `process.env.NODE_ENV !== 'production'`.
+    // Production keeps the bare reference for zero overhead — the guard is
+    // gated through `isDevMode()` (`NODE_ENV !== 'production'`, or an explicit
+    // `globalThis.KERF_DEV`).
     const counter = defineStore({
       initial: () => ({ count: 0 }),
       actions: (_set, get) => ({
@@ -243,7 +243,7 @@ describe('Diagnostic-error audit (KF-169) — Hard Rules 1–12', () => {
       observed = counter.state.value.count;
     });
     expect(observed).toBe(0);
-    expect(() => counter.actions.wronglyMutate()).toThrow(/Cannot assign to read only property/);
+    expect(() => counter.actions.wronglyMutate()).toThrow(/read-only/);
     // State and observer both stay at the initial value — the mutation never landed.
     expect(counter.state.value.count).toBe(0);
     expect(observed).toBe(0);
