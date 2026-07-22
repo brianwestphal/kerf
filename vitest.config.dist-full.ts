@@ -35,6 +35,7 @@ const SUBPATH_ENTRIES: Record<string, string> = {
   'jsx-runtime': resolve(DIST, 'jsx-runtime.js'),
   testing: resolve(DIST, 'testing.js'),
   'array-signal': resolve(DIST, 'array-signal.js'),
+  html: resolve(DIST, 'html.js'),
 };
 
 function srcToDistPlugin(): Plugin {

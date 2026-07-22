@@ -1,7 +1,7 @@
 ---
 name: kerf-app
 description: Build UIs in the kerf reactive framework (https://github.com/brianwestphal/kerf). Use this skill whenever the user is writing or modifying code that imports `kerfjs`, asks to add a feature to a kerf app, or asks "how do I do X in kerf?". Use it proactively the moment you spot a kerf import in the file you're editing.
-kerf-skill-version: 1.5.0
+kerf-skill-version: 1.6.0
 ---
 
 # Building apps with kerf
@@ -53,6 +53,7 @@ import { arraySignal } from 'kerfjs/array-signal';
 | `toElement(jsx)` | parse JSX into a DOM node (SVG-aware). Single-root → `Element`; multi-root (`<><svg/> label</>`, two icons side by side) → `DocumentFragment` that `appendChild`/`replaceChildren`/`append` inlines into the parent. |
 | `raw(html)` | inject pre-escaped HTML |
 | `arraySignal(initial?)` | granular keyed-list signal (subpath `kerfjs/array-signal`); `each()` reconciles in O(patches) |
+| `` html`…` `` | tagged template (subpath `kerfjs/html`) — JSX-identical runtime semantics with NO build step, for CDN/importmap projects. Real HTML attribute names (`class`, not `className`); holes only in text positions or as a COMPLETE attribute value (`attr=${v}` / `attr="${v}"`) |
 
 ## Hard rules — every AI assistant gets these wrong at least once
 
@@ -148,6 +149,15 @@ mount(listEl, () => (
   </ul>
 ));
 // selectedId.value = 3  → only the ~2 affected <li> class attrs update.
+
+// Pattern 6: no build step (CDN / importmap) — the html tagged template
+// instead of JSX. Same runtime semantics; real HTML attribute names; a hole
+// must be a text position or a COMPLETE attribute value (partials throw).
+import { html } from 'kerfjs/html';
+mount(rootEl, () => html`
+  <div class="${cls}">Count: ${count}</div>
+  <ul>${each(rows.value, (row) => html`<li data-key="${row.id}">${row.label}</li>`)}</ul>
+`);
 ```
 
 ## Diagnosing common errors
@@ -165,6 +175,7 @@ mount(listEl, () => (
 | Drag/drop / state change has no visible effect; only elements *outside* `each()` update | Used `each(STATIC_ARRAY, …)` whose row render reads signals. Items never change identity → cache hits forever → row render never re-invoked → signal reads stop tracking | Replace outer with `STATIC_ARRAY.map(...)`; keep inner `each()` for the dynamic sub-list. See Hard Rule 14 |
 | Row-enter CSS animation no longer replays when only a row's *content* changed (kerf ≥ 0.15.0) | 0.15.0+ morphs a same-identity, same-position row *in place* instead of recreating its node, so a mount-keyed `@keyframes` never re-triggers on a content-only update (≤ 0.14.x recreated the node, so it fired). Intentional flip side: focus, scroll, IME, and in-progress transitions now survive | Key the animation on a state-class toggle, not element creation. To force a remount, churn the row's identity (new object ref / `data-key`) so the reconciler replaces the node |
 | Want a hot spot to update without re-running the whole render | Fine-grained binding: pass the signal/`computed` ITSELF into the attr/text hole (`class={computed(() => …)}`), not `.value`. Use `computed()` not a bare `() => …` (memoization keeps a shared-signal flip to ~O(changed nodes)). Opt-in per hole. Limit: a bound hole depending on the row's OWN mutated data goes stale on a granular in-place update — use plain interpolation there |
+| `` html`` ``: partial attribute values are not supported | In `kerfjs/html` templates a hole must be the COMPLETE attribute value | Build the full string first (`` class="${`a ${b}`}" ``), or bind `class="${computed(() => `a ${b.value}`)}"` for a reactive one |
 
 ## Workflow guidance
 

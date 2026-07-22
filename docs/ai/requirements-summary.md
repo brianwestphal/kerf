@@ -19,7 +19,7 @@ Status markers:
 | §3 | Stores (`defineStore` / `resetAllStores`) | Shipped |
 | §4 | Render (`mount` + native diff + list reconciler) | Shipped |
 | §5 | Event delegation (Tier 1 / 2 / 3) | Shipped |
-| §6 | JSX runtime (`SafeHtml` / `raw` / `Fragment`) | Shipped |
+| §6 | JSX runtime (`SafeHtml` / `raw` / `Fragment`) + `kerfjs/html` tagged templates | Shipped |
 | §7 | SVG (`toElement` SVG-aware) | Shipped |
 | §8 | API reference | Shipped |
 | §9 | Live demo (GitHub Pages deploy of `examples/reactivity-demo`) | Shipped |
@@ -72,6 +72,8 @@ Three-tier model:
 JSX renders to `SafeHtml` strings via `kerfjs/jsx-runtime`. Configured via `tsconfig` `"jsxImportSource": "kerfjs"`. Attribute aliases for HTML + SVG camelCase → kebab-case. Boolean attribute semantics. Children: strings escaped, `SafeHtml` injected raw, DOM nodes throw, arrays joined. `raw(html)` wraps pre-escaped strings. §6.4.1 dangerous-URL filter: `javascript:`/`vbscript:`/script-executing `data:` values on URL-bearing attributes (`href`/`src`/`xlink:href`/`formaction`/`action`/`data`) are dropped — KF-340: throws in dev, warns+drops in prod (production byte-identical); `raw()` opts out in both modes.
 
 Typed `IntrinsicElements` (KF-75) catches misspelled tags + attribute typos at compile time. Custom elements / web components extend the table via declaration merging into `kerfjs/jsx-runtime`'s JSX namespace (KF-100): `IntrinsicElements` is exposed as an `interface extends`, and `KerfCustomElement` / `KerfBaseAttrs` / `AttrLike` / `AttrValue` / `DataAriaAttrs` are re-exported from `kerfjs/jsx-runtime` for project-side composition.
+
+§6.11 **Tagged-template authoring — `kerfjs/html`** (Shipped, KF-333) — the `html` tagged template makes "no build step" literal for CDN/importmap consumers: same `SafeHtml` output and IDENTICAL runtime semantics to JSX (text-hole escaping/passthrough incl. `each()` list segments, attribute rules incl. URL screening + `on*` rejection, fine-grained signal bindings, SSR snapshots), reusing the JSX runtime's own helpers rather than duplicating them. Differences: attribute names verbatim (no camelCase aliases), and a strict hole contract (holes only in text positions or as a complete attribute value; tag-name / attr-name / partial-value / in-comment holes throw). Static parts parse once per call site (`WeakMap` on the template strings array). Own subpath so JSX-only apps ship none of it.
 
 ### §7 SVG
 

@@ -20,6 +20,7 @@ kerf/
 │   ├── morph.ts                  ← native general-purpose DOM reconciler (replaces morphdom); exported publicly as morph() (KF-150)
 │   ├── segment.ts                ← Segment types (static/list/mixed) + flatten helpers
 │   ├── each.ts                   ← each() — keyed list iteration with per-item memo
+│   ├── html.ts                   ← KF-333 — `html` tagged template at the kerfjs/html subpath (no-build authoring path for CDN/importmap consumers). Thin front-end over the exact JSX machinery: text holes via jsx-runtime's `_toSegment` (escaping, SafeHtml/each() list-segment passthrough, signal → bindText), attr holes via `_assertEmittableAttrName` + `bindAttr` (signals, grouped into one marker attr per element at the tag-close `>`) or `_renderAttrVerbatim` (statics — NO camelCase aliasing; authors write real HTML names). Parse-once-per-callsite via a WeakMap keyed on the template strings array; `_parseCount()` test hook. mount/morph/reconcilers unchanged.
 │   ├── bindings.ts               ← KF-294 (spike, perf/fine-grained-bindings branch) — fine-grained signal bindings. A `Signal` handed straight into a JSX attr (`class={sig}`) or text hole (`{sig}`) inside a mount() emits a marker instead of stringifying; a wiring pass attaches one effect per hole after parse so the node updates without a render re-run. TWO scopes with disjoint marker namespaces: GLOBAL holes (`data-kfb` / `<!--kfb:id-->`) wired by wireBindings() over the mount root; ROW holes inside each() (`data-kfbrow` / `<!--kfbr:id-->`, row-local ids) captured by captureRowBindings(), wired/disposed by BOTH reconcile paths at each row node's create/remove (snapshot: buildFreshNodes/removeOldNodes; granular: applyInsert/remove/update) — so select-row updates fire only the ~2 changed effects (no render, no reconcile). SSR/toString snapshots the value. Optimized wiring: root-attr holes resolved allocation-free (no querySelectorAll/Map for the common `<tr class={sig}>` row). RESERVED NAMESPACE (KF-314): the wiring pass matches markers by id across the subtree with no ownership check, so `data-kfb`/`data-kfbrow` + comments beginning `kfb:`/`kfbr:`/`kf-list:` are a reserved consumer contract — a consumer that emits one can collide with a real binding's id and steal its effect; documented in docs/2-reactivity.md and pinned by a marker-constant test. SECURITY (KF-322 completes KF-306): the bound path's attr NAME is trusted at write time — `on*` and malformed attribute names are rejected at binding registration in jsx-runtime's `jsx()` signal branch via the shared `assertEmittableAttrName` (the same helper renderAttr uses for static attrs), so a signal bound to `onclick` can never reach `setBoundAttr`→`setAttribute('onclick', …)` and install a live inline handler.
 │   ├── list-render-state.ts      ← KF-336 reified dispatch state machine — ListRenderState (unbound/empty/bound), deriveListRenderState(count), decideListPath() with the documented transition table (first-render/empty-binding/no-patches/replace/count-drift → snapshot; else granular; cachekey-drift + render-threw layered on in each.ts). Pure + directly unit-tested, incl. the previously-c8-ignored count-drift arm
 │   ├── list-reconcile.ts         ← top-level dispatcher (KF-112) — re-exports BoundItem / ListBinding / endAnchor and defines reconcileList; its non-empty-binding granular precondition is the DOM-side restatement of list-render-state's `bound` state
@@ -42,6 +43,7 @@ kerf/
 │       ├── jsx-attr-aliases.ts   ← camelCase → HTML/SVG attribute name table (KF-21)
 │       ├── rowContract.ts        ← KF-103 row-contract helpers — ROW_HTML_SNIPPET_MAX, parseRowTemplate, rowContractError, truncateRowHtml (dev-mode row-key warn gated via utils/devMode.ts)
 │       ├── syncFormProp.ts       ← KF-335 form-state property sync (checked/value/selected follow a MUTATED attribute; dirty-flag detachment fix) — called by morph.ts's morphAttributes and bindings.ts's setBoundAttr only at actual attribute mutation, so uncontrolled usage stays untouched; focused elements keep the in-progress edit
+│       ├── templateParse.ts      ← KF-333 — static-parts state machine for `html\`\`` (text/tag/comment modes + quote state). Classifies each hole as text or complete-attribute-value; tag-name / attr-name / partial-value / in-comment holes THROW with actionable messages; records per-chunk tag-close offsets for bound-attr marker injection
 │       └── urlScreen.ts          ← KF-297 shared URL-attr screening (isDangerousUrlValue / dangerousUrlWarning / reportDangerousUrl) used by BOTH jsx-runtime's renderAttr (static attrs) and bindings' setBoundAttr (bound attrs) — scheme-based: drops javascript:/vbscript: + script-executing data: subtypes (text/html, image/svg+xml, xml; inert media allowlisted) on href/src/formaction/action/xlink:href/data(<object>); normalizes control-char/whitespace scheme obfuscation before matching; raw() opts out. KF-340: reportDangerousUrl THROWS in dev (isDevMode()), console.warns + drops in prod (byte-identical) — the drop happens in both modes, only the reporting differs
 ├── tests/
 │   ├── conventions.test.ts       ← KF-286 — API-surface + no-default-export + row-contract invariants (the in-suite complement to check-doc-api-coverage.mjs / check-feature-coverage.mjs); pins facts line coverage can't express
@@ -67,6 +69,7 @@ kerf/
 │   │   ├── bindings.test.ts
 │   │   ├── each.test.ts
 │   │   ├── edge-case-coverage.test.tsx     ← adversarial probes for mount-lifecycle / shape-transitions / focus-on-granular-path / fast-path corners / 1000-row stress
+│   │   ├── html.test.ts ← KF-333 — `kerfjs/html` tagged template: JSX semantic parity (text + attr holes), hole-contract errors, fine-grained signal bindings under mount, each() composition (snapshot + granular), SSR snapshots, parse cache
 │   │   ├── jsx-runtime.test.ts
 │   │   ├── jsx-types.test.tsx
 │   │   ├── kf102-each-after-transition.test.tsx ← KF-102 round 2 — each() reconcile after sibling-introduction transitions
@@ -86,6 +89,7 @@ kerf/
 │   │   ├── consumer-app.spec.ts        ← KF-123 — drives `tests/dist/consumer-app/` (real esbuild-bundled app against dist/) across Chromium / Firefox / WebKit
 │   │   ├── example-apps.spec.ts        ← KF-165 — one smoke spec per `site/src/examples/complete/<name>/` app (kanban / markdown-editor / chat / todomvc / dashboard). Kanban drag spec is the regression gate for KF-163 (no visual feedback during drag) and KF-165 (delegateCapture matches() vs. delegate() closest() — pointerdown on `.card-text` missed `.card` until the example switched to `delegate()`).
 │   │   ├── global-setup.mjs            ← rebuilds `tests/dist/consumer-app/dist/main.js` AND `tests/dist/example-apps/<name>/` before the suite (skipped per-build via `KERF_SKIP_CONSUMER_BUILD=1` / `KERF_SKIP_EXAMPLE_APPS_BUILD=1`)
+│   │   ├── html-tag.spec.ts            ← KF-333 — `kerfjs/html` no-build fixture: dist/html.js via importmap, mount + fine-grained signal updates + each() keyed reconcile across the three engines
 │   │   ├── ime-composition.spec.ts     ← IME composition survives a re-render
 │   │   ├── mutation-count.spec.ts      ← LIS-based reorder produces the minimum insertBefore count
 │   │   ├── perf-1k.spec.ts             ← 1k-row stress (real-browser sanity check on the bench app)
@@ -200,6 +204,8 @@ Every export reachable via `import { ... } from 'kerfjs'`:
 | `isSafeHtml` | `jsx-runtime.ts` | Cross-bundle type guard for `SafeHtml` (preferred over `instanceof`) |
 | `raw` | `jsx-runtime.ts` | Wrap a pre-escaped HTML string |
 | `Fragment` | `jsx-runtime.ts` | JSX `<>...</>` tag; also re-exported from the barrel for manual composition |
+
+Plus, on the `kerfjs/html` subpath: `html` (tagged template — same runtime semantics as JSX, no build step; `HtmlValue` hole type; `_parseCount()` test hook), see `html.ts` above.
 
 Plus, on the `kerfjs/array-signal` subpath:
 

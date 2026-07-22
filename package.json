@@ -53,6 +53,10 @@
       "types": "./dist/array-signal.d.ts",
       "import": "./dist/array-signal.js"
     },
+    "./html": {
+      "types": "./dist/html.d.ts",
+      "import": "./dist/html.js"
+    },
     "./ai/*": "./ai/*"
   },
   "files": [

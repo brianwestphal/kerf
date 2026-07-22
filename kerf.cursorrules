@@ -1,4 +1,4 @@
-<!-- kerf-skill-version: 1.5.0 -->
+<!-- kerf-skill-version: 1.6.0 -->
 # kerf.cursorrules — rules for building apps with kerf
 #
 # Drop this file into your project as `.cursorrules` (Cursor will pick it
@@ -48,6 +48,7 @@ import { arraySignal } from 'kerfjs/array-signal';
 | `toElement(jsx)` | parse JSX into a DOM node (SVG-aware). Single-root → `Element`; multi-root (`<><svg/> label</>`, two icons side by side) → `DocumentFragment` that `appendChild`/`replaceChildren`/`append` inlines into the parent. |
 | `raw(html)` | inject pre-escaped HTML |
 | `arraySignal(initial?)` | granular keyed-list signal at `kerfjs/array-signal` subpath; `each()` reconciles in O(patches) |
+| `` html`…` `` | tagged template at `kerfjs/html` subpath — JSX-identical runtime semantics with NO build step (CDN/importmap projects). Real HTML attribute names (`class`, not `className`); holes only in text positions or as a COMPLETE attribute value (`attr=${v}` / `attr="${v}"`) |
 
 ## Hard rules — get these right on the first try
 
@@ -125,6 +126,15 @@ const cart = defineStore({
 // One-shot reconcile against existing DOM (no signals)
 morph(liveCard, '<article class="card">…</article>');
 
+// No build step (CDN / importmap): the html tagged template instead of JSX.
+// Same runtime semantics as JSX; write real HTML attribute names; a hole must
+// be a text position or a COMPLETE attribute value (partial values throw).
+import { html } from 'kerfjs/html';
+mount(rootEl, () => html`
+  <div class="${cls}">Count: ${count}</div>
+  <ul>${each(rows.value, (row) => html`<li data-key="${row.id}">${row.label}</li>`)}</ul>
+`);
+
 // Fine-grained binding (opt-in): pass the signal/computed ITSELF into a hole
 // so a change updates ONLY that node (no render re-run, no reconcile). For a
 // hot spot driven by an external signal (selection class) — not everywhere.
@@ -151,6 +161,7 @@ mount(listEl, () => (
 - Drag/drop / state change has no visible effect, only stuff *outside* `each()` updates → you used `each(STATIC_ARRAY, …)` whose row render reads signals. Replace the outer with `STATIC_ARRAY.map(...)`; keep inner `each()` for the dynamic sub-list. See Hard Rule 14.
 - Row-enter CSS animation no longer replays when only a row's *content* changed (kerf ≥ 0.15.0) → 0.15.0+ morphs a same-identity, same-position row *in place* instead of recreating its node, so a mount-keyed `@keyframes` never re-triggers on a content-only update (≤ 0.14.x recreated the node, so it fired; the intentional flip side is that focus, scroll, IME, and in-progress transitions now survive). Key the animation on a state-class toggle, not element creation; to force a remount, churn the row's identity (new object ref / `data-key`).
 - Want a hot spot to update without re-running the whole render → fine-grained binding: pass the signal/`computed` ITSELF into the attr/text hole (`class={computed(() => …)}`), not `.value`. Use `computed()` not a bare `() => …` (memoization keeps a shared-signal flip to ~O(changed nodes)). Opt-in per hole. Limit: a bound hole depending on the row's OWN mutated data goes stale on a granular in-place update — use plain interpolation there.
+- `` html`` ``: partial attribute values are not supported → in `kerfjs/html` templates a hole must be the COMPLETE attribute value. Replace `class="a ${b}"` with a pre-built string (`` class="${`a ${b}`}" ``) or, for a bound attribute, `class="${computed(() => `a ${b.value}`)}"`.
 
 ## Server / SSR
 

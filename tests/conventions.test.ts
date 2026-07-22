@@ -16,6 +16,7 @@
 import { describe, expect, it } from 'vitest';
 
 import * as arraySignalSubpath from '../src/array-signal.js';
+import * as htmlSubpath from '../src/html.js';
 import * as barrel from '../src/index.js';
 import * as jsxRuntime from '../src/jsx-runtime.js';
 import * as testingSubpath from '../src/testing.js';
@@ -61,8 +62,13 @@ describe('public export surface (KF-286)', () => {
     expect(runtimeKeys(testingSubpath)).toEqual(['clearStoreRegistry']);
   });
 
+  it('the kerfjs/html subpath exposes html (plus the _parseCount test hook only)', () => {
+    expect(runtimeKeys(htmlSubpath)).toEqual(['_parseCount', 'html']);
+    expect(typeof htmlSubpath.html).toBe('function');
+  });
+
   it('no entry point ships a default export (kerf is named-exports only)', () => {
-    for (const ns of [barrel, jsxRuntime, arraySignalSubpath, testingSubpath]) {
+    for (const ns of [barrel, jsxRuntime, arraySignalSubpath, testingSubpath, htmlSubpath]) {
       expect('default' in ns).toBe(false);
     }
   });

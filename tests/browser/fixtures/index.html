@@ -11,6 +11,7 @@
       "imports": {
         "kerfjs": "/dist/index.js",
         "kerfjs/jsx-runtime": "/dist/jsx-runtime.js",
+        "kerfjs/html": "/dist/html.js",
         "@preact/signals-core": "/node_modules/@preact/signals-core/dist/signals-core.mjs"
       }
     }
@@ -18,9 +19,11 @@
   <script type="module">
     import * as kerf from 'kerfjs';
     import * as jsxRuntime from 'kerfjs/jsx-runtime';
+    import { html } from 'kerfjs/html';
     // Expose for `page.evaluate` tests.
     window.kerf = kerf;
     window.jsxRuntime = jsxRuntime;
+    window.kerfHtml = html;
     window.kerfReady = true;
   </script>
 </body>

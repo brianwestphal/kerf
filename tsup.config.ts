@@ -1,7 +1,7 @@
 import { defineConfig } from 'tsup';
 
 export default defineConfig({
-  entry: ['src/index.ts', 'src/jsx-runtime.ts', 'src/testing.ts', 'src/array-signal.ts'],
+  entry: ['src/index.ts', 'src/jsx-runtime.ts', 'src/testing.ts', 'src/array-signal.ts', 'src/html.ts'],
   format: ['esm'],
   outDir: 'dist',
   target: 'es2022',

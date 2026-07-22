@@ -41,6 +41,8 @@ npm install kerfjs
 
 Vite / esbuild need no extra config. The `jsx-runtime` and `jsx-dev-runtime` subpaths are both exposed.
 
+**No build tool at all?** (CDN / importmap page, `<script type="module">` island): skip JSX and author with the `html` tagged template from `kerfjs/html` — same runtime semantics as JSX, no transform needed. See the `html` row below.
+
 ## Public API — everything is in one import
 
 ```ts
@@ -55,6 +57,9 @@ import {
 
 // Optional, only when you need granular collection updates:
 import { arraySignal } from 'kerfjs/array-signal';
+
+// Optional, only for no-build-step (CDN / importmap) authoring:
+import { html } from 'kerfjs/html';
 ```
 
 | Export | Signature | Use |
@@ -77,6 +82,7 @@ import { arraySignal } from 'kerfjs/array-signal';
 | `isSafeHtml(v)` | `boolean` (type guard) | cross-bundle-safe `SafeHtml` check; prefer over `instanceof` |
 | `Fragment` | `(props) => SafeHtml` | JSX `<>...</>` tag; useful when composing `Fragment` manually |
 | `arraySignal<T>(initial?)` *(subpath: `kerfjs/array-signal`)* | `ArraySignal<T>` (`.value` snapshot, `update`/`insert`/`push`/`remove`/`move`/`replace` mutators) | granular keyed-list signal — `each(arraySig, ...)` reconciles in O(patches) instead of O(N) |
+| `` html`…` `` *(subpath: `kerfjs/html`)* | `html(strings, ...values: HtmlValue[]) => SafeHtml` | tagged-template authoring with IDENTICAL runtime semantics to JSX (escaping, boolean/nullish attrs, URL screening, `on*` rejection, fine-grained signal holes, `each()` composition) — for projects with NO build step (CDN/importmap). Attribute names verbatim (`class`, not `className`); holes only in text positions or as a COMPLETE attribute value (`attr=${v}` / `attr="${v}"` — tag-name, attr-name, partial-value, and in-comment holes throw); static parts parse once per call site |
 
 ## The core patterns
 

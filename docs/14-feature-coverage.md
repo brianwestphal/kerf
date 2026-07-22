@@ -184,6 +184,20 @@ axis (`cacheKey` reading an external signal) crosses all of them.
 | FC-JX13 | Inline event-handler attributes (`on*`, string or function, any case) are rejected | `src/jsx-runtime.ts` | `tests/unit/jsx-runtime.test.ts` › "rejects a string-valued on* attribute (would be a live inline handler)" |
 | FC-JX14 | URL screen throws in dev, warns+drops in prod (dev/prod split) | `src/jsx-runtime.ts`, `src/utils/urlScreen.ts`, `src/utils/devMode.ts` | `tests/unit/jsx-runtime.test.ts` › "throws on a javascript: href"; `tests/unit/jsx-runtime.test.ts` › "falls back to NODE_ENV when no KERF_DEV override is set (ambient dev throws)" |
 
+### §6.11 Tagged-template authoring (`kerfjs/html`)
+
+| ID | Behavior | Implements | Guarding test(s) |
+| --- | --- | --- | --- |
+| FC-H1 | `html` text holes share JSX child semantics — identical escaping for identical input | `src/html.ts`, `src/jsx-runtime.ts` | `tests/unit/html.test.ts` › "escapes string holes exactly like JSX children" |
+| FC-H2 | `html` attribute holes share JSX attribute semantics (quoted / single-quoted / unquoted render identically; boolean/nullish rules) | `src/html.ts`, `src/jsx-runtime.ts` | `tests/unit/html.test.ts` › "quoted, single-quoted, and unquoted holes render identically", `tests/unit/html.test.ts` › "boolean and nullish values follow HTML boolean-attribute semantics" |
+| FC-H3 | Attribute names are emitted verbatim — no camelCase aliasing on the template path | `src/html.ts`, `src/jsx-runtime.ts` | `tests/unit/html.test.ts` › "does NOT apply camelCase aliases — attribute names are emitted verbatim" |
+| FC-H4 | URL screening and `on*`-attribute rejection apply to template attribute holes | `src/html.ts`, `src/utils/urlScreen.ts` | `tests/unit/html.test.ts` › "applies the dangerous-URL screen (javascript: href dropped + warned)", `tests/unit/html.test.ts` › "rejects on* attribute holes — function, string, and object-less values alike" |
+| FC-H5 | Signal text + attribute holes bind fine-grained under `mount()` (no render re-run; per-element marker grouping) | `src/html.ts`, `src/bindings.ts` | `tests/unit/html.test.ts` › "binds a text hole: updates without re-running render", `tests/unit/html.test.ts` › "groups multiple signal attributes on one element into one marker" |
+| FC-H6 | `each()` composes in a template hole — the list segment threads through to the keyed reconciler (snapshot + granular) | `src/html.ts`, `src/each.ts` | `tests/unit/html.test.ts` › "threads the list segment through mount: unchanged rows keep their nodes", `tests/unit/html.test.ts` › "composes with arraySignal: granular append leaves existing rows untouched" |
+| FC-H7 | Hole-contract violations throw (tag-name / attribute-name / partial-value / comment holes) | `src/utils/templateParse.ts` | `tests/unit/html.test.ts` › "tag-name holes throw", `tests/unit/html.test.ts` › "partial quoted attribute values throw with composition advice", `tests/unit/html.test.ts` › "holes inside HTML comments throw" |
+| FC-H8 | The static parts parse once per call site (WeakMap keyed on template-strings identity) | `src/html.ts` | `tests/unit/html.test.ts` › "parses a call site once across repeated renders" |
+| FC-H9 | SSR / `.toString()` outside a mount snapshots signal holes, no markers | `src/html.ts`, `src/bindings.ts` | `tests/unit/html.test.ts` › "snapshots a signal text hole with no marker", `tests/unit/html.test.ts` › "snapshots a signal attribute hole with no marker" |
+
 ### §7 SVG
 
 | ID | Behavior | Implements | Guarding test(s) |
@@ -231,6 +245,7 @@ paint, real-consumer bundling). Guarded by Playwright specs under `tests/browser
 | FC-BR6 | Real-consumer bundle exercises each public primitive end-to-end | (all, via `dist/`) | `tests/browser/consumer-app.spec.ts` › "counter — signal + computed + delegate increments and re-renders" |
 | FC-BR7 | The eight complete example apps run their headline interaction | (all) | `tests/browser/example-apps.spec.ts` › "drag updates the card transform during pointermove (KF-163 regression)" |
 | FC-BR8 | krausest-style 1k-row perf scenarios (create/update/select/swap/clear) | `src/list-reconcile*.ts` | `tests/browser/perf-1k.spec.ts` › "1000-row keyed list — create / partial-update / select / swap / clear timings" |
+| FC-BR9 | `kerfjs/html` no-build path works from `dist/` via importmap: mount + fine-grained signal updates + `each()` keyed reconcile in real engines | `src/html.ts` (via `dist/html.js`) | `tests/browser/html-tag.spec.ts` › "html``: mount + fine-grained signal update + each() list, from dist via importmap" |
 
 ## Completeness — two directions, two mechanisms
 
