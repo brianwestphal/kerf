@@ -1,5 +1,5 @@
 /**
- * KF-165 — smoke specs for the seven complete example apps under
+ * KF-165 — smoke specs for the eight complete example apps under
  * `site/src/examples/complete/`. Each test exercises the app's headline
  * interaction end-to-end against the latest `dist/` via the test build at
  * `tests/dist/example-apps/<name>/` (see `tests/browser/global-setup.mjs`).
@@ -389,6 +389,45 @@ test.describe('dashboard', () => {
     expect(second).not.toBe(first);
     // Status pill is LIVE.
     await expect(page.locator('.status')).toContainText('LIVE');
+  });
+});
+
+test.describe('row-selector', () => {
+  test('selecting a row updates only the bound holes — no list re-render', async ({ page }) => {
+    await page.goto(`${BASE}/row-selector/`);
+
+    const rows = page.locator('[data-select]');
+    await expect(rows.first()).toBeVisible();
+    const renders = page.locator('[data-renders]');
+    const name = page.locator('[data-d-name]');
+
+    // Rendered once at mount.
+    await expect(renders).toHaveText('1');
+    await expect(name).toHaveText('Select a host');
+
+    // Select the first row: it gains the highlight class, the detail pane
+    // updates — and the render counter does NOT move (fine-grained binding,
+    // not a re-render).
+    const firstName = await rows.first().locator('.rs-name').innerText();
+    await rows.first().click();
+    await expect(rows.first()).toHaveClass(/rs-row-on/);
+    await expect(name).toHaveText(firstName);
+    await expect(renders).toHaveText('1');
+
+    // Select a different row: highlight moves off the first onto the third;
+    // still no re-render.
+    const thirdName = await rows.nth(2).locator('.rs-name').innerText();
+    await rows.nth(2).click();
+    await expect(rows.nth(2)).toHaveClass(/rs-row-on/);
+    await expect(rows.first()).not.toHaveClass(/rs-row-on/);
+    await expect(name).toHaveText(thirdName);
+    await expect(renders).toHaveText('1');
+
+    // Regenerate forces an actual re-render — now the counter ticks and the
+    // selection clears.
+    await page.locator('button[data-action="regenerate"]').click();
+    await expect(renders).toHaveText('2');
+    await expect(name).toHaveText('Select a host');
   });
 });
 

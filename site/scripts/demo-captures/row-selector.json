@@ -1,0 +1,68 @@
+{
+  "width": 880,
+  "height": 470,
+  "output": "site/public/demos/row-selector.svg",
+  "optimize": true,
+  "vars": {
+    "base": "http://localhost:4188",
+    "easeOut": "cubic-bezier(0.215,0.61,0.355,1)"
+  },
+  "cursor": "auto",
+  "frames": [
+    {
+      "transition": { "type": "cut", "duration": 0 },
+      "input": "${base}/row-selector/",
+      "waitFor": "[data-list]",
+      "wait": 300,
+      "duration": 900
+    },
+    {
+      "continue": true,
+      "transition": { "type": "cut", "duration": 0 },
+      "actions": [
+        { "type": "click", "selector": "li[data-select='h0']" },
+        { "type": "wait", "ms": 160 }
+      ],
+      "animations": [
+        { "selector": "[data-detail]", "property": "translateY", "from": "8px", "to": "0px", "duration": 280, "easing": "${easeOut}" }
+      ],
+      "duration": 900
+    },
+    {
+      "continue": true,
+      "transition": { "type": "cut", "duration": 0 },
+      "actions": [
+        { "type": "click", "selector": "li[data-select='h3']" },
+        { "type": "wait", "ms": 160 }
+      ],
+      "animations": [
+        { "selector": "[data-detail]", "property": "translateY", "from": "8px", "to": "0px", "duration": 280, "easing": "${easeOut}" }
+      ],
+      "duration": 900
+    },
+    {
+      "continue": true,
+      "transition": { "type": "cut", "duration": 0 },
+      "actions": [
+        { "type": "click", "selector": "li[data-select='h7']" },
+        { "type": "wait", "ms": 160 }
+      ],
+      "animations": [
+        { "selector": "[data-detail]", "property": "translateY", "from": "8px", "to": "0px", "duration": 280, "easing": "${easeOut}" }
+      ],
+      "duration": 1000
+    },
+    {
+      "continue": true,
+      "transition": { "type": "cut", "duration": 0 },
+      "actions": [
+        { "type": "click", "selector": "button[data-action='regenerate']" },
+        { "type": "wait", "ms": 200 }
+      ],
+      "animations": [
+        { "selector": "[data-renders]", "property": "scale", "from": "1.4", "to": "1", "duration": 300, "easing": "${easeOut}", "transformOrigin": "center" }
+      ],
+      "duration": 1100
+    }
+  ]
+}

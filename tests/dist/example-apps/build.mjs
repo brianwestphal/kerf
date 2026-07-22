@@ -47,6 +47,7 @@ const COMPLETE_APPS = [
   'dashboard',
   'cart-htmx',
   'counter-store',
+  'row-selector',
 ];
 
 async function buildOne(name) {

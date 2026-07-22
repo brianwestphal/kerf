@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>kerf · Row selector (fine-grained bindings)</title>
+    <style>
+      body { font-family: system-ui, sans-serif; background: #f5f5f5; margin: 0; padding: 1.5rem; color: #1f2937; }
+      .rs-wrap { max-width: 820px; margin: 0 auto; }
+      h1 { font-size: 1.3rem; margin: 0 0 0.25rem; }
+      p.lede { color: #555; margin: 0 0 1rem; font-size: 0.9rem; }
+      .rs { display: grid; grid-template-columns: 1fr 260px; gap: 1rem; align-items: start; }
+      .rs-main { background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden; }
+      .rs-listhead {
+        display: flex; align-items: center; gap: 0.75rem;
+        padding: 0.6rem 0.9rem; border-bottom: 1px solid #e5e7eb;
+        background: #fafafa; font-size: 0.85rem; color: #555;
+      }
+      .rs-renders { margin-left: auto; }
+      .rs-renders b { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; color: #2563eb; }
+      .rs-listhead button {
+        padding: 0.3rem 0.7rem; border: 1px solid #cbd5e1; background: #fff;
+        border-radius: 5px; cursor: pointer; font-size: 0.8rem;
+      }
+      .rs-listhead button:hover { background: #eff6ff; border-color: #2563eb; }
+      .rs-list { list-style: none; margin: 0; padding: 0; max-height: 360px; overflow-y: auto; }
+      .rs-row {
+        display: flex; align-items: center; gap: 0.6rem;
+        padding: 0.4rem 0.9rem; border-bottom: 1px solid #f1f5f9;
+        cursor: pointer; font-size: 0.85rem; transition: background 100ms ease;
+      }
+      .rs-row:hover { background: #f8fafc; }
+      .rs-row-on { background: #dbeafe; }
+      .rs-row-on:hover { background: #bfdbfe; }
+      .rs-dot { width: 8px; height: 8px; border-radius: 999px; flex: none; }
+      .rs-healthy  { background: #22c55e; }
+      .rs-degraded { background: #f59e0b; }
+      .rs-down     { background: #ef4444; }
+      .rs-name { font-weight: 600; min-width: 90px; }
+      .rs-region { color: #64748b; min-width: 88px; }
+      .rs-cpu { margin-left: auto; font-family: ui-monospace, monospace; color: #475569; }
+      .rs-detail { background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; padding: 0.9rem 1rem; }
+      .rs-detail h2 { margin: 0 0 0.75rem; font-size: 1rem; }
+      .rs-detail dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 0.35rem 0.75rem; font-size: 0.85rem; }
+      .rs-detail dt { color: #64748b; }
+      .rs-detail dd { margin: 0; font-family: ui-monospace, monospace; }
+    </style>
+  </head>
+  <body>
+    <div class="rs-wrap">
+      <h1>Host selector</h1>
+      <p class="lede">
+        Click a host. Only the selected row's class and the detail pane update — the list
+        renders <strong>once</strong> (watch the counter), no re-render, no reconcile.
+      </p>
+      <div id="app"></div>
+    </div>
+    <script type="module" src="./main.tsx"></script>
+  </body>
+</html>

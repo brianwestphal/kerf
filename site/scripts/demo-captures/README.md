@@ -34,6 +34,7 @@ smoke spec exercises:
 | `dashboard` | live ticker ticking + a continuously scrolling sparkline |
 | `counter-store` | increment ×3 (number pops each beat), decrement, async fetch resolves |
 | `cart-htmx` | swap in the cart island, remove an item |
+| `row-selector` | select three rows (highlight + detail follow, "list renders" stays at 1), then Regenerate ticks it |
 
 A frame's `waitFor*` gates are readiness preconditions applied **before** that
 frame's `actions`; the capture happens **after** the actions. So assertions about

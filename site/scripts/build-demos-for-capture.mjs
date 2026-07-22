@@ -21,6 +21,7 @@ const COMPLETE_APPS = [
   'dashboard',
   'cart-htmx',
   'counter-store',
+  'row-selector',
 ];
 
 const outRoot = process.argv[2] || '/tmp/claude/kerf-demos';

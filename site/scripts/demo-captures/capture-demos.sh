@@ -23,7 +23,7 @@ cd "$REPO_ROOT"
 SERVE_DIR="$(mktemp -d)"
 SERVE_PORT=4188
 CONFIG_DIR="site/scripts/demo-captures"
-APPS=(todomvc counter-store cart-htmx chat dashboard markdown-editor kanban)
+APPS=(todomvc counter-store cart-htmx chat dashboard markdown-editor kanban row-selector)
 
 cleanup() {
   [[ -n "${SERVE_PID:-}" ]] && kill "$SERVE_PID" 2>/dev/null || true
