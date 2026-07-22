@@ -46,7 +46,7 @@ Also covers `arraySignal()` (KF-92) — a granular collection signal at the `ker
 
 ### §3 Stores
 
-`defineStore({ initial, actions })` produces a `{ state, actions, reset }`. Three rules: read-only state, actions-only mutation, always-reset. Module-level registry powers `resetAllStores()`. Multi-step actions use `batch()` for atomic notification. Derived state via `computed()` next to the store.
+`defineStore({ initial, actions })` produces a `{ state, actions, reset }`. Three rules: read-only state, actions-only mutation, always-reset. Module-level registry powers `resetAllStores()`. Multi-step actions use `batch()` for atomic notification. Derived state via `computed()` next to the store. In dev, `get()` returns a **deep read-only Proxy** (`src/utils/devReadonly.ts`, gated by `src/utils/devMode.ts`'s `isDevMode()`): any write — including a nested `get().a.b = 1` — throws a Rule-8 `TypeError`, while reads (spread/JSON/keys/iteration) are transparent and the live state object is never frozen; `set()` unwraps get()-derived proxies so the signal only ever stores plain objects. Prod returns the bare reference (byte-identical, no proxy).
 
 ### §4 Render
 

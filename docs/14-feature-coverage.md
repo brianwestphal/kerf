@@ -121,7 +121,9 @@ axis (`cacheKey` reading an external signal) crosses all of them.
 | FC-ST2 | `reset()` returns state to `initial()` (fresh each reset) | `src/store.ts` | `tests/unit/store.test.ts` › "reset() returns state to initial()" |
 | FC-ST3 | `resetAllStores()` resets every registered store | `src/store.ts` | `tests/unit/store.test.ts` › "resetAllStores()" |
 | FC-ST4 | Multiple consumers share one state, update in lockstep | `src/store.ts` | `tests/unit/store.test.ts` › "multiple consumers see the same state and update in lockstep" |
-| FC-ST5 | `get()` snapshot is frozen in dev mode (mutation throws) | `src/store.ts` | `tests/unit/store.test.ts` › "dev-mode freeze of get() snapshot (KF-177)" |
+| FC-ST5 | `get()` snapshot is read-only in dev mode — top-level write / delete / defineProperty throws | `src/store.ts`, `src/utils/devReadonly.ts` | `tests/unit/store.test.ts` › "mutating a top-level property of get() throws a read-only TypeError" |
+| FC-ST6 | `get()` read-only guard is DEEP (nested mutation throws) and prod returns the raw object with no traps | `src/store.ts`, `src/utils/devReadonly.ts` | `tests/unit/store.test.ts` › "mutating a NESTED property of get() throws (deep coverage, new capability)"; `tests/unit/store.test.ts` › "prod mode (globalThis.KERF_DEV = false) returns the raw object with no traps" |
+| FC-ST7 | Reads through the guard are transparent (spread / JSON / keys / iteration) and `set({ ...get() })` stores a plain object, never a Proxy | `src/store.ts`, `src/utils/devReadonly.ts` | `tests/unit/store.test.ts` › "spread / JSON.stringify / Object.keys / array iteration all work through the proxy"; `tests/unit/store.test.ts` › "set({ ...get(), ... }) stores a plain object — never a Proxy — and shares unchanged nested refs" |
 
 ### §4 Render — mount / morph / each / segment
 

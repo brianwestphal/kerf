@@ -22,6 +22,7 @@ import { maybeWarnNarrowSet, type NarrowSetWarnContext } from './dev-store-warn.
 import type { ReadonlySignal, Signal } from './reactive.js';
 import { signal } from './reactive.js';
 import { isDevMode } from './utils/devMode.js';
+import { devReadonlyProxy, toRaw } from './utils/devReadonly.js';
 
 export interface Store<TState, TActions> {
   /** Read-only reactive view. Consumers read `state.value` or subscribe via `effect()`. */
@@ -49,24 +50,32 @@ export function defineStore<TState, TActions>(
   // on the env-var read before any per-set work runs.
   const warnCtx: NarrowSetWarnContext = { warned: false };
 
+  // The dev gate is resolved once per store, lazily on first `set()`/`get()`
+  // (so a runtime `globalThis.KERF_DEV` override set before mount is honored),
+  // then cached — the prod hot path stays a bare boolean read, never a
+  // per-call env probe.
+  let devGate: boolean | undefined;
+  const isDev = (): boolean => (devGate ??= isDevMode());
+
   const set = (next: TState): void => {
-    maybeWarnNarrowSet(internal.value, next, warnCtx);
-    internal.value = next;
+    // In dev, `next` may carry proxies handed back by the `get()` trap (e.g.
+    // `set({ ...get(), count: 1 })`). Unwrap them so the internal signal only
+    // ever holds a plain object — the narrow-set warning and every consumer
+    // read see raw state, never a Proxy. Prod stores the bare reference.
+    const raw = isDev() ? toRaw(next) : next;
+    maybeWarnNarrowSet(internal.value, raw, warnCtx);
+    internal.value = raw;
   };
-  // In dev, freeze the snapshot returned to actions so that
-  // `get().count = 42`-style mutations (a documented Rule 8 violation) throw
-  // a native `TypeError: Cannot assign to read only property` instead of
-  // silently landing on the underlying state without notifying subscribers.
-  // Production keeps the bare reference for zero overhead. The dev gate is
-  // resolved once per store on first `get()` (lazily, so a runtime
-  // `globalThis.KERF_DEV` override set before mount is honored) then cached —
-  // the hot path stays a bare boolean read, never a per-call env probe.
-  let devFreezeGate: boolean | undefined;
+  // In dev, wrap the reference returned to actions in a deep read-only Proxy so
+  // that `get().count = 42` / `get().nested.x = 1` (documented Rule 8
+  // violations) throw a `TypeError` instead of silently landing on the
+  // underlying state without notifying subscribers. The live state object is
+  // never frozen or mutated, so external references to it stay writable.
+  // Production returns the bare reference for zero overhead (no proxy).
   const get = (): Readonly<TState> => {
     const v = internal.value;
-    devFreezeGate ??= isDevMode();
-    if (devFreezeGate && v !== null && typeof v === 'object') {
-      Object.freeze(v);
+    if (isDev() && v !== null && typeof v === 'object') {
+      return devReadonlyProxy(v as TState & object);
     }
     return v;
   };

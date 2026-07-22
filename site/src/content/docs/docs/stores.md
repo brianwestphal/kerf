@@ -123,11 +123,16 @@ kerf: defineStore.set() called with keys missing from the current state — `ite
 
 The warn is off by default because narrow-set IS legal — a `reset()` that drops keys, a feature-flag-driven schema change, a state shape that genuinely needs to shrink would all warn under this heuristic. Opt-in keeps the diagnostic available without penalising the legitimate cases. Production behavior is unchanged for zero runtime cost (the env-var check short-circuits before any per-set work). See [`docs/11-dev-warnings.md`](/kerf/docs/dev-warnings/) for the full dev-warn family and the rules that keep them coherent.
 
-## 3.7 The `get()` snapshot is frozen in dev
+## 3.7 The `get()` snapshot is read-only in dev
 
-`get()` is typed as `() => Readonly<TState>` — a compile-time counterpart to the dev-mode runtime freeze. Actions that try to mutate `get().count = 42` fail `tsc --noEmit` before they ever reach the runtime.
+`get()` is typed as `() => Readonly<TState>` — a compile-time counterpart to the dev-mode runtime guard. Actions that try to mutate `get().count = 42` fail `tsc --noEmit` before they ever reach the runtime.
 
-In a non-production build, the value returned by `get()` is also `Object.freeze`d at runtime. This means the mutation throws a native `TypeError: Cannot assign to read only property` at the call site rather than landing on the underlying state and slowly desyncing the reactive consumers. Production keeps the bare reference for zero overhead.
+In a non-production build, the value returned by `get()` is also wrapped in a **deep read-only `Proxy`** at runtime. Any write to it — a top-level assignment, a `delete`, an `Object.defineProperty`, **or a nested mutation like `get().nested.x = 1`** — throws a `TypeError` at the call site rather than landing on the underlying state and slowly desyncing the reactive consumers. The proxy wraps nested plain objects and arrays lazily on access, so the guard is deep at O(1) per property read with no cloning. Reads are transparent: spread (`{ ...get() }`), `JSON.stringify(get())`, `Object.keys(get())`, `instanceof`, and array iteration all behave exactly as on the raw object. Production returns the bare reference for zero overhead — no proxy is ever constructed, so prod perf and semantics are byte-identical to a plain object.
+
+Two things changed versus the earlier `Object.freeze(get())` guard:
+
+- **Deep, not shallow.** The old freeze only guarded top-level keys, so `get().nested.x = 1` slipped through silently. The proxy throws on nested writes too.
+- **No collateral freezing of the live object.** The old guard froze the *live* state object as a side effect of reading it, so any external reference that later mutated it (legitimately, outside an action) threw in dev but not in prod. The proxy never freezes or mutates the underlying object, so external references stay writable and dev matches prod there.
 
 ## 3.8 Derived state via `computed()`
 
