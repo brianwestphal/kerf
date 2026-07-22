@@ -144,6 +144,19 @@ body {
 .demo-keyed-label { min-width: 80px; font-weight: 500; font-size: 13px; }
 .demo-arraysig-list { max-height: 320px; overflow-y: auto; }
 
+/* §9 fine-grained bindings — a bound class flips the highlight without a re-render */
+.demo-select-row { cursor: pointer; transition: background 120ms ease; }
+.demo-select-row:hover { background: var(--demo-accent-soft); }
+.demo-select-row-on { background: #fef3c7; }
+.demo-select-row-on:hover { background: #fde68a; }
+.demo-select-hint { margin-left: auto; font-size: 11px; color: var(--demo-muted); }
+.demo-binding-status { margin-top: 12px; }
+.demo-render-count {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-weight: 700; color: var(--demo-accent);
+  padding: 1px 6px; border-radius: 4px; background: var(--demo-accent-soft);
+}
+
 .demo-skip-mount { margin: 12px 0; }
 .demo-skip-widget {
   display: flex; align-items: center; gap: 10px;

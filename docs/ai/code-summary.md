@@ -91,7 +91,7 @@ kerf/
 │       ├── safe-html-cross-bundle.test.ts ← KF-14 regression
 │       └── store-registry-shared.test.ts  ← KF-15 regression
 ├── examples/
-│   └── reactivity-demo/          ← 7-section live demo (port of Hot Sheet's /_demo/reactivity)
+│   └── reactivity-demo/          ← 9-section live demo (port of Hot Sheet's /_demo/reactivity)
 ├── bench/
 │   ├── kerfjs-impl/              ← PR-ready entry for krausest/js-framework-benchmark
 │   ├── setup.sh                  ← clones the upstream harness into .bench-cache/

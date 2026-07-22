@@ -37,4 +37,4 @@ kerf renders JSX to a structured `SafeHtml` (string for static content; tagged "
 
 ## Examples
 
-- [reactivity-demo](https://github.com/brianwestphal/kerf/blob/main/examples/reactivity-demo): seven-section live demo exercising every primitive — counter, multi-consumer store, focus survival, keyed list, morph-skip, JSX-rendered SVG, capture-phase delegation. Runs live at <https://brianwestphal.github.io/kerf/demo/>.
+- [reactivity-demo](https://github.com/brianwestphal/kerf/blob/main/examples/reactivity-demo): nine-section live demo exercising every primitive — counter, multi-consumer store, focus survival, keyed list, morph-skip, JSX-rendered SVG, capture-phase delegation, granular arraySignal, fine-grained signal bindings. Runs live at <https://brianwestphal.github.io/kerf/demo/>.

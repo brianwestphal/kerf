@@ -1,6 +1,6 @@
 # 9. Live demo (GitHub Pages)
 
-The seven-section reactivity demo under [`examples/reactivity-demo/`](../examples/reactivity-demo) is published as a live site at <https://brianwestphal.github.io/kerf/demo/>. Anyone can play with kerf without cloning the repo or running a local dev server.
+The nine-section reactivity demo under [`examples/reactivity-demo/`](../examples/reactivity-demo) is published as a live site at <https://brianwestphal.github.io/kerf/demo/>. Anyone can play with kerf without cloning the repo or running a local dev server.
 
 This doc covers what the deploy is, how it's wired up, and the constraints that shape it.
 
@@ -9,7 +9,7 @@ This doc covers what the deploy is, how it's wired up, and the constraints that 
 A single GitHub Pages artifact contains two builds, served from one origin:
 
 - `https://brianwestphal.github.io/kerf/` — the marketing + docs site, built from [`site/`](../site) (Astro + Starlight).
-- `https://brianwestphal.github.io/kerf/demo/` — the seven-section reactivity demo, built from [`examples/reactivity-demo/`](../examples/reactivity-demo).
+- `https://brianwestphal.github.io/kerf/demo/` — the nine-section reactivity demo, built from [`examples/reactivity-demo/`](../examples/reactivity-demo).
 
 Both are static asset bundles. There is no server-side rendering, no API. The site has Pagefind search built in; the demo does not.
 
@@ -20,7 +20,7 @@ Both are static asset bundles. There is no server-side rendering, no API. The si
 1. **`sync-docs`** — generates `site/src/content/docs/docs/*.md` and `api.md` from `docs/N-*.md` and the AI usage guide. Single source of truth = `docs/`.
 2. **`build-examples`** — runs in two passes:
    - Builds each of the five complete apps (`site/src/examples/complete/<name>/`) via Vite into `site/public/run/<name>/`. Each app's docs page links here as **Run live →**.
-   - Builds the seven-section reactivity demo (`examples/reactivity-demo/`) via its own Vite config (base `/kerf/demo/`) and copies the result into `site/public/demo/`.
+   - Builds the nine-section reactivity demo (`examples/reactivity-demo/`) via its own Vite config (base `/kerf/demo/`) and copies the result into `site/public/demo/`.
 
 Astro then runs and copies `public/` into `dist/` as part of its normal static asset handling. The result: `site/dist/` contains the Starlight site at the root, the runnable complete apps under `dist/run/<name>/`, and the reactivity demo under `dist/demo/`. One artifact, one upload, no manual `cp` step.
 
@@ -54,7 +54,7 @@ GitHub Pages source must be set to **GitHub Actions** in repo settings (`Setting
 ## 9.5 Constraints and non-goals
 
 - **Two builds, one origin.** The site at `/kerf/` and the demo at `/kerf/demo/` are independent — different framework, different toolchain, different bundles. They share only the artifact upload step. A change in one cannot break the other at build time.
-- **No redirect from the old `/kerf/` root.** Before this layout, `/kerf/` *was* the demo. After, `/kerf/` is the Starlight home and the demo continues to deploy at `/kerf/demo/`. The demo is **fully supported and the canonical "play with kerf" URL** — README.md links to it directly, and the build pipeline rebuilds it on every push to `main`. The Starlight site nav was deliberately reshaped (KF-49) to surface inline single-concept examples next to their docs, but the seven-section reactivity demo at `/kerf/demo/` remains the right link to send a colleague who wants to explore the framework outside the docs context. Anyone with a stale bookmark for the old `/kerf/` (root demo URL) lands on the marketing site instead — if preserving those inbound links matters, add a `site/public/_redirects` (or equivalent) in a follow-up.
+- **No redirect from the old `/kerf/` root.** Before this layout, `/kerf/` *was* the demo. After, `/kerf/` is the Starlight home and the demo continues to deploy at `/kerf/demo/`. The demo is **fully supported and the canonical "play with kerf" URL** — README.md links to it directly, and the build pipeline rebuilds it on every push to `main`. The Starlight site nav was deliberately reshaped (KF-49) to surface inline single-concept examples next to their docs, but the nine-section reactivity demo at `/kerf/demo/` remains the right link to send a colleague who wants to explore the framework outside the docs context. Anyone with a stale bookmark for the old `/kerf/` (root demo URL) lands on the marketing site instead — if preserving those inbound links matters, add a `site/public/_redirects` (or equivalent) in a follow-up.
 - **No server-side rendering.** `SafeHtml.toString()` works server-side, but both deploys are pure client-side mounts.
 - **Tied to the package homepage.** The `homepage` field in `package.json` still points at the GitHub repo, not the Pages URL. npm uses `homepage` as the package's project landing page; the repo is the canonical source of truth, the Pages site is the runnable demo of it.
 

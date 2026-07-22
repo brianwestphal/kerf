@@ -1,6 +1,7 @@
 import { mountArraySignalSection } from './sections/arraySignalSection.js';
 import { mountCart } from './sections/cartSection.js';
 import { mountCounter } from './sections/counterSection.js';
+import { mountFineGrainedBinding } from './sections/fineGrainedBindingSection.js';
 import { mountFocusSurvival } from './sections/focusSurvivalSection.js';
 import { mountKeyedList } from './sections/keyedListSection.js';
 import { mountMorphSkip } from './sections/morphSkipSection.js';
@@ -16,4 +17,5 @@ document.addEventListener('DOMContentLoaded', () => {
   mountSvgRender(document.getElementById('section-svg')!);
   mountTier2Capture(document.getElementById('section-tier2')!);
   mountArraySignalSection(document.getElementById('section-arraysignal')!);
+  mountFineGrainedBinding(document.getElementById('section-binding')!);
 });
