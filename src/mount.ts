@@ -27,12 +27,14 @@
 
 import {
   _setBindingContext,
+  type Binding,
   type BindingContext,
   disposeRowBindings,
   newBindingContext,
   wireBindings,
   wireRowBindings,
 } from './bindings.js';
+import { isOptedIn as isStaleBindingWarnOptedIn, maybeWarnStaleBinding } from './dev-binding-warn.js';
 import { maybeWarnEachInMorphSkip } from './dev-each-warn.js';
 import { installListenerRebuildWarn } from './dev-listener-warn.js';
 import { _setRenderContext, type RenderContext } from './each.js';
@@ -174,6 +176,13 @@ export function mount(rootEl: HTMLElement, render: () => MountResult): () => voi
   // holds the per-hole effects so they're torn down on unmount.
   const bindingCtx: BindingContext = newBindingContext();
   let bindingDisposers: Array<() => void> = [];
+  // KF-338: the global-hole binding list that is ACTUALLY wired (bound to live
+  // effects) right now. On the fast path the effects aren't re-wired, so this
+  // list — captured whenever `wireBindings` runs — describes the signal
+  // instances the live effects are still bound to. The stale-binding dev warn
+  // compares it against this render's registered holes. Retained only when the
+  // warning is opted in, so the fast path stays allocation-free when it's off.
+  let prevWiredBindings: Binding[] = [];
   let isFirst = true;
   // KF-88: the static-surrounds HTML string from the previous render. If a
   // re-render produces the same string (the common case when a signal flips
@@ -209,6 +218,7 @@ export function mount(rootEl: HTMLElement, render: () => MountResult): () => voi
       runFirstRender(rootEl, segment, bindings);
       prevStaticHtml = flattenWithoutListItems(segment);
       bindingDisposers = wireBindings(rootEl, bindingCtx, bindingDisposers);
+      if (isStaleBindingWarnOptedIn()) prevWiredBindings = bindingCtx.list;
       isFirst = false;
     } else {
       const nextStaticHtml = runSubsequentRender(rootEl, segment, bindings, renderCtx, prevStaticHtml);
@@ -232,6 +242,13 @@ export function mount(rootEl: HTMLElement, render: () => MountResult): () => voi
       // duplicating inserted text nodes, so it's not worth it for an anti-pattern.
       if (nextStaticHtml !== prevStaticHtml) {
         bindingDisposers = wireBindings(rootEl, bindingCtx, bindingDisposers);
+        if (isStaleBindingWarnOptedIn()) prevWiredBindings = bindingCtx.list;
+      } else {
+        // KF-338: fast path — the effects stay bound to `prevWiredBindings`.
+        // Dev-warn (opt-in) if this render tried to bind a DIFFERENT signal
+        // instance to a hole, which silently goes stale (the effect isn't
+        // re-wired). The warner short-circuits on its env gate first.
+        maybeWarnStaleBinding(prevWiredBindings, bindingCtx.list);
       }
       prevStaticHtml = nextStaticHtml;
     }

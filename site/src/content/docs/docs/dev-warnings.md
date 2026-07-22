@@ -61,7 +61,7 @@ antipatterns at edit time; tsc catches type-shaped bugs at build time; the
 dev-warns catch the runtime patterns that need flow / call-graph
 information no static checker has.
 
-## 11.2 The six warnings
+## 11.2 The seven warnings
 
 ### 11.2.1 `KERF_DEV_WARN_REBUILT_LISTENERS=1` (Rule 4)
 
@@ -177,7 +177,44 @@ would have missed same-count-different-keys cases.
 
 **Why opt-in.** No realistic kerf code legitimately calls `delegate()` inside an `effect()` body — but the wrap of `effect()` itself adds a microscopic call-frame overhead, so the bare `coreEffect` re-export stays the default path when the env var is unset. Production NODE_ENV short-circuits before the wrap decision; production bundles see the bare re-export with zero overhead.
 
-### 11.2.7 Double-mount guard (always-on, not opt-in)
+### 11.2.7 `KERF_DEV_WARN_STALE_BINDING=1`
+
+**Module:** [`src/dev-binding-warn.ts`](../src/dev-binding-warn.ts) (KF-338).
+**Trigger:** `mount()` takes its fast path (a re-render whose static-surrounds
+HTML is byte-for-byte identical to the previous render, so the morph AND the
+fine-grained binding re-wiring are both skipped) and a GLOBAL (static-surround)
+hole registers a **different signal instance** than the one currently wired.
+**What it catches:** the silently-stale-binding pattern documented in
+`docs/2-reactivity.md` §2.9 — `class={cond ? sigA : sigB}` (switching which
+signal *instance* a hole binds while the surrounds string is unchanged). On the
+fast path kerf keeps the original binding effect bound to `sigA` and never
+re-binds to `sigB`, so the hole freezes: no error, the UI just stops updating.
+
+**Mechanism.** `mount()` retains the global-hole binding list that is actually
+wired (`prevWiredBindings`, refreshed whenever `wireBindings` runs — first
+render and every surrounds-changed morph). On a fast-path render it calls
+`maybeWarnStaleBinding(prevWiredBindings, bindingCtx.list)`, which: (1)
+short-circuits on NODE_ENV / env var; (2) walks the two lists in registration
+order (they describe the same holes in the same order on the fast path); (3)
+when a hole's signal instance differs and hasn't already warned, fires a
+one-shot `console.warn` naming the hole (kind / attr / id) and pointing at "bind
+one `computed` that switches internally" as the fix. The retention itself is
+gated on the same opt-in, so the fast path stays allocation-free when the
+warning is off.
+
+**Dedup scope.** Per hole (the stable per-hole binding id). One warning per
+switched hole, not one per render pass.
+
+**Why opt-in.** The comparison is raw signal identity, so a global hole bound
+with a *fresh inline* `computed(() => …)` — a new instance every render, but
+reading the same signals, hence safe — would also differ on the fast path and
+warn. Binding a stable signal / computed reference for global holes (the
+idiomatic shape) avoids that; the opt-in gate keeps the diagnostic available
+without penalising projects that pass a fresh inline computed into a global
+hole. (Row holes inside `each()` are wired per-row-node and disposed on row
+removal, so they never reach this warner.)
+
+### 11.2.8 Double-mount guard (always-on, not opt-in)
 
 **Module:** [`src/mount.ts`](../src/mount.ts) (KF-175, KF-225).
 **Trigger:** `mount(el, render)` is called on an element that is already the root of a live mount, or on a descendant or ancestor of such an element. **What it catches:** the "two competing effects" pattern — two `mount()` calls on the same DOM subtree both install `effect()` watchers that fight over the same live nodes, producing conflicting DOM mutations and unpredictable rendering output with no runtime error.
@@ -304,13 +341,13 @@ the hot path stays a bare boolean read rather than a per-call env probe.
 
 ## 11.4 Where each warning is referenced
 
-| Surface | KF-174 (rebuilt listeners) | KF-176 (untracked signals) | KF-212 (narrow set) | duplicate cacheKey | each-in-morph-skip | KF-238 (delegate-in-effect) |
-| --- | --- | --- | --- | --- | --- | --- |
-| Source module | `src/dev-listener-warn.ts` | `src/dev-signal.ts` | `src/dev-store-warn.ts` | `src/dev-each-warn.ts` | `src/dev-each-warn.ts` | `src/dev-delegate-warn.ts` |
-| Wired in | `src/mount.ts` | `src/reactive.ts` | `src/store.ts` | `src/each.ts` | `src/mount.ts` | `src/reactive.ts` (effect wrap) + `src/delegate.ts` (check) |
-| Numbered doc | `docs/5-event-delegation.md` (Rule 4) | `docs/2-reactivity.md` (Rule 8) | `docs/3-stores.md` (Rule 9) | `docs/4-render.md` §4.2 | `docs/4-render.md` §4.3 | `docs/5-event-delegation.md` §5.3 |
-| AI usage guide | `docs/ai/usage-guide.md` "Hard rules" | same | same | n/a | `docs/ai/usage-guide.md` "Common errors" | `docs/ai/usage-guide.md` Hard Rule 5 + "Common errors" |
-| Test fixture | `tests/unit/dev-listener-warn.internal.test.ts` | covered in `tests/unit/reactive.test.ts` | `tests/unit/dev-store-warn.internal.test.ts` | `tests/unit/dev-each-warn.internal.test.ts` | same | `tests/unit/dev-delegate-warn.internal.test.ts` |
+| Surface | KF-174 (rebuilt listeners) | KF-176 (untracked signals) | KF-212 (narrow set) | duplicate cacheKey | each-in-morph-skip | KF-238 (delegate-in-effect) | KF-338 (stale binding) |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Source module | `src/dev-listener-warn.ts` | `src/dev-signal.ts` | `src/dev-store-warn.ts` | `src/dev-each-warn.ts` | `src/dev-each-warn.ts` | `src/dev-delegate-warn.ts` | `src/dev-binding-warn.ts` |
+| Wired in | `src/mount.ts` | `src/reactive.ts` | `src/store.ts` | `src/each.ts` | `src/mount.ts` | `src/reactive.ts` (effect wrap) + `src/delegate.ts` (check) | `src/mount.ts` (fast path) |
+| Numbered doc | `docs/5-event-delegation.md` (Rule 4) | `docs/2-reactivity.md` (Rule 8) | `docs/3-stores.md` (Rule 9) | `docs/4-render.md` §4.2 | `docs/4-render.md` §4.3 | `docs/5-event-delegation.md` §5.3 | `docs/2-reactivity.md` §2.9 |
+| AI usage guide | `docs/ai/usage-guide.md` "Hard rules" | same | same | n/a | `docs/ai/usage-guide.md` "Common errors" | `docs/ai/usage-guide.md` Hard Rule 5 + "Common errors" | `docs/ai/usage-guide.md` "Common errors" |
+| Test fixture | `tests/unit/dev-listener-warn.internal.test.ts` | covered in `tests/unit/reactive.test.ts` | `tests/unit/dev-store-warn.internal.test.ts` | `tests/unit/dev-each-warn.internal.test.ts` | same | `tests/unit/dev-delegate-warn.internal.test.ts` | `tests/unit/dev-binding-warn.internal.test.ts` |
 
 ## 11.5 Adding a new warning
 
