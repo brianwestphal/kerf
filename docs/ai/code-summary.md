@@ -37,6 +37,7 @@ kerf/
 │       ├── escapeHtml.ts         ← used by jsx-runtime
 │       ├── jsx-attr-aliases.ts   ← camelCase → HTML/SVG attribute name table (KF-21)
 │       ├── rowContract.ts        ← KF-103 row-contract helpers — ROW_HTML_SNIPPET_MAX, parseRowTemplate, rowContractError, truncateRowHtml
+│       ├── syncFormProp.ts       ← KF-335 form-state property sync (checked/value/selected follow a MUTATED attribute; dirty-flag detachment fix) — called by morph.ts's morphAttributes and bindings.ts's setBoundAttr only at actual attribute mutation, so uncontrolled usage stays untouched; focused elements keep the in-progress edit
 │       └── urlScreen.ts          ← KF-297 shared URL-attr screening (isDangerousUrlValue / dangerousUrlWarning) used by BOTH jsx-runtime's renderAttr (static attrs) and bindings' setBoundAttr (bound attrs) — scheme-based: drops javascript:/vbscript: + script-executing data: subtypes (text/html, image/svg+xml, xml; inert media allowlisted) on href/src/formaction/action/xlink:href/data(<object>); normalizes control-char/whitespace scheme obfuscation before matching; raw() opts out
 ├── tests/
 │   ├── conventions.test.ts       ← KF-286 — API-surface + no-default-export + row-contract invariants (the in-suite complement to check-doc-api-coverage.mjs / check-feature-coverage.mjs); pins facts line coverage can't express
@@ -51,6 +52,8 @@ kerf/
 │   │   ├── dev-store-warn.internal.test.ts ← KF-212 — opt-in `KERF_DEV_WARN_NARROW_SET=1` dev-mode warning when `defineStore.set(next)` has any key from the current state missing in `next`; covers opt-out (env var unset / =0 / production), opt-in (warns once, names missing keys), per-store dedup, same-count-different-keys, array-skip, null-skip, primitive-skip, and the `_resetWarnContext` test helper. `*.internal.test.ts` so dist-full excludes it.
 │   │   ├── demo-configs.test.ts ← guards the animated demo-capture configs + committed SVGs under site/scripts/demo-captures/ + site/public/demos/: every frame must use an explicit `cut` or `magic-move` transition (never domotion's silent crossfade default — the full-screen flash), every committed SVG must keep `step-end` on its fv-N opacity tracks (no last-frame fade-out; domotion ≥ 0.18.0 emits `step-end` natively through SVGO, so the old fix-cut-timing post-pass is gone), and — KF-330 follow-up: a config shipped without running its capture 404'd on the site — every config's `output` SVG must be committed, every committed SVG must have a config (no orphans), and every `/demos/*.svg` reference in site/src must resolve to a committed file
 │   │   ├── diagnostic-error-audit.test.tsx ← KF-169 — one test per Hard Rule pinning the runtime behavior callers see on violation (introduced when the `/ai-evidence/diagnostics/` page existed; that page was removed in KF-211 but the runtime contract these tests pin still matters as a UX gate)
+│   │   ├── form-state-sync.internal.test.ts ← KF-335 direct unit tests for the private syncFormProp helper (internal → excluded from dist-full)
+│   │   ├── form-state-sync.test.ts ← KF-335 public-surface coverage for the morph/binding form-prop sync call sites (diverged-property simulation; the truthful dirty-flag behavior is browser-tested)
 │   │   ├── morph.internal.test.ts
 │   │   ├── doc-contract-coverage.test.tsx  ← KF-104 — comprehensive contract suite covering every doc-asserted behavior
 │   │   ├── bindings.test.ts
@@ -78,6 +81,7 @@ kerf/
 │   │   ├── ime-composition.spec.ts     ← IME composition survives a re-render
 │   │   ├── mutation-count.spec.ts      ← LIS-based reorder produces the minimum insertBefore count
 │   │   ├── perf-1k.spec.ts             ← 1k-row stress (real-browser sanity check on the bench app)
+│   │   ├── form-state-sync.spec.ts     ← KF-335 dirty-flag regression suite: controlled checked/value/selected recover after user interaction, uncontrolled + focused preservation guards (chromium/firefox/webkit)
 │   │   ├── stateful-attrs.spec.ts      ← `<details open>` / `<dialog open>` user-agent-owned attribute survival
 │   │   ├── svg-mathml.spec.ts          ← KF-83 — SVG/MathML namespacing across real browsers
 │   │   ├── toelement-adopt.spec.ts     ← KF-240 — toElement() returns live-document nodes (ownerDocument === document, every shape) + mount-before-insert burst across Chromium/Firefox/WebKit

@@ -39,6 +39,7 @@
  */
 
 import { effect, isSignal, type Signal } from './reactive.js';
+import { syncFormProp } from './utils/syncFormProp.js';
 import { dangerousUrlWarning, isDangerousUrlValue } from './utils/urlScreen.js';
 
 // RESERVED NAMESPACE (consumer contract, KF-314). The wiring pass finds these
@@ -327,18 +328,25 @@ function attachTextEffect(marker: Comment, signal: Signal<unknown>): () => void 
  * would install a live inline handler — can never reach this writer.
  */
 function setBoundAttr(el: Element, name: string, value: unknown): void {
+  // KF-335: every attribute write below also syncs the matching form-state
+  // property (checked/value/selected) — after user interaction the dirty flag
+  // detaches the property from the attribute, so an attribute-only write
+  // leaves the visible state stale. `syncFormProp` no-ops for other names.
   if (value == null || value === false) {
     el.removeAttribute(name);
+    syncFormProp(el, name, '', false);
     return;
   }
   if (value === true) {
     el.setAttribute(name, '');
+    syncFormProp(el, name, '', true);
     return;
   }
   // SafeHtml (raw()) is the documented opt-out — bypasses URL screening and is
   // written verbatim, matching renderAttr's SafeHtml branch.
   if (isSafeHtmlValue(value)) {
     el.setAttribute(name, value.__html);
+    syncFormProp(el, name, value.__html, true);
     return;
   }
   const str = String(value);
@@ -348,6 +356,7 @@ function setBoundAttr(el: Element, name: string, value: unknown): void {
     return;
   }
   el.setAttribute(name, str);
+  syncFormProp(el, name, str, true);
 }
 
 // Cross-bundle SafeHtml brand check (mirrors jsx-runtime's `isSafeHtml`).

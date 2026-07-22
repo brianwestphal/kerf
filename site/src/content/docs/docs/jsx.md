@@ -75,6 +75,8 @@ Anything not in the alias table is passed through verbatim. So `data-action`, `a
 
 This matches HTML semantics — a boolean attribute is "on" by being present, regardless of its value.
 
+For the form-state trio — `checked`, `value`, `selected` — re-renders also carry the mutated attribute onto the live DOM *property*, so controlled form state keeps working after the user has interacted with the control (the browser's dirty-state flags would otherwise detach the visible state from the attribute). See the render doc's "Form-state properties" section for the full rules.
+
 ### 6.4.1 Dangerous URL filter
 
 Plain-string values written to URL-bearing attributes are screened by scheme. If a value resolves to a `javascript:` or `vbscript:` scheme, or a script-executing `data:` document type (`data:text/html`, `data:image/svg+xml`, XHTML/XML), kerf **drops the attribute entirely** and `console.warn`s. The screen runs on these attribute names: `href`, `src`, `xlink:href`, `formaction`, `action`, and `data` (the `<object data>` attribute).

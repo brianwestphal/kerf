@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Fixed
+
+- **Controlled form state now survives user interaction** — `morph()` (and the fine-grained binding writer) sync the `checked` / `value` / `selected` DOM properties whenever they mutate those attributes. Previously, the browser's dirty-value/dirty-checked flags detached the live property from the attribute after the user touched a control, so a controlled `checked={sig.value}` checkbox the user had clicked (or a non-focused `value={...}` input the user had typed into, or a `<select>` with `selected` options, or a controlled `<textarea>`) updated its attribute while the visible state stayed stale. Uncontrolled usage — JSX that never mentions the attribute — is untouched, and a focused text input/textarea still keeps the user's in-progress edit. Pinned by a real-browser regression suite (`tests/browser/form-state-sync.spec.ts`) across Chromium/Firefox/WebKit.
+
 ## [1.0.2] - 2026-07-22
 
 

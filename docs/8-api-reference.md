@@ -139,7 +139,7 @@ Lists rendered with `each(...)` go through a separate keyed reconciler that oper
 
 ### `morph(liveRoot: Element, template: Element | SafeHtml | string): void`
 
-One-shot in-place reconciliation primitive — the same algorithm `mount()` uses internally, exported for consumers that have an already-populated element they need to reconcile against a freshly-built template. Unlike `mount()`, `morph()` doesn't wrap an `effect()` and doesn't bulk-write `innerHTML` first: it runs once per call against the live tree as-is.
+One-shot in-place reconciliation primitive — the same algorithm `mount()` uses internally, exported for consumers that have an already-populated element they need to reconcile against a freshly-built template. Unlike `mount()`, `morph()` doesn't wrap an `effect()` and doesn't bulk-write `innerHTML` first: it runs once per call against the live tree as-is. When it mutates a `checked` / `value` / `selected` attribute it syncs the matching DOM property too, so controlled form state holds up after user interaction (the dirty-state flags would otherwise detach the visible state from the attribute); attributes the template never mentions are left alone.
 
 ```ts
 import { morph, raw } from 'kerfjs';

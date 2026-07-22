@@ -224,6 +224,16 @@ The result: attribute updates from the surrounding render still apply (className
 
 Other input types (range, color, file, date, checkbox, radio…) don't have meaningful text-selection state, so they aren't touched specially — the diff proceeds normally.
 
+### Form-state properties: `checked`, `value`, `selected`
+
+Browsers detach a form control's live property from its attribute once the control is "dirty" (the user — or script — has touched it): after that, the attribute is only the *default*. An attribute-only reconciler would update `checked=""` on a checkbox the user already clicked while the visible checkmark stayed stale.
+
+kerf closes this gap with one rule: **whenever the diff (or a fine-grained signal binding) actually mutates a `checked`, `value`, or `selected` attribute, the matching property is synced too.** The consequences:
+
+- **Controlled usage works after user interaction.** `checked={done.value}` re-checks a box the user unchecked; `value={v.value}` updates a non-focused input the user typed into; `selected` flips a `<select>` back. A controlled `<textarea>{text.value}</textarea>` follows template-text changes the same way.
+- **Uncontrolled usage is untouched.** JSX that never mentions the attribute never mutates it, so the user's state survives unrelated re-renders — the same philosophy as the user-agent-owned `open` attribute on `<details>`/`<dialog>`.
+- **The focused element still wins.** A focused text input or textarea keeps the user's in-progress edit (the preservation rules above take precedence over `value` sync).
+
 ### `[contenteditable]`
 
 For a focused contenteditable, kerf takes the heavier-handed approach: **the entire subtree is skipped on this morph**, the same way `data-morph-skip` works. The user's typed content, caret position, and any multi-range selection survive verbatim — including any custom DOM they produced (`<b>`, `<a>`, line breaks, etc.). The trade-off is that *any* update to the contenteditable's attributes or children is also deferred until the next render after the user blurs.

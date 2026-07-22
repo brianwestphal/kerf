@@ -45,6 +45,7 @@
  */
 
 import type { SafeHtml } from './jsx-runtime.js';
+import { syncFormProp } from './utils/syncFormProp.js';
 
 const ID_KEY_PREFIX = 'id:';
 const DATA_KEY_PREFIX = 'data-key:';
@@ -250,10 +251,27 @@ function morphElement(
   //    the children alone. Use for client-hydrated slots whose loading /
   //    state classes still need to flow through.
   if ((fromEl as HTMLElement).dataset.morphSkipChildren !== undefined) return;
+  // KF-335: a TEXTAREA's value lives in its child text, and the dirty-value
+  // flag detaches the property once the user (or script) has touched it.
+  // When the template's text genuinely differs — a template-driven change,
+  // detected BEFORE the child morph rewrites the live text — carry the
+  // property along after the morph. A focused textarea keeps the user's
+  // in-progress edit (same exception as the input `value` sync), and an
+  // unchanged template leaves a dirty textarea untouched (uncontrolled
+  // usage preserved).
+  const syncTextareaValue = fromEl.tagName === 'TEXTAREA'
+    && fromEl !== document.activeElement
+    && fromEl.textContent !== toEl.textContent;
   // 5. Recurse into children. List items inside `fromEl` (if any) are
   //    skipped via `ownedItems` inside morphChildren — list reconciler
   //    owns them — but non-list siblings are still morphed.
   morphChildren(fromEl, toEl, ownedItems);
+  if (syncTextareaValue) {
+    // `textContent` is only null for Document/DocumentType nodes — for an
+    // element it's always a string, so the cast avoids an unreachable `?? ''`
+    // branch under the coverage gate.
+    (fromEl as HTMLTextAreaElement).value = toEl.textContent as string;
+  }
 }
 
 /**
@@ -288,6 +306,12 @@ function morphAttributes(fromEl: Element, toEl: Element): void {
       }
     } else if (fromEl.getAttribute(name) !== value) {
       fromEl.setAttribute(name, value);
+      // KF-335: a mutated checked/value/selected attribute must carry the live
+      // property with it — after user interaction the dirty flag detaches the
+      // property from the attribute, so an attribute-only write leaves the
+      // visible state stale. Sync happens ONLY on actual attribute mutation,
+      // so uncontrolled elements (JSX never mentions the attr) stay untouched.
+      syncFormProp(fromEl, name, value, true);
     }
   }
   // Remove attributes that are no longer present on toEl.
@@ -301,6 +325,9 @@ function morphAttributes(fromEl: Element, toEl: Element): void {
       if (!toEl.hasAttributeNS(ns, name)) fromEl.removeAttributeNS(ns, name);
     } else if (!toEl.hasAttribute(name) && !isUserAgentOwnedAttr(fromTag, name)) {
       fromEl.removeAttribute(name);
+      // KF-335: removed checked/value/selected attr → property follows (see
+      // the set-side comment above).
+      syncFormProp(fromEl, name, '', false);
     }
   }
 }
