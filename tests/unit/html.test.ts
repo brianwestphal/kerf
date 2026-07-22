@@ -100,12 +100,19 @@ describe('html`` — attribute holes share JSX attribute semantics', () => {
       .toBe('<a href="javascript:bookmarklet()">b</a>');
   });
 
-  it('applies the dangerous-URL screen (javascript: href dropped + warned)', () => {
+  it('applies the dangerous-URL screen (dev: throws; prod: drops + warns) — same contract as JSX', () => {
+    // Dev (NODE_ENV=test): the screen throws so the mistake fails loudly.
+    expect(() => html`<a href="${'javascript:alert(1)'}">c</a>`.toString())
+      .toThrow(/javascript:/);
+    // Prod (globalThis.KERF_DEV = false): warn + drop, never crash.
+    const glob = globalThis as { KERF_DEV?: boolean };
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    glob.KERF_DEV = false;
     try {
       expect(html`<a href="${'javascript:alert(1)'}">c</a>`.toString()).toBe('<a>c</a>');
       expect(warn).toHaveBeenCalledTimes(1);
     } finally {
+      delete glob.KERF_DEV;
       warn.mockRestore();
     }
   });
