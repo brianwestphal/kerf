@@ -77,6 +77,45 @@ describe('dev-store-warn (KF-212, opt-in)', () => {
     }
   });
 
+  it('KF-334: globalThis.KERF_DEV=false silences the warning even with the env var set', () => {
+    env.KERF_DEV_WARN_NARROW_SET = '1';
+    const glob = globalThis as { KERF_DEV?: unknown };
+    glob.KERF_DEV = false;
+    try {
+      const store = defineStore({
+        initial: () => ({ a: 1, b: 2 }),
+        actions: (set) => ({
+          setA: (a: number) => set({ a } as { a: number; b: number }),
+        }),
+      });
+      store.actions.setA(99);
+      expect(warnSpy).not.toHaveBeenCalled();
+    } finally {
+      delete glob.KERF_DEV;
+    }
+  });
+
+  it('KF-334: globalThis.KERF_DEV=true re-enables the warning under NODE_ENV=production', () => {
+    env.KERF_DEV_WARN_NARROW_SET = '1';
+    const origNodeEnv = env.NODE_ENV;
+    env.NODE_ENV = 'production';
+    const glob = globalThis as { KERF_DEV?: unknown };
+    glob.KERF_DEV = true;
+    try {
+      const store = defineStore({
+        initial: () => ({ a: 1, b: 2 }),
+        actions: (set) => ({
+          setA: (a: number) => set({ a } as { a: number; b: number }),
+        }),
+      });
+      store.actions.setA(99);
+      expect(warnSpy).toHaveBeenCalledOnce();
+    } finally {
+      env.NODE_ENV = origNodeEnv;
+      delete glob.KERF_DEV;
+    }
+  });
+
   describe('with KERF_DEV_WARN_NARROW_SET=1', () => {
     beforeEach(() => {
       env.KERF_DEV_WARN_NARROW_SET = '1';

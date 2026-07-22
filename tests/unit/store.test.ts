@@ -172,6 +172,48 @@ describe('dev-mode freeze of get() snapshot (KF-177)', () => {
   });
 });
 
+describe('dev-mode freeze respects the globalThis.KERF_DEV override (KF-334)', () => {
+  const glob = globalThis as {
+    KERF_DEV?: unknown;
+    process?: { env?: Record<string, string | undefined> };
+  };
+  const env = glob.process?.env as Record<string, string | undefined>;
+
+  afterEach(() => {
+    delete glob.KERF_DEV;
+  });
+
+  it('KERF_DEV=false disables the freeze even under a dev NODE_ENV', () => {
+    // NODE_ENV=test here → dev-ON by default, but the explicit override wins,
+    // so the mutation lands silently instead of throwing.
+    glob.KERF_DEV = false;
+    const counter = defineStore({
+      initial: () => ({ count: 0 }),
+      actions: (_set, get) => ({
+        mutate: () => { (get() as { count: number }).count = 42; },
+      }),
+    });
+    expect(() => counter.actions.mutate()).not.toThrow();
+  });
+
+  it('KERF_DEV=true enables the freeze even under NODE_ENV=production', () => {
+    const prevNodeEnv = env.NODE_ENV;
+    env.NODE_ENV = 'production';
+    glob.KERF_DEV = true;
+    try {
+      const counter = defineStore({
+        initial: () => ({ count: 0 }),
+        actions: (_set, get) => ({
+          mutate: () => { (get() as { count: number }).count = 42; },
+        }),
+      });
+      expect(() => counter.actions.mutate()).toThrow(/Cannot assign to read only property/);
+    } finally {
+      env.NODE_ENV = prevNodeEnv;
+    }
+  });
+});
+
 describe('batch() inside an action', () => {
   // docs/3-stores.md §3.5 — wrapping multiple set() calls in batch() inside
   // a multi-step action coalesces consumer notifications. Without this,

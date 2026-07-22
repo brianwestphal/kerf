@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Added a runtime dev-mode override: set `globalThis.KERF_DEV = false` (or `true`) before mounting to force production (or development) behavior regardless of `NODE_ENV`. This fixes no-bundler / CDN-importmap consumers — which have no `process` — being permanently stuck in development mode (store `get()` freeze, opt-in warnings) in their production deployment. With no override set, behavior is unchanged: bundled consumers follow `NODE_ENV` and bundlers still dead-code-eliminate the dev paths.
+
 ## [1.0.2] - 2026-07-22
 
 
