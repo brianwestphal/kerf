@@ -42,6 +42,7 @@ import { type Binding, captureRowBindings } from './bindings.js';
 import { maybeWarnDuplicateCacheKeys } from './dev-each-warn.js';
 import type { SafeHtml } from './jsx-runtime.js';
 import { granularListSafeHtml, isSafeHtml, listSafeHtml } from './jsx-runtime.js';
+import { decideListPath, deriveListRenderState } from './list-render-state.js';
 import type { ArrayPatchInternal } from './segment.js';
 
 /**
@@ -159,51 +160,28 @@ function eachGranular<T extends object>(
   // We're inside a mount context (caller-checked).
   const ctx = context as RenderContext;
   const id = String(ctx.counter++);
-  // KF-98: a tracked binding count means a prior render of this mount has
-  // successfully reconciled this list. On the very first render (no count
-  // recorded yet) the granular reconciler has no binding to apply patches
-  // to, so any pre-mount mutations would silently produce an empty list.
-  // Drain the queue (the snapshot already reflects those mutations) and
-  // take the snapshot path; the count will be recorded for the next render.
+  // KF-336: dispatch through the reified state machine (`list-render-state.ts`
+  // holds the transition table). The state derives from the count `mount()`
+  // recorded after this list's last successful reconcile; the patch queue is
+  // drained BEFORE deciding so a snapshot route still consumes it (the
+  // snapshot already reflects every queued mutation, including pre-mount
+  // mutations on a first render — the KF-98 case).
   const previousBindingCount = ctx.bindingCounts.get(id);
   const patches = sig._consumePatches();
   const snapshot = sig.value as readonly T[];
 
-  // First render, empty binding, no patches, or any 'replace' patch → snapshot.
-  // First render (count === undefined): the granular reconciler has no binding
-  // to apply patches to yet.
-  // Empty binding (count === 0): the list was emptied by a prior clear/replace.
-  // Repopulating it is effectively a first render again — the granular path
-  // would emit a segment with an empty `items` array that `reconcileList`
-  // routes to the snapshot path (its dispatch requires a non-empty binding for
-  // the granular path), and the snapshot path would then reconcile against
-  // those empty `items` and render nothing. Snapshot-build from scratch instead.
-  // No patches: typical re-render triggered by a non-arraySignal signal change.
-  // 'replace': wholesale reset — granular can't help; the snapshot already
-  // reflects the post-replace state (and any subsequent granular ops).
-  if (previousBindingCount === undefined || previousBindingCount === 0 || patches.length === 0) {
-    return eachSnapshotById(snapshot, render, cacheKey, id);
-  }
-  // KF-99: detect drift between the live binding and the arraySignal. After
-  // a clean prior reconcile, `previousBindingCount + (#inserts - #removes)`
-  // must equal `snapshot.length`. If it doesn't, a previous render threw
-  // mid-reconcile and left the binding inconsistent with the signal — fall
-  // back to the snapshot path, which classifies fresh against `snapshot`
-  // and rebuilds the binding to match.
-  let netDelta = 0;
-  for (const p of patches) {
-    if (p.type === 'insert') netDelta += 1;
-    else if (p.type === 'remove') netDelta -= 1;
-    else if (p.type === 'replace') {
-      return eachSnapshotById(snapshot, render, cacheKey, id);
-    }
-  }
-  // Defensive: triggered only when an external party drains `_consumePatches()`
-  // or mutates `_items` behind arraySignal's back, OR when a previous reconcile
-  // threw mid-DOM-op (rare; not naturally reachable in tests since apply* ops
-  // don't throw on well-formed row HTML).
-  /* c8 ignore next 3 */
-  if (previousBindingCount + netDelta !== snapshot.length) {
+  // Structural decision: first-render / empty-binding / no-patches / replace /
+  // count-drift all route to the snapshot path (see the transition table for
+  // why each one can't be patched granularly). The two side-effectful reasons
+  // — cachekey-drift and render-threw — are layered on below. The count-drift
+  // arm is defensive-only from inside `mount()` (it needs an external party
+  // draining `_consumePatches()` or mutating `_items` behind the signal's
+  // back), but as a pure function it's now covered directly by
+  // `tests/unit/list-render-state.internal.test.ts`.
+  const decision = decideListPath(
+    deriveListRenderState(previousBindingCount), patches, snapshot.length, previousBindingCount,
+  );
+  if (decision.path === 'snapshot') {
     return eachSnapshotById(snapshot, render, cacheKey, id);
   }
 
@@ -257,6 +235,7 @@ function eachGranular<T extends object>(
       // list — the whole reason the arraySignal path exists. The common case, a
       // structural change with no selection change, stays granular.
       if (cached !== undefined && cached.cacheKey !== k) {
+        // Transition-table reason: `cachekey-drift` (list-render-state.ts).
         return eachSnapshotById(snapshot, render, cacheKey, id);
       }
     }
@@ -289,13 +268,13 @@ function eachGranular<T extends object>(
       }
     }
   } catch {
-    // Pre-render threw. The snapshot already reflects every mutation
-    // (arraySignal mutates _items eagerly at the call site), but the snapshot
-    // path is going to throw on the same bad item too — leaving the binding
-    // out of sync with the signal. Clear the binding count so the NEXT
-    // render (after the user fixes the bad item) doesn't see the previous
-    // render's count and falsely conclude there's no drift; instead it'll
-    // take the snapshot path and rebuild from scratch.
+    // Transition-table reason: `render-threw` (list-render-state.ts). The
+    // snapshot already reflects every mutation (arraySignal mutates _items
+    // eagerly at the call site), but the snapshot path is going to throw on
+    // the same bad item too — leaving the binding out of sync with the
+    // signal. Deleting the count resets this list to the `unbound` state so
+    // the NEXT render (after the user fixes the bad item) snapshot-rebuilds
+    // from scratch instead of trusting the stale count.
     ctx.bindingCounts.delete(id);
     return eachSnapshotById(snapshot, render, cacheKey, id);
   }

@@ -36,15 +36,18 @@ import type { ListSegment } from './segment.js';
  * Reconcile `binding`'s live parent against `listSeg`. Mutates `binding.items`
  * to mirror the new segment when done.
  *
- * Dispatch:
+ * Dispatch — the DOM-side half of the state machine reified in
+ * `list-render-state.ts` (see its transition table):
  * - **Granular (KF-92)**: an `arraySignal`-backed `each()` whose patch
- *   queue is non-empty AND the binding has at least one row. Applies
- *   patches directly. `each()` filters `replace` patches upstream so the
- *   patches reaching here are guaranteed to be update/insert/remove/move
- *   only.
- * - **Snapshot**: every other case — first render of a list, plain-array
- *   `each()`, post-`replace()`, post-drift recovery. Runs the keyed
- *   classify/build/move algorithm.
+ *   queue is non-empty AND the binding has at least one row — i.e. the list
+ *   was in the `bound` state when `each()` decided the path. `each()` only
+ *   emits a patch segment from that state and filters `replace` patches
+ *   upstream, so the patches reaching here are guaranteed to be
+ *   update/insert/remove/move only. The non-empty-binding check is the
+ *   DOM-side restatement of the same `bound` precondition.
+ * - **Snapshot**: every other case — first render of a list (`unbound`),
+ *   plain-array `each()`, empty binding (`empty`), post-`replace()`,
+ *   post-drift recovery. Runs the keyed classify/build/move algorithm.
  */
 export function reconcileList(binding: ListBinding, listSeg: ListSegment): void {
   if (listSeg.patches !== undefined && binding.items.length > 0) {

@@ -73,6 +73,7 @@ axis (`cacheKey` reading an external signal) crosses all of them.
 | FC-T3 | Appending to a just-emptied list renders the rows (empty-binding transition) | `src/each.ts` | `tests/unit/array-signal.test.ts` › "append after clear renders the rows (empty-binding insert)" |
 | FC-T4 | Adversarial transition-matrix suite walks multi-step sequences across reconciler states | `src/each.ts`, `src/list-reconcile*.ts` | `tests/unit/array-signal.test.ts` › "arraySignal — reconciler transition matrix (adversarial)" |
 | FC-T5 | `each()` introduced by a re-render (not present on first render) reconciles with trailing siblings intact | `src/mount.ts`, `src/each.ts` | `tests/unit/kf102-each-after-transition.test.tsx` › "KF-102: each() introduced via re-render with trailing siblings" |
+| FC-T6 | The dispatch transition table is pinned directly — every structural route (first-render / empty-binding / no-patches / replace / count-drift / granular) as a pure decision, incl. the count-drift arm unreachable through `mount()` | `src/list-render-state.ts` | `tests/unit/list-render-state.internal.test.ts` › "decideListPath — the transition table" |
 
 ### `arraySignal` collection signal (`kerfjs/array-signal`)
 
