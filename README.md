@@ -41,9 +41,9 @@ That's it. Your JSX renders to HTML strings, kerf's native diff applies the mini
 
 5. **Safe by default.** Text and attribute values are HTML-escaped automatically, URL attributes are scheme-screened (`javascript:` / script-carrying `data:` dropped), inline `on*` handlers are rejected outright, and the same screening covers the fine-grained bound path — so untrusted data stays inert even when kerf is dropped into someone else's page. `raw()` is the explicit, auditable opt-out.
 
-6. **Small public API.** ~17 exports from the main barrel (plus `arraySignal` on its own subpath). No hooks, no lifecycle, no per-instance state. Components are plain functions that return JSX.
+6. **Small public API.** ~17 exports from the main barrel (plus `arraySignal` and the `html` tagged template on their own subpaths). No hooks, no lifecycle, no per-instance state. Components are plain functions that return JSX.
 
-7. **Plain TS, plain JSX, plain ESM.** Drops into anything using esbuild / Vite / tsup. No plugin chain.
+7. **Plain TS, plain JSX, plain ESM.** Drops into anything using esbuild / Vite / tsup. No plugin chain. And with the `html` tagged template (`import { html } from 'kerfjs/html'` — identical runtime semantics to JSX), a CDN / importmap project needs no build step at all.
 
 8. **Grown-up tooling around a tiny core.** An [ESLint plugin](https://brianwestphal.github.io/kerf/docs/eslint-plugin/) that enforces the hard rules at edit time, a `create-kerf-component` scaffold for publishable component packages, drop-in AI-assistant configs, and side-by-side migration guides for a dozen-plus frameworks — none of which grows the core runtime past ~11 KB.
 
@@ -91,16 +91,12 @@ mount(root, () => (
   <div>
     <h1>Cart ({cart.state.value.items.length})</h1>
     <ul>
-      {each(
-        cart.state.value.items,
-        (item) => (
-          <li>
-            {item.name}
-            <button data-action="remove" data-id={item.id}>×</button>
-          </li>
-        ),
-        (item) => item.id,
-      )}
+      {each(cart.state.value.items, (item) => (
+        <li data-key={item.id}>
+          {item.name}
+          <button data-action="remove" data-id={item.id}>×</button>
+        </li>
+      ))}
     </ul>
     <p>Doubled count: {doubled.value}</p>
   </div>
@@ -110,6 +106,17 @@ mount(root, () => (
 delegate(root, 'click', '[data-action="remove"]', (_e, btn) => {
   cart.actions.remove((btn as HTMLElement).dataset.id!);
 });
+```
+
+The stringly-typed `'[data-action="remove"]'` pair above can be made rename-safe with the `attr()` helper — declare the attribute once and use it on both sides:
+
+```ts
+import { attr } from 'kerfjs';
+
+const REMOVE = attr('data-action', 'remove'); // pre-escaped name/value/selector
+
+<button {...REMOVE.attrs} data-id={item.id}>×</button>;          // in JSX
+delegate(root, 'click', REMOVE.selector, (_e, btn) => { /* … */ }); // in delegation
 ```
 
 ### Fine-grained updates: bind a signal into a hole
