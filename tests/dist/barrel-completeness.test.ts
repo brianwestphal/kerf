@@ -28,6 +28,7 @@ const DIST_INDEX = resolve(HERE, '../../dist/index.js');
 const DIST_JSX = resolve(HERE, '../../dist/jsx-runtime.js');
 const DIST_TESTING = resolve(HERE, '../../dist/testing.js');
 const DIST_ARRAY_SIGNAL = resolve(HERE, '../../dist/array-signal.js');
+const DIST_HTML = resolve(HERE, '../../dist/html.js');
 
 interface ExpectedExport {
   name: string;
@@ -67,9 +68,9 @@ const EXPECTED_EXPORTS: readonly ExpectedExport[] = [
 
 function requireDist(): void {
   if (!existsSync(DIST_INDEX) || !existsSync(DIST_JSX) || !existsSync(DIST_TESTING)
-      || !existsSync(DIST_ARRAY_SIGNAL)) {
+      || !existsSync(DIST_ARRAY_SIGNAL) || !existsSync(DIST_HTML)) {
     throw new Error(
-      `dist/ is missing — run 'npm run build' first. Expected: ${DIST_INDEX}, ${DIST_JSX}, ${DIST_TESTING}, ${DIST_ARRAY_SIGNAL}`,
+      `dist/ is missing — run 'npm run build' first. Expected: ${DIST_INDEX}, ${DIST_JSX}, ${DIST_TESTING}, ${DIST_ARRAY_SIGNAL}, ${DIST_HTML}`,
     );
   }
 }
@@ -186,6 +187,24 @@ describe('dist/ — barrel completeness (KF-24)', () => {
     } finally {
       document.body.innerHTML = '';
     }
+  });
+
+  it('html is reachable via kerfjs/html only (tagged-template authoring path), and renders through the shared SafeHtml chunk', async () => {
+    requireDist();
+    const indexMod = await import(DIST_INDEX) as Record<string, unknown>;
+    const htmlMod = await import(DIST_HTML) as {
+      html: (strings: TemplateStringsArray, ...values: unknown[]) => { toString(): string };
+    };
+    // Main barrel must NOT expose it — that's the point of the subpath split.
+    expect(indexMod.html).toBeUndefined();
+    expect(typeof htmlMod.html).toBe('function');
+    // Functional smoke against the published bytes: escaping + attribute hole.
+    const out = htmlMod.html`<p class="${'a b'}">${'<x>'}</p>`;
+    expect(out.toString()).toBe('<p class="a b">&lt;x&gt;</p>');
+    // Cross-entry SafeHtml identity: the tagged template's output passes the
+    // barrel's brand guard (shared chunk, not a duplicated SafeHtml class).
+    const { isSafeHtml } = indexMod as { isSafeHtml: (v: unknown) => boolean };
+    expect(isSafeHtml(out)).toBe(true);
   });
 
   it('jsx / jsxs / jsxDEV are reachable via kerfjs/jsx-runtime (the JSX transform contract)', async () => {

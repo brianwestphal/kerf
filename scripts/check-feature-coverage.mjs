@@ -42,10 +42,11 @@ const INDEX_DOC = resolve(REPO_ROOT, 'docs/14-feature-coverage.md');
 // must be named by at least one index row, so adding a public export forces a
 // behavior row. Type-only exports have no behavior; internal/JSX-transform
 // symbols are exempt.
-const EXPORT_SOURCES = ['src/index.ts', 'src/array-signal.ts'];
+const EXPORT_SOURCES = ['src/index.ts', 'src/array-signal.ts', 'src/html.ts'];
 const EXPORT_EXEMPT = new Set([
   'ARRAY_SIGNAL_BRAND', // internal cross-bundle brand symbol, not a user behavior
   'jsx', 'jsxs', 'jsxDEV', // JSX-transform entry points, not called by hand
+  '_parseCount', // test-only cache-stats hook on kerfjs/html
 ]);
 
 /** Normalize so `today\'s` in a source string matches `today's` in the doc. */

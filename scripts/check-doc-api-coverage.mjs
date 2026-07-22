@@ -37,6 +37,7 @@ const PUBLIC_EXPORT_SOURCES = [
   { path: 'src/index.ts', label: 'kerfjs (main barrel)' },
   { path: 'src/array-signal.ts', label: 'kerfjs/array-signal' },
   { path: 'src/testing.ts', label: 'kerfjs/testing' },
+  { path: 'src/html.ts', label: 'kerfjs/html' },
 ];
 
 // JSX-runtime subpath exports (`jsx`, `jsxs`, `jsxDEV`) are consumed by the
@@ -55,6 +56,9 @@ const EXEMPT = new Set([
   'DataAriaAttrs',
   'KerfBaseAttrs',
   'KerfCustomElement',
+  // Test-only cache-stats hook on the kerfjs/html subpath — underscore-
+  // prefixed, not part of the documented surface.
+  '_parseCount',
 ]);
 
 function collectExports(absPath) {

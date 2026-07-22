@@ -256,7 +256,15 @@ function assertEmittableAttrName(key: string, name: string, isFn: boolean): void
 }
 
 function renderAttr(key: string, value: unknown): string {
-  const name = ATTR_ALIASES[key] ?? key;
+  return renderAttrNamed(key, ATTR_ALIASES[key] ?? key, value);
+}
+
+/**
+ * Core attribute renderer. `key` is the author-written attribute key (used in
+ * error messages); `name` is the final emitted attribute name — post-alias for
+ * JSX, verbatim for the `kerfjs/html` tagged-template path.
+ */
+function renderAttrNamed(key: string, name: string, value: unknown): string {
   if (value == null || value === false) return '';
   assertEmittableAttrName(key, name, typeof value === 'function');
   if (value === true) return ` ${name}`;
@@ -364,6 +372,26 @@ export namespace JSX {
   // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   export interface IntrinsicElements extends KerfBuiltinIntrinsicElements {}
 }
+
+/**
+ * Internal coordination exports for the `kerfjs/html` tagged-template
+ * front-end (`src/html.ts`). Underscore-prefixed and deliberately NOT in the
+ * main barrel — the contract is that `html\`\`` routes through the exact same
+ * value semantics as JSX (text holes: `_toSegment`; attribute holes:
+ * `_assertEmittableAttrName` + `_renderAttrVerbatim`), so the two authoring
+ * paths cannot drift. `_renderAttrVerbatim` skips the camelCase
+ * `ATTR_ALIASES` table: template authors write real HTML attribute names
+ * (`class`, not `className`).
+ */
+export function _toSegment(child: unknown): Segment {
+  return toSegment(child as Children);
+}
+
+export function _renderAttrVerbatim(name: string, value: unknown): string {
+  return renderAttrNamed(name, name, value);
+}
+
+export { assertEmittableAttrName as _assertEmittableAttrName };
 
 /**
  * Public re-exports of the JSX type primitives so consumers can compose

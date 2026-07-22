@@ -299,6 +299,28 @@ Wrap a pre-escaped HTML string. Useful for icons, rendered Markdown, server-incl
 
 JSX `<>...</>` — concatenates children without a wrapper tag. Available from both `kerfjs/jsx-runtime` (used by the JSX transform) and the main `kerfjs` barrel (when you need to compose `Fragment` manually, e.g. `jsx(Fragment, { children })`).
 
+### `` html`…` `` — `kerfjs/html` subpath
+
+```ts
+import { html, type HtmlValue } from 'kerfjs/html';
+
+function html(strings: TemplateStringsArray, ...values: HtmlValue[]): SafeHtml;
+
+type HtmlValue =
+  | SafeHtml | string | number | boolean | null | undefined
+  | ReadonlySignal<unknown>
+  | readonly HtmlValue[];
+```
+
+Tagged-template authoring path — the same `SafeHtml` output and the **same runtime semantics** as JSX, with no JSX transform required. Made for CDN / importmap consumers ("no build step" taken literally); it lives at its own subpath so JSX-only apps don't ship it.
+
+```js
+html`<div class="${cls}">Count: ${count}</div>`
+html`<ul>${each(items.value, (i) => html`<li id="${i.id}">${i.label}</li>`)}</ul>`
+```
+
+Text/child holes follow the JSX child rules (escaping, number stringify, boolean/nullish → nothing, arrays, `SafeHtml`/`each()` passthrough, signal → fine-grained text binding, DOM nodes throw). Attribute holes follow the JSX attribute rules (boolean attributes, `SafeHtml` bypass, dangerous-URL screening, `on*`/malformed-name rejection, signal → fine-grained attribute binding). Two differences: attribute names are emitted **verbatim** (write `class`, not `className` — no camelCase aliasing), and holes are only legal in text positions or as a **complete** attribute value (`attr=${v}` / `attr="${v}"`); tag-name holes, attribute-name holes, partial values (`class="a ${b}"`), and holes inside comments throw. Static template parts pass through verbatim (same trust model as JSX tags/attrs). The static parts are parsed once per call site and cached by template-strings identity. See `docs/6-jsx-runtime.md` §6.11.
+
 ### Custom-element typing via declaration merging
 
 Per-tag intrinsic-element interfaces live in `src/jsx-types.ts` and are aliased into the JSX namespace by `src/jsx-runtime.ts`. To add tags for custom elements / web components, declaration-merge into the `kerfjs/jsx-runtime` JSX namespace:

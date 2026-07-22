@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Added
+
+- **`kerfjs/html` — tagged-template authoring, so "no build step" is literally true.** A CDN / importmap consumer can now author kerf UIs without a JSX transform: `` html`<div class="${cls}">Count: ${count}</div>` `` from the new `kerfjs/html` subpath. It is a thin front-end over the exact machinery JSX uses — text and attribute holes run through the same code paths (escaping, boolean/nullish semantics, `SafeHtml`/`each()` passthrough incl. the keyed list reconciler, dangerous-URL screening, `on*`/malformed-name rejection, fine-grained signal bindings, SSR snapshots). Attribute names are emitted verbatim (write `class`, not `className` — no camelCase aliasing), and holes are only legal in text positions or as a complete attribute value (`attr=${v}` / `attr="${v}"`); tag-name, attribute-name, partial-value, and in-comment holes throw with actionable errors. Static parts parse once per call site (cached by template-strings identity). Purely additive: the subpath is opt-in, and the main `kerfjs` barrel is byte-identical for non-users.
+
 ## [1.0.2] - 2026-07-22
 
 

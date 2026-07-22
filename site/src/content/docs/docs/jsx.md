@@ -326,3 +326,41 @@ For Stencil / Lit / Solid-js custom-element libraries, repeat the pattern once p
 
 - `declare global { namespace JSX { ... } }` — kerf's JSX namespace is module-scoped, not global. With `jsxImportSource: "kerfjs"`, TypeScript looks up `JSX` inside `kerfjs/jsx-runtime`, not the global scope. The merge above is the only working form.
 - Importing from `kerfjs/jsx-types` — that's an internal module and is intentionally not in `package.json#exports`.
+
+## 6.11 Tagged templates — `kerfjs/html` (no build step at all)
+
+JSX needs a transform. If your project has none — a CDN / importmap page, a `<script type="module">` island, a quick prototype — author with the `html` tagged template instead. It lives at its own subpath so JSX-only apps don't ship a byte of it:
+
+```js
+import { html } from 'kerfjs/html';
+
+const cls = signal('idle');
+const count = signal(0);
+
+mount(rootEl, () => html`
+  <div class="${cls}">Count: ${count}</div>
+  <ul>${each(items.value, (i) => html`<li id="${i.id}">${i.label}</li>`)}</ul>
+`);
+```
+
+`html` returns the same `SafeHtml` JSX produces, and every hole runs through the **same runtime code paths** as the equivalent JSX — not a lookalike reimplementation:
+
+- **Text/child holes** follow §6.5 exactly: strings are HTML-escaped, numbers stringify, `null` / `undefined` / booleans render nothing, arrays join, `SafeHtml` (nested `html\`\``, `raw()`, and `each()` list segments) passes through — so a list hole is owned by the keyed reconciler just like in JSX. A signal/`computed` handed in *itself* binds fine-grained (see §8.5 of the API reference and `2-reactivity.md` §2.9); DOM nodes and other unsupported types throw the same errors.
+- **Attribute holes** follow §6.4 exactly: `true` renders the bare attribute, `false` / nullish omit it, `SafeHtml` values bypass the URL screen, plain strings are escaped and screened for dangerous URL schemes (§6.4.1), `on*` attributes and malformed names are rejected (§6.4.2), and a signal/`computed` binds the attribute fine-grained.
+
+Two authoring differences from JSX:
+
+1. **No camelCase aliases.** Template authors write real HTML attribute names — `class`, `for`, `tabindex`, `stroke-width` — not `className` / `htmlFor`. The §6.3 alias table does not apply; an attribute name passes through verbatim.
+2. **The hole contract.** A `${…}` hole is allowed in exactly two positions: a text/child position, or as the **complete** value of an attribute — `attr=${v}`, `attr="${v}"`, or `attr='${v}'`. Everything else throws with a descriptive error at template evaluation:
+
+```js
+html`<${tag}>…`                 // ✗ tag-name hole — write tag names statically
+html`<div ${name}="x">…`        // ✗ attribute-name hole — write names statically
+html`<div class="a ${b}">…`     // ✗ partial value — build the full string first,
+                                //   or bind computed(() => `a ${b.value}`)
+html`<!-- ${note} -->`          // ✗ hole inside a comment
+```
+
+The static parts of the template are **author-written markup and pass through verbatim** — the same trust model as JSX tag and attribute names. Only hole *values* are escaped/screened; never splice untrusted text into the static side of a template.
+
+Performance: the static strings are parsed once per call site (tagged-template string arrays have stable identity, so the parse is cached in a `WeakMap`) and each render is a chunk walk with string concatenation — the same cost shape as the JSX runtime. Server-side (`.toString()`, outside `mount()`) works like JSX too: signal holes snapshot their current value.
