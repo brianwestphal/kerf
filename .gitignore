@@ -16,6 +16,7 @@ test-results/
 .DS_Store
 .mcp.json
 .claude/settings.local.json
+.claude/worktrees
 /.hotsheet/*
 !/.hotsheet/settings.json
 /.glassbox/*
