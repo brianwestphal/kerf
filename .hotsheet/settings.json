@@ -104,7 +104,8 @@
       "target": "shell",
       "icon": "globe",
       "launchInNewTerminal": true,
-      "color": "#3b82f6"
+      "color": "#3b82f6",
+      "id": "a132768f-70c6-495a-b202-4c3e1a53e7ec"
     }
   ],
   "terminals": [
