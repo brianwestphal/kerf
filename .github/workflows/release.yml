@@ -220,7 +220,10 @@ jobs:
         with:
           node-version: '${{ env.NODE_VERSION }}'
           registry-url: 'https://registry.npmjs.org/'
-      - run: npm install -g npm@latest   # trusted publishing OIDC needs npm ≥ 11.5.1
+      # Pinned to the npm 11 line (not @latest): OIDC trusted publishing needs
+      # npm ≥ 11.5.1, but npm@12 requires Node ≥ 22.22.2 — above the 22.21.0
+      # pin (see NODE_VERSION comment). Revisit when the Node pin is lifted.
+      - run: npm install -g npm@11
       - name: Download the built dist/ (produced by the token-less build job)
         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:

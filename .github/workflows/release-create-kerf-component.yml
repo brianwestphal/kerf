@@ -98,7 +98,10 @@ jobs:
         with:
           node-version: '${{ env.NODE_VERSION }}'
           registry-url: 'https://registry.npmjs.org/'
-      - run: npm install -g npm@latest   # trusted publishing OIDC needs npm ≥ 11.5.1
+      # Pinned to the npm 11 line (not @latest): OIDC trusted publishing needs
+      # npm ≥ 11.5.1, but npm@12 requires Node ≥ 22.22.2 — above the 22.21.0
+      # pin (see NODE_VERSION comment). Revisit when the Node pin is lifted.
+      - run: npm install -g npm@11
       - name: Bump package.json to beta version (ephemeral, not committed)
         if: needs.detect.outputs.is_beta == 'true'
         run: |
