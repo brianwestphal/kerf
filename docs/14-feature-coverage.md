@@ -200,6 +200,7 @@ axis (`cacheKey` reading an external signal) crosses all of them.
 | FC-DW4 | `KERF_DEV_WARN_EACH_IN_MORPH_SKIP` each()-in-morph-skip warning | `src/dev-each-warn.ts` | `tests/unit/dev-each-warn.internal.test.ts` › "dev-each-warn (KERF_DEV_WARN_EACH_IN_MORPH_SKIP=1)" |
 | FC-DW5 | `KERF_DEV_WARN_DUPLICATE_EACH_KEYS` duplicate-cacheKey warning | `src/dev-each-warn.ts` | `tests/unit/dev-each-warn.internal.test.ts` › "dev-each-warn duplicate cacheKey (KERF_DEV_WARN_DUPLICATE_EACH_KEYS=1)" |
 | FC-DW6 | `delegate()` dev warning (opt-in) | `src/dev-delegate-warn.ts` | `tests/unit/dev-delegate-warn.internal.test.ts` › "dev-delegate-warn (KF-238, opt-in)" |
+| FC-DW7 | `globalThis.KERF_DEV` runtime override wins over `NODE_ENV` for the shared dev-mode gate (read lazily; gates the store freeze + the opt-in warning family) | `src/utils/devMode.ts` | `tests/unit/devMode.internal.test.ts` › "isDevMode() — globalThis.KERF_DEV override wins"; `tests/unit/store.test.ts` › "dev-mode freeze respects the globalThis.KERF_DEV override (KF-334)" |
 
 ### Integration (full pipeline)
 

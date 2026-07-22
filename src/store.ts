@@ -21,6 +21,7 @@
 import { maybeWarnNarrowSet, type NarrowSetWarnContext } from './dev-store-warn.js';
 import type { ReadonlySignal, Signal } from './reactive.js';
 import { signal } from './reactive.js';
+import { isDevMode } from './utils/devMode.js';
 
 export interface Store<TState, TActions> {
   /** Read-only reactive view. Consumers read `state.value` or subscribe via `effect()`. */
@@ -37,11 +38,6 @@ interface DefineStoreSpec<TState, TActions> {
 }
 
 const REGISTRY: Array<{ reset: () => void }> = [];
-
-const IS_DEV: boolean = (() => {
-  const proc = (globalThis as { process?: { env?: { NODE_ENV?: string } } }).process;
-  return proc?.env?.NODE_ENV !== 'production';
-})();
 
 export function defineStore<TState, TActions>(
   spec: DefineStoreSpec<TState, TActions>,
@@ -61,11 +57,15 @@ export function defineStore<TState, TActions>(
   // `get().count = 42`-style mutations (a documented Rule 8 violation) throw
   // a native `TypeError: Cannot assign to read only property` instead of
   // silently landing on the underlying state without notifying subscribers.
-  // Production keeps the bare reference for zero overhead. Read NODE_ENV via
-  // globalThis so the source works untouched in browsers (no bare `process`).
+  // Production keeps the bare reference for zero overhead. The dev gate is
+  // resolved once per store on first `get()` (lazily, so a runtime
+  // `globalThis.KERF_DEV` override set before mount is honored) then cached —
+  // the hot path stays a bare boolean read, never a per-call env probe.
+  let devFreezeGate: boolean | undefined;
   const get = (): Readonly<TState> => {
     const v = internal.value;
-    if (IS_DEV && v !== null && typeof v === 'object') {
+    devFreezeGate ??= isDevMode();
+    if (devFreezeGate && v !== null && typeof v === 'object') {
       Object.freeze(v);
     }
     return v;

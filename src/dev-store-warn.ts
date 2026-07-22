@@ -36,6 +36,8 @@
  * short-circuits before any per-set work runs).
  */
 
+import { isDevMode } from './utils/devMode.js';
+
 export interface NarrowSetWarnContext {
   /** Set once per store; the warner reads/writes this to enforce the per-store one-shot dedup. */
   warned: boolean;
@@ -49,8 +51,8 @@ const WARNING_SUFFIX
   + 'Set KERF_DEV_WARN_NARROW_SET=0 (or unset it) to silence this warning.';
 
 export function isOptedIn(): boolean {
+  if (!isDevMode()) return false;
   const proc = (globalThis as { process?: { env?: Record<string, string | undefined> } }).process;
-  if (proc?.env?.NODE_ENV === 'production') return false;
   return proc?.env?.KERF_DEV_WARN_NARROW_SET === '1';
 }
 

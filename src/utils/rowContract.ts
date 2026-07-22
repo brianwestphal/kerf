@@ -9,6 +9,8 @@
  * KF-115).
  */
 
+import { isDevMode } from './devMode.js';
+
 /**
  * Truncation limit applied to row HTML when including it in a contract-
  * violation error message. Keeps the error readable when a row produced
@@ -55,11 +57,6 @@ export function rowContractError(index: number, html: string): Error {
     + 'wrap multiple roots in a single parent (e.g. <li>...</li>). '
     + `Got HTML: ${JSON.stringify(truncateRowHtml(html))}`,
   );
-}
-
-function isDevMode(): boolean {
-  const proc = (globalThis as { process?: { env?: { NODE_ENV?: string } } }).process;
-  return proc?.env?.NODE_ENV !== 'production';
 }
 
 /**

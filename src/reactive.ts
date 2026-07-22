@@ -13,8 +13,10 @@
  *   when `KERF_DEV_WARN_DELEGATE_IN_EFFECT=1` so `delegate()` can detect when
  *   it's running inside an effect body and fire the appropriate warning.
  *
- * Both gates short-circuit on `NODE_ENV === 'production'` — production
- * always sees the bare `@preact/signals-core` exports with zero overhead.
+ * Both gates short-circuit when `isDevMode()` is false (i.e. under
+ * `NODE_ENV === 'production'`, or a `globalThis.KERF_DEV = false` override) —
+ * production always sees the bare `@preact/signals-core` exports with zero
+ * overhead.
  */
 
 import { effect as coreEffect,Signal,signal as coreSignal } from '@preact/signals-core';
