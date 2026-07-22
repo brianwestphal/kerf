@@ -42,7 +42,7 @@ The framework is a small set of independent modules that compose. Each one earns
 - `src/toElement.ts` — SVG-aware JSX → DOM helper. Routes SVG content through `DOMParser('image/svg+xml')`.
 - `src/testing.ts` — `kerfjs/testing` subpath. Re-exports `clearStoreRegistry` for unit-test isolation.
 - `src/utils/escapeHtml.ts` — HTML / attribute escaping helpers used by the JSX runtime.
-- `src/utils/jsx-attr-aliases.ts` — `ATTR_ALIASES` table mapping camelCase JSX attributes to their HTML / SVG equivalents (extracted from `jsx-runtime.ts` to keep it under the 200-LOC guideline).
+- `src/utils/jsx-attr-aliases.ts` — `ATTR_ALIASES` table mapping camelCase JSX attributes to their HTML / SVG equivalents (extracted from `jsx-runtime.ts` so the alias data is a separable concern from the runtime logic).
 - `src/utils/rowContract.ts` — shared "exactly one top-level element per row" helpers (KF-103). `ROW_HTML_SNIPPET_MAX`, `truncateRowHtml`, `parseRowTemplate`, `rowContractError`. Used by both reconcile paths and by `mount.ts`'s first-render `validateInlinedRowMatch`.
 - `bench/` — performance tooling for [`krausest/js-framework-benchmark`](https://github.com/krausest/js-framework-benchmark). `bench/kerfjs-impl/` is the kerf entry, **merged upstream** at `frameworks/keyed/kerfjs/` — keep it in sync and open a follow-up upstream PR to bump the pinned kerfjs version on release. `bench/import-krausest.mjs` imports the official upstream numbers into the published `bench/results.{json,md}` (the site's source of truth). `bench/setup.sh`, `run.sh`, `aggregate-results.mjs` are the LOCAL dev-only harness (profiling on your own machine; writes the gitignored `bench/results.local.*`). See "Performance comparison numbers" below.
 
@@ -129,7 +129,7 @@ Coverage thresholds (`vitest.config.ts`): **100% lines / functions / statements,
 
 - **Always fix lint and type errors before finishing work.** Run `npx tsc --noEmit` and `npm run lint` before handing work back. Both must pass with zero errors.
 - **Prefer editing existing files** to creating new ones. The runtime is small on purpose.
-- **Files should not be excessively long.** The largest file in `src/` should stay under ~200 LOC. (One primary export per file — Design rule 4.)
+- **One coherent concern per file.** Split a file when it holds two genuinely separable concerns — never to satisfy a line count. Prefer a ~400-line file that houses one coherent state machine or algorithm to three fragments that each hold a slice of it (the keyed list reconciler is deliberately one algorithm even though it spans several hundred lines across its dispatcher and path files). A file growing past ~500 LOC is a *smell* worth a second look for a hidden second concern, not a gate that fails the build. (One primary export per file — Design rule 4.)
 
 ### Code search (prefer ast-grep for structure)
 

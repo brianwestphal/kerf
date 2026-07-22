@@ -23,7 +23,10 @@ export default defineConfig({
       provider: 'v8',
       reporter: ['text', 'html', 'lcov'],
       include: ['src/**/*.ts', 'src/**/*.tsx'],
-      exclude: ['src/**/*.test.ts', 'src/**/*.test.tsx', 'src/**/index.ts'],
+      // `src/jsx-types.ts` is type-only (interfaces + type aliases, no value
+      // exports) so it compiles to zero runtime JS and shows a permanent
+      // 0/0/0/0 row; exclude it like the type-only `index.ts` barrels.
+      exclude: ['src/**/*.test.ts', 'src/**/*.test.tsx', 'src/**/index.ts', 'src/jsx-types.ts'],
       thresholds: {
         lines: 100,
         functions: 100,
