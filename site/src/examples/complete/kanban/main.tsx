@@ -114,11 +114,12 @@ let startX = 0;
 let startY = 0;
 let dragEl: HTMLElement | null = null;
 
-// `delegate()` here (vs `delegateCapture()`): pointerdown bubbles natively, and
-// `delegate()` matches via `closest()` so a click on any descendant of `.card`
-// (the tag span, the text div, the meta row) climbs up to the card itself.
-// `delegateCapture` would use `target.matches()` — exact-match only — and miss
-// children entirely. (Surfaced by KF-165's regression spec.)
+// `delegate()` here (vs `delegateCapture()`): pointerdown bubbles natively, so
+// bubble-phase delegation reaches it — no need for capture. Matching walks up
+// from `event.target` via `closest('.card')`, so a pointerdown on any descendant
+// of `.card` (the tag span, the text div, the meta row) climbs to the card
+// itself. (Both helpers default to this `closest()` walk-up now; `delegate` is
+// the right pick here purely because pointerdown bubbles.)
 //
 // Page-lifetime registration: `root` is the kanban mount root, attached once at
 // module load and never torn down. The leading `void` is the explicit-discard

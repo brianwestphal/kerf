@@ -68,8 +68,8 @@ import { arraySignal } from 'kerfjs/array-signal';
 | `mount(el, render)` | `() => void` disposer | bind reactive render to a DOM element |
 | `morph(liveRoot, template)` | `void` | one-shot in-place reconciliation against an already-populated element. Template can be an `Element`, `SafeHtml`, or raw HTML string. Honors every short-circuit `mount()` uses (`data-morph-skip`, `data-morph-skip-children`, `data-morph-preserve`, focus + caret preservation). Use for SSR-fragment hydration, page-refresh diffs, third-party widget remounts; use `mount()` when you want re-renders driven by signals. |
 | `each(items, render, cacheKey?)` | `SafeHtml` | iterate a keyed list; cache per-item HTML by identity (+ optional `cacheKey`) so unchanged rows skip re-render. The `cacheKey` function is a passive comparator — it bakes external state (e.g. a "selected id") into the cache invalidation. Distinct from `data-key` on the rendered element, which is the DOM-reconciliation identity that morph uses |
-| `delegate<T>(root, type, sel, h)` | `() => void` disposer | event delegation; auto-promotes `focus`/`blur`/`scroll`/`load`/`error`/`mouseenter`/`mouseleave` to capture phase. `closest()`-style matching for every event type. Optional `T extends Element` generic narrows the second handler arg to avoid casts. |
-| `delegateCapture<T>(root, type, sel, h)` | `() => void` disposer | explicit-capture escape hatch. `target.matches()`-style direct matching. Same `T` generic as `delegate`. |
+| `delegate<T>(root, type, sel, h, opts?)` | `() => void` disposer | event delegation; auto-promotes `focus`/`blur`/`scroll`/`load`/`error`/`mouseenter`/`mouseleave` to capture phase. `closest()`-style matching for every event type. Optional `T extends Element` generic narrows the second handler arg to avoid casts. Optional `{ match?: 'closest' \| 'direct' }` (default `'closest'`). |
+| `delegateCapture<T>(root, type, sel, h, opts?)` | `() => void` disposer | explicit-capture escape hatch. `closest()`-style walk-up matching by default (same as `delegate`), passes the matched ancestor. Same `T` generic. Pass `{ match: 'direct' }` for strict `target.matches()` matching. |
 | `attr(name, value)` | `AttrSpec<N,V>` | **Static form.** Pre-computed attribute descriptor: `.name`, `.value`, `.selector` (`'[name="value"]'`), `.attrs` (`{ readonly [name]: value }` — spread into JSX for rename-safety). Build a typed constants object and use `.selector` in `delegate()`, spread `.attrs` in JSX. |
 | `attr(name)` | `(value: V) => { readonly [name]: V }` | **Dynamic form.** Pre-validates the attribute name, returns a per-render factory. Both generics off → `N` inferred, `V` defaults to `string`. Specify both explicitly (`attr<'data-sort', 'asc'\|'desc'>('data-sort')`) to constrain the value set. Result is spreadable into JSX. |
 | `toElement(jsx)` | `Element \| DocumentFragment` | parse JSX/HTML string into a DOM node (SVG-aware). Single-root inputs return an `Element`; multi-root (`<><svg/> label</>`, two icons side by side) returns a `DocumentFragment` that DOM insertion APIs (`appendChild` / `replaceChildren` / `append`) inline into the parent. |
@@ -128,7 +128,7 @@ mount(rootEl, () => (
 | Tier | Events | Helper | Match |
 | --- | --- | --- | --- |
 | 1 (`delegate`) | click, input, change, submit, keydown/up, pointerdown/up/move, focusin/focusout, drag*, drop, wheel, contextmenu, copy/paste/cut, **plus** focus, blur, scroll, load, error, mouseenter, mouseleave (auto-promoted to capture under the hood) | `delegate` | `closest(selector)` (walks up from target) |
-| 2 (`delegateCapture`) | custom non-bubbling events not covered by Tier 1's auto-promotion list, or any event you want strict element-match for | `delegateCapture` | `target.matches(selector)` (no walk-up) |
+| 2 (`delegateCapture`) | custom non-bubbling events not covered by Tier 1's auto-promotion list, or capture-phase interception (run before any descendant's bubble handler) | `delegateCapture` | `closest(selector)` walk-up by default (same as `delegate`); pass `{ match: 'direct' }` for strict `target.matches()` |
 | 3 (skip) | library-owned subtrees (Monaco, charts, terminals, iframes) | mark host with `data-morph-skip`, mount lib imperatively, add listeners directly to the lib | n/a |
 
 ## Hard rules (every AI gets these wrong at least once)
@@ -170,7 +170,7 @@ warning lands before `tsc` or the runtime dev-warns ever run.
   - No → plain `delegate()` for the originating event is sufficient.
 - **Is the event one of the well-known non-bubblers (`focus`, `blur`, `scroll`, `load`, `error`, `mouseenter`, `mouseleave`)?**
   - Yes → use plain `delegate()` anyway. It auto-promotes these to capture phase under the hood, so no special handling is needed.
-  - Anything else that needs capture-phase semantics specifically (custom non-bubblers, strict element-match instead of `closest`) → `delegateCapture()`.
+  - Anything else that needs capture-phase semantics specifically (custom non-bubblers, or intercepting before a descendant's bubble handler) → `delegateCapture()`. It defaults to the same `closest()` walk-up as `delegate()`; add `{ match: 'direct' }` on either helper when you want strict element-match instead of walk-up.
 
 Worked example: pointer drag across columns at `site/src/examples/complete/kanban/main.tsx`. Tier table earlier in this doc enumerates which events fall in which tier.
 

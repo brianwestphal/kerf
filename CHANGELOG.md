@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Breaking
+
+- **`delegateCapture()` now uses `closest()`-style walk-up matching by default**, unifying it with `delegate()`. Previously it matched only via `target.matches()` (the exact element the event landed on) and passed the raw target to the handler; now it walks up from `event.target` via `closest(selector)`, applies the same `rootEl.contains()` containment check as `delegate()`, and passes the matched ancestor to the handler. This removes a long-standing asymmetry between the two helpers (a click on a descendant of the selected element now climbs to it, as with `delegate()`). **Migration:** if you relied on the old direct-match behavior, pass `{ match: 'direct' }` as the new optional final options argument — e.g. `delegateCapture(root, 'click', '.exact', handler, { match: 'direct' })`. Both `delegate()` and `delegateCapture()` accept `{ match?: 'closest' | 'direct' }` (default `'closest'`), exposed as the new `DelegateOptions` type.
+
 ## [1.0.2] - 2026-07-22
 
 

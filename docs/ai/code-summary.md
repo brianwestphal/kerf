@@ -29,7 +29,7 @@ kerf/
 │   ├── list-reconcile-fast-paths.ts ← KF-198 attribute-only + KF-206 text-content-only fast paths for the granular update path
 │   ├── list-reconcile-focus.ts   ← focus snapshot/restore around the move pass (engine-quirk fix)
 │   ├── attrSelector.ts           ← attr / AttrSpec<N,V> — two overloads: static attr(name,value)→AttrSpec (with .attrs spreadable JSX object), dynamic attr(name)→factory; cssEscapeIdent + escapeCSSString internals
-│   ├── delegate.ts               ← delegate<T> + delegateCapture<T> (generic element type for handler arg); calls warnIfInsideEffect() at the top of both helpers when KF-238's gate is on
+│   ├── delegate.ts               ← delegate<T> + delegateCapture<T> (generic element type for handler arg) + DelegateOptions; BOTH helpers default to closest()-style walk-up matching and pass the matched ancestor — delegateCapture unified onto closest() (BREAKING; opt into old direct-match via { match: 'direct' }); shared makeListener() applies match mode + rootEl.contains() guard; calls warnIfInsideEffect() at the top of both helpers when KF-238's gate is on
 │   ├── dev-delegate-warn.ts      ← KF-238 — opt-in dev warn when `delegate()` / `delegateCapture()` is called inside an `effect()` body (each effect re-run installs a fresh listener; effect disposer cleans only the subscription). `reactive.ts`'s `effect()` wrap increments/decrements a depth counter when the gate is on; `delegate.ts` checks it. Opt-in via `KERF_DEV_WARN_DELEGATE_IN_EFFECT=1` in dev; production unchanged.
 │   ├── dev-each-warn.ts          ← KERF_DEV_WARN_DUPLICATE_EACH_KEYS + KERF_DEV_WARN_EACH_IN_MORPH_SKIP opt-in warnings
 │   ├── toElement.ts              ← SVG-aware JSX-to-DOM; adopts the result into the live `document` (KF-240) so inert-template/DOMParser-document nodes aren't returned (WebKit mis-parses innerHTML on inert-doc elements under bursts)
@@ -179,8 +179,9 @@ Every export reachable via `import { ... } from 'kerfjs'`:
 | `morph` | `morph.ts` | KF-150 — one-shot in-place DOM reconciliation; same algorithm `mount()` uses, but doesn't subscribe to signals |
 | `each` | `each.ts` | Keyed list iteration; per-item HTML memo by object identity (+ optional key) |
 | `attr`, `AttrSpec<N,V>` | `attrSelector.ts` | Two overloads. **Static** `attr(name, value)` → `AttrSpec<N,V>` with `.name`, `.value`, `.selector`, `.attrs` (`{ readonly [name]: value }` — spreadable into JSX). **Dynamic** `attr<N,V=string>(name)` → factory `(value: V) => { readonly [name]: V }` for per-row data attributes; `V` defaults to `string`, specify both generics to constrain the value set. Both CSS-escape at creation time. |
-| `delegate<T>` | `delegate.ts` | Event delegation; auto-promotes known non-bubblers (focus/blur/scroll/load/error/mouseenter/mouseleave) to capture, keeps `closest()` matching; generic `T extends Element` narrows the `target` arg |
-| `delegateCapture<T>` | `delegate.ts` | Explicit-capture escape hatch; `target.matches()`-style direct matching; same `T` generic |
+| `delegate<T>` | `delegate.ts` | Event delegation; auto-promotes known non-bubblers (focus/blur/scroll/load/error/mouseenter/mouseleave) to capture, keeps `closest()` matching; generic `T extends Element` narrows the `target` arg; optional `{ match: 'closest' \| 'direct' }` (default `'closest'`) |
+| `delegateCapture<T>` | `delegate.ts` | Explicit-capture escape hatch; `closest()`-style walk-up matching by default (unified with `delegate()`), passes the matched ancestor; same `T` generic; opt into strict `matches()` via `{ match: 'direct' }` |
+| `DelegateOptions` | `delegate.ts` | Options for both delegation helpers: `{ match?: 'closest' \| 'direct' }` — `'closest'` (default) walks up via `closest()`, `'direct'` matches only `event.target` |
 | `toElement` | `toElement.ts` | JSX → DOM (SVG-aware) |
 | `SafeHtml` | `jsx-runtime.ts` | The JSX result type |
 | `isSafeHtml` | `jsx-runtime.ts` | Cross-bundle type guard for `SafeHtml` (preferred over `instanceof`) |

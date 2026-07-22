@@ -172,7 +172,7 @@ If a descendant of a moved row holds focus, the reconciler snapshots the active 
 
 ## 8.4 Event delegation
 
-### `delegate(rootEl, type, selector, handler): () => void`
+### `delegate(rootEl, type, selector, handler, options?): () => void`
 
 ```ts
 delegate(rootEl, 'click', '[data-action="add"]', (event, matched) => { ... });
@@ -183,9 +183,21 @@ One root listener with `closest(selector)`-style walk-up matching; fires `handle
 
 Auto-promotes the well-known non-bubbling event types (`focus`, `blur`, `scroll`, `load`, `error`, `mouseenter`, `mouseleave`) to capture phase under the hood, so the call site looks identical regardless of whether the event bubbles. Selector matching stays `closest()`-style for every event type — wrapper selectors still match when the event lands on a descendant.
 
-### `delegateCapture(rootEl, type, selector, handler): () => void`
+The optional fifth argument is `{ match?: 'closest' | 'direct' }` (see [`DelegateOptions`](#delegateoptions-type) below). It defaults to `'closest'`; pass `'direct'` to fire only when `event.target` itself matches the selector (no walk-up).
 
-Same shape, but installs on the capture phase and matches via `target.matches(selector)` (direct match, no walk-up). The escape hatch — use it for custom non-bubbling events that aren't in `delegate()`'s auto-promotion list, or when you want capture-phase semantics with strict element-match behavior. Same disposer-capture rule as `delegate()`.
+### `delegateCapture(rootEl, type, selector, handler, options?): () => void`
+
+Same shape, but installs on the capture phase. Selector matching is `closest()`-style by default — the same walk-up as `delegate()`, passing the matched ancestor (not the raw target) to your handler. The escape hatch — use it for custom non-bubbling events that aren't in `delegate()`'s auto-promotion list, or when you want capture-phase semantics (run before any descendant's bubble-phase handler). Same disposer-capture rule as `delegate()`. Pass `{ match: 'direct' }` to opt into strict `target.matches(selector)` matching (fire only on the exact element the selector identifies, no walk-up).
+
+### `DelegateOptions` (type)
+
+```ts
+interface DelegateOptions {
+  match?: 'closest' | 'direct';
+}
+```
+
+Options accepted by both `delegate()` and `delegateCapture()`. `match` selects how the selector is applied to `event.target`: `'closest'` (the default) walks up via `closest(selector)` and fires for the nearest matching ancestor inside `rootEl`; `'direct'` fires only when `event.target` itself matches the selector.
 
 ### `attr(name, value)` — static form
 

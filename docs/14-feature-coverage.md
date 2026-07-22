@@ -153,7 +153,10 @@ axis (`cacheKey` reading an external signal) crosses all of them.
 | FC-EV3 | `delegate()` survives DOM rebuilds (newly-inserted matches still fire) | `src/delegate.ts` | `tests/unit/delegate.test.ts` › "survives DOM rebuilds — newly-inserted matching elements still fire" |
 | FC-EV4 | `delegate()` disposer removes the listener | `src/delegate.ts` | `tests/unit/delegate.test.ts` › "disposer removes the listener" |
 | FC-EV5 | Tier 1 auto-promotes known non-bubblers to capture | `src/delegate.ts` | `tests/unit/delegate.test.ts` › "delegate() — auto-promotion to capture for known non-bubblers (KF-56)" |
-| FC-EV6 | `delegateCapture()` uses `matches()` (NOT `closest()`) direct matching | `src/delegate.ts` | `tests/unit/delegate.test.ts` › "uses closest()-style matching, NOT direct matches() — selector matches a wrapper of the focused element" |
+| FC-EV6 | `delegateCapture()` defaults to `closest()`-style walk-up matching (passes the matched ancestor) | `src/delegate.ts` | `tests/unit/delegate.test.ts` › "defaults to closest()-style walk-up matching and passes the matched ancestor" |
+| FC-EV6b | `delegateCapture()` `{ match: 'direct' }` opts into strict `matches()` matching (no walk-up) | `src/delegate.ts` | `tests/unit/delegate.test.ts` › "fires only when the event lands on the exact matching element (no walk-up)" |
+| FC-EV6c | `delegate()` `{ match: 'direct' }` opts into strict `matches()` matching (symmetry) | `src/delegate.ts` | `tests/unit/delegate.test.ts` › "fires only on the exact target, not a descendant, when direct matching is requested" |
+| FC-EV6d | Delegation containment guard — a `closest()` match outside `rootEl` does not fire | `src/delegate.ts` | `tests/unit/delegate.test.ts` › "delegate does not fire when the closest() match lives outside rootEl" |
 | FC-EV7 | Invalid selector throws immediately (no silent listener) | `src/delegate.ts` | `tests/unit/delegate.test.ts` › "delegate throws immediately on an invalid selector" |
 
 ### §6 JSX runtime

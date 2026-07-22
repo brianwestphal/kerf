@@ -64,7 +64,7 @@ KF-117 documented kerf's no-op-render fast path as a contract: when the static-s
 
 Three-tier model:
 - **Tier 1** (`delegate()`) — bubbling events plus the well-known non-bubblers (`focus`, `blur`, `scroll`, `load`, `error`, `mouseenter`, `mouseleave`) auto-promoted to capture phase under the hood. Walk-up via `closest()` for every event type.
-- **Tier 2** (`delegateCapture()`) — explicit-capture escape hatch. Use when the auto-promotion list doesn't cover your event type (custom non-bubbling events) or when you want capture-phase semantics with strict element-match (`target.matches()`) instead of walk-up.
+- **Tier 2** (`delegateCapture()`) — explicit-capture escape hatch. Use when the auto-promotion list doesn't cover your event type (custom non-bubbling events) or when you want capture-phase interception. Matches via `closest()` walk-up by default (unified with `delegate()`, passing the matched ancestor); pass `{ match: 'direct' }` for strict `target.matches()` matching. Both helpers accept the `{ match?: 'closest' | 'direct' }` options argument (`DelegateOptions`).
 - **Tier 3** (library-owned subtrees) → `data-morph-skip` + manual lifecycle.
 
 ### §6 JSX runtime

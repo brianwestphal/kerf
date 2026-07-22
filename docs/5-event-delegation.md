@@ -36,7 +36,8 @@ Explicit-capture escape hatch. After `delegate()`'s auto-promotion list expanded
 
 1. **Custom non-bubbling events** that a third-party library or your own code dispatches without bubbling, which `delegate()`'s auto-promotion list doesn't know about.
 2. **Capture-phase interception** — you want the listener to run BEFORE any descendant's bubble-phase handler sees the event.
-3. **Strict element-match semantics** — `delegateCapture()` uses `target.matches()` (no `closest()` walk-up), so the handler fires only when the event lands on the exact element the selector identifies.
+
+Selector matching is `closest()`-style by default — the same walk-up as `delegate()`, passing the matched ancestor (not the raw target) to your handler — so a click on any descendant of the selected element climbs to it. This unifies the two helpers on the one matching model you almost always want.
 
 ```ts
 import { delegateCapture } from 'kerfjs';
@@ -44,7 +45,7 @@ import { delegateCapture } from 'kerfjs';
 // 1. Custom non-bubbling event from a third-party widget.
 //    e.g. `xterm-resize` is dispatched on the terminal element and doesn't bubble:
 delegateCapture(rootEl, 'xterm-resize', '.terminal-host', (event, host) => {
-  // host === the .terminal-host element; event was dispatched on it directly.
+  // host === the .terminal-host element (or its closest matching ancestor).
   void event; void host;
 });
 
@@ -53,15 +54,22 @@ delegateCapture(rootEl, 'xterm-resize', '.terminal-host', (event, host) => {
 delegateCapture(rootEl, 'click', '[data-action="submit"]', (event) => {
   if (!isValid()) event.stopPropagation();  // bubble-phase handler won't fire
 });
+```
 
-// 3. Strict-match: only fire when the click lands ON the element, not a child.
+**Strict element-match — `{ match: 'direct' }`.** Both helpers accept an optional `{ match: 'closest' | 'direct' }` argument. The default, `'closest'`, is the walk-up above. Pass `'direct'` when you want the handler to fire **only** when the event lands on the exact element the selector identifies (a `target.matches()` check, no walk-up):
+
+```ts
+// Only fire when the click lands ON the element, not a child.
 delegateCapture(rootEl, 'click', '.exact-target', (_event, exact) => {
   // descendant clicks won't trigger this — `target.matches('.exact-target')` is false.
   void exact;
-});
+}, { match: 'direct' });
+
+// The option is symmetric — delegate() accepts it too:
+delegate(rootEl, 'click', '.exact-target', handler, { match: 'direct' });
 ```
 
-In practice you almost never need `delegateCapture()` — `delegate()` covers the common cases. Reach for it only when the three scenarios above apply.
+In practice you almost never need `delegateCapture()` — `delegate()` covers the common cases. Reach for it only when scenario 1 or 2 above applies.
 
 ### Tier 3 — per-element instances / library-owned subtrees
 
@@ -91,9 +99,9 @@ chart.on('select', (point) => { /* ... */ });   // direct listener — fine
 
 A click on an icon inside a button should fire the button's handler, not the icon's. `closest()` walks UP from the original target until it finds a matching ancestor — which is what you almost always want.
 
-`delegate()` uses `closest()` for **every** event type, including the auto-promoted non-bubblers. So `delegate(root, 'focus', '.field-row', ...)` fires when a descendant `<input>` of `.field-row` receives focus, with the row as the matched element.
+Both `delegate()` and `delegateCapture()` use `closest()` by default, for **every** event type, including the auto-promoted non-bubblers. So `delegate(root, 'focus', '.field-row', ...)` fires when a descendant `<input>` of `.field-row` receives focus, with the row as the matched element — and `delegateCapture()` behaves the same way.
 
-`delegateCapture()` uses `target.matches()` (direct match only). This is the escape-hatch behavior — useful when you want the listener to fire only when the event lands on the exact element the selector identifies, not any descendant.
+When you genuinely want direct-match semantics — fire only when the event lands on the exact element the selector identifies, not any descendant — pass `{ match: 'direct' }` as the optional fourth-position options argument to either helper. It switches the internal match from `closest()` to `target.matches()`.
 
 ## 5.3 Disposers
 

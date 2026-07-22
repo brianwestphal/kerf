@@ -1,7 +1,7 @@
 ---
 name: kerf-app
 description: Build UIs in the kerf reactive framework (https://github.com/brianwestphal/kerf). Use this skill whenever the user is writing or modifying code that imports `kerfjs`, asks to add a feature to a kerf app, or asks "how do I do X in kerf?". Use it proactively the moment you spot a kerf import in the file you're editing.
-kerf-skill-version: 1.3.0
+kerf-skill-version: 1.4.0
 ---
 
 # Building apps with kerf
@@ -47,7 +47,7 @@ import { arraySignal } from 'kerfjs/array-signal';
 | `morph(liveRoot, template)` | one-shot reconcile against a populated element (SSR hydration, page-refresh diffs). Template = `Element`, `SafeHtml`, or HTML string |
 | `each(items, render, cacheKey?)` | keyed list iteration; per-row memoization on identity (+ optional cacheKey — a passive comparator for external state). Distinct from `data-key` on the rendered element |
 | `delegate(root, type, sel, h)` | one listener at the root; `closest(selector)` walk from target |
-| `delegateCapture(root, type, sel, h)` | capture-phase escape hatch; `target.matches()` strict match |
+| `delegateCapture(root, type, sel, h, opts?)` | capture-phase escape hatch; `closest()` walk-up by default (same as `delegate`); pass `{ match: 'direct' }` for strict `target.matches()` |
 | `attr(name, value)` | pre-computed `AttrSpec<N,V>` — `.selector` for `delegate()`, `.attrs` to spread into JSX (rename-safe) |
 | `attr(name)` | dynamic factory — `attr<N,V=string>(name)` returns `(value: V) => { readonly [name]: V }`; both generics off → N inferred, V defaults to string; specify both to constrain values |
 | `toElement(jsx)` | parse JSX into a DOM node (SVG-aware). Single-root → `Element`; multi-root (`<><svg/> label</>`, two icons side by side) → `DocumentFragment` that `appendChild`/`replaceChildren`/`append` inlines into the parent. |
@@ -81,7 +81,7 @@ When deciding which primitive to reach for, work down the axes:
 **Events.**
 - Originates inside the mount tree → `delegate(rootEl, type, sel, handler)`. Originates outside (window-level keyboard, online/offline, beforeunload) → native `window.addEventListener` at module top-level.
 - Gesture that needs to follow an element after press (drag, draw, resize) → at the start event, `el.setPointerCapture(e.pointerId)`. Subsequent `pointermove` / `pointerup` redirect to the captured element and `delegate(rootEl, 'pointermove', '[data-card]', …)` still picks them up. Don't reach for `window.addEventListener` for in-mount-tree gestures.
-- Well-known non-bubbler (`focus`, `blur`, `scroll`, `load`, `error`, `mouseenter`, `mouseleave`) → still `delegate()`; it auto-promotes to capture. Custom non-bubblers or strict element-match → `delegateCapture()`.
+- Well-known non-bubbler (`focus`, `blur`, `scroll`, `load`, `error`, `mouseenter`, `mouseleave`) → still `delegate()`; it auto-promotes to capture. Custom non-bubblers or capture-phase interception → `delegateCapture()` (also `closest()`-matched by default). Need strict element-match? Add `{ match: 'direct' }` on either helper.
 
 **Lists.**
 - Items change across renders (todos, chat messages, table rows) → `each(items, render)`.
