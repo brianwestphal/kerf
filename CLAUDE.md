@@ -106,6 +106,7 @@ npm run typecheck         # tsc --noEmit
 npm run lint              # eslint
 npm run check:docs:test-inventory  # KF-109: ensures docs/ai/code-summary.md mentions every test file in tests/
 npm run check:docs:api-coverage  # KF-162: ensures docs/8-api-reference.md mentions every public export from src/index.ts and its subpaths
+npm run check:docs:api-signatures  # KF-343: builds, then verifies each public function export's signature in docs/8-api-reference.md matches the emitted dist/*.d.ts (param names + arity + return type per overload). In the check chain it runs right after the build step (no rebuild)
 npm run check:features    # KF-284/286/289: ensures every behavior in the docs/14-feature-coverage.md index maps to a live guarding test, AND every public value export is represented by an index row (a behavior/transition axis orthogonal to line coverage)
 npm run check             # local pre-commit gate: lint + typecheck + doc inventory + api/feature coverage + test + build + both dist:* suites + jsx-typing dist gate
 npm run check:full        # KF-118: pre-push gate — `check` plus the Playwright browser suite (chromium/firefox/webkit), which exercises tests/dist/consumer-app/ end-to-end

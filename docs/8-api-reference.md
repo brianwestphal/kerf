@@ -4,7 +4,7 @@ Everything kerf exports, organized by module. Imported via `import { … } from 
 
 ## 8.1 Reactivity
 
-### `signal<T>(initial: T): Signal<T>`
+### `signal<T>(value?: T): Signal<T>`
 
 A reactive value. `.value` reads / writes; reads inside `effect()` / `computed()` are tracked.
 

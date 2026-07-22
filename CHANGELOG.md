@@ -6,6 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+
+- Corrected the `signal` entry in the API reference: its parameter is `value?` (optional), not `initial` — matching the actual type signature. A new build-time gate now verifies every documented function signature against the emitted type declarations, so the API reference can't silently drift from the code.
+
 ## [1.0.2] - 2026-07-22
 
 

@@ -136,6 +136,7 @@ kerf/
 │   ├── sync-ai-bundle.mjs        ← KF-215 — regenerates `ai/` from `kerf.claude-skill.md` + `kerf.cursorrules`; run after editing either source
 │   ├── check-ai-bundle.mjs       ← KF-215 — in-sync gate; fails when `ai/` drifts from the root sources or the manifest's `kerfjsVersion` is stale. Wired into `npm run check`
 │   ├── check-feature-coverage.mjs ← KF-284/286/289 — parses the feature index in docs/14-feature-coverage.md and fails if any behavior row's guarding test (file + title) no longer resolves; ALSO fails if any public value export (src/index.ts + src/array-signal.ts, minus type-only + EXPORT_EXEMPT) has no index row (export-representation completeness). The behavior/transition coverage axis line coverage can't express. Wired into `npm run check` (`npm run check:features`)
+│   ├── check-doc-api-signatures.mjs ← KF-343 — parses the emitted dist/*.d.ts export inventory (names + overload signatures, following local re-export chunks) and verifies each public FUNCTION export's signature shown in docs/8-api-reference.md matches the .d.ts truth. Matching rule: parameter names + arity + return type per overload; param/return types compared only when the doc commits to a non-function/non-object type (docs may simplify bare params and object-literal returns); doc may omit trailing OPTIONAL params (e.g. morph's internal `ownedItems?`); every .d.ts overload must be documented (catches a dropped overload). Class members are out of scope (SafeHtml/ArraySignal reference internal types). Needs dist built first — wired into `npm run check` right after `npm run build`; standalone `npm run check:docs:api-signatures` builds then checks
 │   └── release.sh                ← interactive release flow w/ --beta support; drafts release notes via gitgist (`gitgist <last-tag>..HEAD`; gitgist is a devDependency)
 ├── .github/workflows/
 │   ├── ci.yml                    ← test + lint + typecheck on push/PR
@@ -239,7 +240,7 @@ Runtime dep (`@preact/signals-core`) is external — consumers' bundlers pick it
 
 | If you're touching... | look in |
 | --- | --- |
-| Adding a new public export | `src/index.ts` + the relevant module + `docs/8-api-reference.md` |
+| Adding a new public export | `src/index.ts` + the relevant module + `docs/8-api-reference.md` — a function export's documented signature is then gated by `scripts/check-doc-api-signatures.mjs` (names + arity + return type vs the emitted `.d.ts`) |
 | JSX attribute alias | `src/utils/jsx-attr-aliases.ts` (the `ATTR_ALIASES` map) |
 | morph conventions | `src/morph.ts` (public `morph()` (KF-150), key matching, `data-morph-skip`, `data-morph-skip-children` (KF-152), `data-morph-preserve` (KF-151), focus preservation), `src/mount.ts` (segment dispatch) |
 | SVG namespace handling | `src/toElement.ts` (`SVG_FRAGMENT_TAGS`) |
