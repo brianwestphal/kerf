@@ -6,16 +6,16 @@
       "source": "kerf.claude-skill.md",
       "bundle": "ai/skill.md",
       "dest": ".claude/skills/kerf-app/SKILL.md",
-      "version": "1.7.0",
-      "sha256": "033c6e538d3a48f36c52a1ba154c6c7782f6c7cca9399adee0fbd519cfaf5919"
+      "version": "1.8.0",
+      "sha256": "76b8a88bc7aaf9d50e6f3eee7b57a976b3279127f5d4970599aef1f839a06655"
     },
     {
       "name": "cursorrules",
       "source": "kerf.cursorrules",
       "bundle": "ai/cursorrules",
       "dest": ".cursorrules",
-      "version": "1.7.0",
-      "sha256": "8ce556caf8fa95f783f5423bf882a735fc3ce6b7eb83e823aaa0417b3272af15"
+      "version": "1.8.0",
+      "sha256": "f91402df009941b4198ea659498f458d2433843d47a3b524b0ca5e2d3d2fc949"
     }
   ]
 }
