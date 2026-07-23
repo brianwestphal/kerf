@@ -92,6 +92,29 @@ the element lookahead can never see a text blocker), while the nested case
 rides the older element lookahead and passes on both. The one still open is
 `data-morph-preserve`d siblings interleaved with owned rows during a shift.
 
+**Update (KF-384) — all four now closed.** The `data-morph-preserve` × owned-row
+sweep landed in `tests/unit/kf384-morph-preserve-interaction.test.tsx`
+(FC-T18), and it was the highest-yield of the four: two of its five shapes were
+**broken, not merely untested**, which is the outcome this whole analysis
+predicted for cross-subsystem seams.
+
+- **KF-385** (filed, high) — any non-owned node between a marker and its rows
+  truncates the KF-382 run collector, so the marker moves alone and a trailing
+  template sibling wedges in ahead of the rows. It reproduces the exact failure
+  the unit-move was built to prevent, by defeating the mechanism that prevents
+  it. The existing guard test passes only because nothing interrupts the run —
+  a reminder that a guard test proves the guard works *on the shape it was
+  written for*.
+- **KF-386** (filed) — a preserved node inside a container that gets rebuilt is
+  destroyed with it. Rows recover because `mount()` re-renders them; a
+  consumer-owned node has no such recovery, so the loss is silent and
+  permanent. This severity class was not part of the KF-383 WONTFIX calculus,
+  which reasoned only about row focus/scroll/IME.
+
+Both are pinned asserting current behavior with `KNOWN BUG` comments, so the
+gate stays green and the assertions flip when the fixes land. The KF-383
+container-key workaround is also shown to protect against KF-386.
+
 ## Outcome
 
 - 14 new tests (12 asserting, 2 `.skip` known-bug pins) in

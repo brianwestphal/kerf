@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "Hot Sheet",
+          "rules": [
+            {
+              "id": "review-note",
+              "name": "ReviewNote",
+              "shortDescription": {
+                "text": "AI-authored, line-anchored review note."
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "review-note",
+          "ruleIndex": 0,
+          "kind": "informational",
+          "level": "none",
+          "guid": "mry2i34gzk3i1u86",
+          "message": {
+            "text": "Highest-yield sweep of the KF-380 analysis: 2 of 5 shapes were broken rather than merely untested, which is exactly what the analysis predicted for cross-subsystem seams. Notable methodologically — the KF-385 wedge bug reproduces the failure KF-382's unit-move was built to prevent, and the existing guard test ('a trailing template sibling cannot wedge...') passes right through it, because that test's run is uninterrupted. A guard test proves the guard works on the shape it was written for, not on the shape's neighbors; the KF-385 fix must extend it with an interleaved non-owned node. Both defects are pinned asserting CURRENT behavior so the gate stays green and the assertions flip when fixed, rather than being left as .skip (a skipped test asserts nothing and is easy to forget).",
+            "markdown": "Highest-yield sweep of the KF-380 analysis: 2 of 5 shapes were broken rather than merely untested, which is exactly what the analysis predicted for cross-subsystem seams. Notable methodologically — the KF-385 wedge bug reproduces the failure KF-382's unit-move was built to prevent, and the existing guard test ('a trailing template sibling cannot wedge...') passes right through it, because that test's run is uninterrupted. A guard test proves the guard works on the shape it was written for, not on the shape's neighbors; the KF-385 fix must extend it with an interleaved non-owned node. Both defects are pinned asserting CURRENT behavior so the gate stays green and the assertions flip when fixed, rather than being left as .skip (a skipped test asserts nothing and is easy to forget)."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "tests/unit/kf384-morph-preserve-interaction.test.tsx"
+                },
+                "region": {
+                  "startLine": 1,
+                  "endLine": 30,
+                  "snippet": {
+                    "text": "/**\n * KF-384 — `data-morph-preserve` nodes interleaved with `each()`-owned rows\n * during a positional shift. The last open item from the KF-380 gap analysis.\n *\n * Why this pairing is interesting: preserved nodes and owned rows are BOTH\n * protected from the morph's trailing-removal pass, but by different\n * mechanisms and on behalf of different owners (the consumer vs. the list\n * reconciler). They now meet three separate node-moving recovery paths:\n * the element lookahead (`morph.ts` 2.5), the marker + owned-row unit move\n * (2.6), and `mount()`'s stale-binding self-heal, which removes still-live\n * rows. Nothing previously tested them together.\n *\n * The sweep found two real defects, filed rather than fixed (this is a\n * test-and-analysis ticket; runtime is frozen):\n *\n *   - **KF-385** — a non-owned node between the marker and its rows truncates\n *     the 2.6 run collector, so the marker moves alone and a trailing template\n *     sibling wedges in ahead of the rows. This is precisely the failure the\n *     unit-move exists to prevent.\n *   - **KF-386** — a preserved node inside a container that gets rebuilt is\n *     destroyed with the container. It is consumer-owned, so nothing\n *     re-creates it: silent, permanent loss.\n *\n * Both are pinned below asserting CURRENT behavior with `KNOWN BUG` comments.\n * When either is fixed, its assertion flips and the test must be updated —\n * that is the intent.\n */\nimport { afterEach, beforeEach, describe, expect, it } from 'vitest';\n\nimport { each, mount, signal } from '../../src/index.js';"
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "tags": [
+              "test-evidence"
+            ]
+          },
+          "workItemUris": [
+            "KF-384"
+          ],
+          "partialFingerprints": {
+            "prNoteAnchor/v1": "ba4380c6881de375d5d1da14ddbf49c2"
+          }
+        }
+      ],
+      "versionControlProvenance": [
+        {
+          "repositoryUri": "git@github.com:brianwestphal/kerf.git",
+          "revisionId": "a52b6e1a560c683bcb45666147920cd35aaea432",
+          "branch": "main"
+        }
+      ]
+    }
+  ]
+}
