@@ -24,18 +24,30 @@
           "text": "import { signal, mount, delegate } from 'kerfjs';",
           "anchor": {
             "selector": "#Lc1",
-            "at": "left",
-            "dx": 0
+            "at": "top-left",
+            "dx": 0,
+            "dy": 11.5
           },
           "fontSize": 12.5,
           "fontFamily": "Menlo",
           "color": "#e2e8f0",
           "caret": true,
           "speed": 24,
-          "jitter": 0.12
+          "jitter": 0.12,
+          "delay": 300
         }
       ],
-      "duration": 1876
+      "animations": [
+        {
+          "selector": "#Cv1",
+          "property": "opacity",
+          "from": "1",
+          "to": "0",
+          "duration": 40,
+          "delay": 1536
+        }
+      ],
+      "duration": 2126
     },
     {
       "continue": true,
@@ -55,18 +67,30 @@
           "text": "const count = signal(0);",
           "anchor": {
             "selector": "#Lc3",
-            "at": "left",
-            "dx": 0
+            "at": "top-left",
+            "dx": 0,
+            "dy": 11.5
           },
           "fontSize": 12.5,
           "fontFamily": "Menlo",
           "color": "#e2e8f0",
           "caret": true,
           "speed": 24,
-          "jitter": 0.12
+          "jitter": 0.12,
+          "delay": 300
         }
       ],
-      "duration": 1076
+      "animations": [
+        {
+          "selector": "#Cv3",
+          "property": "opacity",
+          "from": "1",
+          "to": "0",
+          "duration": 40,
+          "delay": 936
+        }
+      ],
+      "duration": 1426
     },
     {
       "continue": true,
@@ -86,18 +110,30 @@
           "text": "const root = document.getElementById('app')!;",
           "anchor": {
             "selector": "#Lc4",
-            "at": "left",
-            "dx": 0
+            "at": "top-left",
+            "dx": 0,
+            "dy": 11.5
           },
           "fontSize": 12.5,
           "fontFamily": "Menlo",
           "color": "#e2e8f0",
           "caret": true,
           "speed": 24,
-          "jitter": 0.12
+          "jitter": 0.12,
+          "delay": 300
         }
       ],
-      "duration": 1580
+      "animations": [
+        {
+          "selector": "#Cv4",
+          "property": "opacity",
+          "from": "1",
+          "to": "0",
+          "duration": 40,
+          "delay": 1440
+        }
+      ],
+      "duration": 1930
     },
     {
       "continue": true,
@@ -117,18 +153,30 @@
           "text": "mount(root, () => (",
           "anchor": {
             "selector": "#Lc6",
-            "at": "left",
-            "dx": 0
+            "at": "top-left",
+            "dx": 0,
+            "dy": 11.5
           },
           "fontSize": 12.5,
           "fontFamily": "Menlo",
           "color": "#e2e8f0",
           "caret": true,
           "speed": 24,
-          "jitter": 0.12
+          "jitter": 0.12,
+          "delay": 300
         }
       ],
-      "duration": 956
+      "animations": [
+        {
+          "selector": "#Cv6",
+          "property": "opacity",
+          "from": "1",
+          "to": "0",
+          "duration": 40,
+          "delay": 816
+        }
+      ],
+      "duration": 1306
     },
     {
       "continue": true,
@@ -148,18 +196,30 @@
           "text": "  <button class=\"btn\" data-action=\"inc\">",
           "anchor": {
             "selector": "#Lc7",
-            "at": "left",
-            "dx": 0
+            "at": "top-left",
+            "dx": 0,
+            "dy": 11.5
           },
           "fontSize": 12.5,
           "fontFamily": "Menlo",
           "color": "#e2e8f0",
           "caret": true,
           "speed": 24,
-          "jitter": 0.12
+          "jitter": 0.12,
+          "delay": 300
         }
       ],
-      "duration": 1460
+      "animations": [
+        {
+          "selector": "#Cv7",
+          "property": "opacity",
+          "from": "1",
+          "to": "0",
+          "duration": 40,
+          "delay": 1320
+        }
+      ],
+      "duration": 1810
     },
     {
       "continue": true,
@@ -179,18 +239,30 @@
           "text": "    Clicked {count} times",
           "anchor": {
             "selector": "#Lc8",
-            "at": "left",
-            "dx": 0
+            "at": "top-left",
+            "dx": 0,
+            "dy": 11.5
           },
           "fontSize": 12.5,
           "fontFamily": "Menlo",
           "color": "#e2e8f0",
           "caret": true,
           "speed": 24,
-          "jitter": 0.12
+          "jitter": 0.12,
+          "delay": 300
         }
       ],
-      "duration": 1100
+      "animations": [
+        {
+          "selector": "#Cv8",
+          "property": "opacity",
+          "from": "1",
+          "to": "0",
+          "duration": 40,
+          "delay": 960
+        }
+      ],
+      "duration": 1450
     },
     {
       "continue": true,
@@ -210,18 +282,30 @@
           "text": "  </button>",
           "anchor": {
             "selector": "#Lc9",
-            "at": "left",
-            "dx": 0
+            "at": "top-left",
+            "dx": 0,
+            "dy": 11.5
           },
           "fontSize": 12.5,
           "fontFamily": "Menlo",
           "color": "#e2e8f0",
           "caret": true,
           "speed": 24,
-          "jitter": 0.12
+          "jitter": 0.12,
+          "delay": 300
         }
       ],
-      "duration": 764
+      "animations": [
+        {
+          "selector": "#Cv9",
+          "property": "opacity",
+          "from": "1",
+          "to": "0",
+          "duration": 40,
+          "delay": 624
+        }
+      ],
+      "duration": 1114
     },
     {
       "continue": true,
@@ -241,18 +325,30 @@
           "text": "));",
           "anchor": {
             "selector": "#Lc10",
-            "at": "left",
-            "dx": 0
+            "at": "top-left",
+            "dx": 0,
+            "dy": 11.5
           },
           "fontSize": 12.5,
           "fontFamily": "Menlo",
           "color": "#e2e8f0",
           "caret": true,
           "speed": 24,
-          "jitter": 0.12
+          "jitter": 0.12,
+          "delay": 300
         }
       ],
-      "duration": 572
+      "animations": [
+        {
+          "selector": "#Cv10",
+          "property": "opacity",
+          "from": "1",
+          "to": "0",
+          "duration": 40,
+          "delay": 432
+        }
+      ],
+      "duration": 922
     },
     {
       "continue": true,
@@ -272,18 +368,30 @@
           "text": "delegate(root, 'click', '[data-action=\"inc\"]', () => count.value++);",
           "anchor": {
             "selector": "#Lc12",
-            "at": "left",
-            "dx": 0
+            "at": "top-left",
+            "dx": 0,
+            "dy": 11.5
           },
           "fontSize": 12.5,
           "fontFamily": "Menlo",
           "color": "#e2e8f0",
           "caret": true,
           "speed": 24,
-          "jitter": 0.12
+          "jitter": 0.12,
+          "delay": 300
         }
       ],
-      "duration": 2132
+      "animations": [
+        {
+          "selector": "#Cv12",
+          "property": "opacity",
+          "from": "1",
+          "to": "0",
+          "duration": 40,
+          "delay": 1992
+        }
+      ],
+      "duration": 2482
     },
     {
       "continue": true,
@@ -297,7 +405,7 @@
           "script": "window.S(10)"
         }
       ],
-      "duration": 1200
+      "duration": 1100
     },
     {
       "continue": true,
@@ -308,27 +416,35 @@
       "actions": [
         {
           "type": "evaluate",
-          "script": "window.scene('terminal'); window.term(1)"
+          "script": "window.scene('terminal', 'editor'); window.termCmd('npm run dev'); window.term(1)"
         }
       ],
       "animations": [
         {
           "selector": ".window.terminal",
           "property": "transform",
-          "from": "translate(300px, 175px) scale(0.12)",
-          "to": "translate(0px, 0px) scale(1)",
+          "from": "scale(0.16)",
+          "to": "scale(1)",
           "duration": 480,
           "easing": "cubic-bezier(0.645,0.045,0.355,1)",
-          "transformOrigin": "center"
+          "transformOrigin": "92% 92%"
         },
         {
           "selector": ".window.editor",
           "property": "transform",
-          "from": "translate(0px, 0px) scale(1)",
-          "to": "translate(-300px, 175px) scale(0.12)",
+          "from": "scale(1)",
+          "to": "scale(0.12)",
           "duration": 480,
           "easing": "cubic-bezier(0.645,0.045,0.355,1)",
-          "transformOrigin": "center"
+          "transformOrigin": "8% 92%"
+        },
+        {
+          "selector": "#term-cov",
+          "property": "opacity",
+          "from": "1",
+          "to": "0",
+          "duration": 40,
+          "delay": 990
         }
       ],
       "overlays": [
@@ -337,8 +453,9 @@
           "text": "npm run dev",
           "anchor": {
             "selector": "#term-cmd",
-            "at": "left",
-            "dx": 0
+            "at": "top-left",
+            "dx": 0,
+            "dy": 12
           },
           "fontSize": 13,
           "fontFamily": "Menlo",
@@ -346,7 +463,8 @@
           "caret": true,
           "speed": 30,
           "jitter": 0.12,
-          "delay": 600
+          "delay": 600,
+          "dy": 12
         }
       ],
       "duration": 1800
@@ -360,7 +478,7 @@
       "actions": [
         {
           "type": "evaluate",
-          "script": "window.termCmd('npm run dev'); window.term(6)"
+          "script": "window.term(6)"
         }
       ],
       "duration": 1900
@@ -392,27 +510,27 @@
       "actions": [
         {
           "type": "evaluate",
-          "script": "window.scene('browser')"
+          "script": "window.scene('browser', 'terminal')"
         }
       ],
       "animations": [
         {
           "selector": ".window.browser",
           "property": "transform",
-          "from": "translate(0px, 215px) scale(0.14)",
-          "to": "translate(0px, 0px) scale(1)",
+          "from": "scale(0.14)",
+          "to": "scale(1)",
           "duration": 520,
           "easing": "${popSoft}",
-          "transformOrigin": "center"
+          "transformOrigin": "50% 95%"
         },
         {
           "selector": ".window.terminal",
           "property": "transform",
-          "from": "translate(0px, 0px) scale(1)",
-          "to": "translate(-300px, 205px) scale(0.10)",
+          "from": "scale(1)",
+          "to": "scale(0.12)",
           "duration": 480,
           "easing": "cubic-bezier(0.645,0.045,0.355,1)",
-          "transformOrigin": "center"
+          "transformOrigin": "8% 92%"
         }
       ],
       "duration": 1400
@@ -513,30 +631,40 @@
       "actions": [
         {
           "type": "evaluate",
-          "script": "window.visited(); window.scene('editor'); window.E(0)"
+          "script": "window.scene('editor', 'browser'); window.lt(1)"
         }
       ],
       "animations": [
         {
           "selector": ".window.editor",
           "property": "transform",
-          "from": "translate(-300px, 175px) scale(0.12)",
-          "to": "translate(0px, 0px) scale(1)",
+          "from": "scale(0.12)",
+          "to": "scale(1)",
           "duration": 480,
           "easing": "cubic-bezier(0.645,0.045,0.355,1)",
-          "transformOrigin": "center"
+          "transformOrigin": "8% 92%"
         },
         {
           "selector": ".window.browser",
           "property": "transform",
-          "from": "translate(0px, 0px) scale(1)",
-          "to": "translate(300px, 205px) scale(0.14)",
+          "from": "scale(1)",
+          "to": "scale(0.12)",
           "duration": 480,
           "easing": "cubic-bezier(0.645,0.045,0.355,1)",
-          "transformOrigin": "center"
+          "transformOrigin": "92% 90%"
+        },
+        {
+          "selector": ".ltwrap",
+          "property": "transform",
+          "from": "translate(0px, 20px) scale(0.92)",
+          "to": "translate(0px, 0px) scale(1)",
+          "duration": 400,
+          "delay": 500,
+          "easing": "${popSoft}",
+          "transformOrigin": "50% 100%"
         }
       ],
-      "duration": 1300
+      "duration": 1500
     },
     {
       "continue": true,
@@ -544,24 +672,69 @@
         "type": "cut",
         "duration": 0
       },
-      "overlays": [
+      "actions": [
         {
-          "kind": "typing",
-          "text": " computed,",
-          "anchor": {
-            "selector": "#ins-imp",
-            "at": "left",
-            "dx": 0
-          },
-          "fontSize": 12.5,
-          "fontFamily": "Menlo",
-          "color": "#e2e8f0",
-          "caret": true,
-          "speed": 24,
-          "jitter": 0.12
+          "type": "evaluate",
+          "script": "window.ins(2)"
         }
       ],
-      "duration": 840
+      "duration": 170
+    },
+    {
+      "continue": true,
+      "transition": {
+        "type": "cut",
+        "duration": 0
+      },
+      "actions": [
+        {
+          "type": "evaluate",
+          "script": "window.ins(4)"
+        }
+      ],
+      "duration": 170
+    },
+    {
+      "continue": true,
+      "transition": {
+        "type": "cut",
+        "duration": 0
+      },
+      "actions": [
+        {
+          "type": "evaluate",
+          "script": "window.ins(6)"
+        }
+      ],
+      "duration": 170
+    },
+    {
+      "continue": true,
+      "transition": {
+        "type": "cut",
+        "duration": 0
+      },
+      "actions": [
+        {
+          "type": "evaluate",
+          "script": "window.ins(8)"
+        }
+      ],
+      "duration": 170
+    },
+    {
+      "continue": true,
+      "transition": {
+        "type": "cut",
+        "duration": 0
+      },
+      "actions": [
+        {
+          "type": "evaluate",
+          "script": "window.ins(10)"
+        }
+      ],
+      "duration": 170
     },
     {
       "continue": true,
@@ -581,18 +754,30 @@
           "text": "const cls = computed(() => count.value >= 5 ? 'btn hot' : 'btn');",
           "anchor": {
             "selector": "#Lc4",
-            "at": "left",
-            "dx": 0
+            "at": "top-left",
+            "dx": 0,
+            "dy": 11.5
           },
           "fontSize": 12.5,
           "fontFamily": "Menlo",
           "color": "#e2e8f0",
           "caret": true,
           "speed": 24,
-          "jitter": 0.12
+          "jitter": 0.12,
+          "delay": 300
         }
       ],
-      "duration": 2060
+      "animations": [
+        {
+          "selector": "#Cv4",
+          "property": "opacity",
+          "from": "1",
+          "to": "0",
+          "duration": 40,
+          "delay": 1920
+        }
+      ],
+      "duration": 2460
     },
     {
       "continue": true,
@@ -620,7 +805,7 @@
           "script": "window.E(3)"
         }
       ],
-      "duration": 900
+      "duration": 950
     },
     {
       "continue": true,
@@ -631,27 +816,38 @@
       "actions": [
         {
           "type": "evaluate",
-          "script": "window.E(4)"
+          "script": "window.rep(2)"
         }
       ],
-      "overlays": [
+      "duration": 180
+    },
+    {
+      "continue": true,
+      "transition": {
+        "type": "cut",
+        "duration": 0
+      },
+      "actions": [
         {
-          "kind": "typing",
-          "text": "{cls}",
-          "anchor": {
-            "selector": "#rep-cls",
-            "at": "left",
-            "dx": 0
-          },
-          "fontSize": 12.5,
-          "fontFamily": "Menlo",
-          "color": "#e2e8f0",
-          "caret": true,
-          "speed": 24,
-          "jitter": 0.12
+          "type": "evaluate",
+          "script": "window.rep(4)"
         }
       ],
-      "duration": 770
+      "duration": 180
+    },
+    {
+      "continue": true,
+      "transition": {
+        "type": "cut",
+        "duration": 0
+      },
+      "actions": [
+        {
+          "type": "evaluate",
+          "script": "window.rep(5)"
+        }
+      ],
+      "duration": 180
     },
     {
       "continue": true,
@@ -690,27 +886,27 @@
       "actions": [
         {
           "type": "evaluate",
-          "script": "window.scene('browser'); window.hmr(true); window.v2live = true"
+          "script": "window.scene('browser', 'editor'); window.hmr(true); window.v2live = true"
         }
       ],
       "animations": [
         {
           "selector": ".window.browser",
           "property": "transform",
-          "from": "translate(300px, 205px) scale(0.14)",
-          "to": "translate(0px, 0px) scale(1)",
+          "from": "scale(0.12)",
+          "to": "scale(1)",
           "duration": 480,
           "easing": "cubic-bezier(0.645,0.045,0.355,1)",
-          "transformOrigin": "center"
+          "transformOrigin": "92% 90%"
         },
         {
           "selector": ".window.editor",
           "property": "transform",
-          "from": "translate(0px, 0px) scale(1)",
-          "to": "translate(-300px, 175px) scale(0.12)",
+          "from": "scale(1)",
+          "to": "scale(0.12)",
           "duration": 480,
           "easing": "cubic-bezier(0.645,0.045,0.355,1)",
-          "transformOrigin": "center"
+          "transformOrigin": "8% 92%"
         }
       ],
       "duration": 1600
@@ -779,18 +975,8 @@
           "selector": "#counter-btn",
           "property": "scale",
           "from": "0.93",
-          "to": "1",
-          "duration": 250,
-          "easing": "${pop}",
-          "transformOrigin": "center"
-        },
-        {
-          "selector": "#counter-btn",
-          "property": "scale",
-          "from": "1",
           "to": "1.07",
-          "duration": 300,
-          "delay": 260,
+          "duration": 480,
           "easing": "${pop}",
           "transformOrigin": "center"
         }
@@ -835,27 +1021,27 @@
       "actions": [
         {
           "type": "evaluate",
-          "script": "window.scene('end')"
+          "script": "window.scene('end', 'browser')"
         }
       ],
       "animations": [
         {
           "selector": ".window.end",
           "property": "transform",
-          "from": "translate(0px, 195px) scale(0.22)",
-          "to": "translate(0px, 0px) scale(1)",
+          "from": "scale(0.2)",
+          "to": "scale(1)",
           "duration": 520,
           "easing": "${popSoft}",
-          "transformOrigin": "center"
+          "transformOrigin": "50% 95%"
         },
         {
           "selector": ".window.browser",
           "property": "transform",
-          "from": "translate(0px, 0px) scale(1)",
-          "to": "translate(0px, 215px) scale(0.14)",
+          "from": "scale(1)",
+          "to": "scale(0.12)",
           "duration": 480,
           "easing": "cubic-bezier(0.645,0.045,0.355,1)",
-          "transformOrigin": "center"
+          "transformOrigin": "50% 95%"
         }
       ],
       "duration": 3600

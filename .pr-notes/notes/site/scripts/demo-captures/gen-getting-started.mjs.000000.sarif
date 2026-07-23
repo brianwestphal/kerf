@@ -64,6 +64,145 @@
           "branch": "main"
         }
       ]
+    },
+    {
+      "tool": {
+        "driver": {
+          "name": "Hot Sheet",
+          "rules": [
+            {
+              "id": "review-note",
+              "name": "ReviewNote",
+              "shortDescription": {
+                "text": "AI-authored, line-anchored review note."
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "review-note",
+          "ruleIndex": 0,
+          "kind": "informational",
+          "level": "none",
+          "guid": "mrx3zfl8w64w1q75",
+          "message": {
+            "text": "**Why the app-switch glides are pure `scale()` with a directional `transform-origin` (no translate).** Round 2's \"terminal suddenly disappears\" transitions had two stacked causes, both proven from the emitted SVG:\n\n1. **Baked-relative composition.** domotion element animations compose with the transform an element was CAPTURED with. Round 2 parked windows via page CSS, so the outgoing window was captured already-parked and the config's `front → park` tween re-applied the park on top — teleporting it off-stage at the cut. Fix: capture every window untransformed; glides live only in the config.\n\n2. **Cross-frame `cull-N` class collision (domotion bug, filed upstream).** The viewBox culler reads only an animation's *translate* component (scale ignored) against each CHILD's static bbox, and numbers its visibility classes `cull-0, cull-1, …` PER FRAME. With several switch frames emitting windows, later frames' `@keyframes cull-0` clobber earlier frames'. Concretely: frame 10's editor code runs whose right edge sat left of x=250 got an exit-window named `cull-0`, and frame 36's end-card enter-window (visible only from 91.58% of the loop) was ALSO named `cull-0` and won — so \"import\", \"const\", line numbers, and the tab title vanished for the whole session (the missing-text screenshots in the ticket round-3 iteration).\n\nA `scale(1) ↔ scale(0.12)` tween moves no bbox in the culler's translate-only math → zero cull classes emitted (verified: `cull-` count in the final SVG is 0), while `transform-origin: 8% 92%` (etc.) still yields the diagonal shrink-toward-a-corner app-switch path. Windows tuck INSIDE the stage, covered by the opaque front window (z6 over z5), and return from the same corner they exited to.\n",
+            "markdown": "**Why the app-switch glides are pure `scale()` with a directional `transform-origin` (no translate).** Round 2's \"terminal suddenly disappears\" transitions had two stacked causes, both proven from the emitted SVG:\n\n1. **Baked-relative composition.** domotion element animations compose with the transform an element was CAPTURED with. Round 2 parked windows via page CSS, so the outgoing window was captured already-parked and the config's `front → park` tween re-applied the park on top — teleporting it off-stage at the cut. Fix: capture every window untransformed; glides live only in the config.\n\n2. **Cross-frame `cull-N` class collision (domotion bug, filed upstream).** The viewBox culler reads only an animation's *translate* component (scale ignored) against each CHILD's static bbox, and numbers its visibility classes `cull-0, cull-1, …` PER FRAME. With several switch frames emitting windows, later frames' `@keyframes cull-0` clobber earlier frames'. Concretely: frame 10's editor code runs whose right edge sat left of x=250 got an exit-window named `cull-0`, and frame 36's end-card enter-window (visible only from 91.58% of the loop) was ALSO named `cull-0` and won — so \"import\", \"const\", line numbers, and the tab title vanished for the whole session (the missing-text screenshots in the ticket round-3 iteration).\n\nA `scale(1) ↔ scale(0.12)` tween moves no bbox in the culler's translate-only math → zero cull classes emitted (verified: `cull-` count in the final SVG is 0), while `transform-origin: 8% 92%` (etc.) still yields the diagonal shrink-toward-a-corner app-switch path. Windows tuck INSIDE the stage, covered by the opaque front window (z6 over z5), and return from the same corner they exited to.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "site/scripts/demo-captures/gen-getting-started.mjs"
+                },
+                "region": {
+                  "startLine": 49,
+                  "endLine": 70,
+                  "snippet": {
+                    "text": "const __dirname = dirname(fileURLToPath(import.meta.url));\n\nconst CUT = { type: 'cut', duration: 0 };\n\n// --- app-switch glides (baked-relative: all windows captured at front) ----\n// Pure scale() tweens; the transform-origin picks the corner the window\n// shrinks toward / grows from, giving the diagonal app-switch path with no\n// translate for the viewBox culler to act on (see rule 2 above). A window\n// RETURNS from the same corner it tucked into.\nconst FRONT = 'scale(1)';\nconst TUCK = 'scale(0.12)';\nconst ORIGIN_BL = '8% 92%';    // editor + terminal tuck: bottom-left\nconst ORIGIN_BR = '92% 90%';   // browser tuck: bottom-right\nconst ORIGIN_B = '50% 95%';    // new-window pops: bottom-center\nconst EASE_SWITCH = 'cubic-bezier(0.645,0.045,0.355,1)';\nconst glide = (selector, from, to, origin, opts = {}) => ({\n  selector,\n  property: 'transform',\n  from,\n  to,\n  duration: opts.duration ?? 480,\n  easing: opts.easing ?? EASE_SWITCH,"
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "tags": [
+              "rationale"
+            ]
+          },
+          "workItemUris": [
+            "KF-371"
+          ],
+          "partialFingerprints": {
+            "prNoteAnchor/v1": "dcf3b5199311f04f7586f90a8ce2b6d7"
+          }
+        },
+        {
+          "ruleId": "review-note",
+          "ruleIndex": 0,
+          "kind": "informational",
+          "level": "none",
+          "guid": "mrx3zfs2nf16pvhf",
+          "message": {
+            "text": "**One animation per element per frame.** `data-domotion-anim` is a single attribute set per matched element, so a frame's second `animations` entry on the same selector silently overwrites the first (round 2's click-5 frame lost its click-dip pop this way — `anim-f28a0` was absent from the emitted SVG while `f28a1` was present). The click-5 frame now uses ONE merged pop (0.93 → 1.07). The tags also persist on the live page into every later frame's capture; that persistence is load-bearing here — it is what holds a tucked window at its parked scale for the rest of the session.",
+            "markdown": "**One animation per element per frame.** `data-domotion-anim` is a single attribute set per matched element, so a frame's second `animations` entry on the same selector silently overwrites the first (round 2's click-5 frame lost its click-dip pop this way — `anim-f28a0` was absent from the emitted SVG while `f28a1` was present). The click-5 frame now uses ONE merged pop (0.93 → 1.07). The tags also persist on the live page into every later frame's capture; that persistence is load-bearing here — it is what holds a tucked window at its parked scale for the rest of the session."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "site/scripts/demo-captures/gen-getting-started.mjs"
+                },
+                "region": {
+                  "startLine": 148,
+                  "endLine": 152,
+                  "snippet": {
+                    "text": "    { type: 'wait', ms: 120 },\n  ],\n  animations: [\n    // NOTE: one animation per element per frame — a second entry targeting\n    // #counter-btn would overwrite the first's data-domotion-anim tag."
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "tags": [
+              "assumption"
+            ]
+          },
+          "workItemUris": [
+            "KF-371"
+          ],
+          "partialFingerprints": {
+            "prNoteAnchor/v1": "b0172aba6f485464314980a3ee0495b5"
+          }
+        },
+        {
+          "ruleId": "review-note",
+          "ruleIndex": 0,
+          "kind": "informational",
+          "level": "none",
+          "guid": "mrx3zolmiqj13999",
+          "message": {
+            "text": "**Push-typing is page-driven per-2-char frames, not overlays.** The mid-line edits (` computed,` into the import; `\"btn\"` → `{cls}`) must SHIFT the text right of the caret as characters land — a typing overlay paints on top of a static capture and cannot reflow it, which is exactly the round-3 'edits overlay rather than push' complaint. Considered domotion's `typeResample` (real per-keystroke re-capture) but it only drives form fields (input/textarea), not rich syntax-colored markup. So `window.ins(k)`/`window.rep(k)` re-render the real line with k plain characters inserted + a block caret, one cut frame per 2 chars (~85 ms/char — brisk real typing). Cost: 8 extra frames ≈ nothing after gzip (the whole 37-frame SVG gzips to ~68 KB, smaller than round 2's 31-frame ~95 KB because glyph dedup compresses repeated editor states well). A domotion feature ticket for first-class rich-text display/editing (the general fix) is filed in the domotion Hot Sheet.",
+            "markdown": "**Push-typing is page-driven per-2-char frames, not overlays.** The mid-line edits (` computed,` into the import; `\"btn\"` → `{cls}`) must SHIFT the text right of the caret as characters land — a typing overlay paints on top of a static capture and cannot reflow it, which is exactly the round-3 'edits overlay rather than push' complaint. Considered domotion's `typeResample` (real per-keystroke re-capture) but it only drives form fields (input/textarea), not rich syntax-colored markup. So `window.ins(k)`/`window.rep(k)` re-render the real line with k plain characters inserted + a block caret, one cut frame per 2 chars (~85 ms/char — brisk real typing). Cost: 8 extra frames ≈ nothing after gzip (the whole 37-frame SVG gzips to ~68 KB, smaller than round 2's 31-frame ~95 KB because glyph dedup compresses repeated editor states well). A domotion feature ticket for first-class rich-text display/editing (the general fix) is filed in the domotion Hot Sheet."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "site/scripts/demo-captures/gen-getting-started.mjs"
+                },
+                "region": {
+                  "startLine": 156,
+                  "endLine": 164,
+                  "snippet": {
+                    "text": "});\n\n// Page-driven push-typing: k chars landed via window.ins/rep — REAL page\n// text, so everything right of the caret genuinely shifts. ~2 chars per\n// frame reads as brisk real typing at these durations.\nconst pushFrame = (script, dur = 170) => ({\n  continue: true,\n  transition: CUT,\n  actions: [{ type: 'evaluate', script }],"
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "tags": [
+              "alternative-considered"
+            ]
+          },
+          "workItemUris": [
+            "KF-371"
+          ],
+          "partialFingerprints": {
+            "prNoteAnchor/v1": "238afa63b0fd8cccd8a52779129bfaf1"
+          }
+        }
+      ],
+      "versionControlProvenance": [
+        {
+          "repositoryUri": "git@github.com:brianwestphal/kerf.git",
+          "revisionId": "c0c87d557ec368598170b75b193f269280d5bc87",
+          "branch": "main"
+        }
+      ]
     }
   ]
 }

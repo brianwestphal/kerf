@@ -140,6 +140,69 @@
           "branch": "main"
         }
       ]
+    },
+    {
+      "tool": {
+        "driver": {
+          "name": "Hot Sheet",
+          "rules": [
+            {
+              "id": "review-note",
+              "name": "ReviewNote",
+              "shortDescription": {
+                "text": "AI-authored, line-anchored review note."
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "review-note",
+          "ruleIndex": 0,
+          "kind": "informational",
+          "level": "none",
+          "guid": "mrx3z1a52p2xl7vh",
+          "message": {
+            "text": "**Why a cover rect instead of a hidden underlay (round 3 typing fix).** The round-2 approach — typing overlay over an empty slot, next frame swaps the colored line in — had two visible defects the maintainer flagged: domotion fades every typing overlay out starting 150 ms before its frame ends (hardcoded `disappearGap` in `renderTypingOverlay`), and the overlay baseline sat ~4 px above the swapped-in line. The fix renders every typed line as REAL page text from frame start with a background-colored cover over it, faded out by a config animation the moment typing completes.\n\nTwo designs were tried and rejected with rendered-pixel proof (`svg-to-image` probes):\n- `opacity: 0` underlay → the element is dropped entirely at render (`element-tree-to-svg`: `if (opacity === 0) return`), so it can't be animated back in.\n- `opacity: 0.01` underlay + opacity animation → the captured opacity is baked onto a *parent* `<g opacity=\"0\">` wrapper; the animation class lands INSIDE that wrapper, so the animated opacity multiplies against it and the text never appears.\n\nThe cover is captured fully opaque (no wrapper) and animated 1→0 — verified seamless: probes at t=1700 (overlay typed), t=2000 (overlay fading over revealed underlay), t=2100 (underlay only) show the line continuously present, and pixel cross-correlation of the overlay frame vs the revealed-underlay frame measures (0, 0) offset at `BASELINE_DY = 11.5`.\n",
+            "markdown": "**Why a cover rect instead of a hidden underlay (round 3 typing fix).** The round-2 approach — typing overlay over an empty slot, next frame swaps the colored line in — had two visible defects the maintainer flagged: domotion fades every typing overlay out starting 150 ms before its frame ends (hardcoded `disappearGap` in `renderTypingOverlay`), and the overlay baseline sat ~4 px above the swapped-in line. The fix renders every typed line as REAL page text from frame start with a background-colored cover over it, faded out by a config animation the moment typing completes.\n\nTwo designs were tried and rejected with rendered-pixel proof (`svg-to-image` probes):\n- `opacity: 0` underlay → the element is dropped entirely at render (`element-tree-to-svg`: `if (opacity === 0) return`), so it can't be animated back in.\n- `opacity: 0.01` underlay + opacity animation → the captured opacity is baked onto a *parent* `<g opacity=\"0\">` wrapper; the animation class lands INSIDE that wrapper, so the animated opacity multiplies against it and the text never appears.\n\nThe cover is captured fully opaque (no wrapper) and animated 1→0 — verified seamless: probes at t=1700 (overlay typed), t=2000 (overlay fading over revealed underlay), t=2100 (underlay only) show the line continuously present, and pixel cross-correlation of the overlay frame vs the revealed-underlay frame measures (0, 0) offset at `BASELINE_DY = 11.5`.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "site/scripts/demo-captures/pages/getting-started/index.html"
+                },
+                "region": {
+                  "startLine": 30,
+                  "endLine": 45,
+                  "snippet": {
+                    "text": "      fades the cover out the moment the domotion typing overlay finishes.\n      The overlay types the IDENTICAL text in the IDENTICAL font at the\n      IDENTICAL baseline, so when the overlay fades out (domotion always\n      fades a typing overlay ~150 ms before its frame ends — not\n      configurable), the real line is already showing underneath and the\n      handoff is invisible. The next frame swaps the plain line for its\n      syntax-colored form in place (same glyph geometry — reads as the\n      tokenizer catching up). A cover, not a hidden underlay, because\n      domotion cannot animate a captured-invisible element back in\n      (opacity-0 elements are dropped at render; captured opacity < 1 is\n      baked onto a parent wrapper the animation can't override).\n\n      Mid-line edits (the ` computed,` insert and the \"btn\" → {cls}\n      replacement) are page-driven per-2-char snapshots instead (window.ins /\n      window.rep) so the text to the right of the caret genuinely shifts as\n      characters land, like a real editor. Typing overlays can't do that —"
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "tags": [
+              "rationale"
+            ]
+          },
+          "workItemUris": [
+            "KF-371"
+          ],
+          "partialFingerprints": {
+            "prNoteAnchor/v1": "6934b08cfd0ed640d94ab26dd4b6c0a9"
+          }
+        }
+      ],
+      "versionControlProvenance": [
+        {
+          "repositoryUri": "git@github.com:brianwestphal/kerf.git",
+          "revisionId": "c0c87d557ec368598170b75b193f269280d5bc87",
+          "branch": "main"
+        }
+      ]
     }
   ]
 }

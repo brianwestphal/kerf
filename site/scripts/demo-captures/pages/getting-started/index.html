@@ -7,20 +7,53 @@
       Static capture page for the animated end-to-end coding session on the
       Getting-started docs page + README.
 
-      All four "windows" (editor / terminal / browser / end card) stay in the
-      DOM at all times, each carrying a data-magic-key; scenes are per-window
-      transform states keyed off body[data-scene]. Scene changes are captured
-      with magic-move transitions, so windows glide/scale between their front
-      and parked positions like a user switching apps — no page JS animation.
+      WINDOW TRANSFORMS — the baked-relative rule (round 3 learning):
+      domotion element animations COMPOSE with the transform each element was
+      captured with (the "baked" state). So every window is captured
+      UNTRANSFORMED (front position); the app-switch glides live entirely in
+      the capture config's animations — pure scale() tweens whose directional
+      transform-origin gives the shrink-toward-a-corner switch path, with
+      tucked windows landing INSIDE the stage covered by the opaque front
+      window. (Round 2 parked windows via page CSS and animated in page-CSS
+      space — the outgoing window's park transform was then double-applied on
+      top of its baked park, teleporting it offscreen at the cut. Never park
+      windows in page CSS; see gen-getting-started.mjs rule 2 for why the
+      glides must also avoid translate components entirely.)
+
+      Stacking is per-scene z-index only: the front window rides z6, the
+      window exiting during a switch rides z5 (body[data-out=…]), everything
+      else sits at z2 underneath the opaque desktop backdrop (z3).
+
+      TYPED TEXT — the underlay contract: every "typed" line is REAL page
+      text present (fully opaque) from its frame's start (span #Lc<row> in
+      the editor, #term-cmd in the terminal), hidden by a background-colored
+      COVER rect (#Cv<row> / #term-cov) painted over it; a config animation
+      fades the cover out the moment the domotion typing overlay finishes.
+      The overlay types the IDENTICAL text in the IDENTICAL font at the
+      IDENTICAL baseline, so when the overlay fades out (domotion always
+      fades a typing overlay ~150 ms before its frame ends — not
+      configurable), the real line is already showing underneath and the
+      handoff is invisible. The next frame swaps the plain line for its
+      syntax-colored form in place (same glyph geometry — reads as the
+      tokenizer catching up). A cover, not a hidden underlay, because
+      domotion cannot animate a captured-invisible element back in
+      (opacity-0 elements are dropped at render; captured opacity < 1 is
+      baked onto a parent wrapper the animation can't override).
+
+      Mid-line edits (the ` computed,` insert and the "btn" → {cls}
+      replacement) are page-driven per-2-char snapshots instead (window.ins /
+      window.rep) so the text to the right of the caret genuinely shifts as
+      characters land, like a real editor. Typing overlays can't do that —
+      they paint over the captured frame.
 
       The capture config drives everything through small window.* helpers:
-        scene(name)          — switch scene state
+        scene(name, out)     — switch scene; `out` = the window gliding away
         S(i)                 — editor snapshot i of the v1 typing progression
         E(i)                 — editor snapshot i of the v2 edit progression
-        term(n)              — reveal first n terminal lines
-        clickCounter()       — (bound to real button; config clicks it)
-      Editor "typing" is domotion typing overlays anchored to empty line spans;
-      the following frame swaps in the syntax-colored line.
+        ins(k)               — k chars of ' computed,' inserted into line 1
+        rep(k)               — k chars of '{cls}' replacing the "btn" selection
+        term(n) / termCmd(s) — reveal first n terminal lines / set the command
+        lt(on)               — show/hide the edit-explainer lower third
     -->
     <style>
       * { box-sizing: border-box; }
@@ -35,48 +68,27 @@
         background: #fff;
       }
 
-      /* ---- scene states: every window has a transform in every scene ----
-         Parked windows stay INSIDE the viewport (small scale, fully tucked
-         under the opaque 724x524 front window so they serialize but never
-         show). The app-switch glides are NOT CSS transitions — each switch
-         frame is a hard cut whose capture config animates the two windows'
-         `transform` from the previous scene's value to this scene's value
-         (see gen-getting-started.mjs SWITCHES), giving the scale+path
-         "switching apps" motion deterministically. Park positions therefore
-         define each window's entry/exit path direction and MUST stay in sync
-         with the from/to transforms in the gen script. */
-      /* The desktop backdrop sits ABOVE parked windows (z 3) and BELOW any
-         window participating in the current scene, so parked windows stay
-         serialized but invisible; only the entering (z 6) and exiting (z 5)
-         windows of a switch ever show over it. */
+      /* ---- stacking: all windows are captured UNTRANSFORMED (see the
+         baked-relative rule in the header comment). Front window z6, the
+         exiting window of the current switch z5, everything else z2 under
+         the opaque desktop backdrop (z3). ---- */
       .desktop { position: absolute; inset: 0; background: #e8eaee; z-index: 3; }
-      /* front */
+      .window { z-index: 2; }
       body[data-scene='editor']   .window.editor,
       body[data-scene='terminal'] .window.terminal,
       body[data-scene='browser']  .window.browser,
-      body[data-scene='end']      .window.end { transform: translate(0, 0) scale(1); z-index: 6; }
-      /* parked defaults (under the desktop backdrop) */
-      .window.editor   { transform: translate(-300px, 175px) scale(0.12); z-index: 2; } /* left  → exits/returns via bottom-left */
-      .window.terminal { transform: translate(300px, 175px) scale(0.12); z-index: 2; }  /* right → enters from bottom-right */
-      .window.browser  { transform: translate(0px, 215px) scale(0.14); z-index: 2; }    /* bottom-center → pops up + grows like a new window */
+      body[data-scene='end']      .window.end { z-index: 6; }
+      body[data-out='editor']   .window.editor   { z-index: 5; }
+      body[data-out='terminal'] .window.terminal { z-index: 5; }
+      body[data-out='browser']  .window.browser  { z-index: 5; }
+      body[data-scene='editor'] .window.editor { z-index: 6; } /* front beats a stale data-out */
       /* display:none until its scene — serializing the parked end card in
          every earlier frame made the optimizer collide its font subset with
          other frames' (the wordmark rendered with overlapping glyphs). It only
-         needs to exist in the final frame, where its glide animates from the
-         park transform anyway. */
-      .window.end      { transform: translate(0, 195px) scale(0.22); z-index: 1; display: none; }
+         needs to exist in the final frame, where it glides in from offscreen
+         via the capture config anyway. */
+      .window.end { display: none; background: #0f172a; align-items: center; justify-content: flex-start; }
       body[data-scene='end'] .window.end { display: flex; }
-      /* the window EXITING in each scene rides above the desktop while it glides out */
-      body[data-scene='terminal'] .window.editor { z-index: 5; }
-      body[data-scene='browser']  .window.terminal { z-index: 5; }
-      body[data-scene='browser']  .window.editor { z-index: 5; }
-      body[data-scene='editor'][data-visited='1'] .window.browser { z-index: 5; }
-      body[data-scene='end'] .window.browser { z-index: 5; }
-      /* after the browser opens, the terminal parks left (it exited stage-left) */
-      body[data-scene='browser'] .window.terminal,
-      body[data-scene='end'] .window.terminal { transform: translate(-300px, 205px) scale(0.10); }
-      /* when we return to the editor, the browser parks right (slides back out) */
-      body[data-scene='editor'][data-visited='1'] .window.browser { transform: translate(300px, 205px) scale(0.14); }
 
       .titlebar {
         height: 34px; flex: none; display: flex; align-items: center; gap: 8px;
@@ -107,8 +119,16 @@
       .tag { color: #f9a8d4; } .attr { color: #7dd3fc; } .hole { color: #fbbf24; }
       .sel { background: #3b82f6aa; border-radius: 2px; }
       .caret { display: inline-block; width: 7px; height: 14px; background: #e2e8f0; vertical-align: -2px; }
-      /* empty typing-anchor slots need a real box for overlay anchoring */
-      [id^='Lc'], #ins-imp, #rep-cls, #term-cmd { display: inline-block; height: 15px; min-width: 1px; vertical-align: -3px; }
+      /* underlay lines (see the underlay contract above): the real text is
+         captured FULLY OPAQUE with an editor-background cover rect painted
+         over it; the config animates the COVER's opacity 1 → 0 the moment
+         the typing overlay finishes. The cover — not a hidden underlay —
+         because domotion can't animate a captured-invisible element back in:
+         opacity:0 elements are dropped at render (`if (opacity === 0)
+         return`), and any captured opacity < 1 is baked onto a PARENT
+         wrapper group that an animation on the element cannot override. */
+      .tw { position: relative; flex: 1; }
+      .tw .cover { position: absolute; inset: 0 0 0 -2px; background: #1e293b; }
 
       /* --- terminal --------------------------------------------------- */
       .window.terminal { background: #0f172a; }
@@ -120,6 +140,9 @@
       .t-dim { color: #64748b; } .t-green { color: #4ade80; } .t-cyan { color: #22d3ee; }
       .t-vite { color: #a78bfa; font-weight: 600; }
       #local-link { color: #22d3ee; text-decoration: underline; cursor: pointer; }
+      /* the typed command's cover — same trick as the editor's .tw .cover */
+      .twi { position: relative; display: inline-block; }
+      .twi .cover { position: absolute; left: -2px; top: -1px; height: 21px; width: 320px; background: #0f172a; }
 
       /* --- browser ---------------------------------------------------- */
       .browser .titlebar { background: #f1f5f9; border-bottom: 1px solid #e2e8f0; }
@@ -143,41 +166,50 @@
       }
       .btn.hot { background: #ea580c; box-shadow: 0 2px 14px #ea580c66; }
 
-      /* --- end card ---------------------------------------------------- */
-      /* content pushed below y≈240: the capture's simulated cursor stays
-         parked at the last counter-click spot (~380,224), so the space above
-         the wordmark is deliberately empty for it. */
-      .window.end { background: #0f172a; align-items: center; justify-content: flex-start; }
-      .endcard { text-align: center; color: #e2e8f0; padding-top: 250px; }
-      /* Menlo, not system-ui bold @44px: domotion's multi-frame font
-         subsetting renders that face with overlapping glyphs (single-frame
-         captures are fine); Menlo is exercised at many sizes across the whole
-         session and stays clean — and suits the dev-tool theme anyway. */
-      .endcard .mark { font-size: 40px; font-weight: 700; font-family: Menlo, ui-monospace, monospace; }
-      .endcard .cut { color: #64748b; font-size: 15px; margin-top: 2px; font-style: italic; }
-      .endcard .install {
-        margin-top: 26px; font-family: Menlo, ui-monospace, monospace;
-        font-size: 16px; background: #1e293b; border: 1px solid #334155;
-        border-radius: 8px; padding: 12px 26px; display: inline-block;
+      /* --- lower third (edit-scene explainer) -------------------------- */
+      /* Sits over the bottom edge of the stage, above every window (z7).
+         Gated by data-lt; hidden again on the end card. The WRAPPER does the
+         centering (flex) and carries no transform, so the config's slide-in
+         animation on it composes from identity (the baked-relative rule). */
+      .ltwrap {
+        position: absolute; left: 0; right: 0; bottom: 12px; z-index: 7;
+        display: none; justify-content: center; pointer-events: none;
       }
-      .endcard .install .t-dim { color: #64748b; }
-      .endcard .sub { margin-top: 16px; font-size: 13px; color: #94a3b8; }
+      body[data-lt='1'] .ltwrap { display: flex; }
+      body[data-scene='end'] .ltwrap { display: none; }
+      .lt {
+        white-space: nowrap;
+        background: #0f172af2; color: #e2e8f0; border: 1px solid #334155;
+        border-radius: 999px; padding: 8px 18px; font-size: 12px;
+        box-shadow: 0 6px 24px rgba(15, 23, 42, 0.45);
+      }
+      .lt code {
+        font-family: Menlo, ui-monospace, monospace; font-size: 11px;
+        color: #fbbf24; background: #1e293b; border-radius: 4px; padding: 1px 5px;
+      }
     </style>
   </head>
   <body data-scene="editor">
     <div class="desktop"></div>
     <!-- ============ end card (bottom of stack) ============ -->
-    <div class="window end" data-magic-key="win-end">
-      <div class="endcard">
-        <div class="mark">kerf</div>
-        <div class="cut">The smallest cut.</div>
-        <div class="install"><span class="t-dim">$</span> npm install kerfjs</div>
-        <div class="sub">~11 KB · no virtual DOM · no compiler · your existing build (or none at all)</div>
+    <div class="window end">
+      <!-- content pushed below y≈240: the capture's simulated cursor stays
+           parked at the last counter-click spot (~380,224), so the space above
+           the wordmark is deliberately empty for it. -->
+      <div class="endcard" style="text-align:center;color:#e2e8f0;padding-top:250px;">
+        <!-- Menlo, not system-ui bold @44px: domotion's multi-frame font
+             subsetting renders that face with overlapping glyphs (single-frame
+             captures are fine); Menlo is exercised at many sizes across the
+             whole session and stays clean — and suits the dev-tool theme. -->
+        <div class="mark" style="font-size:40px;font-weight:700;font-family:Menlo,ui-monospace,monospace;">kerf</div>
+        <div class="cut" style="color:#64748b;font-size:15px;margin-top:2px;font-style:italic;">The smallest cut.</div>
+        <div class="install" style="margin-top:26px;font-family:Menlo,ui-monospace,monospace;font-size:16px;background:#1e293b;border:1px solid #334155;border-radius:8px;padding:12px 26px;display:inline-block;"><span class="t-dim">$</span> npm install kerfjs</div>
+        <div class="sub" style="margin-top:16px;font-size:13px;color:#94a3b8;">~11 KB · no virtual DOM · no compiler · your existing build (or none at all)</div>
       </div>
     </div>
 
     <!-- ============ browser ============ -->
-    <div class="window browser" data-magic-key="win-browser">
+    <div class="window browser">
       <div class="titlebar"><span class="dots"><i></i><i></i><i></i></span><span class="urlbar">localhost:5173</span></div>
       <div class="page">
         <div class="appwrap"><button class="btn" id="counter-btn">Clicked 0 times</button></div>
@@ -186,17 +218,20 @@
     </div>
 
     <!-- ============ terminal ============ -->
-    <div class="window terminal" data-magic-key="win-terminal">
+    <div class="window terminal">
       <div class="titlebar"><span class="dots"><i></i><i></i><i></i></span><span class="title">my-app — zsh</span></div>
       <div class="termarea" id="term"></div>
     </div>
 
     <!-- ============ editor (top when front) ============ -->
-    <div class="window editor" data-magic-key="win-editor">
+    <div class="window editor">
       <div class="titlebar"><span class="dots"><i></i><i></i><i></i></span><span class="title">my-app — Visual Studio Code</span></div>
       <div class="tabbar"><span class="tab">app.tsx<span class="dot">●</span></span></div>
       <div class="codearea" id="code"></div>
     </div>
+
+    <!-- ============ lower third ============ -->
+    <div class="ltwrap"><div class="lt">The change: <code>cls = computed(…)</code> bound as <code>class={cls}</code> → the button turns hot at 5 clicks. No reload, no re-render.</div></div>
 
     <script>
       const K = (s) => `<span class="kw">${s}</span>`;
@@ -205,77 +240,124 @@
       const A = (s) => `<span class="attr">${s}</span>`;
       const H = (s) => `<span class="hole">${s}</span>`;
       const N = (s) => `<span class="num">${s}</span>`;
+      const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      const CARET = '<span class="caret"></span>';
 
       // --- v1 program, syntax-colored, one entry per line -----------------
       const L1  = `${K('import')} { signal, mount, delegate } ${K('from')} ${S_("'kerfjs'")};`;
       const L3  = `${K('const')} count = signal(${N('0')});`;
       const L4  = `${K('const')} root = document.getElementById(${S_("'app'")})!;`;
       const L6  = `mount(root, () ${K('=>')} (`;
-      const L7  = `  &lt;${T('button')} <span id="cls-attr">${A('class')}=${S_('"btn"')}</span> ${A('data-action')}=${S_('"inc"')}&gt;`;
+      const L7  = `  &lt;${T('button')} ${A('class')}=${S_('"btn"')} ${A('data-action')}=${S_('"inc"')}&gt;`;
       const L8  = `    Clicked ${H('{count}')} times`;
       const L9  = `  &lt;/${T('button')}&gt;`;
       const L10 = `));`;
       const L12 = `delegate(root, ${S_("'click'")}, ${S_('\'[data-action="inc"]\'')}, () ${K('=>')} count.value++);`;
 
       // --- the v2 edit pieces --------------------------------------------
-      const L1v2 = `${K('import')} { signal,<span id="ins-imp"></span> mount, delegate } ${K('from')} ${S_("'kerfjs'")};`;
       const L1v2done = `${K('import')} { signal, computed, mount, delegate } ${K('from')} ${S_("'kerfjs'")};`;
       const LCLS = `${K('const')} cls = computed(() ${K('=>')} count.value &gt;= ${N('5')} ? ${S_("'btn hot'")} : ${S_("'btn'")});`;
       const L7sel  = `  &lt;${T('button')} ${A('class')}=<span class="sel">${S_('"btn"')}</span> ${A('data-action')}=${S_('"inc"')}&gt;`;
-      const L7hole = `  &lt;${T('button')} ${A('class')}=<span id="rep-cls"></span> ${A('data-action')}=${S_('"inc"')}&gt;`;
       const L7v2   = `  &lt;${T('button')} ${A('class')}=${H('{cls}')} ${A('data-action')}=${S_('"inc"')}&gt;`;
 
-      // A doc is an array of [html, flags]; flags: 'empty' renders an empty
-      // typing anchor (<span id=Lc>), 'new' highlights the line, 'caret'
-      // appends a caret.
-      const el = (html) => html;
+      // A doc is an array of [html, flags]; flags:
+      //   'type'  — the row is an UNDERLAY: real plain text (escaped) in
+      //             <span id="Lc<row>"> (the typing overlay's anchor) with a
+      //             <span class="cover" id="Cv<row>"> painted over it for the
+      //             config's reveal animation to fade out
+      //   'new'   — highlight the line (freshly landed)
+      //   'caret' — append a block caret
       function render(doc) {
         document.getElementById('code').innerHTML = doc
           .map((entry, i) => {
             const [html, flags = ''] = Array.isArray(entry) ? entry : [entry];
-            const anchor = flags.includes('empty') ? `<span id="Lc${i + 1}"></span>` : html;
-            const caret = flags.includes('caret') ? '<span class="caret"></span>' : '';
+            const type = flags.includes('type');
+            const body = type
+              ? `<span id="Lc${i + 1}">${esc(html)}</span><span class="cover" id="Cv${i + 1}"></span>`
+              : html;
+            const caret = flags.includes('caret') ? CARET : '';
             const cls = flags.includes('new') ? ' ln-new' : '';
-            return `<div class="ln${cls}"><span class="no">${i + 1}</span><span>${anchor}${caret}</span></div>`;
+            return `<div class="ln${cls}"><span class="no">${i + 1}</span><span${type ? ' class="tw"' : ''}>${body}${caret}</span></div>`;
           })
           .join('');
       }
 
-      // --- v1 typing snapshots: each S(i) leaves line i's slot EMPTY with an
-      // anchor so the config's typing overlay lands on it; S(i+1) swaps the
-      // real colored line in and empties the next slot.
-      const D = (...rows) => rows;
-      const V1SNAPS = [
-        D(['', 'empty']),                                                     // S0: about to type L1
-        D(L1, '', ['', 'empty']),                                             // S1: L1 done; typing L3
-        D(L1, '', L3, ['', 'empty']),                                         // S2: typing L4
-        D(L1, '', L3, L4, '', ['', 'empty']),                                 // S3: typing L6
-        D(L1, '', L3, L4, '', L6, ['', 'empty']),                             // S4: typing L7
-        D(L1, '', L3, L4, '', L6, L7, ['', 'empty']),                         // S5: typing L8
-        D(L1, '', L3, L4, '', L6, L7, L8, ['', 'empty']),                     // S6: typing L9
-        D(L1, '', L3, L4, '', L6, L7, L8, L9, ['', 'empty']),                 // S7: typing L10
-        D(L1, '', L3, L4, '', L6, L7, L8, L9, L10, '', ['', 'empty']),        // S8: typing L12
-        D(L1, '', L3, L4, '', L6, L7, L8, L9, L10, '', [L12, 'caret']),       // S9: v1 complete
-        D(L1, '', L3, L4, '', L6, L7, L8, L9, L10, '', L12),                  // S10: settled
+      // --- v1 typing snapshots: S(i) shows lines < i colored and line i as a
+      // full plain-text underlay (opacity 0) for the overlay to type over;
+      // S(i+1) swaps the real colored line in and opens the next underlay.
+      const P1 = [
+        // [row (1-based), plain text (what the overlay types), colored form]
+        [1,  "import { signal, mount, delegate } from 'kerfjs';", L1],
+        [3,  'const count = signal(0);', L3],
+        [4,  "const root = document.getElementById('app')!;", L4],
+        [6,  'mount(root, () => (', L6],
+        [7,  '  <button class="btn" data-action="inc">', L7],
+        [8,  '    Clicked {count} times', L8],
+        [9,  '  </button>', L9],
+        [10, '));', L10],
+        [12, "delegate(root, 'click', '[data-action=\"inc\"]', () => count.value++);", L12],
       ];
-      window.S = (i) => render(V1SNAPS[i]);
+      function v1snap(i) {
+        // rows 1..row(i) with lines < i colored, line i underlay
+        const doc = [];
+        for (let k = 0; k <= i && k < P1.length; k++) {
+          const [row, plain, colored] = P1[k];
+          while (doc.length < row - 1) doc.push('');
+          doc.push(k < i ? colored : [plain, 'type']);
+        }
+        return doc;
+      }
+      window.S = (i) => {
+        if (i === 9) { const d = v1snap(9); d[11] = [L12 + CARET]; render(d); return; } // complete + caret
+        if (i === 10) { render(v1snap(10)); return; }                                    // settled
+        render(v1snap(i));
+      };
 
-      // --- v2 edit snapshots ---------------------------------------------
-      const E0 = D(L1v2, '', L3, L4, '', L6, L7, L8, L9, L10, '', L12);                    // caret in import, anchor #ins-imp
-      const E1 = D(L1v2done, '', L3, ['', 'empty'], L4, '', L6, L7, L8, L9, L10, '', L12); // import done; new line 4 open, typing cls
-      const E2 = D(L1v2done, '', L3, [LCLS, 'new'], L4, '', L6, L7, L8, L9, L10, '', L12); // cls line landed
-      const E3 = D(L1v2done, '', L3, LCLS, L4, '', L6, L7sel, L8, L9, L10, '', L12);       // "btn" selected
-      const E4 = D(L1v2done, '', L3, LCLS, L4, '', L6, L7hole, L8, L9, L10, '', L12);      // selection deleted, typing {cls} at #rep-cls
-      const E5 = D(L1v2done, '', L3, LCLS, L4, '', L6, [L7v2, 'new'], L8, L9, L10, '', L12); // hole landed
-      const E6 = D(L1v2done, '', L3, LCLS, L4, '', L6, L7v2, L8, L9, L10, '', L12);        // settled
-      const ESNAPS = [E0, E1, E2, E3, E4, E5, E6];
+      // --- v2 edit ---------------------------------------------------------
+      // Base rows for the edit phase (v1 program, line 1 import being edited,
+      // line 4 opens for the cls line, 13 rows total once inserted).
+      const INS = ' computed,';   // typed into the import after `signal,`
+      const REP = '{cls}';        // typed over the "btn" selection
+      // ins(k): k chars of INS landed mid-line — REAL text, so ` mount, …`
+      // visibly shifts right as characters arrive (flags-free row: hand-built).
+      window.ins = (k) => {
+        const typed = esc(INS.slice(0, k));
+        const row1 = `${K('import')} { signal,${typed}${k < INS.length ? CARET : ''} mount, delegate } ${K('from')} ${S_("'kerfjs'")};`;
+        render([[row1], '', L3, L4, '', L6, L7, L8, L9, L10, '', L12]);
+      };
+      // E snapshots around the insert/replace:
+      //   E1 — import colorized; new line 4 open as an underlay for LCLS
+      //   E2 — cls line landed (highlight)  E3 — "btn" selected (hold)
+      //   E5 — {cls} landed (highlight)     E6 — settled
+      const CLS_PLAIN = "const cls = computed(() => count.value >= 5 ? 'btn hot' : 'btn');";
+      const E1 = [L1v2done, '', L3, [CLS_PLAIN, 'type'], L4, '', L6, L7, L8, L9, L10, '', L12];
+      const E2 = [L1v2done, '', L3, [LCLS, 'new'], L4, '', L6, L7, L8, L9, L10, '', L12];
+      const E3 = [L1v2done, '', L3, LCLS, L4, '', L6, L7sel, L8, L9, L10, '', L12];
+      const E5 = [L1v2done, '', L3, LCLS, L4, '', L6, [L7v2, 'new'], L8, L9, L10, '', L12];
+      const E6 = [L1v2done, '', L3, LCLS, L4, '', L6, L7v2, L8, L9, L10, '', L12];
+      const ESNAPS = { 1: E1, 2: E2, 3: E3, 5: E5, 6: E6 };
       window.E = (i) => render(ESNAPS[i]);
+      // rep(k): k chars of REP typed in place of the selection — the rest of
+      // the line has already snapped left (selection replaced) and shifts
+      // right again as {cls} lands.
+      window.rep = (k) => {
+        const typed = esc(REP.slice(0, k));
+        const row7 = `  &lt;${T('button')} ${A('class')}=${typed}${k < REP.length ? CARET : ''} ${A('data-action')}=${S_('"inc"')}&gt;`;
+        render([L1v2done, '', L3, LCLS, L4, '', L6, [row7], L8, L9, L10, '', L12]);
+      };
 
       /* ---------- terminal ---------- */
+      // The command is an underlay like the editor lines: real opaque text
+      // from the frame's start with a terminal-background cover over it; the
+      // config fades the cover out when the typing overlay finishes. The
+      // cover only exists while the command is being typed (termShown === 1).
       let termCmdText = '';
       let termShown = 0;
       const termLines = () => [
-        `<span class="t-dim">~/my-app</span> <span class="t-green">$</span> <span id="term-cmd">${termCmdText}</span>`,
+        `<span class="t-dim">~/my-app</span> <span class="t-green">$</span> ` +
+          (termShown > 1
+            ? `<span id="term-cmd">${termCmdText}</span>`
+            : `<span class="twi"><span id="term-cmd">${termCmdText}</span><span class="cover" id="term-cov"></span></span>`),
         ``,
         `  <span class="t-vite">VITE v6.0.3</span>  <span class="t-green">ready in 213 ms</span>`,
         ``,
@@ -289,9 +371,12 @@
       window.termCmd = (cmd) => { termCmdText = cmd; termRender(); };
 
       /* ---------- scene + mock app ---------- */
-      window.scene = (s) => { document.body.dataset.scene = s; };
-      window.visited = () => { document.body.dataset.visited = '1'; };
+      window.scene = (s, out) => {
+        document.body.dataset.scene = s;
+        if (out) document.body.dataset.out = out; else delete document.body.dataset.out;
+      };
       window.hmr = (on) => { if (on) document.body.dataset.hmr = '1'; else delete document.body.dataset.hmr; };
+      window.lt = (on) => { if (on) document.body.dataset.lt = '1'; else delete document.body.dataset.lt; };
 
       // The mock app behaves EXACTLY like the code on screen: the label is
       // always `Clicked {count} times` (no pluralization the code doesn't
