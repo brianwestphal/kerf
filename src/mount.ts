@@ -515,9 +515,37 @@ function validateInlinedRowMatch(
   // is whitespace / browser-normalization (e.g. `<br/>` → `<br>`) and
   // we proceed silently. Otherwise build the precise contract-violation
   // error from the shared helper.
-  const { count } = parseRowTemplate(expectedHtml);
-  if (count === 1) return;
-  throw rowContractError(index, expectedHtml);
+  const { content, count } = parseRowTemplate(expectedHtml);
+  if (count !== 1) throw rowContractError(index, expectedHtml);
+  // KF-391: single-root, but is it the SAME root? The HTML parser restructures
+  // some markup — most commonly `<tr>` directly under `<table>`, where it
+  // inserts an implicit `<tbody>` around the whole row run. The binding walk
+  // then takes that wrapper as row 0 and never finds the real rows, the
+  // reconcile re-inserts them outside the wrapper (visible duplicates), and
+  // the missing-row-key warning fires falsely against the wrapper. Comparing
+  // tags catches it: this is the same "the parse can't line up one row per
+  // element" class the row contract exists to reject, so reject it loudly
+  // rather than binding to the wrong node.
+  const expectedTag = (content.firstElementChild as Element).tagName;
+  if (boundEl.tagName !== expectedTag) throw rowStructureError(index, boundEl.tagName, expectedTag);
+}
+
+/**
+ * KF-391: the author's row markup parsed into a different element than the row
+ * itself, because the HTML parser restructured it. Names both tags and points
+ * at the fix — the shape kerf supports (and that the benchmark entry uses) is
+ * an explicit sectioning element around the list.
+ */
+function rowStructureError(index: number, gotTag: string, wantTag: string): Error {
+  const got = gotTag.toLowerCase();
+  const want = wantTag.toLowerCase();
+  return new Error(
+    `each(): row ${index} renders <${want}>, but the HTML parser wrapped the rows in `
+    + `<${got}> — so kerf cannot bind one row per element. This happens when an each() of `
+    + `<${want}> sits directly inside a table: the parser inserts <${got}> around the whole run. `
+    + `Put the each() inside an explicit <${got}> (e.g. <table><${got}>{each(...)}</${got}></table>) `
+    + 'so the rows are the direct children kerf binds.',
+  );
 }
 
 /**

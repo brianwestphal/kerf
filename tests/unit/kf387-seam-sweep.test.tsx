@@ -21,7 +21,7 @@
  * The rest pin documented claims verified true by execution (the KF-383
  * lesson: run the claim, don't read the code).
  */
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 import { arraySignal } from '../../src/array-signal.js';
 import { batch, delegate, each, mount, signal } from '../../src/index.js';
@@ -382,33 +382,18 @@ describe('KF-387 seam: each() list identity across a varying call count', () => 
 });
 
 describe('KF-387 seam: each() rows × table parsing', () => {
-  it('each() of tr rows directly under table misbinds through the parser-inserted tbody and duplicates rows', () => {
-    // KNOWN BUG KF-391 (each() of <tr> directly under <table> silently
-    // misbinds). The first-render innerHTML wraps the row run in an implicit
-    // <tbody>; the binding walk pairs row 0 with the TBODY, the KF-103
-    // misalignment guard is defeated (the row re-parse alone counts 1
-    // element), the reconcile inserts the "missing" rows outside the tbody —
-    // visible duplicates — and the missing-row-key warning fires FALSELY
-    // (it inspects the tbody, which has no data-key). Asserting current
-    // behavior; when KF-391 lands this shape should throw a row-contract
-    // error instead (or bind through the tbody — update per the fix chosen).
-    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
-    try {
-      const rows = [{ id: 'r1' }, { id: 'r2' }];
-      const dispose = mount(root, () => (
-        <table>{each(rows, (r) => <tr data-key={r.id}><td>{r.id}</td></tr>)}</table>
-      ));
-      // KNOWN BUG KF-391: r2 exists twice — inside the implicit tbody and as
-      // a reconciler-inserted duplicate outside it.
-      expect(root.querySelectorAll('tr[data-key="r2"]').length).toBe(2);
-      expect(root.querySelector('tbody')).not.toBeNull();
-      // The false-positive diagnostic: rows DO carry data-key, but the
-      // warning inspects the mis-bound tbody and claims they don't.
-      expect(warn.mock.calls.some((c) => String(c[0]).includes('no `id` or `data-key`'))).toBe(true);
-      dispose();
-    } finally {
-      warn.mockRestore();
-    }
+  it('each() of tr rows directly under table fails loudly instead of misbinding', () => {
+    // KF-391 (fixed): the first-render innerHTML wraps the row run in an
+    // implicit <tbody>, so the binding walk used to pair row 0 with the
+    // TBODY, the reconcile re-inserted the "missing" rows outside it
+    // (visible duplicates), and the missing-row-key warning fired FALSELY
+    // against the wrapper. The row-contract guard now compares the bound
+    // element's TAG against the row's own top-level tag and rejects the
+    // shape with an actionable error naming both tags.
+    const rows = [{ id: 'r1' }, { id: 'r2' }];
+    expect(() => mount(root, () => (
+      <table>{each(rows, (r) => <tr data-key={r.id}><td>{r.id}</td></tr>)}</table>
+    ))).toThrow(/parser wrapped the rows in <tbody>/);
   });
 
   it('each() of tr rows inside an explicit tbody binds and reconciles cleanly', () => {
