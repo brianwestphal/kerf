@@ -5,196 +5,860 @@
   "optimize": true,
   "vars": {
     "base": "http://localhost:4188",
-    "easeOut": "cubic-bezier(0.215,0.61,0.355,1)",
-    "pop": "cubic-bezier(0.175,0.885,0.32,1.275)"
+    "pop": "cubic-bezier(0.175,0.885,0.32,1.275)",
+    "popSoft": "cubic-bezier(0.22,1.08,0.36,1)"
   },
   "cursor": "auto",
   "frames": [
     {
-      "transition": { "type": "cut", "duration": 0 },
+      "transition": {
+        "type": "cut",
+        "duration": 0
+      },
       "input": "${base}/getting-started/",
       "waitFor": "#code",
       "wait": 200,
-      "duration": 900
+      "overlays": [
+        {
+          "kind": "typing",
+          "text": "import { signal, mount, delegate } from 'kerfjs';",
+          "anchor": {
+            "selector": "#Lc1",
+            "at": "left",
+            "dx": 0
+          },
+          "fontSize": 12.5,
+          "fontFamily": "Menlo",
+          "color": "#e2e8f0",
+          "caret": true,
+          "speed": 24,
+          "jitter": 0.12
+        }
+      ],
+      "duration": 1876
     },
     {
       "continue": true,
-      "transition": { "type": "cut", "duration": 0 },
-      "actions": [{ "type": "evaluate", "script": "window.snap(1)" }],
-      "duration": 800
+      "transition": {
+        "type": "cut",
+        "duration": 0
+      },
+      "actions": [
+        {
+          "type": "evaluate",
+          "script": "window.S(1)"
+        }
+      ],
+      "overlays": [
+        {
+          "kind": "typing",
+          "text": "const count = signal(0);",
+          "anchor": {
+            "selector": "#Lc3",
+            "at": "left",
+            "dx": 0
+          },
+          "fontSize": 12.5,
+          "fontFamily": "Menlo",
+          "color": "#e2e8f0",
+          "caret": true,
+          "speed": 24,
+          "jitter": 0.12
+        }
+      ],
+      "duration": 1076
     },
     {
       "continue": true,
-      "transition": { "type": "cut", "duration": 0 },
-      "actions": [{ "type": "evaluate", "script": "window.snap(2)" }],
-      "duration": 1000
+      "transition": {
+        "type": "cut",
+        "duration": 0
+      },
+      "actions": [
+        {
+          "type": "evaluate",
+          "script": "window.S(2)"
+        }
+      ],
+      "overlays": [
+        {
+          "kind": "typing",
+          "text": "const root = document.getElementById('app')!;",
+          "anchor": {
+            "selector": "#Lc4",
+            "at": "left",
+            "dx": 0
+          },
+          "fontSize": 12.5,
+          "fontFamily": "Menlo",
+          "color": "#e2e8f0",
+          "caret": true,
+          "speed": 24,
+          "jitter": 0.12
+        }
+      ],
+      "duration": 1580
     },
     {
       "continue": true,
-      "transition": { "type": "cut", "duration": 0 },
-      "actions": [{ "type": "evaluate", "script": "window.snap(3)" }],
-      "duration": 800
+      "transition": {
+        "type": "cut",
+        "duration": 0
+      },
+      "actions": [
+        {
+          "type": "evaluate",
+          "script": "window.S(3)"
+        }
+      ],
+      "overlays": [
+        {
+          "kind": "typing",
+          "text": "mount(root, () => (",
+          "anchor": {
+            "selector": "#Lc6",
+            "at": "left",
+            "dx": 0
+          },
+          "fontSize": 12.5,
+          "fontFamily": "Menlo",
+          "color": "#e2e8f0",
+          "caret": true,
+          "speed": 24,
+          "jitter": 0.12
+        }
+      ],
+      "duration": 956
     },
     {
       "continue": true,
-      "transition": { "type": "cut", "duration": 0 },
-      "actions": [{ "type": "evaluate", "script": "window.snap(4)" }],
+      "transition": {
+        "type": "cut",
+        "duration": 0
+      },
+      "actions": [
+        {
+          "type": "evaluate",
+          "script": "window.S(4)"
+        }
+      ],
+      "overlays": [
+        {
+          "kind": "typing",
+          "text": "  <button class=\"btn\" data-action=\"inc\">",
+          "anchor": {
+            "selector": "#Lc7",
+            "at": "left",
+            "dx": 0
+          },
+          "fontSize": 12.5,
+          "fontFamily": "Menlo",
+          "color": "#e2e8f0",
+          "caret": true,
+          "speed": 24,
+          "jitter": 0.12
+        }
+      ],
+      "duration": 1460
+    },
+    {
+      "continue": true,
+      "transition": {
+        "type": "cut",
+        "duration": 0
+      },
+      "actions": [
+        {
+          "type": "evaluate",
+          "script": "window.S(5)"
+        }
+      ],
+      "overlays": [
+        {
+          "kind": "typing",
+          "text": "    Clicked {count} times",
+          "anchor": {
+            "selector": "#Lc8",
+            "at": "left",
+            "dx": 0
+          },
+          "fontSize": 12.5,
+          "fontFamily": "Menlo",
+          "color": "#e2e8f0",
+          "caret": true,
+          "speed": 24,
+          "jitter": 0.12
+        }
+      ],
+      "duration": 1100
+    },
+    {
+      "continue": true,
+      "transition": {
+        "type": "cut",
+        "duration": 0
+      },
+      "actions": [
+        {
+          "type": "evaluate",
+          "script": "window.S(6)"
+        }
+      ],
+      "overlays": [
+        {
+          "kind": "typing",
+          "text": "  </button>",
+          "anchor": {
+            "selector": "#Lc9",
+            "at": "left",
+            "dx": 0
+          },
+          "fontSize": 12.5,
+          "fontFamily": "Menlo",
+          "color": "#e2e8f0",
+          "caret": true,
+          "speed": 24,
+          "jitter": 0.12
+        }
+      ],
+      "duration": 764
+    },
+    {
+      "continue": true,
+      "transition": {
+        "type": "cut",
+        "duration": 0
+      },
+      "actions": [
+        {
+          "type": "evaluate",
+          "script": "window.S(7)"
+        }
+      ],
+      "overlays": [
+        {
+          "kind": "typing",
+          "text": "));",
+          "anchor": {
+            "selector": "#Lc10",
+            "at": "left",
+            "dx": 0
+          },
+          "fontSize": 12.5,
+          "fontFamily": "Menlo",
+          "color": "#e2e8f0",
+          "caret": true,
+          "speed": 24,
+          "jitter": 0.12
+        }
+      ],
+      "duration": 572
+    },
+    {
+      "continue": true,
+      "transition": {
+        "type": "cut",
+        "duration": 0
+      },
+      "actions": [
+        {
+          "type": "evaluate",
+          "script": "window.S(8)"
+        }
+      ],
+      "overlays": [
+        {
+          "kind": "typing",
+          "text": "delegate(root, 'click', '[data-action=\"inc\"]', () => count.value++);",
+          "anchor": {
+            "selector": "#Lc12",
+            "at": "left",
+            "dx": 0
+          },
+          "fontSize": 12.5,
+          "fontFamily": "Menlo",
+          "color": "#e2e8f0",
+          "caret": true,
+          "speed": 24,
+          "jitter": 0.12
+        }
+      ],
+      "duration": 2132
+    },
+    {
+      "continue": true,
+      "transition": {
+        "type": "cut",
+        "duration": 0
+      },
+      "actions": [
+        {
+          "type": "evaluate",
+          "script": "window.S(10)"
+        }
+      ],
       "duration": 1200
     },
     {
       "continue": true,
-      "transition": { "type": "cut", "duration": 0 },
-      "actions": [{ "type": "evaluate", "script": "window.scene('terminal'); window.term(1)" }],
+      "transition": {
+        "type": "cut",
+        "duration": 0
+      },
+      "actions": [
+        {
+          "type": "evaluate",
+          "script": "window.scene('terminal'); window.term(1)"
+        }
+      ],
+      "animations": [
+        {
+          "selector": ".window.terminal",
+          "property": "transform",
+          "from": "translate(300px, 175px) scale(0.12)",
+          "to": "translate(0px, 0px) scale(1)",
+          "duration": 480,
+          "easing": "cubic-bezier(0.645,0.045,0.355,1)",
+          "transformOrigin": "center"
+        },
+        {
+          "selector": ".window.editor",
+          "property": "transform",
+          "from": "translate(0px, 0px) scale(1)",
+          "to": "translate(-300px, 175px) scale(0.12)",
+          "duration": 480,
+          "easing": "cubic-bezier(0.645,0.045,0.355,1)",
+          "transformOrigin": "center"
+        }
+      ],
+      "overlays": [
+        {
+          "kind": "typing",
+          "text": "npm run dev",
+          "anchor": {
+            "selector": "#term-cmd",
+            "at": "left",
+            "dx": 0
+          },
+          "fontSize": 13,
+          "fontFamily": "Menlo",
+          "color": "#e2e8f0",
+          "caret": true,
+          "speed": 30,
+          "jitter": 0.12,
+          "delay": 600
+        }
+      ],
+      "duration": 1800
+    },
+    {
+      "continue": true,
+      "transition": {
+        "type": "cut",
+        "duration": 0
+      },
+      "actions": [
+        {
+          "type": "evaluate",
+          "script": "window.termCmd('npm run dev'); window.term(6)"
+        }
+      ],
+      "duration": 1900
+    },
+    {
+      "continue": true,
+      "transition": {
+        "type": "cut",
+        "duration": 0
+      },
+      "actions": [
+        {
+          "type": "click",
+          "selector": "#local-link"
+        },
+        {
+          "type": "wait",
+          "ms": 120
+        }
+      ],
       "duration": 900
     },
     {
       "continue": true,
-      "transition": { "type": "cut", "duration": 0 },
-      "actions": [{ "type": "evaluate", "script": "window.term(6)" }],
-      "duration": 1700
-    },
-    {
-      "continue": true,
-      "transition": { "type": "cut", "duration": 0 },
-      "actions": [{ "type": "evaluate", "script": "window.scene('browser'); window.appVersion('v1')" }],
-      "duration": 1000
-    },
-    {
-      "continue": true,
-      "transition": { "type": "cut", "duration": 0 },
+      "transition": {
+        "type": "cut",
+        "duration": 0
+      },
       "actions": [
-        { "type": "click", "selector": "#counter-btn" },
-        { "type": "wait", "ms": 120 }
-      ],
-      "animations": [
-        { "selector": "#counter-btn", "property": "scale", "from": "0.93", "to": "1", "duration": 250, "easing": "${pop}", "transformOrigin": "center" }
-      ],
-      "duration": 700
-    },
-    {
-      "continue": true,
-      "transition": { "type": "cut", "duration": 0 },
-      "actions": [
-        { "type": "click", "selector": "#counter-btn" },
-        { "type": "wait", "ms": 120 }
-      ],
-      "animations": [
-        { "selector": "#counter-btn", "property": "scale", "from": "0.93", "to": "1", "duration": 250, "easing": "${pop}", "transformOrigin": "center" }
-      ],
-      "duration": 700
-    },
-    {
-      "continue": true,
-      "transition": { "type": "cut", "duration": 0 },
-      "actions": [
-        { "type": "click", "selector": "#counter-btn" },
-        { "type": "wait", "ms": 120 }
-      ],
-      "animations": [
-        { "selector": "#counter-btn", "property": "scale", "from": "0.93", "to": "1", "duration": 250, "easing": "${pop}", "transformOrigin": "center" }
-      ],
-      "duration": 1100
-    },
-    {
-      "continue": true,
-      "transition": { "type": "cut", "duration": 0 },
-      "actions": [{ "type": "evaluate", "script": "window.scene('editor'); window.snap(5)" }],
-      "duration": 1100
-    },
-    {
-      "continue": true,
-      "transition": { "type": "cut", "duration": 0 },
-      "actions": [{ "type": "evaluate", "script": "window.snap(6)" }],
-      "duration": 1300
-    },
-    {
-      "continue": true,
-      "transition": { "type": "cut", "duration": 0 },
-      "actions": [{ "type": "evaluate", "script": "window.snap(7)" }],
-      "duration": 1100
-    },
-    {
-      "continue": true,
-      "transition": { "type": "cut", "duration": 0 },
-      "actions": [{ "type": "evaluate", "script": "window.snap(8)" }],
-      "duration": 1100
-    },
-    {
-      "continue": true,
-      "transition": { "type": "cut", "duration": 0 },
-      "actions": [{ "type": "evaluate", "script": "window.scene('browser'); window.appVersion('v2'); window.hmr(true)" }],
-      "duration": 1300
-    },
-    {
-      "continue": true,
-      "transition": { "type": "cut", "duration": 0 },
-      "actions": [{ "type": "evaluate", "script": "window.hmr(false)" }],
-      "overlays": [
         {
-          "kind": "typing",
-          "text": "Ship it",
-          "anchor": { "selector": "#todo-input", "at": "left", "dx": 15 },
-          "fontSize": 15,
-          "color": "#1f2937",
-          "caret": true,
-          "bgColor": "#ffffff",
-          "bgWidth": 380,
-          "bgHeight": 24,
-          "speed": 20
+          "type": "evaluate",
+          "script": "window.scene('browser')"
         }
       ],
-      "duration": 1000
-    },
-    {
-      "continue": true,
-      "transition": { "type": "cut", "duration": 0 },
-      "actions": [
-        { "type": "fill", "selector": "#todo-input", "value": "Ship it" },
-        { "type": "press", "key": "Enter" },
-        { "type": "wait", "ms": 120 }
-      ],
       "animations": [
-        { "selector": "#todo-list li:last-child", "property": "translateY", "from": "-8px", "to": "0px", "duration": 240, "easing": "${easeOut}" }
-      ],
-      "duration": 800
-    },
-    {
-      "continue": true,
-      "transition": { "type": "cut", "duration": 0 },
-      "overlays": [
         {
-          "kind": "typing",
-          "text": "Tell the team",
-          "anchor": { "selector": "#todo-input", "at": "left", "dx": 15 },
-          "fontSize": 15,
-          "color": "#1f2937",
-          "caret": true,
-          "bgColor": "#ffffff",
-          "bgWidth": 380,
-          "bgHeight": 24,
-          "speed": 20
+          "selector": ".window.browser",
+          "property": "transform",
+          "from": "translate(0px, 215px) scale(0.14)",
+          "to": "translate(0px, 0px) scale(1)",
+          "duration": 520,
+          "easing": "${popSoft}",
+          "transformOrigin": "center"
+        },
+        {
+          "selector": ".window.terminal",
+          "property": "transform",
+          "from": "translate(0px, 0px) scale(1)",
+          "to": "translate(-300px, 205px) scale(0.10)",
+          "duration": 480,
+          "easing": "cubic-bezier(0.645,0.045,0.355,1)",
+          "transformOrigin": "center"
         }
-      ],
-      "duration": 1100
-    },
-    {
-      "continue": true,
-      "transition": { "type": "cut", "duration": 0 },
-      "actions": [
-        { "type": "fill", "selector": "#todo-input", "value": "Tell the team" },
-        { "type": "press", "key": "Enter" },
-        { "type": "wait", "ms": 120 }
-      ],
-      "animations": [
-        { "selector": "#todo-list li:last-child", "property": "translateY", "from": "-8px", "to": "0px", "duration": 240, "easing": "${easeOut}" }
       ],
       "duration": 1400
     },
     {
       "continue": true,
-      "transition": { "type": "cut", "duration": 0 },
-      "actions": [{ "type": "evaluate", "script": "window.scene('end')" }],
-      "duration": 3400
+      "transition": {
+        "type": "cut",
+        "duration": 0
+      },
+      "actions": [
+        {
+          "type": "click",
+          "selector": "#counter-btn"
+        },
+        {
+          "type": "wait",
+          "ms": 120
+        }
+      ],
+      "animations": [
+        {
+          "selector": "#counter-btn",
+          "property": "scale",
+          "from": "0.93",
+          "to": "1",
+          "duration": 250,
+          "easing": "${pop}",
+          "transformOrigin": "center"
+        }
+      ],
+      "duration": 750
+    },
+    {
+      "continue": true,
+      "transition": {
+        "type": "cut",
+        "duration": 0
+      },
+      "actions": [
+        {
+          "type": "click",
+          "selector": "#counter-btn"
+        },
+        {
+          "type": "wait",
+          "ms": 120
+        }
+      ],
+      "animations": [
+        {
+          "selector": "#counter-btn",
+          "property": "scale",
+          "from": "0.93",
+          "to": "1",
+          "duration": 250,
+          "easing": "${pop}",
+          "transformOrigin": "center"
+        }
+      ],
+      "duration": 750
+    },
+    {
+      "continue": true,
+      "transition": {
+        "type": "cut",
+        "duration": 0
+      },
+      "actions": [
+        {
+          "type": "click",
+          "selector": "#counter-btn"
+        },
+        {
+          "type": "wait",
+          "ms": 120
+        }
+      ],
+      "animations": [
+        {
+          "selector": "#counter-btn",
+          "property": "scale",
+          "from": "0.93",
+          "to": "1",
+          "duration": 250,
+          "easing": "${pop}",
+          "transformOrigin": "center"
+        }
+      ],
+      "duration": 1200
+    },
+    {
+      "continue": true,
+      "transition": {
+        "type": "cut",
+        "duration": 0
+      },
+      "actions": [
+        {
+          "type": "evaluate",
+          "script": "window.visited(); window.scene('editor'); window.E(0)"
+        }
+      ],
+      "animations": [
+        {
+          "selector": ".window.editor",
+          "property": "transform",
+          "from": "translate(-300px, 175px) scale(0.12)",
+          "to": "translate(0px, 0px) scale(1)",
+          "duration": 480,
+          "easing": "cubic-bezier(0.645,0.045,0.355,1)",
+          "transformOrigin": "center"
+        },
+        {
+          "selector": ".window.browser",
+          "property": "transform",
+          "from": "translate(0px, 0px) scale(1)",
+          "to": "translate(300px, 205px) scale(0.14)",
+          "duration": 480,
+          "easing": "cubic-bezier(0.645,0.045,0.355,1)",
+          "transformOrigin": "center"
+        }
+      ],
+      "duration": 1300
+    },
+    {
+      "continue": true,
+      "transition": {
+        "type": "cut",
+        "duration": 0
+      },
+      "overlays": [
+        {
+          "kind": "typing",
+          "text": " computed,",
+          "anchor": {
+            "selector": "#ins-imp",
+            "at": "left",
+            "dx": 0
+          },
+          "fontSize": 12.5,
+          "fontFamily": "Menlo",
+          "color": "#e2e8f0",
+          "caret": true,
+          "speed": 24,
+          "jitter": 0.12
+        }
+      ],
+      "duration": 840
+    },
+    {
+      "continue": true,
+      "transition": {
+        "type": "cut",
+        "duration": 0
+      },
+      "actions": [
+        {
+          "type": "evaluate",
+          "script": "window.E(1)"
+        }
+      ],
+      "overlays": [
+        {
+          "kind": "typing",
+          "text": "const cls = computed(() => count.value >= 5 ? 'btn hot' : 'btn');",
+          "anchor": {
+            "selector": "#Lc4",
+            "at": "left",
+            "dx": 0
+          },
+          "fontSize": 12.5,
+          "fontFamily": "Menlo",
+          "color": "#e2e8f0",
+          "caret": true,
+          "speed": 24,
+          "jitter": 0.12
+        }
+      ],
+      "duration": 2060
+    },
+    {
+      "continue": true,
+      "transition": {
+        "type": "cut",
+        "duration": 0
+      },
+      "actions": [
+        {
+          "type": "evaluate",
+          "script": "window.E(2)"
+        }
+      ],
+      "duration": 900
+    },
+    {
+      "continue": true,
+      "transition": {
+        "type": "cut",
+        "duration": 0
+      },
+      "actions": [
+        {
+          "type": "evaluate",
+          "script": "window.E(3)"
+        }
+      ],
+      "duration": 900
+    },
+    {
+      "continue": true,
+      "transition": {
+        "type": "cut",
+        "duration": 0
+      },
+      "actions": [
+        {
+          "type": "evaluate",
+          "script": "window.E(4)"
+        }
+      ],
+      "overlays": [
+        {
+          "kind": "typing",
+          "text": "{cls}",
+          "anchor": {
+            "selector": "#rep-cls",
+            "at": "left",
+            "dx": 0
+          },
+          "fontSize": 12.5,
+          "fontFamily": "Menlo",
+          "color": "#e2e8f0",
+          "caret": true,
+          "speed": 24,
+          "jitter": 0.12
+        }
+      ],
+      "duration": 770
+    },
+    {
+      "continue": true,
+      "transition": {
+        "type": "cut",
+        "duration": 0
+      },
+      "actions": [
+        {
+          "type": "evaluate",
+          "script": "window.E(5)"
+        }
+      ],
+      "duration": 900
+    },
+    {
+      "continue": true,
+      "transition": {
+        "type": "cut",
+        "duration": 0
+      },
+      "actions": [
+        {
+          "type": "evaluate",
+          "script": "window.E(6)"
+        }
+      ],
+      "duration": 800
+    },
+    {
+      "continue": true,
+      "transition": {
+        "type": "cut",
+        "duration": 0
+      },
+      "actions": [
+        {
+          "type": "evaluate",
+          "script": "window.scene('browser'); window.hmr(true); window.v2live = true"
+        }
+      ],
+      "animations": [
+        {
+          "selector": ".window.browser",
+          "property": "transform",
+          "from": "translate(300px, 205px) scale(0.14)",
+          "to": "translate(0px, 0px) scale(1)",
+          "duration": 480,
+          "easing": "cubic-bezier(0.645,0.045,0.355,1)",
+          "transformOrigin": "center"
+        },
+        {
+          "selector": ".window.editor",
+          "property": "transform",
+          "from": "translate(0px, 0px) scale(1)",
+          "to": "translate(-300px, 175px) scale(0.12)",
+          "duration": 480,
+          "easing": "cubic-bezier(0.645,0.045,0.355,1)",
+          "transformOrigin": "center"
+        }
+      ],
+      "duration": 1600
+    },
+    {
+      "continue": true,
+      "transition": {
+        "type": "cut",
+        "duration": 0
+      },
+      "actions": [
+        {
+          "type": "evaluate",
+          "script": "window.hmr(false)"
+        }
+      ],
+      "duration": 500
+    },
+    {
+      "continue": true,
+      "transition": {
+        "type": "cut",
+        "duration": 0
+      },
+      "actions": [
+        {
+          "type": "click",
+          "selector": "#counter-btn"
+        },
+        {
+          "type": "wait",
+          "ms": 120
+        }
+      ],
+      "animations": [
+        {
+          "selector": "#counter-btn",
+          "property": "scale",
+          "from": "0.93",
+          "to": "1",
+          "duration": 250,
+          "easing": "${pop}",
+          "transformOrigin": "center"
+        }
+      ],
+      "duration": 800
+    },
+    {
+      "continue": true,
+      "transition": {
+        "type": "cut",
+        "duration": 0
+      },
+      "actions": [
+        {
+          "type": "click",
+          "selector": "#counter-btn"
+        },
+        {
+          "type": "wait",
+          "ms": 120
+        }
+      ],
+      "animations": [
+        {
+          "selector": "#counter-btn",
+          "property": "scale",
+          "from": "0.93",
+          "to": "1",
+          "duration": 250,
+          "easing": "${pop}",
+          "transformOrigin": "center"
+        },
+        {
+          "selector": "#counter-btn",
+          "property": "scale",
+          "from": "1",
+          "to": "1.07",
+          "duration": 300,
+          "delay": 260,
+          "easing": "${pop}",
+          "transformOrigin": "center"
+        }
+      ],
+      "duration": 1700
+    },
+    {
+      "continue": true,
+      "transition": {
+        "type": "cut",
+        "duration": 0
+      },
+      "actions": [
+        {
+          "type": "click",
+          "selector": "#counter-btn"
+        },
+        {
+          "type": "wait",
+          "ms": 120
+        }
+      ],
+      "animations": [
+        {
+          "selector": "#counter-btn",
+          "property": "scale",
+          "from": "0.93",
+          "to": "1",
+          "duration": 250,
+          "easing": "${pop}",
+          "transformOrigin": "center"
+        }
+      ],
+      "duration": 1300
+    },
+    {
+      "continue": true,
+      "transition": {
+        "type": "cut",
+        "duration": 0
+      },
+      "actions": [
+        {
+          "type": "evaluate",
+          "script": "window.scene('end')"
+        }
+      ],
+      "animations": [
+        {
+          "selector": ".window.end",
+          "property": "transform",
+          "from": "translate(0px, 195px) scale(0.22)",
+          "to": "translate(0px, 0px) scale(1)",
+          "duration": 520,
+          "easing": "${popSoft}",
+          "transformOrigin": "center"
+        },
+        {
+          "selector": ".window.browser",
+          "property": "transform",
+          "from": "translate(0px, 0px) scale(1)",
+          "to": "translate(0px, 215px) scale(0.14)",
+          "duration": 480,
+          "easing": "cubic-bezier(0.645,0.045,0.355,1)",
+          "transformOrigin": "center"
+        }
+      ],
+      "duration": 3600
     }
   ]
 }

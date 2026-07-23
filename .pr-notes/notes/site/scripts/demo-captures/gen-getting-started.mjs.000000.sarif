@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "Hot Sheet",
+          "rules": [
+            {
+              "id": "review-note",
+              "name": "ReviewNote",
+              "shortDescription": {
+                "text": "AI-authored, line-anchored review note."
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "review-note",
+          "ruleIndex": 0,
+          "kind": "informational",
+          "level": "none",
+          "guid": "mrx0ui6dvi5kcufm",
+          "message": {
+            "text": "App-switch transitions are hard cuts + explicit per-window `transform` animations (parked→front), NOT domotion's `magic-move`. magic-move was tried first: it could not reliably pair the full window subtrees (bridges came out as tiny clipped fragments; the switch rendered as a snap), whereas config-driven transform animations are deterministic and give exactly the requested scale-plus-path glide. The from/to strings here MUST stay byte-in-sync with the scene-state CSS in `pages/getting-started/index.html` — the CSS defines the end states the capture lands on, these define the motion into them.",
+            "markdown": "App-switch transitions are hard cuts + explicit per-window `transform` animations (parked→front), NOT domotion's `magic-move`. magic-move was tried first: it could not reliably pair the full window subtrees (bridges came out as tiny clipped fragments; the switch rendered as a snap), whereas config-driven transform animations are deterministic and give exactly the requested scale-plus-path glide. The from/to strings here MUST stay byte-in-sync with the scene-state CSS in `pages/getting-started/index.html` — the CSS defines the end states the capture lands on, these define the motion into them."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "site/scripts/demo-captures/gen-getting-started.mjs"
+                },
+                "region": {
+                  "startLine": 27,
+                  "endLine": 46,
+                  "snippet": {
+                    "text": "const POS = {\n  front: 'translate(0px, 0px) scale(1)',\n  editorPark: 'translate(-300px, 175px) scale(0.12)',\n  terminalPark: 'translate(300px, 175px) scale(0.12)',\n  terminalParkLeft: 'translate(-300px, 205px) scale(0.10)',\n  browserPark: 'translate(0px, 215px) scale(0.14)',\n  browserParkRight: 'translate(300px, 205px) scale(0.14)',\n  endPark: 'translate(0px, 195px) scale(0.22)',\n};\nconst EASE_SWITCH = 'cubic-bezier(0.645,0.045,0.355,1)';\nconst glide = (selector, from, to, opts = {}) => ({\n  selector,\n  property: 'transform',\n  from,\n  to,\n  duration: opts.duration ?? 480,\n  easing: opts.easing ?? EASE_SWITCH,\n  transformOrigin: 'center',\n});\n"
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "tags": [
+              "alternative-considered"
+            ]
+          },
+          "workItemUris": [
+            "KF-371"
+          ],
+          "partialFingerprints": {
+            "prNoteAnchor/v1": "3aa4a2abb65d8da55ca7acdfd5c29e7f"
+          }
+        }
+      ],
+      "versionControlProvenance": [
+        {
+          "repositoryUri": "git@github.com:brianwestphal/kerf.git",
+          "revisionId": "cf935102cf08491d904d9fcfdc85d3fadd60d207",
+          "branch": "main"
+        }
+      ]
+    }
+  ]
+}

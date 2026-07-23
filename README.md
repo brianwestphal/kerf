@@ -35,7 +35,7 @@ That's it. Your JSX renders to HTML strings, kerf's native diff applies the mini
 
 Here's the whole development loop — write a component, run the dev server, click around, edit, watch the browser pick it up:
 
-[![Animated coding session: a counter component is typed into an editor, the dev server starts in a terminal, the running app is clicked in a browser, then the code is edited into a todo list and the browser picks the change up live](https://brianwestphal.github.io/kerf/demos/getting-started.svg)](https://brianwestphal.github.io/kerf/getting-started/)
+[![Animated coding session: a counter component is typed line by line into an editor, npm run dev starts in a terminal and the localhost link is clicked, the running app is clicked in a browser, then back in the editor a computed class is added — selecting "btn" and typing a bound {cls} hole — and the browser shows the button change color at the fifth click](https://brianwestphal.github.io/kerf/demos/getting-started.svg)](https://brianwestphal.github.io/kerf/getting-started/)
 
 ## Why Kerf
 

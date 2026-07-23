@@ -5,7 +5,7 @@ description: From empty file to a working reactive app — watch the whole loop,
 
 Here's the entire development loop — write a component, run the dev server, click around, edit, see it update — in forty seconds:
 
-![Animated coding session: a counter component is typed into an editor, the dev server starts in a terminal, the running app is clicked in a browser, then the code is edited into a todo list and the browser picks the change up live](/kerf/demos/getting-started.svg)
+![Animated coding session: a counter component is typed line by line into an editor, npm run dev starts in a terminal and the localhost link is clicked, the running app is clicked in a browser, then back in the editor a computed class is added — selecting "btn" and typing a bound {cls} hole — and the browser shows the button change color at the fifth click](/kerf/demos/getting-started.svg)
 
 Everything in that session is the whole story: plain TypeScript + JSX, your existing dev server (Vite here — anything that does JSX works), and a browser. No framework CLI, no compiler plugin, no devtools extension required.
 
@@ -45,7 +45,7 @@ delegate(root, 'click', '[data-action="inc"]', () => count.value++);
 
 Three things to notice, because they're the whole mental model:
 
-- **`{count}` is the signal itself, not `count.value`.** That makes it a *bound hole* — a click updates that one text node directly, with no render re-run. Values bind; structure re-renders.
+- **`{count}` is the signal itself, not `count.value`.** That makes it a *bound hole* — a click updates that one text node directly, with no render re-run. Values bind; structure re-renders. (The edit in the animation does the same for an attribute: `class={cls}` binds a `computed` that flips the button's look at the fifth click.)
 - **`mount()` re-runs the render only when a signal it *read* changes.** This render reads nothing, so it runs exactly once.
 - **`delegate()` is one listener on the root**, dispatched by selector — no per-element handlers, nothing to unbind when the DOM changes.
 

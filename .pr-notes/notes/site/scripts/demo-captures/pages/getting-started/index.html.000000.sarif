@@ -1,0 +1,145 @@
+{
+  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "Hot Sheet",
+          "rules": [
+            {
+              "id": "review-note",
+              "name": "ReviewNote",
+              "shortDescription": {
+                "text": "AI-authored, line-anchored review note."
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "review-note",
+          "ruleIndex": 0,
+          "kind": "informational",
+          "level": "none",
+          "guid": "mrx0uid0eohwb2c0",
+          "message": {
+            "text": "Parked windows stay INSIDE the 760×560 viewport (small scale) instead of translating offscreen because domotion culls fully-offscreen elements from the capture — an animated window whose start/end state is culled cannot glide, which made the first attempt's transitions snap. The `.desktop` backdrop at z-index 3 then hides the parked windows from view; only the entering (z 6) and per-scene exiting (z 5) windows ride above it during a switch. See also `gen-getting-started.mjs` (the transform animations that pair with these states).",
+            "markdown": "Parked windows stay INSIDE the 760×560 viewport (small scale) instead of translating offscreen because domotion culls fully-offscreen elements from the capture — an animated window whose start/end state is culled cannot glide, which made the first attempt's transitions snap. The `.desktop` backdrop at z-index 3 then hides the parked windows from view; only the entering (z 6) and per-scene exiting (z 5) windows ride above it during a switch. See also `gen-getting-started.mjs` (the transform animations that pair with these states)."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "site/scripts/demo-captures/pages/getting-started/index.html"
+                },
+                "region": {
+                  "startLine": 38,
+                  "endLine": 75,
+                  "snippet": {
+                    "text": "      /* ---- scene states: every window has a transform in every scene ----\n         Parked windows stay INSIDE the viewport (small scale, fully tucked\n         under the opaque 724x524 front window so they serialize but never\n         show). The app-switch glides are NOT CSS transitions — each switch\n         frame is a hard cut whose capture config animates the two windows'\n         `transform` from the previous scene's value to this scene's value\n         (see gen-getting-started.mjs SWITCHES), giving the scale+path\n         \"switching apps\" motion deterministically. Park positions therefore\n         define each window's entry/exit path direction and MUST stay in sync\n         with the from/to transforms in the gen script. */\n      /* The desktop backdrop sits ABOVE parked windows (z 3) and BELOW any\n         window participating in the current scene, so parked windows stay\n         serialized but invisible; only the entering (z 6) and exiting (z 5)\n         windows of a switch ever show over it. */\n      .desktop { position: absolute; inset: 0; background: #e8eaee; z-index: 3; }\n      /* front */\n      body[data-scene='editor']   .window.editor,\n      body[data-scene='terminal'] .window.terminal,\n      body[data-scene='browser']  .window.browser,\n      body[data-scene='end']      .window.end { transform: translate(0, 0) scale(1); z-index: 6; }\n      /* parked defaults (under the desktop backdrop) */\n      .window.editor   { transform: translate(-300px, 175px) scale(0.12); z-index: 2; } /* left  → exits/returns via bottom-left */\n      .window.terminal { transform: translate(300px, 175px) scale(0.12); z-index: 2; }  /* right → enters from bottom-right */\n      .window.browser  { transform: translate(0px, 215px) scale(0.14); z-index: 2; }    /* bottom-center → pops up + grows like a new window */\n      /* display:none until its scene — serializing the parked end card in\n         every earlier frame made the optimizer collide its font subset with\n         other frames' (the wordmark rendered with overlapping glyphs). It only\n         needs to exist in the final frame, where its glide animates from the\n         park transform anyway. */\n      .window.end      { transform: translate(0, 195px) scale(0.22); z-index: 1; display: none; }\n      body[data-scene='end'] .window.end { display: flex; }\n      /* the window EXITING in each scene rides above the desktop while it glides out */\n      body[data-scene='terminal'] .window.editor { z-index: 5; }\n      body[data-scene='browser']  .window.terminal { z-index: 5; }\n      body[data-scene='browser']  .window.editor { z-index: 5; }\n      body[data-scene='editor'][data-visited='1'] .window.browser { z-index: 5; }\n      body[data-scene='end'] .window.browser { z-index: 5; }\n      /* after the browser opens, the terminal parks left (it exited stage-left) */"
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "tags": [
+              "rationale"
+            ]
+          },
+          "workItemUris": [
+            "KF-371"
+          ],
+          "partialFingerprints": {
+            "prNoteAnchor/v1": "6aa9ab908766261e56023adc9f126965"
+          }
+        },
+        {
+          "ruleId": "review-note",
+          "ruleIndex": 0,
+          "kind": "informational",
+          "level": "warning",
+          "guid": "mrx0us4ex6iqlq3i",
+          "message": {
+            "text": "Two capture-pipeline quirks are worked around here and both are invisible in a normal browser (only the rendered SVG shows them): (1) the end card's wordmark uses Menlo because system-ui bold @44px comes out with overlapping glyphs in MULTI-frame captures (single-frame captures of the same page are clean — a domotion font-subsetting issue worth reporting upstream); (2) the card's content is padded below y≈240 because the simulated cursor stays parked at the last counter-click position (~380,224) for the final frame — hover/click actions in that frame do not move the cursor track. If the browser button or the end-card layout moves, re-verify the final frame of the captured SVG, not just the page.",
+            "markdown": "Two capture-pipeline quirks are worked around here and both are invisible in a normal browser (only the rendered SVG shows them): (1) the end card's wordmark uses Menlo because system-ui bold @44px comes out with overlapping glyphs in MULTI-frame captures (single-frame captures of the same page are clean — a domotion font-subsetting issue worth reporting upstream); (2) the card's content is padded below y≈240 because the simulated cursor stays parked at the last counter-click position (~380,224) for the final frame — hover/click actions in that frame do not move the cursor track. If the browser button or the end-card layout moves, re-verify the final frame of the captured SVG, not just the page."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "site/scripts/demo-captures/pages/getting-started/index.html"
+                },
+                "region": {
+                  "startLine": 147,
+                  "endLine": 156,
+                  "snippet": {
+                    "text": "      /* content pushed below y≈240: the capture's simulated cursor stays\n         parked at the last counter-click spot (~380,224), so the space above\n         the wordmark is deliberately empty for it. */\n      .window.end { background: #0f172a; align-items: center; justify-content: flex-start; }\n      .endcard { text-align: center; color: #e2e8f0; padding-top: 250px; }\n      /* Menlo, not system-ui bold @44px: domotion's multi-frame font\n         subsetting renders that face with overlapping glyphs (single-frame\n         captures are fine); Menlo is exercised at many sizes across the whole\n         session and stays clean — and suits the dev-tool theme anyway. */\n      .endcard .mark { font-size: 40px; font-weight: 700; font-family: Menlo, ui-monospace, monospace; }"
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "tags": [
+              "risk"
+            ]
+          },
+          "workItemUris": [
+            "KF-371"
+          ],
+          "partialFingerprints": {
+            "prNoteAnchor/v1": "54988ec54142399af613096fef6e0d37"
+          }
+        },
+        {
+          "ruleId": "review-note",
+          "ruleIndex": 0,
+          "kind": "informational",
+          "level": "none",
+          "guid": "mrx0usavgdmo2xah",
+          "message": {
+            "text": "The typing illusion is a two-step contract with the config: each frame anchors a domotion typing overlay to an EMPTY line slot (`#LcN` / `#ins-imp` / `#rep-cls`), and the next frame swaps in the pre-colored line via `window.S(i)`/`window.E(i)`. The overlay's plain text in `gen-getting-started.mjs` must render the same characters as the colored HTML here — a mismatch shows as the typed text visibly changing at the swap. The v1/v2 line constants and V1_LINES/CLS_LINE in the gen script are the two halves of that contract.",
+            "markdown": "The typing illusion is a two-step contract with the config: each frame anchors a domotion typing overlay to an EMPTY line slot (`#LcN` / `#ins-imp` / `#rep-cls`), and the next frame swaps in the pre-colored line via `window.S(i)`/`window.E(i)`. The overlay's plain text in `gen-getting-started.mjs` must render the same characters as the colored HTML here — a mismatch shows as the typed text visibly changing at the swap. The v1/v2 line constants and V1_LINES/CLS_LINE in the gen script are the two halves of that contract."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "site/scripts/demo-captures/pages/getting-started/index.html"
+                },
+                "region": {
+                  "startLine": 178,
+                  "endLine": 206,
+                  "snippet": {
+                    "text": "\n    <!-- ============ browser ============ -->\n    <div class=\"window browser\" data-magic-key=\"win-browser\">\n      <div class=\"titlebar\"><span class=\"dots\"><i></i><i></i><i></i></span><span class=\"urlbar\">localhost:5173</span></div>\n      <div class=\"page\">\n        <div class=\"appwrap\"><button class=\"btn\" id=\"counter-btn\">Clicked 0 times</button></div>\n        <div class=\"hmr\">[vite] hot updated: /app.tsx</div>\n      </div>\n    </div>\n\n    <!-- ============ terminal ============ -->\n    <div class=\"window terminal\" data-magic-key=\"win-terminal\">\n      <div class=\"titlebar\"><span class=\"dots\"><i></i><i></i><i></i></span><span class=\"title\">my-app — zsh</span></div>\n      <div class=\"termarea\" id=\"term\"></div>\n    </div>\n\n    <!-- ============ editor (top when front) ============ -->\n    <div class=\"window editor\" data-magic-key=\"win-editor\">\n      <div class=\"titlebar\"><span class=\"dots\"><i></i><i></i><i></i></span><span class=\"title\">my-app — Visual Studio Code</span></div>\n      <div class=\"tabbar\"><span class=\"tab\">app.tsx<span class=\"dot\">●</span></span></div>\n      <div class=\"codearea\" id=\"code\"></div>\n    </div>\n\n    <script>\n      const K = (s) => `<span class=\"kw\">${s}</span>`;\n      const S_ = (s) => `<span class=\"str\">${s}</span>`;\n      const T = (s) => `<span class=\"tag\">${s}</span>`;\n      const A = (s) => `<span class=\"attr\">${s}</span>`;\n      const H = (s) => `<span class=\"hole\">${s}</span>`;"
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "tags": [
+              "assumption"
+            ]
+          },
+          "workItemUris": [
+            "KF-371"
+          ],
+          "partialFingerprints": {
+            "prNoteAnchor/v1": "b30f75dede7fca013bd4f9f61c3c7633"
+          }
+        }
+      ],
+      "versionControlProvenance": [
+        {
+          "repositoryUri": "git@github.com:brianwestphal/kerf.git",
+          "revisionId": "cf935102cf08491d904d9fcfdc85d3fadd60d207",
+          "branch": "main"
+        }
+      ]
+    }
+  ]
+}
