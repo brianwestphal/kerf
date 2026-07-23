@@ -195,15 +195,16 @@
 
       /* --- lower third (edit-scene explainer) -------------------------- */
       /* Sits over the bottom edge of the stage, above every window (z7).
-         Gated by data-lt; hidden again on the end card. The WRAPPER does the
+         Shown only during the editor edit scene (data-lt AND scene=editor),
+         so it disappears at the cut back to the browser — the browser round
+         then PROVES the message instead of restating it. The WRAPPER does the
          centering (flex) and carries no transform, so the config's slide-in
          animation on it composes from identity (the baked-relative rule). */
       .ltwrap {
         position: absolute; left: 0; right: 0; bottom: 12px; z-index: 7;
         display: none; justify-content: center; pointer-events: none;
       }
-      body[data-lt='1'] .ltwrap { display: flex; }
-      body[data-scene='end'] .ltwrap { display: none; }
+      body[data-lt='1'][data-scene='editor'] .ltwrap { display: flex; }
       .lt {
         white-space: nowrap;
         background: #0f172af2; color: #e2e8f0; border: 1px solid #334155;
@@ -220,10 +221,10 @@
     <div class="desktop"></div>
     <!-- ============ end card (bottom of stack) ============ -->
     <div class="window end">
-      <!-- content pushed below y≈240: the capture's simulated cursor stays
-           parked at the last counter-click spot (~380,224), so the space above
-           the wordmark is deliberately empty for it. -->
-      <div class="endcard" style="text-align:center;color:#e2e8f0;padding-top:250px;">
+      <!-- the cursor track hides on this scene (explicit cursor events in the
+           config), so the card is simply centered — no space reserved for a
+           parked pointer -->
+      <div class="endcard" style="text-align:center;color:#e2e8f0;padding-top:170px;">
         <!-- Menlo, not system-ui bold @44px: domotion's multi-frame font
              subsetting renders that face with overlapping glyphs (single-frame
              captures are fine); Menlo is exercised at many sizes across the

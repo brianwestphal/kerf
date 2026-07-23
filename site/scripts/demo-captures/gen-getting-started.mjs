@@ -291,10 +291,8 @@ frames.push(clickFrame(1300)); // 6 — stays hot
 frames.push({
   continue: true,
   transition: CUT,
-  // NOTE: the simulated cursor stays parked at the last counter-click
-  // position for this frame (hover/click actions here don't move the cursor
-  // track), so the end card lays out with its content pushed below that spot —
-  // keep .endcard's padding in sync if the browser button ever moves.
+  // The cursor track HIDES at this frame (the explicit cursor events below),
+  // so the end card owns the whole stage.
   actions: [{ type: 'evaluate', script: "window.scene('end', 'browser')" }],
   animations: [
     glide('.window.end', 'scale(0.2)', FRONT, ORIGIN_B, { duration: 520, easing: '${popSoft}' }),
@@ -302,6 +300,31 @@ frames.push({
   ],
   duration: 3600,
 });
+
+// --- explicit cursor track -------------------------------------------------
+// Not 'auto': auto derives its move+click events from the click actions but
+// has no way to HIDE the pointer, and it must not float over the end card.
+// This replicates auto's staging (a continue frame's click is shown on the
+// PREVIOUS frame's hold — the "before" image — landing a short beat before
+// the cut that reveals the result) and adds the end-card hide.
+const MOVE_MS = 400;                                // auto's move duration
+const tailOf = (dur) => Math.min(250, dur * 0.25);  // auto's pre-cut beat
+const cursorEvents = [];
+frames.forEach((f, i) => {
+  const click = (f.actions ?? []).find((a) => a.type === 'click');
+  if (click == null) return;
+  const stage = i - 1; // every click frame here is a continue frame
+  const dur = frames[stage].duration;
+  const clickAt = Math.max(0, dur - tailOf(dur));
+  cursorEvents.push({
+    frame: stage,
+    at: Math.max(0, clickAt - MOVE_MS),
+    type: 'moveClick',
+    selector: click.selector,
+    duration: Math.min(MOVE_MS, clickAt),
+  });
+});
+cursorEvents.push({ frame: frames.length - 1, at: 0, type: 'hide' });
 
 const config = {
   width: 760,
@@ -313,7 +336,7 @@ const config = {
     pop: 'cubic-bezier(0.175,0.885,0.32,1.275)',
     popSoft: 'cubic-bezier(0.22,1.08,0.36,1)',
   },
-  cursor: 'auto',
+  cursor: { events: cursorEvents },
   frames,
 };
 

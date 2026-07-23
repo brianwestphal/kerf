@@ -8,7 +8,64 @@
     "pop": "cubic-bezier(0.175,0.885,0.32,1.275)",
     "popSoft": "cubic-bezier(0.22,1.08,0.36,1)"
   },
-  "cursor": "auto",
+  "cursor": {
+    "events": [
+      {
+        "frame": 11,
+        "at": 1250,
+        "type": "moveClick",
+        "selector": "#local-link",
+        "duration": 400
+      },
+      {
+        "frame": 13,
+        "at": 750,
+        "type": "moveClick",
+        "selector": "#btn-hit",
+        "duration": 400
+      },
+      {
+        "frame": 14,
+        "at": 162.5,
+        "type": "moveClick",
+        "selector": "#btn-hit",
+        "duration": 400
+      },
+      {
+        "frame": 15,
+        "at": 162.5,
+        "type": "moveClick",
+        "selector": "#btn-hit",
+        "duration": 400
+      },
+      {
+        "frame": 32,
+        "at": 0,
+        "type": "moveClick",
+        "selector": "#btn-hit",
+        "duration": 375
+      },
+      {
+        "frame": 33,
+        "at": 200,
+        "type": "moveClick",
+        "selector": "#btn-hit",
+        "duration": 400
+      },
+      {
+        "frame": 34,
+        "at": 1050,
+        "type": "moveClick",
+        "selector": "#btn-hit",
+        "duration": 400
+      },
+      {
+        "frame": 36,
+        "at": 0,
+        "type": "hide"
+      }
+    ]
+  },
   "frames": [
     {
       "transition": {
