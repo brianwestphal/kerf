@@ -6,10 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
-- Fixed the morph dropping static sibling text next to a fine-grained bound text hole (`<div>{boundLabel} / static</div>` losing ` / static` after a structural re-render): the reconciler's child pairing now steps past the live text node a binding marker owns, so template statics pair with their real counterparts. The keyed-list text fast path also bails to the morph when a binding marker precedes the changed text, closing the same off-by-one on rows. Bound holes mixed with static siblings are fully supported (and now documented in the reactivity guide).
-- New **Getting started** page on the site (now the hero's "Get started" target) built around an animated end-to-end coding session — a counter is typed line by line into an editor, `npm run dev` runs in a terminal (with the localhost link clicked), the app is clicked in a browser, then a subtle edit adds a bound `computed` class (` computed,` push-typed into the import, `"btn"` selected and retyped as `{cls}` — with the rest of each line genuinely shifting as characters land) and the browser shows the button change at the fifth click. Scene changes glide like app switches (windows scale away toward a corner and return from it), typed lines hand off seamlessly to their syntax-colored form, and a lower third on the edit scene states the expected outcome before the browser proves it. The same animation opens the README.
-- The docs' "architecture in one diagram" is now a real animated SVG (a signal write pulsing down the bound-hole path, then lighting the structural pipeline stage by stage) instead of an ASCII block, with a prose fallback for accessibility. Both animations are produced by a new static-page mechanism in the demo-capture pipeline (`site/scripts/demo-captures/pages/`).
-- README: the site link now sits directly under the logo and name.
+## [2.0.1] - 2026-07-23
+
+
+
+- Fixed a `morph()` bug where static text siblings of a fine-grained bound text hole were dropped after a structural re-render (e.g. `<div>{label} / static</div>` collapsing to just the label).
+
+
+- New animated coding-session demo on the getting-started page: watch the canonical counter get typed out, served, clicked in a browser, and live-edited into a todo list.
+- Added an animated architecture diagram and a link to the docs site from the README.
 
 ## [2.0.0] - 2026-07-23
 
