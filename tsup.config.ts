@@ -16,7 +16,14 @@ export default defineConfig({
   splitting: true,
   clean: true,
   sourcemap: true,
-  dts: true,
+  // The .d.ts build runs on typescript@6 (the JS-API bridge release — the
+  // native typescript@7 ships no JS API, so rollup-plugin-dts can't use it).
+  // tsup hardcodes `baseUrl: "."` into the dts compiler options, and TS 6
+  // enforces the TS 7 deprecations as errors (TS5101) — `ignoreDeprecations`
+  // waives exactly that. Kept here, NOT in tsconfig.json, so the repo's own
+  // configs stay clean for the native TS 7 `tsc` that runs every typecheck
+  // gate (see the `typescript7` npm alias in package.json).
+  dts: { compilerOptions: { ignoreDeprecations: '6.0' } },
   minify: false,
   treeshake: true,
   // @preact/signals-core stays external — consumers' bundlers pick it up

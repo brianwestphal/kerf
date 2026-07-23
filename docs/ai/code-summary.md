@@ -107,7 +107,7 @@ kerf/
 │       ├── consumer-app/                  ← KF-123 — esbuild-bundled downstream-style app; main.tsx exercises every public primitive (counter/store/each/arraySignal/delegateCapture/focus/morph-skip/SVG/Fragment/declaration-merged custom element). Driven by `tests/browser/consumer-app.spec.ts`
 │       ├── example-apps/                  ← KF-165 — Vite-bundled `site/src/examples/complete/<name>/` apps re-emitted with `base: './'` so the Playwright webServer can serve them at `/tests/dist/example-apps/<name>/`. Driven by `tests/browser/example-apps.spec.ts`
 │       │   └── build.mjs                  ← one Vite build per app; called from `tests/browser/global-setup.mjs`
-│       ├── jsx-typing/                    ← KF-123 — `tsc -p tests/dist/jsx-typing/tsconfig.json` typechecks consumer .tsx against `dist/jsx-runtime.d.ts` to catch IntrinsicElements self-shadow / declaration-merging regressions; gated by `npm run check`
+│       ├── jsx-typing/                    ← KF-123 — `tsc -p tests/dist/jsx-typing/tsconfig.json` (the native TS 7 `tsc` via the `typescript7` alias) typechecks consumer .tsx against `dist/jsx-runtime.d.ts` to catch IntrinsicElements self-shadow / declaration-merging regressions; gated by `npm run check`
 │       ├── safe-html-cross-bundle.test.ts ← KF-14 regression
 │       └── store-registry-shared.test.ts  ← KF-15 regression
 ├── examples/
@@ -241,7 +241,9 @@ The JSX runtime is a separate subpath export at `kerfjs/jsx-runtime`. It's refer
 
 ## Build outputs
 
-`npm run build` → `tsup` → `dist/`:
+`npm run build` → `tsup` → `dist/`. TypeScript is dual-track (KF-375): the native **TypeScript 7** compiler — installed as the `typescript7` npm alias, invoked as `node node_modules/typescript7/bin/tsc` — runs every typecheck gate (`npm run typecheck` and the three `-p` dist-typing gates plus the docs-examples compile), while `typescript@6` (the JS-API bridge; native 7 ships no JS API) remains the resolvable `typescript` package for tsup's `.d.ts` emit and typescript-eslint (whose peer range caps at `<6.1.0`). `tsup.config.ts` sets `dts.compilerOptions.ignoreDeprecations: '6.0'` because tsup hardcodes the TS-7-removed `baseUrl` into its dts build — the waiver lives there, not in tsconfig.json.
+
+Outputs:
 
 - `dist/index.js` (ESM bundle, ~11 KB min+gz including `@preact/signals-core`; ~12 KB if a consumer also imports `arraySignal` from `kerfjs/array-signal`. See `bench/results.md` for the per-shape numbers.)
 - `dist/index.d.ts` (types)

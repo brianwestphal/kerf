@@ -11,8 +11,8 @@ The name *kerf* is a woodworking term — the narrow strip a saw blade removes. 
 ## Tech Stack
 
 - **Runtime**: Browser (modern, ES2022+). Node 22.12+ for build/test (Astro requirement).
-- **Language**: TypeScript (strict mode, ESM-only).
-- **Build**: tsup (esbuild + tsc-emit). Outputs ESM + types.
+- **Language**: TypeScript (strict mode, ESM-only). Dual-track toolchain: the **native TypeScript 7** compiler (installed as the `typescript7` npm alias; invoked as `node node_modules/typescript7/bin/tsc`) runs every typecheck gate (`npm run typecheck`, the three `-p` dist-typing gates, the docs-examples compile), while **`typescript@6`** (the JS-API bridge release — the native 7 package ships no JS API) stays the resolvable `typescript` package for API consumers: tsup's `.d.ts` build and typescript-eslint. Don't collapse the two — `@typescript-eslint` caps its peer at `<6.1.0` and rollup-plugin-dts needs `lib/typescript.js`.
+- **Build**: tsup (esbuild + dts emit via typescript@6; `ignoreDeprecations: '6.0'` is set in `tsup.config.ts`'s `dts.compilerOptions` because tsup hardcodes the TS-7-removed `baseUrl` into the dts build — keep that waiver out of tsconfig.json so the native 7 gates stay strict). Outputs ESM + types.
 - **Tests**: vitest with `happy-dom` as the default environment. `tests/unit/toElement.test.ts` overrides to `jsdom` (via `@vitest-environment jsdom`) because happy-dom's `DOMParser('image/svg+xml')` returns a document with `null` `documentElement` for SVG input — jsdom gets it right, and so do real browsers. Both `jsdom` and `@types/jsdom` are devDeps for that one file; do not remove them.
 - **Lint**: eslint flat config + `simple-import-sort` + typescript-eslint.
 

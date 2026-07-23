@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "Hot Sheet",
+          "rules": [
+            {
+              "id": "review-note",
+              "name": "ReviewNote",
+              "shortDescription": {
+                "text": "AI-authored, line-anchored review note."
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "review-note",
+          "ruleIndex": 0,
+          "kind": "informational",
+          "level": "none",
+          "guid": "mrx6f9wtccqswh5r",
+          "message": {
+            "text": "**Why `ignoreDeprecations` lives here and not in tsconfig.json.** The dts build is the one consumer that still runs on `typescript@6` (the JS-API bridge — native `typescript@7` ships no `lib/typescript.js`, so rollup-plugin-dts cannot load it), and tsup hardcodes `baseUrl: compilerOptions.baseUrl || '.'` into its dts compiler options (`node_modules/tsup/dist/rollup.js`), which TS 6 rejects as error TS5101 (`baseUrl` is removed in TS 7). Scoping the waiver to `dts.compilerOptions` keeps tsconfig.json clean so the native TS 7 `tsc` (the `typescript7` alias) that runs every typecheck gate stays fully strict — putting it in tsconfig would silence deprecations for the whole repo and break the moment TS 7 drops recognition of the '6.0' value.",
+            "markdown": "**Why `ignoreDeprecations` lives here and not in tsconfig.json.** The dts build is the one consumer that still runs on `typescript@6` (the JS-API bridge — native `typescript@7` ships no `lib/typescript.js`, so rollup-plugin-dts cannot load it), and tsup hardcodes `baseUrl: compilerOptions.baseUrl || '.'` into its dts compiler options (`node_modules/tsup/dist/rollup.js`), which TS 6 rejects as error TS5101 (`baseUrl` is removed in TS 7). Scoping the waiver to `dts.compilerOptions` keeps tsconfig.json clean so the native TS 7 `tsc` (the `typescript7` alias) that runs every typecheck gate stays fully strict — putting it in tsconfig would silence deprecations for the whole repo and break the moment TS 7 drops recognition of the '6.0' value."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "tsup.config.ts"
+                },
+                "region": {
+                  "startLine": 20,
+                  "endLine": 28,
+                  "snippet": {
+                    "text": "  // native typescript@7 ships no JS API, so rollup-plugin-dts can't use it).\n  // tsup hardcodes `baseUrl: \".\"` into the dts compiler options, and TS 6\n  // enforces the TS 7 deprecations as errors (TS5101) — `ignoreDeprecations`\n  // waives exactly that. Kept here, NOT in tsconfig.json, so the repo's own\n  // configs stay clean for the native TS 7 `tsc` that runs every typecheck\n  // gate (see the `typescript7` npm alias in package.json).\n  dts: { compilerOptions: { ignoreDeprecations: '6.0' } },\n  minify: false,\n  treeshake: true,"
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "tags": [
+              "rationale"
+            ]
+          },
+          "workItemUris": [
+            "KF-375"
+          ],
+          "partialFingerprints": {
+            "prNoteAnchor/v1": "cff1cebba900492391192031f3b25d69"
+          }
+        }
+      ],
+      "versionControlProvenance": [
+        {
+          "repositoryUri": "git@github.com:brianwestphal/kerf.git",
+          "revisionId": "19f4be89ebbde25b6f6935c5f2aaca0cf3101651",
+          "branch": "main"
+        }
+      ]
+    }
+  ]
+}

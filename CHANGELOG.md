@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Toolchain: the repo now type-checks with the native **TypeScript 7** compiler across every gate (`typecheck`, the dist `.d.ts` typing gates, the docs code-block compile — a full-repo `tsc --noEmit` now takes ~0.3 s), with `typescript@6` (the JS-API bridge release) retained for tsup's `.d.ts` emit and typescript-eslint, which still require the JS compiler API. `@typescript-eslint/*` bumped to 8.65. No shipped-code changes — `dist/` output is unaffected.
+
 ## [2.0.1] - 2026-07-23
 
 

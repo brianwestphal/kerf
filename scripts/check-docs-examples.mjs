@@ -242,7 +242,7 @@ if (totalCompiledBlocks === 0) {
 }
 
 try {
-  execSync(`npx tsc -p ${scratchDir}`, { stdio: 'inherit' });
+  execSync(`node node_modules/typescript7/bin/tsc -p ${scratchDir}`, { stdio: 'inherit' });
   ok(`${totalCompiledBlocks} self-contained kerf code blocks compile clean (${totalSkippedBlocks} fragments skipped)`);
   rmSync(scratchDir, { recursive: true, force: true });
 } catch {

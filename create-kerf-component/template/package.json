@@ -30,6 +30,6 @@
   "devDependencies": {
     "kerfjs": "^0.15.0",
     "tsup": "^8",
-    "typescript": "^5"
+    "typescript": "^5 || ^6"
   }
 }
