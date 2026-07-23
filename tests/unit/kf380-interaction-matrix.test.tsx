@@ -454,11 +454,63 @@ describe('KF-380 interaction matrix: morph × owned each() rows × conditional s
       </div>
     ));
     expect(labels()).toEqual(['A', 'B']);
+    const rowA = root.querySelector('li[data-key="a"]');
     banner.value = false;
     expect(labels()).toEqual(['A', 'B']);
+    // BY DESIGN (KF-383, resolved WONTFIX): unlike every other shifted-list
+    // shape in this file, this one does NOT keep row identity. A same-tag
+    // unkeyed sibling positionally takes the container's place, so the
+    // mismatch happens one level ABOVE the marker and the marker-aware
+    // lookahead can never engage; the container is rebuilt and mount()
+    // self-heals with fresh rows. Correct, announced by
+    // KERF_DEV_WARN_LIST_REBIND, and fixable by the author with one attribute
+    // (see the next test). Covering it in the reconciler would need a third
+    // matching mode in the morph's hottest loop. Pinned so the trade-off is
+    // explicit: if this assertion ever flips, the reconciler changed and this
+    // comment is stale.
+    expect(root.querySelector('li[data-key="a"]')).not.toBe(rowA);
     banner.value = true;
     expect(labels()).toEqual(['A', 'B']); // was ['A','B','A','B'] before KF-381
     expect(labels(root.querySelector('ul.banner') as HTMLElement)).toEqual([]);
+    dispose();
+  });
+
+  it('KF-383: keying the LIST CONTAINER is the documented fix for the shape above — identity survives both directions', () => {
+    // The escape hatch kerf documents for the shape-2 trade-off, guarded here
+    // so the guidance can't rot. A key on the list's own container makes it
+    // ineligible for positional matching AND findable by key, so neither
+    // toggle direction can hijack it.
+    //
+    // NOTE the asymmetry, verified empirically: keying the CONDITIONAL SIBLING
+    // instead only fixes the toggle-OFF direction. On toggle-ON the template's
+    // keyed banner has no live counterpart, the keyed lookup misses, and the
+    // fallback positional match tests only the LIVE node's key — so the
+    // unkeyed live container is hijacked anyway. Key the container, not the
+    // sibling. (Wrapping the sibling in an always-present container also
+    // works, but costs an element.)
+    const banner = signal(true);
+    const dispose = mount(root, () => (
+      <div>
+        {banner.value ? <ul class="banner"><li class="hd">warn</li></ul> : ''}
+        <ul class="list" data-key="the-list">
+          {each(ROWS, (r) => <li data-key={r.id}>{r.label}</li>)}
+        </ul>
+      </div>
+    ));
+    expect(labels()).toEqual(['A', 'B']);
+    const rowA = root.querySelector('li[data-key="a"]');
+
+    banner.value = false;
+    expect(labels()).toEqual(['A', 'B']);
+    expect(root.querySelector('li[data-key="a"]')).toBe(rowA);
+
+    banner.value = true;
+    expect(labels()).toEqual(['A', 'B']);
+    expect(root.querySelector('li[data-key="a"]')).toBe(rowA);
+    expect(labels(root.querySelector('ul.banner') as HTMLElement)).toEqual([]);
+
+    banner.value = false; // and it holds across repeats
+    expect(root.querySelector('li[data-key="a"]')).toBe(rowA);
     dispose();
   });
 

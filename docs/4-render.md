@@ -38,7 +38,18 @@ Elements without a key are matched positionally by tag name, with a forward look
 
 The lookahead also covers the `each()` list marker itself. A list's begin-anchor is a comment node, and its rows live only in the live tree (the template carries the bare marker), so a conditional sibling *inside* the list's parent — a header row that comes and goes above the list — would otherwise leave the marker un-matched at the cursor. kerf matches it by its exact marker data and moves it up, carrying its whole run of rows with it, so the list binding never detaches and every row keeps its DOM identity, focus, and caret. Moving the marker and its rows as one unit is what stops a later template sibling (a trailing button, say) from landing between the anchor and the rows it anchors.
 
-Two shapes still rebuild a list's container: an *ancestor's tag* changing across renders (`<section>` ↔ `<article>` around the same list), and a *same-tag sibling* that positionally takes the container's place (a `<ul>` banner rendered before a `<ul>` list). Both replace the container, and kerf self-heals — re-binding the list, discarding any rows stranded by the swap, and repopulating. That recovery is correct but lossy: the rows are fresh nodes, so focus, scroll, and IME state on them are discarded. If the rows should survive, keep ancestor tags stable and give a conditional same-tag sibling a distinguishing `id`/`data-key` (or wrap it in an always-present container) so it can't pair with the list's container. The opt-in dev warning `KERF_DEV_WARN_LIST_REBIND=1` surfaces each list the first time such a rebuild happens (see [`docs/11-dev-warnings.md`](11-dev-warnings.md)).
+Two shapes still rebuild a list's container: an *ancestor's tag* changing across renders (`<section>` ↔ `<article>` around the same list), and a *same-tag sibling* that positionally takes the container's place (a `<ul>` banner rendered before a `<ul>` list). Both replace the container, and kerf self-heals — re-binding the list, discarding any rows stranded by the swap, and repopulating. That recovery is correct but lossy: the rows are fresh nodes, so focus, scroll, and IME state on them are discarded.
+
+If the rows should survive, keep ancestor tags stable, and **give the list's own container a stable `id` or `data-key`**:
+
+```tsx
+<div>
+  {showBanner.value ? <ul class="banner">…</ul> : ''}
+  <ul data-key="results">{each(rows.value, …)}</ul>
+</div>
+```
+
+A key makes the container ineligible for positional matching *and* findable by key, so no sibling can take its place from either direction. Note the asymmetry: keying the *conditional sibling* instead only helps when the sibling is being removed — when it reappears, its key has no live counterpart, the diff falls back to position, and the unkeyed container is taken over anyway. Key the container, not the sibling. The opt-in dev warning `KERF_DEV_WARN_LIST_REBIND=1` surfaces each list the first time such a rebuild happens (see [`docs/11-dev-warnings.md`](11-dev-warnings.md)).
 
 ```tsx
 // Reorderable list — give each row a stable data-key

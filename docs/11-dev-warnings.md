@@ -251,9 +251,12 @@ self-heal branch after the stale binding is dropped, with the fresh container
 the cloned marker landed in. The function: (1) short-circuits on NODE_ENV /
 env var; (2) checks a module-level `warnedIds` Set for dedup; (3) fires a
 `console.warn` naming the list id and container tag, explaining the row-state
-loss, and pointing at keeping the structure around a list stable (stable
-ancestor tags; a distinguishing key on a conditional same-tag sibling, or
-wrapping it in an always-present container) as the fix.
+loss, and pointing at the fix: give the **list's own container** a stable
+`id`/`data-key` (which makes it both un-hijackable positionally and findable
+by key), plus stable ancestor tags. The message explicitly steers away from
+keying the *conditional sibling*, which only helps in the removal direction —
+when the sibling reappears its key has no live counterpart, the diff falls
+back to position, and the unkeyed container is taken over anyway.
 
 **Dedup scope.** Per list id (same as `KERF_DEV_WARN_EACH_IN_MORPH_SKIP`).
 One warning per `each()` callsite, not one per rebuild.

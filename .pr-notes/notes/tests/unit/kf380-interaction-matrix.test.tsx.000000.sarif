@@ -102,6 +102,69 @@
           "branch": "main"
         }
       ]
+    },
+    {
+      "tool": {
+        "driver": {
+          "name": "Hot Sheet",
+          "rules": [
+            {
+              "id": "review-note",
+              "name": "ReviewNote",
+              "shortDescription": {
+                "text": "AI-authored, line-anchored review note."
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "review-note",
+          "ruleIndex": 0,
+          "kind": "informational",
+          "level": "none",
+          "guid": "mry26rhpb2zpb471",
+          "message": {
+            "text": "This test exists because verifying the WONTFIX escape hatch found the documented guidance was half-wrong. Measured, not reasoned: keying the CONDITIONAL SIBLING preserves row identity on toggle-OFF but NOT toggle-ON (the template's keyed banner has no live counterpart, the keyed lookup misses, and the positional fallback tests only the LIVE node's key, so the unkeyed container is hijacked anyway). Keying the LIST'S OWN container works in both directions and across repeats, because the key makes it simultaneously ineligible for positional matching and findable by key. docs/4 §4.2, docs/11 §11.2.9, the KERF_DEV_WARN_LIST_REBIND message, and the CHANGELOG were all corrected from the sibling-keying advice to container-keying; this test guards the corrected guidance so it cannot rot.",
+            "markdown": "This test exists because verifying the WONTFIX escape hatch found the documented guidance was half-wrong. Measured, not reasoned: keying the CONDITIONAL SIBLING preserves row identity on toggle-OFF but NOT toggle-ON (the template's keyed banner has no live counterpart, the keyed lookup misses, and the positional fallback tests only the LIVE node's key, so the unkeyed container is hijacked anyway). Keying the LIST'S OWN container works in both directions and across repeats, because the key makes it simultaneously ineligible for positional matching and findable by key. docs/4 §4.2, docs/11 §11.2.9, the KERF_DEV_WARN_LIST_REBIND message, and the CHANGELOG were all corrected from the sibling-keying advice to container-keying; this test guards the corrected guidance so it cannot rot."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "tests/unit/kf380-interaction-matrix.test.tsx"
+                },
+                "region": {
+                  "startLine": 478,
+                  "endLine": 515,
+                  "snippet": {
+                    "text": "  it('KF-383: keying the LIST CONTAINER is the documented fix for the shape above — identity survives both directions', () => {\n    // The escape hatch kerf documents for the shape-2 trade-off, guarded here\n    // so the guidance can't rot. A key on the list's own container makes it\n    // ineligible for positional matching AND findable by key, so neither\n    // toggle direction can hijack it.\n    //\n    // NOTE the asymmetry, verified empirically: keying the CONDITIONAL SIBLING\n    // instead only fixes the toggle-OFF direction. On toggle-ON the template's\n    // keyed banner has no live counterpart, the keyed lookup misses, and the\n    // fallback positional match tests only the LIVE node's key — so the\n    // unkeyed live container is hijacked anyway. Key the container, not the\n    // sibling. (Wrapping the sibling in an always-present container also\n    // works, but costs an element.)\n    const banner = signal(true);\n    const dispose = mount(root, () => (\n      <div>\n        {banner.value ? <ul class=\"banner\"><li class=\"hd\">warn</li></ul> : ''}\n        <ul class=\"list\" data-key=\"the-list\">\n          {each(ROWS, (r) => <li data-key={r.id}>{r.label}</li>)}\n        </ul>\n      </div>\n    ));\n    expect(labels()).toEqual(['A', 'B']);\n    const rowA = root.querySelector('li[data-key=\"a\"]');\n\n    banner.value = false;\n    expect(labels()).toEqual(['A', 'B']);\n    expect(root.querySelector('li[data-key=\"a\"]')).toBe(rowA);\n\n    banner.value = true;\n    expect(labels()).toEqual(['A', 'B']);\n    expect(root.querySelector('li[data-key=\"a\"]')).toBe(rowA);\n    expect(labels(root.querySelector('ul.banner') as HTMLElement)).toEqual([]);\n\n    banner.value = false; // and it holds across repeats\n    expect(root.querySelector('li[data-key=\"a\"]')).toBe(rowA);\n    dispose();\n  });"
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "tags": [
+              "test-evidence"
+            ]
+          },
+          "workItemUris": [
+            "KF-383"
+          ],
+          "partialFingerprints": {
+            "prNoteAnchor/v1": "300a88783ece298d5c7584e079741e4f"
+          }
+        }
+      ],
+      "versionControlProvenance": [
+        {
+          "repositoryUri": "git@github.com:brianwestphal/kerf.git",
+          "revisionId": "1a288d94a75f45f4592796fb3e8b8ffe04d72d41",
+          "branch": "main"
+        }
+      ]
     }
   ]
 }
