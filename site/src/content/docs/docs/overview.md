@@ -49,40 +49,9 @@ Everything else is detail.
 
 ## 1.5 The architecture in one diagram
 
-```
-   user code
-   ─────────────────────────────────────────────
-   const count = signal(0);
+[![Animated architecture diagram: a signal write flows down two paths — a bound value hole updates one node directly with no re-render, while a .value read in the render re-fires the effect through SafeHtml, morph(), and the each() reconciler down to minimal DOM mutations](https://brianwestphal.github.io/kerf/demos/architecture.svg)](https://brianwestphal.github.io/kerf/)
 
-   mount(rootEl, () => (                        ← effect() wrapper
-     <div>
-       <button data-action="inc">+</button>     ← Tier 1 delegation target
-       <span>{count}</span>                     ← BOUND: signal passed, not read
-     </div>
-   ));
-
-   delegate(rootEl, 'click', '[data-action="inc"]', () => {
-     count.value += 1;                           ← signal write
-   });
-   ─────────────────────────────────────────────
-                      │
-                      │  count.value++
-                      ▼
-   ┌─────────────────────────────────────────┐
-   │ bound hole ({count}, class={sig}):       │
-   │   → one effect writes the text node /    │
-   │     attribute directly — NO render       │
-   │     re-run, NO morph, NO reconcile       │
-   ├─────────────────────────────────────────┤
-   │ .value read in the render fn             │
-   │ (structural: cond ? <a/> : <b/>):        │
-   │   effect() re-fires the render fn        │
-   │   → SafeHtml (segment tree)              │
-   │   → morph(live, template, ownedItems)    │
-   │   → each() reconciler patches each list  │
-   │   → minimal DOM mutations applied        │
-   └─────────────────────────────────────────┘
-```
+In prose: a `count.value += 1` write reaches the DOM down one of two paths. A **bound value hole** (`{count}`, `class={sig}` — the signal itself in the hole, not `.value`) has one binding effect that writes the text node or attribute directly: no render re-run, no morph, no reconcile. A **`.value` read inside the render function** (structural — conditionals, list shape) re-fires the `effect()` wrapper: the render produces a `SafeHtml` segment tree, `morph()` reconciles the static surrounds in place, the `each()` keyed reconciler patches list rows, and the minimum set of DOM mutations lands — element identity and focus preserved.
 
 ## 1.6 Reading order for the rest of the docs
 

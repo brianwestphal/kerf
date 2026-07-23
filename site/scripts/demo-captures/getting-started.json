@@ -1,0 +1,200 @@
+{
+  "width": 760,
+  "height": 560,
+  "output": "site/public/demos/getting-started.svg",
+  "optimize": true,
+  "vars": {
+    "base": "http://localhost:4188",
+    "easeOut": "cubic-bezier(0.215,0.61,0.355,1)",
+    "pop": "cubic-bezier(0.175,0.885,0.32,1.275)"
+  },
+  "cursor": "auto",
+  "frames": [
+    {
+      "transition": { "type": "cut", "duration": 0 },
+      "input": "${base}/getting-started/",
+      "waitFor": "#code",
+      "wait": 200,
+      "duration": 900
+    },
+    {
+      "continue": true,
+      "transition": { "type": "cut", "duration": 0 },
+      "actions": [{ "type": "evaluate", "script": "window.snap(1)" }],
+      "duration": 800
+    },
+    {
+      "continue": true,
+      "transition": { "type": "cut", "duration": 0 },
+      "actions": [{ "type": "evaluate", "script": "window.snap(2)" }],
+      "duration": 1000
+    },
+    {
+      "continue": true,
+      "transition": { "type": "cut", "duration": 0 },
+      "actions": [{ "type": "evaluate", "script": "window.snap(3)" }],
+      "duration": 800
+    },
+    {
+      "continue": true,
+      "transition": { "type": "cut", "duration": 0 },
+      "actions": [{ "type": "evaluate", "script": "window.snap(4)" }],
+      "duration": 1200
+    },
+    {
+      "continue": true,
+      "transition": { "type": "cut", "duration": 0 },
+      "actions": [{ "type": "evaluate", "script": "window.scene('terminal'); window.term(1)" }],
+      "duration": 900
+    },
+    {
+      "continue": true,
+      "transition": { "type": "cut", "duration": 0 },
+      "actions": [{ "type": "evaluate", "script": "window.term(6)" }],
+      "duration": 1700
+    },
+    {
+      "continue": true,
+      "transition": { "type": "cut", "duration": 0 },
+      "actions": [{ "type": "evaluate", "script": "window.scene('browser'); window.appVersion('v1')" }],
+      "duration": 1000
+    },
+    {
+      "continue": true,
+      "transition": { "type": "cut", "duration": 0 },
+      "actions": [
+        { "type": "click", "selector": "#counter-btn" },
+        { "type": "wait", "ms": 120 }
+      ],
+      "animations": [
+        { "selector": "#counter-btn", "property": "scale", "from": "0.93", "to": "1", "duration": 250, "easing": "${pop}", "transformOrigin": "center" }
+      ],
+      "duration": 700
+    },
+    {
+      "continue": true,
+      "transition": { "type": "cut", "duration": 0 },
+      "actions": [
+        { "type": "click", "selector": "#counter-btn" },
+        { "type": "wait", "ms": 120 }
+      ],
+      "animations": [
+        { "selector": "#counter-btn", "property": "scale", "from": "0.93", "to": "1", "duration": 250, "easing": "${pop}", "transformOrigin": "center" }
+      ],
+      "duration": 700
+    },
+    {
+      "continue": true,
+      "transition": { "type": "cut", "duration": 0 },
+      "actions": [
+        { "type": "click", "selector": "#counter-btn" },
+        { "type": "wait", "ms": 120 }
+      ],
+      "animations": [
+        { "selector": "#counter-btn", "property": "scale", "from": "0.93", "to": "1", "duration": 250, "easing": "${pop}", "transformOrigin": "center" }
+      ],
+      "duration": 1100
+    },
+    {
+      "continue": true,
+      "transition": { "type": "cut", "duration": 0 },
+      "actions": [{ "type": "evaluate", "script": "window.scene('editor'); window.snap(5)" }],
+      "duration": 1100
+    },
+    {
+      "continue": true,
+      "transition": { "type": "cut", "duration": 0 },
+      "actions": [{ "type": "evaluate", "script": "window.snap(6)" }],
+      "duration": 1300
+    },
+    {
+      "continue": true,
+      "transition": { "type": "cut", "duration": 0 },
+      "actions": [{ "type": "evaluate", "script": "window.snap(7)" }],
+      "duration": 1100
+    },
+    {
+      "continue": true,
+      "transition": { "type": "cut", "duration": 0 },
+      "actions": [{ "type": "evaluate", "script": "window.snap(8)" }],
+      "duration": 1100
+    },
+    {
+      "continue": true,
+      "transition": { "type": "cut", "duration": 0 },
+      "actions": [{ "type": "evaluate", "script": "window.scene('browser'); window.appVersion('v2'); window.hmr(true)" }],
+      "duration": 1300
+    },
+    {
+      "continue": true,
+      "transition": { "type": "cut", "duration": 0 },
+      "actions": [{ "type": "evaluate", "script": "window.hmr(false)" }],
+      "overlays": [
+        {
+          "kind": "typing",
+          "text": "Ship it",
+          "anchor": { "selector": "#todo-input", "at": "left", "dx": 15 },
+          "fontSize": 15,
+          "color": "#1f2937",
+          "caret": true,
+          "bgColor": "#ffffff",
+          "bgWidth": 380,
+          "bgHeight": 24,
+          "speed": 20
+        }
+      ],
+      "duration": 1000
+    },
+    {
+      "continue": true,
+      "transition": { "type": "cut", "duration": 0 },
+      "actions": [
+        { "type": "fill", "selector": "#todo-input", "value": "Ship it" },
+        { "type": "press", "key": "Enter" },
+        { "type": "wait", "ms": 120 }
+      ],
+      "animations": [
+        { "selector": "#todo-list li:last-child", "property": "translateY", "from": "-8px", "to": "0px", "duration": 240, "easing": "${easeOut}" }
+      ],
+      "duration": 800
+    },
+    {
+      "continue": true,
+      "transition": { "type": "cut", "duration": 0 },
+      "overlays": [
+        {
+          "kind": "typing",
+          "text": "Tell the team",
+          "anchor": { "selector": "#todo-input", "at": "left", "dx": 15 },
+          "fontSize": 15,
+          "color": "#1f2937",
+          "caret": true,
+          "bgColor": "#ffffff",
+          "bgWidth": 380,
+          "bgHeight": 24,
+          "speed": 20
+        }
+      ],
+      "duration": 1100
+    },
+    {
+      "continue": true,
+      "transition": { "type": "cut", "duration": 0 },
+      "actions": [
+        { "type": "fill", "selector": "#todo-input", "value": "Tell the team" },
+        { "type": "press", "key": "Enter" },
+        { "type": "wait", "ms": 120 }
+      ],
+      "animations": [
+        { "selector": "#todo-list li:last-child", "property": "translateY", "from": "-8px", "to": "0px", "duration": 240, "easing": "${easeOut}" }
+      ],
+      "duration": 1400
+    },
+    {
+      "continue": true,
+      "transition": { "type": "cut", "duration": 0 },
+      "actions": [{ "type": "evaluate", "script": "window.scene('end')" }],
+      "duration": 3400
+    }
+  ]
+}

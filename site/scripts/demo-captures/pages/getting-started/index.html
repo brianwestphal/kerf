@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>kerf · getting-started coding session (capture page)</title>
+    <!--
+      Static capture page for the animated end-to-end coding session on the
+      Getting-started docs page + README. Simulates an editor, a terminal, and
+      a browser as full-window scenes; the capture config drives scene changes
+      (window.scene), editor code snapshots (window.snap), terminal output
+      (window.term), and the mock browser app (real DOM + handlers, so clicks
+      and typing are genuine interactions).
+    -->
+    <style>
+      * { box-sizing: border-box; }
+      body {
+        margin: 0; width: 760px; height: 560px; overflow: hidden;
+        font-family: system-ui, sans-serif; background: #e8eaee;
+        display: flex; align-items: center; justify-content: center;
+      }
+      .window {
+        width: 724px; height: 524px; border-radius: 10px; overflow: hidden;
+        box-shadow: 0 12px 40px rgba(15, 23, 42, 0.35); display: none; flex-direction: column;
+        background: #fff;
+      }
+      body[data-scene='editor'] .window.editor,
+      body[data-scene='terminal'] .window.terminal,
+      body[data-scene='browser'] .window.browser,
+      body[data-scene='end'] .window.end { display: flex; }
+
+      .titlebar {
+        height: 34px; flex: none; display: flex; align-items: center; gap: 8px;
+        padding: 0 12px; font-size: 12px; color: #94a3b8;
+      }
+      .dots { display: flex; gap: 6px; }
+      .dots i { width: 11px; height: 11px; border-radius: 50%; }
+      .dots i:nth-child(1) { background: #ff5f57; } .dots i:nth-child(2) { background: #febc2e; } .dots i:nth-child(3) { background: #28c840; }
+      .titlebar .title { flex: 1; text-align: center; margin-right: 45px; }
+
+      /* --- editor ---------------------------------------------------- */
+      .window.editor { background: #1e293b; }
+      .editor .titlebar { background: #0f172a; }
+      .tabbar { height: 30px; flex: none; background: #0f172a; display: flex; align-items: flex-end; padding: 0 10px; }
+      .tab {
+        background: #1e293b; color: #e2e8f0; font-size: 11.5px; border-radius: 6px 6px 0 0;
+        padding: 6px 14px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      }
+      .tab .dot { color: #fbbf24; margin-left: 6px; }
+      .codearea {
+        flex: 1; padding: 10px 0; font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 12.5px; line-height: 17px; color: #e2e8f0; overflow: hidden;
+      }
+      .ln { display: flex; white-space: pre; }
+      .ln .no { width: 40px; flex: none; text-align: right; padding-right: 14px; color: #475569; user-select: none; }
+      .ln.ln-new { background: #2563eb2b; }
+      .kw { color: #93c5fd; } .str { color: #86efac; } .num { color: #fbbf24; }
+      .tag { color: #f9a8d4; } .attr { color: #7dd3fc; } .hole { color: #fbbf24; }
+      .caret { display: inline-block; width: 7px; height: 14px; background: #e2e8f0; vertical-align: -2px; }
+
+      /* --- terminal --------------------------------------------------- */
+      .window.terminal { background: #0f172a; }
+      .terminal .titlebar { background: #020617; }
+      .termarea {
+        flex: 1; padding: 14px 18px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 13px; line-height: 22px; color: #e2e8f0; white-space: pre-wrap;
+      }
+      .t-dim { color: #64748b; } .t-green { color: #4ade80; } .t-cyan { color: #22d3ee; }
+      .t-vite { color: #a78bfa; font-weight: 600; }
+
+      /* --- browser ---------------------------------------------------- */
+      .browser .titlebar { background: #f1f5f9; border-bottom: 1px solid #e2e8f0; }
+      .urlbar {
+        flex: 1; background: #fff; border: 1px solid #e2e8f0; border-radius: 999px;
+        font-size: 11.5px; color: #475569; padding: 4px 14px; margin: 0 30px;
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      }
+      .page { flex: 1; background: #f8fafc; padding: 34px; overflow: hidden; position: relative; }
+      .hmr {
+        position: absolute; right: 12px; bottom: 10px; font-size: 11px;
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace; color: #7c3aed;
+        background: #f5f3ff; border: 1px solid #ddd6fe; border-radius: 6px; padding: 3px 10px;
+        display: none;
+      }
+      body[data-hmr='1'] .hmr { display: block; }
+      .app-v1, .app-v2 { display: none; }
+      body[data-app='v1'] .app-v1 { display: block; text-align: center; padding-top: 90px; }
+      body[data-app='v2'] .app-v2 { display: block; max-width: 420px; margin: 0 auto; }
+      .btn {
+        font: inherit; font-size: 17px; background: #2563eb; color: #fff; border: 0;
+        border-radius: 8px; padding: 12px 26px; cursor: pointer; box-shadow: 0 2px 8px #2563eb44;
+      }
+      .app-v2 h1 { font-size: 22px; margin: 0 0 14px; color: #1f2937; }
+      .todo-input {
+        font: inherit; font-size: 15px; width: 100%; padding: 10px 14px;
+        border: 1.5px solid #cbd5e1; border-radius: 8px; outline: none; background: #fff;
+      }
+      .todo-list { list-style: none; margin: 14px 0 0; padding: 0; display: grid; gap: 8px; }
+      .todo-list li {
+        background: #fff; border: 1px solid #e5e7eb; border-radius: 8px;
+        padding: 10px 14px; font-size: 15px; color: #1f2937;
+      }
+
+      /* --- end card ---------------------------------------------------- */
+      .window.end { background: #0f172a; align-items: center; justify-content: center; }
+      .endcard { text-align: center; color: #e2e8f0; }
+      .endcard .mark { font-size: 44px; font-weight: 700; letter-spacing: -1px; }
+      .endcard .cut { color: #64748b; font-size: 15px; margin-top: 2px; font-style: italic; }
+      .endcard .install {
+        margin-top: 26px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 16px; background: #1e293b; border: 1px solid #334155;
+        border-radius: 8px; padding: 12px 26px; display: inline-block;
+      }
+      .endcard .install .t-dim { color: #64748b; }
+      .endcard .sub { margin-top: 16px; font-size: 13px; color: #94a3b8; }
+    </style>
+  </head>
+  <body data-scene="editor" data-app="v1">
+    <!-- ============ editor ============ -->
+    <div class="window editor">
+      <div class="titlebar"><span class="dots"><i></i><i></i><i></i></span><span class="title">my-app — Visual Studio Code</span></div>
+      <div class="tabbar"><span class="tab">app.tsx<span class="dot">●</span></span></div>
+      <div class="codearea" id="code"></div>
+    </div>
+
+    <!-- ============ terminal ============ -->
+    <div class="window terminal">
+      <div class="titlebar"><span class="dots"><i></i><i></i><i></i></span><span class="title">my-app — zsh</span></div>
+      <div class="termarea" id="term"></div>
+    </div>
+
+    <!-- ============ browser ============ -->
+    <div class="window browser">
+      <div class="titlebar"><span class="dots"><i></i><i></i><i></i></span><span class="urlbar">localhost:5173</span></div>
+      <div class="page">
+        <div class="app-v1"><button class="btn" id="counter-btn">Clicked 0 times</button></div>
+        <div class="app-v2">
+          <h1 id="todo-count">Todos (1)</h1>
+          <input class="todo-input" id="todo-input" placeholder="What needs doing?" />
+          <ul class="todo-list" id="todo-list"><li>Try kerf</li></ul>
+        </div>
+        <div class="hmr">[vite] hot updated: /app.tsx</div>
+      </div>
+    </div>
+
+    <!-- ============ end card ============ -->
+    <div class="window end">
+      <div class="endcard">
+        <div class="mark">kerf</div>
+        <div class="cut">The smallest cut.</div>
+        <div class="install"><span class="t-dim">$</span> npm install kerfjs</div>
+        <div class="sub">~11 KB · no virtual DOM · no compiler · your existing build (or none at all)</div>
+      </div>
+    </div>
+
+    <script>
+      /* ---------- editor snapshots ---------- */
+      const K = (s) => `<span class="kw">${s}</span>`;
+      const S = (s) => `<span class="str">${s}</span>`;
+      const T = (s) => `<span class="tag">${s}</span>`;
+      const A = (s) => `<span class="attr">${s}</span>`;
+      const H = (s) => `<span class="hole">${s}</span>`;
+
+      // Final v1 (counter) program, one entry per line.
+      const V1 = [
+        `${K('import')} { signal, mount, delegate } ${K('from')} ${S("'kerfjs'")};`,
+        ``,
+        `${K('const')} count = signal(${'<span class="num">0</span>'});`,
+        `${K('const')} root = document.getElementById(${S("'app'")})!;`,
+        ``,
+        `mount(root, () ${K('=>')} (`,
+        `  &lt;${T('button')} ${A('class')}=${S('"btn"')} ${A('data-action')}=${S('"inc"')}&gt;`,
+        `    Clicked ${H('{count}')} times`,
+        `  &lt;/${T('button')}&gt;`,
+        `));`,
+        ``,
+        `delegate(root, ${S("'click'")}, ${S("'[data-action=\"inc\"]'")}, () ${K('=>')} count.value++);`,
+      ];
+
+      // Final v2 (todos) program.
+      const V2 = [
+        `${K('import')} { signal, mount, each, delegate } ${K('from')} ${S("'kerfjs'")};`,
+        ``,
+        `${K('const')} todos = signal([{ id: <span class="num">1</span>, text: ${S("'Try kerf'")} }]);`,
+        `${K('const')} root = document.getElementById(${S("'app'")})!;`,
+        `${K('let')} nextId = <span class="num">2</span>;`,
+        ``,
+        `mount(root, () ${K('=>')} (`,
+        `  &lt;${T('div')} ${A('class')}=${S('"app"')}&gt;`,
+        `    &lt;${T('h1')}&gt;Todos (${H('{todos.value.length}')})&lt;/${T('h1')}&gt;`,
+        `    &lt;${T('input')} ${A('placeholder')}=${S('"What needs doing?"')} /&gt;`,
+        `    &lt;${T('ul')}&gt;`,
+        `      ${H('{each(')}todos.value, (t) ${K('=>')} (`,
+        `        &lt;${T('li')} ${A('data-key')}=${H('{t.id}')}&gt;${H('{t.text}')}&lt;/${T('li')}&gt;`,
+        `      ))${H('}')}`,
+        `    &lt;/${T('ul')}&gt;`,
+        `  &lt;/${T('div')}&gt;`,
+        `));`,
+        ``,
+        `delegate(root, ${S("'keydown'")}, ${S("'input'")}, (e, el) ${K('=>')} {`,
+        `  ${K('if')} (e.key !== ${S("'Enter'")}) ${K('return')};`,
+        `  todos.value = [...todos.value, { id: nextId++, text: el.value }];`,
+        `  el.value = ${S("''")};`,
+        `});`,
+      ];
+
+      // Snapshots: [lines, set-of-highlighted-line-indexes, caretLine]
+      const SNAPS = [
+        [V1.slice(0, 1), [0], 0],                            // 0: import typed
+        [V1.slice(0, 4), [2, 3], 3],                         // 1: signal + root
+        [V1.slice(0, 10), [5, 6, 7, 8, 9], 9],               // 2: mount block
+        [V1, [11], 11],                                      // 3: delegate line
+        [V1, [], -1],                                        // 4: v1 settled
+        // --- the edit to v2 ---
+        [V2.slice(0, 5).concat(V1.slice(4)), [0, 2, 4], 4],  // 5: imports + state edited
+        [V2.slice(0, 17).concat(V1.slice(10)), [7, 8, 9, 10, 11, 12, 13, 14, 15], 15], // 6: new mount body
+        [V2, [18, 19, 20, 21, 22], 22],                      // 7: new delegate block
+        [V2, [], -1],                                        // 8: v2 settled
+      ];
+
+      window.snap = (i) => {
+        const [lines, hi, caretLine] = SNAPS[i];
+        document.getElementById('code').innerHTML = lines
+          .map((html, n) => `<div class="ln${hi.includes(n) ? ' ln-new' : ''}"><span class="no">${n + 1}</span><span>${html}${n === caretLine ? '<span class="caret"></span>' : ''}</span></div>`)
+          .join('');
+      };
+
+      /* ---------- terminal ---------- */
+      const TERM = [
+        `<span class="t-dim">~/my-app</span> <span class="t-green">$</span> npm run dev`,
+        ``,
+        `  <span class="t-vite">VITE v6.0.3</span>  <span class="t-green">ready in 213 ms</span>`,
+        ``,
+        `  <span class="t-green">➜</span>  Local:   <span class="t-cyan">http://localhost:5173/</span>`,
+        `  <span class="t-green">➜</span>  Network: use --host to expose`,
+      ];
+      window.term = (n) => {
+        document.getElementById('term').innerHTML = TERM.slice(0, n).join('\n');
+      };
+
+      /* ---------- scene + mock app ---------- */
+      window.scene = (s) => { document.body.dataset.scene = s; };
+      window.appVersion = (v) => { document.body.dataset.app = v; };
+      window.hmr = (on) => { if (on) document.body.dataset.hmr = '1'; else delete document.body.dataset.hmr; };
+
+      // The mock apps behave like the real thing so clicks/typing are genuine.
+      let clicks = 0;
+      document.getElementById('counter-btn').addEventListener('click', () => {
+        clicks += 1;
+        document.getElementById('counter-btn').textContent = `Clicked ${clicks} ${clicks === 1 ? 'time' : 'times'}`;
+      });
+      document.getElementById('todo-input').addEventListener('keydown', (e) => {
+        if (e.key !== 'Enter') return;
+        const input = e.target;
+        if (!input.value) return;
+        const li = document.createElement('li');
+        li.textContent = input.value;
+        document.getElementById('todo-list').appendChild(li);
+        input.value = '';
+        const n = document.querySelectorAll('#todo-list li').length;
+        document.getElementById('todo-count').textContent = `Todos (${n})`;
+      });
+
+      window.snap(0);
+    </script>
+  </body>
+</html>

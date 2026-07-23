@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>kerf · architecture diagram (capture page)</title>
+    <!--
+      Static diagram page for the animated "architecture in one diagram" SVG on
+      the site (docs/1 §1.5). Not an example app — captured directly by
+      capture-demos.sh via the PAGES mechanism. Animation phases are driven by
+      the capture config setting `data-phase` / `data-stage` on <body>.
+    -->
+    <style>
+      * { box-sizing: border-box; }
+      body {
+        font-family: system-ui, sans-serif; margin: 0; padding: 14px 18px;
+        background: #f5f5f5; color: #1f2937; width: 760px;
+      }
+      .diagram { display: grid; gap: 10px; }
+
+      /* --- code card ------------------------------------------------ */
+      .code {
+        background: #1e293b; color: #e2e8f0; border-radius: 8px;
+        padding: 10px 14px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 12.5px; line-height: 1.55; white-space: pre;
+      }
+      .code .kw { color: #93c5fd; }
+      .code .str { color: #86efac; }
+      .code .cm { color: #64748b; }
+      .code .hole { border-radius: 3px; padding: 0 2px; transition: background 250ms ease, color 250ms ease; }
+      .code .write { border-radius: 3px; padding: 0 2px; transition: background 250ms ease; }
+      body[data-phase='bound'] .code .hole { background: #2563eb; color: #fff; }
+      body[data-phase='bound'] .code .write,
+      body[data-phase='structure'] .code .write { background: #b45309; }
+
+      /* --- the write chip + branch arrows --------------------------- */
+      .flow { display: flex; justify-content: center; }
+      .write-chip {
+        background: #fff; border: 1.5px solid #b45309; color: #b45309;
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12.5px;
+        border-radius: 999px; padding: 3px 14px; transition: background 250ms ease, color 250ms ease;
+      }
+      body[data-phase='bound'] .write-chip,
+      body[data-phase='structure'] .write-chip { background: #b45309; color: #fff; }
+      .arrows { display: grid; grid-template-columns: 1fr 1fr; text-align: center; color: #94a3b8; font-size: 16px; margin: -4px 0; }
+
+      /* --- the two paths -------------------------------------------- */
+      .paths { display: grid; grid-template-columns: 1fr 1.15fr; gap: 12px; align-items: start; }
+      .card {
+        background: #fff; border: 1.5px solid #e5e7eb; border-radius: 8px;
+        padding: 10px 14px; transition: border-color 250ms ease, box-shadow 250ms ease, opacity 250ms ease;
+      }
+      .card h2 { font-size: 13px; margin: 0 0 6px; display: flex; align-items: center; gap: 8px; }
+      .card h2 .tag {
+        font-size: 10.5px; font-weight: 600; border-radius: 999px; padding: 1.5px 8px;
+        background: #f1f5f9; color: #475569;
+      }
+      body[data-phase='bound'] .card-bound { border-color: #2563eb; box-shadow: 0 0 0 3px #2563eb22; }
+      body[data-phase='bound'] .card-structure { opacity: 0.45; }
+      body[data-phase='structure'] .card-structure { border-color: #b45309; box-shadow: 0 0 0 3px #b4530922; }
+      body[data-phase='structure'] .card-bound { opacity: 0.45; }
+
+      .mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+      .card-bound .holes { font-size: 12.5px; color: #2563eb; margin-bottom: 6px; }
+      .card-bound p { font-size: 12px; margin: 0 0 8px; color: #374151; }
+      .nots { display: flex; gap: 6px; flex-wrap: wrap; }
+      .nots span {
+        font-size: 11px; border-radius: 999px; padding: 2px 9px;
+        background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe;
+      }
+      .touch {
+        margin-top: 8px; font-size: 11.5px; color: #16a34a; font-weight: 600;
+        opacity: 0; transition: opacity 250ms ease;
+      }
+      body[data-phase='bound'] .touch { opacity: 1; }
+
+      /* --- structural stage chain ----------------------------------- */
+      .stages { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+      .stages li {
+        font-size: 12px; border: 1px solid #e5e7eb; border-radius: 6px;
+        padding: 4.5px 10px; background: #fafafa; color: #374151;
+        display: flex; gap: 8px; align-items: baseline;
+        transition: background 200ms ease, border-color 200ms ease, color 200ms ease;
+      }
+      .stages li b { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-weight: 600; }
+      .stages li .n { color: #94a3b8; font-size: 10.5px; }
+      body[data-stage='1'] .stages li:nth-child(-n+1),
+      body[data-stage='2'] .stages li:nth-child(-n+2),
+      body[data-stage='3'] .stages li:nth-child(-n+3),
+      body[data-stage='4'] .stages li:nth-child(-n+4),
+      body[data-stage='5'] .stages li:nth-child(-n+5) {
+        background: #fffbeb; border-color: #b45309; color: #78350f;
+      }
+
+      /* --- tagline --------------------------------------------------- */
+      .tagline {
+        text-align: center; font-size: 13px; color: #64748b; margin: 2px 0 0;
+        transition: color 250ms ease, font-weight 250ms ease;
+      }
+      body[data-phase='done'] .tagline { color: #1f2937; font-weight: 600; }
+      .tagline b { color: #2563eb; } .tagline i { color: #b45309; font-style: normal; }
+    </style>
+  </head>
+  <body>
+    <div class="diagram">
+      <div class="code">const count = <span class="kw">signal</span>(0);
+
+<span class="kw">mount</span>(rootEl, () =&gt; (
+  &lt;div&gt;
+    &lt;button data-action=<span class="str">"inc"</span>&gt;+&lt;/button&gt;   <span class="cm">← Tier-1 delegation target</span>
+    &lt;span&gt;<span class="hole">{count}</span>&lt;/span&gt;                   <span class="cm">← bound: the signal itself, not .value</span>
+  &lt;/div&gt;
+));
+
+<span class="kw">delegate</span>(rootEl, <span class="str">'click'</span>, <span class="str">'[data-action="inc"]'</span>, () =&gt; <span class="write">count.value += 1</span>);</div>
+
+      <div class="flow"><span class="write-chip">count.value += 1</span></div>
+      <div class="arrows"><span>↓</span><span>↓</span></div>
+
+      <div class="paths">
+        <div class="card card-bound">
+          <h2>Value hole <span class="tag">bound</span></h2>
+          <div class="holes mono">{count} · class={sig}</div>
+          <p>One binding effect writes the text node / attribute <b>directly</b>.</p>
+          <div class="nots"><span>no re-render</span><span>no morph</span><span>no reconcile</span></div>
+          <div class="touch mono" data-touch>✓ touched: 1 text node</div>
+        </div>
+
+        <div class="card card-structure">
+          <h2>Structure <span class="tag">re-render</span></h2>
+          <ol class="stages">
+            <li><span class="n">1</span><span><b>.value</b> read in the render fn — <b>effect()</b> re-fires it</span></li>
+            <li><span class="n">2</span><span>JSX → <b>SafeHtml</b> segment tree (strings + list segments)</span></li>
+            <li><span class="n">3</span><span><b>morph()</b> reconciles the static surrounds in place</span></li>
+            <li><span class="n">4</span><span><b>each()</b> keyed reconciler patches list rows</span></li>
+            <li><span class="n">5</span><span>minimal DOM mutations applied — identity &amp; focus preserved</span></li>
+          </ol>
+        </div>
+      </div>
+
+      <p class="tagline"><b>Values bind</b>, <i>structure re-renders</i> — the smallest possible cut, either way.</p>
+    </div>
+  </body>
+</html>

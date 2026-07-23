@@ -36,6 +36,19 @@ smoke spec exercises:
 | `cart-htmx` | swap in the cart island, remove an item |
 | `row-selector` | select three rows (highlight + detail follow, "list renders" stays at 1), then Regenerate ticks it |
 | `live-poll` | the no-build app (importmap + `html` tagged template): five votes land (counts pop, bars slide, "renders" stays at 1), then Reset collapses the bars |
+| `architecture` | *(static page, not an app)* the docs' "architecture in one diagram": a `count.value += 1` write pulses down the bound-hole path (one node touched), then lights the structural pipeline stage by stage |
+| `getting-started` | *(static page, not an app)* the end-to-end coding session on the Getting-started page + README: a counter is typed into an editor, `npm run dev` starts in a terminal, the app is clicked in a browser, then the code is edited into a todo list and the browser picks it up live; closes on an install end-card |
+
+## Static capture pages
+
+Not everything captured is an example app. Hand-authored capture pages live
+under `pages/<name>/` in this directory (plain HTML + CSS, no build) and are
+listed in the `PAGES=` array in `capture-demos.sh`, which copies them into the
+serve root next to the built apps and captures them with the same
+`<name>.json` config machinery. The animated site diagrams (e.g. the
+architecture diagram embedded in the overview doc) are produced this way —
+animation phases are driven by `evaluate` actions setting `data-*` attributes
+that the page's CSS reacts to.
 
 A frame's `waitFor*` gates are readiness preconditions applied **before** that
 frame's `actions`; the capture happens **after** the actions. So assertions about

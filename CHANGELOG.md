@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- New **Getting started** page on the site (now the hero's "Get started" target) built around an animated end-to-end coding session — a counter is typed into an editor, the dev server starts in a terminal, the app is clicked in a browser, then the code is edited into a todo list and the browser picks it up live. The same animation opens the README.
+- The docs' "architecture in one diagram" is now a real animated SVG (a signal write pulsing down the bound-hole path, then lighting the structural pipeline stage by stage) instead of an ASCII block, with a prose fallback for accessibility. Both animations are produced by a new static-page mechanism in the demo-capture pipeline (`site/scripts/demo-captures/pages/`).
+- README: the site link now sits directly under the logo and name.
+
 ## [2.0.0] - 2026-07-23
 
 

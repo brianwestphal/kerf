@@ -6,6 +6,10 @@
 
 <p align="center"><em>The smallest cut.</em></p>
 
+<p align="center">
+  <a href="https://brianwestphal.github.io/kerf/"><strong>brianwestphal.github.io/kerf</strong></a> — docs · examples · live demo
+</p>
+
 ---
 
 > Introducing Kerf.
@@ -28,6 +32,10 @@ mount(document.getElementById('app')!, () => (
 ```
 
 That's it. Your JSX renders to HTML strings, kerf's native diff applies the minimum DOM mutations to make the live tree match, and signals re-run the render only when something they read actually changed.
+
+Here's the whole development loop — write a component, run the dev server, click around, edit, watch the browser pick it up:
+
+[![Animated coding session: a counter component is typed into an editor, the dev server starts in a terminal, the running app is clicked in a browser, then the code is edited into a todo list and the browser picks the change up live](https://brianwestphal.github.io/kerf/demos/getting-started.svg)](https://brianwestphal.github.io/kerf/getting-started/)
 
 ## Why Kerf
 

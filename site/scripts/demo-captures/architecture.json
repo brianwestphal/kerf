@@ -1,0 +1,89 @@
+{
+  "width": 760,
+  "height": 560,
+  "output": "site/public/demos/architecture.svg",
+  "optimize": true,
+  "vars": {
+    "base": "http://localhost:4188",
+    "pop": "cubic-bezier(0.175,0.885,0.32,1.275)"
+  },
+  "frames": [
+    {
+      "transition": { "type": "cut", "duration": 0 },
+      "input": "${base}/architecture/",
+      "waitFor": ".diagram",
+      "wait": 200,
+      "duration": 1400
+    },
+    {
+      "continue": true,
+      "transition": { "type": "cut", "duration": 0 },
+      "actions": [
+        { "type": "evaluate", "script": "document.body.dataset.phase = 'bound'" },
+        { "type": "wait", "ms": 300 }
+      ],
+      "animations": [
+        { "selector": ".write-chip", "property": "scale", "from": "0.85", "to": "1", "duration": 350, "easing": "${pop}", "transformOrigin": "center" },
+        { "selector": ".card-bound", "property": "scale", "from": "0.97", "to": "1", "duration": 350, "easing": "${pop}", "transformOrigin": "center" }
+      ],
+      "duration": 2600
+    },
+    {
+      "continue": true,
+      "transition": { "type": "cut", "duration": 0 },
+      "actions": [
+        { "type": "evaluate", "script": "document.body.dataset.phase = 'structure'; document.body.dataset.stage = '1'" },
+        { "type": "wait", "ms": 300 }
+      ],
+      "animations": [
+        { "selector": ".card-structure", "property": "scale", "from": "0.97", "to": "1", "duration": 350, "easing": "${pop}", "transformOrigin": "center" }
+      ],
+      "duration": 900
+    },
+    {
+      "continue": true,
+      "transition": { "type": "cut", "duration": 0 },
+      "actions": [
+        { "type": "evaluate", "script": "document.body.dataset.stage = '2'" },
+        { "type": "wait", "ms": 250 }
+      ],
+      "duration": 700
+    },
+    {
+      "continue": true,
+      "transition": { "type": "cut", "duration": 0 },
+      "actions": [
+        { "type": "evaluate", "script": "document.body.dataset.stage = '3'" },
+        { "type": "wait", "ms": 250 }
+      ],
+      "duration": 700
+    },
+    {
+      "continue": true,
+      "transition": { "type": "cut", "duration": 0 },
+      "actions": [
+        { "type": "evaluate", "script": "document.body.dataset.stage = '4'" },
+        { "type": "wait", "ms": 250 }
+      ],
+      "duration": 700
+    },
+    {
+      "continue": true,
+      "transition": { "type": "cut", "duration": 0 },
+      "actions": [
+        { "type": "evaluate", "script": "document.body.dataset.stage = '5'" },
+        { "type": "wait", "ms": 250 }
+      ],
+      "duration": 1400
+    },
+    {
+      "continue": true,
+      "transition": { "type": "cut", "duration": 0 },
+      "actions": [
+        { "type": "evaluate", "script": "document.body.dataset.phase = 'done'; delete document.body.dataset.stage" },
+        { "type": "wait", "ms": 300 }
+      ],
+      "duration": 3200
+    }
+  ]
+}

@@ -118,5 +118,6 @@
       "fontFamily": "system",
       "fontSize": 17
     }
-  ]
+  ],
+  "aiReviewNotes": true
 }

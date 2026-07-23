@@ -66,6 +66,7 @@ export default defineConfig({
         {
           label: 'Start here',
           items: [
+            { label: 'Getting started', slug: 'getting-started' },
             { label: 'Why Kerf', slug: 'why-kerf' },
             { label: 'Use cases', slug: 'use-cases' },
             { label: 'When to use something else', slug: 'alternatives' },
