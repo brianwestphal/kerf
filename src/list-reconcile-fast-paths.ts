@@ -37,6 +37,8 @@ const AMP = 0x26;     // &
 const EQ = 0x3D;      // =
 const SLASH = 0x2F;   // /
 const TEXT_NODE = 3;
+import { syncFormProp } from './utils/syncFormProp.js';
+
 const ELEMENT_NODE = 1;
 
 function isWhitespace(cc: number): boolean {
@@ -93,12 +95,21 @@ export function tryAttributeOnlyFastPath(
   for (const [name, rawValue] of newTag.attrs) {
     const oldValue = oldTag.attrs.get(name);
     if (oldValue === rawValue) continue;
-    liveNode.setAttribute(name, unescapeAttrValue(rawValue));
+    const value = unescapeAttrValue(rawValue);
+    liveNode.setAttribute(name, value);
+    // KF-390: this is the third attribute writer in the codebase, and it has
+    // to honor the same rule as the morph's writer and the binding writer — a
+    // mutated checked/value/selected attribute must carry the live property
+    // with it, because the browser detaches the two once the control is dirty
+    // (KF-335). Without this, whether a controlled row obeyed the app depended
+    // on which internal route the diff happened to take.
+    syncFormProp(liveNode, name, value, true);
   }
   for (const name of oldTag.attrs.keys()) {
     if (newTag.attrs.has(name)) continue;
     if (isUserAgentOwnedAttr(liveTagUpper, name)) continue;
     liveNode.removeAttribute(name);
+    syncFormProp(liveNode, name, '', false);
   }
   return true;
 }

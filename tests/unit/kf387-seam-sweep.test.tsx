@@ -140,32 +140,50 @@ describe('KF-387 seam: form-state sync × list reconcile', () => {
     dispose();
   });
 
-  it('a dirty checkbox row does NOT follow an attribute-only arraySignal update (fast path skips the property sync)', () => {
-    // KNOWN BUG KF-390 (attribute-only row fast path skips form-state
-    // property sync). When the row's TOP-LEVEL element is the control and
-    // the update changes only its attributes, tryAttributeOnlyFastPath
-    // mutates the attribute raw — the dirty control's visible state stays
-    // stale, unlike the identical operation through the morph path above.
-    // This test asserts the CURRENT (wrong) behavior; when KF-390 lands,
-    // flip the final expectation to `false`.
+  it('a dirty checkbox row is left alone when the update changes no attribute (uncontrolled preservation)', () => {
+    // This shape was originally filed as the KF-390 repro, but it does not
+    // demonstrate the bug: `done` goes false → false, so the `checked`
+    // attribute is absent before AND after and kerf mutates nothing. Leaving
+    // the user's state alone is then exactly right — the KF-335 rule is
+    // "sync the property only where we actually mutate the attribute", which
+    // is what keeps uncontrolled usage working. Pinned so the distinction
+    // between "no mutation" and "mutation without sync" stays explicit.
     const rows = arraySignal([{ id: 'a', done: false }]);
     const dispose = mount(root, () => (
       <div>{each(rows, (r) => <input type="checkbox" data-key={r.id} checked={r.done} />)}</div>
     ));
     const box = root.querySelector('input') as HTMLInputElement;
     box.checked = true; // user checks — control is dirty
-    rows.update(0, (r) => ({ ...r, done: false })); // app unchecks; attr-only diff
+    rows.update(0, (r) => ({ ...r, done: false })); // no attribute change at all
     expect(root.querySelector('input')).toBe(box);
-    expect(box.hasAttribute('checked')).toBe(false); // the attribute obeyed
-    expect(box.checked).toBe(true); // KNOWN BUG KF-390: property left stale — should be false
+    expect(box.hasAttribute('checked')).toBe(false);
+    expect(box.checked).toBe(true); // untouched, by design
     dispose();
   });
 
-  it('a dirty text input row keeps the stale user value on an attribute-only value update (fast path skips the sync)', () => {
-    // KNOWN BUG KF-390 — the `value` flavor. The input is NOT focused, so
-    // syncFormProp's focused-element exception does not apply; the morph
-    // path would write the property. Flip both final expectations when
-    // KF-390 lands (prop should become 'two').
+  it('a dirty checkbox row DOES follow an attribute-only update that really changes the attribute', () => {
+    // The genuine KF-390 shape: the row's top-level element is the control
+    // and the attribute actually flips, so the fast path mutates it — and
+    // must carry the property along, exactly as the morph route does.
+    const rows = arraySignal([{ id: 'a', done: true }]);
+    const dispose = mount(root, () => (
+      <div>{each(rows, (r) => <input type="checkbox" data-key={r.id} checked={r.done} />)}</div>
+    ));
+    const box = root.querySelector('input') as HTMLInputElement;
+    box.checked = false;
+    box.checked = true; // dirty
+    rows.update(0, (r) => ({ ...r, done: false })); // attribute genuinely removed
+    expect(root.querySelector('input')).toBe(box); // same node — fast path ran
+    expect(box.hasAttribute('checked')).toBe(false);
+    expect(box.checked).toBe(false); // property followed (was stale before KF-390)
+    dispose();
+  });
+
+  it('a dirty text input row follows an attribute-only value update', () => {
+    // The `value` flavor of KF-390, now fixed. The input is NOT focused, so
+    // syncFormProp's focused-element exception does not apply and the
+    // property follows the mutated attribute — as it always did on the morph
+    // route.
     const rows = arraySignal([{ id: 'a', v: 'one' }]);
     const dispose = mount(root, () => (
       <div>{each(rows, (r) => <input data-key={r.id} value={r.v} />)}</div>
@@ -174,7 +192,7 @@ describe('KF-387 seam: form-state sync × list reconcile', () => {
     inp.value = 'user-typed'; // dirty, not focused
     rows.update(0, (r) => ({ ...r, v: 'two' }));
     expect(inp.getAttribute('value')).toBe('two');
-    expect(inp.value).toBe('user-typed'); // KNOWN BUG KF-390: should be 'two'
+    expect(inp.value).toBe('two'); // was left at 'user-typed' before KF-390
     dispose();
   });
 });

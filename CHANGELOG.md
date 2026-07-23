@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Fixed: a controlled `checked` / `value` on an `each()` row's own top-level element could stay visibly stale after the user had interacted with it — the row reconciler's attribute-only fast path wrote the attribute without syncing the live property, so whether the control obeyed your data depended on which internal route the update happened to take.
+
 - Fixed: when a conditionally-rendered `each()` list is added or removed, a sibling list could render the *other* list's rows — a batched "hide one list and push to another" applied the queued update to the wrong list's DOM. Lists now verify which data a pending update belongs to before applying it, and rebuild from their own items when it doesn't match.
 
 - Fixed: `each()` rows inside an `<svg>` root were re-parsed in the HTML namespace on every update, so rows added or structurally changed after the first render were invisible in the browser — the initial picture looked right, which made it read as a rendering flake. Row parsing now follows the list parent's namespace (rows under `<foreignObject>` correctly stay HTML).
