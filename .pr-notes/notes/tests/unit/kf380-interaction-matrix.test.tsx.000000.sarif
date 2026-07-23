@@ -1,0 +1,107 @@
+{
+  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "Hot Sheet",
+          "rules": [
+            {
+              "id": "review-note",
+              "name": "ReviewNote",
+              "shortDescription": {
+                "text": "AI-authored, line-anchored review note."
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "review-note",
+          "ruleIndex": 0,
+          "kind": "informational",
+          "level": "none",
+          "guid": "mrxyaiily8qr9w6p",
+          "message": {
+            "text": "The two KF-381 shapes are pinned as .skip tests asserting the INTENDED contract, not as passing tests asserting the buggy duplicate-rows output. Rationale: asserting duplication as expected would make the KF-381 fix a red-to-green flip in the wrong direction and would put a wrong contract in the suite; .skip keeps the correct contract readable, and un-skipping these two tests is the fix's acceptance criterion. The npm run check gate stays green because skipped tests don't run.",
+            "markdown": "The two KF-381 shapes are pinned as .skip tests asserting the INTENDED contract, not as passing tests asserting the buggy duplicate-rows output. Rationale: asserting duplication as expected would make the KF-381 fix a red-to-green flip in the wrong direction and would put a wrong contract in the suite; .skip keeps the correct contract readable, and un-skipping these two tests is the fix's acceptance criterion. The npm run check gate stays green because skipped tests don't run."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "tests/unit/kf380-interaction-matrix.test.tsx"
+                },
+                "region": {
+                  "startLine": 270,
+                  "endLine": 270,
+                  "snippet": {
+                    "text": "  it.skip('a conditional sibling INSIDE the list parent before the marker keeps rows single (KNOWN BUG KF-381 shape 1)', () => {"
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "tags": [
+              "rationale"
+            ]
+          },
+          "workItemUris": [
+            "KF-381"
+          ],
+          "partialFingerprints": {
+            "prNoteAnchor/v1": "c146673e1aeb127c0ee5825a7880a999"
+          }
+        },
+        {
+          "ruleId": "review-note",
+          "ruleIndex": 0,
+          "kind": "informational",
+          "level": "none",
+          "guid": "mrxyaioflyr8tp36",
+          "message": {
+            "text": "The render-count pin is 4, not 3: arraySignal mutations re-run the mount render by design (that render is how the patch queue drains), so initial + two banner toggles + the granular remove = 4. The invariant this test asserts is that the four SELECTION flips add zero renders — they flow entirely through the per-row binding effects. If this pin breaks with a higher count, a selection flip started re-rendering (the FC-B3 regression); if lower, the patch-drain model changed.",
+            "markdown": "The render-count pin is 4, not 3: arraySignal mutations re-run the mount render by design (that render is how the patch queue drains), so initial + two banner toggles + the granular remove = 4. The invariant this test asserts is that the four SELECTION flips add zero renders — they flow entirely through the per-row binding effects. If this pin breaks with a higher count, a selection flip started re-rendering (the FC-B3 regression); if lower, the patch-drain model changed."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "tests/unit/kf380-interaction-matrix.test.tsx"
+                },
+                "region": {
+                  "startLine": 372,
+                  "endLine": 374,
+                  "snippet": {
+                    "text": "    // Selection flips never re-ran the render: only the initial render, the\n    // two banner toggles, and the granular remove (patch drain) did.\n    expect(render).toHaveBeenCalledTimes(4);"
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "tags": [
+              "rationale"
+            ]
+          },
+          "workItemUris": [
+            "KF-380"
+          ],
+          "partialFingerprints": {
+            "prNoteAnchor/v1": "d95518d0b19fa6629c8937092d693450"
+          }
+        }
+      ],
+      "versionControlProvenance": [
+        {
+          "repositoryUri": "git@github.com:brianwestphal/kerf.git",
+          "revisionId": "ba66de0807f201b113f1998fa6e0da7ee6cce723",
+          "branch": "main"
+        }
+      ]
+    }
+  ]
+}
