@@ -7,9 +7,9 @@ A tiny reactive UI framework. Roughly 11 KB minified + gzipped including its sol
 - **Signals** — fine-grained reactive values. `signal()`, `computed()`, `effect()`, `batch()`.
 - **Stores** — composable testable units of state. `defineStore()`, `resetAllStores()`.
 - **Render** — `mount(rootEl, () => jsx)`. JSX renders to a structured `SafeHtml`; kerf's segment-aware diff reconciles static surrounds while a keyed list reconciler owns rows from `each(...)`. The split keeps partial-update / select-row / swap-rows costs at O(changes), not O(rows).
-- **Event delegation** — `delegate()` (Tier 1, bubble) and `delegateCapture()` (Tier 2, capture) replace per-element listeners with one root-level listener per event type.
+- **Event delegation** — `delegate()` (Tier 1, bubble + auto-capture for the known non-bubblers like focus/blur/scroll) and `delegateCapture()` (Tier 2, explicit capture) replace per-element listeners with one root-level listener per event type.
 
-Plus a JSX runtime (`kerfjs/jsx-runtime`) and an SVG-aware `toElement()` for direct JSX-to-DOM conversion.
+Plus a JSX runtime (`kerfjs/jsx-runtime`), the `html` tagged template (`kerfjs/html` — identical runtime semantics with no JSX transform, so a CDN / importmap project needs no build step at all), and an SVG-aware `toElement()` for direct JSX-to-DOM conversion.
 
 ## 1.2 What kerf is NOT
 
@@ -89,3 +89,9 @@ Everything else is detail.
 - [§6 JSX runtime](6-jsx-runtime.md) — JSX → HTML strings, server-side use.
 - [§7 SVG](7-svg.md) — namespace handling and the `toElement()` escape hatch.
 - [§8 API reference](8-api-reference.md) — every export, every option.
+- [§9 Live demo](9-live-demo.md) — the GitHub Pages deploy of the reactivity demo.
+- [§10 Migrating](10-migrating.md) — the coming-from-React/Vue/Lit/… comparison hub.
+- [§11 Dev-mode warnings](11-dev-warnings.md) — the opt-in `KERF_DEV_WARN_*` family.
+- [§12 AI-assistant configs](12-ai-assistant-configs.md) — the drop-in Claude Code skill + Cursor rules.
+- [§13 Component packages](13-component-packages.md) — publishing reusable kerf components to npm.
+- [§14 Feature coverage](14-feature-coverage.md) — the per-behavior test index.

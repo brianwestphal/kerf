@@ -15,12 +15,14 @@ Both are static asset bundles. There is no server-side rendering, no API. The si
 
 ## 9.2 How it builds
 
-`npm run site:build` runs `astro build`, whose `prebuild` npm hook chains two steps before Astro itself runs:
+`npm run site:build` runs `astro build`, whose `prebuild` npm hook chains four steps before Astro itself runs:
 
 1. **`sync-docs`** — generates `site/src/content/docs/docs/*.md` and `api.md` from `docs/N-*.md` and the AI usage guide. Single source of truth = `docs/`.
 2. **`build-examples`** — runs in two passes:
-   - Builds each of the five complete apps (`site/src/examples/complete/<name>/`) via Vite into `site/public/run/<name>/`. Each app's docs page links here as **Run live →**.
+   - Builds each complete app (`site/src/examples/complete/<name>/`) via Vite into `site/public/run/<name>/`. Each app's docs page links here as **Run live →**.
    - Builds the nine-section reactivity demo (`examples/reactivity-demo/`) via its own Vite config (base `/kerf/demo/`) and copies the result into `site/public/demo/`.
+3. **`build-icons`** — generates the site's icon assets.
+4. **`gen-llms-txt`** — regenerates the site's `llms.txt` AI-discovery index.
 
 Astro then runs and copies `public/` into `dist/` as part of its normal static asset handling. The result: `site/dist/` contains the Starlight site at the root, the runnable complete apps under `dist/run/<name>/`, and the reactivity demo under `dist/demo/`. One artifact, one upload, no manual `cp` step.
 
@@ -45,7 +47,7 @@ The basic single-concept examples (9 of them) are **not** built by this pipeline
 5. `actions/upload-pages-artifact@v3` with `path: site/dist` → uploads the bundle.
 6. A separate `deploy` job uses `actions/deploy-pages@v4` to publish.
 
-The workflow uses the standard Pages permissions (`pages: write`, `id-token: write`) and a single `pages` concurrency group so overlapping pushes serialize.
+The workflow uses least-privilege permissions — top-level `contents: read`, with `pages: write` / `id-token: write` granted only to the deploy job — and a single `pages` concurrency group with `cancel-in-progress: true`, so an overlapping push cancels the older in-flight run rather than queueing behind it.
 
 ## 9.4 One-time repo setup
 
@@ -56,7 +58,7 @@ GitHub Pages source must be set to **GitHub Actions** in repo settings (`Setting
 - **Two builds, one origin.** The site at `/kerf/` and the demo at `/kerf/demo/` are independent — different framework, different toolchain, different bundles. They share only the artifact upload step. A change in one cannot break the other at build time.
 - **No redirect from the old `/kerf/` root.** Before this layout, `/kerf/` *was* the demo. After, `/kerf/` is the Starlight home and the demo continues to deploy at `/kerf/demo/`. The demo is **fully supported and the canonical "play with kerf" URL** — README.md links to it directly, and the build pipeline rebuilds it on every push to `main`. The Starlight site nav was deliberately reshaped (KF-49) to surface inline single-concept examples next to their docs, but the nine-section reactivity demo at `/kerf/demo/` remains the right link to send a colleague who wants to explore the framework outside the docs context. Anyone with a stale bookmark for the old `/kerf/` (root demo URL) lands on the marketing site instead — if preserving those inbound links matters, add a `site/public/_redirects` (or equivalent) in a follow-up.
 - **No server-side rendering.** `SafeHtml.toString()` works server-side, but both deploys are pure client-side mounts.
-- **Tied to the package homepage.** The `homepage` field in `package.json` still points at the GitHub repo, not the Pages URL. npm uses `homepage` as the package's project landing page; the repo is the canonical source of truth, the Pages site is the runnable demo of it.
+- **Tied to the package homepage.** The `homepage` field in `package.json` points at the Pages site (`https://brianwestphal.github.io/kerf/`) — npm uses `homepage` as the package's project landing page, and the docs site is the front door; the GitHub repo remains the canonical source of truth.
 
 ## 9.6 Local preview
 
@@ -71,7 +73,7 @@ npm run site:dev:hmr    # `astro dev` instead — fast HMR for editing content,
 
 Both scripts run the `sync-docs` + `build-examples` pre-step (via `prebuild` for `site:dev`, `predev:hmr` for `site:dev:hmr`), so `/kerf/`, `/kerf/demo/`, and `/kerf/run/<name>/` all resolve from one local server.
 
-The first run takes longer because that pre-step builds the five complete apps + copies the reactivity demo into `site/public/`. Subsequent runs reuse the build cache.
+The first run takes longer because that pre-step builds each complete app + copies the reactivity demo into `site/public/`. Subsequent runs reuse the build cache.
 
 For a static preview without rebuilding:
 

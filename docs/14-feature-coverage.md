@@ -112,6 +112,9 @@ axis (`cacheKey` reading an external signal) crosses all of them.
 | FC-B14 | Adversarial: full binding × reconcile transition walk (first-render / granular insert+update+remove+move / replace → snapshot rebuild) | `src/bindings.ts`, `src/list-reconcile-granular.ts`, `src/list-reconcile-snapshot.ts` | `tests/unit/bindings.test.ts` › "adversarial: full binding × reconcile transition walk (arraySignal + select-binding)" |
 | FC-B15 | Reserved marker namespace is pinned to its documented names (`data-kfb`/`data-kfbrow`/`kfb:`/`kfbr:`/`kf-list:`) | `src/bindings.ts`, `src/mount.ts` | `tests/unit/bindings.test.ts` › "emits exactly the documented reserved marker names" |
 | FC-B16 | `on*` / malformed attribute names are rejected on the bound (signal) path too — no `setAttribute('onclick', …)` live handler | `src/jsx-runtime.ts`, `src/bindings.ts` | `tests/unit/bindings.test.ts` › "throws when a signal is bound to onclick inside a mount — no handler installed", `tests/unit/bindings.test.ts` › "rejects a signal bound to a malformed attribute name" |
+| FC-B17 | The fully-bound-mount guarantee — a render reading no `.value` runs exactly once; every update flows through per-hole binding effects | `src/mount.ts`, `src/bindings.ts` | `tests/unit/bindings.test.ts` › "a single bound text hole: the render fn runs exactly once across writes"; `tests/unit/bindings.test.ts` › "several bound holes in a static frame: still one render, all holes live" |
+| FC-B18 | In-place row updates re-wire changed binding instances — self-reading holes update after `arraySignal.update()` (incl. the html-identical no-op arm), carried holes stay live | `src/bindings.ts`, `src/list-reconcile-granular.ts`, `src/list-reconcile-inplace.ts` | `tests/unit/bindings.test.ts` › "granular update(): self-reading bound TEXT hole updates (html-identical no-op arm)"; `tests/unit/bindings.test.ts` › "snapshot in-place: a cacheKey re-render re-wires the changed row; untouched rows carry for free and stay live" |
+| FC-B19 | A tag-changed row on the snapshot in-place path wires its fresh bindings; a row losing its holes disposes them | `src/list-reconcile-inplace.ts`, `src/bindings.ts` | `tests/unit/bindings.test.ts` › "snapshot in-place: a tag-changed row gets its fresh bindings WIRED (previously dropped unwired)"; `tests/unit/bindings.test.ts` › "granular update(): a row that LOSES its bound hole disposes the old effect and wires nothing" |
 
 ### §3 Stores
 
@@ -221,9 +224,6 @@ axis (`cacheKey` reading an external signal) crosses all of them.
 | FC-DW7 | `globalThis.KERF_DEV` runtime override wins over `NODE_ENV` for the shared dev-mode gate (read lazily; gates the store freeze + the opt-in warning family) | `src/utils/devMode.ts` | `tests/unit/devMode.internal.test.ts` › "isDevMode() — globalThis.KERF_DEV override wins"; `tests/unit/store.test.ts` › "dev-mode freeze respects the globalThis.KERF_DEV override (KF-334)" |
 | FC-DW8 | `KERF_DEV_WARN_STALE_BINDING` stale-fine-grained-binding warning (fast-path signal-instance switch) | `src/dev-binding-warn.ts` | `tests/unit/dev-binding-warn.internal.test.ts` › "dev-binding-warn (KERF_DEV_WARN_STALE_BINDING=1, opt-in)" |
 | FC-DW9 | `KERF_DEV_WARN_VALUE_ONLY_RERENDER` value-only re-render warning — fires on text/attr-value-only diffs, stays silent on structural diffs, one-shot per mount | `src/dev-rerender-warn.ts` | `tests/unit/dev-rerender-warn.internal.test.ts` › "warns on a text-only value change"; `tests/unit/dev-rerender-warn.internal.test.ts` › "does NOT warn on a structural change (conditional element)" |
-| FC-B10 | The fully-bound-mount guarantee — a render reading no `.value` runs exactly once; every update flows through per-hole binding effects | `src/mount.ts`, `src/bindings.ts` | `tests/unit/bindings.test.ts` › "a single bound text hole: the render fn runs exactly once across writes"; `tests/unit/bindings.test.ts` › "several bound holes in a static frame: still one render, all holes live" |
-| FC-B11 | In-place row updates re-wire changed binding instances — self-reading holes update after `arraySignal.update()` (incl. the html-identical no-op arm), carried holes stay live | `src/bindings.ts`, `src/list-reconcile-granular.ts`, `src/list-reconcile-inplace.ts` | `tests/unit/bindings.test.ts` › "granular update(): self-reading bound TEXT hole updates (html-identical no-op arm)"; `tests/unit/bindings.test.ts` › "snapshot in-place: a cacheKey re-render re-wires the changed row; untouched rows carry for free and stay live" |
-| FC-B12 | A tag-changed row on the snapshot in-place path wires its fresh bindings; a row losing its holes disposes them | `src/list-reconcile-inplace.ts`, `src/bindings.ts` | `tests/unit/bindings.test.ts` › "snapshot in-place: a tag-changed row gets its fresh bindings WIRED (previously dropped unwired)"; `tests/unit/bindings.test.ts` › "granular update(): a row that LOSES its bound hole disposes the old effect and wires nothing" |
 
 ### Integration (full pipeline)
 
@@ -262,7 +262,7 @@ purpose (KF-289 investigation outcome):
    because "every documented behavior" has no clean machine-readable boundary —
    prose describes behaviors at wildly varying granularity. It is split:
    - **Public *value* exports → automated.** Every user-facing export from
-     `kerfjs` / `kerfjs/array-signal` must be named by at least one index row
+     `kerfjs` / `kerfjs/array-signal` / `kerfjs/html` must be named by at least one index row
      (the same script enforces this). Adding a public export therefore forces a
      behavior row. This is the tractable, high-value slice — a new API can't ship
      un-indexed.

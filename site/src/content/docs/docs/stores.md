@@ -121,7 +121,7 @@ When set (and `NODE_ENV !== 'production'`), every `defineStore.set(next)` call c
 kerf: defineStore.set() called with keys missing from the current state — `items`, `editingId`. set() REPLACES state; the missing keys will be undefined after this call. Use `set({ ...get(), ...next })` to merge instead, or update each call site to pass the full state. Set KERF_DEV_WARN_NARROW_SET=0 (or unset it) to silence this warning.
 ```
 
-The warn is off by default because narrow-set IS legal — a `reset()` that drops keys, a feature-flag-driven schema change, a state shape that genuinely needs to shrink would all warn under this heuristic. Opt-in keeps the diagnostic available without penalising the legitimate cases. Production behavior is unchanged for zero runtime cost (the env-var check short-circuits before any per-set work). See [`docs/11-dev-warnings.md`](/kerf/docs/dev-warnings/) for the full dev-warn family and the rules that keep them coherent.
+The warn is off by default because narrow-set IS legal — a `reset()` that drops keys, a feature-flag-driven schema change, a state shape that genuinely needs to shrink would all warn under this heuristic. Opt-in keeps the diagnostic available without penalizing the legitimate cases. Production behavior is unchanged for zero runtime cost (the env-var check short-circuits before any per-set work). See [`docs/11-dev-warnings.md`](/kerf/docs/dev-warnings/) for the full dev-warn family and the rules that keep them coherent.
 
 ## 3.7 The `get()` snapshot is read-only in dev
 

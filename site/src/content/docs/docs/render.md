@@ -23,7 +23,7 @@ const dispose = mount(document.getElementById('app')!, () => (
 
 1. Wraps `effect()` so the render fn re-runs whenever any signal it reads changes.
 2. Evaluates `render()` to a `SafeHtml`. The wrapped `Segment` is either a single static-html node (most renders), or a tree containing `list` segments (anywhere `each(...)` was used) and `mixed` segments wrapping their parents. As a small ergonomic affordance, a render that returns `null`, `undefined`, `false`, or `true` is coerced to "render nothing" (empty string) — so `mount(el, () => cond ? <jsx/> : null)` and `mount(el, () => cond && <jsx/>)` work without each consumer adding a sentinel. Numbers stringify; real strings pass through.
-3. **First render:** sets `rootEl.innerHTML` to the flattened HTML (with sentinel comments around each list), then walks those comments to bind every list to its live parent. Bulk parse, single pass.
+3. **First render:** sets `rootEl.innerHTML` to the flattened HTML (with a sentinel comment before each list), then walks those comments to bind every list to its live parent. Bulk parse, single pass.
 4. **Subsequent renders:** builds a marker-only template (lists become `<!--kf-list:N-->` placeholders, *no row HTML*), runs kerf's native morph (`src/morph.ts`) over the static surrounds, then dispatches each list segment to a keyed reconciler that operates directly on the live parent's children. Cache-hit rows are reused verbatim. When the list's items are unchanged in count and order but some rows' content changed (the common "external state flipped a class/label" case), those rows are morphed *in place* on their existing nodes — preserving DOM identity, focus, scroll, IME composition, and in-progress CSS transitions. (This in-place behavior is new in 0.15.0; versions ≤ 0.14.x recreated the row node on a content change instead. One consequence of reusing the node: a CSS enter-animation keyed on the row element's *creation* no longer replays on a content-only update — key such animations on a state-class toggle if you need them to fire.) Genuinely new rows are batched into one parse and `insertBefore`'d into place; a longest-increasing-subsequence pass keeps reorder mutations to the minimum.
 5. Returns a disposer that tears down the effect.
 
@@ -49,7 +49,9 @@ Elements without a key are matched positionally by tag name. Pure-HTML diffs wor
 </ul>
 ```
 
-For large lists, swap `.map(...)` for the `each(items, render, cacheKey?)` helper. It returns a structured list segment that `mount()` recognizes and routes to the keyed reconciler — bypassing the parse-the-whole-table step entirely. Each row is memoized by item identity (with an optional `cacheKey` that captures external state like a "selected id"), so unchanged rows skip JSX evaluation, string-building, *and* the morph walk. Items must be objects (the cache is a `WeakMap`); the immutable-update style elsewhere in this codebase makes the cache work automatically — replace a row with a fresh object and it re-renders, leave its reference alone and it doesn't.
+For large lists, swap `.map(...)` for the `each(items, render, cacheKey?)` helper. It returns a structured list segment that `mount()` recognizes and routes to the keyed reconciler — bypassing the parse-the-whole-table step entirely. Each row is memoized by item identity (with an optional `cacheKey` that captures external state like a "selected id"), so unchanged rows skip JSX evaluation, string-building, *and* the morph walk. Items must be objects (the cache is a `WeakMap`), and the same object reference must not appear at more than one index — `each()` throws on a duplicate reference, since one object can only map to one cached row node. The immutable-update style elsewhere in this codebase makes the cache work automatically — replace a row with a fresh object and it re-renders, leave its reference alone and it doesn't.
+
+In development, if the first row of a list renders without an `id` or `data-key` attribute, kerf logs a one-shot warning (always on in dev — no env var): keyless rows match positionally, so focus and per-row state jump rows on insert/delete.
 
 ```tsx
 import { each } from 'kerfjs';
@@ -122,6 +124,7 @@ A few invariants the granular path holds:
 - **`replace()` always falls back to snapshot** — wholesale resets are easier to reconcile that way and preserve focus better.
 - **A throwing render falls back to snapshot** — pre-rendering happens at JSX-eval time inside a try/catch, so a single bad row doesn't desync the binding from the signal.
 - **Drift triggers a rebuild** — if a previous render threw mid-batch, the next render notices that `binding.length + patch_delta !== signal.length` and rebuilds via the snapshot path.
+- **An emptied list rebuilds via snapshot on refill** — once a binding's row count reaches zero there is no live row to anchor patches against, so the next non-empty render takes the snapshot path (and re-binds) rather than the patch path.
 
 See §2.6 for the full `arraySignal` API.
 
@@ -362,6 +365,8 @@ mount(footerEl, () => <div>{cartTotal.value.toFixed(2)}</div>);
 
 Each region re-renders only when its own dependencies change. Adding an item to the cart triggers all three; changing an unrelated piece of state triggers none.
 
+The regions must be disjoint: mounting the same element twice, or an element inside (or containing) an already-mounted tree, throws immediately — one mount per tree. Compose with plain functions that return JSX instead of nesting mounts; see §11.2.9 in `docs/11-dev-warnings.md` for the guard's details.
+
 ## 4.6 Server-rendering
 
 `SafeHtml.toString()` is server-safe. You can build the same JSX server-side, write the resulting string into your HTML response, and then call `mount()` on the same element on the client. The first-render path bulk-renders into the existing DOM via `innerHTML`; if the server output and client output match (which they should, given the same store state), the resulting tree is identical — and signal subscriptions are now wired up for future updates.
@@ -384,4 +389,4 @@ After dispose, signal mutations no longer trigger re-renders for this mount. The
 
 - It doesn't manage component lifecycle. There's no `onMount` / `onUnmount` / `onUpdate` hook. Use `effect()` directly if you need a side effect tied to a signal.
 - It doesn't batch updates across animation frames. If a signal mutates 100 times in 16ms, the render fn runs 100 times. Use `batch()` if you have a multi-write action that should fire once.
-- It doesn't dedupe identical renders. If your render fn returns the same HTML on consecutive runs, the diff still walks the tree (and short-circuits per element via `isEqualNode`). The cost is the walk; it's cheap for small trees, and lists go through the keyed reconciler which is even cheaper.
+- It doesn't diff what didn't change shape. A re-render whose static-surrounds HTML is byte-for-byte identical to the previous render skips the template build, parse, and morph walk entirely (the §4.4.2 fast path) — only list segments still dispatch to their reconcilers. When the surrounds DO change, the diff walks the tree with per-element `isEqualNode` short-circuits.

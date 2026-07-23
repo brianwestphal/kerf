@@ -31,7 +31,7 @@ jobs:
       - run: npm run build
       # site:build's prebuild hook handles everything else:
       #   - sync-docs (docs/*.md → Starlight pages)
-      #   - build-examples (5 complete apps → public/run/<name>/, reactivity-demo → public/demo/)
+      #   - build-examples (each complete app → public/run/<name>/, reactivity-demo → public/demo/)
       # Astro then copies public/ into dist/, producing one combined artifact.
       - run: npm run site:build
       - uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5.0.0

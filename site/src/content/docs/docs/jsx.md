@@ -59,7 +59,7 @@ JSX attributes use camelCase (React convention). The runtime translates the comm
 | `strokeWidth` | `stroke-width` |
 | `fillOpacity` | `fill-opacity` |
 | `xlinkHref` | `xlink:href` |
-| ...many more in `src/jsx-runtime.ts` | |
+| ...many more in `src/utils/jsx-attr-aliases.ts` (the `ATTR_ALIASES` table) | |
 
 Anything not in the alias table is passed through verbatim. So `data-action`, `aria-label`, `data-key` all work as expected (JSX-to-HTML uses the literal attribute name) — as long as the name is well-formed (see [§6.4.2](#642-attribute-name-validation)).
 
@@ -85,7 +85,7 @@ Plain-string values written to URL-bearing attributes are screened by scheme. If
 
 Inert `data:` media — raster images (`data:image/png`, …), fonts, audio, video, and plain text/CSS — pass through, so `<img src="data:image/png;base64,…">` still works. Every other `data:` subtype (including unknown ones) fails closed.
 
-The scheme match sees through the obfuscations a browser sees through: leading/trailing C0 control characters and spaces, and `TAB`/`LF`/`CR` anywhere in the value, are stripped before the scheme is read — so `java&#9;script:`, a leading `\x01`, or `javascript\x00:` are all recognized and dropped, not just a clean `javascript:`.
+The scheme match sees through the obfuscations a browser sees through — and then some: every C0 control character and `DEL` is stripped from anywhere in the value, then leading whitespace is trimmed, before the scheme is read. So `java&#9;script:`, a leading `\x01`, or `javascript\x00:` are all recognized and dropped, not just a clean `javascript:`. (Kerf is deliberately stricter here than the browser's own TAB/LF/CR-only stripping.)
 
 ```tsx
 <a href={userInput}>click</a>
@@ -249,7 +249,7 @@ To ship reusable components as npm packages — including the per-instance-state
 
 ## 6.10 Typed JSX intrinsic elements
 
-The JSX transform looks at `JSX.IntrinsicElements` in `kerfjs/jsx-runtime` to type-check tags and attributes. The table covers the ~30 most common HTML elements and the SVG primitives that `toElement()` supports. Misspelled tags (`<diiv>`) and misspelled attribute names (`<input typo />`) fail to compile.
+The JSX transform looks at `JSX.IntrinsicElements` in `kerfjs/jsx-runtime` to type-check tags and attributes. The table covers roughly 100 HTML elements (the full sectioning / text / embedded / forms / tables / metadata / interactive sets) and the SVG primitives that `toElement()` supports. Misspelled tags (`<diiv>`) and misspelled attribute names (`<input typo />`) fail to compile.
 
 ### Adding custom elements / web components
 

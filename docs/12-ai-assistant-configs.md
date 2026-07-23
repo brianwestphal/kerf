@@ -218,8 +218,8 @@ marker); consumers add their own project-specific guidance there.
 ## 12.4 The ESLint rule — `kerfjs/ai-assistant-configs`
 
 Implemented as a new rule in
-[`eslint-plugin-kerfjs`](../eslint-plugin/README.md). Joins the four
-existing AST rules but is fundamentally different in shape — it doesn't
+[`eslint-plugin-kerfjs`](../eslint-plugin/README.md). Joins the other
+AST rules but is fundamentally different in shape — it doesn't
 look at AST nodes; it consults the filesystem.
 
 ### 12.4.1 Trigger logic — which projects get nudged
@@ -389,7 +389,7 @@ existing CI is already running.
 | Rule source | — | `eslint-plugin/lib/rules/ai-assistant-configs.js` |
 | Rule docs | — | `eslint-plugin/docs/rules/ai-assistant-configs.md` |
 | Rule tests | — | `eslint-plugin/tests/rules/ai-assistant-configs.test.js` |
-| Recommended config | — | `eslint-plugin/index.js` `errorRules` table |
+| Recommended config | — | `eslint-plugin/index.js` `recommendedRules` table |
 | Numbered doc | This file (§12) | This file (§12.4) |
 | AI usage guide | `docs/ai/usage-guide.md` install section | `docs/ai/usage-guide.md` companion-plugin section |
 | CLAUDE.md section | "Drop-in AI-tool config" | "Drop-in AI-tool config" |

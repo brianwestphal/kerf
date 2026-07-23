@@ -12,9 +12,9 @@ A reactive value. `.value` reads / writes; reads inside `effect()` / `computed()
 
 A derived signal. Re-runs `fn` whenever any signal it reads changes. Read-only.
 
-### `effect(fn: () => void): () => void`
+### `effect(fn: () => void | (() => void)): () => void`
 
-Run `fn` immediately, then re-run it whenever any signal it reads changes. Returns a disposer.
+Run `fn` immediately, then re-run it whenever any signal it reads changes. Returns a disposer. `fn` may return a cleanup function, which runs before each re-run and on dispose (see `docs/2-reactivity.md` §2.3).
 
 ### `batch(fn: () => void): void`
 
@@ -54,7 +54,7 @@ class ArraySignal<T> {
 }
 ```
 
-All mutators throw a descriptive `Error` on out-of-bounds indices. Reads on `arraySig.value` register a tracking dependency just like `signal.value` — `computed(() => arraySig.value.filter(...))` and `effect(() => render(arraySig.value))` work the same way.
+All mutators throw a descriptive `Error` on out-of-bounds indices (with one carve-out: `move()`'s `from === to` no-op check runs *before* its bounds check, so an out-of-bounds `move(9, 9)` silently no-ops). Reads on `arraySig.value` register a tracking dependency just like `signal.value` — `computed(() => arraySig.value.filter(...))` and `effect(() => render(arraySig.value))` work the same way.
 
 The `ArraySignal<T>` class is detected via `Symbol.for('kerfjs.ArraySignal')`, not `instanceof`, so multiple bundle copies still interoperate. The brand symbol itself is also exported as **`ARRAY_SIGNAL_BRAND`** from `kerfjs/array-signal` for consumers who build their own collection types and want `each(...)` to recognize them via brand check.
 
@@ -84,7 +84,7 @@ defineStore({
 
 Creates a store with `state: ReadonlySignal<TState>`, `actions: TActions`, `reset(): void`. Registers in the global registry consumed by `resetAllStores()`.
 
-`set(next)` REPLACES state; it does NOT merge. Pass the full state object on every call, or use `set({ ...get(), ...patch })` to merge. In dev mode (`NODE_ENV !== 'production'`), `get()` returns a deep read-only `Proxy` so that any mutation of it — including a nested `get().nested.x = 1` — throws a `TypeError`; reads (spread, `JSON.stringify`, `Object.keys`, iteration) are transparent, and the live state object is never frozen. Production returns the bare reference for zero overhead. Opt in to the runtime narrow-set warning with `KERF_DEV_WARN_NARROW_SET=1` to catch partial-set bugs at the moment they happen (see [docs/11-dev-warnings.md](11-dev-warnings.md) for the full dev-warn family).
+`set(next)` REPLACES state; it does NOT merge. Pass the full state object on every call, or use `set({ ...get(), ...patch })` to merge. In dev mode (`globalThis.KERF_DEV` boolean override wins when set, else `NODE_ENV !== 'production'`), `get()` returns a deep read-only `Proxy` so that any mutation of it — including a nested `get().nested.x = 1` — throws a `TypeError`; reads (spread, `JSON.stringify`, `Object.keys`, iteration) are transparent, and the live state object is never frozen. Production returns the bare reference for zero overhead. Opt in to the runtime narrow-set warning with `KERF_DEV_WARN_NARROW_SET=1` to catch partial-set bugs at the moment they happen (see [docs/11-dev-warnings.md](11-dev-warnings.md) for the full dev-warn family).
 
 ### `resetAllStores(): void`
 
@@ -120,7 +120,7 @@ Bind `render()` to `rootEl`'s children. Wraps `effect()` with kerf's segment-awa
 
 If `rootEl` belongs to an *inert* document (no browsing context — e.g. a `DOMParser` result, a `<template>.content` child, or `document.implementation.createHTMLDocument()` output), `mount()` adopts it into the live `document` first, so its first-render `innerHTML` write is safe on every engine (some engines mis-parse `innerHTML` on inert-document elements under rapid bursts). Roots that are already in the live document — the normal case — are untouched, and a live element in another realm (e.g. an iframe) is left in place. `toElement()` output is already adopted, so this only matters for hand-rolled roots.
 
-`MountResult` is wide enough that consumers can write `() => cond ? <jsx/> : null` and `() => cond && <jsx/>` without a sentinel — matching the React / Solid convention. `null` / `undefined` / `false` / `true` coerce to "render nothing" (empty string); numbers stringify; everything else falls through `String(...)`. See `docs/4-render.md` §4.4 for the rationale and the equivalent fallback patterns. The `MountResult` type alias is exported from the main barrel for consumers that want to annotate their render functions explicitly.
+`MountResult` is wide enough that consumers can write `() => cond ? <jsx/> : null` and `() => cond && <jsx/>` without a sentinel — matching the React / Solid convention. `null` / `undefined` / `false` / `true` coerce to "render nothing" (empty string); numbers stringify; everything else falls through `String(...)`. See `docs/4-render.md` §4.1 (step 2 of the render pipeline) for the rationale and the equivalent fallback patterns. The `MountResult` type alias is exported from the main barrel for consumers that want to annotate their render functions explicitly.
 
 The diff:
 
@@ -240,7 +240,7 @@ const ITEM = { id: attr('data-id') } as const;
 <li {...ITEM.id(String(item.id))}>…</li>
 ```
 
-Both the attribute name (CSS identifier) and value (double-quoted CSS string) are CSS-escaped — SSR-safe, no `CSS.escape` dependency. Throws on an empty attribute name.
+The attribute name is validated and CSS-escaped at creation; the factory result carries the raw value (escaped later by the JSX attribute renderer when spread). In the *static* form, both the name (CSS identifier) and value (double-quoted CSS string) are CSS-escaped into `.selector` at creation — SSR-safe, no `CSS.escape` dependency. Both forms throw on an empty attribute name.
 
 For ad-hoc compound selectors, concatenate `.selector` strings:
 
@@ -297,7 +297,7 @@ class SafeHtml {
 }
 ```
 
-The return type of every JSX expression. `.toString()` returns the underlying HTML.
+The return type of every JSX expression. `.toString()` returns the underlying HTML. (The listing above is the public contract, deliberately simplified: the emitted declaration's constructor also accepts an internal `Segment` and the instance carries a `__segment` field — both internal plumbing for `mount()`'s list handling that consumers should not construct or read.)
 
 `SafeHtml` instances carry a brand symbol — `Symbol.for('kerfjs.SafeHtml')` — so cross-bundle identification works even if a consumer's bundler ends up loading two copies of kerf (e.g. the barrel and the JSX-runtime entry resolved as independent modules). Prefer `isSafeHtml()` over `instanceof SafeHtml` when writing custom integrations.
 

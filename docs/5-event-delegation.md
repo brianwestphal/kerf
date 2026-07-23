@@ -19,8 +19,9 @@ Non-bubbling events that `delegate()` auto-promotes to capture phase under the h
 ```ts
 import { delegate } from 'kerfjs';
 
-delegate(rootEl, 'click', '[data-action="add"]', (e, btn) => {
-  // `btn` is the matched element (the button), not the original target
+delegate<HTMLButtonElement>(rootEl, 'click', '[data-action="add"]', (e, btn) => {
+  // `btn` is the matched element (the button), not the original target.
+  // The generic narrows it from the default `Element` so `.dataset` typechecks.
   console.log('clicked', btn.dataset.id);
 });
 
@@ -101,7 +102,7 @@ A click on an icon inside a button should fire the button's handler, not the ico
 
 Both `delegate()` and `delegateCapture()` use `closest()` by default, for **every** event type, including the auto-promoted non-bubblers. So `delegate(root, 'focus', '.field-row', ...)` fires when a descendant `<input>` of `.field-row` receives focus, with the row as the matched element — and `delegateCapture()` behaves the same way.
 
-When you genuinely want direct-match semantics — fire only when the event lands on the exact element the selector identifies, not any descendant — pass `{ match: 'direct' }` as the optional fourth-position options argument to either helper. It switches the internal match from `closest()` to `target.matches()`.
+When you genuinely want direct-match semantics — fire only when the event lands on the exact element the selector identifies, not any descendant — pass `{ match: 'direct' }` as the optional trailing options argument (the fifth parameter, after the handler) to either helper. It switches the internal match from `closest()` to `target.matches()`.
 
 ## 5.3 Disposers
 
@@ -361,7 +362,7 @@ delegate(root, 'click',
 // → '[data-action="toggle-todo"][data-id="42"]'
 ```
 
-Both forms CSS-escape at creation time (SSR-safe; no `CSS.escape` dependency). Hand-written string literals like `'[data-action="add"]'` are still fine for one-off selectors. `attr()` earns its keep when the attribute name and value both live in a typed constant that's also referenced in JSX.
+The static form CSS-escapes the name and value at creation time; the dynamic form validates and escapes the *name* at creation, while values are escaped later by the JSX attribute renderer when the factory result is spread (SSR-safe either way; no `CSS.escape` dependency). Hand-written string literals like `'[data-action="add"]'` are still fine for one-off selectors. `attr()` earns its keep when the attribute name and value both live in a typed constant that's also referenced in JSX.
 
 ### Generic type parameter
 

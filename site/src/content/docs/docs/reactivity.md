@@ -57,6 +57,15 @@ count.value = 2;
 
 An `effect()` runs its body synchronously once on creation, then re-runs it whenever any signal read during the last run changes. Returns a disposer that tears the effect down.
 
+The body may itself return a **cleanup function**: it runs right before the next re-run and again on dispose — the place to clear a timer, abort a fetch, or remove a listener the body installed:
+
+```ts
+const dispose = effect(() => {
+  const id = setInterval(() => console.log(count.value), 1000);
+  return () => clearInterval(id); // runs before each re-run and on dispose()
+});
+```
+
 `mount()` is built on `effect()` — same semantics, with kerf's segment-aware diff as the side effect.
 
 ## 2.4 `batch(fn)`
@@ -109,14 +118,14 @@ rows.move(0, 1);
 rows.remove(0);
 rows.replace([{ id: 99, label: 'reset' }]);
 
-rows.value;       // → readonly snapshot, registers a tracking dependency
+rows.value;       // → the live array, readonly-typed; registers a tracking dependency
 ```
 
 `arraySignal` is a keyed-list-friendly variant of `signal()`. The mutators emit typed patch events (`update` / `insert` / `remove` / `move` / `replace`); when an `arraySignal` is bound to `each(...)` inside a `mount()`, the keyed list reconciler applies just the patches against the live DOM — no per-row iteration, no `classifyItems` Map build, no LIS pass over unchanged rows. Cost is **O(patches)**, not O(N).
 
 It lives in its own subpath (`kerfjs/array-signal`) so apps that don't need granular collections shed ~1 KB from the main barrel. The class itself is detected via a brand symbol — not `instanceof` — so multiple bundle copies still interoperate.
 
-Read-side semantics match a regular signal: `arraySig.value` is a snapshot, and reads inside `effect()` / `computed()` register as dependencies. So `computed(() => arraySig.value.filter(...))` works the way you expect.
+Read-side semantics match a regular signal: reads of `arraySig.value` inside `effect()` / `computed()` register as dependencies, so `computed(() => arraySig.value.filter(...))` works the way you expect. Note the returned array is the signal's live internal array typed `readonly`, not a defensive copy — a reference you hold across a later mutation will observe that mutation; spread (`[...arraySig.value]`) if you need a stable snapshot.
 
 ### When to reach for `arraySignal`
 - Long keyed lists (hundreds of rows) where most updates are pointwise (selection class flips, single-row edits, append-to-end, etc.).
@@ -209,7 +218,7 @@ The JSX runtime renders to HTML strings. When it sees a signal in a hole it emit
 
 - **SSR / `SafeHtml.toString()`**: outside a `mount()` there's nothing to wire, so a bound signal **snapshots its current value** and emits no markers — server output is correct and marker-free.
 - **Non-breaking**: passing a raw signal into JSX used to throw (`"Did you mean to read .value off a Signal?"`), so this only lights up input that couldn't run before.
-- **Bound URL attributes** (`href`/`src`/`formaction`/`action`/`xlink:href`/`data`) get the same dangerous-URL screening as static attributes — a bound value resolving to `javascript:`/`vbscript:` or a script-executing `data:` document type (`text/html`, `image/svg+xml`, XHTML/XML) is dropped, including control-character-obfuscated schemes; `raw()` opts out.
+- **Bound URL attributes** (`href`/`src`/`formaction`/`action`/`xlink:href`/`data`) get the same dangerous-URL screening as static attributes — a bound value resolving to `javascript:`/`vbscript:` or a script-executing `data:` document type (`text/html`, `image/svg+xml`, XHTML/XML) is never written (throws in development, warns and drops the attribute in production — see §6.4.1), including control-character-obfuscated schemes; `raw()` opts out.
 
 ### Reserved marker names
 

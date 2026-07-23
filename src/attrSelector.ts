@@ -20,7 +20,8 @@
  * **Dynamic form** — best for per-row data like `data-id`, where the value
  * changes per item but the attribute name is constant.
  * The name is validated and pre-escaped at definition time; calling the
- * returned factory is cheap (just escape the value and freeze the object).
+ * returned factory is cheap (it just freezes a one-key object — the value is
+ * escaped later by the JSX attribute renderer when the result is spread).
  *
  *   const ITEM = { id: attr('data-id') } as const;
  *
