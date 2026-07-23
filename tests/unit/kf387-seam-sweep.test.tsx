@@ -199,17 +199,15 @@ describe('KF-387 seam: SVG × list reconcile', () => {
     dispose();
   });
 
-  it('each() rows inside an svg root come back HTML-namespaced from every post-first-render parse', () => {
-    // KNOWN BUG KF-389 (each() svg rows lose the SVG namespace after first
-    // render). Rows are re-parsed through an HTML <template>, which never
-    // sees the <svg> context — a granular insert, a snapshot append, and a
-    // structural update all produce HTML-namespace nodes that a real
-    // browser will not paint. First-render rows are correct (inlined into
-    // the root innerHTML). This test asserts the CURRENT (wrong) behavior;
-    // when KF-389 lands, flip the three xhtml expectations to the SVG
-    // namespace.
+  it('each() rows inside an svg root keep the SVG namespace through every post-first-render parse', () => {
+    // KF-389 (fixed): each() rows inside <svg> keep the SVG namespace on
+    // EVERY parse, not just the first render. Rows used to be re-parsed
+    // through a bare HTML <template> that never saw the <svg> context, so a
+    // granular insert, a snapshot append, and a structural update each
+    // produced HTML-namespace nodes a real browser will not paint — and
+    // because first render was correct, it presented as a flake. Row parsing
+    // is now namespace-aware (utils/rowContract.ts).
     const SVG_NS = 'http://www.w3.org/2000/svg';
-    const XHTML_NS = 'http://www.w3.org/1999/xhtml';
 
     // Granular insert.
     const pts = arraySignal([{ id: 'p1' }]);
@@ -219,7 +217,7 @@ describe('KF-387 seam: SVG × list reconcile', () => {
     expect((root.querySelector('circle[data-key="p1"]') as Element).namespaceURI).toBe(SVG_NS);
     pts.push({ id: 'p2' });
     expect((root.querySelector('circle[data-key="p2"]') as Element).namespaceURI)
-      .toBe(XHTML_NS); // KNOWN BUG KF-389: should be SVG_NS
+      .toBe(SVG_NS);
     dispose1();
     root.innerHTML = '';
 
@@ -230,7 +228,7 @@ describe('KF-387 seam: SVG × list reconcile', () => {
     ));
     list.value = [...list.value, { id: 's2' }];
     expect((root.querySelector('circle[data-key="s2"]') as Element).namespaceURI)
-      .toBe(XHTML_NS); // KNOWN BUG KF-389: should be SVG_NS
+      .toBe(SVG_NS);
     dispose2();
     root.innerHTML = '';
 
@@ -245,7 +243,7 @@ describe('KF-387 seam: SVG × list reconcile', () => {
     ));
     shapes.update(0, (r) => ({ ...r, big: true }));
     expect((root.querySelector('g') as Element).namespaceURI)
-      .toBe(XHTML_NS); // KNOWN BUG KF-389: should be SVG_NS
+      .toBe(SVG_NS);
     dispose3();
   });
 });

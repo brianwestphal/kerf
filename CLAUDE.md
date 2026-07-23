@@ -215,6 +215,21 @@ The only edits to make in-flight under another ticket are ones explicitly within
 
 Use the `hs-bug` / `hs-task` / `hs-issue` / `hs-feature` / `hs-investigation` / `hs-requirement-change` skills (or POST to the Hot Sheet API directly) to file. Reference the surfacing context in the ticket title so the link back is obvious (e.g. "Surfaced by /check-code-hygiene on YYYY-MM-DD").
 
+### Tag a ticket `Fable` when Fable is the right model for it
+
+When **you** create a ticket, decide which model should work it and **tag it `Fable`** whenever Fable is the better fit. The tag is the signal for dispatching the work to a Fable subagent; untagged tickets are worked normally.
+
+Tag `Fable` when the ticket is **wide, exploratory, and search-shaped** — the work is mostly *finding* something whose location isn't known up front:
+
+- Adversarial sweeps and audits over a large surface (the KF-380 / KF-387 interaction-matrix and seam sweeps).
+- "Where else does this pattern occur?" / "what else is broken like this?" investigations.
+- Cross-cutting analyses that must hold many files in view at once to draw a conclusion.
+- Large mechanical migrations where the hard part is exhaustively locating every call site.
+
+Do **not** tag `Fable` for work that is narrow and already-located: a specific bug with a known repro, a targeted fix, a doc edit, a release chore. Those are ordinary tickets — the fix is the work, not the search.
+
+Rule of thumb: if the ticket's value is in **coverage and recall**, tag it `Fable`; if it's in **a precise change to a known place**, don't. When a sweep-style ticket files follow-up bug tickets, those follow-ups are usually *not* Fable work — the sweep already did the finding.
+
 ## Conventions
 
 - ESM modules (`"type": "module"`).

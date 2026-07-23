@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "Hot Sheet",
+          "rules": [
+            {
+              "id": "review-note",
+              "name": "ReviewNote",
+              "shortDescription": {
+                "text": "AI-authored, line-anchored review note."
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "review-note",
+          "ruleIndex": 0,
+          "kind": "informational",
+          "level": "none",
+          "guid": "mry4m4y9kklx4i74",
+          "message": {
+            "text": "Chose the <svg>-wrapper HTML-parser route over DOMParser('image/svg+xml') deliberately. toElement() uses the XML parser for orphan SVG fragments because stricter parsing catches malformed markup there, but rows are different: first render inlines them into the mount root's innerHTML, i.e. the HTML parser in foreign-content mode. If later parses used XML, the two paths would accept DIFFERENT markup — a row that renders fine on first paint could throw on the next insert. Re-entering foreign content the same way first render does keeps them identical by construction.\n\nThe foreignObject carve-out is load-bearing and pinned: foreignObject is itself SVG-namespaced but its children are HTML, so the predicate cannot be \"is the parent SVG?\" alone.\n\nReturn type changed from {tpl: HTMLTemplateElement} to {content: DocumentFragment} so both paths hand callers the same thing and the bulk-insert sites keep their single-DOM-op fragment insert.\n",
+            "markdown": "Chose the <svg>-wrapper HTML-parser route over DOMParser('image/svg+xml') deliberately. toElement() uses the XML parser for orphan SVG fragments because stricter parsing catches malformed markup there, but rows are different: first render inlines them into the mount root's innerHTML, i.e. the HTML parser in foreign-content mode. If later parses used XML, the two paths would accept DIFFERENT markup — a row that renders fine on first paint could throw on the next insert. Re-entering foreign content the same way first render does keeps them identical by construction.\n\nThe foreignObject carve-out is load-bearing and pinned: foreignObject is itself SVG-namespaced but its children are HTML, so the predicate cannot be \"is the parent SVG?\" alone.\n\nReturn type changed from {tpl: HTMLTemplateElement} to {content: DocumentFragment} so both paths hand callers the same thing and the bulk-insert sites keep their single-DOM-op fragment insert.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/utils/rowContract.ts"
+                },
+                "region": {
+                  "startLine": 55,
+                  "endLine": 95,
+                  "snippet": {
+                    "text": " * Parse a row's HTML and report how many top-level elements it produced. The\n * reconciler uses the count to detect contract violations (count !== 1) on\n * both single-row and bulk-row paths.\n *\n * `parent` is the list's live parent when the caller knows it; it selects the\n * parse namespace (KF-389). Callers that only need the element COUNT for an\n * error message may omit it — the count is namespace-independent.\n *\n * Returns a `DocumentFragment` either way, so callers insert it identically.\n */\nexport function parseRowTemplate(\n  html: string,\n  parent?: Element | null,\n): { content: DocumentFragment; count: number } {\n  const tpl = document.createElement('template');\n  if (!needsSvgParse(parent)) {\n    tpl.innerHTML = html;\n    return { content: tpl.content, count: tpl.content.children.length };\n  }\n  // Re-enter foreign content the same way the first render does: wrap in an\n  // <svg> so the HTML parser namespaces the rows, then lift them out. Using\n  // the parser (rather than DOMParser/XML) keeps row markup as forgiving here\n  // as it is on first render — the two paths must accept the same input.\n  tpl.innerHTML = `<svg>${html}</svg>`;\n  const host = tpl.content.firstElementChild as Element;\n  const content = document.createDocumentFragment();\n  while (host.firstChild !== null) content.appendChild(host.firstChild);\n  return { content, count: content.children.length };\n}\n\n/**\n * Parse one row's HTML to its single top-level element, enforcing the\n * \"exactly one top-level element per row\" contract with a row-precise error.\n * Shared by the granular reconciler's single-row paths and the snapshot\n * in-place morph path.\n */\nexport function parseSingleRow(html: string, index: number, parent?: Element | null): Element {\n  const { content, count } = parseRowTemplate(html, parent);\n  if (count !== 1) throw rowContractError(index, html);\n  return content.firstElementChild as Element;\n}"
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "tags": [
+              "rationale"
+            ]
+          },
+          "workItemUris": [
+            "KF-389"
+          ],
+          "partialFingerprints": {
+            "prNoteAnchor/v1": "c546aaf60fe238bcfb15ceb678ce710e"
+          }
+        }
+      ],
+      "versionControlProvenance": [
+        {
+          "repositoryUri": "git@github.com:brianwestphal/kerf.git",
+          "revisionId": "0f632787a60159c669d428a10769bd397409cdce",
+          "branch": "main"
+        }
+      ]
+    }
+  ]
+}

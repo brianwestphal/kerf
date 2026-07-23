@@ -67,7 +67,7 @@ export function reconcileSnapshot(binding: ListBinding, listSeg: ListSegment): v
   // boundary. Capturing here uses the binding's current (pre-mutation)
   // items[last].node which is still attached.
   const tailAnchor = endAnchor(binding);
-  buildFreshNodes(newRecord, freshIndices, freshHtmls);
+  buildFreshNodes(newRecord, freshIndices, freshHtmls, liveParent);
   const focusSnap = captureFocus(liveParent);
   removeOldNodes(liveParent, removedItems);
   applyMoves(liveParent, newRecord, prevIdx, lis(prevIdx), tailAnchor);
@@ -144,16 +144,17 @@ function buildFreshNodes(
   newRecord: BoundItem[],
   freshIndices: number[],
   freshHtmls: string[],
+  liveParent: Element,
 ): void {
   if (freshHtmls.length === 0) return;
-  const { tpl, count } = parseRowTemplate(freshHtmls.join(''));
+  const { content, count } = parseRowTemplate(freshHtmls.join(''), liveParent);
   if (count !== freshHtmls.length) {
     throw findOffendingRow(newRecord, freshIndices, freshHtmls);
   }
-  // After the count check above, we know `tpl.content.children.length`
+  // After the count check above, we know the fragment's `children.length`
   // equals `freshIndices.length`, so the walk below always finds an element
   // for every index. No defensive null-guard needed.
-  let node = tpl.content.firstElementChild;
+  let node = content.firstElementChild;
   for (const idx of freshIndices) {
     const next = (node as Element).nextElementSibling;
     const item = newRecord[idx];

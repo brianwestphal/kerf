@@ -57,7 +57,7 @@ svgRoot.appendChild(path);   // paints correctly
 
 ## 7.4 When you need `toElement` vs. when `mount` is enough
 
-- **`mount()` is enough** when your SVG has an `<svg>` root tag in the JSX. The HTML5 parser handles namespacing inside foreign content.
+- **`mount()` is enough** when your SVG has an `<svg>` root tag in the JSX. The HTML5 parser handles namespacing inside foreign content — including `each()` rows, which are re-parsed in their parent's namespace on every update, not just the first render.
 - **`toElement()` is the escape hatch** for direct DOM construction OR for SVG fragments inserted ad-hoc into an existing `<svg>`.
 
 If you're not sure which you need, default to `mount()`. The vast majority of SVG icon and chart use cases work fine without `toElement`.

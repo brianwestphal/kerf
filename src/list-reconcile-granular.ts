@@ -138,7 +138,7 @@ function applySingleInsert(
   tailAnchor: Element | null,
 ): void {
   const { html } = patch;
-  const newNode = parseSingleRow(html, patch.index);
+  const newNode = parseSingleRow(html, patch.index, liveParent);
   const anchor = patch.index < items.length ? items[patch.index].node : tailAnchor;
   liveParent.insertBefore(newNode, anchor);
   items.splice(patch.index, 0, {
@@ -181,7 +181,7 @@ function applySingleUpdate(
     items[patch.index] = reuseBound(patch, html, oldEntry);
     return;
   }
-  const newNode = parseSingleRow(html, patch.index);
+  const newNode = parseSingleRow(html, patch.index, liveParent);
   applyParsedRowUpdate(liveParent, items, patch, html, newNode);
 }
 
@@ -279,11 +279,11 @@ function applyBulkUpdate(
   if (morphChanges.length === 0) return;
 
   // Bulk-parse only the rows the fast paths couldn't handle.
-  const { tpl, count } = parseRowTemplate(morphChanges.map((c) => c.html).join(''));
+  const { content, count } = parseRowTemplate(morphChanges.map((c) => c.html).join(''), liveParent);
   if (count !== morphChanges.length) {
     throw findOffendingChange(patches, morphChanges);
   }
-  const newNodes = collectTemplateChildren(tpl, morphChanges.length);
+  const newNodes = collectTemplateChildren(content, morphChanges.length);
 
   // Shared KF-201 morph-vs-replace ladder per row (same tail as
   // applySingleUpdate).
@@ -314,15 +314,15 @@ function applyBulkInsert(
   for (let k = start; k < end; k++) {
     htmls[k - start] = (patches[k] as InsertPatch).html;
   }
-  const { tpl, count } = parseRowTemplate(htmls.join(''));
+  const { content, count } = parseRowTemplate(htmls.join(''), liveParent);
   if (count !== htmls.length) {
     throw findOffendingInsert(patches, start, htmls);
   }
   // Count matches; capture child refs BEFORE the fragment-insert empties
-  // tpl.content.
-  const newNodes = collectTemplateChildren(tpl, end - start);
+  // the fragment.
+  const newNodes = collectTemplateChildren(content, end - start);
   const anchor = startIdx < items.length ? items[startIdx].node : tailAnchor;
-  liveParent.insertBefore(tpl.content, anchor);
+  liveParent.insertBefore(content, anchor);
   // Splice all new entries into binding.items at the run's start index.
   const newEntries = new Array<BoundItem>(end - start);
   for (let k = 0; k < newEntries.length; k++) {

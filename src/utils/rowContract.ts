@@ -29,15 +29,57 @@ export function truncateRowHtml(html: string): string {
     : html;
 }
 
+const SVG_NS = 'http://www.w3.org/2000/svg';
+
 /**
- * Parse a row's HTML into a `<template>` and report how many top-level
- * elements it produced. The reconciler uses the count to detect contract
- * violations (count !== 1) on both single-row and bulk-row paths.
+ * Does a row destined for `parent` need SVG-namespace parsing? (KF-389)
+ *
+ * A bare `<template>` parses in the HTML namespace, so an `each()` row like
+ * `<circle/>` comes back an `HTMLUnknownElement` and never paints. First
+ * render escapes this because rows are inlined into the mount root's
+ * `innerHTML`, where the surrounding `<svg>` puts the parser in foreign-content
+ * mode; every LATER parse (granular insert, snapshot rebuild, structural
+ * update) went through the bare template and produced dead nodes.
+ *
+ * `<foreignObject>` is the exception that proves the rule: it is itself
+ * SVG-namespaced, but its children are HTML again, so rows under it must take
+ * the ordinary path.
  */
-export function parseRowTemplate(html: string): { tpl: HTMLTemplateElement; count: number } {
+function needsSvgParse(parent: Element | null | undefined): boolean {
+  return parent != null
+    && parent.namespaceURI === SVG_NS
+    && parent.localName !== 'foreignObject';
+}
+
+/**
+ * Parse a row's HTML and report how many top-level elements it produced. The
+ * reconciler uses the count to detect contract violations (count !== 1) on
+ * both single-row and bulk-row paths.
+ *
+ * `parent` is the list's live parent when the caller knows it; it selects the
+ * parse namespace (KF-389). Callers that only need the element COUNT for an
+ * error message may omit it — the count is namespace-independent.
+ *
+ * Returns a `DocumentFragment` either way, so callers insert it identically.
+ */
+export function parseRowTemplate(
+  html: string,
+  parent?: Element | null,
+): { content: DocumentFragment; count: number } {
   const tpl = document.createElement('template');
-  tpl.innerHTML = html;
-  return { tpl, count: tpl.content.children.length };
+  if (!needsSvgParse(parent)) {
+    tpl.innerHTML = html;
+    return { content: tpl.content, count: tpl.content.children.length };
+  }
+  // Re-enter foreign content the same way the first render does: wrap in an
+  // <svg> so the HTML parser namespaces the rows, then lift them out. Using
+  // the parser (rather than DOMParser/XML) keeps row markup as forgiving here
+  // as it is on first render — the two paths must accept the same input.
+  tpl.innerHTML = `<svg>${html}</svg>`;
+  const host = tpl.content.firstElementChild as Element;
+  const content = document.createDocumentFragment();
+  while (host.firstChild !== null) content.appendChild(host.firstChild);
+  return { content, count: content.children.length };
 }
 
 /**
@@ -46,20 +88,20 @@ export function parseRowTemplate(html: string): { tpl: HTMLTemplateElement; coun
  * Shared by the granular reconciler's single-row paths and the snapshot
  * in-place morph path.
  */
-export function parseSingleRow(html: string, index: number): Element {
-  const { tpl, count } = parseRowTemplate(html);
+export function parseSingleRow(html: string, index: number, parent?: Element | null): Element {
+  const { content, count } = parseRowTemplate(html, parent);
   if (count !== 1) throw rowContractError(index, html);
-  return tpl.content.firstElementChild as Element;
+  return content.firstElementChild as Element;
 }
 
 /**
- * Capture the first `n` element children of a parsed row template into an
- * array BEFORE a fragment insert empties `tpl.content`. Callers have already
- * verified the parse count equals `n`, so the walk never sees a null.
+ * Capture the first `n` element children of a parsed row fragment into an
+ * array BEFORE a fragment insert empties it. Callers have already verified the
+ * parse count equals `n`, so the walk never sees a null.
  */
-export function collectTemplateChildren(tpl: HTMLTemplateElement, n: number): Element[] {
+export function collectTemplateChildren(content: DocumentFragment, n: number): Element[] {
   const nodes = new Array<Element>(n);
-  let child = tpl.content.firstElementChild;
+  let child = content.firstElementChild;
   for (let k = 0; k < n; k++) {
     nodes[k] = child as Element;
     child = (child as Element).nextElementSibling;

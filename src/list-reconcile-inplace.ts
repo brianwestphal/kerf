@@ -90,7 +90,7 @@ function updateRowInPlace(
       bindings: kept.bindings, bindingDisposers: kept.bindingDisposers,
     };
   }
-  const newNode = parseSingleRow(ni.html, index);
+  const newNode = parseSingleRow(ni.html, index, liveParent);
   if (old.node.tagName === newNode.tagName) {
     _morphElement(old.node, newNode);
     // Same carry-or-rewire decision as the fast-path arm above (KF-347).
