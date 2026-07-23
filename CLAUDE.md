@@ -258,6 +258,7 @@ Numbered docs in `docs/` cover the design. Reading order:
 13. `13-component-packages.md` — building and publishing reusable kerf components as npm packages (no-instance model, per-instance state via factories, event/cleanup patterns, `kerfjs`-as-peer-dependency packaging).
 14. `14-feature-coverage.md` — the feature/behavior coverage axis (orthogonal to line coverage): a per-behavior index mapping each behavior — especially reconciler *state transitions* — to the test that guards it, enforced by `scripts/check-feature-coverage.mjs` (`npm run check:features`).
 15. `15-no-build-example.md` — the no-build example app (`live-poll`): served-as-source (importmap + `html` tagged template, zero tooling), the vendor-copy contract shared by all three example build scripts (`site/scripts/lib/copy-no-build-app.mjs`), and its test/capture surfaces.
+16. `16-list-identity.md` — **design only**: why an `each()` list's identity (its call-order index) is not stable, what the source guard already fixes vs. what it doesn't, the five verified constraints any scheme must survive, and the explicit-key + diagnostic recommendation.
 
 **Keep every surface up to date — proactively, without being asked.** Any change to source, API, behavior, or examples must be reflected across all affected surfaces in the same diff. Do not wait for a follow-up prompt. The full checklist:
 

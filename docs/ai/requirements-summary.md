@@ -29,8 +29,9 @@ Status markers:
 | §13 | Component packages (authoring/publishing reusable kerf components as npm packages) | Doc only — no first-party component packages shipped yet |
 | §14 | Feature coverage (per-behavior index + `check:features` gate) | Shipped |
 | §15 | No-build example app (`live-poll` — served-as-source, importmap + `html` tagged template) | Shipped |
+| §16 | List identity (why an `each()` list's id is not stable; constraints + recommended scheme) | Design-only |
 
-Everything in the v0.1–v0.3 design is shipped (each / native diff / list reconciler / `isSafeHtml` / `Fragment` barrel re-export all landed in 0.2–0.3). No partial / design-only / deferred entries.
+Everything in the v0.1–v0.3 design is shipped (each / native diff / list reconciler / `isSafeHtml` / `Fragment` barrel re-export all landed in 0.2–0.3). One **design-only** entry: §16 list identity — its correctness half is already fixed in `src/`, its quality half is specified but unbuilt.
 
 ## Per-doc summary
 
@@ -112,6 +113,10 @@ KF-254 investigation outcome: shipping reusable kerf components as npm packages 
 ### §15 No-build example app
 
 **Shipped.** The `live-poll` example ("Tabs or spaces?") proves the "no build step at all" positioning on the site: plain `main.js` + an `index.html` importmap resolving `kerfjs` / `kerfjs/html` / `@preact/signals-core` to static files — served as authored source, never bundled (view-source shows the app). Exercises fine-grained bindings (bound counts, bound `style` bars, bound total), `each()` composition, `delegate()`, `batch()`, and the fully-bound-mount guarantee (render reads no `.value`; a "renders" badge stays at 1). The vendor-copy contract lives in `site/scripts/lib/copy-no-build-app.mjs`, shared by all three example build scripts; consequences: excluded from the examples typecheck gate (correctness gated by the three-engine browser smoke spec) and skipped by the doc/source import-drift check (which pairs on `main.tsx`). Demo capture at `site/public/demos/live-poll.svg`.
+
+### §16 List identity
+
+**Design only.** Names the missing concept behind a family of reconciler bugs: an `each()` list's identity is the implicit "n-th `each()` call this render", and four persistent structures (`renderCtx.caches` / `bindingCounts` / `bindingSources`, `mount()`'s `bindings`) key on it while assuming it stable. Any render that changes how many `each()` calls precede a list reassigns its id. The **corruption** half is already fixed (the source guard in `each()` refuses a patch queue when an id changed hands); the **cost** half is open — the affected list rebuilds from scratch, losing row identity/focus/scroll/IME and going O(N), with no warning (`KERF_DEV_WARN_LIST_REBIND` is structurally blind to it since the rebuild routes through classify, not the self-heal). Documents five verified constraints — two `each()` calls may legitimately share one data source; derived plain arrays have no stable identity; render-fn identity was tried and reverted; marker ids are baked into HTML at call time; the id is needed early *because* of the granular fast path — which together rule out both "key on the data" and a structural path without a reconciler restructure. Recommends an explicit optional key plus a dev warning that names it as the fix, with the API shape (a fourth positional arg vs. an options object) flagged as the open decision.
 
 ## Update triggers
 
