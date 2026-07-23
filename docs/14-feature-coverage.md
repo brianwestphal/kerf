@@ -228,6 +228,7 @@ axis (`cacheKey` reading an external signal) crosses all of them.
 | FC-DW7 | `globalThis.KERF_DEV` runtime override wins over `NODE_ENV` for the shared dev-mode gate (read lazily; gates the store freeze + the opt-in warning family) | `src/utils/devMode.ts` | `tests/unit/devMode.internal.test.ts` › "isDevMode() — globalThis.KERF_DEV override wins"; `tests/unit/store.test.ts` › "dev-mode freeze respects the globalThis.KERF_DEV override (KF-334)" |
 | FC-DW8 | `KERF_DEV_WARN_STALE_BINDING` stale-fine-grained-binding warning (fast-path signal-instance switch) | `src/dev-binding-warn.ts` | `tests/unit/dev-binding-warn.internal.test.ts` › "dev-binding-warn (KERF_DEV_WARN_STALE_BINDING=1, opt-in)" |
 | FC-DW9 | `KERF_DEV_WARN_VALUE_ONLY_RERENDER` value-only re-render warning — fires on text/attr-value-only diffs, stays silent on structural diffs, one-shot per mount | `src/dev-rerender-warn.ts` | `tests/unit/dev-rerender-warn.internal.test.ts` › "warns on a text-only value change"; `tests/unit/dev-rerender-warn.internal.test.ts` › "does NOT warn on a structural change (conditional element)" |
+| FC-DW10 | `KERF_DEV_WARN_LIST_REBIND` list-container-rebuild warning — fires when the self-heal re-binds a rebuilt `each()` container (ancestor tag swap), silent by default, one-shot per list id, silent in production mode | `src/dev-list-rebind-warn.ts` | `tests/unit/dev-list-rebind-warn.internal.test.ts` › "dev-list-rebind-warn (KERF_DEV_WARN_LIST_REBIND=1)" |
 
 ### Integration (full pipeline)
 

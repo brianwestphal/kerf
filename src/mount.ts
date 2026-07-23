@@ -36,6 +36,7 @@ import {
 } from './bindings.js';
 import { isOptedIn as isStaleBindingWarnOptedIn, maybeWarnStaleBinding } from './dev-binding-warn.js';
 import { maybeWarnEachInMorphSkip } from './dev-each-warn.js';
+import { maybeWarnListRebind } from './dev-list-rebind-warn.js';
 import { installListenerRebuildWarn } from './dev-listener-warn.js';
 import { maybeWarnValueOnlyRerender, type ValueOnlyWarnContext } from './dev-rerender-warn.js';
 import { _setRenderContext, type RenderContext } from './each.js';
@@ -428,6 +429,9 @@ function bindListsFromMarkers(
       // repopulates the list from scratch.
       for (const item of existing.items) disposeRowBindings(item.bindingDisposers);
       bindings.delete(id);
+      // Opt-in dev warning (KERF_DEV_WARN_LIST_REBIND=1): the recovery is
+      // correct but lossy — row DOM state is discarded — so surface it.
+      maybeWarnListRebind(id, marker.parentElement as Element);
     }
     const listSeg = lists.get(id) as ListSegment;
     const liveParent = marker.parentElement as Element;

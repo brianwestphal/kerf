@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "Hot Sheet",
+          "rules": [
+            {
+              "id": "review-note",
+              "name": "ReviewNote",
+              "shortDescription": {
+                "text": "AI-authored, line-anchored review note."
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "review-note",
+          "ruleIndex": 0,
+          "kind": "informational",
+          "level": "none",
+          "guid": "mrxkvhf1l0npypoj",
+          "message": {
+            "text": "Warner is a copy-of-shape of dev-each-warn per docs/11 §11.5 ('every new warning should be a copy-paste-and-modify of an existing one'): same env-var gate order (isDevMode first), per-list-id one-shot dedup Set, _resetWarnedForTests test hook, message ending with the silence instruction. Fired from the ONE call site where the lossy condition is provable — mount's self-heal branch in bindListsFromMarkers — rather than anywhere in the morph, so the ordinary conditional-sibling shape (handled losslessly by the positional lookahead) can never false-positive. The message names the container tag (<ul> etc.) from the fresh marker's parent so the author can locate the swapped ancestor.",
+            "markdown": "Warner is a copy-of-shape of dev-each-warn per docs/11 §11.5 ('every new warning should be a copy-paste-and-modify of an existing one'): same env-var gate order (isDevMode first), per-list-id one-shot dedup Set, _resetWarnedForTests test hook, message ending with the silence instruction. Fired from the ONE call site where the lossy condition is provable — mount's self-heal branch in bindListsFromMarkers — rather than anywhere in the morph, so the ordinary conditional-sibling shape (handled losslessly by the positional lookahead) can never false-positive. The message names the container tag (<ul> etc.) from the fresh marker's parent so the author can locate the swapped ancestor."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/dev-list-rebind-warn.ts"
+                },
+                "region": {
+                  "startLine": 27,
+                  "endLine": 56,
+                  "snippet": {
+                    "text": "\nconst warnedIds = new Set<string>();\n\nfunction isOptedIn(): boolean {\n  if (!isDevMode()) return false;\n  const proc = (globalThis as { process?: { env?: Record<string, string | undefined> } }).process;\n  return proc?.env?.KERF_DEV_WARN_LIST_REBIND === '1';\n}\n\n/**\n * Fire the one-shot (per list id) rebuild warning. `liveParent` is the fresh\n * container the cloned marker landed in — named in the message so the author\n * can find the swap site.\n */\nexport function maybeWarnListRebind(id: string, liveParent: Element): void {\n  if (!isOptedIn()) return;\n  if (warnedIds.has(id)) return;\n  warnedIds.add(id);\n  console.warn(\n    `kerf: each() list '${id}' had its container (<${liveParent.tagName.toLowerCase()}>) rebuilt by the morph this render — `\n    + 'an ancestor\\'s tag changed, so the whole subtree was replaced. The list re-binds and repopulates '\n    + 'automatically, but its rows were re-created from scratch: focus, scroll positions, in-progress IME '\n    + 'composition, and any imperative listeners on the old row nodes are lost. Keep the tags of a list\\'s '\n    + 'ancestors stable across renders (toggle classes/attributes instead of swapping tags) if the rows '\n    + 'should survive. '\n    + 'Set KERF_DEV_WARN_LIST_REBIND=0 (or unset it) to silence this warning.',\n  );\n}\n\n/** Test helper — resets the one-shot dedup set for unit tests. */"
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "tags": [
+              "rationale"
+            ]
+          },
+          "workItemUris": [
+            "KF-379"
+          ],
+          "partialFingerprints": {
+            "prNoteAnchor/v1": "707000dc2095caa33c0a058f99305359"
+          }
+        }
+      ],
+      "versionControlProvenance": [
+        {
+          "repositoryUri": "git@github.com:brianwestphal/kerf.git",
+          "revisionId": "f7f09b508b6c4409066bc4d224acf3407847f68a",
+          "branch": "main"
+        }
+      ]
+    }
+  ]
+}

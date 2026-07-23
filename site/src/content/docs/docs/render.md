@@ -40,6 +40,8 @@ Everything above is the **coarse** update path: a signal change re-runs `render(
 
 Elements without a key are matched positionally by tag name, with a forward lookahead: when the element at a position doesn't match (say, a conditional banner was removed this render, shifting everything after it), the diff scans later live siblings for the first same-tag unkeyed element and moves it up instead of rebuilding it from the template. Stateful subtrees — most importantly the parent of an `each()` list — keep their node identity when a sibling before them appears or disappears. Pure-HTML diffs work fine without keys; you only need keys when list rows reorder, are inserted in the middle, or removed.
 
+One shape does still rebuild a list's container: an *ancestor's tag* changing across renders (`<section>` ↔ `<article>` around the same list) replaces the whole subtree, and kerf self-heals by re-binding the list and repopulating its rows. That recovery is correct but lossy — the rows are fresh nodes, so focus, scroll, and IME state on them are discarded. If the rows should survive, keep ancestor tags stable and toggle classes/attributes instead; the opt-in dev warning `KERF_DEV_WARN_LIST_REBIND=1` surfaces each list the first time such a rebuild happens (see [`docs/11-dev-warnings.md`](/kerf/docs/dev-warnings/)).
+
 ```tsx
 // Reorderable list — give each row a stable data-key
 <ul>
@@ -365,7 +367,7 @@ mount(footerEl, () => <div>{cartTotal.value.toFixed(2)}</div>);
 
 Each region re-renders only when its own dependencies change. Adding an item to the cart triggers all three; changing an unrelated piece of state triggers none.
 
-The regions must be disjoint: mounting the same element twice, or an element inside (or containing) an already-mounted tree, throws immediately — one mount per tree. Compose with plain functions that return JSX instead of nesting mounts; see §11.2.9 in `docs/11-dev-warnings.md` for the guard's details.
+The regions must be disjoint: mounting the same element twice, or an element inside (or containing) an already-mounted tree, throws immediately — one mount per tree. Compose with plain functions that return JSX instead of nesting mounts; see §11.2.10 in `docs/11-dev-warnings.md` for the guard's details.
 
 ## 4.6 Server-rendering
 

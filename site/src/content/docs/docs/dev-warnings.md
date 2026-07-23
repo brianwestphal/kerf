@@ -226,7 +226,42 @@ removal, so they never reach this warner.)
 
 **Why opt-in.** Re-rendering on `.value` reads is *correct* — this is a migration aid for adopting the bound-first idiom, not a lint on broken code. The parse-and-compare also has real (dev-only) cost, so it runs only when asked, and only on the already-slow surrounds-changed path; the env read short-circuits everything else.
 
-### 11.2.9 Double-mount guard (always-on, not opt-in)
+### 11.2.9 `KERF_DEV_WARN_LIST_REBIND=1`
+
+**Module:** [`src/dev-list-rebind-warn.ts`](../src/dev-list-rebind-warn.ts).
+**Trigger:** `bindListsFromMarkers` takes its **self-heal branch** — a list
+marker found in the live tree already has a binding, but that binding's own
+marker is no longer inside the mount root, meaning the morph rebuilt the
+list's container this render (an ancestor's tag changed, so `replaceChild`
+swapped the whole subtree and cloned a fresh marker).
+**What it catches:** the lossy-recovery pattern. The self-heal makes the
+rebuild *correct* — the stale binding is dropped, the list re-binds against
+the fresh marker, and the next reconcile repopulates the rows — but the rows
+are re-created from scratch, so focus, scroll positions, in-progress IME
+composition, and any imperative listeners on the old row nodes are silently
+discarded. An author who didn't intend the ancestor tag swap gets no other
+signal that their rows are being churned. (A conditional sibling merely
+appearing or disappearing before the list does NOT fire this — the morph's
+positional lookahead preserves the container in place for that shape.)
+
+**Mechanism.** `maybeWarnListRebind(id, liveParent)` is called from the
+self-heal branch after the stale binding is dropped, with the fresh container
+the cloned marker landed in. The function: (1) short-circuits on NODE_ENV /
+env var; (2) checks a module-level `warnedIds` Set for dedup; (3) fires a
+`console.warn` naming the list id and container tag, explaining the row-state
+loss, and pointing at keeping ancestor tags stable (toggle classes/attributes
+instead of swapping tags) as the fix.
+
+**Dedup scope.** Per list id (same as `KERF_DEV_WARN_EACH_IN_MORPH_SKIP`).
+One warning per `each()` callsite, not one per rebuild.
+
+**Why opt-in.** Swapping an ancestor's tag across renders (`<section>` ↔
+`<article>` around the same list) is occasionally intentional — semantic
+element changes driven by state — and the rebuild-with-repopulate behavior is
+then exactly what the author wants. The opt-in keeps the diagnostic available
+for projects that want it without penalising that pattern.
+
+### 11.2.10 Double-mount guard (always-on, not opt-in)
 
 **Module:** [`src/mount.ts`](../src/mount.ts) (KF-175, KF-225).
 **Trigger:** `mount(el, render)` is called on an element that is already the root of a live mount, or on a descendant or ancestor of such an element. **What it catches:** the "two competing effects" pattern — two `mount()` calls on the same DOM subtree both install `effect()` watchers that fight over the same live nodes, producing conflicting DOM mutations and unpredictable rendering output with no runtime error.
@@ -237,7 +272,7 @@ removal, so they never reach this warner.)
 
 **Sibling mounts are allowed.** Two `mount()` calls on independent elements (neither is an ancestor or descendant of the other) work correctly — each manages its own subtree. This is the multi-island pattern for apps with independently reactive regions of the page.
 
-### 11.2.10 Dangerous-URL screen (throws in dev, warns in prod)
+### 11.2.11 Dangerous-URL screen (throws in dev, warns in prod)
 
 **Module:** [`src/utils/urlScreen.ts`](../src/utils/urlScreen.ts), applied in [`src/jsx-runtime.ts`](../src/jsx-runtime.ts) (`renderAttr`) and [`src/bindings.ts`](../src/bindings.ts) (`setBoundAttr`).
 **Trigger:** a plain-string URL value that resolves to a `javascript:` / `vbscript:` scheme or a script-executing `data:` document type is written to a URL-bearing attribute (`href`, `src`, `xlink:href`, `formaction`, `action`, `data`). **What it catches:** a stored-XSS payload reaching a `href={...}` interpolation that would otherwise turn into a clickable script vector. See [`docs/6-jsx-runtime.md`](/kerf/docs/jsx/) §6.4.1 for the screening details.
@@ -365,13 +400,13 @@ the hot path stays a bare boolean read rather than a per-call env probe.
 
 ## 11.4 Where each warning is referenced
 
-| Surface | KF-174 (rebuilt listeners) | KF-176 (untracked signals) | KF-212 (narrow set) | duplicate cacheKey | each-in-morph-skip | KF-238 (delegate-in-effect) | KF-338 (stale binding) | value-only re-render |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Source module | `src/dev-listener-warn.ts` | `src/dev-signal.ts` | `src/dev-store-warn.ts` | `src/dev-each-warn.ts` | `src/dev-each-warn.ts` | `src/dev-delegate-warn.ts` | `src/dev-binding-warn.ts` | `src/dev-rerender-warn.ts` |
-| Wired in | `src/mount.ts` | `src/reactive.ts` | `src/store.ts` | `src/each.ts` | `src/mount.ts` | `src/reactive.ts` (effect wrap) + `src/delegate.ts` (check) | `src/mount.ts` (fast path) | `src/mount.ts` (surrounds-changed path) |
-| Numbered doc | `docs/5-event-delegation.md` (Rule 4) | `docs/2-reactivity.md` (Rule 8) | `docs/3-stores.md` (Rule 9) | `docs/4-render.md` §4.2 | `docs/4-render.md` §4.3 | `docs/5-event-delegation.md` §5.3 | `docs/2-reactivity.md` §2.9 | `docs/2-reactivity.md` §2.9 |
-| AI usage guide | `docs/ai/usage-guide.md` "Hard rules" | same | same | n/a | `docs/ai/usage-guide.md` "Common errors" | `docs/ai/usage-guide.md` Hard Rule 5 + "Common errors" | `docs/ai/usage-guide.md` "Common errors" | `docs/ai/usage-guide.md` Hard Rule 9 family list |
-| Test fixture | `tests/unit/dev-listener-warn.internal.test.ts` | covered in `tests/unit/reactive.test.ts` | `tests/unit/dev-store-warn.internal.test.ts` | `tests/unit/dev-each-warn.internal.test.ts` | same | `tests/unit/dev-delegate-warn.internal.test.ts` | `tests/unit/dev-binding-warn.internal.test.ts` | `tests/unit/dev-rerender-warn.internal.test.ts` |
+| Surface | KF-174 (rebuilt listeners) | KF-176 (untracked signals) | KF-212 (narrow set) | duplicate cacheKey | each-in-morph-skip | KF-238 (delegate-in-effect) | KF-338 (stale binding) | value-only re-render | list rebind |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Source module | `src/dev-listener-warn.ts` | `src/dev-signal.ts` | `src/dev-store-warn.ts` | `src/dev-each-warn.ts` | `src/dev-each-warn.ts` | `src/dev-delegate-warn.ts` | `src/dev-binding-warn.ts` | `src/dev-rerender-warn.ts` | `src/dev-list-rebind-warn.ts` |
+| Wired in | `src/mount.ts` | `src/reactive.ts` | `src/store.ts` | `src/each.ts` | `src/mount.ts` | `src/reactive.ts` (effect wrap) + `src/delegate.ts` (check) | `src/mount.ts` (fast path) | `src/mount.ts` (surrounds-changed path) | `src/mount.ts` (self-heal branch) |
+| Numbered doc | `docs/5-event-delegation.md` (Rule 4) | `docs/2-reactivity.md` (Rule 8) | `docs/3-stores.md` (Rule 9) | `docs/4-render.md` §4.2 | `docs/4-render.md` §4.3 | `docs/5-event-delegation.md` §5.3 | `docs/2-reactivity.md` §2.9 | `docs/2-reactivity.md` §2.9 | `docs/4-render.md` §4.2 |
+| AI usage guide | `docs/ai/usage-guide.md` "Hard rules" | same | same | n/a | `docs/ai/usage-guide.md` "Common errors" | `docs/ai/usage-guide.md` Hard Rule 5 + "Common errors" | `docs/ai/usage-guide.md` "Common errors" | `docs/ai/usage-guide.md` Hard Rule 9 family list | `docs/ai/usage-guide.md` "Common errors" |
+| Test fixture | `tests/unit/dev-listener-warn.internal.test.ts` | covered in `tests/unit/reactive.test.ts` | `tests/unit/dev-store-warn.internal.test.ts` | `tests/unit/dev-each-warn.internal.test.ts` | same | `tests/unit/dev-delegate-warn.internal.test.ts` | `tests/unit/dev-binding-warn.internal.test.ts` | `tests/unit/dev-rerender-warn.internal.test.ts` | `tests/unit/dev-list-rebind-warn.internal.test.ts` |
 
 ## 11.5 Adding a new warning
 
