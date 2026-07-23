@@ -28,6 +28,7 @@ Status markers:
 | §12 | AI-assistant configs (Claude skill + Cursor rules bundled in npm; eslint drift-check rule) | Shipped |
 | §13 | Component packages (authoring/publishing reusable kerf components as npm packages) | Doc only — no first-party component packages shipped yet |
 | §14 | Feature coverage (per-behavior index + `check:features` gate) | Shipped |
+| §15 | No-build example app (`live-poll` — served-as-source, importmap + `html` tagged template) | Shipped |
 
 Everything in the v0.1–v0.3 design is shipped (each / native diff / list reconciler / `isSafeHtml` / `Fragment` barrel re-export all landed in 0.2–0.3). No partial / design-only / deferred entries.
 
@@ -107,6 +108,10 @@ KF-254 investigation outcome: shipping reusable kerf components as npm packages 
 ### §14 Feature coverage
 
 **Shipped.** KF-284 added a coverage axis orthogonal to v8 line/branch coverage: a per-behavior index (`docs/14-feature-coverage.md`) mapping each behavior — the list-reconciler state machine (`first-render ↔ granular ↔ snapshot ↔ empty-binding ↔ drift-recovery`), its *transitions*, and the public API — to the test that would fail if it regressed. `scripts/check-feature-coverage.mjs` (`npm run check:features`, wired into `npm run check`) fails if any indexed row's guarding test (file + title, double-quoted or backtick-wrapped for `<…>` titles) no longer resolves, so a renamed/deleted guarding test trips the gate. Rationale: two critical KF-125 reconciler bugs (select-after-delete, append-after-clear) shipped under 100% line coverage because the *transitions between states* were never asserted — line coverage is structurally blind to a missing transition. **KF-286** expanded the index to **78 rows** covering every documented behavior area across §2–§7, §11, integration, and real-browser (`(browser)`-marked) specs, and added **`tests/conventions.test.ts`** pinning in-suite invariants line coverage can't express (the barrel exports exactly the documented surface, no default export, the `each()` row contract). Complements the existing `check-doc-api-coverage` (export surface) and `check-doc-test-inventory` (test-file inventory) guards. **KF-289** resolved the completeness question: the tractable half — *every public value export must be named by an index row* — is now automated in the same script (adding a public export forces a behavior row); the intractable half — enumerating every documented prose behavior — is intentionally left to the periodic `/analyze-code-quality` behavioral audit + `/check-requirements-against-code` + the "Adding to the index" discipline, with the reasoning recorded in the doc's "Completeness" section (tagging every behavior would be circular + high-maintenance).
+
+### §15 No-build example app
+
+**Shipped.** The `live-poll` example ("Tabs or spaces?") proves the "no build step at all" positioning on the site: plain `main.js` + an `index.html` importmap resolving `kerfjs` / `kerfjs/html` / `@preact/signals-core` to static files — served as authored source, never bundled (view-source shows the app). Exercises fine-grained bindings (bound counts, bound `style` bars, bound total), `each()` composition, `delegate()`, `batch()`, and the fully-bound-mount guarantee (render reads no `.value`; a "renders" badge stays at 1). The vendor-copy contract lives in `site/scripts/lib/copy-no-build-app.mjs`, shared by all three example build scripts; consequences: excluded from the examples typecheck gate (correctness gated by the three-engine browser smoke spec) and skipped by the doc/source import-drift check (which pairs on `main.tsx`). Demo capture at `site/public/demos/live-poll.svg`.
 
 ## Update triggers
 

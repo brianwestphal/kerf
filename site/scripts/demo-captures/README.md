@@ -35,6 +35,7 @@ smoke spec exercises:
 | `counter-store` | increment ×3 (number pops each beat), decrement, async fetch resolves |
 | `cart-htmx` | swap in the cart island, remove an item |
 | `row-selector` | select three rows (highlight + detail follow, "list renders" stays at 1), then Regenerate ticks it |
+| `live-poll` | the no-build app (importmap + `html` tagged template): five votes land (counts pop, bars slide, "renders" stays at 1), then Reset collapses the bars |
 
 A frame's `waitFor*` gates are readiness preconditions applied **before** that
 frame's `actions`; the capture happens **after** the actions. So assertions about

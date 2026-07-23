@@ -1,0 +1,90 @@
+{
+  "width": 720,
+  "height": 560,
+  "output": "site/public/demos/live-poll.svg",
+  "optimize": true,
+  "vars": {
+    "base": "http://localhost:4188",
+    "easeOut": "cubic-bezier(0.215,0.61,0.355,1)",
+    "pop": "cubic-bezier(0.175,0.885,0.32,1.275)"
+  },
+  "cursor": "auto",
+  "frames": [
+    {
+      "transition": { "type": "cut", "duration": 0 },
+      "input": "${base}/live-poll/",
+      "waitFor": "[data-total]",
+      "wait": 250,
+      "duration": 800
+    },
+    {
+      "continue": true,
+      "transition": { "type": "cut", "duration": 0 },
+      "actions": [
+        { "type": "click", "selector": "button[data-vote='tabs']" },
+        { "type": "wait", "ms": 350 }
+      ],
+      "animations": [
+        { "selector": "button[data-vote='tabs'] .opt-count", "property": "scale", "from": "0.7", "to": "1", "duration": 300, "easing": "${pop}", "transformOrigin": "center" }
+      ],
+      "duration": 700
+    },
+    {
+      "continue": true,
+      "transition": { "type": "cut", "duration": 0 },
+      "actions": [
+        { "type": "click", "selector": "button[data-vote='spaces']" },
+        { "type": "wait", "ms": 350 }
+      ],
+      "animations": [
+        { "selector": "button[data-vote='spaces'] .opt-count", "property": "scale", "from": "0.7", "to": "1", "duration": 300, "easing": "${pop}", "transformOrigin": "center" }
+      ],
+      "duration": 700
+    },
+    {
+      "continue": true,
+      "transition": { "type": "cut", "duration": 0 },
+      "actions": [
+        { "type": "click", "selector": "button[data-vote='tabs']" },
+        { "type": "wait", "ms": 350 }
+      ],
+      "animations": [
+        { "selector": "button[data-vote='tabs'] .opt-count", "property": "scale", "from": "0.7", "to": "1", "duration": 300, "easing": "${pop}", "transformOrigin": "center" }
+      ],
+      "duration": 700
+    },
+    {
+      "continue": true,
+      "transition": { "type": "cut", "duration": 0 },
+      "actions": [
+        { "type": "click", "selector": "button[data-vote='formatter']" },
+        { "type": "wait", "ms": 350 }
+      ],
+      "animations": [
+        { "selector": "button[data-vote='formatter'] .opt-count", "property": "scale", "from": "0.7", "to": "1", "duration": 300, "easing": "${pop}", "transformOrigin": "center" }
+      ],
+      "duration": 700
+    },
+    {
+      "continue": true,
+      "transition": { "type": "cut", "duration": 0 },
+      "actions": [
+        { "type": "click", "selector": "button[data-vote='spaces']" },
+        { "type": "wait", "ms": 350 }
+      ],
+      "animations": [
+        { "selector": "button[data-vote='spaces'] .opt-count", "property": "scale", "from": "0.7", "to": "1", "duration": 300, "easing": "${pop}", "transformOrigin": "center" }
+      ],
+      "duration": 900
+    },
+    {
+      "continue": true,
+      "transition": { "type": "cut", "duration": 0 },
+      "actions": [
+        { "type": "click", "selector": "[data-reset]" },
+        { "type": "wait", "ms": 400 }
+      ],
+      "duration": 1000
+    }
+  ]
+}

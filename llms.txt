@@ -34,6 +34,7 @@ kerf renders JSX to a structured `SafeHtml` (string for static content; tagged "
 - [AI-assistant configs](https://github.com/brianwestphal/kerf/blob/main/docs/12-ai-assistant-configs.md): how the drop-in Claude Code skill + Cursor rules ship inside the `kerfjs` npm package at `ai/skill.md` / `ai/cursorrules` / `ai/manifest.json`, the version + marker contract for customization preservation, and the `kerfjs/ai-assistant-configs` ESLint rule that surfaces drift on every lint pass.
 - [Component packages](https://github.com/brianwestphal/kerf/blob/main/docs/13-component-packages.md): building and publishing reusable kerf components as npm packages — the no-instance component model, per-instance state via factories, event/cleanup patterns, and `kerfjs`-as-peer-dependency packaging modeled on `eslint-plugin-kerfjs`. Scaffold one with `npm create kerf-component@latest <dir>` (the `create-kerf-component` initializer).
 - [Feature coverage](https://github.com/brianwestphal/kerf/blob/main/docs/14-feature-coverage.md): the per-behavior coverage axis orthogonal to line coverage — an index mapping each behavior (especially list-reconciler *state transitions*) to its guarding test, enforced by `npm run check:features`.
+- [No-build example](https://github.com/brianwestphal/kerf/blob/main/docs/15-no-build-example.md): the served-as-source `live-poll` example app — plain JS + importmap + the `html` tagged template, zero tooling — and the vendor-copy contract that ships it.
 
 ## Examples
 

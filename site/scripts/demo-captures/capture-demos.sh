@@ -7,7 +7,7 @@
 # this file as <name>.json; each drives the app through the same headline
 # interaction its browser smoke spec exercises (todomvc add/toggle, kanban drag,
 # chat streaming, dashboard tick, counter-store inc/fetch, cart-htmx swap,
-# markdown live preview).
+# markdown live preview, row-selector fine-grained select, live-poll no-build voting).
 #
 # Prereqs: Playwright Chromium installed (the repo's browser tests already need
 # it). domotion-svg is a root devDependency — its version is pinned in the
@@ -23,7 +23,7 @@ cd "$REPO_ROOT"
 SERVE_DIR="$(mktemp -d)"
 SERVE_PORT=4188
 CONFIG_DIR="site/scripts/demo-captures"
-APPS=(todomvc counter-store cart-htmx chat dashboard markdown-editor kanban row-selector)
+APPS=(todomvc counter-store cart-htmx chat dashboard markdown-editor kanban row-selector live-poll)
 
 cleanup() {
   [[ -n "${SERVE_PID:-}" ]] && kill "$SERVE_PID" 2>/dev/null || true

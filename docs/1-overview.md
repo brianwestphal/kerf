@@ -95,3 +95,4 @@ Everything else is detail.
 - [§12 AI-assistant configs](12-ai-assistant-configs.md) — the drop-in Claude Code skill + Cursor rules.
 - [§13 Component packages](13-component-packages.md) — publishing reusable kerf components to npm.
 - [§14 Feature coverage](14-feature-coverage.md) — the per-behavior test index.
+- [§15 No-build example](15-no-build-example.md) — the served-as-source `live-poll` app (importmap + `html` tagged template).

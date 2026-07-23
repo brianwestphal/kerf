@@ -1,5 +1,5 @@
 /**
- * KF-165 — smoke specs for the eight complete example apps under
+ * KF-165 — smoke specs for the nine complete example apps under
  * `site/src/examples/complete/`. Each test exercises the app's headline
  * interaction end-to-end against the latest `dist/` via the test build at
  * `tests/dist/example-apps/<name>/` (see `tests/browser/global-setup.mjs`).
@@ -428,6 +428,44 @@ test.describe('row-selector', () => {
     await page.locator('button[data-action="regenerate"]').click();
     await expect(renders).toHaveText('2');
     await expect(name).toHaveText('Select a host');
+  });
+});
+
+test.describe('live-poll', () => {
+  test('the no-build (importmap + html``) app votes fine-grained — render count stays 1', async ({ page }) => {
+    await page.goto(`${BASE}/live-poll/`);
+
+    // The app is served as untranspiled source resolved via an importmap —
+    // if the vendor copy or the map is broken, mount never runs and this
+    // first assertion fails.
+    const renders = page.locator('[data-renders]');
+    await expect(renders).toHaveText('1');
+    const total = page.locator('[data-total]');
+    await expect(total).toHaveText('0');
+
+    const tabs = page.locator('button[data-vote="tabs"]');
+    const spaces = page.locator('button[data-vote="spaces"]');
+
+    // Vote: counts, total, and bar widths update through bound holes.
+    await tabs.click();
+    await tabs.click();
+    await spaces.click();
+    await expect(tabs.locator('.opt-count')).toHaveText('2');
+    await expect(spaces.locator('.opt-count')).toHaveText('1');
+    await expect(total).toHaveText('3');
+
+    // Bound bar style follows the vote share (2/3 ≈ 67%).
+    await expect(tabs.locator('.opt-bar')).toHaveAttribute('style', /width:\s*67%/);
+
+    // The render function reads no signal .value — it ran exactly once.
+    await expect(renders).toHaveText('1');
+
+    // Reset zeroes every counter in one batch; still no re-render.
+    await page.locator('[data-reset]').click();
+    await expect(total).toHaveText('0');
+    await expect(tabs.locator('.opt-count')).toHaveText('0');
+    await expect(tabs.locator('.opt-bar')).toHaveAttribute('style', /width:\s*0%/);
+    await expect(renders).toHaveText('1');
   });
 });
 

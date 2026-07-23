@@ -19,6 +19,8 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { build } from 'vite';
 
+import { copyNoBuildApp, NO_BUILD_APPS } from '../../../site/scripts/lib/copy-no-build-app.mjs';
+
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(__dirname, '../../..');
 const siteRoot = resolve(repoRoot, 'site');
@@ -48,11 +50,18 @@ const COMPLETE_APPS = [
   'cart-htmx',
   'counter-store',
   'row-selector',
+  'live-poll',
 ];
 
 async function buildOne(name) {
   const appRoot = resolve(siteRoot, 'src/examples/complete', name);
   const outDir = resolve(outRoot, name);
+  if (NO_BUILD_APPS.has(name)) {
+    // The no-build app is copied, not bundled — relative paths only, so the
+    // same output serves at /tests/dist/example-apps/<name>/ unchanged.
+    copyNoBuildApp(appRoot, outDir, repoRoot);
+    return;
+  }
   if (existsSync(outDir)) rmSync(outDir, { recursive: true, force: true });
   mkdirSync(outDir, { recursive: true });
   await build({

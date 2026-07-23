@@ -16,6 +16,8 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { build } from 'vite';
 
+import { copyNoBuildApp, NO_BUILD_APPS } from './lib/copy-no-build-app.mjs';
+
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const siteRoot = resolve(__dirname, '..');
 const repoRoot = resolve(siteRoot, '..');
@@ -29,6 +31,7 @@ const COMPLETE_APPS = [
   'cart-htmx',
   'counter-store',
   'row-selector',
+  'live-poll',
 ];
 
 async function buildCompleteApps() {
@@ -42,6 +45,13 @@ async function buildCompleteApps() {
   // app's resolution starts from the site root (where kerfjs is installed).
   for (const name of COMPLETE_APPS) {
     const appRoot = resolve(siteRoot, 'src/examples/complete', name);
+    if (NO_BUILD_APPS.has(name)) {
+      // The no-build app ships its source verbatim + a vendored kerf dist —
+      // no Vite involved (that's its whole story). Relative paths only, so
+      // it serves correctly under /kerf/run/<name>/ without a base rewrite.
+      copyNoBuildApp(appRoot, resolve(outDir, name), repoRoot);
+      continue;
+    }
     await build({
       root: appRoot,
       base: `/kerf/run/${name}/`,

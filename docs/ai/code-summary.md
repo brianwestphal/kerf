@@ -91,7 +91,7 @@ kerf/
 │   ├── browser/                  ← Playwright real-browser tests (chromium/firefox/webkit) — run via `npm run test:browser`
 │   │   ├── fixtures/index.html         ← importmap-based page that loads kerf from dist/
 │   │   ├── consumer-app.spec.ts        ← KF-123 — drives `tests/dist/consumer-app/` (real esbuild-bundled app against dist/) across Chromium / Firefox / WebKit
-│   │   ├── example-apps.spec.ts        ← KF-165 — one smoke spec per `site/src/examples/complete/<name>/` app (all eight: kanban / markdown-editor / chat / todomvc / dashboard / cart-htmx / counter-store / row-selector). Kanban drag spec is the regression gate for KF-163 (no visual feedback during drag) and KF-165 (delegateCapture matches() vs. delegate() closest() — pointerdown on `.card-text` missed `.card` until the example switched to `delegate()`).
+│   │   ├── example-apps.spec.ts        ← KF-165 — one smoke spec per `site/src/examples/complete/<name>/` app (all nine: kanban / markdown-editor / chat / todomvc / dashboard / cart-htmx / counter-store / row-selector / live-poll). Kanban drag spec is the regression gate for KF-163 (no visual feedback during drag) and KF-165 (delegateCapture matches() vs. delegate() closest() — pointerdown on `.card-text` missed `.card` until the example switched to `delegate()`).
 │   │   ├── global-setup.mjs            ← rebuilds `tests/dist/consumer-app/dist/main.js` AND `tests/dist/example-apps/<name>/` before the suite (skipped per-build via `KERF_SKIP_CONSUMER_BUILD=1` / `KERF_SKIP_EXAMPLE_APPS_BUILD=1`)
 │   │   ├── html-tag.spec.ts            ← KF-333 — `kerfjs/html` no-build fixture: dist/html.js via importmap, mount + fine-grained signal updates + each() keyed reconcile across the three engines
 │   │   ├── ime-composition.spec.ts     ← IME composition survives a re-render
@@ -123,7 +123,7 @@ kerf/
 │   ├── results.json              ← KF-138 / KF-291 — in-repo snapshot tracked in git (from import-krausest.mjs); the Pages build has no network so this IS the source of truth at site-build time
 │   ├── results.md                ← markdown tables (from import-krausest.mjs) consumed by docs
 │   └── results-table.mjs         ← helper for the perf-comparison renderer
-├── site/                         ← Astro + Starlight marketing/docs site, deployed to /kerf/ on GitHub Pages
+├── site/                         ← Astro + Starlight marketing/docs site, deployed to /kerf/ on GitHub Pages. `site/src/examples/complete/<name>/` holds the nine complete example apps — eight Vite-built .tsx apps plus the no-build `live-poll` (plain main.js + importmap, copied verbatim with a vendored dist by `site/scripts/lib/copy-no-build-app.mjs`; design in docs/15)
 ├── docs/
 │   ├── orientation.md            ← KF-179 — hard-capped 500-word one-pager for humans new to the codebase. Maintained by the `/check-requirements-against-code` skill.
 │   ├── diagrams/
@@ -142,6 +142,7 @@ kerf/
 │   ├── 12-ai-assistant-configs.md ← KF-215 + KF-216 + KF-217 — Claude Code skill + Cursor rules bundled in the kerfjs npm package, canonical-file contract (version + KERF-APP-CANONICAL-END marker), and the `kerfjs/ai-assistant-configs` ESLint rule with versioned-section preservation
 │   ├── 13-component-packages.md   ← KF-254 — guide to building/publishing reusable kerf components as npm packages (no-instance model, per-instance state via factories, event/cleanup patterns, kerfjs-as-peer-dependency packaging modeled on eslint-plugin-kerfjs)
 │   ├── 14-feature-coverage.md     ← KF-284 — feature/behavior coverage axis (orthogonal to line coverage): per-behavior index mapping each behavior (esp. reconciler state transitions) → its guarding test; enforced by scripts/check-feature-coverage.mjs (npm run check:features)
+│   ├── 15-no-build-example.md     ← the no-build example app (live-poll): served-as-source (importmap + html tagged template, zero tooling), the vendor-copy contract (site/scripts/lib/copy-no-build-app.mjs shared by the three example build scripts), and its test/capture surfaces
 │   └── ai/
 │       ├── code-summary.md       ← THIS FILE
 │       ├── requirements-summary.md

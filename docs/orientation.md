@@ -37,4 +37,4 @@ One coherent concern per file, one primary export per file, ESM-only, kebab-case
 
 ## Deeper reading
 
-`docs/1-overview.md` → `docs/14-feature-coverage.md` (design); `docs/ai/usage-guide.md` (AI-first reference); `CLAUDE.md` (canonical agent doc).
+`docs/1-overview.md` → `docs/15-no-build-example.md` (design); `docs/ai/usage-guide.md` (AI-first reference); `CLAUDE.md` (canonical agent doc).

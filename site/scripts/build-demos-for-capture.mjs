@@ -10,8 +10,11 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { build } from 'vite';
 
+import { copyNoBuildApp, NO_BUILD_APPS } from './lib/copy-no-build-app.mjs';
+
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const siteRoot = resolve(__dirname, '..');
+const repoRoot = resolve(siteRoot, '..');
 
 const COMPLETE_APPS = [
   'todomvc',
@@ -22,6 +25,7 @@ const COMPLETE_APPS = [
   'cart-htmx',
   'counter-store',
   'row-selector',
+  'live-poll',
 ];
 
 const outRoot = process.argv[2] || '/tmp/claude/kerf-demos';
@@ -29,6 +33,11 @@ const outRoot = process.argv[2] || '/tmp/claude/kerf-demos';
 async function buildOne(name) {
   const appRoot = resolve(siteRoot, 'src/examples/complete', name);
   const outDir = resolve(outRoot, name);
+  if (NO_BUILD_APPS.has(name)) {
+    copyNoBuildApp(appRoot, outDir, repoRoot);
+    console.log(`[demos] copied ${name} (no-build) → ${outDir}`);
+    return;
+  }
   if (existsSync(outDir)) rmSync(outDir, { recursive: true, force: true });
   mkdirSync(outDir, { recursive: true });
   await build({
