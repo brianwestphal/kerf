@@ -35,17 +35,17 @@ That's it. Your JSX renders to HTML strings, kerf's native diff applies the mini
 
 2. **No virtual DOM, no compiler.** JSX → HTML strings → native diff. DevTools shows the real DOM because it *is* the DOM.
 
-3. **Fine-grained updates, opt-in.** Hand a signal *itself* into a JSX hole — `class={selectedId}` or `{status}` — and kerf binds that one node directly: when the signal changes, only that attribute or text node updates, with no render re-run and no list reconcile. It's a surgical tier beneath the coarse render effect, for the *external-state-drives-one-spot* pattern — a selection flip on a 10,000-row table touches exactly one class.
+3. **Values bind, structure re-renders.** Hand a signal *itself* into a JSX hole — `class={selectedId}` or `{status}` — and kerf binds that one node directly: when the signal changes, only that attribute or text node updates, with no render re-run and no list reconcile. A selection flip on a 10,000-row table touches exactly one class. Taken to its logical end: a mount whose render reads no `.value` at all runs **exactly once, forever** — every subsequent update flows through the per-hole bindings. Read `.value` in the render only when the *structure* depends on it (conditionals, list shape).
 
 4. **Focus, selection, listeners survive re-renders — even mid-list.** The reconciler morphs instead of rebuilding, so caret position, selection range, IME composition, and delegated listeners survive every re-render. Keyed lists get the same treatment: same-identity rows are updated *in place* rather than recreated, so a row reorder or a single-cell edit no longer blows away focus, scroll, or an in-flight animation the way node replacement does.
 
-5. **Safe by default.** Text and attribute values are HTML-escaped automatically, URL attributes are scheme-screened (`javascript:` / script-carrying `data:` dropped), inline `on*` handlers are rejected outright, and the same screening covers the fine-grained bound path — so untrusted data stays inert even when kerf is dropped into someone else's page. `raw()` is the explicit, auditable opt-out.
+5. **Safe by default.** Text and attribute values are HTML-escaped automatically, URL attributes are scheme-screened (`javascript:` / script-carrying `data:` dropped), inline `on*` handlers are rejected outright, and the same screening covers the fine-grained bound path — so untrusted data stays inert even when kerf is dropped into someone else's page. The URL screen fails loudly at your desk (throws in development) and degrades safely in the field (warns and drops in production). `raw()` is the explicit, auditable opt-out.
 
 6. **Small public API.** ~17 exports from the main barrel (plus `arraySignal` and the `html` tagged template on their own subpaths). No hooks, no lifecycle, no per-instance state. Components are plain functions that return JSX.
 
 7. **Plain TS, plain JSX, plain ESM.** Drops into anything using esbuild / Vite / tsup. No plugin chain. And with the `html` tagged template (`import { html } from 'kerfjs/html'` — identical runtime semantics to JSX), a CDN / importmap project needs no build step at all.
 
-8. **Grown-up tooling around a tiny core.** An [ESLint plugin](https://brianwestphal.github.io/kerf/docs/eslint-plugin/) that enforces the hard rules at edit time, a `create-kerf-component` scaffold for publishable component packages, drop-in AI-assistant configs, and side-by-side migration guides for a dozen-plus frameworks — none of which grows the core runtime past ~11 KB.
+8. **Grown-up tooling around a tiny core.** An [ESLint plugin](https://brianwestphal.github.io/kerf/docs/eslint-plugin/) that enforces the hard rules at edit time, an opt-in family of `KERF_DEV_WARN_*` runtime warnings that catch the classic mistakes in development (with zero production cost), a `create-kerf-component` scaffold for publishable component packages, drop-in AI-assistant configs, and side-by-side migration guides for a dozen-plus frameworks — none of which grows the core runtime past ~11 KB.
 
 ## When to use Kerf
 
@@ -135,7 +135,9 @@ mount(root, () => (
 status.value = 'saving';     // updates the class + the text node directly — no re-render
 ```
 
-The headline use is external state driving one spot: a `selectedId` flipping a single row's class inside a 10,000-row `each()` list touches exactly that one node, no reconcile. Works in static content and inside `each()` rows (a row's binding is torn down with the row); outside a `mount()` (SSR / `SafeHtml.toString()`) a bound signal just snapshots its current value. See [`docs/2-reactivity.md`](./docs/2-reactivity.md) §2.9.
+The headline use is external state driving one spot: a `selectedId` flipping a single row's class inside a 10,000-row `each()` list touches exactly that one node, no reconcile. Works in static content and inside `each()` rows (a row's binding is torn down with the row); outside a `mount()` (SSR / `SafeHtml.toString()`) a bound signal just snapshots its current value.
+
+This is kerf's guiding idiom — *values bind, structure re-renders*: pass the signal itself wherever a hole is just a value, and read `.value` in the render function only where the JSX structure depends on it. A render that reads no `.value` runs exactly once; from then on every update is a direct write to the node it concerns. See [`docs/2-reactivity.md`](./docs/2-reactivity.md) §2.9.
 
 ### Long keyed lists: `arraySignal`
 
@@ -170,6 +172,25 @@ morph(liveCard, raw(htmlFromServer));                    // SafeHtml
 ```
 
 Same algorithm `mount()` uses internally — `data-morph-skip`, `data-morph-skip-children`, `data-morph-preserve`, focused-input value + selection preservation, the `<details>` / `<dialog>` user-agent-owned `open` rule all carry over. Use it for SSR-fragment hydration, page-refresh diffs, third-party widget remounts. See [`docs/4-render.md`](./docs/4-render.md) §4.4.3.
+
+### No build step at all: the `html` tagged template
+
+"No compiler" isn't just a JSX story. The `html` tagged template from `kerfjs/html` has **identical runtime semantics to JSX** — escaping, boolean/nullish attribute rules, URL screening, `on*` rejection, fine-grained signal bindings, `each()` composition — with no transform, so a plain `<script type="module">` on a CDN / importmap page is a complete kerf app:
+
+```html
+<script type="module">
+  import { signal, mount, each } from 'https://esm.sh/kerfjs';
+  import { html } from 'https://esm.sh/kerfjs/html';
+
+  const items = signal([{ id: 1, label: 'no build step' }]);
+
+  mount(document.getElementById('app'), () => html`
+    <ul>${each(items.value, (i) => html`<li id="${i.id}">${i.label}</li>`)}</ul>
+  `);
+</script>
+```
+
+Attribute names are written verbatim (`class`, not `className`), and holes are only legal in text positions or as a complete attribute value — anything ambiguous throws with an actionable message. Static template parts parse once per call site. See [`docs/6-jsx-runtime.md`](./docs/6-jsx-runtime.md) §6.11.
 
 ## Install
 
@@ -232,7 +253,7 @@ A *kerf* is the narrow strip of material a saw blade removes when cutting — th
 
 ## Status
 
-1.0 — the public API is stable and follows semver from here. See [CHANGELOG.md](./CHANGELOG.md) for the current version and what's shipped.
+Stable — the public API follows semver. See [CHANGELOG.md](./CHANGELOG.md) for the current version and what's shipped.
 
 ## Sponsor
 
