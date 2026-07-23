@@ -359,6 +359,62 @@ describe('KF-380 interaction matrix: morph × owned each() rows × conditional s
     dispose();
   });
 
+  it('KF-382: a TEXT node before the marker shifts out without rebuilding the list', () => {
+    // Deferred neighbor shape from the KF-380 gap analysis. The blocker at the
+    // cursor is a text node, not an element — the marker lookahead still has to
+    // engage (the element lookahead never would), and the trailing pass removes
+    // the orphaned text.
+    const cond = signal(true);
+    const dispose = mount(root, () => (
+      <ul>
+        {cond.value ? 'heading text' : ''}
+        {each(ROWS, (r) => <li data-key={r.id}>{r.label}</li>)}
+      </ul>
+    ));
+    expect(labels()).toEqual(['A', 'B']);
+    const rowA = root.querySelector('li[data-key="a"]');
+
+    cond.value = false;
+    expect(labels()).toEqual(['A', 'B']);
+    expect(root.querySelector('li[data-key="a"]')).toBe(rowA);
+    expect((root.querySelector('ul') as HTMLElement).textContent).not.toContain('heading text');
+
+    cond.value = true;
+    expect(labels()).toEqual(['A', 'B']);
+    expect(root.querySelector('li[data-key="a"]')).toBe(rowA);
+    dispose();
+  });
+
+  it('a nested each() inside a container moved by the element lookahead keeps its rows', () => {
+    // Deferred neighbor shape from the KF-380 gap analysis. The shifted element
+    // is an ANCESTOR of the list, so this rides the element lookahead (2.5,
+    // KF-377) rather than the marker lookahead: the container is moved whole and
+    // the inner list's marker is never re-paired at all. Verified to pass on the
+    // pre-marker-lookahead morph, so it guards the 2.5 path specifically.
+    const banner = signal(true);
+    const dispose = mount(root, () => (
+      <div>
+        {banner.value ? <p class="banner">warn</p> : ''}
+        <section>
+          <ul>{each(ROWS, (r) => <li data-key={r.id}>{r.label}</li>)}</ul>
+        </section>
+      </div>
+    ));
+    expect(labels()).toEqual(['A', 'B']);
+    const rowA = root.querySelector('li[data-key="a"]');
+    const section = root.querySelector('section');
+
+    banner.value = false;
+    expect(labels()).toEqual(['A', 'B']);
+    expect(root.querySelector('section')).toBe(section);   // container moved, not cloned
+    expect(root.querySelector('li[data-key="a"]')).toBe(rowA); // rows rode along
+
+    banner.value = true;
+    expect(labels()).toEqual(['A', 'B']);
+    expect(root.querySelector('li[data-key="a"]')).toBe(rowA);
+    dispose();
+  });
+
   it('KF-382: a trailing template sibling cannot wedge between the marker and its rows', () => {
     // The marker moves as a UNIT with its owned-row run. Moving it alone would
     // let the trailing <button> (matched by the element lookahead on the next

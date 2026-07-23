@@ -83,6 +83,15 @@ container; `data-morph-preserve`d siblings interleaved with owned rows during
 a shift; focus survival across a lookahead move of the focused element's
 container.
 
+**Update (KF-383).** Three of those four are now closed. Focus survival across
+a lookahead move is covered by the KF-382 fix + its focused-row test; the
+conditional *text* node before a marker and the nested `each()` in a shifted
+container are covered by FC-T16 — the text-node case turned out to be
+load-bearing on the marker lookahead (it fails on the pre-KF-382 morph, since
+the element lookahead can never see a text blocker), while the nested case
+rides the older element lookahead and passes on both. The one still open is
+`data-morph-preserve`d siblings interleaved with owned rows during a shift.
+
 ## Outcome
 
 - 14 new tests (12 asserting, 2 `.skip` known-bug pins) in
