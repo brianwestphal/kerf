@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Fixed: when a conditionally-rendered `each()` list is added or removed, a sibling list could render the *other* list's rows — a batched "hide one list and push to another" applied the queued update to the wrong list's DOM. Lists now verify which data a pending update belongs to before applying it, and rebuild from their own items when it doesn't match.
+
 - Fixed: `each()` rows inside an `<svg>` root were re-parsed in the HTML namespace on every update, so rows added or structurally changed after the first render were invisible in the browser — the initial picture looked right, which made it read as a rendering flake. Row parsing now follows the list parent's namespace (rows under `<foreignObject>` correctly stay HTML).
 
 - New opt-in dev warning `KERF_DEV_WARN_LIST_REBIND=1`: fires (once per list) when an `each()` list's container is rebuilt by the morph — an ancestor's tag changed across renders, so the subtree was replaced and the list self-healed by re-binding and repopulating. The recovery is correct but discards row DOM state (focus, scroll, IME, imperative listeners); the warning names the list and points at keeping ancestor tags stable. Follows the standard `KERF_DEV_WARN_*` family rules: off by default, dev-mode only, zero production cost.

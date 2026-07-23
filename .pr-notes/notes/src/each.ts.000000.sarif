@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "Hot Sheet",
+          "rules": [
+            {
+              "id": "review-note",
+              "name": "ReviewNote",
+              "shortDescription": {
+                "text": "AI-authored, line-anchored review note."
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "review-note",
+          "ruleIndex": 0,
+          "kind": "informational",
+          "level": "none",
+          "guid": "mry4ypex4awkpk7o",
+          "message": {
+            "text": "The layer matters, and I got it wrong first. My initial attempt put the source check in reconcileList — refuse the granular path, fall through to snapshot. That removed the corruption but rendered the list EMPTY, because granular segments deliberately carry `items: []` (the patches hold the payload). The reconciler is structurally unable to recover: by the time a segment reaches it, the snapshot it would need was never produced.\n\nSo the check belongs in each(), which still holds `sig.value` and can emit a real snapshot segment via the existing eachSnapshotById fallback — the same route already used for replace/drift/render-threw recovery.\n\nIt is checked BEFORE decideListPath rather than as another reason inside it, because a reused id poisons the pure function's own inputs: `previousBindingCount` came from the previous occupant, so the drift arm would be comparing this list's snapshot length against another list's count. That is precisely how the corruption passed the drift check in the first place (A had 2 rows, B had 2 rows + 1 insert === 3, so 2 + 1 === 3 looked clean). Short-circuiting keeps the pure state machine honest — it never sees inputs from a list that isn't this one.\n\nIdentity comparison only; the source object is never read. Known hole, tracked in KF-392: two each() calls over the SAME arraySignal share a source, so a shift between those two still passes. It closes for free under a real identity scheme.\n",
+            "markdown": "The layer matters, and I got it wrong first. My initial attempt put the source check in reconcileList — refuse the granular path, fall through to snapshot. That removed the corruption but rendered the list EMPTY, because granular segments deliberately carry `items: []` (the patches hold the payload). The reconciler is structurally unable to recover: by the time a segment reaches it, the snapshot it would need was never produced.\n\nSo the check belongs in each(), which still holds `sig.value` and can emit a real snapshot segment via the existing eachSnapshotById fallback — the same route already used for replace/drift/render-threw recovery.\n\nIt is checked BEFORE decideListPath rather than as another reason inside it, because a reused id poisons the pure function's own inputs: `previousBindingCount` came from the previous occupant, so the drift arm would be comparing this list's snapshot length against another list's count. That is precisely how the corruption passed the drift check in the first place (A had 2 rows, B had 2 rows + 1 insert === 3, so 2 + 1 === 3 looked clean). Short-circuiting keeps the pure state machine honest — it never sees inputs from a list that isn't this one.\n\nIdentity comparison only; the source object is never read. Known hole, tracked in KF-392: two each() calls over the SAME arraySignal share a source, so a shift between those two still passes. It closes for free under a real identity scheme.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/each.ts"
+                },
+                "region": {
+                  "startLine": 197,
+                  "endLine": 215,
+                  "snippet": {
+                    "text": "  // KF-388: before trusting the state at all, confirm this id still refers to\n  // THIS list. Ids are call-order indexes, so a render that adds or drops an\n  // `each()` call ahead of this one silently hands us the previous occupant's\n  // binding — and its recorded count, which is what let a queued patch pass\n  // the drift check and get applied to the wrong list's live rows. Comparing\n  // the recorded source (identity only; the value is never read) catches the\n  // reuse, and a `known` mismatch is treated as first-render so the snapshot\n  // rebuilds this container from our own items.\n  const previousSource = ctx.bindingSources.get(id);\n  const sourceReused = ctx.bindingSources.has(id) && previousSource !== sig;\n  const decision = sourceReused\n    ? { path: 'snapshot' as const }\n    : decideListPath(\n      deriveListRenderState(previousBindingCount), patches, snapshot.length, previousBindingCount,\n    );\n  if (decision.path === 'snapshot') {\n    return eachSnapshotById(snapshot, render, cacheKey, id, sig);\n  }\n"
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "tags": [
+              "rationale"
+            ]
+          },
+          "workItemUris": [
+            "KF-388"
+          ],
+          "partialFingerprints": {
+            "prNoteAnchor/v1": "3e35f179a76c7fa785fb1a47474a6ec6"
+          }
+        }
+      ],
+      "versionControlProvenance": [
+        {
+          "repositoryUri": "git@github.com:brianwestphal/kerf.git",
+          "revisionId": "1285ef51b92c1b608192e083c78883e22400cad7",
+          "branch": "main"
+        }
+      ]
+    }
+  ]
+}

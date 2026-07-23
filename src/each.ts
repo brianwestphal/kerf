@@ -101,6 +101,21 @@ export interface RenderContext {
    * snapshot rebuild rather than applying patches against a stale binding.
    */
   bindingCounts: Map<string, number>;
+  /**
+   * KF-388: per-list-id record of the data source (`arraySignal` instance, or
+   * `undefined` for a plain array) the binding was last reconciled against.
+   * Maintained by `mount()` alongside `bindingCounts`.
+   *
+   * A list's id is its call-order index, so a render that changes how many
+   * `each()` calls precede this one silently hands this id's binding to a
+   * DIFFERENT list. A queued patch is only meaningful against the binding it
+   * was queued for, so `eachGranular` compares the source recorded here before
+   * emitting patches — a mismatch means the id was reused and the list must
+   * snapshot-rebuild instead. The check lives here, not in the reconciler,
+   * because only `each()` can still produce the full item snapshot the
+   * rebuild needs (granular segments deliberately carry `items: []`).
+   */
+  bindingSources: Map<string, object | undefined>;
 }
 
 let context: RenderContext | null = null;
@@ -179,11 +194,23 @@ function eachGranular<T extends object>(
   // draining `_consumePatches()` or mutating `_items` behind the signal's
   // back), but as a pure function it's now covered directly by
   // `tests/unit/list-render-state.internal.test.ts`.
-  const decision = decideListPath(
-    deriveListRenderState(previousBindingCount), patches, snapshot.length, previousBindingCount,
-  );
+  // KF-388: before trusting the state at all, confirm this id still refers to
+  // THIS list. Ids are call-order indexes, so a render that adds or drops an
+  // `each()` call ahead of this one silently hands us the previous occupant's
+  // binding — and its recorded count, which is what let a queued patch pass
+  // the drift check and get applied to the wrong list's live rows. Comparing
+  // the recorded source (identity only; the value is never read) catches the
+  // reuse, and a `known` mismatch is treated as first-render so the snapshot
+  // rebuilds this container from our own items.
+  const previousSource = ctx.bindingSources.get(id);
+  const sourceReused = ctx.bindingSources.has(id) && previousSource !== sig;
+  const decision = sourceReused
+    ? { path: 'snapshot' as const }
+    : decideListPath(
+      deriveListRenderState(previousBindingCount), patches, snapshot.length, previousBindingCount,
+    );
   if (decision.path === 'snapshot') {
-    return eachSnapshotById(snapshot, render, cacheKey, id);
+    return eachSnapshotById(snapshot, render, cacheKey, id, sig);
   }
 
   // The granular path applies arraySignal patches but never evaluates
@@ -237,7 +264,7 @@ function eachGranular<T extends object>(
       // structural change with no selection change, stays granular.
       if (cached !== undefined && cached.cacheKey !== k) {
         // Transition-table reason: `cachekey-drift` (list-render-state.ts).
-        return eachSnapshotById(snapshot, render, cacheKey, id);
+        return eachSnapshotById(snapshot, render, cacheKey, id, sig);
       }
     }
   }
@@ -277,11 +304,11 @@ function eachGranular<T extends object>(
     // the NEXT render (after the user fixes the bad item) snapshot-rebuilds
     // from scratch instead of trusting the stale count.
     ctx.bindingCounts.delete(id);
-    return eachSnapshotById(snapshot, render, cacheKey, id);
+    return eachSnapshotById(snapshot, render, cacheKey, id, sig);
   }
   // The `items` field is left empty for the granular case — the reconciler
   // doesn't need it; every insert/update patch carries pre-rendered HTML.
-  return granularListSafeHtml(id, [], internalPatches);
+  return granularListSafeHtml(id, [], internalPatches, sig);
 }
 
 /** Like eachSnapshot but uses a pre-allocated id (caller already advanced the counter). */
@@ -290,6 +317,7 @@ function eachSnapshotById<T extends object>(
   render: (item: T, index: number) => SafeHtml | string,
   cacheKey: ((item: T, index: number) => unknown) | undefined,
   id: string,
+  source?: object,
 ): SafeHtml {
   let cache: WeakMap<object, CacheEntry> | null = null;
   if (context !== null) {
@@ -343,5 +371,5 @@ function eachSnapshotById<T extends object>(
   if (cacheKey !== undefined) {
     maybeWarnDuplicateCacheKeys(id, segItems);
   }
-  return listSafeHtml(id, segItems);
+  return listSafeHtml(id, segItems, source);
 }

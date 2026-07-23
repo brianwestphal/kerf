@@ -99,8 +99,12 @@ export function raw(html: string): SafeHtml {
  * Internal: build a `SafeHtml` representing a list segment. Used by
  * `each()` so the JSX runtime is the sole owner of `SafeHtml` construction.
  */
-export function listSafeHtml(id: string, items: ListSegment['items']): SafeHtml {
-  return new SafeHtml({ kind: 'list', id, items });
+export function listSafeHtml(
+  id: string,
+  items: ListSegment['items'],
+  source?: object,
+): SafeHtml {
+  return new SafeHtml({ kind: 'list', id, items, source });
 }
 
 /**
@@ -119,8 +123,9 @@ export function granularListSafeHtml(
   id: string,
   items: ListSegment['items'],
   patches: NonNullable<ListSegment['patches']>,
+  source?: object,
 ): SafeHtml {
-  return new SafeHtml({ kind: 'list', id, items, patches });
+  return new SafeHtml({ kind: 'list', id, items, patches, source });
 }
 
 // KF-294: `ReadonlySignal<unknown>` (covariant) accepts both `signal()` and

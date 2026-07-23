@@ -24,11 +24,16 @@
  *   bound    + count + netΔ(inserts−removes) ≠ snapshot  → snapshot  count-drift
  *   bound    + a bound row's `cacheKey` changed          → snapshot  cachekey-drift †
  *   bound    + a patch row's render() threw              → snapshot  render-threw †
+ *   any      + this id now holds a DIFFERENT source     → snapshot  source-reuse †
  *   bound    + otherwise                                 → granular
  *
- *   † decided in `each.ts:eachGranular` after this module's structural
- *     decision, because both require side effects the pure function must not
- *     own: the `cacheKey` scan doubles as the dependency-tracking read that
+ *   † decided in `each.ts:eachGranular` around this module's structural
+ *     decision, because each needs side effects or context the pure
+ *     function must not own. `source-reuse` (KF-388) is checked FIRST and
+ *     short-circuits the rest: a list's id is its call-order index, so when a
+ *     render changes how many `each()` calls precede this one, this id's
+ *     recorded state belongs to a different list entirely — including the
+ *     count the drift arm above would otherwise trust. The other two: the `cacheKey` scan doubles as the dependency-tracking read that
  *     keeps external selection signals subscribed, and the pre-render
  *     try/catch drives throw recovery (which also resets the list to
  *     `unbound` via `bindingCounts.delete(id)` so the NEXT render snapshot-

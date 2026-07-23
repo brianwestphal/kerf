@@ -178,6 +178,7 @@ export function mount(rootEl: HTMLElement, render: () => MountResult): () => voi
     counter: 0,
     caches: new Map(),
     bindingCounts: new Map(),
+    bindingSources: new Map(),
   };
   // KF-294: per-mount fine-grained binding context + live-effect disposers.
   // `bindingCtx` is reset and repopulated each render; `bindingDisposers`
@@ -285,6 +286,9 @@ export function mount(rootEl: HTMLElement, render: () => MountResult): () => voi
       // granular path can detect drift (a prior render that threw mid-batch
       // leaves the binding shorter than the signal expects).
       renderCtx.bindingCounts.set(listSeg.id, binding.items.length);
+      // KF-388: record WHICH list this id now holds, so the next render can
+      // tell a genuine continuation from an id reused by a different list.
+      renderCtx.bindingSources.set(listSeg.id, listSeg.source);
     }
   });
 
@@ -557,6 +561,7 @@ function cleanupOrphanBindings(
     }
     bindings.delete(id);
     renderCtx.bindingCounts.delete(id);
+    renderCtx.bindingSources.delete(id);
     renderCtx.caches.delete(id);
   }
 }

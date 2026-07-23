@@ -63,6 +63,18 @@ export interface ListSegment {
    * patches are present.
    */
   patches?: ArrayPatchInternal[];
+  /**
+   * KF-388: the identity of the data this list renders — the `arraySignal`
+   * instance, or `undefined` for a plain array.
+   *
+   * A list's `id` is its call-order index, so a render that changes how many
+   * `each()` calls precede this one hands this segment a DIFFERENT list's
+   * binding. Patches are only meaningful against the binding they were queued
+   * for, so the reconciler compares this against the binding's recorded source
+   * before trusting the patch queue. It is an identity check, not a value
+   * check — the instance is never read.
+   */
+  source?: object;
 }
 
 /**

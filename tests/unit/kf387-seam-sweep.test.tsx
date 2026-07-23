@@ -255,14 +255,13 @@ describe('KF-387 seam: each() list identity across a varying call count', () => 
   const bLabels = (): string[] =>
     Array.from(root.querySelectorAll('ul.b li')).map((li) => li.textContent ?? '');
 
-  it('a batched conditional-toggle + granular patch renders the WRONG list\'s rows', () => {
-    // KNOWN BUG KF-388 shape A (each() list identity is its call-order
-    // index). Hiding the panel makes list B the render's FIRST each() call,
-    // so it inherits list A's id — and A's binding, whose recorded count
-    // makes B's queued insert patch pass the drift check. The granular path
-    // then applies B's patch against A's live rows: ul.b displays A1 A2 B3.
-    // This test asserts the CURRENT (corrupt) output; when KF-388 lands,
-    // change it to ['B1', 'B2', 'B3'].
+  it('a batched conditional-toggle + granular patch renders its own list\'s rows', () => {
+    // KF-388 (fixed): hiding the panel makes list B the render's FIRST each()
+    // call, so it inherits list A's id — and A's binding, whose recorded count
+    // used to make B's queued insert patch pass the drift check. The granular
+    // path then applied B's patch to A's live rows and ul.b displayed
+    // A1 A2 B3. each() now compares the recorded data source for the id and
+    // snapshot-rebuilds on a mismatch, so B renders B's rows.
     const cond = signal(true);
     const a = arraySignal(A_ROWS());
     const b = arraySignal(B_ROWS());
@@ -277,15 +276,13 @@ describe('KF-387 seam: each() list identity across a varying call count', () => 
       cond.value = false;
       b.push({ id: 'b3', t: 'B3' });
     });
-    // KNOWN BUG KF-388: list B shows list A's rows plus the pushed item.
-    expect(bLabels()).toEqual(['A1', 'A2', 'B3']);
+    expect(bLabels()).toEqual(['B1', 'B2', 'B3']);
     dispose();
   });
 
-  it('a batched conditional-toggle + granular update splices the two lists\' rows together', () => {
-    // KNOWN BUG KF-388 shape A, update flavor: ul.b ends up ['B1-upd', 'A2']
-    // — the updated B row patched over A's row 0, with A's row 1 kept.
-    // Change to ['B1-upd', 'B2'] when KF-388 lands.
+  it('a batched conditional-toggle + granular update keeps the two lists\' rows separate', () => {
+    // KF-388 (fixed), update flavor: ul.b used to end up ['B1-upd', 'A2'] —
+    // the updated B row patched over A's row 0, with A's row 1 kept.
     const cond = signal(true);
     const a = arraySignal(A_ROWS());
     const b = arraySignal(B_ROWS());
@@ -299,8 +296,7 @@ describe('KF-387 seam: each() list identity across a varying call count', () => 
       cond.value = false;
       b.update(0, (r) => ({ ...r, t: 'B1-upd' }));
     });
-    // KNOWN BUG KF-388: a spliced hybrid of the two lists.
-    expect(bLabels()).toEqual(['B1-upd', 'A2']);
+    expect(bLabels()).toEqual(['B1-upd', 'B2']);
     dispose();
   });
 
