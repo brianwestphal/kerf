@@ -18,6 +18,10 @@
  *   morph attrs on the element, leave its subtree verbatim — for
  *   client-hydrated slots whose loading/state classes still need to flow
  *   through), and `isEqualNode` (byte-identical, no work needed).
+ * - **`data-morph-preserve`** protects a node at ITS OWN level only — an
+ *   ancestor the template drops still takes the whole subtree, preserved
+ *   descendants included (KF-386: intended, but easy to over-read, so it is
+ *   pinned by tests and stated in docs/4-render.md §4.3).
  * - **`data-morph-preserve`** (KF-151) is honored in the trailing-removal
  *   pass: an unmatched live element with this attribute is skipped instead
  *   of removed. Lets imperatively-injected nodes (autoplay `<video>`s,

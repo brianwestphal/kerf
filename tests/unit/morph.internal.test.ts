@@ -177,6 +177,36 @@ describe('morph()', () => {
     expect(host.querySelector('b')).toBe(null);
   });
 
+  it('KF-386: data-morph-preserve is a same-level opt-out — it does not make ancestors immortal', () => {
+    // The attribute exempts a node from the removal pass AT ITS OWN LEVEL. It
+    // does not protect it from an ancestor being removed: when the template
+    // drops the whole <section>, everything inside goes with it, preserved or
+    // not. That is intended — the app's template said that subtree is gone, and
+    // re-homing the node somewhere else would be arbitrary — but it is worth
+    // pinning, because "preserve" reads stronger than it is and the loss is
+    // silent. Consumers who need the node to outlive its host must attach it
+    // to an element the template keeps.
+    live.innerHTML = '<section class="wrap"><span data-morph-preserve></span></section><p>tail</p>';
+    const preserved = live.querySelector('span');
+    const tpl = renderTemplate('<p>tail</p>');
+    morph(live, tpl, new Set());
+    expect(live.contains(preserved)).toBe(false);
+    expect(live.innerHTML).toBe('<p>tail</p>');
+  });
+
+  it('KF-386: the same node attached one level up (where the template keeps the host) survives', () => {
+    // The counterpart of the test above, and the fix consumers should reach
+    // for: same node, same render, attached to a surviving host instead.
+    live.innerHTML = '<section class="wrap"></section><p>tail</p>';
+    const preserved = document.createElement('span');
+    preserved.setAttribute('data-morph-preserve', '');
+    live.appendChild(preserved);
+    const tpl = renderTemplate('<p>tail</p>');
+    morph(live, tpl, new Set());
+    expect(live.contains(preserved)).toBe(true);
+    expect(live.querySelector('section')).toBe(null); // host still dropped
+  });
+
   it('skips elements listed in ownedItems (kerf list reconciler owns them)', () => {
     live.innerHTML = '<ul><!--marker--><li>row 1</li><li>row 2</li></ul>';
     const ul = live.querySelector('ul')!;

@@ -111,9 +111,14 @@ predicted for cross-subsystem seams.
   permanent. This severity class was not part of the KF-383 WONTFIX calculus,
   which reasoned only about row focus/scroll/IME.
 
-Both are pinned asserting current behavior with `KNOWN BUG` comments, so the
-gate stays green and the assertions flip when the fixes land. The KF-383
-container-key workaround is also shown to protect against KF-386.
+Both were pinned asserting current behavior so the gate stayed green while
+they were triaged. **Both are now resolved**: KF-385 was a real defect and is
+fixed (a list's row region is atomic to the diff, in both the moved run and
+the cursor advance); KF-386 turned out NOT to be list-specific at all — the
+same loss happens through the public `morph()` API with no list involved —
+and was resolved as a documented boundary: `data-morph-preserve` is a
+same-level opt-out that never made ancestors immortal. The KF-383
+container-key workaround also protects against the list flavor.
 
 ## Outcome
 

@@ -123,12 +123,20 @@ describe('KF-384: data-morph-preserve nodes interleaved with owned each() rows',
     dispose();
   });
 
-  it('KNOWN BUG KF-386: a preserved node is destroyed when its container is rebuilt', () => {
+  it('KF-386: a preserved node goes with its container when the container is rebuilt', () => {
     // The KF-383 shape-2 hijack: a same-tag conditional sibling takes the list
     // container's place, so the real container is removed wholesale and a
     // fresh one cloned. Rows come back (mount re-renders them); the
-    // consumer-owned preserved node does not — it is silently, permanently
-    // gone. Fix or documented-boundary decision tracked in KF-386.
+    // consumer-owned preserved node does not.
+    //
+    // Resolved (KF-386) as a DOCUMENTED BOUNDARY, not a defect:
+    // `data-morph-preserve` is a same-level opt-out and never made ancestors
+    // immortal — the identical loss happens through the public `morph()` API
+    // with no list involved, whenever the template drops a preserved node's
+    // host (pinned in `morph.internal.test.ts`). What is specific to this
+    // shape is only that the container's removal was accidental rather than
+    // app-directed, which is KF-383's accepted trade-off — and the container
+    // key that fixes KF-383 prevents this too (next test).
     const banner = signal(true);
     const dispose = mount(root, () => (
       <div>

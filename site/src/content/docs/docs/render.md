@@ -221,6 +221,7 @@ Scope is deliberately narrow — it's an **end-of-list-discard opt-out**, nothin
 
 - If a keyed-match (`id` / `data-key`) in the new template lines up with the preserved element, kerf will still move it (`insertBefore`) to wherever the template places it. The attribute doesn't pin position.
 - Attribute morphing and child diffing still run on a matched preserved element exactly as on any other element. The attribute only affects the "unmatched → remove" decision.
+- **It protects the node at its own level only — it does not make its ancestors immortal.** If a render drops the element the preserved node lives inside, the whole subtree goes and the preserved node with it. That's intended: your template said that region is gone, and re-homing the node elsewhere would be guesswork. Attach the node to a host the template keeps if it needs to outlive one. (This also applies to `each()` list containers: a container rebuilt by a same-tag conditional sibling — see §4.2 — takes preserved descendants with it, and keying the container prevents that.)
 - Use `data-morph-skip` if you also need the element's subtree/attributes left alone.
 
 Comparison:

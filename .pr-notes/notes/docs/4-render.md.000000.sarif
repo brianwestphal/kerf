@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "Hot Sheet",
+          "rules": [
+            {
+              "id": "review-note",
+              "name": "ReviewNote",
+              "shortDescription": {
+                "text": "AI-authored, line-anchored review note."
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "review-note",
+          "ruleIndex": 0,
+          "kind": "informational",
+          "level": "none",
+          "guid": "mry33wklw1ydx6ie",
+          "message": {
+            "text": "Resolved as a documented boundary rather than a code fix, after probing showed the ticket's framing was wrong. The report described this as an each()/self-heal defect; it is neither list-specific nor mount-specific. A bare morph(live, template) call with no list and no mount destroys a data-morph-preserve node just as readily whenever the template drops the node's HOST — only a preserved node that is a DIRECT CHILD of the morphed parent survives. So the attribute was never subtree-immortality; it is a same-level 'unmatched -> remove' opt-out, exactly as docs/4 already scoped it, with the ancestor case simply never spelled out. Re-homing a preserved descendant into a replacement container was rejected: when the template says a region is gone, relocating consumer nodes somewhere else is guesswork, and in the general (non-list) case the removal is app-directed and correct. A dev warning was also rejected: the condition fires mostly on legitimate app-directed subtree removal, so it would be noise; the one case where kerf removes a container WITHOUT the app asking is the KF-383 hijack, which KERF_DEV_WARN_LIST_REBIND already reports and which the container key prevents.",
+            "markdown": "Resolved as a documented boundary rather than a code fix, after probing showed the ticket's framing was wrong. The report described this as an each()/self-heal defect; it is neither list-specific nor mount-specific. A bare morph(live, template) call with no list and no mount destroys a data-morph-preserve node just as readily whenever the template drops the node's HOST — only a preserved node that is a DIRECT CHILD of the morphed parent survives. So the attribute was never subtree-immortality; it is a same-level 'unmatched -> remove' opt-out, exactly as docs/4 already scoped it, with the ancestor case simply never spelled out. Re-homing a preserved descendant into a replacement container was rejected: when the template says a region is gone, relocating consumer nodes somewhere else is guesswork, and in the general (non-list) case the removal is app-directed and correct. A dev warning was also rejected: the condition fires mostly on legitimate app-directed subtree removal, so it would be noise; the one case where kerf removes a container WITHOUT the app asking is the KF-383 hijack, which KERF_DEV_WARN_LIST_REBIND already reports and which the container key prevents."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "docs/4-render.md"
+                },
+                "region": {
+                  "startLine": 224,
+                  "endLine": 226,
+                  "snippet": {
+                    "text": "\n- `data-morph-skip` covers *library-owned hosts*: the whole region is off-limits.\n- `data-morph-skip-children` covers *server-rendered shells*: attributes flow, children are off-limits."
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "tags": [
+              "rationale"
+            ]
+          },
+          "workItemUris": [
+            "KF-386"
+          ],
+          "partialFingerprints": {
+            "prNoteAnchor/v1": "85a628b76bd253f9fd761919736ca803"
+          }
+        }
+      ],
+      "versionControlProvenance": [
+        {
+          "repositoryUri": "git@github.com:brianwestphal/kerf.git",
+          "revisionId": "eaa0079d4fe0c44c5546facd0e0df77e057b334f",
+          "branch": "main"
+        }
+      ]
+    }
+  ]
+}
