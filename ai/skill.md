@@ -1,7 +1,7 @@
 ---
 name: kerf-app
 description: Build UIs in the kerf reactive framework (https://github.com/brianwestphal/kerf). Use this skill whenever the user is writing or modifying code that imports `kerfjs`, asks to add a feature to a kerf app, or asks "how do I do X in kerf?". Use it proactively the moment you spot a kerf import in the file you're editing.
-kerf-skill-version: 1.8.0
+kerf-skill-version: 1.8.1
 ---
 
 # Building apps with kerf
@@ -180,6 +180,7 @@ mount(rootEl, () => html`
 | Row-enter CSS animation no longer replays when only a row's *content* changed (kerf ≥ 0.15.0) | 0.15.0+ morphs a same-identity, same-position row *in place* instead of recreating its node, so a mount-keyed `@keyframes` never re-triggers on a content-only update (≤ 0.14.x recreated the node, so it fired). Intentional flip side: focus, scroll, IME, and in-progress transitions now survive | Key the animation on a state-class toggle, not element creation. To force a remount, churn the row's identity (new object ref / `data-key`) so the reconciler replaces the node |
 | Want a hot spot to update without re-running the whole render | Fine-grained binding: pass the signal/`computed` ITSELF into the attr/text hole (`class={computed(() => …)}`), not `.value`. Use `computed()` not a bare `() => …` (memoization keeps a shared-signal flip to ~O(changed nodes)). Opt-in per hole. Limit: a bound hole depending on the row's OWN mutated data goes stale on a granular in-place update — use plain interpolation there |
 | `` html`` ``: partial attribute values are not supported | In `kerfjs/html` templates a hole must be the COMPLETE attribute value | Build the full string first (`` class="${`a ${b}`}" ``), or bind `class="${computed(() => `a ${b.value}`)}"` for a reactive one |
+| Keyed `each()` list suddenly renders zero rows — only its `<!--kf-list:N-->` marker — with no errors, and it never recovers (kerfjs ≤ 2.0.1) | A conditionally-rendered sibling BEFORE the list (possibly higher in the tree, e.g. an error banner) was removed that render; older kerfjs rebuilt the shifted list container from the template, permanently detaching the list's internal binding | Upgrade kerfjs (fixed after 2.0.1 — the morph now moves the shifted container up in place, keeping node identity). On older versions, keep the structure before the list stable: wrap the conditional in an always-present container (`<div class="banners">{cond ? <div/> : ''}</div>`) |
 
 ## Workflow guidance
 

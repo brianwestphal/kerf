@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "Hot Sheet",
+          "rules": [
+            {
+              "id": "review-note",
+              "name": "ReviewNote",
+              "shortDescription": {
+                "text": "AI-authored, line-anchored review note."
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "review-note",
+          "ruleIndex": 0,
+          "kind": "informational",
+          "level": "none",
+          "guid": "mrxfwl182z66e1pb",
+          "message": {
+            "text": "The ticket proposed a new hard rule banning conditional siblings before each() lists, but KF-377's fix landed in the same unreleased version — the shape is now fully supported and regression-tested, so a hard rule would steer AI assistants into wrapping banners in pointless stable containers on current kerf. Scoped down to a version-scoped diagnosing row (mirrored in cursorrules + usage-guide) so assistants working against apps pinned to kerfjs ≤ 2.0.1 can still recognize the symptom and apply the wrap-or-upgrade fix. The dev-warning idea (item 3) became KF-379 — with the fix, anchor loss is recoverable, so the warning's value shifts to surfacing silent row-state loss on the self-heal path.",
+            "markdown": "The ticket proposed a new hard rule banning conditional siblings before each() lists, but KF-377's fix landed in the same unreleased version — the shape is now fully supported and regression-tested, so a hard rule would steer AI assistants into wrapping banners in pointless stable containers on current kerf. Scoped down to a version-scoped diagnosing row (mirrored in cursorrules + usage-guide) so assistants working against apps pinned to kerfjs ≤ 2.0.1 can still recognize the symptom and apply the wrap-or-upgrade fix. The dev-warning idea (item 3) became KF-379 — with the fix, anchor loss is recoverable, so the warning's value shifts to surfacing silent row-state loss on the self-heal path."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "kerf.claude-skill.md"
+                },
+                "region": {
+                  "startLine": 183,
+                  "endLine": 183,
+                  "snippet": {
+                    "text": "| Keyed `each()` list suddenly renders zero rows — only its `<!--kf-list:N-->` marker — with no errors, and it never recovers (kerfjs ≤ 2.0.1) | A conditionally-rendered sibling BEFORE the list (possibly higher in the tree, e.g. an error banner) was removed that render; older kerfjs rebuilt the shifted list container from the template, permanently detaching the list's internal binding | Upgrade kerfjs (fixed after 2.0.1 — the morph now moves the shifted container up in place, keeping node identity). On older versions, keep the structure before the list stable: wrap the conditional in an always-present container (`<div class=\"banners\">{cond ? <div/> : ''}</div>`) |"
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "tags": [
+              "rationale"
+            ]
+          },
+          "workItemUris": [
+            "KF-378"
+          ],
+          "partialFingerprints": {
+            "prNoteAnchor/v1": "7685292f548e7d035c8a59050d983c56"
+          }
+        }
+      ],
+      "versionControlProvenance": [
+        {
+          "repositoryUri": "git@github.com:brianwestphal/kerf.git",
+          "revisionId": "7f388deed30d9114393cd155a0dc3dba3aedff84",
+          "branch": "main"
+        }
+      ]
+    }
+  ]
+}
