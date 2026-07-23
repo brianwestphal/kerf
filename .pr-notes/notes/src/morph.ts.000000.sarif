@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "Hot Sheet",
+          "rules": [
+            {
+              "id": "review-note",
+              "name": "ReviewNote",
+              "shortDescription": {
+                "text": "AI-authored, line-anchored review note."
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "review-note",
+          "ruleIndex": 0,
+          "kind": "informational",
+          "level": "none",
+          "guid": "mrx5jcermuy0itiz",
+          "message": {
+            "text": "**Root cause of KF-374 (morph dropped static siblings of a bound text hole).** The wiring pass inserts a hole's live text node at `marker.nextSibling`, but templates contain only the marker comment. So live children were `[marker, inserted, static]` against template `[marker, static]`: the positional pairing matched the template's static text against the INSERTED node (same nodeType), overwrote the bound text with the static content, and the real static sibling fell into the trailing-removal pass. The post-morph re-wire then found the (position-strict) cached node still at `marker.nextSibling` and re-targeted it back to the bound value — net effect: the parent held only the hole's value. Deterministic whenever a morph with changed surrounds HTML walks the parent (the \"intermittent\" flake upstream was just whether the structural toggle actually changed the HTML).\n\nThe fix keys off the one piece of state that already knows the relationship: `bindings.ts`'s `insertedTextNodes` WeakMap, exposed as `boundTextNodeOf(marker)` (position-strict, same rule as the wiring reuse check). After a comment matches positionally, the cursor steps past its owned node — statics pair with statics, and the owned node (behind the cursor) survives the trailing removal. Import direction bindings ← morph is acyclic; `boundTextNodeOf` is not in the public barrel.\n\nAlternative rejected: emitting the hole's snapshot value into the template (so pairing lines up naturally) — it would change the surrounds HTML on every bound-value change, defeating mount's byte-equal fast path and re-introducing morph churn for value-only updates.\n",
+            "markdown": "**Root cause of KF-374 (morph dropped static siblings of a bound text hole).** The wiring pass inserts a hole's live text node at `marker.nextSibling`, but templates contain only the marker comment. So live children were `[marker, inserted, static]` against template `[marker, static]`: the positional pairing matched the template's static text against the INSERTED node (same nodeType), overwrote the bound text with the static content, and the real static sibling fell into the trailing-removal pass. The post-morph re-wire then found the (position-strict) cached node still at `marker.nextSibling` and re-targeted it back to the bound value — net effect: the parent held only the hole's value. Deterministic whenever a morph with changed surrounds HTML walks the parent (the \"intermittent\" flake upstream was just whether the structural toggle actually changed the HTML).\n\nThe fix keys off the one piece of state that already knows the relationship: `bindings.ts`'s `insertedTextNodes` WeakMap, exposed as `boundTextNodeOf(marker)` (position-strict, same rule as the wiring reuse check). After a comment matches positionally, the cursor steps past its owned node — statics pair with statics, and the owned node (behind the cursor) survives the trailing removal. Import direction bindings ← morph is acyclic; `boundTextNodeOf` is not in the public barrel.\n\nAlternative rejected: emitting the hole's snapshot value into the template (so pairing lines up naturally) — it would change the surrounds HTML on every bound-value change, defeating mount's byte-equal fast path and re-introducing morph churn for value-only updates.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/morph.ts"
+                },
+                "region": {
+                  "startLine": 190,
+                  "endLine": 205,
+                  "snippet": {
+                    "text": "      // inserted right after it — the template never contains that node\n      // (templates carry only the marker). Step the cursor past it so a\n      // template static sibling pairs with its real live counterpart instead\n      // of the inserted node; behind the cursor, the inserted node also\n      // survives the trailing-removal pass.\n      if (matched.nodeType === COMMENT_NODE && fromChild !== null) {\n        const owned = boundTextNodeOf(matched as Comment);\n        if (owned !== null && fromChild === owned) {\n          fromChild = skipOwned(owned.nextSibling, ownedItems);\n        }\n      }\n    }\n\n    if (matched !== null) {\n      morphNode(matched, toChild, ownedItems);\n    } else {"
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "tags": [
+              "rationale"
+            ]
+          },
+          "workItemUris": [
+            "KF-374"
+          ],
+          "partialFingerprints": {
+            "prNoteAnchor/v1": "bb8cf9046bf183626e3bdb7417847982"
+          }
+        }
+      ],
+      "versionControlProvenance": [
+        {
+          "repositoryUri": "git@github.com:brianwestphal/kerf.git",
+          "revisionId": "cbfa499966441601b3dddd814009c6014d629d83",
+          "branch": "main"
+        }
+      ]
+    }
+  ]
+}

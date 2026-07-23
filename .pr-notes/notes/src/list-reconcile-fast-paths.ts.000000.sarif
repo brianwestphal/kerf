@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "Hot Sheet",
+          "rules": [
+            {
+              "id": "review-note",
+              "name": "ReviewNote",
+              "shortDescription": {
+                "text": "AI-authored, line-anchored review note."
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "review-note",
+          "ruleIndex": 0,
+          "kind": "informational",
+          "level": "warning",
+          "guid": "mrx5jckkdmrd1k62",
+          "message": {
+            "text": "**Why the text fast path bails on a preceding binding marker.** The path maps an HTML-string diff position to the nth live text node — but a live row with a wired text hole carries one MORE text node than its HTML (the wiring-inserted node after the `<!--kfbr:…-->` marker), so any marker before the diff shifts the index by one. The `nodeValue === oldText` safety net catches the mismatch in almost every case, but is defeated when the bound node's current value coincidentally equals the expected static text — the fast path would then patch the BOUND node and skip the morph entirely (pinned in `list-reconcile-fast-paths.internal.test.ts` › the KF-374 coincidence case). Markers at/after the diff's text node don't shift the index and stay on the fast path, so the krausest partial-update shape is unaffected; rows whose updates flow through bindings produce byte-identical HTML and never enter this path anyway.",
+            "markdown": "**Why the text fast path bails on a preceding binding marker.** The path maps an HTML-string diff position to the nth live text node — but a live row with a wired text hole carries one MORE text node than its HTML (the wiring-inserted node after the `<!--kfbr:…-->` marker), so any marker before the diff shifts the index by one. The `nodeValue === oldText` safety net catches the mismatch in almost every case, but is defeated when the bound node's current value coincidentally equals the expected static text — the fast path would then patch the BOUND node and skip the morph entirely (pinned in `list-reconcile-fast-paths.internal.test.ts` › the KF-374 coincidence case). Markers at/after the diff's text node don't shift the index and stay on the fast path, so the krausest partial-update shape is unaffected; rows whose updates flow through bindings produce byte-identical HTML and never enter this path anyway."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/list-reconcile-fast-paths.ts"
+                },
+                "region": {
+                  "startLine": 163,
+                  "endLine": 172,
+                  "snippet": {
+                    "text": "  // KF-374: a binding TEXT marker (`<!--kfb:…-->` / `<!--kfbr:…-->`) earlier\n  // in the row means the LIVE row carries an extra wiring-inserted text node\n  // the HTML string doesn't contain — the HTML-position → nth-live-text-node\n  // mapping below would be off by one, and the nodeValue safety net could be\n  // defeated by a coincidental value match (patching the bound node instead\n  // of the static one). Bail to the morph path, which pairs marker-owned\n  // nodes correctly. Markers at/after the diff's text node don't shift the\n  // index and stay on the fast path.\n  if (oldHtml.lastIndexOf('<!--kfb', textStart) !== -1) return false;\n"
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "tags": [
+              "risk"
+            ]
+          },
+          "workItemUris": [
+            "KF-374"
+          ],
+          "partialFingerprints": {
+            "prNoteAnchor/v1": "4d4f9b5fbf31bce81a2f5e8297d51ceb"
+          }
+        }
+      ],
+      "versionControlProvenance": [
+        {
+          "repositoryUri": "git@github.com:brianwestphal/kerf.git",
+          "revisionId": "cbfa499966441601b3dddd814009c6014d629d83",
+          "branch": "main"
+        }
+      ]
+    }
+  ]
+}

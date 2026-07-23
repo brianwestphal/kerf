@@ -44,6 +44,7 @@
  * runtime dependency. Original copyright preserved in `LICENSE`.
  */
 
+import { boundTextNodeOf } from './bindings.js';
 import type { SafeHtml } from './jsx-runtime.js';
 import { syncFormProp } from './utils/syncFormProp.js';
 
@@ -185,6 +186,18 @@ function morphChildren(
                 && getNodeKey(fromChild) === undefined))) {
       matched = fromChild;
       fromChild = skipOwned(fromChild.nextSibling, ownedItems);
+      // KF-374: a binding marker comment OWNS the text node the wiring pass
+      // inserted right after it — the template never contains that node
+      // (templates carry only the marker). Step the cursor past it so a
+      // template static sibling pairs with its real live counterpart instead
+      // of the inserted node; behind the cursor, the inserted node also
+      // survives the trailing-removal pass.
+      if (matched.nodeType === COMMENT_NODE && fromChild !== null) {
+        const owned = boundTextNodeOf(matched as Comment);
+        if (owned !== null && fromChild === owned) {
+          fromChild = skipOwned(owned.nextSibling, ownedItems);
+        }
+      }
     }
 
     if (matched !== null) {

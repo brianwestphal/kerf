@@ -160,6 +160,16 @@ export function tryTextContentFastPath(
   const oldText = oldHtml.slice(textStart + 1, textEnd);
   const newText = newHtml.slice(textStart + 1, newTextEnd);
 
+  // KF-374: a binding TEXT marker (`<!--kfb:…-->` / `<!--kfbr:…-->`) earlier
+  // in the row means the LIVE row carries an extra wiring-inserted text node
+  // the HTML string doesn't contain — the HTML-position → nth-live-text-node
+  // mapping below would be off by one, and the nodeValue safety net could be
+  // defeated by a coincidental value match (patching the bound node instead
+  // of the static one). Bail to the morph path, which pairs marker-owned
+  // nodes correctly. Markers at/after the diff's text node don't shift the
+  // index and stay on the fast path.
+  if (oldHtml.lastIndexOf('<!--kfb', textStart) !== -1) return false;
+
   // Find the text-node-index in document order.
   const textIdx = countTextNodesBefore(oldHtml, textStart + 1);
   const targetNode = nthTextNodeDescendant(liveNode, textIdx);

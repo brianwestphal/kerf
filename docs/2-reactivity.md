@@ -193,6 +193,14 @@ mount(root, () => <span>{count}</span>); // pass the signal, not count.value
 count.value++;                            // updates only that text node
 ```
 
+A bound text hole does not need its own element — it can share a parent with
+static text and other holes, and the mix survives coarse re-renders intact:
+
+```tsx
+const elapsed = computed(() => fmt(playhead.value));
+mount(root, () => <div class="time">{elapsed} / {fmt(duration)}</div>);
+```
+
 ### When to bind (the default for values)
 
 - **Any hole whose content is a signal's or computed's current value.** Counters, labels, status attributes, selection classes, ticking values. Derived text composes with `computed`: `{computed(() => \`${n.value} items\`)}`.

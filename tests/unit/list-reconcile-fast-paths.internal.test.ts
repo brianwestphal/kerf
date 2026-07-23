@@ -193,6 +193,36 @@ describe('fast-paths internal — tryTextContentFastPath bail branches', () => {
     const live = document.createElement('li');
     expect(tryTextContentFastPath(live, '<li>x</li>', '<li>y</li>')).toBe(false);
   });
+
+  it('bails when a binding text marker precedes the diff (KF-374 — the live row carries an inserted node the HTML lacks)', () => {
+    // A live row with a wired text hole holds [marker, inserted bound node,
+    // static text] where the HTML has only [marker, static text] — the
+    // nth-text-node mapping is off by one. Worse, the nodeValue safety net
+    // can be defeated by a coincidence: here the bound node's live value
+    // ('7 / ') EQUALS the static text the HTML expects at that index, so
+    // without the marker guard the fast path would patch the BOUND node
+    // instead of the static one.
+    const live = buildLive('<li><span>x</span><!--kfbr:t0-->7 / </li>');
+    const marker = live.childNodes[1] as Comment;
+    marker.after(document.createTextNode('7 / ')); // the wiring-inserted bound node
+    expect(tryTextContentFastPath(
+      live,
+      '<li><span>x</span><!--kfbr:t0-->7 / </li>',
+      '<li><span>x</span><!--kfbr:t0-->8 / </li>',
+    )).toBe(false);
+    // Neither the bound node nor the static text was touched.
+    expect(live.textContent).toBe('x7 / 7 / ');
+  });
+
+  it('stays on the fast path when the only binding marker sits after the diff', () => {
+    const live = buildLive('<li>1 / <!--kfbr:t0--></li>');
+    expect(tryTextContentFastPath(
+      live,
+      '<li>1 / <!--kfbr:t0--></li>',
+      '<li>2 / <!--kfbr:t0--></li>',
+    )).toBe(true);
+    expect(live.textContent).toBe('2 / ');
+  });
 });
 
 describe('fast-paths internal — tryTextContentFastPath walk-and-find', () => {

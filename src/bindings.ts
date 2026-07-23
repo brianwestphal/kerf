@@ -365,6 +365,22 @@ function attachAttrEffect(el: Element, attr: string, signal: Signal<unknown>): (
 const insertedTextNodes = new WeakMap<Comment, Text>();
 
 /**
+ * The live text node `marker` currently owns, or null (KF-374 — morph drops
+ * static siblings of a bound hole). Position-strict, same rule as the reuse
+ * check below: the node counts as owned only while it still sits at
+ * `marker.nextSibling`. The morph's child pairing uses this to step PAST the
+ * binding-inserted node — the template never contains it (templates carry
+ * only the marker comment), so without the skip a template static sibling
+ * pairs positionally with the inserted node, the morph overwrites the bound
+ * text with the static content, and the real static sibling falls off the
+ * cursor's tail and is removed.
+ */
+export function boundTextNodeOf(marker: Comment): Text | null {
+  const t = insertedTextNodes.get(marker);
+  return t !== undefined && marker.nextSibling === t ? t : null;
+}
+
+/**
  * Bind a live text node after `marker` to `signal`; returns the effect
  * disposer. Reuses the marker's previously-inserted node when it is still
  * exactly where we put it (`marker.nextSibling`) — a rewire then just

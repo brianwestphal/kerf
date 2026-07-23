@@ -831,6 +831,152 @@ describe('fine-grained bindings — lifecycle', () => {
   });
 });
 
+describe('mixed content: a bound hole sharing its parent with static siblings (KF-374 — the morph dropped the static text)', () => {
+  // KF-374: the wiring pass inserts the hole's live text node AFTER its marker
+  // comment, but templates carry only the marker — so the morph's positional
+  // child pairing matched a template static sibling against the inserted node,
+  // overwrote it, and removed the real static text in the trailing pass. After
+  // the re-wire the div held only the hole's value. These walk the full
+  // transition matrix (bind-update ↔ coarse morph, repeated) for every hole /
+  // static ordering.
+  it('keeps a trailing static sibling across repeated morphs and updates (the svg-scrubber time-label shape)', () => {
+    const playhead = signal(0);
+    const playing = signal(false);
+    const timeLabel = computed(() => `0:0${playhead.value}`);
+    const render = vi.fn(() =>
+      jsx('div', {
+        children: [
+          jsx('button', { id: 'b', children: playing.value ? 'pause' : 'play' }),
+          jsx('div', { id: 'time', children: [timeLabel, ' / 0:05'] }),
+        ],
+      }),
+    );
+    const dispose = mount(root, render);
+    const time = root.querySelector('#time') as HTMLElement;
+    expect(time.textContent).toBe('0:00 / 0:05');
+
+    // bind-update → morph → bind-update → morph → bind-update
+    playhead.value = 1;
+    expect(time.textContent).toBe('0:01 / 0:05');
+    playing.value = true; // structural change → morph runs over the surrounds
+    expect((root.querySelector('#b') as HTMLElement).textContent).toBe('pause');
+    expect(time.textContent).toBe('0:01 / 0:05');
+    playhead.value = 2;
+    expect(time.textContent).toBe('0:02 / 0:05');
+    playing.value = false; // and back again
+    expect(time.textContent).toBe('0:02 / 0:05');
+    playhead.value = 3;
+    expect(time.textContent).toBe('0:03 / 0:05');
+    // Fine-grained the whole way: only the two structural flips re-rendered.
+    expect(render).toHaveBeenCalledTimes(3);
+    dispose();
+  });
+
+  it('keeps leading, trailing, and in-between statics for every hole position', () => {
+    const v = signal('X');
+    const t = signal(0);
+    const dispose = mount(root, () =>
+      jsx('div', {
+        'data-tick': String(t.value), // structural: changes the surrounds HTML
+        children: [
+          jsx('p', { id: 'lead', children: ['pre ', v] }),
+          jsx('p', { id: 'trail', children: [v, ' post'] }),
+          jsx('p', { id: 'both', children: ['pre ', v, ' post'] }),
+        ],
+      }),
+    );
+    const read = (id: string): string =>
+      (root.querySelector(`#${id}`) as HTMLElement).textContent as string;
+    expect(read('lead')).toBe('pre X');
+    expect(read('trail')).toBe('X post');
+    expect(read('both')).toBe('pre X post');
+
+    t.value = 1; // morph
+    expect(read('lead')).toBe('pre X');
+    expect(read('trail')).toBe('X post');
+    expect(read('both')).toBe('pre X post');
+
+    v.value = 'Y'; // bindings still live post-morph
+    expect(read('lead')).toBe('pre Y');
+    expect(read('trail')).toBe('Y post');
+    expect(read('both')).toBe('pre Y post');
+
+    t.value = 2; // morph again with the NEW bound value in the nodes
+    expect(read('both')).toBe('pre Y post');
+    dispose();
+  });
+
+  it('keeps the static separator between two holes in one parent', () => {
+    const a = signal('0:01');
+    const b = signal('0:05');
+    const t = signal(0);
+    const dispose = mount(root, () =>
+      jsx('div', {
+        'data-tick': String(t.value),
+        children: [jsx('div', { id: 'time', children: [a, ' / ', b] })],
+      }),
+    );
+    const time = root.querySelector('#time') as HTMLElement;
+    expect(time.textContent).toBe('0:01 / 0:05');
+    t.value = 1; // morph
+    expect(time.textContent).toBe('0:01 / 0:05');
+    a.value = '0:02';
+    b.value = '0:06';
+    expect(time.textContent).toBe('0:02 / 0:06');
+    t.value = 2; // morph again
+    expect(time.textContent).toBe('0:02 / 0:06');
+    dispose();
+  });
+
+  it('a hole element removed by a structural change comes back intact when re-added', () => {
+    const v = signal('val');
+    const show = signal(true);
+    const dispose = mount(root, () =>
+      jsx('div', {
+        children: show.value
+          ? jsx('div', { id: 'mixed', children: [v, ' static'] })
+          : jsx('span', { id: 'alt', children: 'gone' }),
+      }),
+    );
+    expect((root.querySelector('#mixed') as HTMLElement).textContent).toBe('val static');
+    show.value = false; // hole element removed entirely
+    expect(root.querySelector('#mixed')).toBeNull();
+    v.value = 'ignored-while-hidden';
+    show.value = true; // re-added: fresh marker, fresh node, current value
+    expect((root.querySelector('#mixed') as HTMLElement).textContent).toBe('ignored-while-hidden static');
+    v.value = 'live-again';
+    expect((root.querySelector('#mixed') as HTMLElement).textContent).toBe('live-again static');
+    dispose();
+  });
+
+  it('row scope: a row mixing a bound hole and static text survives an in-place row update', () => {
+    // The row's static text changes via update() (a text diff AFTER a text
+    // marker → the KF-374 fast-path guard bails to the morph, which must
+    // pair the marker-owned node correctly), while the bound hole keeps its
+    // own signal instance so the binding carries across the update.
+    const label = signal('a');
+    const items = arraySignal([{ id: 1, unit: 'ms' }]);
+    const dispose = mount(root, () =>
+      jsx('ul', {
+        children: each(
+          items,
+          (it) => jsx('li', { children: [label, ' in ', it.unit] }),
+          (it) => it.id,
+        ),
+      }),
+    );
+    const li = (): HTMLElement => root.querySelector('li') as HTMLElement;
+    expect(li().textContent).toBe('a in ms');
+    label.value = 'b'; // fine-grained row update
+    expect(li().textContent).toBe('b in ms');
+    items.update(0, (it) => ({ ...it, unit: 's' })); // static row text changes → row reconcile
+    expect(li().textContent).toBe('b in s');
+    label.value = 'c'; // binding still live on the surviving row node
+    expect(li().textContent).toBe('c in s');
+    dispose();
+  });
+});
+
 describe('reserved marker namespace (KF-314)', () => {
   // The wiring pass matches markers by id across the mounted subtree, so these
   // attribute/comment names are a reserved consumer contract (see
