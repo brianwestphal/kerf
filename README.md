@@ -190,7 +190,7 @@ Same algorithm `mount()` uses internally — `data-morph-skip`, `data-morph-skip
 </script>
 ```
 
-Attribute names are written verbatim (`class`, not `className`), and holes are only legal in text positions or as a complete attribute value — anything ambiguous throws with an actionable message. Static template parts parse once per call site. See [`docs/6-jsx-runtime.md`](./docs/6-jsx-runtime.md) §6.11.
+Attribute names are written verbatim (`class`, not `className`), and holes are only legal in text positions or as a complete attribute value — anything ambiguous throws with an actionable message. Static template parts parse once per call site. See [`docs/6-jsx-runtime.md`](./docs/6-jsx-runtime.md) §6.11 — or the [live-poll example](https://brianwestphal.github.io/kerf/examples/complete/live-poll/), a complete app served exactly as authored: no bundler ever touches it.
 
 ## Install
 
