@@ -64,6 +64,69 @@
           "branch": "main"
         }
       ]
+    },
+    {
+      "tool": {
+        "driver": {
+          "name": "Hot Sheet",
+          "rules": [
+            {
+              "id": "review-note",
+              "name": "ReviewNote",
+              "shortDescription": {
+                "text": "AI-authored, line-anchored review note."
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "review-note",
+          "ruleIndex": 0,
+          "kind": "informational",
+          "level": "none",
+          "guid": "mrxfsb5pfiqvmql3",
+          "message": {
+            "text": "Lookahead moves the matched element up (insertBefore, mirroring the keyed branch) rather than removing the intervening nodes eagerly. Removal-style lookahead (morphdom's approach) destroys intervening live nodes that a LATER template child may still positionally match — e.g. an unkeyed swap [span,div]→[div,span] would rebuild the span. Move-style preserves both: skipped nodes stay behind the cursor for later template children, and genuinely unmatched ones are cleaned up by the existing trailing-removal pass, which already honors ownedItems and data-morph-preserve. Restricted to elements because binding-marker comments own an inserted text sibling (KF-374) that a lone-comment move would strand.",
+            "markdown": "Lookahead moves the matched element up (insertBefore, mirroring the keyed branch) rather than removing the intervening nodes eagerly. Removal-style lookahead (morphdom's approach) destroys intervening live nodes that a LATER template child may still positionally match — e.g. an unkeyed swap [span,div]→[div,span] would rebuild the span. Move-style preserves both: skipped nodes stay behind the cursor for later template children, and genuinely unmatched ones are cleaned up by the existing trailing-removal pass, which already honors ownedItems and data-morph-preserve. Restricted to elements because binding-marker comments own an inserted text sibling (KF-374) that a lone-comment move would strand."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/morph.ts"
+                },
+                "region": {
+                  "startLine": 203,
+                  "endLine": 228,
+                  "snippet": {
+                    "text": "    // 2.5. Positional lookahead (KF-377: removing a conditional sibling ahead\n    //    of a keyed list must not rebuild the list's container). The\n    //    positional match failed, but the real counterpart may sit further\n    //    along the live children — the common case is a conditional element\n    //    this render removed, shifting everything after it one slot left.\n    //    Without this, the shifted element is cloned from scratch and the\n    //    original is dropped by the trailing-removal pass — catastrophic when\n    //    it (or a descendant) hosts an each() marker, whose ListBinding would\n    //    detach permanently. Scan forward for the first same-tag unkeyed\n    //    element and move it up, exactly the move the keyed branch performs;\n    //    skipped-over live nodes stay behind the cursor for later template\n    //    children or the trailing-removal pass. Elements only: comments/text\n    //    are stateless to rebuild, and binding-marker comments own an\n    //    inserted text sibling that must never be separated by a move.\n    if (matched === null && toChild.nodeType === ELEMENT_NODE && fromChild !== null) {\n      const toTag = (toChild as Element).tagName;\n      for (let scan: Node | null = fromChild.nextSibling; scan !== null; scan = scan.nextSibling) {\n        if (scan.nodeType !== ELEMENT_NODE) continue;\n        const el = scan as Element;\n        if (ownedItems.has(el)) continue;\n        if (el.tagName !== toTag || getNodeKey(el) !== undefined) continue;\n        matched = el;\n        fromParent.insertBefore(el, fromChild);\n        break;\n      }\n    }"
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "tags": [
+              "rationale"
+            ]
+          },
+          "workItemUris": [
+            "KF-377"
+          ],
+          "partialFingerprints": {
+            "prNoteAnchor/v1": "c4704750cc4b7db584f61e87812ebd8b"
+          }
+        }
+      ],
+      "versionControlProvenance": [
+        {
+          "repositoryUri": "git@github.com:brianwestphal/kerf.git",
+          "revisionId": "c9abe40c429fe16e4834aca0461e23e1c6f57278",
+          "branch": "main"
+        }
+      ]
     }
   ]
 }

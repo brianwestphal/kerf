@@ -34,7 +34,7 @@ Everything above is the **coarse** update path: a signal change re-runs `render(
 - **`id`** — wins over any other key. Useful for singletons.
 - **`data-key`** — generic per-row key for list items.
 
-Elements without a key are matched positionally by tag name. Pure-HTML diffs work fine without keys; you only need keys when list rows reorder, are inserted in the middle, or removed.
+Elements without a key are matched positionally by tag name, with a forward lookahead: when the element at a position doesn't match (say, a conditional banner was removed this render, shifting everything after it), the diff scans later live siblings for the first same-tag unkeyed element and moves it up instead of rebuilding it from the template. Stateful subtrees — most importantly the parent of an `each()` list — keep their node identity when a sibling before them appears or disappears. Pure-HTML diffs work fine without keys; you only need keys when list rows reorder, are inserted in the middle, or removed.
 
 ```tsx
 // Reorderable list — give each row a stable data-key

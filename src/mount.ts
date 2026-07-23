@@ -413,7 +413,22 @@ function bindListsFromMarkers(
   for (const marker of found) {
     if (!marker.data.startsWith(LIST_MARKER_PREFIX)) continue;
     const id = marker.data.slice(LIST_MARKER_PREFIX.length);
-    if (bindings.has(id)) continue;  // existing binding survives the diff
+    const existing = bindings.get(id);
+    if (existing !== undefined) {
+      // Existing binding whose marker is still inside the mount survives the
+      // diff — the prior render's item nodes stay bound.
+      if (rootEl.contains(existing.marker)) continue;
+      // KF-377 self-heal: the marker we found is a fresh clone — the list's
+      // container was rebuilt by the morph (e.g. an ancestor's tag changed,
+      // so replaceChild swapped the whole subtree). The old binding points at
+      // a detached tree; keeping it would make every future reconcile mutate
+      // that detached parent, permanently rendering zero rows. Drop it
+      // (disposing the dead rows' fine-grained binding effects) and fall
+      // through to re-bind against the live marker, so the next reconcile
+      // repopulates the list from scratch.
+      for (const item of existing.items) disposeRowBindings(item.bindingDisposers);
+      bindings.delete(id);
+    }
     const listSeg = lists.get(id) as ListSegment;
     const liveParent = marker.parentElement as Element;
     const items: BoundItem[] = [];

@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "Hot Sheet",
+          "rules": [
+            {
+              "id": "review-note",
+              "name": "ReviewNote",
+              "shortDescription": {
+                "text": "AI-authored, line-anchored review note."
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "review-note",
+          "ruleIndex": 0,
+          "kind": "informational",
+          "level": "none",
+          "guid": "mrxfsibou382ld9f",
+          "message": {
+            "text": "Self-heal is checked with rootEl.contains(existing.marker), not marker.isConnected — a mount root may legitimately live in a detached tree (mounted before being appended to the document), where isConnected is false for perfectly valid bindings. Containment in the mount root is the invariant that actually matters. This is defense in depth behind the morph lookahead: the lookahead keeps the container alive when a sibling is removed; this path covers genuine rebuilds (ancestor tag swap via replaceChild) where a fresh marker clone lands in the live tree while the binding still points at the detached original — previously a permanent, silent zero-row state.",
+            "markdown": "Self-heal is checked with rootEl.contains(existing.marker), not marker.isConnected — a mount root may legitimately live in a detached tree (mounted before being appended to the document), where isConnected is false for perfectly valid bindings. Containment in the mount root is the invariant that actually matters. This is defense in depth behind the morph lookahead: the lookahead keeps the container alive when a sibling is removed; this path covers genuine rebuilds (ancestor tag swap via replaceChild) where a fresh marker clone lands in the live tree while the binding still points at the detached original — previously a permanent, silent zero-row state."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/mount.ts"
+                },
+                "region": {
+                  "startLine": 425,
+                  "endLine": 441,
+                  "snippet": {
+                    "text": "      // that detached parent, permanently rendering zero rows. Drop it\n      // (disposing the dead rows' fine-grained binding effects) and fall\n      // through to re-bind against the live marker, so the next reconcile\n      // repopulates the list from scratch.\n      for (const item of existing.items) disposeRowBindings(item.bindingDisposers);\n      bindings.delete(id);\n    }\n    const listSeg = lists.get(id) as ListSegment;\n    const liveParent = marker.parentElement as Element;\n    const items: BoundItem[] = [];\n    if (inlinedItems) {\n      // KF-103: enforce the \"exactly one top-level element per row\" contract\n      // on first render too. Without this check, a multi-root row inlined\n      // via `flatten(seg, true)` would silently misalign the binding (each\n      // bound item.node points at only the first of a row's 2+ elements,\n      // and the leftover elements are picked up as \"next\" rows). The check\n      // is per-row so we can pinpoint the offender by index."
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "tags": [
+              "rationale"
+            ]
+          },
+          "workItemUris": [
+            "KF-377"
+          ],
+          "partialFingerprints": {
+            "prNoteAnchor/v1": "42d5c77b4cb85b8091fbee3217c027d3"
+          }
+        }
+      ],
+      "versionControlProvenance": [
+        {
+          "repositoryUri": "git@github.com:brianwestphal/kerf.git",
+          "revisionId": "c9abe40c429fe16e4834aca0461e23e1c6f57278",
+          "branch": "main"
+        }
+      ]
+    }
+  ]
+}

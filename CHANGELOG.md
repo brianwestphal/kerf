@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Fixed: removing a conditionally-rendered sibling ahead of a keyed `each()` list (e.g. a banner that disappears) permanently emptied the list — the morph rebuilt the list's container from the template and the list binding stayed pointed at the detached subtree, silently rendering zero rows forever. The morph now performs a positional lookahead (a later same-tag live element is moved up and morphed in place instead of being cloned from scratch), so list containers — and any stateful element — survive a preceding sibling's removal with node identity intact. As defense in depth, `mount()` now self-heals a list binding whose marker left the live tree (e.g. an ancestor's tag changed, so the whole subtree was replaced): the stale binding is dropped and re-bound so rows repopulate instead of vanishing.
+
 - Toolchain: the repo now type-checks with the native **TypeScript 7** compiler across every gate (`typecheck`, the dist `.d.ts` typing gates, the docs code-block compile — a full-repo `tsc --noEmit` now takes ~0.3 s), with `typescript@6` (the JS-API bridge release) retained for tsup's `.d.ts` emit and typescript-eslint, which still require the JS compiler API. `@typescript-eslint/*` bumped to 8.65. No shipped-code changes — `dist/` output is unaffected.
 
 ## [2.0.1] - 2026-07-23

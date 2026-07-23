@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "Hot Sheet",
+          "rules": [
+            {
+              "id": "review-note",
+              "name": "ReviewNote",
+              "shortDescription": {
+                "text": "AI-authored, line-anchored review note."
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "review-note",
+          "ruleIndex": 0,
+          "kind": "informational",
+          "level": "none",
+          "guid": "mrxfsii8dfbe366f",
+          "message": {
+            "text": "Verified these tests catch the original bug: with src/morph.ts + src/mount.ts stashed to their pre-fix state, 6 of the 8 tests fail (the 2 passing ones are deliberate pins of already-working nearby shapes: conditional-after-list and the p↔ul container swap). With the fix, all 8 pass and the full `npm run check` gate (100% line / 99% branch coverage thresholds) stays green.",
+            "markdown": "Verified these tests catch the original bug: with src/morph.ts + src/mount.ts stashed to their pre-fix state, 6 of the 8 tests fail (the 2 passing ones are deliberate pins of already-working nearby shapes: conditional-after-list and the p↔ul container swap). With the fix, all 8 pass and the full `npm run check` gate (100% line / 99% branch coverage thresholds) stays green."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "tests/unit/kf377-conditional-sibling-before-each.test.tsx"
+                },
+                "region": {
+                  "startLine": 1,
+                  "endLine": 27,
+                  "snippet": {
+                    "text": "/**\n * KF-377 regression tests — removing a conditionally-rendered sibling that\n * precedes a keyed `each()` list must not empty the list.\n *\n * The bug: with live children `[banner, ul]` and template children `[ul]`\n * (banner removed this render), the morph's positional match failed on\n * DIV-vs-UL, cloned a FRESH empty `<ul><!--kf-list:N--></ul>` from the\n * template, and the trailing-removal pass then removed the original `<ul>` —\n * taking every owned row with it (only the rows are owned, not their parent).\n * `bindListsFromMarkers` next found the cloned marker but skipped re-binding\n * because a binding for the id already existed — permanently pointed at the\n * detached subtree, so every later reconcile mutated a dead tree and the live\n * list rendered zero rows forever, with no errors.\n *\n * The fix is two-layered:\n *  - `morph.ts` step 2.5 positional lookahead: when the positional match\n *    fails, scan later live siblings for a same-tag unkeyed element and move\n *    it up (the same move the keyed branch performs), so the list container —\n *    and any stateful element — survives a preceding sibling's removal.\n *  - `mount.ts` `bindListsFromMarkers` self-heal: if a binding's marker is no\n *    longer inside the mount root (the container was genuinely rebuilt, e.g.\n *    an ancestor's tag changed so replaceChild swapped the subtree), drop the\n *    stale binding and re-bind against the live marker so the next reconcile\n *    repopulates instead of permanently rendering nothing.\n */\nimport { afterEach, describe, expect, it } from 'vitest';\n"
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "tags": [
+              "test-evidence"
+            ]
+          },
+          "workItemUris": [
+            "KF-377"
+          ],
+          "partialFingerprints": {
+            "prNoteAnchor/v1": "36325022a65aff35e55d355514294cf4"
+          }
+        }
+      ],
+      "versionControlProvenance": [
+        {
+          "repositoryUri": "git@github.com:brianwestphal/kerf.git",
+          "revisionId": "c9abe40c429fe16e4834aca0461e23e1c6f57278",
+          "branch": "main"
+        }
+      ]
+    }
+  ]
+}

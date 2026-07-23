@@ -200,6 +200,33 @@ function morphChildren(
       }
     }
 
+    // 2.5. Positional lookahead (KF-377: removing a conditional sibling ahead
+    //    of a keyed list must not rebuild the list's container). The
+    //    positional match failed, but the real counterpart may sit further
+    //    along the live children — the common case is a conditional element
+    //    this render removed, shifting everything after it one slot left.
+    //    Without this, the shifted element is cloned from scratch and the
+    //    original is dropped by the trailing-removal pass — catastrophic when
+    //    it (or a descendant) hosts an each() marker, whose ListBinding would
+    //    detach permanently. Scan forward for the first same-tag unkeyed
+    //    element and move it up, exactly the move the keyed branch performs;
+    //    skipped-over live nodes stay behind the cursor for later template
+    //    children or the trailing-removal pass. Elements only: comments/text
+    //    are stateless to rebuild, and binding-marker comments own an
+    //    inserted text sibling that must never be separated by a move.
+    if (matched === null && toChild.nodeType === ELEMENT_NODE && fromChild !== null) {
+      const toTag = (toChild as Element).tagName;
+      for (let scan: Node | null = fromChild.nextSibling; scan !== null; scan = scan.nextSibling) {
+        if (scan.nodeType !== ELEMENT_NODE) continue;
+        const el = scan as Element;
+        if (ownedItems.has(el)) continue;
+        if (el.tagName !== toTag || getNodeKey(el) !== undefined) continue;
+        matched = el;
+        fromParent.insertBefore(el, fromChild);
+        break;
+      }
+    }
+
     if (matched !== null) {
       morphNode(matched, toChild, ownedItems);
     } else {

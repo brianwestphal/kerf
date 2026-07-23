@@ -213,6 +213,56 @@ describe('morph()', () => {
     expect(wrap.firstChild!.nodeType).toBe(Node.COMMENT_NODE);
   });
 
+  describe('positional lookahead (KF-377: a removed leading sibling must not rebuild what follows)', () => {
+    it('preserves the identity of a later same-tag element when a leading sibling disappears', () => {
+      // The stray text node between banner and list exercises the scan's
+      // skip-non-elements step.
+      live.innerHTML = '<div class="banner">warn</div>stray<ul><li>a</li></ul>';
+      const ul = live.querySelector('ul')!;
+      const tpl = renderTemplate('<ul><li>a</li></ul>');
+      morph(live, tpl, new Set());
+      expect(live.querySelector('.banner')).toBeNull();
+      // The ORIGINAL <ul> node was moved up and morphed in place — not cloned.
+      expect(live.querySelector('ul')).toBe(ul);
+      expect(live.innerHTML).toBe('<ul><li>a</li></ul>');
+    });
+
+    it('scans past owned items and keyed elements without matching them', () => {
+      // The owned <ul> and the keyed <ul id="x"> must both be invisible to the
+      // lookahead; the unkeyed trailing <ul> is the one that gets moved up.
+      live.innerHTML = '<span>s</span><ul class="owned"></ul><ul id="x"></ul><ul class="plain"></ul>';
+      const owned = live.querySelector('ul.owned') as Element;
+      const plain = live.querySelector('ul.plain');
+      const tpl = renderTemplate('<ul class="target"></ul><ul id="x"></ul>');
+      morph(live, tpl, new Set([owned]));
+      // Lookahead matched the unkeyed plain <ul>, morphed it to class=target.
+      expect(live.querySelector('ul.target')).toBe(plain);
+      // Keyed <ul id="x"> matched by key and survives; owned <ul> untouched.
+      expect(live.querySelector('ul#x')).not.toBeNull();
+      expect(live.contains(owned)).toBe(true);
+      // The unmatched leading <span> was removed by the trailing pass.
+      expect(live.querySelector('span')).toBeNull();
+    });
+
+    it('falls back to cloning when no later same-tag element exists', () => {
+      live.innerHTML = '<span>x</span><p>y</p>';
+      const tpl = renderTemplate('<ul><li>a</li></ul><p>y</p>');
+      morph(live, tpl, new Set());
+      expect(live.innerHTML).toBe('<ul><li>a</li></ul><p>y</p>');
+    });
+
+    it('an unkeyed swap preserves both elements (move + positional match)', () => {
+      live.innerHTML = '<span>s</span><div>d</div>';
+      const spanEl = live.querySelector('span');
+      const divEl = live.querySelector('div');
+      const tpl = renderTemplate('<div>d</div><span>s</span>');
+      morph(live, tpl, new Set());
+      expect(live.innerHTML).toBe('<div>d</div><span>s</span>');
+      expect(live.querySelector('div')).toBe(divEl);
+      expect(live.querySelector('span')).toBe(spanEl);
+    });
+  });
+
   it('short-circuits on isEqualNode-equal subtrees', () => {
     live.innerHTML = '<p><span>a</span><span>b</span></p>';
     const innerSpan = live.querySelector('span');
