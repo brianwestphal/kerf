@@ -144,7 +144,11 @@ const clickFrame = (dur, pop = {}) => ({
   continue: true,
   transition: CUT,
   actions: [
-    { type: 'click', selector: '#counter-btn' },
+    // #btn-hit, not #counter-btn: the auto-cursor lands on the click target's
+    // center, and the invisible pad sits in the button's lower-right so the
+    // pointer never covers the "Clicked N times" label (the changing count is
+    // the payoff). The click bubbles to the button's own listener.
+    { type: 'click', selector: '#btn-hit' },
     { type: 'wait', ms: 120 },
   ],
   animations: [

@@ -165,6 +165,19 @@ just use a short trailing `wait`; the dashboard trims to 10 rows via an injected
   `animations` entry on the same selector overwrites the first's
   `data-domotion-anim` tag (and those tags persist on the live page into all
   later frames' captures, which is what holds a tucked window in place).
+- **Aim clicks beside the payoff, and steer the auto-cursor's glyph with the
+  DOM.** The auto-cursor lands on the *click target's center*, so if the
+  changing value IS the click target's label (the getting-started counter),
+  the pointer covers the one thing the viewer must read — click an invisible
+  pad positioned inside the element but beside the label instead (the click
+  bubbles to the real listener). And the glyph is resolved by a
+  z-index-agnostic "last element in DFS order whose box contains the point"
+  hit-test over the captured tree — on a stage of stacked full-size windows,
+  whichever window is last in the DOM answers for all of them. Put the window
+  the clicks happen in last, and use invisible cursor-less / `cursor:
+  pointer` hint boxes (opacity 0 — captured for the hit-test, never
+  rendered) to force the right glyph where the DOM order alone gets it wrong
+  (the getting-started page's `#link-hint` / `#rest-hint`).
 - **For "constantly changing" live data, sample often.** Each frame is a single
   DOM snapshot, so a live feed (the dashboard's ticker) only updates as often as
   you capture. Use many short frames with a real `wait` between captures so the

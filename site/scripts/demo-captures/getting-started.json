@@ -544,7 +544,7 @@
       "actions": [
         {
           "type": "click",
-          "selector": "#counter-btn"
+          "selector": "#btn-hit"
         },
         {
           "type": "wait",
@@ -573,7 +573,7 @@
       "actions": [
         {
           "type": "click",
-          "selector": "#counter-btn"
+          "selector": "#btn-hit"
         },
         {
           "type": "wait",
@@ -602,7 +602,7 @@
       "actions": [
         {
           "type": "click",
-          "selector": "#counter-btn"
+          "selector": "#btn-hit"
         },
         {
           "type": "wait",
@@ -934,7 +934,7 @@
       "actions": [
         {
           "type": "click",
-          "selector": "#counter-btn"
+          "selector": "#btn-hit"
         },
         {
           "type": "wait",
@@ -963,7 +963,7 @@
       "actions": [
         {
           "type": "click",
-          "selector": "#counter-btn"
+          "selector": "#btn-hit"
         },
         {
           "type": "wait",
@@ -992,7 +992,7 @@
       "actions": [
         {
           "type": "click",
-          "selector": "#counter-btn"
+          "selector": "#btn-hit"
         },
         {
           "type": "wait",

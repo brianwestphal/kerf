@@ -163,8 +163,35 @@
       .btn {
         font: inherit; font-size: 17px; background: #2563eb; color: #fff; border: 0;
         border-radius: 8px; padding: 12px 26px; cursor: pointer; box-shadow: 0 2px 8px #2563eb44;
+        position: relative;
       }
       .btn.hot { background: #ea580c; box-shadow: 0 2px 14px #ea580c66; }
+      /* CURSOR AIM + GLYPH HINTS. domotion's auto-cursor moves to the CENTER
+         of the clicked element and resolves the glyph by a z-index-agnostic
+         "last element in DFS order containing the point" hit-test over the
+         captured tree. Two consequences handled here:
+         - #btn-hit is the config's click target instead of the button: an
+           invisible pad in the button's lower-right, so the pointer lands
+           BESIDE the "Clicked N times" label (the changing count is the
+           payoff — the arrow must never sit on it). Clicks bubble to the
+           button's own listener.
+         - The browser window is deliberately LAST among the windows in the
+           DOM (all four share one stage box, so DFS-last wins every
+           hit-test): its cursor values answer for all the button clicks.
+           #link-hint (opacity 0 — captured but never rendered) sits over the
+           terminal's localhost link so the pointer shows the hand there too;
+           without it the browser's page (arrow) would answer. */
+      #btn-hit { position: absolute; right: 4px; bottom: 2px; width: 14px; height: 14px; }
+      #link-hint { position: absolute; z-index: 1; opacity: 0; cursor: pointer; pointer-events: none; display: none; }
+      /* rest hint: between browser rounds the pointer parks at the last
+         button-click spot, whose hit-test would still resolve the (hidden)
+         browser button → a floating hand over the editor / end card. This
+         cursor-less box wins the DFS-last hit-test in the non-browser scenes
+         so the resting glyph is the plain arrow. */
+      #rest-hint { position: absolute; left: 420px; top: 215px; width: 80px; height: 55px; opacity: 0; pointer-events: none; display: none; }
+      body[data-scene='editor'] #rest-hint,
+      body[data-scene='terminal'] #rest-hint,
+      body[data-scene='end'] #rest-hint { display: block; }
 
       /* --- lower third (edit-scene explainer) -------------------------- */
       /* Sits over the bottom edge of the stage, above every window (z7).
@@ -208,15 +235,6 @@
       </div>
     </div>
 
-    <!-- ============ browser ============ -->
-    <div class="window browser">
-      <div class="titlebar"><span class="dots"><i></i><i></i><i></i></span><span class="urlbar">localhost:5173</span></div>
-      <div class="page">
-        <div class="appwrap"><button class="btn" id="counter-btn">Clicked 0 times</button></div>
-        <div class="hmr">[vite] hot updated: /app.tsx</div>
-      </div>
-    </div>
-
     <!-- ============ terminal ============ -->
     <div class="window terminal">
       <div class="titlebar"><span class="dots"><i></i><i></i><i></i></span><span class="title">my-app — zsh</span></div>
@@ -230,8 +248,23 @@
       <div class="codearea" id="code"></div>
     </div>
 
+    <!-- ============ browser ============ -->
+    <div class="window browser">
+      <div class="titlebar"><span class="dots"><i></i><i></i><i></i></span><span class="urlbar">localhost:5173</span></div>
+      <div class="page">
+        <div class="appwrap"><button class="btn" id="counter-btn"><span id="btn-label">Clicked 0 times</span><span id="btn-hit"></span></button></div>
+        <div class="hmr">[vite] hot updated: /app.tsx</div>
+      </div>
+    </div>
+
+
     <!-- ============ lower third ============ -->
     <div class="ltwrap"><div class="lt">The change: <code>cls = computed(…)</code> bound as <code>class={cls}</code> → the button turns hot at 5 clicks. No reload, no re-render.</div></div>
+    <!-- glyph hint over the terminal's localhost link (see the cursor CSS
+         comment); positioned by termRender, DFS-last so it wins the
+         auto-cursor hit-test -->
+    <div id="link-hint"></div>
+    <div id="rest-hint"></div>
 
     <script>
       const K = (s) => `<span class="kw">${s}</span>`;
@@ -366,6 +399,17 @@
       ];
       const termRender = () => {
         document.getElementById('term').innerHTML = termLines().slice(0, termShown).join('\n');
+        // park the pointer glyph hint over the localhost link (stage coords —
+        // the terminal is captured untransformed, so its rect is the stage rect)
+        const link = document.getElementById('local-link');
+        const hint = document.getElementById('link-hint');
+        if (link == null) { hint.style.display = 'none'; return; }
+        const r = link.getBoundingClientRect();
+        hint.style.display = 'block';
+        hint.style.left = r.left + 'px';
+        hint.style.top = r.top + 'px';
+        hint.style.width = r.width + 'px';
+        hint.style.height = r.height + 'px';
       };
       window.term = (n) => { termShown = n; termRender(); };
       window.termCmd = (cmd) => { termCmdText = cmd; termRender(); };
@@ -385,9 +429,10 @@
       window.v2live = false;
       document.getElementById('counter-btn').addEventListener('click', () => {
         clicks += 1;
-        const btn = document.getElementById('counter-btn');
-        btn.textContent = `Clicked ${clicks} times`;
-        if (window.v2live) btn.classList.toggle('hot', clicks >= 5);
+        // update the label span only — #btn-hit (the cursor-aim pad) must
+        // survive every click, so never write the button's textContent
+        document.getElementById('btn-label').textContent = `Clicked ${clicks} times`;
+        if (window.v2live) document.getElementById('counter-btn').classList.toggle('hot', clicks >= 5);
       });
 
       window.S(0);

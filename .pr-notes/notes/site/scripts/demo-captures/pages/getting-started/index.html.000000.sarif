@@ -203,6 +203,69 @@
           "branch": "main"
         }
       ]
+    },
+    {
+      "tool": {
+        "driver": {
+          "name": "Hot Sheet",
+          "rules": [
+            {
+              "id": "review-note",
+              "name": "ReviewNote",
+              "shortDescription": {
+                "text": "AI-authored, line-anchored review note."
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "review-note",
+          "ruleIndex": 0,
+          "kind": "informational",
+          "level": "none",
+          "guid": "mrx4m7vt7v325qmn",
+          "message": {
+            "text": "**Cursor aim + glyph hints (round-4 feedback: wrong pointer types; pointer covered the count).** Two mechanisms in domotion's auto-cursor drive this design:\n\n1. The pointer lands on the **click target's center** — which for `#counter-btn` is the middle of the \"Clicked N times\" label, obscuring the count (the one element that must stay readable as it changes). The config therefore clicks `#btn-hit`, an invisible pad in the button's lower-right; the pointer + pulse land beside the label and the click bubbles to the button's listener. The click handler updates `#btn-label` only — writing the button's `textContent` would destroy the pad and break the next click action.\n\n2. The glyph is resolved by `cursorAtPoint`: the **last element in DFS order whose box contains the point** (z-index-agnostic), taking its captured `cursor` or `default`. All four windows share one stage box, so DFS-last answered every hit-test — the editor (previously last) painted an arrow over the button and an I-beam over the terminal link. Fixes: the browser window is now last among windows (button clicks → its `cursor: pointer` hand); `#link-hint` (opacity 0 — captured for the hit-test, dropped at render) sits over the localhost link so the click there shows the hand; `#rest-hint` (cursor-less, shown in editor/terminal/end scenes) wins the hit-test at the pointer's parked spot so the resting glyph is the plain arrow instead of a floating hand.\n\nAll four states verified in svg-to-image probes: hand+pulse on the link, hand beside a fully-legible count on every button click, arrow while parked over the editor, arrow on the end card.\n",
+            "markdown": "**Cursor aim + glyph hints (round-4 feedback: wrong pointer types; pointer covered the count).** Two mechanisms in domotion's auto-cursor drive this design:\n\n1. The pointer lands on the **click target's center** — which for `#counter-btn` is the middle of the \"Clicked N times\" label, obscuring the count (the one element that must stay readable as it changes). The config therefore clicks `#btn-hit`, an invisible pad in the button's lower-right; the pointer + pulse land beside the label and the click bubbles to the button's listener. The click handler updates `#btn-label` only — writing the button's `textContent` would destroy the pad and break the next click action.\n\n2. The glyph is resolved by `cursorAtPoint`: the **last element in DFS order whose box contains the point** (z-index-agnostic), taking its captured `cursor` or `default`. All four windows share one stage box, so DFS-last answered every hit-test — the editor (previously last) painted an arrow over the button and an I-beam over the terminal link. Fixes: the browser window is now last among windows (button clicks → its `cursor: pointer` hand); `#link-hint` (opacity 0 — captured for the hit-test, dropped at render) sits over the localhost link so the click there shows the hand; `#rest-hint` (cursor-less, shown in editor/terminal/end scenes) wins the hit-test at the pointer's parked spot so the resting glyph is the plain arrow instead of a floating hand.\n\nAll four states verified in svg-to-image probes: hand+pulse on the link, hand beside a fully-legible count on every button click, arrow while parked over the editor, arrow on the end card.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "site/scripts/demo-captures/pages/getting-started/index.html"
+                },
+                "region": {
+                  "startLine": 152,
+                  "endLine": 170,
+                  "snippet": {
+                    "text": "        font-family: Menlo, ui-monospace, monospace;\n      }\n      .page { flex: 1; background: #f8fafc; overflow: hidden; position: relative; }\n      .hmr {\n        position: absolute; right: 12px; bottom: 10px; font-size: 11px;\n        font-family: Menlo, ui-monospace, monospace; color: #7c3aed;\n        background: #f5f3ff; border: 1px solid #ddd6fe; border-radius: 6px; padding: 3px 10px;\n        display: none;\n      }\n      body[data-hmr='1'] .hmr { display: block; }\n      .appwrap { text-align: center; padding-top: 150px; }\n      .btn {\n        font: inherit; font-size: 17px; background: #2563eb; color: #fff; border: 0;\n        border-radius: 8px; padding: 12px 26px; cursor: pointer; box-shadow: 0 2px 8px #2563eb44;\n        position: relative;\n      }\n      .btn.hot { background: #ea580c; box-shadow: 0 2px 14px #ea580c66; }\n      /* CURSOR AIM + GLYPH HINTS. domotion's auto-cursor moves to the CENTER\n         of the clicked element and resolves the glyph by a z-index-agnostic"
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "tags": [
+              "rationale"
+            ]
+          },
+          "workItemUris": [
+            "KF-371"
+          ],
+          "partialFingerprints": {
+            "prNoteAnchor/v1": "2788854b56e0f4c277f5e6ebf63969fd"
+          }
+        }
+      ],
+      "versionControlProvenance": [
+        {
+          "repositoryUri": "git@github.com:brianwestphal/kerf.git",
+          "revisionId": "5cb3ba39e46721b82a37f4556350ef7f5aac6be4",
+          "branch": "main"
+        }
+      ]
     }
   ]
 }
