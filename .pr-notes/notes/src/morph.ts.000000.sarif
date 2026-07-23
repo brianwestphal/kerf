@@ -127,6 +127,69 @@
           "branch": "main"
         }
       ]
+    },
+    {
+      "tool": {
+        "driver": {
+          "name": "Hot Sheet",
+          "rules": [
+            {
+              "id": "review-note",
+              "name": "ReviewNote",
+              "shortDescription": {
+                "text": "AI-authored, line-anchored review note."
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "review-note",
+          "ruleIndex": 0,
+          "kind": "informational",
+          "level": "none",
+          "guid": "mry1j3r43i3jfs3s",
+          "message": {
+            "text": "Three deliberate choices here. (1) The kf-list marker is the ONE comment kind exempted from step 2.5's elements-only rule, because it is the only comment that is not stateless to rebuild — it anchors a ListBinding. Binding markers (kfb:/kfbr:) stay excluded: they own an inserted text sibling that a move would strand (KF-374). (2) Matched on EXACT marker data, not just the kf-list: prefix, so two each() lists sharing a parent cannot latch onto each other's anchor. (3) The marker travels with its contiguous owned-row run rather than alone. Moving it alone is subtly wrong and the 'trailing template sibling cannot wedge' test pins it: with <ul>{cond?<li/>:''}{each(...)}<button/></ul>, a marker-only move lets the next loop iteration match <button> via the element lookahead and insert it BEFORE the rows, reordering the list against its JSX. Verified by temporarily disabling the run collection — that test, and only that test, fails. captureFocus/restoreFocus wrap the move because happy-dom and older Safari blur a focused descendant on insertBefore; happy-dom is the pessimistic engine here, so a green unit test implies real-Safari coverage (the full Playwright suite passes on all three engines too).",
+            "markdown": "Three deliberate choices here. (1) The kf-list marker is the ONE comment kind exempted from step 2.5's elements-only rule, because it is the only comment that is not stateless to rebuild — it anchors a ListBinding. Binding markers (kfb:/kfbr:) stay excluded: they own an inserted text sibling that a move would strand (KF-374). (2) Matched on EXACT marker data, not just the kf-list: prefix, so two each() lists sharing a parent cannot latch onto each other's anchor. (3) The marker travels with its contiguous owned-row run rather than alone. Moving it alone is subtly wrong and the 'trailing template sibling cannot wedge' test pins it: with <ul>{cond?<li/>:''}{each(...)}<button/></ul>, a marker-only move lets the next loop iteration match <button> via the element lookahead and insert it BEFORE the rows, reordering the list against its JSX. Verified by temporarily disabling the run collection — that test, and only that test, fails. captureFocus/restoreFocus wrap the move because happy-dom and older Safari blur a focused descendant on insertBefore; happy-dom is the pessimistic engine here, so a green unit test implies real-Safari coverage (the full Playwright suite passes on all three engines too)."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/morph.ts"
+                },
+                "region": {
+                  "startLine": 231,
+                  "endLine": 268,
+                  "snippet": {
+                    "text": "    }\n\n    // 2.6. Marker-aware lookahead (KF-382: a sibling that shifts an each()\n    //    list's begin-anchor must not cost the rows their DOM identity). A\n    //    `kf-list:` comment is the one comment kind that is NOT stateless to\n    //    rebuild: it anchors a ListBinding, and its rows exist only in the live\n    //    tree (the template carries the bare marker). Cloning it instead of\n    //    moving it detaches the binding, so mount() self-heals by re-creating\n    //    every row — correct, but focus / scroll / IME / listeners are lost.\n    //    Scan forward for the SAME marker (matched on exact data, so sibling\n    //    lists in one parent can't cross-match) and move it up. The marker\n    //    travels WITH its contiguous owned-row run: moving it alone would let a\n    //    later template sibling (a trailing <button>, say) match ahead of the\n    //    rows and wedge itself between the anchor and the rows it anchors.\n    if (matched === null && fromChild !== null\n        && toChild.nodeType === COMMENT_NODE\n        && (toChild as Comment).data.startsWith(LIST_MARKER_PREFIX)) {\n      const wantData = (toChild as Comment).data;\n      for (let scan: Node | null = fromChild.nextSibling; scan !== null; scan = scan.nextSibling) {\n        if (scan.nodeType !== COMMENT_NODE || (scan as Comment).data !== wantData) continue;\n        // Collect the marker plus the owned rows immediately following it, then\n        // re-insert the whole run ahead of the cursor in order.\n        const run: Node[] = [scan];\n        for (let r: Node | null = scan.nextSibling;\n          r !== null && r.nodeType === ELEMENT_NODE && ownedItems.has(r as Element);\n          r = r.nextSibling) {\n          run.push(r);\n        }\n        // Some engines (older Safari, happy-dom) blur a focused descendant on\n        // `insertBefore` even though the node survives the move connected —\n        // the same quirk the list reconciler's move pass handles. Preserving\n        // row identity is only half the promise; the caret has to survive too.\n        const focusSnap = captureFocus(fromParent);\n        for (const node of run) fromParent.insertBefore(node, fromChild);\n        if (focusSnap !== null) restoreFocus(focusSnap);\n        matched = scan;\n        break;\n      }"
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "tags": [
+              "rationale"
+            ]
+          },
+          "workItemUris": [
+            "KF-382"
+          ],
+          "partialFingerprints": {
+            "prNoteAnchor/v1": "d8ff9f9669258aac4b19e2024e5ebf10"
+          }
+        }
+      ],
+      "versionControlProvenance": [
+        {
+          "repositoryUri": "git@github.com:brianwestphal/kerf.git",
+          "revisionId": "eeb9c7a2618c5483406b2d83e5b77eae57d019dc",
+          "branch": "main"
+        }
+      ]
     }
   ]
 }

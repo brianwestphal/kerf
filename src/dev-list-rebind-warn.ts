@@ -44,11 +44,12 @@ export function maybeWarnListRebind(id: string, liveParent: Element): void {
   warnedIds.add(id);
   console.warn(
     `kerf: each() list '${id}' had its container (<${liveParent.tagName.toLowerCase()}>) rebuilt by the morph this render — `
-    + 'an ancestor\'s tag changed so the subtree was replaced, or a sibling shifted/shadowed the list\'s '
-    + 'marker. The list re-binds and repopulates automatically, but its rows were re-created from scratch: '
-    + 'focus, scroll positions, in-progress IME composition, and any imperative listeners on the old row '
-    + 'nodes are lost. Keep the structure around a list stable across renders (stable ancestor tags; wrap '
-    + 'conditional siblings in an always-present container) if the rows should survive. '
+    + 'an ancestor\'s tag changed so the subtree was replaced, or a same-tag sibling positionally took the '
+    + 'container\'s place. The list re-binds and repopulates automatically, but its rows were re-created '
+    + 'from scratch: focus, scroll positions, in-progress IME composition, and any imperative listeners on '
+    + 'the old row nodes are lost. Keep the structure around a list stable across renders (stable ancestor '
+    + 'tags; give a conditional same-tag sibling a distinguishing id/data-key, or wrap it in an '
+    + 'always-present container) if the rows should survive. '
     + 'Set KERF_DEV_WARN_LIST_REBIND=0 (or unset it) to silence this warning.',
   );
 }

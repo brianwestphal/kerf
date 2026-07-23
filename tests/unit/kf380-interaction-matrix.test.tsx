@@ -27,7 +27,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { arraySignal } from '../../src/array-signal.js';
-import { batch, computed, each, mount, signal, toElement } from '../../src/index.js';
+import { batch, computed, each, mount, raw, signal, toElement } from '../../src/index.js';
 
 interface Item { id: string; label: string }
 const ROWS: Item[] = [
@@ -260,14 +260,15 @@ describe('KF-380 interaction matrix: morph × owned each() rows × conditional s
     dispose();
   });
 
-  // KF-381 shape 1: a conditional element sibling INSIDE the each() parent,
-  // before the marker. The template's first child is the marker COMMENT; the
-  // elements-only lookahead can't move it, so the morph clones the marker and
-  // the trailing pass removes the original (owned rows survive). The self-heal
-  // used to re-bind with empty items and re-insert fresh rows next to the
-  // stranded originals (<ul><!--kf-list:0-->A B A B</ul>). Fixed: the self-heal
-  // now removes any still-live stranded row before repopulating, so recovery
-  // replaces rather than duplicates.
+  // KF-381 shape 1 / KF-382: a conditional element sibling INSIDE the each()
+  // parent, before the marker. The template's first child is the marker
+  // COMMENT. Originally the elements-only lookahead couldn't move it, so the
+  // morph cloned the marker, the trailing pass removed the original (owned rows
+  // survived), and the self-heal re-inserted fresh rows beside the stranded
+  // originals: <ul><!--kf-list:0-->A B A B</ul>. KF-381 stopped the
+  // duplication; KF-382's marker-aware lookahead now MOVES the marker (with its
+  // owned-row run) instead of cloning it, so the binding never detaches and the
+  // rows keep their DOM identity — focus, scroll, and IME survive with them.
   it('a conditional sibling INSIDE the list parent before the marker keeps rows single (KF-381 shape 1)', () => {
     const hd = signal(true);
     const dispose = mount(root, () => (
@@ -277,10 +278,106 @@ describe('KF-380 interaction matrix: morph × owned each() rows × conditional s
       </ul>
     ));
     expect(labels()).toEqual(['A', 'B']);
+    const rowA = root.querySelector('li[data-key="a"]');
+    const rowB = root.querySelector('li[data-key="b"]');
+
     hd.value = false;
-    expect(labels()).toEqual(['A', 'B']); // currently ['A','B','A','B']
+    expect(labels()).toEqual(['A', 'B']); // was ['A','B','A','B'] before KF-381
+    // KF-382: the marker moved rather than being cloned, so these are the SAME
+    // nodes — nothing was re-created.
+    expect(root.querySelector('li[data-key="a"]')).toBe(rowA);
+    expect(root.querySelector('li[data-key="b"]')).toBe(rowB);
+
     hd.value = true;
     expect(labels()).toEqual(['A', 'B']);
+    expect(root.querySelector('li[data-key="a"]')).toBe(rowA);
+    dispose();
+  });
+
+  it('KF-382: a focused row survives the header toggle that shifts the list marker', () => {
+    // Identity preservation is what makes this work — the row node is never
+    // re-created, so the browser never has anything to blur.
+    const hd = signal(true);
+    const dispose = mount(root, () => (
+      <ul>
+        {hd.value ? <li class="hd">header</li> : ''}
+        {each(ROWS, (r) => <li data-key={r.id}><input value={r.label} /></li>)}
+      </ul>
+    ));
+    const input = root.querySelector('li[data-key="a"] input') as HTMLInputElement;
+    input.focus();
+    expect(document.activeElement).toBe(input);
+
+    hd.value = false;
+    expect(root.querySelector('li[data-key="a"] input')).toBe(input);
+    expect(document.activeElement).toBe(input);
+    dispose();
+  });
+
+  it('KF-382: the marker lookahead scans past unrelated comments to find its own marker', () => {
+    // The scan must skip comments that aren't this list's marker — it matches
+    // on exact marker data, which is also what keeps sibling lists in one
+    // parent from cross-matching each other's anchors.
+    const hd = signal(true);
+    const dispose = mount(root, () => (
+      <ul>
+        {hd.value ? <li class="hd">header</li> : ''}
+        {raw('<!--note-->')}
+        {each(ROWS, (r) => <li data-key={r.id}>{r.label}</li>)}
+      </ul>
+    ));
+    expect(labels()).toEqual(['A', 'B']);
+    const rowA = root.querySelector('li[data-key="a"]');
+    hd.value = false;
+    expect(labels()).toEqual(['A', 'B']);
+    expect(root.querySelector('li[data-key="a"]')).toBe(rowA); // still moved, not rebuilt
+    dispose();
+  });
+
+  it('KF-382: two lists in one parent keep their own rows when a shared conditional sibling toggles', () => {
+    // Exact-data marker matching: list 0's lookahead must not latch onto
+    // list 1's marker (which would splice the wrong rows into the wrong slot).
+    const hd = signal(true);
+    const first = [{ id: 'a', label: 'A' }, { id: 'b', label: 'B' }];
+    const second = [{ id: 'c', label: 'C' }];
+    const dispose = mount(root, () => (
+      <ul>
+        {hd.value ? <li class="hd">header</li> : ''}
+        {each(first, (r) => <li data-key={r.id}>{r.label}</li>)}
+        {each(second, (r) => <li data-key={r.id}>{r.label}</li>)}
+      </ul>
+    ));
+    expect(labels()).toEqual(['A', 'B', 'C']);
+    const rowA = root.querySelector('li[data-key="a"]');
+    const rowC = root.querySelector('li[data-key="c"]');
+    hd.value = false;
+    expect(labels()).toEqual(['A', 'B', 'C']); // order preserved, no cross-splice
+    expect(root.querySelector('li[data-key="a"]')).toBe(rowA);
+    expect(root.querySelector('li[data-key="c"]')).toBe(rowC);
+    hd.value = true;
+    expect(labels()).toEqual(['A', 'B', 'C']);
+    dispose();
+  });
+
+  it('KF-382: a trailing template sibling cannot wedge between the marker and its rows', () => {
+    // The marker moves as a UNIT with its owned-row run. Moving it alone would
+    // let the trailing <button> (matched by the element lookahead on the next
+    // iteration) land ahead of the rows, reordering the list against its JSX.
+    const hd = signal(true);
+    const dispose = mount(root, () => (
+      <ul>
+        {hd.value ? <li class="hd">header</li> : ''}
+        {each(ROWS, (r) => <li data-key={r.id}>{r.label}</li>)}
+        <button class="more">more</button>
+      </ul>
+    ));
+    expect(labels()).toEqual(['A', 'B']);
+    hd.value = false;
+    expect(labels()).toEqual(['A', 'B']);
+    // Rows must still precede the trailing button, matching JSX order.
+    const tags = Array.from((root.querySelector('ul') as HTMLElement).children)
+      .map((el) => el.tagName.toLowerCase() + (el.className ? `.${el.className}` : ''));
+    expect(tags).toEqual(['li', 'li', 'button.more']);
     dispose();
   });
 

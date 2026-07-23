@@ -46,6 +46,8 @@
 
 import { boundTextNodeOf } from './bindings.js';
 import type { SafeHtml } from './jsx-runtime.js';
+import { captureFocus, restoreFocus } from './list-reconcile-focus.js';
+import { LIST_MARKER_PREFIX } from './segment.js';
 import { syncFormProp } from './utils/syncFormProp.js';
 
 const ID_KEY_PREFIX = 'id:';
@@ -213,7 +215,8 @@ function morphChildren(
     //    skipped-over live nodes stay behind the cursor for later template
     //    children or the trailing-removal pass. Elements only: comments/text
     //    are stateless to rebuild, and binding-marker comments own an
-    //    inserted text sibling that must never be separated by a move.
+    //    inserted text sibling that must never be separated by a move. The
+    //    ONE comment exception is the each() list marker — see 2.6.
     if (matched === null && toChild.nodeType === ELEMENT_NODE && fromChild !== null) {
       const toTag = (toChild as Element).tagName;
       for (let scan: Node | null = fromChild.nextSibling; scan !== null; scan = scan.nextSibling) {
@@ -223,6 +226,44 @@ function morphChildren(
         if (el.tagName !== toTag || getNodeKey(el) !== undefined) continue;
         matched = el;
         fromParent.insertBefore(el, fromChild);
+        break;
+      }
+    }
+
+    // 2.6. Marker-aware lookahead (KF-382: a sibling that shifts an each()
+    //    list's begin-anchor must not cost the rows their DOM identity). A
+    //    `kf-list:` comment is the one comment kind that is NOT stateless to
+    //    rebuild: it anchors a ListBinding, and its rows exist only in the live
+    //    tree (the template carries the bare marker). Cloning it instead of
+    //    moving it detaches the binding, so mount() self-heals by re-creating
+    //    every row — correct, but focus / scroll / IME / listeners are lost.
+    //    Scan forward for the SAME marker (matched on exact data, so sibling
+    //    lists in one parent can't cross-match) and move it up. The marker
+    //    travels WITH its contiguous owned-row run: moving it alone would let a
+    //    later template sibling (a trailing <button>, say) match ahead of the
+    //    rows and wedge itself between the anchor and the rows it anchors.
+    if (matched === null && fromChild !== null
+        && toChild.nodeType === COMMENT_NODE
+        && (toChild as Comment).data.startsWith(LIST_MARKER_PREFIX)) {
+      const wantData = (toChild as Comment).data;
+      for (let scan: Node | null = fromChild.nextSibling; scan !== null; scan = scan.nextSibling) {
+        if (scan.nodeType !== COMMENT_NODE || (scan as Comment).data !== wantData) continue;
+        // Collect the marker plus the owned rows immediately following it, then
+        // re-insert the whole run ahead of the cursor in order.
+        const run: Node[] = [scan];
+        for (let r: Node | null = scan.nextSibling;
+          r !== null && r.nodeType === ELEMENT_NODE && ownedItems.has(r as Element);
+          r = r.nextSibling) {
+          run.push(r);
+        }
+        // Some engines (older Safari, happy-dom) blur a focused descendant on
+        // `insertBefore` even though the node survives the move connected —
+        // the same quirk the list reconciler's move pass handles. Preserving
+        // row identity is only half the promise; the caret has to survive too.
+        const focusSnap = captureFocus(fromParent);
+        for (const node of run) fromParent.insertBefore(node, fromChild);
+        if (focusSnap !== null) restoreFocus(focusSnap);
+        matched = scan;
         break;
       }
     }
