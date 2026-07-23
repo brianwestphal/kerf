@@ -427,7 +427,22 @@ function bindListsFromMarkers(
       // (disposing the dead rows' fine-grained binding effects) and fall
       // through to re-bind against the live marker, so the next reconcile
       // repopulates the list from scratch.
-      for (const item of existing.items) disposeRowBindings(item.bindingDisposers);
+      for (const item of existing.items) {
+        disposeRowBindings(item.bindingDisposers);
+        // KF-381: the morph can separate the marker comment from its owned
+        // rows while leaving those rows attached to the LIVE tree — a
+        // conditional sibling that shifted the marker (rows stranded next to
+        // the clone), or a same-tag sibling that positionally hijacked the
+        // container (rows stranded inside it). Those survivors aren't removed
+        // by the trailing pass (owned items are protected), so the reconcile
+        // that repopulates the re-bound list would render a SECOND copy beside
+        // them. Remove any still-live row here so recovery replaces rather than
+        // duplicates. Rows already gone with a replaced subtree (the ancestor-
+        // tag-swap case) fail the containment check and are left untouched.
+        if (rootEl.contains(item.node)) {
+          item.node.parentElement?.removeChild(item.node);
+        }
+      }
       bindings.delete(id);
       // Opt-in dev warning (KERF_DEV_WARN_LIST_REBIND=1): the recovery is
       // correct but lossy — row DOM state is discarded — so surface it.

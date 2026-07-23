@@ -260,14 +260,15 @@ describe('KF-380 interaction matrix: morph × owned each() rows × conditional s
     dispose();
   });
 
-  // KNOWN BUG KF-381 (shape 1) — un-skip when it lands: a conditional element
-  // sibling INSIDE the each() parent, before the marker, duplicates every row
-  // on removal. The template's first child is the marker COMMENT; the
-  // elements-only lookahead can't move it, so the morph clones the marker,
-  // the trailing pass removes the original (owned rows survive), and the
-  // self-heal re-binds with empty items and re-inserts fresh rows next to the
-  // stranded originals: <ul><!--kf-list:0-->A B A B</ul>.
-  it.skip('a conditional sibling INSIDE the list parent before the marker keeps rows single (KNOWN BUG KF-381 shape 1)', () => {
+  // KF-381 shape 1: a conditional element sibling INSIDE the each() parent,
+  // before the marker. The template's first child is the marker COMMENT; the
+  // elements-only lookahead can't move it, so the morph clones the marker and
+  // the trailing pass removes the original (owned rows survive). The self-heal
+  // used to re-bind with empty items and re-insert fresh rows next to the
+  // stranded originals (<ul><!--kf-list:0-->A B A B</ul>). Fixed: the self-heal
+  // now removes any still-live stranded row before repopulating, so recovery
+  // replaces rather than duplicates.
+  it('a conditional sibling INSIDE the list parent before the marker keeps rows single (KF-381 shape 1)', () => {
     const hd = signal(true);
     const dispose = mount(root, () => (
       <ul>
@@ -283,14 +284,15 @@ describe('KF-380 interaction matrix: morph × owned each() rows × conditional s
     dispose();
   });
 
-  // KNOWN BUG KF-381 (shape 2) — un-skip when it lands: a same-tag conditional
-  // sibling positionally hijacks the list container. Toggle off: the banner
-  // <ul> is morphed INTO the list (rows rebuilt via self-heal — content OK but
-  // identity silently lost). Toggle back on: the live list container is
-  // morphed back into the banner, stranding the still-attached owned rows
-  // inside it while the list rebuilds in a fresh container → visible
-  // duplicates (banner shows A B, list shows A B).
-  it.skip('a same-tag conditional sibling before the list container never strands rows in the old container (KNOWN BUG KF-381 shape 2)', () => {
+  // KF-381 shape 2: a same-tag conditional sibling positionally hijacks the
+  // list container. Toggle off: the banner <ul> is morphed INTO the list (rows
+  // rebuilt via self-heal — content OK but identity lost). Toggle back on: the
+  // live list container is morphed back into the banner, stranding the
+  // still-attached owned rows inside it while the list rebuilds in a fresh
+  // container. This used to show visible duplicates (banner A B + list A B).
+  // Fixed: the self-heal removes the stranded rows from the banner before the
+  // list repopulates, so only the list shows the rows.
+  it('a same-tag conditional sibling before the list container never strands rows in the old container (KF-381 shape 2)', () => {
     const banner = signal(true);
     const dispose = mount(root, () => (
       <div>
@@ -302,8 +304,48 @@ describe('KF-380 interaction matrix: morph × owned each() rows × conditional s
     banner.value = false;
     expect(labels()).toEqual(['A', 'B']);
     banner.value = true;
-    expect(labels()).toEqual(['A', 'B']); // currently ['A','B','A','B']
+    expect(labels()).toEqual(['A', 'B']); // was ['A','B','A','B'] before KF-381
     expect(labels(root.querySelector('ul.banner') as HTMLElement)).toEqual([]);
+    dispose();
+  });
+
+  it('KF-381 shape 1 survives repeated header toggles without ever duplicating', () => {
+    // Walk the toggle several times — each OFF crosses the self-heal, each ON
+    // re-inserts the header. The row count must stay pinned at 2 throughout.
+    const hd = signal(false);
+    const dispose = mount(root, () => (
+      <ul>
+        {hd.value ? <li class="hd">header</li> : ''}
+        {each(ROWS, (r) => <li data-key={r.id}>{r.label}</li>)}
+      </ul>
+    ));
+    for (let i = 0; i < 4; i++) {
+      hd.value = true;
+      expect(labels()).toEqual(['A', 'B']);
+      hd.value = false;
+      expect(labels()).toEqual(['A', 'B']);
+    }
+    dispose();
+  });
+
+  it('KF-381 shape 1 recovery leaves an arraySignal list patchable (granular after self-heal)', () => {
+    // After the stranded-row removal + repopulate, the re-bound list must
+    // accept granular patches — i.e. the binding is healthy, not half-dead.
+    const hd = signal(true);
+    const rows = arraySignal([{ id: 'a', label: 'A' }, { id: 'b', label: 'B' }]);
+    const dispose = mount(root, () => (
+      <ul>
+        {hd.value ? <li class="hd">header</li> : ''}
+        {each(rows, (r) => <li data-key={r.id}>{r.label}</li>)}
+      </ul>
+    ));
+    expect(labels()).toEqual(['A', 'B']);
+    hd.value = false; // crosses the self-heal
+    expect(labels()).toEqual(['A', 'B']);
+    rows.push({ id: 'c', label: 'C' }); // granular insert onto the re-bound list
+    expect(labels()).toEqual(['A', 'B', 'C']);
+    rows.remove(0);
+    expect(labels()).toEqual(['B', 'C']);
     dispose();
   });
 });

@@ -228,25 +228,30 @@ removal, so they never reach this warner.)
 **Trigger:** `bindListsFromMarkers` takes its **self-heal branch** — a list
 marker found in the live tree already has a binding, but that binding's own
 marker is no longer inside the mount root, meaning the morph rebuilt the
-list's container this render (an ancestor's tag changed, so `replaceChild`
-swapped the whole subtree and cloned a fresh marker).
+list's container this render and cloned a fresh marker. Two shapes reach it:
+an ancestor's tag changed, so `replaceChild` swapped the whole subtree; or a
+sibling separated the marker comment from its rows (a conditional element
+inside the list parent before the marker, or a same-tag sibling that
+positionally hijacked the container).
 **What it catches:** the lossy-recovery pattern. The self-heal makes the
-rebuild *correct* — the stale binding is dropped, the list re-binds against
-the fresh marker, and the next reconcile repopulates the rows — but the rows
-are re-created from scratch, so focus, scroll positions, in-progress IME
-composition, and any imperative listeners on the old row nodes are silently
-discarded. An author who didn't intend the ancestor tag swap gets no other
-signal that their rows are being churned. (A conditional sibling merely
-appearing or disappearing before the list does NOT fire this — the morph's
-positional lookahead preserves the container in place for that shape.)
+rebuild *correct* — the stale binding is dropped, its still-live stranded rows
+are removed, the list re-binds against the fresh marker, and the next
+reconcile repopulates the rows — but the rows are re-created from scratch, so
+focus, scroll positions, in-progress IME composition, and any imperative
+listeners on the old row nodes are silently discarded. An author who didn't
+intend the rebuild gets no other signal that their rows are being churned.
+(A conditional sibling merely appearing or disappearing *before* the list's
+container does NOT fire this — the morph's positional lookahead preserves the
+container in place for that shape.)
 
 **Mechanism.** `maybeWarnListRebind(id, liveParent)` is called from the
 self-heal branch after the stale binding is dropped, with the fresh container
 the cloned marker landed in. The function: (1) short-circuits on NODE_ENV /
 env var; (2) checks a module-level `warnedIds` Set for dedup; (3) fires a
 `console.warn` naming the list id and container tag, explaining the row-state
-loss, and pointing at keeping ancestor tags stable (toggle classes/attributes
-instead of swapping tags) as the fix.
+loss, and pointing at keeping the structure around a list stable (stable
+ancestor tags; conditional siblings wrapped in an always-present container) as
+the fix.
 
 **Dedup scope.** Per list id (same as `KERF_DEV_WARN_EACH_IN_MORPH_SKIP`).
 One warning per `each()` callsite, not one per rebuild.

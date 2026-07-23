@@ -64,6 +64,69 @@
           "branch": "main"
         }
       ]
+    },
+    {
+      "tool": {
+        "driver": {
+          "name": "Hot Sheet",
+          "rules": [
+            {
+              "id": "review-note",
+              "name": "ReviewNote",
+              "shortDescription": {
+                "text": "AI-authored, line-anchored review note."
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "review-note",
+          "ruleIndex": 0,
+          "kind": "informational",
+          "level": "none",
+          "guid": "mrxzvdo8t0drb1u0",
+          "message": {
+            "text": "Fix direction (a) from the ticket, chosen over (b)/(c). The self-heal already fires only when the binding's marker left the mount root — i.e. the binding is genuinely broken and repopulating from scratch is the honest recovery — so removing the still-live stranded rows here is the minimal correctness fix and covers BOTH repro shapes (comment-marker-clone and same-tag-container-hijack). The 'rootEl.contains(item.node)' guard is load-bearing: in the KF-379 ancestor-tag-swap case the old rows are already detached with the replaced subtree (contains → false) so they're left untouched; only the KF-381 stranded-but-still-attached rows (contains → true) are removed. Identity preservation (fix b/c: comment-aware marker lookahead / marker+rows-as-a-unit) is deferred to KF-382 because it adds real morph complexity for a narrow focus/scroll/IME benefit that the KERF_DEV_WARN_LIST_REBIND warning already surfaces.",
+            "markdown": "Fix direction (a) from the ticket, chosen over (b)/(c). The self-heal already fires only when the binding's marker left the mount root — i.e. the binding is genuinely broken and repopulating from scratch is the honest recovery — so removing the still-live stranded rows here is the minimal correctness fix and covers BOTH repro shapes (comment-marker-clone and same-tag-container-hijack). The 'rootEl.contains(item.node)' guard is load-bearing: in the KF-379 ancestor-tag-swap case the old rows are already detached with the replaced subtree (contains → false) so they're left untouched; only the KF-381 stranded-but-still-attached rows (contains → true) are removed. Identity preservation (fix b/c: comment-aware marker lookahead / marker+rows-as-a-unit) is deferred to KF-382 because it adds real morph complexity for a narrow focus/scroll/IME benefit that the KERF_DEV_WARN_LIST_REBIND warning already surfaces."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/mount.ts"
+                },
+                "region": {
+                  "startLine": 430,
+                  "endLine": 446,
+                  "snippet": {
+                    "text": "      for (const item of existing.items) {\n        disposeRowBindings(item.bindingDisposers);\n        // KF-381: the morph can separate the marker comment from its owned\n        // rows while leaving those rows attached to the LIVE tree — a\n        // conditional sibling that shifted the marker (rows stranded next to\n        // the clone), or a same-tag sibling that positionally hijacked the\n        // container (rows stranded inside it). Those survivors aren't removed\n        // by the trailing pass (owned items are protected), so the reconcile\n        // that repopulates the re-bound list would render a SECOND copy beside\n        // them. Remove any still-live row here so recovery replaces rather than\n        // duplicates. Rows already gone with a replaced subtree (the ancestor-\n        // tag-swap case) fail the containment check and are left untouched.\n        if (rootEl.contains(item.node)) {\n          item.node.parentElement?.removeChild(item.node);\n        }\n      }\n      bindings.delete(id);"
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "tags": [
+              "rationale"
+            ]
+          },
+          "workItemUris": [
+            "KF-381"
+          ],
+          "partialFingerprints": {
+            "prNoteAnchor/v1": "dce99e19914157f835cb8f7ca45da686"
+          }
+        }
+      ],
+      "versionControlProvenance": [
+        {
+          "repositoryUri": "git@github.com:brianwestphal/kerf.git",
+          "revisionId": "2bc0662dbd43b6631e78e6e80b8a5ce6ead99905",
+          "branch": "main"
+        }
+      ]
     }
   ]
 }
