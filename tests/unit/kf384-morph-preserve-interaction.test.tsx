@@ -151,13 +151,16 @@ describe('KF-384: data-morph-preserve nodes interleaved with owned each() rows',
     dispose();
   });
 
-  it('KNOWN BUG KF-385: a node between marker and rows truncates the run, letting a trailing sibling wedge in', () => {
-    // With an uninterrupted run this is the shape KF-382 fixed:
+  it('KF-385: a node between marker and rows does not let a trailing sibling wedge in', () => {
+    // The interrupted-run counterpart of
     // `tests/unit/kf380-interaction-matrix.test.tsx` › "KF-382: a trailing
-    // template sibling cannot wedge between the marker and its rows".
-    // Interposing ANY non-owned node truncates the 2.6 run collector to just
-    // the marker, so the marker moves alone and the element lookahead then
-    // lands <button> at the cursor — ahead of the rows, against JSX order.
+    // template sibling cannot wedge between the marker and its rows" — that
+    // test only ever exercised an uninterrupted run, which is why it passed
+    // straight through this bug. Interposing ANY non-owned node used to
+    // truncate the 2.6 run collector to the bare marker, so the marker moved
+    // alone and the element lookahead landed <button> at the cursor, ahead of
+    // the rows. The run now extends to the last owned row, carrying the
+    // interloper along.
     const hd = signal(true);
     const dispose = mount(root, () => (
       <ul>
@@ -167,14 +170,49 @@ describe('KF-384: data-morph-preserve nodes interleaved with owned each() rows',
       </ul>
     ));
     const ul = root.querySelector('ul') as HTMLElement;
-    injectPreserved(ul, markerIn(ul).nextSibling);
+    const preserved = injectPreserved(ul, markerIn(ul).nextSibling);
+    const rowA = ul.querySelector('li[data-key="a"]');
     expect(shape(ul)).toBe('li.hd marker div.pres[P] li li button.more');
 
     hd.value = false;
 
-    // KNOWN BUG (KF-385): the correct order is `marker div.pres[P] li li
-    // button.more` — the button must stay last. Flip this when KF-385 lands.
-    expect(shape(ul)).toBe('marker button.more div.pres[P] li li');
+    // Rows precede the trailing button (JSX order), the interloper keeps its
+    // slot between marker and rows, and row identity survives.
+    expect(shape(ul)).toBe('marker div.pres[P] li li button.more');
+    expect(ul.contains(preserved)).toBe(true);
+    expect(ul.querySelector('li[data-key="a"]')).toBe(rowA);
+
+    hd.value = true; // and back again
+    expect(shape(ul)).toBe('li.hd marker div.pres[P] li li button.more');
+    expect(ul.querySelector('li[data-key="a"]')).toBe(rowA);
+    dispose();
+  });
+
+  it('KF-385: the row region is atomic to the cursor, so even an unmarked interloper inside it survives', () => {
+    // Consequence of treating "marker through last row" as one region: a node
+    // the consumer injected between rows is behind the cursor after the move,
+    // so the trailing-removal pass never reaches it — even without
+    // `data-morph-preserve`. Previously its fate was incidental (it was
+    // removed only because the cursor happened to land on it when the marker
+    // moved alone), which was not a contract either way. Surviving matches
+    // kerf's "don't touch what JSX didn't change" model for the region the
+    // list reconciler owns. Pinned so the choice is explicit.
+    const hd = signal(true);
+    const dispose = mount(root, () => (
+      <ul>
+        {hd.value ? <li class="hd">header</li> : ''}
+        {each(ROWS, (r) => <li data-key={r.id}>{r.label}</li>)}
+      </ul>
+    ));
+    const ul = root.querySelector('ul') as HTMLElement;
+    const plain = document.createElement('span');
+    plain.className = 'plain';
+    ul.insertBefore(plain, markerIn(ul).nextSibling);
+
+    hd.value = false;
+
+    expect(shape(ul)).toBe('marker span.plain li li');
+    expect(ul.contains(plain)).toBe(true);
     dispose();
   });
 

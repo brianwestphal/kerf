@@ -190,6 +190,69 @@
           "branch": "main"
         }
       ]
+    },
+    {
+      "tool": {
+        "driver": {
+          "name": "Hot Sheet",
+          "rules": [
+            {
+              "id": "review-note",
+              "name": "ReviewNote",
+              "shortDescription": {
+                "text": "AI-authored, line-anchored review note."
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "review-note",
+          "ruleIndex": 0,
+          "kind": "informational",
+          "level": "none",
+          "guid": "mry2z9k5mnpw9lnr",
+          "message": {
+            "text": "The bug had TWO manifestations, not the one the ticket reported, and both trace to the same wrong definition of a list's extent. (1) The 2.6 run collector read the region as 'the contiguous run of owned rows', so one interloper shrank it to the bare marker and the marker moved alone. (2) After a POSITIONAL marker match, skipOwned advanced only past contiguous owned nodes, parking the cursor on the interloper — inside the list — where the next template sibling was then inserted. Fixing only (1) left the toggle-back-on direction broken, which is how the second one surfaced. afterListRegion() defines the extent once, as 'marker through last owned row, bounded by the next list's marker', and both call sites use it. Chose this over the ticket's suggested option (b) ('move marker + rows, leave interlopers in place'): (b) fixes the wedge too but pushes consumer-injected nodes to the end of the list, whereas carrying them keeps them where the consumer put them AND leaves the already-passing shapes byte-identical. Side effect, pinned and documented: an interloper inside the region now survives the removal pass even without data-morph-preserve, because it ends up behind the cursor. Previously its fate was incidental (removed only because the cursor happened to land on it), so this replaces an accident with a stated rule.",
+            "markdown": "The bug had TWO manifestations, not the one the ticket reported, and both trace to the same wrong definition of a list's extent. (1) The 2.6 run collector read the region as 'the contiguous run of owned rows', so one interloper shrank it to the bare marker and the marker moved alone. (2) After a POSITIONAL marker match, skipOwned advanced only past contiguous owned nodes, parking the cursor on the interloper — inside the list — where the next template sibling was then inserted. Fixing only (1) left the toggle-back-on direction broken, which is how the second one surfaced. afterListRegion() defines the extent once, as 'marker through last owned row, bounded by the next list's marker', and both call sites use it. Chose this over the ticket's suggested option (b) ('move marker + rows, leave interlopers in place'): (b) fixes the wedge too but pushes consumer-injected nodes to the end of the list, whereas carrying them keeps them where the consumer put them AND leaves the already-passing shapes byte-identical. Side effect, pinned and documented: an interloper inside the region now survives the removal pass even without data-morph-preserve, because it ends up behind the cursor. Previously its fate was incidental (removed only because the cursor happened to land on it), so this replaces an accident with a stated rule."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/morph.ts"
+                },
+                "region": {
+                  "startLine": 137,
+                  "endLine": 160,
+                  "snippet": {
+                    "text": " * stay put across morphs — they're invisible to the morph's child cursor.\n */\nfunction skipOwned(node: Node | null, ownedItems: ReadonlySet<Element>): Node | null {\n  while (node !== null && node.nodeType === ELEMENT_NODE\n      && ownedItems.has(node as Element)) {\n    node = node.nextSibling;\n  }\n  return node;\n}\n\nfunction isListMarker(node: Node): boolean {\n  return node.nodeType === COMMENT_NODE\n    && (node as Comment).data.startsWith(LIST_MARKER_PREFIX);\n}\n\n/**\n * The node just PAST a list's row region — an exclusive end, `null` at the end\n * of the parent. The region runs from the marker through its last owned row;\n * when the list is empty that's the marker alone. Nodes sitting BETWEEN rows\n * (something the consumer injected imperatively) are inside the region, so the\n * region is \"marker through last row,\" not \"the contiguous run of owned rows\"\n * (KF-385 — the contiguous reading let one interloper shrink the region to the\n * bare marker).\n *"
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "tags": [
+              "rationale"
+            ]
+          },
+          "workItemUris": [
+            "KF-385"
+          ],
+          "partialFingerprints": {
+            "prNoteAnchor/v1": "a81de94e02af1f55146670ceed3caba7"
+          }
+        }
+      ],
+      "versionControlProvenance": [
+        {
+          "repositoryUri": "git@github.com:brianwestphal/kerf.git",
+          "revisionId": "175ba208a1478c8ded7b6f7d8619d27ede2857c8",
+          "branch": "main"
+        }
+      ]
     }
   ]
 }

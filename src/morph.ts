@@ -144,6 +144,32 @@ function skipOwned(node: Node | null, ownedItems: ReadonlySet<Element>): Node | 
   return node;
 }
 
+function isListMarker(node: Node): boolean {
+  return node.nodeType === COMMENT_NODE
+    && (node as Comment).data.startsWith(LIST_MARKER_PREFIX);
+}
+
+/**
+ * The node just PAST a list's row region — an exclusive end, `null` at the end
+ * of the parent. The region runs from the marker through its last owned row;
+ * when the list is empty that's the marker alone. Nodes sitting BETWEEN rows
+ * (something the consumer injected imperatively) are inside the region, so the
+ * region is "marker through last row," not "the contiguous run of owned rows"
+ * (KF-385 — the contiguous reading let one interloper shrink the region to the
+ * bare marker).
+ *
+ * The scan stops at the next list's marker so a sibling `each()` in the same
+ * parent is never absorbed into this one's region.
+ */
+function afterListRegion(marker: Comment, ownedItems: ReadonlySet<Element>): Node | null {
+  let last: Node = marker;
+  for (let r: Node | null = marker.nextSibling; r !== null; r = r.nextSibling) {
+    if (isListMarker(r)) break;
+    if (r.nodeType === ELEMENT_NODE && ownedItems.has(r as Element)) last = r;
+  }
+  return last.nextSibling;
+}
+
 function morphChildren(
   fromParent: Element,
   toParent: Element,
@@ -187,7 +213,17 @@ function morphChildren(
             || ((fromChild as Element).tagName === (toChild as Element).tagName
                 && getNodeKey(fromChild) === undefined))) {
       matched = fromChild;
-      fromChild = skipOwned(fromChild.nextSibling, ownedItems);
+      // KF-385: a matched list marker carries its whole row region, so the
+      // cursor must land AFTER the last row — not merely after the contiguous
+      // owned run. Stopping at an interloper between rows parks the cursor
+      // inside the list, where the next template sibling would be inserted
+      // (a trailing <button> landing amongst the rows).
+      fromChild = skipOwned(
+        isListMarker(matched)
+          ? afterListRegion(matched as Comment, ownedItems)
+          : fromChild.nextSibling,
+        ownedItems,
+      );
       // KF-374: a binding marker comment OWNS the text node the wiring pass
       // inserted right after it — the template never contains that node
       // (templates carry only the marker). Step the cursor past it so a
@@ -239,21 +275,25 @@ function morphChildren(
     //    every row — correct, but focus / scroll / IME / listeners are lost.
     //    Scan forward for the SAME marker (matched on exact data, so sibling
     //    lists in one parent can't cross-match) and move it up. The marker
-    //    travels WITH its contiguous owned-row run: moving it alone would let a
-    //    later template sibling (a trailing <button>, say) match ahead of the
-    //    rows and wedge itself between the anchor and the rows it anchors.
+    //    travels WITH its whole row region: moving it alone would let a later
+    //    template sibling (a trailing <button>, say) match ahead of the rows
+    //    and wedge itself between the anchor and the rows it anchors.
     if (matched === null && fromChild !== null
         && toChild.nodeType === COMMENT_NODE
         && (toChild as Comment).data.startsWith(LIST_MARKER_PREFIX)) {
       const wantData = (toChild as Comment).data;
       for (let scan: Node | null = fromChild.nextSibling; scan !== null; scan = scan.nextSibling) {
         if (scan.nodeType !== COMMENT_NODE || (scan as Comment).data !== wantData) continue;
-        // Collect the marker plus the owned rows immediately following it, then
-        // re-insert the whole run ahead of the cursor in order.
-        const run: Node[] = [scan];
-        for (let r: Node | null = scan.nextSibling;
-          r !== null && r.nodeType === ELEMENT_NODE && ownedItems.has(r as Element);
-          r = r.nextSibling) {
+        // The run is the marker through its LAST owned row — interlopers in
+        // between travel along (KF-385). Stopping at the first non-owned node
+        // instead would truncate the run to the bare marker the moment anything
+        // sat between the anchor and the rows (an imperatively-injected
+        // `data-morph-preserve` node, say), silently reintroducing the unsafe
+        // move-alone variant. Carrying interlopers also keeps them where the
+        // consumer put them, relative to the list.
+        const regionEnd = afterListRegion(scan as Comment, ownedItems);
+        const run: Node[] = [];
+        for (let r: Node | null = scan; r !== null && r !== regionEnd; r = r.nextSibling) {
           run.push(r);
         }
         // Some engines (older Safari, happy-dom) blur a focused descendant on
