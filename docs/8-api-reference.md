@@ -155,6 +155,8 @@ Every short-circuit `mount()`'s morph honors carries over: `data-morph-skip` (el
 
 `morph()` does NOT subscribe to signals. If you want re-renders, use `mount()`. If you want a one-shot reconciliation against a tree you own, this is the primitive. See `docs/4-render.md` §4.4.3.
 
+A `null` / `undefined` `liveRoot` throws immediately with a descriptive error (the usual cause is a `getElementById` typo returning `null` at runtime despite the TypeScript types) — the same guard `mount()` applies to its `rootEl`.
+
 > **Security — trusted templates only.** A `string` / `SafeHtml` template is parsed as HTML with **no escaping and no URL screening** — the same trust model as `innerHTML` / `raw()`. An `Element` template's attributes are copied to the live tree **verbatim**, including `on*` inline handlers and `javascript:` URLs. So a `morph()` template must be markup you trust: built via JSX, or sanitized upstream (DOMPurify). Never pass unsanitized user input as a `morph()` template. (This is distinct from the `mount()` render path, where JSX escapes values and screens dangerous URLs — `morph()` bypasses that because its template is already-built markup.)
 
 ### `each<T>(items, render, cacheKey?): SafeHtml`

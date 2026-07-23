@@ -52,12 +52,68 @@ import {
   collectLists,
   flatten,
   flattenWithoutListItems,
+  LIST_MARKER_PREFIX,
   type ListSegment,
   type Segment,
 } from './segment.js';
-import { maybeWarnMissingRowKey,parseRowTemplate, rowContractError } from './utils/rowContract.js';
+import { maybeWarnMissingRowKey, parseRowTemplate, rowContractError } from './utils/rowContract.js';
 
-const LIST_MARKER_PREFIX = 'kf-list:';
+/** What `mount()`'s render function may return; non-SafeHtml values coerce (nullish/boolean → render nothing). */
+export type MountResult = SafeHtml | string | number | boolean | null | undefined;
+
+// KF-175 — non-enumerable marker placed on `mount()`'s rootEl so that a
+// second `mount()` call on a descendant, ancestor, or the same element can be
+// detected and rejected. `Symbol.for(...)` so the marker survives multiple
+// kerfjs imports in the same realm (e.g. the dist-full test suite running a
+// rebuilt bundle against the src test infrastructure).
+const MOUNTED_MARKER = Symbol.for('kerfjs.mounted');
+
+const NESTED_MOUNT_MSG
+  = 'mount: rootEl is already inside (or contains) a mounted tree. '
+  + 'kerf supports one mount per tree — compose with plain functions that return JSX instead of nesting mounts.';
+
+function isMounted(el: Element): boolean {
+  return (el as unknown as Record<symbol, unknown>)[MOUNTED_MARKER] === true;
+}
+
+function setMounted(el: Element, on: boolean): void {
+  if (on) {
+    (el as unknown as Record<symbol, unknown>)[MOUNTED_MARKER] = true;
+  } else {
+    delete (el as unknown as Record<symbol, unknown>)[MOUNTED_MARKER];
+  }
+}
+
+function describeEl(el: HTMLElement): string {
+  const tag = el.tagName.toLowerCase();
+  const id = el.id ? `#${el.id}` : '';
+  return `<${tag}${id}>`;
+}
+
+function assertNotInsideMountedTree(rootEl: HTMLElement): void {
+  // The element itself — same element mounted twice.
+  if (isMounted(rootEl)) {
+    throw new Error(
+      `mount: ${describeEl(rootEl)} is already mounted. `
+      + 'Call the disposer returned by the first mount() before mounting again. '
+      + 'kerf supports one mount per element — compose with plain functions that return JSX instead of nesting mounts.',
+    );
+  }
+  // Ancestors — walk up.
+  let ancestor: Element | null = rootEl.parentElement;
+  while (ancestor !== null) {
+    if (isMounted(ancestor)) throw new Error(NESTED_MOUNT_MSG);
+    ancestor = ancestor.parentElement;
+  }
+  // Descendants — DFS.
+  const stack: Element[] = [];
+  for (let i = 0; i < rootEl.children.length; i++) stack.push(rootEl.children[i]);
+  while (stack.length > 0) {
+    const cur = stack.pop() as Element;
+    if (isMounted(cur)) throw new Error(NESTED_MOUNT_MSG);
+    for (let i = 0; i < cur.children.length; i++) stack.push(cur.children[i]);
+  }
+}
 
 /**
  * Bind `render()` to the children of `rootEl`. Re-runs whenever any signal
@@ -82,56 +138,6 @@ const LIST_MARKER_PREFIX = 'kf-list:';
  *   else they did to the DOM — survives verbatim. The next render after
  *   blur catches up.
  */
-export type MountResult = SafeHtml | string | number | boolean | null | undefined;
-
-// KF-175 — non-enumerable marker placed on `mount()`'s rootEl so that a
-// second `mount()` call on a descendant, ancestor, or the same element can be
-// detected and rejected. `Symbol.for(...)` so the marker survives multiple
-// kerfjs imports in the same realm (e.g. the dist-full test suite running a
-// rebuilt bundle against the src test infrastructure).
-const MOUNTED_MARKER = Symbol.for('kerfjs.mounted');
-
-function describeEl(el: HTMLElement): string {
-  const tag = el.tagName.toLowerCase();
-  const id = el.id ? `#${el.id}` : '';
-  return `<${tag}${id}>`;
-}
-
-function assertNotInsideMountedTree(rootEl: HTMLElement): void {
-  // The element itself — same element mounted twice.
-  if ((rootEl as unknown as Record<symbol, unknown>)[MOUNTED_MARKER] === true) {
-    throw new Error(
-      `mount: ${describeEl(rootEl)} is already mounted. `
-      + 'Call the disposer returned by the first mount() before mounting again. '
-      + 'kerf supports one mount per element — compose with plain functions that return JSX instead of nesting mounts.',
-    );
-  }
-  // Ancestors — walk up.
-  let ancestor: Element | null = rootEl.parentElement;
-  while (ancestor !== null) {
-    if ((ancestor as unknown as Record<symbol, unknown>)[MOUNTED_MARKER] === true) {
-      throw new Error(
-        'mount: rootEl is already inside (or contains) a mounted tree. '
-        + 'kerf supports one mount per tree — compose with plain functions that return JSX instead of nesting mounts.',
-      );
-    }
-    ancestor = ancestor.parentElement;
-  }
-  // Descendants — DFS.
-  const stack: Element[] = [];
-  for (let i = 0; i < rootEl.children.length; i++) stack.push(rootEl.children[i]);
-  while (stack.length > 0) {
-    const cur = stack.pop() as Element;
-    if ((cur as unknown as Record<symbol, unknown>)[MOUNTED_MARKER] === true) {
-      throw new Error(
-        'mount: rootEl is already inside (or contains) a mounted tree. '
-        + 'kerf supports one mount per tree — compose with plain functions that return JSX instead of nesting mounts.',
-      );
-    }
-    for (let i = 0; i < cur.children.length; i++) stack.push(cur.children[i]);
-  }
-}
-
 export function mount(rootEl: HTMLElement, render: () => MountResult): () => void {
   if (rootEl == null) {
     throw new Error(
@@ -157,7 +163,7 @@ export function mount(rootEl: HTMLElement, render: () => MountResult): () => voi
     /* c8 ignore stop */
   }
   assertNotInsideMountedTree(rootEl);
-  (rootEl as unknown as Record<symbol, unknown>)[MOUNTED_MARKER] = true;
+  setMounted(rootEl, true);
   // KF-174: opt-in dev MutationObserver that warns when a node carrying an
   // imperative addEventListener listener is removed/rebuilt by the morph.
   const listenerWarnObserver = installListenerRebuildWarn(rootEl);
@@ -176,7 +182,7 @@ export function mount(rootEl: HTMLElement, render: () => MountResult): () => voi
   // `bindingCtx` is reset and repopulated each render; `bindingDisposers`
   // holds the per-hole effects so they're torn down on unmount.
   const bindingCtx: BindingContext = newBindingContext();
-  let bindingDisposers: Array<() => void> = [];
+  let bindingDisposers: ReadonlyArray<() => void> = [];
   // KF-338: the global-hole binding list that is ACTUALLY wired (bound to live
   // effects) right now. On the fast path the effects aren't re-wired, so this
   // list — captured whenever `wireBindings` runs — describes the signal
@@ -259,7 +265,20 @@ export function mount(rootEl: HTMLElement, render: () => MountResult): () => voi
     }
 
     for (const listSeg of collectLists(segment).values()) {
-      const binding = bindings.get(listSeg.id) as ListBinding;
+      // Invariant: `bindListsFromMarkers` just ran over this segment, so every
+      // list id has a binding — EXCEPT when the list's marker never reached the
+      // live DOM because it sits inside a `data-morph-skip` subtree the morph
+      // refused to update. Guard that edge with a descriptive error instead of
+      // letting `reconcileList(undefined, …)` die on a bare TypeError.
+      const binding = bindings.get(listSeg.id);
+      if (binding === undefined) {
+        throw new Error(
+          'mount: an each() list appeared in the render output but its marker never reached the live DOM. '
+          + 'The most common cause is an each() introduced inside a data-morph-skip subtree on a re-render — '
+          + 'the morph leaves that subtree untouched, so the list can never bind. '
+          + 'Move the each() outside the skipped subtree, or remove data-morph-skip from its ancestor.',
+        );
+      }
       reconcileList(binding, listSeg);
       // KF-99: record the post-reconcile binding length so the next render's
       // granular path can detect drift (a prior render that threw mid-batch
@@ -278,7 +297,7 @@ export function mount(rootEl: HTMLElement, render: () => MountResult): () => voi
     }
     listenerWarnObserver?.disconnect();
     // Clear the mounted marker so `mount(sameEl, ...)` after dispose works.
-    delete (rootEl as unknown as Record<symbol, unknown>)[MOUNTED_MARKER];
+    setMounted(rootEl, false);
   };
 }
 
@@ -427,7 +446,7 @@ function bindListsFromMarkers(
     const binding: ListBinding = { liveParent, items, marker };
     // KF-173: dev-only one-shot warning if the first row has no id/data-key.
     if (items.length > 0) {
-      maybeWarnMissingRowKey(items[0].node, 0, items[0].html, binding);
+      maybeWarnMissingRowKey(items[0].node, items[0].html, binding);
     }
     // Dev-mode: warn when an each() list is inside a data-morph-skip subtree
     // (list rows still update; static reactive siblings are frozen).
@@ -519,5 +538,3 @@ function collectComments(node: Node, out: Comment[]): void {
     else if (c.nodeType === Node.ELEMENT_NODE) collectComments(c, out);
   }
 }
-
-

@@ -103,6 +103,41 @@ describe('dev-binding-warn (KERF_DEV_WARN_STALE_BINDING=1, opt-in)', () => {
     }
   });
 
+  it('globalThis.KERF_DEV=false silences the warning even with the env var set (shared isDevMode gate)', () => {
+    env.KERF_DEV_WARN_STALE_BINDING = '1';
+    const glob = globalThis as { KERF_DEV?: unknown };
+    glob.KERF_DEV = false;
+    try {
+      const cond = signal(true);
+      const sigA = signal('a');
+      const sigB = signal('b');
+      mount(root, () => jsx('div', { class: cond.value ? sigA : sigB, children: 'x' }) as never);
+      cond.value = false;
+      expect(warnSpy).not.toHaveBeenCalled();
+    } finally {
+      delete glob.KERF_DEV;
+    }
+  });
+
+  it('globalThis.KERF_DEV=true re-enables the warning under NODE_ENV=production (shared isDevMode gate)', () => {
+    env.KERF_DEV_WARN_STALE_BINDING = '1';
+    const prevNodeEnv = env.NODE_ENV;
+    env.NODE_ENV = 'production';
+    const glob = globalThis as { KERF_DEV?: unknown };
+    glob.KERF_DEV = true;
+    try {
+      const cond = signal(true);
+      const sigA = signal('a');
+      const sigB = signal('b');
+      mount(root, () => jsx('div', { class: cond.value ? sigA : sigB, children: 'x' }) as never);
+      cond.value = false;
+      expect(warnSpy).toHaveBeenCalledTimes(1);
+    } finally {
+      env.NODE_ENV = prevNodeEnv;
+      delete glob.KERF_DEV;
+    }
+  });
+
   it('warns at most once per hole (one-shot dedup)', () => {
     env.KERF_DEV_WARN_STALE_BINDING = '1';
     const which = signal(0);

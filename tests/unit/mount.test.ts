@@ -101,6 +101,23 @@ describe('mount()', () => {
     expect(inputAfter.value).toBe('hello');
   });
 
+  it('throws a descriptive error when an each() is INTRODUCED inside a data-morph-skip subtree on a re-render (marker never reaches the live DOM)', () => {
+    const showList = signal(false);
+    const items = [{ id: 'a' }, { id: 'b' }];
+    mount(root, () => jsx('div', {
+      'data-morph-skip': true,
+      children: showList.value
+        ? each(items, (i) => jsx('li', { 'data-key': i.id, children: i.id }))
+        : jsx('span', { children: 'no list yet' }),
+    }) as never);
+
+    // The morph refuses to write into the skipped subtree, so the new list's
+    // marker never lands in the live DOM — kerf must fail loudly, not with a
+    // bare TypeError from reconcileList(undefined, …).
+    expect(() => { showList.value = true; })
+      .toThrow(/each\(\) list appeared in the render output.*data-morph-skip/s);
+  });
+
   it('skips morphing inside elements marked data-morph-skip', () => {
     const tick = signal(0);
     mount(root, () => jsx('div', {

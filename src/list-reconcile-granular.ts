@@ -26,8 +26,14 @@ import { type BoundItem, endAnchor, type ListBinding } from './list-binding.js';
 import { tryAttributeOnlyFastPath, tryTextContentFastPath } from './list-reconcile-fast-paths.js';
 import { captureFocus, restoreFocus } from './list-reconcile-focus.js';
 import { _morphElement } from './morph.js';
-import type { ListSegment } from './segment.js';
-import { maybeWarnMissingRowKey,parseRowTemplate, rowContractError, truncateRowHtml } from './utils/rowContract.js';
+import type { InsertPatch, ListSegment, UpdatePatch } from './segment.js';
+import {
+  collectTemplateChildren,
+  maybeWarnMissingRowKey,
+  parseRowTemplate,
+  parseSingleRow,
+  rowContractError,
+} from './utils/rowContract.js';
 
 export function reconcileGranular(
   binding: ListBinding,
@@ -82,8 +88,8 @@ export function reconcileGranular(
       let runEnd = i + 1;
       while (runEnd < patches.length
           && patches[runEnd].type === 'insert'
-          && (patches[runEnd] as { index: number }).index
-            === (patches[runEnd - 1] as { index: number }).index + 1) {
+          && (patches[runEnd] as InsertPatch).index
+            === (patches[runEnd - 1] as InsertPatch).index + 1) {
         runEnd += 1;
       }
       const runLen = runEnd - i;
@@ -121,18 +127,18 @@ export function reconcileGranular(
   if (focusSnap !== null) restoreFocus(focusSnap);
   // KF-173: warn once per binding if rows lack id / data-key.
   if (items.length > 0) {
-    maybeWarnMissingRowKey(items[0].node, 0, items[0].html, binding);
+    maybeWarnMissingRowKey(items[0].node, items[0].html, binding);
   }
 }
 
 function applySingleInsert(
   liveParent: Element,
   items: BoundItem[],
-  patch: { type: 'insert'; index: number; item: object; html: string; bindings?: Binding[] },
+  patch: InsertPatch,
   tailAnchor: Element | null,
 ): void {
   const { html } = patch;
-  const newNode = parseSingleRow(html);
+  const newNode = parseSingleRow(html, patch.index);
   const anchor = patch.index < items.length ? items[patch.index].node : tailAnchor;
   liveParent.insertBefore(newNode, anchor);
   items.splice(patch.index, 0, {
@@ -151,7 +157,7 @@ function wireRowIfBound(node: Element, bindings: Binding[] | undefined): Array<(
 function applySingleUpdate(
   liveParent: Element,
   items: BoundItem[],
-  patch: { type: 'update'; index: number; item: object; html: string; bindings?: Binding[] },
+  patch: UpdatePatch,
 ): void {
   const { html } = patch;
   const oldEntry = items[patch.index];
@@ -175,14 +181,27 @@ function applySingleUpdate(
     items[patch.index] = reuseBound(patch, html, oldEntry);
     return;
   }
-  const newNode = parseSingleRow(html);
-  // KF-201: morph the existing live node in place when tags match, so
-  // structure-preserving updates (text-node change, attribute flip) apply
-  // surgically — preserving DOM identity, focus, scroll, IME state, and
-  // skipping the layout cost of a full subtree discard-and-reinsert. For
-  // the rare tag-mismatch case (consumer's render fn returns a different
-  // top-level tag for the same item), fall back to explicit replaceChild
-  // so we keep a reference to the new live node.
+  const newNode = parseSingleRow(html, patch.index);
+  applyParsedRowUpdate(liveParent, items, patch, html, newNode);
+}
+
+/**
+ * Shared tail of both update paths (KF-201): morph the existing live node in
+ * place when tags match, so structure-preserving updates (text-node change,
+ * attribute flip) apply surgically — preserving DOM identity, focus, scroll,
+ * IME state, and skipping the layout cost of a full subtree
+ * discard-and-reinsert. For the rare tag-mismatch case (consumer's render fn
+ * returns a different top-level tag for the same item), fall back to explicit
+ * replaceChild so we keep a reference to the new live node.
+ */
+function applyParsedRowUpdate(
+  liveParent: Element,
+  items: BoundItem[],
+  patch: UpdatePatch,
+  html: string,
+  newNode: Element,
+): void {
+  const oldEntry = items[patch.index];
   if (oldEntry.node.tagName === newNode.tagName) {
     _morphElement(oldEntry.node, newNode);
     items[patch.index] = reuseBound(patch, html, oldEntry);
@@ -241,7 +260,7 @@ function applyBulkUpdate(
   interface Change { patchIdx: number; html: string }
   const morphChanges: Change[] = [];
   for (let k = start; k < end; k++) {
-    const p = patches[k] as { type: 'update'; index: number; item: object; html: string; bindings?: Binding[] };
+    const p = patches[k] as UpdatePatch;
     const oldEntry = items[p.index];
     if (p.html === oldEntry.html) {
       // Same as applySingleUpdate's no-op arm: identical HTML can still carry
@@ -264,32 +283,14 @@ function applyBulkUpdate(
   if (count !== morphChanges.length) {
     throw findOffendingChange(patches, morphChanges);
   }
-  const newNodes = new Array<Element>(morphChanges.length);
-  let child = tpl.content.firstElementChild;
-  for (let k = 0; k < newNodes.length; k++) {
-    newNodes[k] = child as Element;
-    child = (child as Element).nextElementSibling;
-  }
+  const newNodes = collectTemplateChildren(tpl, morphChanges.length);
 
-  // KF-201: morph each row in place when tags match (the common case), so
-  // structure-preserving updates skip the discard-and-reinsert layout cost.
-  // Tag-mismatch falls back to explicit replaceChild so we keep a reference
-  // to the new live node.
+  // Shared KF-201 morph-vs-replace ladder per row (same tail as
+  // applySingleUpdate).
   for (let k = 0; k < morphChanges.length; k++) {
     const c = morphChanges[k];
-    const p = patches[c.patchIdx] as { type: 'update'; index: number; item: object; html: string; bindings?: Binding[] };
-    const oldEntry = items[p.index];
-    if (oldEntry.node.tagName === newNodes[k].tagName) {
-      _morphElement(oldEntry.node, newNodes[k]);
-      items[p.index] = reuseBound(p, c.html, oldEntry);  // KF-294: node reused
-    } else {
-      disposeRowBindings(oldEntry.bindingDisposers);  // KF-294: old node discarded
-      liveParent.replaceChild(newNodes[k], oldEntry.node);
-      items[p.index] = {
-        ref: p.item, cacheKey: undefined, html: c.html, node: newNodes[k],
-        bindings: p.bindings, bindingDisposers: wireRowIfBound(newNodes[k], p.bindings),
-      };
-    }
+    const p = patches[c.patchIdx] as UpdatePatch;
+    applyParsedRowUpdate(liveParent, items, p, c.html, newNodes[k]);
   }
 }
 
@@ -308,32 +309,24 @@ function applyBulkInsert(
   end: number,
   tailAnchor: Element | null,
 ): void {
-  const startIdx = (patches[start] as { index: number }).index;
+  const startIdx = (patches[start] as InsertPatch).index;
   const htmls = new Array<string>(end - start);
   for (let k = start; k < end; k++) {
-    const p = patches[k] as { type: 'insert'; index: number; item: object; html: string };
-    htmls[k - start] = p.html;
+    htmls[k - start] = (patches[k] as InsertPatch).html;
   }
   const { tpl, count } = parseRowTemplate(htmls.join(''));
   if (count !== htmls.length) {
     throw findOffendingInsert(patches, start, htmls);
   }
   // Count matches; capture child refs BEFORE the fragment-insert empties
-  // tpl.content. Walk unconditionally — count check above guarantees
-  // `firstElementChild` is non-null and there are exactly `end - start`
-  // children.
-  const newNodes = new Array<Element>(end - start);
-  let child = tpl.content.firstElementChild;
-  for (let k = 0; k < newNodes.length; k++) {
-    newNodes[k] = child as Element;
-    child = (child as Element).nextElementSibling;
-  }
+  // tpl.content.
+  const newNodes = collectTemplateChildren(tpl, end - start);
   const anchor = startIdx < items.length ? items[startIdx].node : tailAnchor;
   liveParent.insertBefore(tpl.content, anchor);
   // Splice all new entries into binding.items at the run's start index.
   const newEntries = new Array<BoundItem>(end - start);
   for (let k = 0; k < newEntries.length; k++) {
-    const p = patches[start + k] as { type: 'insert'; index: number; item: object; html: string; bindings?: Binding[] };
+    const p = patches[start + k] as InsertPatch;
     newEntries[k] = {
       ref: p.item, cacheKey: undefined, html: htmls[k], node: newNodes[k],
       bindings: p.bindings,
@@ -341,27 +334,6 @@ function applyBulkInsert(
     };
   }
   items.splice(startIdx, 0, ...newEntries);
-}
-
-/**
- * Parse a single row's HTML string into one Element. Used by the granular
- * reconciler's single-row paths (`applySingleInsert`, `applySingleUpdate`).
- * Each row is expected to render exactly one top-level element (the same
- * contract `each()` enforces in the snapshot path).
- */
-function parseSingleRow(html: string): Element {
-  const { tpl, count } = parseRowTemplate(html);
-  if (count !== 1) {
-    const reason = count === 0
-      ? 'produced no top-level element'
-      : `produced ${count} top-level elements; exactly one is required`;
-    throw new Error(
-      `each() granular reconcile: row render ${reason}. `
-      + 'Each item\'s render must return exactly one element. '
-      + `Got HTML: ${JSON.stringify(truncateRowHtml(html))}`,
-    );
-  }
-  return tpl.content.firstElementChild as Element;
 }
 
 /**
@@ -375,8 +347,7 @@ function findOffendingInsert(
 ): Error {
   for (let i = 0; i < htmls.length; i++) {
     if (parseRowTemplate(htmls[i]).count !== 1) {
-      const p = patches[start + i] as { type: 'insert'; index: number };
-      return rowContractError(p.index, htmls[i]);
+      return rowContractError((patches[start + i] as InsertPatch).index, htmls[i]);
     }
   }
   /* c8 ignore start */
@@ -394,8 +365,7 @@ function findOffendingChange(
 ): Error {
   for (const c of changes) {
     if (parseRowTemplate(c.html).count !== 1) {
-      const p = patches[c.patchIdx] as { type: 'update'; index: number };
-      return rowContractError(p.index, c.html);
+      return rowContractError((patches[c.patchIdx] as UpdatePatch).index, c.html);
     }
   }
   /* c8 ignore start */

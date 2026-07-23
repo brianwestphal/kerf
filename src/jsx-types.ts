@@ -716,6 +716,7 @@ export interface KerfBuiltinIntrinsicElements {
   clipPath: SVGCommonAttrs;
   mask: SVGCommonAttrs;
   pattern: SVGCommonAttrs;
+  filter: SVGCommonAttrs;
   marker: SVGCommonAttrs;
   linearGradient: SVGCommonAttrs;
   radialGradient: SVGCommonAttrs;

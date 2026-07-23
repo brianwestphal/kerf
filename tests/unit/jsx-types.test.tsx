@@ -38,6 +38,20 @@ describe('JSX.IntrinsicElements typing (compile-time)', () => {
     expect(ok3.toString()).toContain('src="/x.png"');
   });
 
+  it('accepts every SVG fragment tag toElement() supports — pinned via <filter> (the one once missing)', () => {
+    // <filter> is in toElement's SVG_FRAGMENT_TAGS; it must also be an
+    // intrinsic element so JSX-authored SVG filters compile (docs/6 §6.10
+    // claims the table covers the SVG primitives toElement supports).
+    const ok = (
+      <defs>
+        <filter id="blur">
+          <rect width={4} height={4} />
+        </filter>
+      </defs>
+    );
+    expect(ok.toString()).toContain('<filter id="blur">');
+  });
+
   it('rejects misspelled attributes on typed tags', () => {
     // @ts-expect-error — `typo` is not a known attribute on <input>.
     const bad = <input typo />;

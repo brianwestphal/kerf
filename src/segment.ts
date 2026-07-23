@@ -80,6 +80,14 @@ export type ArrayPatchInternal =
   | { type: 'move'; from: number; to: number }
   | { type: 'replace'; items: readonly object[] };
 
+/**
+ * Narrowed patch aliases. Array indexing loses the union discriminant, so
+ * the granular reconciler casts through these instead of restating the full
+ * object type at every site — a field rename is then a one-place edit.
+ */
+export type UpdatePatch = Extract<ArrayPatchInternal, { type: 'update' }>;
+export type InsertPatch = Extract<ArrayPatchInternal, { type: 'insert' }>;
+
 export interface MixedSegment {
   kind: 'mixed';
   parts: Segment[];
@@ -95,11 +103,19 @@ export interface MixedSegment {
  * list's live parent. Plain (non-marker) flatten is what JSX consumers
  * see when they call `.toString()` on the SafeHtml.
  */
+/**
+ * Comment-marker prefix emitted before each list (`<!--kf-list:{id}-->`).
+ * `mount()` consumes it when binding lists from the live DOM — the emitter
+ * (here) and the consumer must agree byte-for-byte, so both import this one
+ * constant. Part of the reserved marker namespace (see `bindings.ts`).
+ */
+export const LIST_MARKER_PREFIX = 'kf-list:';
+
 export function flatten(segment: Segment, withMarkers: boolean): string {
   if (segment.kind === 'static') return segment.html;
   if (segment.kind === 'list') {
     const items = segment.items.map((i) => i.html).join('');
-    return withMarkers ? `<!--kf-list:${segment.id}-->${items}` : items;
+    return withMarkers ? `<!--${LIST_MARKER_PREFIX}${segment.id}-->${items}` : items;
   }
   return segment.parts.map((p) => flatten(p, withMarkers)).join('');
 }
@@ -114,7 +130,7 @@ export function flatten(segment: Segment, withMarkers: boolean): string {
  */
 export function flattenWithoutListItems(segment: Segment): string {
   if (segment.kind === 'static') return segment.html;
-  if (segment.kind === 'list') return `<!--kf-list:${segment.id}-->`;
+  if (segment.kind === 'list') return `<!--${LIST_MARKER_PREFIX}${segment.id}-->`;
   return segment.parts.map(flattenWithoutListItems).join('');
 }
 

@@ -30,7 +30,7 @@ import { tryAttributeOnlyFastPath, tryTextContentFastPath } from './list-reconci
 import { captureFocus, restoreFocus } from './list-reconcile-focus.js';
 import { _morphElement } from './morph.js';
 import type { ListItem, ListSegment } from './segment.js';
-import { maybeWarnMissingRowKey, parseRowTemplate, rowContractError } from './utils/rowContract.js';
+import { maybeWarnMissingRowKey, parseSingleRow } from './utils/rowContract.js';
 
 /**
  * If the new segment has the same refs in the same order as `binding.items`,
@@ -60,7 +60,7 @@ export function tryInPlaceContentUpdate(binding: ListBinding, listSeg: ListSegme
   if (focusSnap !== null) restoreFocus(focusSnap);
 
   binding.items = newRecord;
-  maybeWarnMissingRowKey(newRecord[0].node, 0, newRecord[0].html, binding);
+  maybeWarnMissingRowKey(newRecord[0].node, newRecord[0].html, binding);
   return true;
 }
 
@@ -113,9 +113,3 @@ function updateRowInPlace(
   };
 }
 
-/** Parse one row's HTML to its single top-level element (row contract). */
-function parseSingleRow(html: string, index: number): Element {
-  const { tpl, count } = parseRowTemplate(html);
-  if (count !== 1) throw rowContractError(index, html);
-  return tpl.content.firstElementChild as Element;
-}

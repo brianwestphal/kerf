@@ -248,6 +248,13 @@ describe('morph()', () => {
   });
 
   describe('KF-150 public surface', () => {
+    it('throws a descriptive hinted error for a null/undefined liveRoot (parity with mount())', () => {
+      expect(() => morph(null as unknown as Element, '<p>x</p>'))
+        .toThrow(/morph: liveRoot is null\/undefined.*getElementById/s);
+      expect(() => morph(undefined as unknown as Element, '<p>x</p>'))
+        .toThrow(/liveRoot is null\/undefined/);
+    });
+
     it('accepts a raw HTML string as the template', () => {
       live.innerHTML = '<p>old</p>';
       morph(live, '<p>new</p>');

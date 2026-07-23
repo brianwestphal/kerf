@@ -28,7 +28,7 @@
  * instance every render, but reading the same signals, hence safe — also differs
  * on the fast path and would warn. Binding a STABLE signal / computed reference
  * for global holes (the idiomatic shape) avoids that; the opt-in gate keeps the
- * diagnostic available for projects that want it without penalising ones that
+ * diagnostic available for projects that want it without penalizing ones that
  * pass a fresh inline computed into a global hole. (Row holes inside `each()` are
  * wired per-row-node and disposed on row removal, so they are not subject to
  * this fast-path staleness and never reach this warner.)
@@ -40,13 +40,17 @@
  */
 
 import type { Binding } from './bindings.js';
+import { isDevMode } from './utils/devMode.js';
 
 /** Per-hole one-shot dedup — keyed by the stable per-hole binding id. */
 const warnedHoles = new Set<string>();
 
 export function isOptedIn(): boolean {
+  // Route the dev decision through the shared gate (family contract, docs/11
+  // §11.3.1 rule 1) so the `globalThis.KERF_DEV` boolean override governs this
+  // warner like every other member of the KERF_DEV_WARN_* family.
+  if (!isDevMode()) return false;
   const proc = (globalThis as { process?: { env?: Record<string, string | undefined> } }).process;
-  if (proc?.env?.NODE_ENV === 'production') return false;
   return proc?.env?.KERF_DEV_WARN_STALE_BINDING === '1';
 }
 

@@ -36,7 +36,8 @@
  * Escaping:
  * - Attribute name: escaped as a CSS identifier via `cssEscapeIdent`, which is
  *   an SSR-safe (no `CSS.escape`) adaptation of the Mathias Bynens polyfill
- *   (https://github.com/nicktindall/cyclon.p2p-common, MIT licensed). Handles
+ *   (https://github.com/mathiasbynens/CSS.escape, MIT licensed — see the
+ *   Acknowledgements section of LICENSE). Handles
  *   control chars, leading digits, non-ASCII, and CSS metacharacters.
  * - Attribute value: embedded in double quotes as a CSS string. Backslashes and
  *   double-quote characters are backslash-escaped; control characters are

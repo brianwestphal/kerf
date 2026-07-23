@@ -93,7 +93,8 @@ export interface RenderContext {
   caches: Map<string, WeakMap<object, CacheEntry>>;
   /**
    * Per-list-id record of the binding's `items.length` after the most recent
-   * successful reconcile. Maintained by `mount()` via `_setBindingCount`. The
+   * successful reconcile. Maintained by `mount()`, which writes
+   * `renderCtx.bindingCounts.set(...)` directly after each `reconcileList`. The
    * granular path consults this to detect drift between the live binding and
    * the arraySignal — drift means a previous render threw mid-reconcile (or
    * a granular path was bypassed externally), so the next render forces a

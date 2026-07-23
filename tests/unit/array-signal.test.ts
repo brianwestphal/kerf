@@ -568,7 +568,7 @@ describe('arraySignal — each() granular integration via mount()', () => {
     // Swap the render impl mid-flight so the next update produces empty HTML.
     renderImpl = () => '   ';
     expect(() => rows.update(0, (r) => ({ ...r, label: 'changed' }))).toThrow(
-      /granular reconcile: row render produced no top-level element/,
+      /each\(\): row render at index \d+ produced no top-level element/,
     );
     // Note: this case goes through `parseSingleRow` (single-update patch),
     // which throws with the granular-reconcile message. KF-103 changed bulk

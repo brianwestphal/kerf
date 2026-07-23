@@ -49,6 +49,10 @@ import { syncFormProp } from './utils/syncFormProp.js';
 
 const ID_KEY_PREFIX = 'id:';
 const DATA_KEY_PREFIX = 'data-key:';
+// Local numeric copies of Node.ELEMENT_NODE etc. — the child-walk loop below
+// is the hottest path in the reconciler, and reading a module-scope const
+// avoids the Node global property lookup per visited node. Don't "normalize"
+// these to Node.* without re-checking the krausest partial-update numbers.
 const ELEMENT_NODE = 1;
 const TEXT_NODE = 3;
 const COMMENT_NODE = 8;
@@ -81,6 +85,12 @@ export function morph(
   template: Element | SafeHtml | string,
   ownedItems: ReadonlySet<Element> = EMPTY_OWNED,
 ): void {
+  if (liveRoot == null) {
+    throw new Error(
+      'morph: liveRoot is null/undefined — pass the live element, e.g. morph(document.getElementById("app")!, template). '
+      + 'A common cause is a typo in the id or selector that returns null at runtime even though the TypeScript types say Element.',
+    );
+  }
   const templateEl: Element = isElementNode(template)
     ? template
     : parseTemplate(liveRoot, template);

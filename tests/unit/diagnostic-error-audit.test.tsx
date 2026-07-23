@@ -142,7 +142,7 @@ describe('Diagnostic-error audit (KF-169) — Hard Rules 1–12', () => {
       expect(host.textContent).toContain('c');
       expect(warnSpy).toHaveBeenCalledTimes(1);
       const message = warnSpy.mock.calls[0][0];
-      expect(message).toMatch(/row at index 0 has no `id` or `data-key`/);
+      expect(message).toMatch(/the first row has no `id` or `data-key`/);
       expect(message).toMatch(/Add `data-key=\{item\.id\}`/);
     } finally {
       warnSpy.mockRestore();

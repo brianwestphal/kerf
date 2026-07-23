@@ -197,7 +197,7 @@ describe('maybeWarnMissingRowKey (KF-173 helper, branch coverage)', () => {
     try {
       const el = document.createElement('li');
       const binding = {};
-      maybeWarnMissingRowKey(el, 0, '<li>x</li>', binding);
+      maybeWarnMissingRowKey(el, '<li>x</li>', binding);
       expect(warnSpy).not.toHaveBeenCalled();
       // The flag is NOT set in production — we short-circuit before the
       // mutation, so a subsequent dev-mode invocation on the same binding
@@ -211,11 +211,11 @@ describe('maybeWarnMissingRowKey (KF-173 helper, branch coverage)', () => {
   it('sets the warned flag on first call and short-circuits on subsequent calls', () => {
     const el = document.createElement('li');
     const binding = {};
-    maybeWarnMissingRowKey(el, 0, '<li>x</li>', binding);
+    maybeWarnMissingRowKey(el, '<li>x</li>', binding);
     expect(warnSpy).toHaveBeenCalledTimes(1);
     expect((binding as { warnedMissingKey?: boolean }).warnedMissingKey).toBe(true);
     // Second call short-circuits at the flag check.
-    maybeWarnMissingRowKey(el, 1, '<li>y</li>', binding);
+    maybeWarnMissingRowKey(el, '<li>y</li>', binding);
     expect(warnSpy).toHaveBeenCalledTimes(1);
   });
 
@@ -223,7 +223,7 @@ describe('maybeWarnMissingRowKey (KF-173 helper, branch coverage)', () => {
     const el = document.createElement('li');
     el.id = 'row-1';
     const binding = {};
-    maybeWarnMissingRowKey(el, 0, '<li id="row-1">x</li>', binding);
+    maybeWarnMissingRowKey(el, '<li id="row-1">x</li>', binding);
     expect(warnSpy).not.toHaveBeenCalled();
     expect((binding as { warnedMissingKey?: boolean }).warnedMissingKey).toBe(true);
   });
@@ -232,7 +232,7 @@ describe('maybeWarnMissingRowKey (KF-173 helper, branch coverage)', () => {
     const el = document.createElement('li');
     el.setAttribute('data-key', '1');
     const binding = {};
-    maybeWarnMissingRowKey(el, 0, '<li data-key="1">x</li>', binding);
+    maybeWarnMissingRowKey(el, '<li data-key="1">x</li>', binding);
     expect(warnSpy).not.toHaveBeenCalled();
     expect((binding as { warnedMissingKey?: boolean }).warnedMissingKey).toBe(true);
   });

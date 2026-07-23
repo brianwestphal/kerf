@@ -32,10 +32,14 @@
  * active: the runtime snapshots `signal.value` and emits no markers, so server
  * output is correct and legacy `.toString()` callers are unaffected.
  *
- * Module-level mutable state note: `context` / `rowSink` here are a third
+ * Module-level mutable state note: `context` / `rowSink` (plus `rowCounter`,
+ * the row-hole id counter that resets with each row capture) are a third
  * sanctioned module-level mutable location (alongside `store.ts:REGISTRY` and
  * `each.ts:context`). They hold the current render's binding sinks and are set
- * / cleared by `mount()` and `each()` around the render calls.
+ * / cleared by `mount()` and `each()` around the render calls. The only other
+ * module-level container here is `insertedTextNodes`, a WeakMap keyed on text
+ * marker comments — a pure cache whose entries die with their nodes (GC-tied
+ * lifetime), so it carries no cross-render semantics.
  */
 
 import { effect, isSignal, type Signal } from './reactive.js';
@@ -95,7 +99,9 @@ let context: BindingContext | null = null;
 let rowSink: Binding[] | null = null;
 let rowCounter = 0;
 
-const NO_DISPOSERS: Array<() => void> = [];
+// Frozen shared sentinel for the no-holes case — readonly so no caller can
+// push into it and corrupt every other no-hole mount.
+const NO_DISPOSERS: ReadonlyArray<() => void> = Object.freeze([]);
 
 export function newBindingContext(): BindingContext {
   return { counter: 0, list: [] };
@@ -182,12 +188,12 @@ export function bindText(signal: Signal<unknown>): string | null {
 export function wireBindings(
   rootEl: Element,
   ctx: BindingContext,
-  prevDisposers: Array<() => void>,
-): Array<() => void> {
+  prevDisposers: ReadonlyArray<() => void>,
+): ReadonlyArray<() => void> {
   for (const d of prevDisposers) d();
   if (ctx.list.length === 0) return NO_DISPOSERS;
   const disposers: Array<() => void> = [];
-  wireInto(rootEl, BIND_ATTR, TEXT_MARKER_PREFIX, ctx.list, disposers);
+  wireInto(rootEl, ctx.list, disposers);
   return disposers;
 }
 
@@ -302,20 +308,19 @@ export function carryOrRewireRowBindings(
 }
 
 /**
- * Shared wiring core. Indexes marked elements + comment markers under `scope`
- * by binding id, then attaches an effect per binding. `includeRoot` also
- * indexes `scope` itself (row roots carry their own marker).
+ * GLOBAL-scope wiring core. Indexes `data-kfb`-marked elements + `kfb:`
+ * comment markers under `scope` by binding id, then attaches an effect per
+ * binding. Row-scope wiring lives in `wireRowBindings` (with its own inlined
+ * root-attr fast path), so this always operates on the GLOBAL marker names.
  */
 function wireInto(
   scope: Element,
-  attrName: string,
-  textPrefix: string,
   bindings: Binding[],
   disposers: Array<() => void>,
 ): void {
-  const attrEls = indexAttrEls(scope, attrName);
+  const attrEls = indexAttrEls(scope, BIND_ATTR);
   const textMarkers = new Map<string, Comment>();
-  collectComments(scope, textPrefix, textMarkers);
+  collectComments(scope, TEXT_MARKER_PREFIX, textMarkers);
 
   for (const b of bindings) {
     if (b.kind === 'attr') {
@@ -444,7 +449,11 @@ function coerceText(value: unknown): string {
   return String(value);
 }
 
-/** Collect comment markers with the given prefix under `node`, keyed by id. */
+/**
+ * Collect comment markers with the given prefix under `node`, keyed by id.
+ * Hand-rolled recursion (same as `mount.ts`'s comment walker) because
+ * happy-dom's `TreeWalker` does not surface comment nodes.
+ */
 function collectComments(node: Node, prefix: string, out: Map<string, Comment>): void {
   for (let c: Node | null = node.firstChild; c !== null; c = c.nextSibling) {
     if (c.nodeType === Node.COMMENT_NODE) {

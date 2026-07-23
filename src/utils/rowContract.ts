@@ -41,6 +41,33 @@ export function parseRowTemplate(html: string): { tpl: HTMLTemplateElement; coun
 }
 
 /**
+ * Parse one row's HTML to its single top-level element, enforcing the
+ * "exactly one top-level element per row" contract with a row-precise error.
+ * Shared by the granular reconciler's single-row paths and the snapshot
+ * in-place morph path.
+ */
+export function parseSingleRow(html: string, index: number): Element {
+  const { tpl, count } = parseRowTemplate(html);
+  if (count !== 1) throw rowContractError(index, html);
+  return tpl.content.firstElementChild as Element;
+}
+
+/**
+ * Capture the first `n` element children of a parsed row template into an
+ * array BEFORE a fragment insert empties `tpl.content`. Callers have already
+ * verified the parse count equals `n`, so the walk never sees a null.
+ */
+export function collectTemplateChildren(tpl: HTMLTemplateElement, n: number): Element[] {
+  const nodes = new Array<Element>(n);
+  let child = tpl.content.firstElementChild;
+  for (let k = 0; k < n; k++) {
+    nodes[k] = child as Element;
+    child = (child as Element).nextElementSibling;
+  }
+  return nodes;
+}
+
+/**
  * Build a precise contract-violation `Error` for the row at `index` whose
  * render produced the given `html`. The thrown message mentions the row
  * index, the actual element count, and the (truncated) HTML so the author
@@ -67,14 +94,14 @@ export function rowContractError(index: number, html: string): Error {
  * names the row index, points at the canonical fix, and quotes the HTML
  * snippet so the author can locate the call site.
  *
- * Called per-binding; the caller passes a mutable flag holder so the warning
- * fires at most once per `mount()`-lifetime per `each()` callsite. Set the
- * holder's flag after the call regardless of whether the warning fired.
- * Production builds emit nothing — the gate is `NODE_ENV !== 'production'`.
+ * Called per-binding with the FIRST row only — rows come from one render
+ * function, so sampling row 0 is representative; per-row checking would just
+ * repeat the same verdict. The caller passes a mutable flag holder so the
+ * warning fires at most once per `mount()`-lifetime per `each()` callsite.
+ * Production builds emit nothing — the gate is the shared `isDevMode()`.
  */
 export function maybeWarnMissingRowKey(
   rowEl: Element,
-  rowIndex: number,
   rowHtml: string,
   binding: { warnedMissingKey?: boolean },
 ): void {
@@ -83,7 +110,7 @@ export function maybeWarnMissingRowKey(
   binding.warnedMissingKey = true;
   if (rowEl.id !== '' || rowEl.hasAttribute('data-key')) return;
   console.warn(
-    `kerf each(): row at index ${rowIndex} has no \`id\` or \`data-key\` attribute. `
+    'kerf each(): the first row has no `id` or `data-key` attribute. '
     + 'Without one, rows match positionally — an insert/remove at the head shifts every row\'s '
     + 'identity, so focused inputs jump to the wrong row, mid-edit textareas swap content with their neighbor, '
     + 'and any per-row state silently follows the wrong item. '

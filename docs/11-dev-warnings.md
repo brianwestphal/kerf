@@ -270,8 +270,11 @@ has now seen this warning for this owner" — not module-global (which
 would make a second buggy store invisible after the first warns) and not
 per-call (which would spam every render).
 
-For testability, each warner exports a `_resetWarnedForTests()` /
-`_resetWarnContext(ctx)` helper that re-arms the first-warning path.
+For testability, warners with module-level dedup state export a
+`_resetWarnedForTests()` / `_resetWarnContext(ctx)` helper that re-arms
+the first-warning path. (Warners whose dedup lives on a per-mount context
+or per-signal instance — the value-only-rerender and untracked-signals
+warners — have no module state to reset and export no helper.)
 These are not on the public dist barrel; tests import them via the
 relative `../../src/dev-...-warn.js` path. Test files that exercise this
 state are named `*.internal.test.ts` so the dist-full suite excludes
