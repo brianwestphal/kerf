@@ -1,5 +1,10 @@
 # Test-gap analysis — KF-380
 
+> **Second sweep:** [`test-gap-analysis-kf387.md`](test-gap-analysis-kf387.md)
+> extends this analysis beyond the morph seam — it answers whether this seam
+> was uniquely fragile (it wasn't; three other seams were broken on first
+> probe: KF-388/KF-389/KF-390/KF-391) and adds the seam inventory + ranking.
+
 Why KF-374 and KF-377 shipped under the 100%-line / 99%-branch coverage gate,
 which interaction axes were untested, and what the KF-380 interaction-matrix
 suite (`tests/unit/kf380-interaction-matrix.test.tsx`) now covers. AI-facing;
