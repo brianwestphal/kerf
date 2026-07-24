@@ -186,6 +186,10 @@ Keyed list iteration with per-item memoization, routed through `mount()`'s nativ
 
 A keyed list does not occupy a call-order slot, so keying just the *conditional* list is usually enough — its unkeyed siblings stop shifting too. Keys must be unique within a mount; two lists claiming the same key throw. In development, kerf warns once per list when it detects an identity shift and names the fix.
 
+A key must be a non-empty string of letters, digits, or `_ . : / -` and may not contain `--` — kerf writes it into the list's marker comment in the DOM, so anything that could terminate a comment is rejected with an error rather than corrupting the mount.
+
+**`each()` does not nest.** A row's HTML is flattened to a string, so an `each()` called inside a row render never binds — it would render as inert static markup. Render an inner collection with plain `.map()` (it re-renders with its row), or restructure to a flat list. A *keyed* nested `each()` throws and says so.
+
 If a descendant of a moved row holds focus, the reconciler snapshots the active element + its selection range before the move pass and re-applies them afterwards — so focus and caret position survive a reorder even on engines that drop focus on `insertBefore` (older Safari, happy-dom). See `docs/4-render.md` §4.4.
 
 ## 8.4 Event delegation

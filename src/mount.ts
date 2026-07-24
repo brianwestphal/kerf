@@ -36,6 +36,7 @@ import {
 } from './bindings.js';
 import { isOptedIn as isStaleBindingWarnOptedIn, maybeWarnStaleBinding } from './dev-binding-warn.js';
 import { maybeWarnEachInMorphSkip } from './dev-each-warn.js';
+import { maybeWarnListIdShift } from './dev-list-key-warn.js';
 import { maybeWarnListRebind } from './dev-list-rebind-warn.js';
 import { installListenerRebuildWarn } from './dev-listener-warn.js';
 import { maybeWarnValueOnlyRerender, type ValueOnlyWarnContext } from './dev-rerender-warn.js';
@@ -180,6 +181,8 @@ export function mount(rootEl: HTMLElement, render: () => MountResult): () => voi
     bindingCounts: new Map(),
     bindingSources: new Map(),
     keysThisRender: new Set(),
+    shiftCandidates: [],
+    warnedShiftIds: new Set(),
   };
   // KF-294: per-mount fine-grained binding context + live-effect disposers.
   // `bindingCtx` is reset and repopulated each render; `bindingDisposers`
@@ -207,6 +210,7 @@ export function mount(rootEl: HTMLElement, render: () => MountResult): () => voi
   const disposeEffect = effect(() => {
     renderCtx.counter = 0;
     renderCtx.keysThisRender.clear();
+    renderCtx.shiftCandidates.length = 0;
     bindingCtx.counter = 0;
     bindingCtx.list = [];
     _setRenderContext(renderCtx);
@@ -292,6 +296,22 @@ export function mount(rootEl: HTMLElement, render: () => MountResult): () => voi
       // tell a genuine continuation from an id reused by a different list.
       renderCtx.bindingSources.set(listSeg.id, listSeg.source);
     }
+
+    // KF-394: an unkeyed list's id can only be taken over by a DIFFERENT list
+    // if the number of unkeyed each() calls changed — otherwise the ids line up
+    // exactly as they did last render and a changed source just means that same
+    // list is showing different data. Deciding here rather than inside each()
+    // is what makes the distinction possible: only now is this render's total
+    // call count known.
+    if (renderCtx.previousCallCount !== undefined
+      && renderCtx.previousCallCount !== renderCtx.counter) {
+      for (const id of renderCtx.shiftCandidates) {
+        if (renderCtx.warnedShiftIds.has(id)) continue;
+        renderCtx.warnedShiftIds.add(id);
+        maybeWarnListIdShift(id);
+      }
+    }
+    renderCtx.previousCallCount = renderCtx.counter;
   });
 
   return () => {
@@ -466,7 +486,7 @@ function bindListsFromMarkers(
       // is per-row so we can pinpoint the offender by index.
       let next: Element | null = marker.nextElementSibling;
       for (let i = 0; i < listSeg.items.length && next !== null; i++) {
-        validateInlinedRowMatch(listSeg.items[i].html, i, next);
+        validateInlinedRowMatch(listSeg.items[i].html, i, next, liveParent);
         const rowBindings = listSeg.items[i].bindings;
         const bound: BoundItem = {
           ref: listSeg.items[i].ref,
@@ -510,6 +530,7 @@ function validateInlinedRowMatch(
   expectedHtml: string,
   index: number,
   boundEl: Element,
+  liveParent: Element,
 ): void {
   if (boundEl.outerHTML === expectedHtml) return;
   // The bound element's outerHTML differs from what we emitted. Parse the
@@ -517,7 +538,13 @@ function validateInlinedRowMatch(
   // is whitespace / browser-normalization (e.g. `<br/>` → `<br>`) and
   // we proceed silently. Otherwise build the precise contract-violation
   // error from the shared helper.
-  const { content, count } = parseRowTemplate(expectedHtml);
+  // KF-396: parse in the LIVE PARENT's namespace. Without it an SVG row
+  // (`<circle/>`) parses HTML and comes back `tagName === 'CIRCLE'` while the
+  // live element is a real SVG `circle` — and the tag comparison below, being
+  // case-sensitive, then rejected a perfectly good list. The everyday trigger
+  // was an apostrophe in any attribute (kerf emits `&#39;`, serializers emit
+  // `'`), which is what makes the outerHTML compare miss and reach here at all.
+  const { content, count } = parseRowTemplate(expectedHtml, liveParent);
   if (count !== 1) throw rowContractError(index, expectedHtml);
   // KF-391: single-root, but is it the SAME root? The HTML parser restructures
   // some markup — most commonly `<tr>` directly under `<table>`, where it

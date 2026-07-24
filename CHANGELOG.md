@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Fixed: an `each()` list inside an `<svg>` whose row markup contained an apostrophe (or anything else the serializer writes back differently) failed to mount at all, with a self-contradictory error. Also fixed: `each({ key })` now validates the key, so a key containing an HTML comment terminator can no longer break out of the list's internal marker and put markup in the page.
+- The development warning about list identity no longer fires when a list simply swaps which data it renders (a filter or tab change) — it only reports an actual identity shift, and each mount now reports its own.
+- Fixed: a controlled `<textarea>` row could keep a stale value after the user had typed in it, when the update changed only its text.
+- A keyed `each()` written inside another list's row now explains that nested lists aren't reconciled, instead of reporting a duplicate key.
+
 - **New:** `each()` accepts an options object — `each(items, render, { cacheKey, key })` — and `key` gives a list a **stable identity**. Without one a list is identified by its position among the `each()` calls in a render, so adding or removing a conditional list above it made kerf rebuild it from scratch: rows lost their DOM nodes, and with them focus, scroll position and in-progress IME composition. Keying a list removes that dependency; because a keyed list doesn't occupy a positional slot, keying just the *conditional* list usually stabilizes its siblings too. The existing three-argument `each(items, render, cacheKey)` form is unchanged. In development kerf now warns once per list when it detects such a shift and names the fix.
 - Focus now survives every move the diff makes, not just morph-in-place updates — moving a subtree (a keyed match, a shifted sibling) no longer drops the caret on engines that blur on `insertBefore`.
 

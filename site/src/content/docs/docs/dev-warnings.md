@@ -284,14 +284,21 @@ rebuilt from scratch and its rows lose DOM identity, focus, scroll position and
 in-progress IME composition, at O(rows) instead of O(changes). See
 [`docs/16-list-identity.md`](16-list-identity.md).
 
-**Mechanism.** `maybeWarnListIdShift(id)` is called from the same source
-comparison that routes the render to the snapshot path. It short-circuits on
+**Mechanism.** `eachGranular` records an unkeyed list id as a *candidate* when
+its recorded data source changed; `mount()` reports candidates at the end of
+the render, and only when the render's `each()` call count ALSO changed —
+which is what an id shift actually requires. A changed source on its own is
+not a shift: the same list swapping which signal it renders (a filter or tab
+switch) changes source too, and warning there told authors to fix correct
+code. Keyed lists are excluded entirely, since a key is the identity. It short-circuits on
 `isDevMode()`, dedups on a module-level `warnedIds` Set, and names the fix:
 `each(items, render, { key: 'my-list' })` — plus the non-obvious part, that
 keying the *conditional* list is usually enough, because a keyed list does not
 occupy a call-order slot.
 
-**Dedup scope.** Per list id. One warning per shifting list, not per render.
+**Dedup scope.** Per list id, **per mount** — the set lives on the render
+context, because ids are per-mount and a module-level set meant the first mount
+to warn for id `'0'` silenced every other mount's genuine shift forever.
 
 **Why always-on rather than env-gated.** Same reasoning as the missing-row-key
 warning (§11.2.12): it fires only when kerf is about to silently discard row
@@ -299,9 +306,11 @@ state, it has no legitimate-use false-positive surface (an author never *wants*
 a list rebuilt by accident), and it names a one-line fix. Opting into a warning
 you would always want is friction with no benefit.
 
-**Known blind spot.** Detection compares data sources, so a shift between two
-`each()` calls over the *same* `arraySignal` is invisible to it. Keys close that
-case by construction, which is what the message asks for.
+**Known blind spots.** Two shapes stay invisible: a shift between two `each()`
+calls over the *same* `arraySignal` (indistinguishable by source), and two
+unkeyed lists swapping order at a constant call count. Both are the price of a
+conservative trigger, and keys close both by construction — which is what the
+message asks for.
 
 ### 11.2.11 Double-mount guard (always-on, not opt-in)
 

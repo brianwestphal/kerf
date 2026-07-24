@@ -23,7 +23,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { arraySignal } from '../../src/array-signal.js';
-import { _resetWarnedForTests } from '../../src/dev-list-key-warn.js';
 import { html } from '../../src/html.js';
 import { batch, each, mount, signal } from '../../src/index.js';
 
@@ -31,7 +30,6 @@ let root: HTMLElement;
 let warnSpy: ReturnType<typeof vi.spyOn>;
 
 beforeEach(() => {
-  _resetWarnedForTests();
   root = document.createElement('div');
   document.body.appendChild(root);
   warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
@@ -58,16 +56,14 @@ describe('KF-393: each() options API adversarial probes', () => {
     dispose();
   });
 
-  it('an empty-string key is accepted as a distinct identity and reconciles granularly', () => {
+  it('an empty-string key is rejected rather than silently becoming an identity', () => {
+    // It used to be accepted, producing `<!--kf-list:k:-->`. An empty key is
+    // almost certainly a bug at the callsite (an unset variable), and the key
+    // validation added for the marker-injection fix rejects it by construction.
     const rows = arraySignal([{ id: 'a' }]);
-    const dispose = mount(root, () => (
+    expect(() => mount(root, () => (
       <ul>{each(rows, (r) => <li data-key={r.id}>{r.id}</li>, { key: '' })}</ul>
-    ));
-    const rowA = root.querySelector('li[data-key="a"]');
-    rows.push({ id: 'b' });
-    expect(root.querySelector('li[data-key="a"]')).toBe(rowA);
-    expect(root.innerHTML).toContain('<!--kf-list:k:-->');
-    dispose();
+    ))).toThrow(/invalid list key ""/);
   });
 
   it('an author key of "0" cannot collide with the call-order id 0 (namespacing holds)', () => {
@@ -216,13 +212,12 @@ describe('KF-393: each() options API adversarial probes', () => {
     d2();
   });
 
-  it('a keyed each() nested in a row render throws the duplicate-key error (misleading; the real boundary is that nested lists degrade)', () => {
-    // KNOWN ISSUE KF-398: every row's render claims the same key, so 2+ rows
-    // throw "duplicate list key" — a message that misdiagnoses. The real
-    // problem is that an each() inside a row render is a degraded shape (row
-    // HTML flattens via toString(), so the inner list never binds). Following
-    // the error's advice (per-row keys) silences the throw and lands in that
-    // silent degradation. This pin holds the CURRENT loud-but-wrong error.
+  it('a keyed each() nested in a row render names the real boundary, not a duplicate key (KF-398)', () => {
+    // Every row's render claims the same key, so this used to surface as
+    // "duplicate list key" — which misdiagnoses, and whose literal advice (a
+    // per-row key) silences the error and lands the author in the silent
+    // degradation instead. The error now names the actual boundary: a nested
+    // each() is never reconciled, because the row is flattened to HTML.
     const rows = arraySignal([
       { id: 'a', subs: [{ id: 's1' }] },
       { id: 'b', subs: [{ id: 's2' }] },
@@ -233,44 +228,58 @@ describe('KF-393: each() options API adversarial probes', () => {
           <ol>{each(r.subs, (s) => <li data-key={s.id}>{s.id}</li>, { key: 'nested' })}</ol>
         </li>
       ))}</ul>
-    ))).toThrow(/duplicate list key "nested"/);
+    ))).toThrow(/nested each\(\) is not reconciled/);
   });
 });
 
 describe('KF-393: list-key marker injection (KNOWN BUG KF-395)', () => {
-  it('a key containing --> breaks out of the marker comment: live injected markup, then an internal TypeError', () => {
-    // KNOWN BUG KF-395: claimKey validates nothing; the id lands verbatim in
-    // <!--kf-list:{id}-->, so a comment terminator in the key ends the marker
-    // early. The remainder of the key becomes LIVE markup in the mount root,
-    // and bindListsFromMarkers then crashes on the truncated id with a bare
-    // TypeError instead of an actionable error. When KF-395 lands (claimKey
-    // rejects keys containing "--"), flip this to assert the validation error
-    // and that NOTHING was injected.
+  it('a key containing --> is rejected before anything reaches the DOM (KF-395)', () => {
+    // The key lands verbatim inside <!--kf-list:{id}-->, so a comment
+    // terminator used to end the marker early: the rest of the key became LIVE
+    // markup in the mount root, and binding then died on a bare TypeError.
+    // Both halves were wrong — markup in the DOM, and an internal error rather
+    // than an actionable one. Keys are now validated up front.
     const rows = arraySignal([{ id: 'a' }]);
     expect(() => mount(root, () => (
       <ul>{each(rows, (r) => <li data-key={r.id}>{r.id}</li>, { key: 'x--><b>pwn</b>' })}</ul>
-    ))).toThrow(TypeError);
-    expect(root.querySelector('b')).not.toBeNull(); // injected element is LIVE in the DOM
+    ))).toThrow(/invalid list key/);
+    expect(root.querySelector('b')).toBeNull(); // nothing injected
+    expect(root.innerHTML).not.toContain('pwn');
   });
 
-  it('a key containing <!-- happens to parse as a longer comment and works by accident', () => {
-    // Same KF-395 family: currently accepted silently. Pinned so a validation
-    // fix consciously decides this shape's fate too.
+  it('a key containing <!-- is rejected too — it used to work by accident (KF-395)', () => {
+    // Previously accepted silently because it happened to parse as a longer
+    // comment. The validation decides this shape deliberately instead of
+    // leaving it to parser luck.
     const rows = arraySignal([{ id: 'a' }]);
-    const dispose = mount(root, () => (
+    expect(() => mount(root, () => (
       <ul>{each(rows, (r) => <li data-key={r.id}>{r.id}</li>, { key: '<!--y' })}</ul>
-    ));
-    expect(Array.from(root.querySelectorAll('li')).map((l) => l.textContent)).toEqual(['a']);
-    dispose();
+    ))).toThrow(/invalid list key/);
+  });
+
+  it('ordinary keys — letters, digits, _ . : / and single dashes — are accepted (KF-395)', () => {
+    // The validation must not be so tight that reasonable keys break. Namespaced
+    // and path-ish keys are the shapes real apps reach for.
+    for (const key of ['results', 'a-b', 'ns:list', 'a/b', 'ok_1.2']) {
+      const host = document.createElement('div');
+      document.body.appendChild(host);
+      const rows = arraySignal([{ id: 'a' }]);
+      const dispose = mount(host, () => (
+        <ul>{each(rows, (r) => <li data-key={r.id}>{r.id}</li>, { key })}</ul>
+      ));
+      expect(host.querySelectorAll('li').length).toBe(1);
+      dispose();
+      host.remove();
+    }
   });
 });
 
-describe('KF-393: identity-shift warning false positives (KNOWN BUG KF-394)', () => {
-  it('a KEYED list legitimately swapping its data source fires the shift warning telling the author to add the key it has', () => {
-    // KNOWN BUG KF-394 (false positive 1): identity is stable ('k:x'), the
-    // snapshot rebuild is correct and unavoidable (different data), yet the
-    // always-on warning fires and recommends `{ key: 'my-list' }` — which the
-    // list already has. Flip to `toEqual([])` when KF-394 lands.
+describe('KF-393: identity-shift warning fires only on a real shift (KF-394)', () => {
+  it('a KEYED list legitimately swapping its data source does NOT warn (KF-394)', () => {
+    // Identity is stable, and the snapshot rebuild is correct and unavoidable
+    // (different data). The warning used to fire here and recommend adding the
+    // key the list already had — telling the author to fix correct code. A key
+    // IS the identity, so a keyed list is excluded from the trigger entirely.
     const cond = signal(true);
     const a = arraySignal([{ id: 'a1', t: 'A1' }]);
     const b = arraySignal([{ id: 'b1', t: 'B1' }]);
@@ -280,19 +289,18 @@ describe('KF-393: identity-shift warning false positives (KNOWN BUG KF-394)', ()
       </ul>
     ));
     cond.value = false;
-    expect(shiftWarnings().length).toBe(1);
-    expect(shiftWarnings()[0]).toContain("'k:x'");
-    // The routing itself is right: the list renders its own new source's rows.
+    expect(shiftWarnings()).toEqual([]);
+    // The routing itself was always right: the list renders its new source's rows.
     expect(Array.from(root.querySelectorAll('li')).map((l) => l.textContent)).toEqual(['B1']);
     dispose();
   });
 
-  it('an UNKEYED sole list swapping its source fires the shift warning although its id never shifted', () => {
-    // KNOWN BUG KF-394 (false positive 2): `each(cond ? a : b, render)` as the
-    // only list in the mount — id '0' is perfectly stable, no each() call was
-    // added or removed anywhere, yet the "identified by call order" warning
-    // fires on an everyday filter/tab source swap. Flip to `toEqual([])` when
-    // KF-394 lands.
+  it('an UNKEYED sole list swapping its source does NOT warn — its id never shifted (KF-394)', () => {
+    // `each(cond ? a : b, render)` as the only list in the mount: id '0' is
+    // stable, no each() call was added or removed anywhere. A changed source is
+    // not a shift — an everyday filter/tab swap changes source too. The trigger
+    // now also requires the render's each() call count to have moved, which is
+    // what an id shift actually requires.
     const cond = signal(true);
     const a = arraySignal([{ id: 'a1', t: 'A1' }]);
     const b = arraySignal([{ id: 'b1', t: 'B1' }]);
@@ -302,16 +310,16 @@ describe('KF-393: identity-shift warning false positives (KNOWN BUG KF-394)', ()
       </ul>
     ));
     cond.value = false;
-    expect(shiftWarnings().length).toBe(1);
+    expect(shiftWarnings()).toEqual([]);
     expect(Array.from(root.querySelectorAll('li')).map((l) => l.textContent)).toEqual(['B1']);
     dispose();
   });
 
-  it('the one-shot dedup is module-level, so a second mount\'s genuine shift on the same id stays silent', () => {
-    // KNOWN BUG KF-394 (dedup scope): warnedIds is module-level and keyed on
-    // the list id, but ids are per-mount — after mount #1 warns for id '0',
-    // mount #2's own genuine shift on ITS id '0' never warns. Flip to
-    // expecting 2 warnings when KF-394 scopes dedup per mount.
+  it('each mount reports its OWN genuine shift — dedup is per mount, not global (KF-394)', () => {
+    // Dedup used to be a module-level set keyed on the list id, but ids are
+    // per-mount: once mount #1 warned for id '0', every other mount's genuine
+    // shift on ITS id '0' was silent forever. Dedup now lives on the per-mount
+    // render context.
     const mk = (host: HTMLElement) => {
       const cond = signal(true);
       const a = arraySignal([{ id: 'a1' }]);
@@ -331,27 +339,42 @@ describe('KF-393: identity-shift warning false positives (KNOWN BUG KF-394)', ()
     m1.cond.value = false;
     expect(shiftWarnings().length).toBe(1);
     m2.cond.value = false;
-    expect(shiftWarnings().length).toBe(1); // second mount's shift was swallowed
+    expect(shiftWarnings().length).toBe(2); // both mounts report their own shift
     m1.dispose();
     m2.dispose();
   });
 });
 
 describe('KF-393: row-structure tag check × SVG rows (KNOWN BUG KF-396)', () => {
-  it('an SVG row with an apostrophe in an attribute falsely fails the first-render tag check', () => {
-    // KNOWN BUG KF-396: emitted row HTML has &#39;, serialized outerHTML has a
-    // raw apostrophe → mismatch → the fallback re-parse runs WITHOUT the live
-    // parent, so <circle> parses HTML-namespaced as tagName 'CIRCLE', which the
-    // tag check compares case-sensitively against the live SVG 'circle'. A
-    // working list (verified against pre-tag-check mount.ts) now throws a
-    // self-contradictory "renders <circle> but wrapped in <circle>" error.
-    // Flip to a mounts-cleanly assertion when KF-396 lands.
+  it('an SVG row with an apostrophe in an attribute mounts and reconciles (KF-396)', () => {
+    // The serialization mismatch is what reaches the fallback re-parse at all:
+    // kerf emits `&#39;`, serializers emit a raw apostrophe. That re-parse now
+    // runs in the LIVE PARENT's namespace, so <circle> comes back a real SVG
+    // element and the tag comparison matches. Previously it parsed HTML —
+    // tagName 'CIRCLE' vs the live 'circle' — and the case-sensitive compare
+    // rejected a working list with a self-contradictory message.
     const pts = arraySignal([{ id: 'p1', note: "it's" }]);
-    expect(() => mount(root, () => (
+    const dispose = mount(root, () => (
       <svg viewBox="0 0 10 10">
         {each(pts, (p) => <circle data-key={p.id} data-note={p.note} cx="1" cy="1" r="1" />)}
       </svg>
-    ))).toThrow(/renders <circle>.*wrapped the rows in <circle>/);
+    ));
+    const first = root.querySelector('circle[data-key="p1"]') as Element;
+    expect(first.namespaceURI).toBe('http://www.w3.org/2000/svg');
+    // and it still reconciles afterwards
+    pts.push({ id: 'p2', note: "also's" });
+    expect(root.querySelectorAll('circle').length).toBe(2);
+    expect((root.querySelector('circle[data-key="p2"]') as Element).namespaceURI)
+      .toBe('http://www.w3.org/2000/svg');
+    dispose();
+  });
+
+  it('the genuine tbody restructure still throws — the tag check is not simply disabled (KF-396)', () => {
+    // The guard that KF-396's namespace fix could have silently defeated.
+    const rows = [{ id: 'r1' }, { id: 'r2' }];
+    expect(() => mount(root, () => (
+      <table>{each(rows, (r) => <tr data-key={r.id}><td>{r.id}</td></tr>)}</table>
+    ))).toThrow(/wrapped the rows in <tbody>/);
   });
 
   it('the same SVG list WITHOUT the serialization-mismatching attribute mounts and reconciles (control)', () => {
@@ -378,9 +401,11 @@ describe('KF-393: row-structure tag check × SVG rows (KNOWN BUG KF-396)', () =>
   });
 });
 
-describe('KF-393: textarea text fast path form-state sync (KNOWN BUG KF-397)', () => {
-  it('a dirty unfocused textarea row goes visibly stale on a granular text-only update', () => {
-    // KNOWN BUG KF-397: tryTextContentFastPath patches the child text node raw.
+describe('KF-393: textarea text fast path form-state sync (KF-397)', () => {
+  it('a dirty unfocused textarea row follows a granular text-only update (KF-397)', () => {
+    // The fourth writer subject to the KF-335 rule: a textarea's value lives in
+    // its child text, so patching that text must carry the property — the morph
+    // route already did, which made behavior depend on the internal route.
     // A textarea's value lives in that text, and once the control is dirty the
     // property is detached — so the visible value stays the user's old text
     // while the DOM text (and the app's model) say otherwise. Flip the value
@@ -394,7 +419,7 @@ describe('KF-393: textarea text fast path form-state sync (KNOWN BUG KF-397)', (
     rows.update(0, (r) => ({ ...r, v: 'two' }));
     expect(root.querySelector('textarea')).toBe(ta); // fast path kept the node
     expect(ta.textContent).toBe('two');
-    expect(ta.value).toBe('user typed'); // ← the stale half; should be 'two'
+    expect(ta.value).toBe('two'); // was left at 'user typed' before KF-397
     dispose();
   });
 

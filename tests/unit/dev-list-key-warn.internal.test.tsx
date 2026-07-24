@@ -11,7 +11,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { arraySignal } from '../../src/array-signal.js';
-import { _resetWarnedForTests } from '../../src/dev-list-key-warn.js';
 import { each } from '../../src/each.js';
 import { mount, signal } from '../../src/index.js';
 
@@ -19,7 +18,6 @@ let root: HTMLElement;
 let warnSpy: ReturnType<typeof vi.spyOn>;
 
 beforeEach(() => {
-  _resetWarnedForTests();
   root = document.createElement('div');
   document.body.appendChild(root);
   warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});

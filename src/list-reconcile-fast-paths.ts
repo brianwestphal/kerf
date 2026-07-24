@@ -193,6 +193,21 @@ export function tryTextContentFastPath(
   if (targetNode.nodeValue !== oldText) return false;
 
   targetNode.nodeValue = newText;
+  // KF-397: a <textarea>'s value lives in its child text, and the dirty-value
+  // flag detaches the property from that text once the control has been
+  // touched. This is the FOURTH writer subject to the KF-335 rule (after the
+  // morph's attribute writer, the binding writer, and the attribute-only fast
+  // path) — the rule is about mutating form state, not specifically about
+  // attributes, and a text mutation on a textarea is exactly that. The morph
+  // route already syncs here, so without this the control's visible value
+  // depended on which internal route the diff took.
+  const host = targetNode.parentNode;
+  if (host !== null && (host as Element).tagName === 'TEXTAREA'
+    && host !== document.activeElement) {
+    // A focused textarea holds the user's in-progress edit — the same
+    // exception `syncFormProp` makes for `value`.
+    (host as HTMLTextAreaElement).value = newText;
+  }
   return true;
 }
 

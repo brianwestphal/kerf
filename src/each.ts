@@ -40,7 +40,6 @@
 import type { ArraySignal } from './array-signal.js';
 import { type Binding, captureRowBindings } from './bindings.js';
 import { maybeWarnDuplicateCacheKeys } from './dev-each-warn.js';
-import { maybeWarnListIdShift } from './dev-list-key-warn.js';
 import type { SafeHtml } from './jsx-runtime.js';
 import { granularListSafeHtml, isSafeHtml, listSafeHtml } from './jsx-runtime.js';
 import { decideListPath, deriveListRenderState } from './list-render-state.js';
@@ -124,9 +123,40 @@ export interface RenderContext {
    * feature itself — so the second claim throws instead.
    */
   keysThisRender: Set<string>;
+  /**
+   * KF-394: unkeyed list ids whose data source changed THIS render. A source
+   * change alone does not mean the id was reused — the same list swapping which
+   * signal it renders (a filter or tab switch) changes source too, and warning
+   * about that told authors to fix code that was already correct. `mount()`
+   * only reports these when the render's `each()` call count also changed,
+   * which is what an actual id shift requires.
+   */
+  shiftCandidates: string[];
+  /** The previous render's total unkeyed `each()` count; `undefined` on first render. */
+  previousCallCount?: number;
+  /** Per-mount dedup for the shift warning — ids are per-mount, so this must be too. */
+  warnedShiftIds: Set<string>;
 }
 
 let context: RenderContext | null = null;
+
+/**
+ * True while a row's render function is executing. A keyed `each()` reached
+ * from inside a row is a different mistake from two sibling lists sharing a
+ * key, and used to be reported as the latter (KF-398).
+ */
+let renderingRow = false;
+
+/** Run `fn` marked as row-render scope, restoring the previous scope after. */
+function inRowScope<R>(fn: () => R): R {
+  const prev = renderingRow;
+  renderingRow = true;
+  try {
+    return fn();
+  } finally {
+    renderingRow = prev;
+  }
+}
 
 export function _setRenderContext(c: RenderContext | null): void {
   context = c;
@@ -165,7 +195,49 @@ function isEachOptions<T>(
 }
 
 /** Claim `key` for this render, or throw if another list already took it. */
+/**
+ * A list key ends up verbatim inside the `<!--kf-list:…-->` marker comment, so
+ * it must be something an HTML comment can actually hold. Anything else is
+ * rejected up front (KF-395): a key containing a comment terminator used to
+ * break out of the marker and land live markup in the mount before dying on an
+ * internal TypeError — wrong twice over.
+ *
+ * The allowed set is deliberately narrow rather than "everything that happens
+ * to survive a parser": keys are short author-chosen identifiers, and a
+ * conservative set can be widened later without breaking anyone, whereas a
+ * permissive one cannot be narrowed. `--` is excluded separately because it is
+ * invalid inside a comment even when every character is individually fine.
+ */
+const VALID_KEY = /^[A-Za-z0-9_.:/-]+$/;
+
+function assertValidKey(key: string): void {
+  if (typeof key !== 'string' || !VALID_KEY.test(key) || key.includes('--')) {
+    throw new Error(
+      `each(): invalid list key ${JSON.stringify(key)}. A key must be a non-empty string of `
+      + 'letters, digits, or _ . : / - (and may not contain "--"), because kerf writes it into '
+      + 'the list\'s marker comment in the DOM. Use a short stable identifier, e.g. '
+      + '{ key: \'results\' }.',
+    );
+  }
+}
+
 function claimKey(ctx: RenderContext, key: string): string {
+  assertValidKey(key);
+  if (renderingRow) {
+    // KF-398: every row claims the same key, so this used to surface as
+    // "duplicate list key" — which misdiagnoses. The real problem is that an
+    // each() inside a row render is not reconciled at all: row HTML is
+    // flattened to a string, so the inner list's marker and binding never
+    // exist and it renders as inert static HTML. Following the duplicate-key
+    // advice (a per-row key) silences the error and lands the author in that
+    // silent degradation instead, which is worse.
+    throw new Error(
+      `each(): list key ${JSON.stringify(key)} was used by an each() inside a row render. `
+      + 'A nested each() is not reconciled — the row is flattened to HTML, so the inner list '
+      + 'never binds and would render as static markup. Render the inner collection with '
+      + 'plain .map() (it re-renders with its row), or restructure to a flat list.',
+    );
+  }
   if (ctx.keysThisRender.has(key)) {
     throw new Error(
       `each(): duplicate list key ${JSON.stringify(key)}. Every keyed each() in a mount must `
@@ -278,7 +350,12 @@ function eachGranular<T extends object>(
   // rebuilds this container from our own items.
   const previousSource = ctx.bindingSources.get(id);
   const sourceReused = ctx.bindingSources.has(id) && previousSource !== sig;
-  if (sourceReused) maybeWarnListIdShift(id);
+  // KF-394: routing on a source change is always right (below); WARNING about
+  // it is not. A keyed list is identified by its key, so a source change there
+  // is an ordinary data swap and never an identity shift. For unkeyed lists,
+  // record a candidate and let `mount()` decide at end of render, when it can
+  // see whether the call count actually moved.
+  if (sourceReused && listKey === undefined) ctx.shiftCandidates.push(id);
   const decision = sourceReused
     ? { path: 'snapshot' as const }
     : decideListPath(
@@ -353,10 +430,10 @@ function eachGranular<T extends object>(
   // in row attrs/text) so the granular reconciler can wire them to the fresh
   // row node and dispose them on removal — same lifecycle as the snapshot path.
   const renderRow = (item: object, index: number): { html: string; bindings: Binding[] } =>
-    captureRowBindings(() => {
+    captureRowBindings(() => inRowScope(() => {
       const out = render(item as T, index);
       return isSafeHtml(out) ? out.toString() : out;
-    });
+    }));
   const internalPatches = new Array<ArrayPatchInternal>(patches.length);
   try {
     for (let i = 0; i < patches.length; i++) {
@@ -433,10 +510,10 @@ function eachSnapshotById<T extends object>(
       // / text). The snapshot reconciler wires them to the row node on create
       // and disposes on remove, so a bound signal updates the row without a
       // render re-run. Cached by row identity alongside the html.
-      const captured = captureRowBindings(() => {
+      const captured = captureRowBindings(() => inRowScope(() => {
         const out = render(item, i);
         return isSafeHtml(out) ? out.toString() : out;
-      });
+      }));
       html = captured.html;
       bindings = captured.bindings;
       if (cache !== null) cache.set(item, { cacheKey: k, html, bindings });
