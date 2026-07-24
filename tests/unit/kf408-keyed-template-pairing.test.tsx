@@ -186,6 +186,31 @@ describe('KF-407/408/409: a keyed template element never matches positionally', 
     dispose();
   });
 
+  it('the positional LOOKAHEAD also refuses to move up a skipped element', () => {
+    // Same rule one step further along: when the immediate positional match
+    // fails, the forward scan must not adopt a skipped element either — it
+    // would move a library-owned subtree into a slot that isn't its own.
+    const cond = signal(true);
+    const dispose = mount(root, () => (
+      <div>
+        {cond.value ? <p>head</p> : ''}
+        <span>mid</span>
+        <p data-morph-skip>widget</p>
+      </div>
+    ));
+    const kids = (): (string | null)[] =>
+      Array.from((root.firstElementChild as Element).children).map((c) => c.textContent);
+    const widget = root.querySelector('[data-morph-skip]');
+    cond.value = false;
+    expect(kids()).toEqual(['mid', 'widget']);
+    expect(root.querySelector('[data-morph-skip]')).toBe(widget);
+    cond.value = true;
+    expect(kids()).toEqual(['head', 'mid', 'widget']);
+    expect(root.querySelectorAll('[data-morph-skip]').length).toBe(1);
+    expect(root.querySelector('[data-morph-skip]')).toBe(widget);
+    dispose();
+  });
+
   it('a keyed element still matches its key across a reorder', () => {
     const flip = signal(false);
     const dispose = mount(root, () => (
