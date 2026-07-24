@@ -36,6 +36,7 @@ import {
 } from './bindings.js';
 import { isOptedIn as isStaleBindingWarnOptedIn, maybeWarnStaleBinding } from './dev-binding-warn.js';
 import { maybeWarnEachInMorphSkip } from './dev-each-warn.js';
+import { maybeCheckListInvariants } from './dev-invariants.js';
 import { maybeWarnListIdShift } from './dev-list-key-warn.js';
 import { maybeWarnListRebind } from './dev-list-rebind-warn.js';
 import { installListenerRebuildWarn } from './dev-listener-warn.js';
@@ -329,6 +330,11 @@ export function mount(rootEl: HTMLElement, render: () => MountResult): () => voi
     }
 
     renderCtx.previousCallCount = renderCtx.counter;
+
+    // Opt-in structural audit of every list binding against the live DOM
+    // (KERF_DEV_INVARIANTS). Placed after the reconcile loop so it sees the
+    // render's final state; a no-op, with no DOM walking at all, when unset.
+    maybeCheckListInvariants(rootEl, bindings);
   });
 
   return () => {

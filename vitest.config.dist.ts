@@ -13,6 +13,11 @@ import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   test: {
+    // KF-400: kerf's own suites run the structural invariant checks in THROW
+    // mode. A warning inside a passing test is invisible, so anything that
+    // corrupts a list binding fails the run at the render that did it rather
+    // than surfacing as a wrong assertion somewhere downstream.
+    env: { KERF_DEV_INVARIANTS: 'throw' },
     environment: 'happy-dom',
     globals: false,
     include: ['tests/dist/**/*.test.ts'],

@@ -328,6 +328,28 @@ message asks for.
 
 **Like the double-mount guard, this is always-on (unconditional), not opt-in** — there is no env var to silence it, only the mode split. A dropped-but-silent dangerous URL in dev is the exact failure mode the throw fixes (nobody reads the console; the attribute just quietly vanishes). Production keeps the non-crashing warn+drop so attacker-influenced data can never take down a shipped app — **production output is byte-identical to before this split.** This is the one place kerf changes behavior between dev and prod for the *same* input; it's justified because the dev throw only ever fires on input a correct app would never produce (a dangerous URL that isn't wrapped in `raw()`).
 
+### 11.2.13 Structural invariant checks (`KERF_DEV_INVARIANTS`)
+
+**Module:** [`src/dev-invariants.ts`](../src/dev-invariants.ts), called from [`src/mount.ts`](../src/mount.ts) after each render's reconcile pass.
+**Trigger:** a list binding disagrees with the live DOM. **What it catches:** the *state* that precedes a wrong render, at the render that created it.
+
+Unlike everything else in this family, this one does not describe a pattern the author should change — it reports a **kerf bug**. It exists because every reconciler defect found so far shared one property: kerf kept running happily in a corrupt state, and the damage surfaced several operations later as a wrong render, far from its cause. Each check below is the negation of a defect that actually shipped:
+
+| Check | The defect it would have caught |
+| --- | --- |
+| **marker-live** | a binding whose marker left the tree — every later reconcile mutates a detached parent |
+| **marker-id** | an id carried by a *different* marker node, which pointed an arriving list at the previous occupant's container |
+| **row-parent / row-live** | a binding holding rows that are detached or attached elsewhere — the "stranded rows" shape |
+| **row-order** | rows that no longer follow their own marker in document order |
+| **row-alias** | one row node claimed by two bindings |
+| **region-overlap** | two lists in one parent interleaving their rows |
+
+**Modes.** `KERF_DEV_INVARIANTS=1` warns; `KERF_DEV_INVARIANTS=throw` throws. Unset (the default) is a complete no-op — the DOM is never walked. The `throw` mode exists because a warning inside a passing test is invisible: kerf's own suites set `throw` (in `vitest.config.ts` and both dist configs) so any future corruption fails the run at the render that caused it. Consumers debugging a suspected reconciler bug want `1` first.
+
+**Cost.** O(rows) per render when enabled, zero when not. Dev-gated through `isDevMode()` like the rest of the family, so production is untouched.
+
+**Pairs with the reconciler fuzz harness** (`tests/unit/reconciler-fuzz.test.ts`): the harness generates the sequences, these checks notice a sequence went wrong. Neither is redundant — the harness alone only sees final-output mismatches, and the checks alone only fire on shapes someone thought to write.
+
 ## 11.3 Design rules for the family
 
 Every dev-warning in this family follows the same shape. New warnings

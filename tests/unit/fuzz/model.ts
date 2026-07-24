@@ -144,12 +144,16 @@ function genNode(ctx: GenCtx, depth: number, inSvg: boolean, inCond: boolean): N
   const boundAttr = !inSvg && ctx.spec.sigCount > 0 && rng.bool(0.25)
     ? { sig: rng.int(ctx.spec.sigCount), id: ctx.holeId++ }
     : null;
-  // Not inside a conditional: both opt-outs are documented to let an element
-  // outlive a template that stops emitting it, so a marked node in a branch that
-  // is toggled off legitimately stays — behavior the liveness model would have
-  // to special-case to no benefit.
+  // `skip` only, and never inside a conditional. `data-morph-skip` marks a
+  // subtree the template DOES emit but the diff should leave alone, which is
+  // exactly what this generates. `data-morph-preserve` is for imperatively
+  // injected nodes the template never emits, so marking a generated node with
+  // it is off-label — and doing so duplicates the node when a conditional
+  // sibling repurposes its host (filed separately; restore it here when that
+  // is resolved). Excluded inside a conditional either way, since both opt-outs
+  // let an element outlive a branch that stops emitting it.
   const special = !inCond && boundAttr === null && isStatic(children) && rng.bool(0.15)
-    ? (rng.bool() ? 'skip' as const : 'preserve' as const)
+    ? 'skip' as const
     : null;
   return {
     kind: 'el',
