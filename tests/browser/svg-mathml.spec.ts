@@ -151,8 +151,9 @@ test('MathML interleaved with HTML retains correct namespace', async ({ page }) 
     const { jsx } = (window as any).jsxRuntime;
     const root = document.getElementById('root')!;
     // MathML inside an HTML mount root — the HTML5 parser switches modes for
-    // <math>, similar to <svg>. kerf doesn't ship special-case MathML
-    // handling; this test documents what real browsers do.
+    // <math>, similar to <svg>. First render inlines the tree into innerHTML,
+    // so this static case was always correct; the each()-list case below is the
+    // one KF-417 fixed (later parses re-entering foreign content).
     mount(root, () =>
       jsx('div', {
         children: jsx('math', {
@@ -178,5 +179,38 @@ test('MathML interleaved with HTML retains correct namespace', async ({ page }) 
   expect(result.hasMath).toBe(true);
   // Real browsers parse <math> in HTML context as MathML namespace.
   expect(result.mathNS).toBe('http://www.w3.org/1998/Math/MathML');
+  expect(result.mnNS).toBe('http://www.w3.org/1998/Math/MathML');
+});
+
+test('KF-417: MathML each() rows keep the namespace after a list update', async ({ page }) => {
+  const result = await page.evaluate(() => {
+    const { mount, each, signal } = (window as any).kerf;
+    const { jsx } = (window as any).jsxRuntime;
+    const root = document.getElementById('root')!;
+    const data = signal([{ id: 1 }]);
+    mount(root, () =>
+      jsx('div', {
+        children: jsx('math', {
+          children: each(
+            data.value,
+            (r: { id: number }) =>
+              jsx('mrow', { 'data-key': String(r.id), children: jsx('mn', { children: String(r.id) }) }),
+            { key: 'M' },
+          ),
+        }),
+      }),
+    );
+    const MATHML = 'http://www.w3.org/1998/Math/MathML';
+    const firstPaintOk = root.querySelector('[data-key="1"]')?.namespaceURI === MATHML;
+    // A snapshot rebuild — the later parse that used to land rows in the HTML ns.
+    data.value = [{ id: 1 }, { id: 2 }];
+    return {
+      firstPaintOk,
+      row2NS: root.querySelector('[data-key="2"]')?.namespaceURI ?? null,
+      mnNS: root.querySelector('[data-key="2"] mn')?.namespaceURI ?? null,
+    };
+  });
+  expect(result.firstPaintOk).toBe(true);
+  expect(result.row2NS).toBe('http://www.w3.org/1998/Math/MathML');
   expect(result.mnNS).toBe('http://www.w3.org/1998/Math/MathML');
 });

@@ -30,25 +30,37 @@ export function truncateRowHtml(html: string): string {
 }
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
+const MATHML_NS = 'http://www.w3.org/1998/Math/MathML';
 
 /**
- * Does a row destined for `parent` need SVG-namespace parsing? (KF-389)
+ * The foreign-content wrapper tag a row destined for `parent` must be parsed
+ * inside — `'svg'` (KF-389) or `'math'` (KF-417) — or `null` for the ordinary
+ * HTML path.
  *
  * A bare `<template>` parses in the HTML namespace, so an `each()` row like
- * `<circle/>` comes back an `HTMLUnknownElement` and never paints. First
- * render escapes this because rows are inlined into the mount root's
- * `innerHTML`, where the surrounding `<svg>` puts the parser in foreign-content
- * mode; every LATER parse (granular insert, snapshot rebuild, structural
- * update) went through the bare template and produced dead nodes.
+ * `<circle/>` or `<mn/>` comes back an `HTMLUnknownElement` and never paints as
+ * SVG/MathML. First render escapes this because rows are inlined into the mount
+ * root's `innerHTML`, where the surrounding `<svg>`/`<math>` puts the parser in
+ * foreign-content mode; every LATER parse (granular insert, snapshot rebuild,
+ * structural update) goes through the bare template and produces dead nodes.
+ * `parseRowTemplate` re-enters foreign content by wrapping the row HTML in this
+ * tag, so those parses namespace the rows the same way the first render did.
  *
- * `<foreignObject>` is the exception that proves the rule: it is itself
- * SVG-namespaced, but its children are HTML again, so rows under it must take
- * the ordinary path.
+ * SVG has a "re-enters HTML" exception, `<foreignObject>`, whose children are
+ * ALWAYS HTML, so rows under it take the ordinary path. MathML's analogue,
+ * `<annotation-xml>`, is only an HTML integration point when it carries
+ * `encoding="text/html"` (otherwise its children are MathML) — a conditional
+ * rule for a rare element that kerf doesn't try to model. A MathML-namespaced
+ * parent therefore always wraps in `<math>`, which is correct for the ordinary
+ * case; embedding HTML inside `annotation-xml` is out of scope.
  */
-function needsSvgParse(parent: Element | null | undefined): boolean {
-  return parent != null
-    && parent.namespaceURI === SVG_NS
-    && parent.localName !== 'foreignObject';
+function foreignWrapper(parent: Element | null | undefined): 'svg' | 'math' | null {
+  if (parent == null) return null;
+  const { namespaceURI } = parent;
+  if (namespaceURI === SVG_NS) {
+    return (parent as Element).localName === 'foreignObject' ? null : 'svg';
+  }
+  return namespaceURI === MATHML_NS ? 'math' : null;
 }
 
 /**
@@ -67,15 +79,16 @@ export function parseRowTemplate(
   parent?: Element | null,
 ): { content: DocumentFragment; count: number } {
   const tpl = document.createElement('template');
-  if (!needsSvgParse(parent)) {
+  const wrapper = foreignWrapper(parent);
+  if (wrapper === null) {
     tpl.innerHTML = html;
     return { content: tpl.content, count: tpl.content.children.length };
   }
   // Re-enter foreign content the same way the first render does: wrap in an
-  // <svg> so the HTML parser namespaces the rows, then lift them out. Using
-  // the parser (rather than DOMParser/XML) keeps row markup as forgiving here
-  // as it is on first render — the two paths must accept the same input.
-  tpl.innerHTML = `<svg>${html}</svg>`;
+  // <svg>/<math> so the HTML parser namespaces the rows, then lift them out.
+  // Using the parser (rather than DOMParser/XML) keeps row markup as forgiving
+  // here as it is on first render — the two paths must accept the same input.
+  tpl.innerHTML = `<${wrapper}>${html}</${wrapper}>`;
   const host = tpl.content.firstElementChild as Element;
   const content = document.createDocumentFragment();
   while (host.firstChild !== null) content.appendChild(host.firstChild);
