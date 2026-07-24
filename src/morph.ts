@@ -168,22 +168,41 @@ function declaresSkip(node: Node): boolean {
 
 const MARKER_PREFIXES = [LIST_MARKER_PREFIX, TEXT_MARKER_PREFIX, ROW_TEXT_PREFIX];
 
-/**
- * Which kind of kerf anchor a comment is — a list marker, a text-binding
- * marker, or neither (an ordinary comment).
- *
- * Comments positionally match by node type alone, which is fine for ordinary
- * comments (stateless to rebuild) but not for kerf's markers: each anchors
- * live state that only exists in the DOM. Pairing a list marker with a text
- * binding's marker overwrites one anchor with the other's id and then the rule
- * that protects a binding marker's inserted text node keeps that text alive
- * under the list — the value renders twice, in a place the template never put
- * it. Two different kinds of anchor are never each other's counterpart.
- */
-function markerKind(node: Node): string {
-  if (node.nodeType !== COMMENT_NODE) return '';
+/** True when `node` is a kerf anchor comment (list marker or binding marker). */
+function isMarker(node: Node): boolean {
+  if (node.nodeType !== COMMENT_NODE) return false;
   const { data } = node as Comment;
-  return MARKER_PREFIXES.find((prefix) => data.startsWith(prefix)) ?? '';
+  return MARKER_PREFIXES.some((prefix) => data.startsWith(prefix));
+}
+
+/**
+ * Whether two nodes may be positionally paired as far as kerf's markers are
+ * concerned. Elements and text carry no marker state, so they defer entirely to
+ * the tag/key checks in the caller — this only constrains comments.
+ *
+ * A kerf marker comment (`kf-list:` / `kfb:` / `kfbr:`) is the comment
+ * equivalent of a keyed element: it anchors live state — a list's rows, a bound
+ * hole's inserted text node — that exists only in the DOM and is looked up by
+ * the marker's EXACT data. So a marker pairs positionally only with the
+ * identical marker, never with a different one.
+ *
+ * The reason is `morphNode`: pairing two mismatched comments overwrites the
+ * live one's data (`from.data = to.data`), which re-points one list/binding's
+ * anchor at another's id. Two shapes it produced, both silent:
+ *
+ *  - a list marker paired with a text-binding marker (different KINDS) carried
+ *    the binding's inserted text node into the list — the value rendered twice.
+ *  - a list marker paired with a DIFFERENT list marker (same kind) — an empty
+ *    conditional list reappearing next to a sibling list overwrote the
+ *    sibling's marker id, so the sibling's binding could no longer find its own
+ *    marker and its whole row region emptied on the next reconcile.
+ *
+ * Ordinary comments carry no state and stay positionally matched (their data
+ * just morphs), so a consumer's `<!-- … -->` is unaffected.
+ */
+function markersPairable(a: Node, b: Node): boolean {
+  if (!isMarker(a) && !isMarker(b)) return true;
+  return (a as CharacterData).data === (b as CharacterData).data;
 }
 
 function skipOwned(node: Node | null, ownedItems: ReadonlySet<Element>): Node | null {
@@ -271,7 +290,7 @@ function morphChildren(
     //      hole's text leaks. Those rules are each right; the pairing was not.
     if (matched === null && fromChild !== null
         && fromChild.nodeType === toChild.nodeType
-        && markerKind(fromChild) === markerKind(toChild)
+        && markersPairable(fromChild, toChild)
         && (toChild.nodeType !== ELEMENT_NODE
             || ((fromChild as Element).tagName === (toChild as Element).tagName
                 && getNodeKey(fromChild) === undefined
