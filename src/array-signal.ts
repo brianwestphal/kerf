@@ -85,7 +85,9 @@ export class ArraySignal<T> {
     // invisible to the row memo, which is keyed on object identity. Bump the
     // item's content version so every consumer — this list, another list over
     // this signal, a second mount, a plain-array filter() view — re-renders it.
-    bumpItemVersion(next as object);
+    // Non-object items (an arraySignal<number> used as a plain signal) are
+    // skipped by bumpItemVersion — they can't be each() rows (KF-419).
+    bumpItemVersion(next);
     this._version.value++;
   }
 

@@ -31,8 +31,17 @@
 const versions = new WeakMap<object, number>();
 let anyVersioned = false;
 
-/** Bump `item`'s content version. Called by `arraySignal.update()` on the item it returns. */
-export function bumpItemVersion(item: object): void {
+/**
+ * Bump `item`'s content version. Called by `arraySignal.update()` on the item it
+ * returns. A no-op for any value that isn't a valid WeakMap key — a primitive
+ * item (an `arraySignal<number>` used purely as a standalone signal) can never be
+ * an `each()` row, since rows are memoized by object identity, so it needs no
+ * content version. Guarding here keeps `update()` from throwing `Invalid value
+ * used as weak map key` and leaves `anyVersioned` false until a real object is
+ * versioned (so the primitive path stays a zero-cost lookup).
+ */
+export function bumpItemVersion(item: unknown): void {
+  if (item === null || (typeof item !== 'object' && typeof item !== 'function')) return;
   anyVersioned = true;
   versions.set(item, (versions.get(item) ?? 0) + 1);
 }

@@ -18,7 +18,7 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 
 import { arraySignal } from '../../src/array-signal.js';
-import { batch, each, mount, signal } from '../../src/index.js';
+import { batch, each, effect, mount, signal } from '../../src/index.js';
 
 let root: HTMLElement;
 let root2: HTMLElement;
@@ -126,6 +126,37 @@ describe('KF-418: same-ref update propagates to every consumer', () => {
     rows.update(0, (r) => { r.t = 'X'; return r; });
     expect(root.querySelector('[data-key="2"]')).toBe(row2); // untouched row kept identity
     expect(texts(root, 'li')).toEqual(['X', 'b']);
+    dispose();
+  });
+});
+
+describe('KF-419: version bump is skipped for non-object items (no WeakMap-key crash)', () => {
+  it('update() on a number-item arraySignal does not throw and still notifies', () => {
+    const nums = arraySignal<number>([1, 2, 3]);
+    const seen: number[][] = [];
+    const dispose = effect(() => { seen.push([...nums.value]); });
+    expect(() => nums.update(0, (n) => n + 1)).not.toThrow();
+    expect(nums.value).toEqual([2, 2, 3]);
+    expect(seen.at(-1)).toEqual([2, 2, 3]); // the version++ notification reached the effect
+    dispose();
+  });
+
+  it('update() returning a string / null / undefined does not throw', () => {
+    const strs = arraySignal<string | null | undefined>(['a', 'b']);
+    expect(() => strs.update(0, () => 'z')).not.toThrow();
+    expect(() => strs.update(1, () => null)).not.toThrow();
+    expect(() => strs.update(0, () => undefined)).not.toThrow();
+    expect(strs.value).toEqual([undefined, null]);
+  });
+
+  it('object items in the same run still version correctly (the guard is value-typed, not global)', () => {
+    // A primitive update must NOT poison the object path: this list still re-renders on a same-ref bump.
+    const rows = arraySignal([{ id: 1, t: 'a' }]);
+    const nums = arraySignal<number>([0]);
+    const dispose = mount(root, () => <ul>{each(rows, (r) => <li data-key={r.id}>{r.t}</li>, { key: 'L' })}</ul>);
+    nums.update(0, (n) => n + 1); // primitive update — skipped, no crash
+    rows.update(0, (r) => { r.t = 'X'; return r; }); // object same-ref update — must still propagate
+    expect(texts(root, 'li')).toEqual(['X']);
     dispose();
   });
 });
