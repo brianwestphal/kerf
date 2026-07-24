@@ -78,6 +78,15 @@ import { each } from 'kerfjs';
 
 > **Memo cache invariant.** The memo cache invalidates *purely* on the third argument (the `cacheKey` function's return value) plus item identity. If a row's rendered output depends on external state that the memo doesn't include, the row will go stale — kerf will return cached HTML even though the render function would produce something different now. The fix is either: (a) bake that state into the memo (`(r) => \`${r.id}-${selectedId === r.id ? 'on' : 'off'}\``), or (b) own the changing DOM imperatively under `data-morph-skip` and let kerf cache the surrounding shell. The kanban example chooses (b) for the live drag transform; the TodoMVC example chooses (a) for the per-row view/edit flip.
 
+> **The `index` argument is a special case of that invariant.** The render function receives the row's position — `each(items, (item, index) => …)` — but `index` is **not** part of the memo key (only item identity, `cacheKey`, and content version are). So a row that keeps its identity while its *position* changes — a reorder, or an insert/remove/move ahead of it — keeps the HTML it rendered at its old index. A numbered list (`{index + 1}. …`), zebra striping, or an "N of M" label then silently shows the wrong value on the moved rows, while everything else looks right. If the row's output depends on the index, fold the index into the memo key so a shift re-renders the displaced rows:
+>
+> ```tsx
+> each(items, (item, i) => <li data-key={item.id}>{i + 1}. {item.label}</li>, { cacheKey: (_, i) => i })
+> // combine with your own key if you use one: { key: 'list', cacheKey: (_, i) => i }
+> ```
+>
+> This trades the memo's benefit for those rows (a reorder now re-renders every displaced row, O(n) on a structural change) for correctness — pay it only when the index actually appears in the output. The opt-in dev warning `KERF_DEV_WARN_STALE_INDEX=1` fires the first time a list reuses a memoized row at a changed index while its render function reads the index (see [`docs/11-dev-warnings.md`](11-dev-warnings.md) §11.2.15).
+
 > **Static structural arrays — use `.map()`, not `each()`.** `each()` is for dynamic lists. When the outer array is a module-level constant (`COLUMNS`, settings sections, nav tabs) whose items never change identity, the per-item HTML cache hits every render *forever* — the row render fn is invoked exactly once at first paint and never again, even when signals it reads change. Signal subscriptions established during that first render get dropped after the next effect run (signal-core only retains subscriptions for signals re-read in the current run), so writes to those signals quietly stop triggering re-renders. The whole rendered tree looks frozen; only elements *outside* the `each()` reflect updates.
 >
 > The wrong shape:

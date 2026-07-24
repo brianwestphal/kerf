@@ -1,7 +1,7 @@
 ---
 name: kerf-app
 description: Build UIs in the kerf reactive framework (https://github.com/brianwestphal/kerf). Use this skill whenever the user is writing or modifying code that imports `kerfjs`, asks to add a feature to a kerf app, or asks "how do I do X in kerf?". Use it proactively the moment you spot a kerf import in the file you're editing.
-kerf-skill-version: 1.9.0
+kerf-skill-version: 1.10.0
 ---
 
 # Building apps with kerf
@@ -183,6 +183,7 @@ mount(rootEl, () => html`
 | `` html`` ``: partial attribute values are not supported | In `kerfjs/html` templates a hole must be the COMPLETE attribute value | Build the full string first (`` class="${`a ${b}`}" ``), or bind `class="${computed(() => `a ${b.value}`)}"` for a reactive one |
 | An `each()` list's rows lose focus / scroll / typing state when an unrelated conditional list above them appears or disappears (kerf warns about this in dev) | Lists without a key are identified by their position among the render's `each()` calls, so adding/removing one above shifts this list's identity and kerf rebuilds it | Give the lists stable keys: `each(items, render, { key: 'results' })`. Keying just the conditional list is usually enough |
 | Keyed `each()` list suddenly renders zero rows — only its `<!--kf-list:N-->` marker — with no errors, and it never recovers (kerfjs ≤ 2.0.1) | A conditionally-rendered sibling BEFORE the list (possibly higher in the tree, e.g. an error banner) was removed that render; older kerfjs rebuilt the shifted list container from the template, permanently detaching the list's internal binding | Upgrade kerfjs (fixed after 2.0.1 — the morph now moves the shifted container up in place, keeping node identity). On older versions, keep the structure before the list stable: wrap the conditional in an always-present container (`<div class="banners">{cond ? <div/> : ''}</div>`) |
+| A numbered / zebra-striped / "N of M" `each()` list shows the wrong number on rows that MOVED (reorder, or non-tail insert/remove), while unmoved rows look right | The render fn's `index` argument is NOT part of the memo key (only item identity + `cacheKey` + content version are), so a row that keeps identity but changes position keeps the HTML it rendered at its old index | Fold the index into the memo key so displaced rows re-render: `each(items, (it, i) => …, { cacheKey: (_, i) => i })` (add `key` if used). Opt-in dev warn: `KERF_DEV_WARN_STALE_INDEX=1` |
 
 ## Workflow guidance
 

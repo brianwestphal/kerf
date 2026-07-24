@@ -372,6 +372,46 @@ Unlike everything else in this family, this one does not describe a pattern the 
 
 **Pairs with the reconciler fuzz harness** (`tests/unit/reconciler-fuzz.test.ts`): the harness generates the sequences, these checks notice a sequence went wrong. Neither is redundant — the harness alone only sees final-output mismatches, and the checks alone only fire on shapes someone thought to write.
 
+### 11.2.15 `KERF_DEV_WARN_STALE_INDEX=1`
+
+**Module:** [`src/dev-list-index-warn.ts`](../src/dev-list-index-warn.ts).
+**Trigger:** an `each()` reconcile reuses a memoized row at an index different from
+the one it was rendered at, while the row's render function declares an `index`
+parameter (`render.length >= 2`). **What it catches:** a stale `index` argument.
+`each(items, (item, index) => …)` passes the row's position, but `each()`
+memoizes a row's HTML by object **identity** (plus `cacheKey` plus content
+version) — the `index` is not part of that key. So a reorder, or an insert /
+remove / move ahead of a surviving row, serves that row's cached HTML, which was
+computed at its OLD index. A numbered list (`{index + 1}. …`), zebra striping, or
+an "N of M" label silently shows the wrong number, while every other row looks
+right.
+
+**Mechanism.** The row memo (`CacheEntry`) records the index each entry was
+rendered at. Two sites detect a shift:
+- **Snapshot path** (`eachSnapshotById`): on a cache HIT, if the entry's stored
+  index differs from the row's current index, warn (a plain-array reorder).
+- **Granular path** (`eachGranular`): the applied `arraySignal` patches are
+  replayed against the pre-batch row count to see whether any patch shifts an
+  existing row — a non-tail `insert` / `remove`, or any `move`. A pure tail
+  append or tail remove shifts nothing and does not warn.
+
+Both are gated on `render.length >= 2` first (a list that never reads the index
+can never go stale) and on the env-var opt-in, so the check is skipped entirely
+otherwise. The message names the list id and the fix: fold the index into the
+memo key with `each(items, render, { cacheKey: (_, i) => i })` (combined with an
+explicit `key` if the list has one), so a shifted row re-renders.
+
+**Dedup scope.** Per list id (module-level `warnedIds` Set), same as
+`KERF_DEV_WARN_EACH_IN_MORPH_SKIP`. One warning per `each()` callsite.
+
+**Why opt-in.** `render.length >= 2` is a heuristic: a render fn may declare the
+index parameter and never use it in its output, in which case a reorder is
+harmless and the warning is a false positive. And the fix carries a cost — folding
+the index into the memo key means a shift re-renders every displaced row (O(n) on
+a structural change), which a list whose index only labels never-reordered rows
+should not pay. Opt-in keeps the diagnostic available without penalising either
+shape.
+
 ## 11.3 Design rules for the family
 
 Every dev-warning in this family follows the same shape. New warnings
@@ -491,13 +531,13 @@ the hot path stays a bare boolean read rather than a per-call env probe.
 
 ## 11.4 Where each warning is referenced
 
-| Surface | KF-174 (rebuilt listeners) | KF-176 (untracked signals) | KF-212 (narrow set) | duplicate cacheKey | each-in-morph-skip | KF-238 (delegate-in-effect) | KF-338 (stale binding) | value-only re-render | list rebind |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Source module | `src/dev-listener-warn.ts` | `src/dev-signal.ts` | `src/dev-store-warn.ts` | `src/dev-each-warn.ts` | `src/dev-each-warn.ts` | `src/dev-delegate-warn.ts` | `src/dev-binding-warn.ts` | `src/dev-rerender-warn.ts` | `src/dev-list-rebind-warn.ts` |
-| Wired in | `src/mount.ts` | `src/reactive.ts` | `src/store.ts` | `src/each.ts` | `src/mount.ts` | `src/reactive.ts` (effect wrap) + `src/delegate.ts` (check) | `src/mount.ts` (fast path) | `src/mount.ts` (surrounds-changed path) | `src/mount.ts` (self-heal branch) |
-| Numbered doc | `docs/5-event-delegation.md` (Rule 4) | `docs/2-reactivity.md` (Rule 8) | `docs/3-stores.md` (Rule 9) | `docs/4-render.md` §4.2 | `docs/4-render.md` §4.3 | `docs/5-event-delegation.md` §5.3 | `docs/2-reactivity.md` §2.9 | `docs/2-reactivity.md` §2.9 | `docs/4-render.md` §4.2 |
-| AI usage guide | `docs/ai/usage-guide.md` "Hard rules" | same | same | n/a | `docs/ai/usage-guide.md` "Common errors" | `docs/ai/usage-guide.md` Hard Rule 5 + "Common errors" | `docs/ai/usage-guide.md` "Common errors" | `docs/ai/usage-guide.md` Hard Rule 9 family list | `docs/ai/usage-guide.md` "Common errors" |
-| Test fixture | `tests/unit/dev-listener-warn.internal.test.ts` | covered in `tests/unit/reactive.test.ts` | `tests/unit/dev-store-warn.internal.test.ts` | `tests/unit/dev-each-warn.internal.test.ts` | same | `tests/unit/dev-delegate-warn.internal.test.ts` | `tests/unit/dev-binding-warn.internal.test.ts` | `tests/unit/dev-rerender-warn.internal.test.ts` | `tests/unit/dev-list-rebind-warn.internal.test.ts` |
+| Surface | KF-174 (rebuilt listeners) | KF-176 (untracked signals) | KF-212 (narrow set) | duplicate cacheKey | each-in-morph-skip | KF-238 (delegate-in-effect) | KF-338 (stale binding) | value-only re-render | list rebind | stale index |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Source module | `src/dev-listener-warn.ts` | `src/dev-signal.ts` | `src/dev-store-warn.ts` | `src/dev-each-warn.ts` | `src/dev-each-warn.ts` | `src/dev-delegate-warn.ts` | `src/dev-binding-warn.ts` | `src/dev-rerender-warn.ts` | `src/dev-list-rebind-warn.ts` | `src/dev-list-index-warn.ts` |
+| Wired in | `src/mount.ts` | `src/reactive.ts` | `src/store.ts` | `src/each.ts` | `src/mount.ts` | `src/reactive.ts` (effect wrap) + `src/delegate.ts` (check) | `src/mount.ts` (fast path) | `src/mount.ts` (surrounds-changed path) | `src/mount.ts` (self-heal branch) | `src/each.ts` (snapshot + granular) |
+| Numbered doc | `docs/5-event-delegation.md` (Rule 4) | `docs/2-reactivity.md` (Rule 8) | `docs/3-stores.md` (Rule 9) | `docs/4-render.md` §4.2 | `docs/4-render.md` §4.3 | `docs/5-event-delegation.md` §5.3 | `docs/2-reactivity.md` §2.9 | `docs/2-reactivity.md` §2.9 | `docs/4-render.md` §4.2 | `docs/4-render.md` §4.2 |
+| AI usage guide | `docs/ai/usage-guide.md` "Hard rules" | same | same | n/a | `docs/ai/usage-guide.md` "Common errors" | `docs/ai/usage-guide.md` Hard Rule 5 + "Common errors" | `docs/ai/usage-guide.md` "Common errors" | `docs/ai/usage-guide.md` Hard Rule 9 family list | `docs/ai/usage-guide.md` "Common errors" | `docs/ai/usage-guide.md` "Common errors" |
+| Test fixture | `tests/unit/dev-listener-warn.internal.test.ts` | covered in `tests/unit/reactive.test.ts` | `tests/unit/dev-store-warn.internal.test.ts` | `tests/unit/dev-each-warn.internal.test.ts` | same | `tests/unit/dev-delegate-warn.internal.test.ts` | `tests/unit/dev-binding-warn.internal.test.ts` | `tests/unit/dev-rerender-warn.internal.test.ts` | `tests/unit/dev-list-rebind-warn.internal.test.ts` | `tests/unit/dev-list-index-warn.internal.test.tsx` |
 
 The two newest members are deliberately absent from that table because two of its
 columns don't apply to them. `KERF_DEV_INVARIANTS` ([`src/dev-invariants.ts`](../src/dev-invariants.ts),

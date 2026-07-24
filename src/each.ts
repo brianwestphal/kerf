@@ -44,6 +44,7 @@
 import type { ArraySignal } from './array-signal.js';
 import { type Binding, captureRowBindings } from './bindings.js';
 import { maybeWarnDuplicateCacheKeys } from './dev-each-warn.js';
+import { isOptedInStaleIndex, maybeWarnStaleIndex } from './dev-list-index-warn.js';
 import { itemVersion } from './item-version.js';
 import type { SafeHtml } from './jsx-runtime.js';
 import { granularListSafeHtml, isSafeHtml, listSafeHtml } from './jsx-runtime.js';
@@ -77,6 +78,13 @@ interface CacheEntry {
    * re-render here rather than serving stale HTML.
    */
   version: number;
+  /**
+   * KF-421: the index this entry's HTML was rendered at. The index is NOT part
+   * of the memo key (a reorder keeps identity + cacheKey + version), so a cache
+   * hit at a different index means the row's `index` argument is now stale. Used
+   * only by the opt-in `KERF_DEV_WARN_STALE_INDEX` diagnostic.
+   */
+  index: number;
 }
 
 /**
@@ -420,6 +428,36 @@ function eachGranular<T extends object>(
     return eachSnapshotById(snapshot, render, cacheKey, id, sig);
   }
 
+  // KF-421: the granular path leaves rows the patches don't touch in place with
+  // their cached HTML — computed at their OLD index. If any applied patch shifts
+  // an existing row's index (a non-tail insert/remove, or any move) and the
+  // render fn reads the index, those carried rows now show a stale index. Opt-in
+  // dev warning; `previousBindingCount` is the pre-batch row count (defined on
+  // the granular path — the snapshot arms above own the `undefined` case).
+  if (render.length >= 2 && isOptedInStaleIndex()) {
+    let len = previousBindingCount as number;
+    for (const p of patches) {
+      if (p.type === 'move') {
+        maybeWarnStaleIndex(id);
+        break;
+      }
+      if (p.type === 'insert') {
+        if (p.index < len) {
+          maybeWarnStaleIndex(id);
+          break;
+        }
+        len++;
+      } else if (p.type === 'remove') {
+        if (p.index < len - 1) {
+          maybeWarnStaleIndex(id);
+          break;
+        }
+        len--;
+      }
+      // 'update' keeps position; 'replace' routed to snapshot above.
+    }
+  }
+
   // The granular path applies arraySignal patches but never evaluates
   // `cacheKey` (or `render`) for the rows the patches don't touch. That has
   // two consequences this loop fixes:
@@ -512,6 +550,7 @@ function eachGranular<T extends object>(
           html,
           bindings,
           version: itemVersion(p.item as object),
+          index: p.index,
         });
       } else {
         internalPatches[i] = p as ArrayPatchInternal;
@@ -578,6 +617,11 @@ function eachSnapshotById<T extends object>(
     if (cached !== undefined && cached.cacheKey === k && cached.version === version) {
       html = cached.html;
       bindings = cached.bindings;
+      // KF-421: this row's HTML was memoized at `cached.index`; serving it at a
+      // different `i` means its `index` argument is stale. Opt-in dev warning.
+      if (cached.index !== i && render.length >= 2 && isOptedInStaleIndex()) {
+        maybeWarnStaleIndex(id);
+      }
     } else {
       // KF-294: capture the row's fine-grained bindings (signals in row attrs
       // / text). The snapshot reconciler wires them to the row node on create
@@ -589,7 +633,7 @@ function eachSnapshotById<T extends object>(
       }));
       html = captured.html;
       bindings = captured.bindings;
-      if (cache !== null) cache.set(item, { cacheKey: k, html, bindings, version });
+      if (cache !== null) cache.set(item, { cacheKey: k, html, bindings, version, index: i });
     }
     segItems[i] = { ref: item, cacheKey: k, html, bindings };
   }
