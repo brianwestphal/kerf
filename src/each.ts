@@ -12,7 +12,11 @@
  *    identity (and optional `cacheKey`) are unchanged since the previous
  *    call. Their HTML strings come from a `WeakMap` keyed by item reference.
  *    The immutable-update style ("replace the row object" instead of "mutate
- *    it") makes the cache work automatically.
+ *    it") is the idiomatic way to invalidate a row and is what the memo is
+ *    built around. A same-ref `arraySignal.update()` (mutate the object and
+ *    return it) also works — it bumps a per-item content version (KF-418,
+ *    `item-version.ts`) that the memo checks — so it re-renders the row in
+ *    every consumer, not just the list that drained the patch.
  *
  * 2. Structural handoff. `mount()` recognizes the list segment and bypasses
  *    the parse-the-whole-table round trip: only fresh items get parsed (one
@@ -40,6 +44,7 @@
 import type { ArraySignal } from './array-signal.js';
 import { type Binding, captureRowBindings } from './bindings.js';
 import { maybeWarnDuplicateCacheKeys } from './dev-each-warn.js';
+import { itemVersion } from './item-version.js';
 import type { SafeHtml } from './jsx-runtime.js';
 import { granularListSafeHtml, isSafeHtml, listSafeHtml } from './jsx-runtime.js';
 import { decideListPath, deriveListRenderState } from './list-render-state.js';
@@ -65,6 +70,13 @@ interface CacheEntry {
   cacheKey: unknown;
   html: string;
   bindings: Binding[];
+  /**
+   * KF-418: the item's content version when this entry was rendered. A cache
+   * hit requires it to still match, so a same-ref `arraySignal.update()` (which
+   * bumps the version but keeps the identity the memo is keyed on) forces a
+   * re-render here rather than serving stale HTML.
+   */
+  version: number;
 }
 
 /**
@@ -499,6 +511,7 @@ function eachGranular<T extends object>(
           cacheKey: cacheKey ? cacheKey(p.item as T, p.index) : undefined,
           html,
           bindings,
+          version: itemVersion(p.item as object),
         });
       } else {
         internalPatches[i] = p as ArrayPatchInternal;
@@ -556,10 +569,13 @@ function eachSnapshotById<T extends object>(
     }
     seen.add(item);
     const k = cacheKey ? cacheKey(item, i) : undefined;
+    const version = itemVersion(item);
     let html: string;
     let bindings: Binding[];
     const cached = cache !== null ? cache.get(item) : undefined;
-    if (cached !== undefined && cached.cacheKey === k) {
+    // KF-418: the version guard is what makes a same-ref update visible here —
+    // same identity, same cacheKey, but a bumped version misses the cache.
+    if (cached !== undefined && cached.cacheKey === k && cached.version === version) {
       html = cached.html;
       bindings = cached.bindings;
     } else {
@@ -573,7 +589,7 @@ function eachSnapshotById<T extends object>(
       }));
       html = captured.html;
       bindings = captured.bindings;
-      if (cache !== null) cache.set(item, { cacheKey: k, html, bindings });
+      if (cache !== null) cache.set(item, { cacheKey: k, html, bindings, version });
     }
     segItems[i] = { ref: item, cacheKey: k, html, bindings };
   }

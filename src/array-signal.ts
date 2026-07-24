@@ -20,6 +20,7 @@
  * dependencies, so derived values keep working.
  */
 
+import { bumpItemVersion } from './item-version.js';
 import type { Signal } from './reactive.js';
 import { signal } from './reactive.js';
 
@@ -64,7 +65,13 @@ export class ArraySignal<T> {
     return this._items;
   }
 
-  /** Replace the item at `index` with `fn(currentItem)`. Emits one `update` patch. */
+  /**
+   * Replace the item at `index` with `fn(currentItem)`. Emits one `update`
+   * patch. Both styles work: returning a fresh object (idiomatic) invalidates
+   * the row by identity, and mutating `item` in place and returning it works
+   * too — a per-item content version (KF-418) makes the same-ref change visible
+   * to every consumer's row memo.
+   */
   update(index: number, fn: (item: T) => T): void {
     if (index < 0 || index >= this._items.length) {
       throw new Error(
@@ -74,6 +81,11 @@ export class ArraySignal<T> {
     const next = fn(this._items[index]);
     this._items[index] = next;
     this._patches.push({ type: 'update', index, item: next });
+    // KF-418: a same-ref update (fn mutates and returns the same object) is
+    // invisible to the row memo, which is keyed on object identity. Bump the
+    // item's content version so every consumer — this list, another list over
+    // this signal, a second mount, a plain-array filter() view — re-renders it.
+    bumpItemVersion(next as object);
     this._version.value++;
   }
 

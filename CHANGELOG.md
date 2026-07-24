@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- `arraySignal.update(i, fn)` now works when `fn` mutates the row object and returns it (not only when it returns a fresh object). Previously such a same-ref update rendered correctly in one list but left every other view of the same signal — a second list, a second `mount()`, a `filter()`ed plain-array view — permanently stale, and was lost outright when the update was batched with a selection change or a `replace()`. kerf now tracks a per-item content version so the change reaches every consumer. Returning a fresh object remains the idiomatic style; both are supported.
 - Fixed: `each()` rows under a `<math>` element rendered as MathML on first paint but fell into the HTML namespace on every later update (a granular insert, or a rebuild) — the rows became inert `HTMLUnknownElement`s that don't display as math. Row re-parsing now re-enters MathML foreign content the same way it already did for SVG (the KF-389 fix, generalized), so MathML lists keep their namespace across updates.
 
 - Fixed: a list rendered ZERO rows when a granular `arraySignal` change (an `insert`/`remove`/`update`) was batched with a re-render that rebuilt the list's container — a swapped ancestor tag, or a sibling appearing and positionally taking the container's place (e.g. a banner toggled on in the same update that removed a row). The list's data was intact in the signal; kerf now detects the rebuild and re-renders the affected list from a full snapshot instead of blanking it.
