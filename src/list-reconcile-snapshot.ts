@@ -149,7 +149,7 @@ function buildFreshNodes(
   if (freshHtmls.length === 0) return;
   const { content, count } = parseRowTemplate(freshHtmls.join(''), liveParent);
   if (count !== freshHtmls.length) {
-    throw findOffendingRow(newRecord, freshIndices, freshHtmls);
+    throw findOffendingRow(newRecord, freshIndices, freshHtmls, liveParent);
   }
   // After the count check above, we know the fragment's `children.length`
   // equals `freshIndices.length`, so the walk below always finds an element
@@ -177,10 +177,13 @@ function findOffendingRow(
   newRecord: BoundItem[],
   freshIndices: number[],
   freshHtmls: string[],
+  liveParent: Element,
 ): Error {
   for (let i = 0; i < freshHtmls.length; i++) {
-    if (parseRowTemplate(freshHtmls[i]).count !== 1) {
-      return rowContractError(freshIndices[i], newRecord[freshIndices[i]].html);
+    // Parse in the live parent's namespace so the per-row count matches the bulk
+    // parse (KF-420) — a namespace mismatch would otherwise miss the offender.
+    if (parseRowTemplate(freshHtmls[i], liveParent).count !== 1) {
+      return rowContractError(freshIndices[i], newRecord[freshIndices[i]].html, liveParent);
     }
   }
   /* c8 ignore next 2 — unreachable: bulk mismatch ⇒ at least one row violates. */

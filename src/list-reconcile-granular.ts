@@ -281,7 +281,7 @@ function applyBulkUpdate(
   // Bulk-parse only the rows the fast paths couldn't handle.
   const { content, count } = parseRowTemplate(morphChanges.map((c) => c.html).join(''), liveParent);
   if (count !== morphChanges.length) {
-    throw findOffendingChange(patches, morphChanges);
+    throw findOffendingChange(patches, morphChanges, liveParent);
   }
   const newNodes = collectTemplateChildren(content, morphChanges.length);
 
@@ -316,7 +316,7 @@ function applyBulkInsert(
   }
   const { content, count } = parseRowTemplate(htmls.join(''), liveParent);
   if (count !== htmls.length) {
-    throw findOffendingInsert(patches, start, htmls);
+    throw findOffendingInsert(patches, start, htmls, liveParent);
   }
   // Count matches; capture child refs BEFORE the fragment-insert empties
   // the fragment.
@@ -344,13 +344,16 @@ function findOffendingInsert(
   patches: NonNullable<ListSegment['patches']>,
   start: number,
   htmls: string[],
+  liveParent: Element,
 ): Error {
   for (let i = 0; i < htmls.length; i++) {
-    if (parseRowTemplate(htmls[i]).count !== 1) {
-      return rowContractError((patches[start + i] as InsertPatch).index, htmls[i]);
+    // Parse in the live parent's namespace so the per-row count matches the bulk
+    // parse (KF-420) — a namespace mismatch would otherwise miss the offender.
+    if (parseRowTemplate(htmls[i], liveParent).count !== 1) {
+      return rowContractError((patches[start + i] as InsertPatch).index, htmls[i], liveParent);
     }
   }
-  /* c8 ignore start */
+  /* c8 ignore start — unreachable: same-namespace per-row parse ⇒ a bulk mismatch has an offender. */
   return new Error('each(): bulk-insert mismatch with no per-row offender (kerf bug).');
 }
 /* c8 ignore stop */
@@ -362,13 +365,16 @@ function findOffendingInsert(
 function findOffendingChange(
   patches: NonNullable<ListSegment['patches']>,
   changes: { patchIdx: number; html: string }[],
+  liveParent: Element,
 ): Error {
   for (const c of changes) {
-    if (parseRowTemplate(c.html).count !== 1) {
-      return rowContractError((patches[c.patchIdx] as UpdatePatch).index, c.html);
+    // Parse in the live parent's namespace so the per-row count matches the bulk
+    // parse (KF-420) — a namespace mismatch would otherwise miss the offender.
+    if (parseRowTemplate(c.html, liveParent).count !== 1) {
+      return rowContractError((patches[c.patchIdx] as UpdatePatch).index, c.html, liveParent);
     }
   }
-  /* c8 ignore start */
+  /* c8 ignore start — unreachable: same-namespace per-row parse ⇒ a bulk mismatch has an offender. */
   return new Error('each(): bulk-update mismatch with no per-row offender (kerf bug).');
 }
 /* c8 ignore stop */

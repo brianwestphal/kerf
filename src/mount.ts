@@ -647,7 +647,7 @@ function validateInlinedRowMatch(
   // was an apostrophe in any attribute (kerf emits `&#39;`, serializers emit
   // `'`), which is what makes the outerHTML compare miss and reach here at all.
   const { content, count } = parseRowTemplate(expectedHtml, liveParent);
-  if (count !== 1) throw rowContractError(index, expectedHtml);
+  if (count !== 1) throw rowContractError(index, expectedHtml, liveParent);
   // KF-391: single-root, but is it the SAME root? The HTML parser restructures
   // some markup — most commonly `<tr>` directly under `<table>`, where it
   // inserts an implicit `<tbody>` around the whole row run. The binding walk

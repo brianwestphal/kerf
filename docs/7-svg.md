@@ -59,6 +59,7 @@ svgRoot.appendChild(path);   // paints correctly
 
 - **`mount()` is enough** when your SVG has an `<svg>` root tag in the JSX. The HTML5 parser handles namespacing inside foreign content — including `each()` rows, which are re-parsed in their parent's namespace on every update, not just the first render.
 - **MathML works the same way.** A `<math>` root tag puts the parser in foreign-content mode, and `each()` rows under a MathML-namespaced parent are re-parsed as MathML on every update (granular insert, snapshot rebuild), not just first paint — the same guarantee kerf gives SVG rows.
+- **HTML rows under a foreign integration point stay HTML.** Where the HTML parser re-enters HTML content — SVG `<foreignObject>`, `<desc>`, `<title>` and the MathML text elements `<mi>`, `<mo>`, `<mn>`, `<ms>`, `<mtext>` — an `each()` list of HTML rows is re-parsed as HTML on every update, matching first paint, so the rows keep the XHTML namespace and aren't mistakenly wrapped.
 - **`toElement()` is the escape hatch** for direct DOM construction OR for SVG fragments inserted ad-hoc into an existing `<svg>`.
 
 If you're not sure which you need, default to `mount()`. The vast majority of SVG icon and chart use cases work fine without `toElement`.

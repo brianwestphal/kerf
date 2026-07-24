@@ -214,3 +214,36 @@ test('KF-417: MathML each() rows keep the namespace after a list update', async 
   expect(result.row2NS).toBe('http://www.w3.org/1998/Math/MathML');
   expect(result.mnNS).toBe('http://www.w3.org/1998/Math/MathML');
 });
+
+test('KF-420: HTML each() rows under a MathML integration point stay HTML after a list update', async ({ page }) => {
+  const result = await page.evaluate(() => {
+    const { mount, each, signal } = (window as any).kerf;
+    const { jsx } = (window as any).jsxRuntime;
+    const root = document.getElementById('root')!;
+    // <mtext> is a MathML text integration point — its HTML children are HTML, not
+    // MathML. The list must re-parse as HTML on update (KF-420), not be wrapped in
+    // <math> (which would pop the <span> breakout tag and empty the row).
+    const data = signal([{ id: 1 }]);
+    mount(root, () =>
+      jsx('math', {
+        children: jsx('mtext', {
+          children: each(
+            data.value,
+            (r: { id: number }) => jsx('span', { 'data-key': String(r.id), children: String(r.id) }),
+            { key: 'M' },
+          ),
+        }),
+      }),
+    );
+    const XHTML = 'http://www.w3.org/1999/xhtml';
+    const firstPaintOk = root.querySelector('[data-key="1"]')?.namespaceURI === XHTML;
+    // A snapshot rebuild — the later parse that used to wrap the row in <math>.
+    data.value = [{ id: 1 }, { id: 2 }];
+    return {
+      firstPaintOk,
+      row2NS: root.querySelector('[data-key="2"]')?.namespaceURI ?? null,
+    };
+  });
+  expect(result.firstPaintOk).toBe(true);
+  expect(result.row2NS).toBe('http://www.w3.org/1999/xhtml');
+});

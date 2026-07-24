@@ -33,6 +33,22 @@ const SVG_NS = 'http://www.w3.org/2000/svg';
 const MATHML_NS = 'http://www.w3.org/1998/Math/MathML';
 
 /**
+ * HTML integration points: foreign-content elements under which the HTML parser
+ * UNCONDITIONALLY re-enters HTML content, so an `each()` row parented there is
+ * ordinary HTML and must NOT be wrapped. SVG has three (`foreignObject`, `desc`,
+ * `title`); MathML has the five text integration points (`mi`, `mo`, `mn`, `ms`,
+ * `mtext`). localNames are case-preserving for both namespaces, so `foreignObject`
+ * matches as authored.
+ *
+ * `annotation-xml` is deliberately absent: it is a MathML HTML integration point
+ * only CONDITIONALLY (with `encoding="text/html"`/`application/xhtml+xml`),
+ * otherwise its children are MathML. That conditional rule for a rare element is
+ * out of scope — a MathML parent not in the text set always wraps in `<math>`.
+ */
+const SVG_HTML_INTEGRATION = new Set(['foreignObject', 'desc', 'title']);
+const MATHML_TEXT_INTEGRATION = new Set(['mi', 'mo', 'mn', 'ms', 'mtext']);
+
+/**
  * The foreign-content wrapper tag a row destined for `parent` must be parsed
  * inside — `'svg'` (KF-389) or `'math'` (KF-417) — or `null` for the ordinary
  * HTML path.
@@ -46,21 +62,21 @@ const MATHML_NS = 'http://www.w3.org/1998/Math/MathML';
  * `parseRowTemplate` re-enters foreign content by wrapping the row HTML in this
  * tag, so those parses namespace the rows the same way the first render did.
  *
- * SVG has a "re-enters HTML" exception, `<foreignObject>`, whose children are
- * ALWAYS HTML, so rows under it take the ordinary path. MathML's analogue,
- * `<annotation-xml>`, is only an HTML integration point when it carries
- * `encoding="text/html"` (otherwise its children are MathML) — a conditional
- * rule for a rare element that kerf doesn't try to model. A MathML-namespaced
- * parent therefore always wraps in `<math>`, which is correct for the ordinary
- * case; embedding HTML inside `annotation-xml` is out of scope.
+ * A parent that is itself an HTML integration point (see the sets above) takes
+ * the ordinary HTML path — wrapping HTML rows in `<svg>`/`<math>` there would
+ * either crash (a breakout tag pops the wrapper, emptying it) or mis-namespace
+ * the row (KF-420).
  */
 function foreignWrapper(parent: Element | null | undefined): 'svg' | 'math' | null {
   if (parent == null) return null;
-  const { namespaceURI } = parent;
+  const { namespaceURI, localName } = parent;
   if (namespaceURI === SVG_NS) {
-    return (parent as Element).localName === 'foreignObject' ? null : 'svg';
+    return SVG_HTML_INTEGRATION.has(localName) ? null : 'svg';
   }
-  return namespaceURI === MATHML_NS ? 'math' : null;
+  if (namespaceURI === MATHML_NS) {
+    return MATHML_TEXT_INTEGRATION.has(localName) ? null : 'math';
+  }
+  return null;
 }
 
 /**
@@ -103,7 +119,7 @@ export function parseRowTemplate(
  */
 export function parseSingleRow(html: string, index: number, parent?: Element | null): Element {
   const { content, count } = parseRowTemplate(html, parent);
-  if (count !== 1) throw rowContractError(index, html);
+  if (count !== 1) throw rowContractError(index, html, parent);
   return content.firstElementChild as Element;
 }
 
@@ -127,9 +143,14 @@ export function collectTemplateChildren(content: DocumentFragment, n: number): E
  * render produced the given `html`. The thrown message mentions the row
  * index, the actual element count, and the (truncated) HTML so the author
  * can locate and fix the offending row quickly.
+ *
+ * `parent` selects the parse namespace so the reported count matches what the
+ * reconciler actually saw (KF-420): re-parsing without it could count a row
+ * differently under a foreign-content parent and print a self-contradictory
+ * "produced 1 top-level elements; exactly one is required".
  */
-export function rowContractError(index: number, html: string): Error {
-  const { count } = parseRowTemplate(html);
+export function rowContractError(index: number, html: string, parent?: Element | null): Error {
+  const { count } = parseRowTemplate(html, parent);
   const reason = count === 0
     ? 'produced no top-level element'
     : `produced ${count} top-level elements; exactly one is required`;
