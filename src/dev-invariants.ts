@@ -47,6 +47,16 @@ function mode(): Mode {
 }
 
 /**
+ * Whether the list-invariant checks are active. Exported so `mount()` can skip
+ * building the per-list expected-count map entirely when they're off — the
+ * checks themselves are a no-op then, but the map would still cost an
+ * allocation per render, and this family's contract is zero production cost.
+ */
+export function listInvariantsEnabled(): boolean {
+  return mode() !== 'off';
+}
+
+/**
  * Child-position lookup for one parent, built once and reused for every node
  * asked about.
  *
@@ -81,6 +91,7 @@ function describe(id: string, problem: string): string {
 export function findListInvariantViolations(
   rootEl: Element,
   bindings: ReadonlyMap<string, ListBinding>,
+  expectedCounts?: ReadonlyMap<string, number>,
 ): string[] {
   const problems: string[] = [];
   const owners = new Map<Node, string>();
@@ -91,6 +102,20 @@ export function findListInvariantViolations(
 
   for (const [id, binding] of bindings) {
     const { marker, liveParent, items } = binding;
+
+    // Row-count agreement (KF-416): the binding must hold as many rows as the
+    // data it just rendered from. Every other check here is INTERNAL — it
+    // confirms the binding agrees with the live DOM — so a reconcile that
+    // emptied a list still passes them all (zero items, zero live rows, all
+    // consistent). Only comparing against the source length catches a list that
+    // rendered the wrong NUMBER of rows, which is how KF-411 slipped through:
+    // a self-healed empty binding was internally perfect and externally blank.
+    // `expectedCounts` is supplied only for lists in the current render.
+    const expected = expectedCounts?.get(id);
+    if (expected !== undefined && items.length !== expected) {
+      problems.push(describe(id, `holds ${items.length} row(s) but its source has ${expected} — `
+        + 'the reconcile dropped or duplicated rows'));
+    }
 
     if (!rootEl.contains(marker)) {
       problems.push(describe(id, 'its marker comment is no longer inside the mount root, so every '
@@ -158,10 +183,11 @@ export function findListInvariantViolations(
 export function maybeCheckListInvariants(
   rootEl: Element,
   bindings: ReadonlyMap<string, ListBinding>,
+  expectedCounts?: ReadonlyMap<string, number>,
 ): void {
   const level = mode();
   if (level === 'off') return;
-  const problems = findListInvariantViolations(rootEl, bindings);
+  const problems = findListInvariantViolations(rootEl, bindings, expectedCounts);
   if (problems.length === 0) return;
   const report = `${problems.join('\n')}\n`
     + 'This is a kerf bug, not an application one — please report it with the markup that produced it. '

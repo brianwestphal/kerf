@@ -364,6 +364,7 @@ Unlike everything else in this family, this one does not describe a pattern the 
 | **row-order** | rows that no longer follow their own marker in document order |
 | **row-alias** | one row node claimed by two bindings |
 | **region-overlap** | two lists in one parent interleaving their rows |
+| **row-count** | a binding holding a different number of rows than the data it rendered from (KF-416). Every other check is *internal* — it confirms the binding agrees with the live DOM — so a list that reconciled to the wrong count still passes them if it's self-consistent. Comparing against the source length is the one check that catches a list rendering too few or too many rows; it is what would have caught KF-411 (a self-healed empty binding, internally perfect and externally blank) at the render that caused it. Supplied per-list by `mount()` only when the checks are enabled, so production pays nothing. |
 
 **Modes.** `KERF_DEV_INVARIANTS=1` warns; `KERF_DEV_INVARIANTS=throw` throws. Unset (the default) is a complete no-op — the DOM is never walked. The `throw` mode exists because a warning inside a passing test is invisible: kerf's own suites set `throw` (in `vitest.config.ts` and both dist configs) so any future corruption fails the run at the render that caused it. Consumers debugging a suspected reconciler bug want `1` first.
 

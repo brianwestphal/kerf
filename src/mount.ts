@@ -36,7 +36,7 @@ import {
 } from './bindings.js';
 import { isOptedIn as isStaleBindingWarnOptedIn, maybeWarnStaleBinding } from './dev-binding-warn.js';
 import { maybeWarnEachInMorphSkip } from './dev-each-warn.js';
-import { maybeCheckListInvariants } from './dev-invariants.js';
+import { listInvariantsEnabled, maybeCheckListInvariants } from './dev-invariants.js';
 import { maybeWarnListIdShift } from './dev-list-key-warn.js';
 import { maybeWarnListRebind } from './dev-list-rebind-warn.js';
 import { installListenerRebuildWarn } from './dev-listener-warn.js';
@@ -326,6 +326,11 @@ export function mount(rootEl: HTMLElement, render: () => MountResult): () => voi
       prevStaticHtml = nextStaticHtml;
     }
 
+    // KF-416: per-list expected row count, for the dev-mode row-count invariant.
+    // Only built when the checks are enabled — otherwise the map would cost an
+    // allocation per render for nothing, and this family promises zero prod cost.
+    const expectedCounts = listInvariantsEnabled() ? new Map<string, number>() : null;
+
     for (const listSeg of collectLists(segment).values()) {
       // Invariant: `bindListsFromMarkers` just ran over this segment, so every
       // list id has a binding — EXCEPT when the list's marker never reached the
@@ -349,6 +354,16 @@ export function mount(rootEl: HTMLElement, render: () => MountResult): () => voi
       // KF-388: record WHICH list this id now holds, so the next render can
       // tell a genuine continuation from an id reused by a different list.
       renderCtx.bindingSources.set(listSeg.id, listSeg.source);
+      // KF-416: a granular segment carries no items but its source (an
+      // arraySignal) knows the count; a snapshot segment's `items` ARE the
+      // count. Duck-typed on the granular case so mount never hard-imports
+      // ArraySignal (which would pull it into the main bundle — KF-95).
+      expectedCounts?.set(
+        listSeg.id,
+        listSeg.patches !== undefined && listSeg.source !== undefined
+          ? (listSeg.source as { value: readonly unknown[] }).value.length
+          : listSeg.items.length,
+      );
     }
 
     renderCtx.previousCallCount = renderCtx.counter;
@@ -356,7 +371,7 @@ export function mount(rootEl: HTMLElement, render: () => MountResult): () => voi
     // Opt-in structural audit of every list binding against the live DOM
     // (KERF_DEV_INVARIANTS). Placed after the reconcile loop so it sees the
     // render's final state; a no-op, with no DOM walking at all, when unset.
-    maybeCheckListInvariants(rootEl, bindings);
+    maybeCheckListInvariants(rootEl, bindings, expectedCounts ?? undefined);
   });
 
   return () => {

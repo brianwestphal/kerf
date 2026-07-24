@@ -30,8 +30,15 @@ function makeList(id: string, n: number, parent: Element = root): ListBinding {
   return { liveParent: parent, items, marker };
 }
 
-const check = (bindings: Record<string, ListBinding>): string[] =>
-  findListInvariantViolations(root, new Map(Object.entries(bindings)));
+const check = (
+  bindings: Record<string, ListBinding>,
+  expectedCounts?: Record<string, number>,
+): string[] =>
+  findListInvariantViolations(
+    root,
+    new Map(Object.entries(bindings)),
+    expectedCounts === undefined ? undefined : new Map(Object.entries(expectedCounts)),
+  );
 
 beforeEach(() => {
   document.body.innerHTML = '';
@@ -50,6 +57,27 @@ afterEach(() => {
 describe('dev invariants: detection', () => {
   it('a healthy binding reports nothing', () => {
     expect(check({ '0': makeList('0', 3) })).toEqual([]);
+  });
+
+  it('flags a binding holding fewer rows than its source (KF-416 — the KF-411 shape)', () => {
+    // A self-healed empty binding is internally perfect but rendered nothing.
+    const b = makeList('0', 0);
+    expect(check({ '0': b }, { '0': 3 })[0]).toMatch(/holds 0 row\(s\) but its source has 3/);
+  });
+
+  it('flags a binding holding MORE rows than its source (duplicated rows)', () => {
+    const b = makeList('0', 4);
+    expect(check({ '0': b }, { '0': 2 })[0]).toMatch(/holds 4 row\(s\) but its source has 2/);
+  });
+
+  it('a matching row count reports nothing', () => {
+    expect(check({ '0': makeList('0', 3) }, { '0': 3 })).toEqual([]);
+  });
+
+  it('a list absent from expectedCounts skips the count check (still DOM-checked)', () => {
+    // Only lists in the current render supply an expected count; others (e.g. a
+    // list that disappeared) are count-exempt but still structurally audited.
+    expect(check({ '0': makeList('0', 2) }, { '1': 5 })).toEqual([]);
   });
 
   it('two healthy lists in one parent report nothing', () => {
