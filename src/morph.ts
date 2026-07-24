@@ -48,7 +48,7 @@
  * runtime dependency. Original copyright preserved in `LICENSE`.
  */
 
-import { boundTextNodeOf } from './bindings.js';
+import { boundTextNodeOf, ROW_TEXT_PREFIX, TEXT_MARKER_PREFIX } from './bindings.js';
 import type { SafeHtml } from './jsx-runtime.js';
 import { captureFocus, restoreFocus } from './list-reconcile-focus.js';
 import { LIST_MARKER_PREFIX } from './segment.js';
@@ -150,6 +150,42 @@ function parseTemplate(liveRoot: Element, template: SafeHtml | string): Element 
  * Advance past any owned (list-reconciler-managed) element. Owned items
  * stay put across morphs — they're invisible to the morph's child cursor.
  */
+/**
+ * Does this element declare itself library-owned (`data-morph-skip`)?
+ *
+ * Asked of BOTH sides before a positional pairing. A live skipped node is
+ * something the diff has promised not to look inside, so adopting it as the
+ * match for a template element that makes no such claim is always wrong: the
+ * skip then keeps the widget's contents in place of the element the template
+ * asked for, and the template's own skipped element is built fresh alongside —
+ * losing the one and duplicating the other. Unlike the key rule this needs no
+ * cooperation from the author, since the attribute is in the template already.
+ */
+function declaresSkip(node: Node): boolean {
+  return node.nodeType === ELEMENT_NODE
+    && (node as HTMLElement).dataset?.morphSkip !== undefined;
+}
+
+const MARKER_PREFIXES = [LIST_MARKER_PREFIX, TEXT_MARKER_PREFIX, ROW_TEXT_PREFIX];
+
+/**
+ * Which kind of kerf anchor a comment is — a list marker, a text-binding
+ * marker, or neither (an ordinary comment).
+ *
+ * Comments positionally match by node type alone, which is fine for ordinary
+ * comments (stateless to rebuild) but not for kerf's markers: each anchors
+ * live state that only exists in the DOM. Pairing a list marker with a text
+ * binding's marker overwrites one anchor with the other's id and then the rule
+ * that protects a binding marker's inserted text node keeps that text alive
+ * under the list — the value renders twice, in a place the template never put
+ * it. Two different kinds of anchor are never each other's counterpart.
+ */
+function markerKind(node: Node): string {
+  if (node.nodeType !== COMMENT_NODE) return '';
+  const { data } = node as Comment;
+  return MARKER_PREFIXES.find((prefix) => data.startsWith(prefix)) ?? '';
+}
+
 function skipOwned(node: Node | null, ownedItems: ReadonlySet<Element>): Node | null {
   while (node !== null && node.nodeType === ELEMENT_NODE
       && ownedItems.has(node as Element)) {
@@ -219,13 +255,28 @@ function morphChildren(
     }
 
     // 2. Fall back to positional match — same nodeType, same tag (for
-    //    elements), and the live node has no key (a keyed node only
-    //    matches by key, never positionally, so reorders work).
+    //    elements), and NEITHER side carries a key. A key on either side is a
+    //    statement of identity, so it must be honored in both directions:
+    //
+    //    - live keyed: matches by key only, never positionally, so reorders
+    //      work rather than churning whatever happens to sit at the index.
+    //    - template keyed: step 1 already looked for its key among the live
+    //      children and didn't find it, so the element the template is asking
+    //      for is genuinely not here. Adopting an unkeyed same-tag neighbour
+    //      instead repurposes a node that is something else, and the rules that
+    //      protect a node's contents (`data-morph-skip`, `data-morph-preserve`,
+    //      a binding marker's inserted text node) then keep the wrong contents
+    //      alive inside it: a skipped widget swallows the element and gets
+    //      duplicated, a preserved child ends up under a foreign host, a bound
+    //      hole's text leaks. Those rules are each right; the pairing was not.
     if (matched === null && fromChild !== null
         && fromChild.nodeType === toChild.nodeType
+        && markerKind(fromChild) === markerKind(toChild)
         && (toChild.nodeType !== ELEMENT_NODE
             || ((fromChild as Element).tagName === (toChild as Element).tagName
-                && getNodeKey(fromChild) === undefined))) {
+                && getNodeKey(fromChild) === undefined
+                && toKey === undefined
+                && declaresSkip(fromChild) === declaresSkip(toChild)))) {
       matched = fromChild;
       // KF-385: a matched list marker carries its whole row region, so the
       // cursor must land AFTER the last row — not merely after the contiguous
@@ -267,13 +318,18 @@ function morphChildren(
     //    are stateless to rebuild, and binding-marker comments own an
     //    inserted text sibling that must never be separated by a move. The
     //    ONE comment exception is the each() list marker — see 2.6.
-    if (matched === null && toChild.nodeType === ELEMENT_NODE && fromChild !== null) {
+    //    Keyed template elements are excluded for the same reason as step 2:
+    //    step 1 already searched every live child for that key, so moving up an
+    //    unkeyed stranger would repurpose a node that is something else.
+    if (matched === null && toChild.nodeType === ELEMENT_NODE && fromChild !== null
+        && toKey === undefined) {
       const toTag = (toChild as Element).tagName;
       for (let scan: Node | null = fromChild.nextSibling; scan !== null; scan = scan.nextSibling) {
         if (scan.nodeType !== ELEMENT_NODE) continue;
         const el = scan as Element;
         if (ownedItems.has(el)) continue;
         if (el.tagName !== toTag || getNodeKey(el) !== undefined) continue;
+        if (declaresSkip(el) !== declaresSkip(toChild)) continue;
         matched = el;
         fromParent.insertBefore(el, fromChild);
         break;

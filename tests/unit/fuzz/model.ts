@@ -144,14 +144,19 @@ function genNode(ctx: GenCtx, depth: number, inSvg: boolean, inCond: boolean): N
   const boundAttr = !inSvg && ctx.spec.sigCount > 0 && rng.bool(0.25)
     ? { sig: rng.int(ctx.spec.sigCount), id: ctx.holeId++ }
     : null;
-  // `skip` only, and never inside a conditional. `data-morph-skip` marks a
-  // subtree the template DOES emit but the diff should leave alone, which is
-  // exactly what this generates. `data-morph-preserve` is for imperatively
-  // injected nodes the template never emits, so marking a generated node with
-  // it is off-label — and doing so duplicates the node when a conditional
-  // sibling repurposes its host (filed separately; restore it here when that
-  // is resolved). Excluded inside a conditional either way, since both opt-outs
-  // let an element outlive a branch that stops emitting it.
+  // `skip` only, and never inside a conditional.
+  //
+  // `data-morph-skip` marks a subtree the template DOES emit but the diff
+  // should leave alone — exactly what this generates. `data-morph-preserve` is
+  // for imperatively injected nodes the template NEVER emits, so putting it on
+  // a generated node is off-label, and its documented contract ("survives even
+  // when the new template doesn't emit it") then legitimately produces a second
+  // copy: the template's own emission plus the exempted live one. That is the
+  // attribute working as specified on input it isn't for, not a defect to
+  // chase. Generating it here would only re-derive that fact every run.
+  //
+  // Excluded inside a conditional either way, since both opt-outs let an
+  // element outlive a branch that stops emitting it.
   const special = !inCond && boundAttr === null && isStatic(children) && rng.bool(0.15)
     ? 'skip' as const
     : null;

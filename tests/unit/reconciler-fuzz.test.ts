@@ -30,8 +30,13 @@
  * fast and can never flake. `KERF_FUZZ_DIFF=0` drops the differential check for
  * triage, leaving only the checks a user would actually see fail.
  *
- * Open defects it has found live in `QUARANTINE` below — see the comment there
- * for the rules that keep that from becoming a place bugs go to be forgotten.
+ * There is currently no quarantine: every generated case is expected to hold.
+ * When it finds a defect that isn't fixed in the same change, hold it in a
+ * quarantine scoped by the SHAPE of the case (not the text of the failure), pin
+ * a reproduction that must keep failing so an entry cannot outlive its bug, and
+ * budget the excused fraction so the debt can shrink but never quietly grow.
+ * Six defects have been carried that way and retired; see the KF-402 / KF-408
+ * history for the pattern.
  *
  * Practical ceiling: a single process runs out of heap somewhere between 6k and
  * 15k cases. `mount`/`dispose` itself was measured leak-free over 22k cycles, so
@@ -41,7 +46,7 @@
 import { afterEach, describe, expect, it } from 'vitest';
 
 import { formatRepro, runCase, shrinkCase } from './fuzz/harness.js';
-import { generateSpec, makeWorld, type NodeSpec, type TreeSpec } from './fuzz/model.js';
+import { generateSpec, makeWorld, type TreeSpec } from './fuzz/model.js';
 import { generateMutations, type Mutation } from './fuzz/mutations.js';
 import { Rng } from './fuzz/rng.js';
 
@@ -51,82 +56,6 @@ const BASE_SEED = Number(env.KERF_FUZZ_SEED ?? 20_260_724);
 const MUTATIONS_PER_CASE = 12;
 /** How many distinct failure signatures to shrink and print. Shrinking is the slow part. */
 const MAX_REPORTS = 3;
-
-// ---------------------------------------------------------------------------
-// Quarantine
-// ---------------------------------------------------------------------------
-
-/**
- * Defects this harness found that are filed and still open. Cases inside a known
- * defect's blast radius are tallied but do not fail the run, so the gate is
- * green while the *rest* of the space stays guarded — a fuzz suite that is red
- * for a known reason is a fuzz suite nobody reads.
- *
- * This is a debt ledger, not a place bugs go to be forgotten. Three rules:
- *
- *  - **Scoped by the shape of the case, not the text of the failure.** "We make
- *    no promise yet about a morph opt-out next to a conditional" has a boundary;
- *    "ignore anything structural" does not. Trees outside the radius stay fully
- *    checked, and *any* failure in them is a hard failure.
- *  - **Each entry must still reproduce.** Its pinned case is replayed every run
- *    and the test fails if it *passes* — so fixing the bug forces you to delete
- *    the entry, and the gate tightens on its own. An entry cannot outlive its bug.
- *  - **The excused count is budgeted.** `QUARANTINE_BUDGET` pins what fraction of
- *    seeds may be excused. A change that pushes more cases into the radius trips
- *    the budget even though every one of them is individually "known" — so the
- *    debt can shrink but never quietly grow.
- *
- * Three earlier entries (wrong-order sibling lists, a row jumping a trailing
- * static sibling, an identity shift rendering another list's rows) were carried
- * this way and retired within hours of being filed.
- */
-interface QuarantineEntry {
-  ticket: string;
-  what: string;
-  excuses: (spec: TreeSpec) => boolean;
-  /** A pinned case that must keep failing for as long as the entry exists. */
-  spec: TreeSpec;
-  mutations: Mutation[];
-}
-
-/** Does any subtree carry a morph opt-out AND does the tree have a conditional? */
-function hasMorphOptOutBesideConditional(spec: TreeSpec): boolean {
-  let optOut = false;
-  let conditional = false;
-  const walk = (nodes: readonly NodeSpec[]): void => {
-    for (const node of nodes) {
-      if (node.kind === 'cond') { conditional = true; walk(node.children); continue; }
-      if (node.kind === 'el') {
-        if (node.special !== null) optOut = true;
-        walk(node.children);
-        continue;
-      }
-      if (node.kind === 'svg') walk(node.children);
-    }
-  };
-  walk(spec.root);
-  return optOut && conditional;
-}
-
-const QUARANTINE: QuarantineEntry[] = [
-  {
-    ticket: 'KF-408',
-    what: 'a data-morph-skip sibling swallows a reappearing conditional element',
-    excuses: hasMorphOptOutBesideConditional,
-    // A conditional <ul> ahead of a skipped one; toggle it off and back on.
-    spec: JSON.parse('{"sigCount":1,"condCount":1,"sources":[{"kind":"plain","ids":[]}],"lists":[],"root":[{"kind":"el","tag":"div","dataKey":null,"special":null,"boundAttr":null,"children":[{"kind":"cond","cond":0,"children":[{"kind":"el","tag":"ul","dataKey":"head","special":null,"boundAttr":null,"children":[{"kind":"text","text":"head"}]}]},{"kind":"el","tag":"ul","dataKey":null,"special":"skip","boundAttr":null,"children":[{"kind":"text","text":"widget"}]}]}]}') as TreeSpec,
-    mutations: JSON.parse('[{"k":"cond","i":0},{"k":"cond","i":0}]') as Mutation[],
-  },
-];
-
-const isQuarantined = (spec: TreeSpec): QuarantineEntry | undefined =>
-  QUARANTINE.find((entry) => entry.excuses(spec));
-
-/**
- * What fraction of seeds the open defects above may excuse. Measured, then
- * pinned — a ratio rather than a count so a longer soak uses the same bar.
- */
-const QUARANTINE_BUDGET = 0.2;
 
 // ---------------------------------------------------------------------------
 // Sweep
@@ -183,40 +112,15 @@ function report(failures: readonly SeedFailure[], runs: number): string {
 describe('reconciler fuzz', () => {
   afterEach(() => { document.body.innerHTML = ''; });
 
-  // If one of these starts passing, the bug is fixed: delete its entry from
-  // QUARANTINE so the sweep stops excusing that whole shape.
-  it.each(QUARANTINE)('quarantined defect $ticket still reproduces — $what', (entry) => {
-    expect(
-      runCase(entry.spec, entry.mutations),
-      `${entry.ticket} no longer reproduces. If it is fixed, remove its QUARANTINE entry.`,
-    ).not.toBeNull();
-  });
-
   it('random trees and mutation sequences hold every reconciler invariant', () => {
     const failures: SeedFailure[] = [];
-    let excused = 0;
     for (let i = 0; i < RUNS; i++) {
       const seed = BASE_SEED + i;
       const { spec, mutations } = caseForSeed(seed);
       const failure = runCase(spec, mutations);
-      if (failure === null) continue;
-      if (isQuarantined(spec) === undefined) {
-        failures.push({ seed, signature: signatureOf(failure.message) });
-      } else {
-        excused++;
-      }
+      if (failure !== null) failures.push({ seed, signature: signatureOf(failure.message) });
     }
     if (failures.length > 0) expect.fail(report(failures, RUNS));
-
-    // Ratchet: the debt may shrink, never grow. A regression that pushes more
-    // cases into a known defect's radius would otherwise be invisible, since
-    // every one of them is individually "expected to fail".
-    expect(
-      excused / RUNS,
-      `${excused}/${RUNS} seeds were excused by the quarantine, over the pinned budget of `
-      + `${QUARANTINE_BUDGET}. Either a change widened a known defect's blast radius, or the `
-      + 'generator changed shape — investigate before raising the budget.',
-    ).toBeLessThanOrEqual(QUARANTINE_BUDGET);
     // Scaled so a `KERF_FUZZ_RUNS=5000` soak doesn't trip vitest's default 5s.
   }, Math.max(30_000, RUNS * 40));
 
