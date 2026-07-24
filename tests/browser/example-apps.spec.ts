@@ -157,8 +157,14 @@ test.describe('chat', () => {
     // While the bot streams, type into the textarea. `data-morph-skip` on the
     // textarea protects its value across re-renders.
     await textarea.fill('draft after send');
-    // Wait for the stream to definitely have caused several re-renders.
-    await page.waitForTimeout(500);
+    // Wait for the stream to have actually re-rendered, rather than for a fixed
+    // delay: the bot bubble growing IS the re-render, so watch for it. A sleep
+    // both fails on a slow machine and — worse — passes vacuously on one where
+    // the stream never started, asserting that the draft survived nothing.
+    const lastBot = page.locator('.msg.bot .bubble').last();
+    await expect(lastBot).toHaveText(/\S+/, { timeout: 8000 });
+    const firstChunk = (await lastBot.innerText()).trim();
+    await expect(lastBot).not.toHaveText(firstChunk, { timeout: 8000 });
     await expect(textarea).toHaveValue('draft after send');
     await expect(textarea).toBeFocused();
   });
@@ -383,10 +389,10 @@ test.describe('dashboard', () => {
     const tick = page.locator('.frame');
     await expect(tick).toBeVisible();
     const first = await tick.innerText();
-    // The dashboard ticks at ~30 Hz; well under a second the counter advances.
-    await page.waitForTimeout(400);
-    const second = await tick.innerText();
-    expect(second).not.toBe(first);
+    // Poll for the counter to advance rather than sleeping and looking once:
+    // the assertion is "it advances", and polling states that directly while a
+    // fixed delay only guesses how long that should take.
+    await expect(tick).not.toHaveText(first);
     // Status pill is LIVE.
     await expect(page.locator('.status')).toContainText('LIVE');
   });

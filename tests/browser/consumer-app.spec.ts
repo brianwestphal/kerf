@@ -112,12 +112,19 @@ test('focus survives unrelated re-renders driven by a 50ms tick', async ({ page 
 });
 
 test('data-morph-skip + raw + isSafeHtml — imperative additions survive re-renders', async ({ page }) => {
-  // Wait long enough for the setTimeout(stamp, 100ms) to land.
+  // The app stamps the skipped subtree from a timer after first paint; wait
+  // for the stamp itself rather than for a duration.
   await page.waitForSelector('[data-testid="skip-stamp"]', { timeout: 2000 });
   await expect(page.getByTestId('skip-injected')).toBeVisible();
   await expect(page.getByTestId('skip-issafehtml')).toHaveText('safe-true');
-  // Tick re-renders the surrounding span; the skipped subtree's <em> stamp survives.
-  await page.waitForTimeout(150);
+  // Tick re-renders the surrounding span; the skipped subtree's <em> stamp
+  // survives. Wait for the tick's own text to CHANGE rather than for a fixed
+  // delay: that proves a re-render actually happened, which a sleep does not —
+  // if the ticker stalled, the old test would still pass having asserted
+  // nothing.
+  const tick = page.getByTestId('skip-tick');
+  const before = await tick.textContent();
+  await expect(tick).not.toHaveText(before ?? '');
   await expect(page.getByTestId('skip-stamp')).toBeVisible();
 });
 
