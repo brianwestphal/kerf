@@ -42,10 +42,9 @@ export interface ListBinding {
    * siblings get inserted, removed, or reordered around the list.
    *
    * `endAnchor(binding)` derives the "insert at end of list" anchor from
-   * `marker.nextElementSibling` (empty list) or
-   * `items[last].node.nextElementSibling` (non-empty list) — picking up
-   * any non-list element the diff inserted between the list and the
-   * parent's tail.
+   * `marker.nextSibling` (empty list) or `items[last].node.nextSibling`
+   * (non-empty list) — picking up whatever the diff placed between the
+   * list and the parent's tail.
    */
   marker: Comment;
 
@@ -62,15 +61,24 @@ export interface ListBinding {
  * Compute the live-DOM anchor that comes after the list's last item, used
  * by the apply* functions when inserting at the tail of the list.
  *
- * - Empty list: `marker.nextElementSibling` — the next non-list element
- *   after the marker, or `null` if the list is the last thing in `liveParent`.
- * - Non-empty list: `items[last].node.nextElementSibling` — derived
- *   dynamically so that non-list siblings the diff inserted between the
- *   list's last item and the parent's tail still anchor correctly.
+ * - Empty list: `marker.nextSibling`.
+ * - Non-empty list: `items[last].node.nextSibling` — derived dynamically so
+ *   that siblings the diff inserted between the list's last item and the
+ *   parent's tail still anchor correctly.
+ *
+ * **`nextSibling`, not `nextElementSibling`.** The list's region ends at its
+ * last row, and the very next node — of any type — is the boundary. Skipping
+ * to the next *element* walks straight past the two things most likely to sit
+ * there and appends at the parent's tail instead: static text or comments
+ * after the list (so a new row jumps a trailing `footer`), and the next
+ * sibling list's `<!--kf-list:…-->` marker (so two lists that are both empty
+ * both anchor at `null` and interleave their rows in the wrong order — with
+ * the *second* list's rows landing first, since the first list to fill has
+ * nothing to anchor against).
  */
-export function endAnchor(binding: ListBinding): Element | null {
+export function endAnchor(binding: ListBinding): Node | null {
   if (binding.items.length > 0) {
-    return binding.items[binding.items.length - 1].node.nextElementSibling;
+    return binding.items[binding.items.length - 1].node.nextSibling;
   }
-  return binding.marker.nextElementSibling;
+  return binding.marker.nextSibling;
 }

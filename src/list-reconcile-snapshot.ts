@@ -204,19 +204,20 @@ function removeOldNodes(liveParent: Element, removedItems: BoundItem[]): void {
  * reverse so each move's anchor (`nextSibling`) is already in its final
  * position by the time we reach earlier items.
  *
- * `tailAnchor` is the element that comes AFTER the list inside `liveParent`
- * (or `null` if the list is at the end). The reconciler computes it via
- * `endAnchor(binding)` so it picks up non-list siblings the diff may have
- * inserted between the list and the parent's tail (KF-102).
+ * `tailAnchor` is the node that comes AFTER the list inside `liveParent` (or
+ * `null` if the list is at the end). The reconciler computes it via
+ * `endAnchor(binding)` so it picks up whatever the diff placed between the
+ * list and the parent's tail — including a static text sibling or the next
+ * sibling list's marker, neither of which is an element.
  */
 function applyMoves(
   liveParent: Element,
   newRecord: BoundItem[],
   prevIdx: number[],
   stable: ReadonlySet<number>,
-  tailAnchor: Element | null,
+  tailAnchor: Node | null,
 ): void {
-  let nextSibling: Element | null = tailAnchor;
+  let nextSibling: Node | null = tailAnchor;
   for (let i = newRecord.length - 1; i >= 0; i--) {
     const node = newRecord[i].node;
     if (prevIdx[i] === -1 || !stable.has(i)) {

@@ -135,7 +135,7 @@ function applySingleInsert(
   liveParent: Element,
   items: BoundItem[],
   patch: InsertPatch,
-  tailAnchor: Element | null,
+  tailAnchor: Node | null,
 ): void {
   const { html } = patch;
   const newNode = parseSingleRow(html, patch.index, liveParent);
@@ -307,7 +307,7 @@ function applyBulkInsert(
   patches: NonNullable<ListSegment['patches']>,
   start: number,
   end: number,
-  tailAnchor: Element | null,
+  tailAnchor: Node | null,
 ): void {
   const startIdx = (patches[start] as InsertPatch).index;
   const htmls = new Array<string>(end - start);

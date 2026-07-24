@@ -51,12 +51,12 @@ const MAX_REPORTS = 3;
 /**
  * What fraction of seeds the open defects below are allowed to excuse. Measured,
  * then pinned — a ratio rather than a count so a longer soak uses the same bar.
- * This is the honest number for how much of the shape space is guarded today: at
- * 200 seeds, 155 are excused (KF-402 accounts for 146 of them, KF-404 for 9),
- * leaving 45 fully checked. Lower it whenever a fix brings it down — fixing the
- * sibling-lists defect alone should collapse it.
+ * This is the honest number for how much of the shape space is guarded today.
+ * Lower it whenever a fix brings it down. It started at 0.78; fixing the
+ * end-anchor defect collapsed it to 3/200, so 197 of 200 seeds are now fully
+ * checked and the only remaining excuse is the list-identity shift.
  */
-const QUARANTINE_BUDGET = 0.78;
+const QUARANTINE_BUDGET = 0.02;
 
 // ---------------------------------------------------------------------------
 // Quarantine
@@ -98,46 +98,6 @@ interface QuarantineEntry {
 }
 
 /**
- * Walk the tree in "parent buckets": a `cond` is transparent (its children are
- * siblings of the conditional itself), while an element or `<svg>` opens a new
- * bucket. `fn` sees each bucket's flattened sibling list.
- */
-function forEachBucket(nodes: readonly NodeSpec[], fn: (bucket: NodeSpec[]) => void): void {
-  const flatten = (siblings: readonly NodeSpec[], into: NodeSpec[]): void => {
-    for (const node of siblings) {
-      into.push(node);
-      if (node.kind === 'cond') flatten(node.children, into);
-      else if (node.kind === 'el' || node.kind === 'svg') forEachBucket(node.children, fn);
-    }
-  };
-  const bucket: NodeSpec[] = [];
-  flatten(nodes, bucket);
-  fn(bucket);
-}
-
-/** Two `each()` calls share a parent element. */
-function hasSiblingLists(spec: TreeSpec): boolean {
-  let found = false;
-  forEachBucket(spec.root, (bucket) => {
-    if (bucket.filter((n) => n.kind === 'list').length >= 2) found = true;
-  });
-  return found;
-}
-
-/**
- * Some list has a following sibling in its own parent. A list that is the last
- * thing in its parent — the canonical `<ul>{each(…)}</ul>` — is not in radius.
- */
-function hasNodeAfterList(spec: TreeSpec): boolean {
-  let found = false;
-  forEachBucket(spec.root, (bucket) => {
-    const last = bucket.map((n) => n.kind).lastIndexOf('list');
-    if (last !== -1 && last < bucket.length - 1) found = true;
-  });
-  return found;
-}
-
-/**
  * The tree can change how many `each()` calls run before a later list — an
  * unkeyed list plus a conditional that encloses a list. Deliberately scoped on
  * the tree rather than on kerf's own identity-shift warning: that warning cannot
@@ -156,22 +116,6 @@ function canShiftListIdentity(spec: TreeSpec): boolean {
 }
 
 const QUARANTINE: QuarantineEntry[] = [
-  {
-    ticket: 'KF-402',
-    what: 'two each() lists sharing a parent render in the wrong order; their markers collapse',
-    excuses: (spec) => hasSiblingLists(spec),
-    // Two keyed lists in one <div> over one initially-empty source; fill it.
-    spec: JSON.parse('{"sigCount":1,"condCount":1,"sources":[{"kind":"plain","ids":[]}],"lists":[{"source":0,"key":"LA","rowTag":"li","rowSig":null},{"source":0,"key":"LB","rowTag":"li","rowSig":null}],"root":[{"kind":"el","tag":"div","dataKey":null,"special":null,"boundAttr":null,"children":[{"kind":"list","list":0},{"kind":"list","list":1}]}]}') as TreeSpec,
-    mutations: JSON.parse('[{"k":"replace","s":0,"ids":["x1","x2"]}]') as Mutation[],
-  },
-  {
-    ticket: 'KF-404',
-    what: 'a row inserted into a list lands after a static sibling that follows the list',
-    excuses: (spec) => hasNodeAfterList(spec),
-    // One keyed list with a static text sibling after it; append a second row.
-    spec: JSON.parse('{"sigCount":1,"condCount":1,"sources":[{"kind":"granular","ids":["a"]}],"lists":[{"source":0,"key":"L","rowTag":"li","rowSig":null}],"root":[{"kind":"el","tag":"ul","dataKey":null,"special":null,"boundAttr":null,"children":[{"kind":"list","list":0},{"kind":"text","text":"footer"}]}]}') as TreeSpec,
-    mutations: JSON.parse('[{"k":"insert","s":0,"at":1,"id":"b"}]') as Mutation[],
-  },
   {
     ticket: 'KF-403',
     what: "a list-identity shift leaves rows behind and renders the wrong list's rows",
