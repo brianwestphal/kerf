@@ -1,5 +1,10 @@
 # Test-gap analysis — KF-387 (second sweep)
 
+> **Third sweep:** [`test-gap-analysis-kf393.md`](test-gap-analysis-kf393.md)
+> audits the 24-hour fix cadence that answered this sweep (KF-385…KF-392) as a
+> body of new code — and found four more defects, three of them *inside or
+> between the fixes themselves* (KF-394/KF-395/KF-396/KF-397).
+
 Sibling of [`test-gap-analysis-kf380.md`](test-gap-analysis-kf380.md). KF-380
 swept ONE seam — morph × bindings × owned rows — and the 24 hours after it
 produced KF-381/KF-383/KF-385/KF-386 inside that same seam. KF-387 asked the
