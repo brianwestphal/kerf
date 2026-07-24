@@ -328,6 +328,27 @@ message asks for.
 
 **Like the double-mount guard, this is always-on (unconditional), not opt-in** — there is no env var to silence it, only the mode split. A dropped-but-silent dangerous URL in dev is the exact failure mode the throw fixes (nobody reads the console; the attribute just quietly vanishes). Production keeps the non-crashing warn+drop so attacker-influenced data can never take down a shipped app — **production output is byte-identical to before this split.** This is the one place kerf changes behavior between dev and prod for the *same* input; it's justified because the dev throw only ever fires on input a correct app would never produce (a dangerous URL that isn't wrapped in `raw()`).
 
+### 11.2.14 Parser repairs (`KERF_DEV_WARN_PARSER_REPAIR=1`)
+
+**Module:** [`src/dev-parser-repair-warn.ts`](../src/dev-parser-repair-warn.ts), called from [`src/mount.ts`](../src/mount.ts) on first render.
+**Trigger:** the rendered markup puts a block-level element inside a `<p>`. **What it catches:** the structure you wrote silently not being the structure you get.
+
+kerf renders JSX to an HTML string and lets the parser build the DOM, so the parser's content-model repairs apply. `<p>` may contain only phrasing content, so the parser **closes it** before a block-level child:
+
+```tsx
+<p><section>head</section><ul>{each(rows, …)}</ul></p>
+```
+
+parses as `<p></p><section>head</section><ul>…</ul>` — an empty `<p>`, with every child hoisted to be its *sibling*.
+
+**What it costs, precisely.** Less than it looks. kerf reconciles the tree the parser actually produced, and does so consistently: updates, list inserts and conditional toggles all behave correctly afterwards. Nothing is corrupted in the ordinary case. What you lose is the *shape you wrote* — your `<p>` is empty, your children are elsewhere, and any CSS or `querySelector` that assumed the nesting quietly stops matching.
+
+**Why it warrants a warning rather than a doc note:** distance. The symptom is "my list isn't inside the element I put it in", three levels away from the `<p>` that caused it, and nothing in the JSX looks wrong. The fix is a one-liner (use a `<div>`, or move the block content out) once you know which tag pair to look at.
+
+**Why opt-in:** detection scans the emitted HTML rather than re-parsing it. A block-level open tag before a `</p>` is an unambiguous repair signal in kerf's own well-formed output, but it is a heuristic rather than a proof, so the family's opt-in default keeps that judgement with the consumer. One-shot per offending tag pair.
+
+Related: the `each()` row contract already throws for the `<table>`/implicit-`<tbody>` case, which is the same family of repair reaching kerf's row binding rather than its static surrounds.
+
 ### 11.2.13 Structural invariant checks (`KERF_DEV_INVARIANTS`)
 
 **Module:** [`src/dev-invariants.ts`](../src/dev-invariants.ts), called from [`src/mount.ts`](../src/mount.ts) after each render's reconcile pass.
@@ -476,6 +497,17 @@ the hot path stays a bare boolean read rather than a per-call env probe.
 | Numbered doc | `docs/5-event-delegation.md` (Rule 4) | `docs/2-reactivity.md` (Rule 8) | `docs/3-stores.md` (Rule 9) | `docs/4-render.md` §4.2 | `docs/4-render.md` §4.3 | `docs/5-event-delegation.md` §5.3 | `docs/2-reactivity.md` §2.9 | `docs/2-reactivity.md` §2.9 | `docs/4-render.md` §4.2 |
 | AI usage guide | `docs/ai/usage-guide.md` "Hard rules" | same | same | n/a | `docs/ai/usage-guide.md` "Common errors" | `docs/ai/usage-guide.md` Hard Rule 5 + "Common errors" | `docs/ai/usage-guide.md` "Common errors" | `docs/ai/usage-guide.md` Hard Rule 9 family list | `docs/ai/usage-guide.md` "Common errors" |
 | Test fixture | `tests/unit/dev-listener-warn.internal.test.ts` | covered in `tests/unit/reactive.test.ts` | `tests/unit/dev-store-warn.internal.test.ts` | `tests/unit/dev-each-warn.internal.test.ts` | same | `tests/unit/dev-delegate-warn.internal.test.ts` | `tests/unit/dev-binding-warn.internal.test.ts` | `tests/unit/dev-rerender-warn.internal.test.ts` | `tests/unit/dev-list-rebind-warn.internal.test.ts` |
+
+The two newest members are deliberately absent from that table because two of its
+columns don't apply to them. `KERF_DEV_INVARIANTS` ([`src/dev-invariants.ts`](../src/dev-invariants.ts),
+wired in `src/mount.ts` after the reconcile pass, tested by
+`tests/unit/dev-invariants.internal.test.ts`) and `KERF_DEV_WARN_PARSER_REPAIR`
+([`src/dev-parser-repair-warn.ts`](../src/dev-parser-repair-warn.ts), wired in
+`src/mount.ts` on first render, tested by
+`tests/unit/dev-parser-repair-warn.internal.test.tsx`) have **no numbered-doc or
+AI-usage-guide surface**: neither describes a kerf pattern an author should adopt.
+One reports a kerf bug, the other reports invalid HTML. There is nothing for the
+usage guide to teach.
 
 ## 11.5 Adding a new warning
 

@@ -40,6 +40,7 @@ import { maybeCheckListInvariants } from './dev-invariants.js';
 import { maybeWarnListIdShift } from './dev-list-key-warn.js';
 import { maybeWarnListRebind } from './dev-list-rebind-warn.js';
 import { installListenerRebuildWarn } from './dev-listener-warn.js';
+import { maybeWarnParserRepair } from './dev-parser-repair-warn.js';
 import { maybeWarnValueOnlyRerender, type ValueOnlyWarnContext } from './dev-rerender-warn.js';
 import { _resetCallOrderListState, _setRenderContext, type RenderContext } from './each.js';
 import type { SafeHtml } from './jsx-runtime.js';
@@ -266,6 +267,10 @@ export function mount(rootEl: HTMLElement, render: () => MountResult): () => voi
     if (isFirst) {
       runFirstRender(rootEl, segment, bindings);
       prevStaticHtml = flattenWithoutListItems(segment);
+      // Opt-in scan for markup the HTML parser silently restructures
+      // (KERF_DEV_WARN_PARSER_REPAIR). First render only: the shape is a
+      // property of the markup, not of any particular update.
+      maybeWarnParserRepair(prevStaticHtml);
       bindingDisposers = wireBindings(rootEl, bindingCtx, bindingDisposers);
       if (isStaleBindingWarnOptedIn()) prevWiredBindings = bindingCtx.list;
       isFirst = false;
