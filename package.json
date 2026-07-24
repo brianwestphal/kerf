@@ -90,6 +90,7 @@
     "check:docs:test-inventory": "node scripts/check-doc-test-inventory.mjs",
     "check:docs:api-coverage": "node scripts/check-doc-api-coverage.mjs",
     "check:docs:api-signatures": "npm run build && node scripts/check-doc-api-signatures.mjs",
+    "fuzz:soak": "node scripts/fuzz-soak.mjs",
     "check:features": "node scripts/check-feature-coverage.mjs",
     "check:ai-bundle-in-sync": "node scripts/check-ai-bundle.mjs",
     "ai-bundle:sync": "node scripts/sync-ai-bundle.mjs",

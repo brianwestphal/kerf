@@ -38,10 +38,18 @@
  * Six defects have been carried that way and retired; see the KF-402 / KF-408
  * history for the pattern.
  *
- * Practical ceiling: a single process runs out of heap somewhere between 6k and
- * 15k cases. `mount`/`dispose` itself was measured leak-free over 22k cycles, so
- * this is the harness's own accumulation and not a runtime defect; for a bigger
- * soak, run several `KERF_FUZZ_SEED` windows of ≤5000 rather than one long run.
+ * Practical ceiling in ONE process: somewhere between 6k and 15k cases. The
+ * cause is **happy-dom retaining detached DOM trees** — a loop that only does
+ * `createElement` → `innerHTML` → `appendChild` → `remove()`, with no kerf
+ * involved, retains ~1.5 MB per iteration of a 200-node tree, linearly, and
+ * OOMs under a 400 MB cap. kerf's own `mount`/`dispose` was measured leak-free
+ * over 22k cycles. Nothing the harness can do about it in-process.
+ *
+ * So for a long soak use `npm run fuzz:soak`, which runs windows of seeds in
+ * FRESH PROCESSES and therefore has no total limit:
+ *
+ *     npm run fuzz:soak                    # 20k cases
+ *     npm run fuzz:soak -- --total 200000  # overnight
  */
 import { afterEach, describe, expect, it } from 'vitest';
 
