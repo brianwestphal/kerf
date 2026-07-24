@@ -64,6 +64,69 @@
           "branch": "main"
         }
       ]
+    },
+    {
+      "tool": {
+        "driver": {
+          "name": "Hot Sheet",
+          "rules": [
+            {
+              "id": "review-note",
+              "name": "ReviewNote",
+              "shortDescription": {
+                "text": "AI-authored, line-anchored review note."
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "review-note",
+          "ruleIndex": 0,
+          "kind": "informational",
+          "level": "none",
+          "guid": "mry6gh7kn4e18ot3",
+          "message": {
+            "text": "Two design points that only became visible while building.\n\n1. A keyed list does NOT consume the call-order counter. That was not in the plan; it falls out of \"the key IS the identity\" and turns out to be the most useful property of the whole feature — keying the CONDITIONAL list stabilizes its unkeyed siblings, so one key usually fixes a whole tree. It is what the dev warning tells authors to do, because it is the smallest possible edit.\n\n2. The source guard stays a ROUTING decision, not an assertion. The ticket proposed demoting it once identity was stable. That does not survive contact with a legitimate case: each(cond ? a : b, ..., { key: 'x' }) is a keyed list whose source legitimately changes, and a snapshot rebuild is the correct answer there, not an error. Recorded in docs/16.\n\nAlso worth noting for future work: duplicate-key detection is per RENDER (RenderContext.keysThisRender, cleared by mount each render), not per mount lifetime. Per-lifetime would wrongly reject the same key re-appearing on the next render, which is the normal case.\n",
+            "markdown": "Two design points that only became visible while building.\n\n1. A keyed list does NOT consume the call-order counter. That was not in the plan; it falls out of \"the key IS the identity\" and turns out to be the most useful property of the whole feature — keying the CONDITIONAL list stabilizes its unkeyed siblings, so one key usually fixes a whole tree. It is what the dev warning tells authors to do, because it is the smallest possible edit.\n\n2. The source guard stays a ROUTING decision, not an assertion. The ticket proposed demoting it once identity was stable. That does not survive contact with a legitimate case: each(cond ? a : b, ..., { key: 'x' }) is a keyed list whose source legitimately changes, and a snapshot rebuild is the correct answer there, not an error. Recorded in docs/16.\n\nAlso worth noting for future work: duplicate-key detection is per RENDER (RenderContext.keysThisRender, cleared by mount each render), not per mount lifetime. Per-lifetime would wrongly reject the same key re-appearing on the next render, which is the normal case.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/each.ts"
+                },
+                "region": {
+                  "startLine": 128,
+                  "endLine": 180,
+                  "snippet": {
+                    "text": "\nlet context: RenderContext | null = null;\n\nexport function _setRenderContext(c: RenderContext | null): void {\n  context = c;\n}\n\n/**\n * Options for `each()`. Supplied in place of the bare `cacheKey` third\n * argument, which remains supported.\n */\nexport interface EachOptions<T> {\n  /**\n   * Passive per-item comparator — the same value the bare third argument\n   * takes. Invalidates an item's cached HTML when external state changes what\n   * the row should render.\n   */\n  cacheKey?: (item: T, index: number) => unknown;\n  /**\n   * A stable identity for THIS list, unique within the mount.\n   *\n   * Without one, a list is identified by its call order (\"the n-th `each()`\n   * this render\"), so any render that changes how many `each()` calls run\n   * before it reassigns its identity — and the list is rebuilt from scratch,\n   * losing row nodes, focus, scroll position and in-progress IME. Give a key\n   * to any list that can be preceded by a conditional list.\n   *\n   * Keyed lists also do not consume a call-order slot, so keying a\n   * *conditional* list additionally stabilizes its unkeyed siblings.\n   */\n  key?: string;\n}\n\nfunction isEachOptions<T>(\n  v: ((item: T, index: number) => unknown) | EachOptions<T> | undefined,\n): v is EachOptions<T> {\n  return typeof v === 'object' && v !== null;\n}\n\n/** Claim `key` for this render, or throw if another list already took it. */\nfunction claimKey(ctx: RenderContext, key: string): string {\n  if (ctx.keysThisRender.has(key)) {\n    throw new Error(\n      `each(): duplicate list key ${JSON.stringify(key)}. Every keyed each() in a mount must `\n      + 'have its own key — two lists sharing one would share the same cache, binding and DOM '\n      + 'anchor. Give each list a distinct key.',\n    );\n  }\n  ctx.keysThisRender.add(key);\n  // Namespaced so an author key can never collide with a call-order id.\n  return `k:${key}`;\n}\n"
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "tags": [
+              "rationale"
+            ]
+          },
+          "workItemUris": [
+            "KF-392"
+          ],
+          "partialFingerprints": {
+            "prNoteAnchor/v1": "f281d1d4b5511341979e95fe5d1744c3"
+          }
+        }
+      ],
+      "versionControlProvenance": [
+        {
+          "repositoryUri": "git@github.com:brianwestphal/kerf.git",
+          "revisionId": "b9faea7ae53e3642c1fd513796e9bad3ad6980a1",
+          "branch": "main"
+        }
+      ]
     }
   ]
 }

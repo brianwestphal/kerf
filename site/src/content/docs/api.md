@@ -165,14 +165,30 @@ A `null` / `undefined` `liveRoot` throws immediately with a descriptive error (t
 
 ### `each<T>(items, render, cacheKey?): SafeHtml`
 
+The third argument may instead be an options object —
+`each<T>(items, render, options?): SafeHtml` — carrying `cacheKey` and/or
+`key`. Both forms are supported; the options form is what you need when a list
+requires a stable identity (see below).
+
 ```ts
 each(rows.value, (row) => <tr data-key={row.id}>{row.label}</tr>);
 each(rows.value, (row) => <tr…>…</tr>, (row) => row.id === selectedId ? 1 : 0);
+each(rows.value, (row) => <tr…>…</tr>, { key: 'rows' });
+each(rows.value, (row) => <tr…>…</tr>, { key: 'rows', cacheKey: (row) => row.id === selectedId });
 ```
 
 Keyed list iteration with per-item memoization, routed through `mount()`'s native list reconciler. Skips re-running `render` for items whose object identity (and optional `cacheKey`) are unchanged since the previous call — those items keep their existing live DOM nodes verbatim. Items whose identity or cacheKey did change get a fresh node (all fresh-node HTML for a render is bulk-parsed in one `innerHTML` call); items that disappeared are removed. Reorders use a longest-increasing-subsequence pass so the number of `insertBefore` calls is the minimum possible. Items must be objects (cache is a `WeakMap`); wrap primitives if you need to iterate them. Each item's render output must produce exactly one top-level element — and that element must survive HTML parsing as itself, so put an `each()` of `<tr>` inside an explicit `<tbody>` (a bare `<table>` makes the parser insert one, which kerf rejects with a precise error).
 
 `cacheKey` is a passive comparator (not a reactive subscription): kerf calls it once per item per mount-effect run and compares the returned value against the previous run's. Use it when external state, not the item itself, drives what the row should render (e.g. a "currently selected" id flips a CSS class). Distinct from `data-key` on the rendered element, which is the DOM-reconciliation identity that morph uses — `cacheKey` controls when the cached HTML is invalidated; `data-key` controls how a row maps to its existing live DOM node. (Renamed from `key` for clarity; positional callers — the canonical form — are unaffected.)
+
+`key` gives the list a **stable identity**. Without one, a list is identified by its call order — "the n-th `each()` in this render" — so any render that changes how many `each()` calls run *before* it reassigns its identity, and kerf rebuilds the list from scratch: rows lose their DOM nodes, and with them focus, scroll position and in-progress IME composition. The common trigger is a conditional list rendered above another list. Give a key to any list that can be preceded by one:
+
+```tsx
+{showFilters.value ? <ul>{each(filters.value, renderFilter, { key: 'filters' })}</ul> : ''}
+<ul>{each(results.value, renderResult, { key: 'results' })}</ul>
+```
+
+A keyed list does not occupy a call-order slot, so keying just the *conditional* list is usually enough — its unkeyed siblings stop shifting too. Keys must be unique within a mount; two lists claiming the same key throw. In development, kerf warns once per list when it detects an identity shift and names the fix.
 
 If a descendant of a moved row holds focus, the reconciler snapshots the active element + its selection range before the move pass and re-applies them afterwards — so focus and caret position survive a reorder even on engines that drop focus on `insertBefore` (older Safari, happy-dom). See `docs/4-render.md` §4.4.
 

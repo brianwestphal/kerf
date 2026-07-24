@@ -271,7 +271,39 @@ element changes driven by state — and the rebuild-with-repopulate behavior is
 then exactly what the author wants. The opt-in keeps the diagnostic available
 for projects that want it without penalising that pattern.
 
-### 11.2.10 Double-mount guard (always-on, not opt-in)
+### 11.2.10 List identity shift (always-on, not opt-in)
+
+**Module:** [`src/dev-list-key-warn.ts`](../src/dev-list-key-warn.ts).
+**Trigger:** `eachGranular` finds that a list id's recorded data source has
+changed — i.e. this call-order id is now a *different* list than it was last
+render.
+**What it catches:** the silent cost of unkeyed list identity. A list without
+an explicit key is identified by its call order, so any render that changes how
+many `each()` calls run before it reassigns its identity; the list is then
+rebuilt from scratch and its rows lose DOM identity, focus, scroll position and
+in-progress IME composition, at O(rows) instead of O(changes). See
+[`docs/16-list-identity.md`](16-list-identity.md).
+
+**Mechanism.** `maybeWarnListIdShift(id)` is called from the same source
+comparison that routes the render to the snapshot path. It short-circuits on
+`isDevMode()`, dedups on a module-level `warnedIds` Set, and names the fix:
+`each(items, render, { key: 'my-list' })` — plus the non-obvious part, that
+keying the *conditional* list is usually enough, because a keyed list does not
+occupy a call-order slot.
+
+**Dedup scope.** Per list id. One warning per shifting list, not per render.
+
+**Why always-on rather than env-gated.** Same reasoning as the missing-row-key
+warning (§11.2.12): it fires only when kerf is about to silently discard row
+state, it has no legitimate-use false-positive surface (an author never *wants*
+a list rebuilt by accident), and it names a one-line fix. Opting into a warning
+you would always want is friction with no benefit.
+
+**Known blind spot.** Detection compares data sources, so a shift between two
+`each()` calls over the *same* `arraySignal` is invisible to it. Keys close that
+case by construction, which is what the message asks for.
+
+### 11.2.11 Double-mount guard (always-on, not opt-in)
 
 **Module:** [`src/mount.ts`](../src/mount.ts) (KF-175, KF-225).
 **Trigger:** `mount(el, render)` is called on an element that is already the root of a live mount, or on a descendant or ancestor of such an element. **What it catches:** the "two competing effects" pattern — two `mount()` calls on the same DOM subtree both install `effect()` watchers that fight over the same live nodes, producing conflicting DOM mutations and unpredictable rendering output with no runtime error.
@@ -282,7 +314,7 @@ for projects that want it without penalising that pattern.
 
 **Sibling mounts are allowed.** Two `mount()` calls on independent elements (neither is an ancestor or descendant of the other) work correctly — each manages its own subtree. This is the multi-island pattern for apps with independently reactive regions of the page.
 
-### 11.2.11 Dangerous-URL screen (throws in dev, warns in prod)
+### 11.2.12 Dangerous-URL screen (throws in dev, warns in prod)
 
 **Module:** [`src/utils/urlScreen.ts`](../src/utils/urlScreen.ts), applied in [`src/jsx-runtime.ts`](../src/jsx-runtime.ts) (`renderAttr`) and [`src/bindings.ts`](../src/bindings.ts) (`setBoundAttr`).
 **Trigger:** a plain-string URL value that resolves to a `javascript:` / `vbscript:` scheme or a script-executing `data:` document type is written to a URL-bearing attribute (`href`, `src`, `xlink:href`, `formaction`, `action`, `data`). **What it catches:** a stored-XSS payload reaching a `href={...}` interpolation that would otherwise turn into a clickable script vector. See [`docs/6-jsx-runtime.md`](/kerf/docs/jsx/) §6.4.1 for the screening details.

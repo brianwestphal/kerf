@@ -64,6 +64,8 @@ A key makes the container ineligible for positional matching *and* findable by k
 
 For large lists, swap `.map(...)` for the `each(items, render, cacheKey?)` helper. It returns a structured list segment that `mount()` recognizes and routes to the keyed reconciler — bypassing the parse-the-whole-table step entirely. Each row is memoized by item identity (with an optional `cacheKey` that captures external state like a "selected id"), so unchanged rows skip JSX evaluation, string-building, *and* the morph walk. Items must be objects (the cache is a `WeakMap`), and the same object reference must not appear at more than one index — `each()` throws on a duplicate reference, since one object can only map to one cached row node. The immutable-update style elsewhere in this codebase makes the cache work automatically — replace a row with a fresh object and it re-renders, leave its reference alone and it doesn't.
 
+Give a list a **stable key** — `each(items, render, { key: 'results' })` — whenever it can be preceded by a *conditional* list. Without one a list is identified by its call order, so adding or removing an `each()` above it reassigns its identity and kerf rebuilds it from scratch, costing its rows their DOM nodes, focus, scroll position and in-progress IME. A keyed list doesn't occupy a call-order slot, so keying the conditional list alone usually stabilizes its siblings too. kerf warns once per list in development when it detects the shift. See [`docs/16-list-identity.md`](16-list-identity.md).
+
 In development, if the first row of a list renders without an `id` or `data-key` attribute, kerf logs a one-shot warning (always on in dev — no env var): keyless rows match positionally, so focus and per-row state jump rows on insert/delete.
 
 ```tsx
@@ -379,7 +381,7 @@ mount(footerEl, () => <div>{cartTotal.value.toFixed(2)}</div>);
 
 Each region re-renders only when its own dependencies change. Adding an item to the cart triggers all three; changing an unrelated piece of state triggers none.
 
-The regions must be disjoint: mounting the same element twice, or an element inside (or containing) an already-mounted tree, throws immediately — one mount per tree. Compose with plain functions that return JSX instead of nesting mounts; see §11.2.10 in `docs/11-dev-warnings.md` for the guard's details.
+The regions must be disjoint: mounting the same element twice, or an element inside (or containing) an already-mounted tree, throws immediately — one mount per tree. Compose with plain functions that return JSX instead of nesting mounts; see §11.2.11 in `docs/11-dev-warnings.md` for the guard's details.
 
 ## 4.6 Server-rendering
 

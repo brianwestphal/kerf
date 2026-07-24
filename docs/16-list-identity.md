@@ -1,9 +1,10 @@
 # 16. List identity
 
-> **Status: design only.** The problem and the constraints below are verified
-> against the current code; no identity scheme is implemented yet. The
-> correctness half of the problem is already fixed (see §16.2) — what remains
-> is the quality half. Tracked in the list-identity ticket (KF-392).
+> **Status: shipped.** `each(items, render, { key })` gives a list a stable
+> identity, and an always-on dev warning names it as the fix when an identity
+> shift is detected. §16.4/§16.5 record why the alternatives were rejected —
+> the constraints in §16.3 are what make an *automatic* scheme unreachable
+> without a reconciler restructure, so they remain the reason this is opt-in.
 
 ## 16.1 The concept that isn't named
 
@@ -38,7 +39,7 @@ The pattern is worth stating plainly, because it predicts where the next one
 will be: *a concept that several call sites each reconstruct from raw
 materials will eventually be reconstructed differently by one of them.*
 
-## 16.2 What is already fixed, and what isn't
+## 16.2 The two halves of the problem
 
 **Fixed — the corruption.** `each()` records each id's data source and refuses
 to emit an `arraySignal` patch queue when the id now holds a *different*
@@ -47,8 +48,8 @@ source, falling back to a snapshot rebuild. Before that, a batched
 list's live rows: the second list rendered the first list's data. The DOM now
 always matches the list's own signal.
 
-**Not fixed — the cost.** An id shift still makes the affected list rebuild
-from scratch:
+**Then fixed — the cost.** Before the key existed, an id shift still made the
+affected list rebuild from scratch:
 
 - row DOM node identity is lost, taking focus, scroll position, in-progress
   IME composition, and per-row binding effects with it;
@@ -61,9 +62,14 @@ in either direction shifts the later list's id), and a **nested `each()`
 inside a row render** (it increments the shared counter only on cache-*miss*
 renders, so the count varies with cache state).
 
-One hole also remains in the source guard itself: two `each()` calls over the
-**same** `arraySignal` share a source, so a shift between those two passes the
-guard. It needs the same signal rendered twice *and* a shifting call count.
+The source guard also had one hole of its own: two `each()` calls over the
+**same** `arraySignal` share a source, so a shift between those two passed the
+guard undetected.
+
+A key removes all of it — the list no longer depends on call order at all, and
+two lists over one signal are trivially distinguishable. What remains is that
+lists *without* a key still behave as described above, which is why the
+diagnostic (§16.4 C) is part of the design rather than a nicety.
 
 ## 16.3 Constraints (verified, not assumed)
 
@@ -136,7 +142,7 @@ Warn when a recorded id is adopted by a different list.
 - **Incomplete alone**: it can only detect the shift when the two lists have
   different sources, which is the same blind spot as the guard (constraint 1).
 
-## 16.5 Recommendation
+## 16.5 What shipped
 
 **A + C**: an explicit optional key, plus a dev warning that names it as the
 fix when a shift is detected.
@@ -152,13 +158,21 @@ missing-row-key warning is the same discovery mechanism.
 It also closes the same-source hole (constraint 1) for free, which no
 automatic scheme derived from the data can.
 
-The open question is the API shape, since `each()` already takes three
-positional parameters — an options object is the obvious form but it is a
-public API change to a shipped major version.
+The API shape chosen is an **options object** in the third position —
+`each(items, render, { cacheKey, key })` — with the bare `cacheKey` third
+argument still supported, so no existing call changes.
 
-## 16.6 Acceptance
+Two properties fell out of the implementation that are worth stating:
 
-Whatever is built:
+- **A keyed list does not consume a call-order slot.** Keying the *conditional*
+  list therefore stabilizes its unkeyed siblings as well, so a whole tree is
+  usually fixed by keying the one list that comes and goes.
+- **The source guard stays a routing decision, not an assertion.** The original
+  plan was to demote it once identity was stable, but a keyed list may
+  legitimately change source (`each(cond ? a : b, …, { key: 'x' })`) — a
+  snapshot rebuild is the right answer there, not an error.
+
+## 16.6 Acceptance — all met
 
 - A keyed list keeps row node identity and focus across a sibling list being
   added or removed, in **both** directions.

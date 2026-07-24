@@ -179,6 +179,7 @@ export function mount(rootEl: HTMLElement, render: () => MountResult): () => voi
     caches: new Map(),
     bindingCounts: new Map(),
     bindingSources: new Map(),
+    keysThisRender: new Set(),
   };
   // KF-294: per-mount fine-grained binding context + live-effect disposers.
   // `bindingCtx` is reset and repopulated each render; `bindingDisposers`
@@ -205,6 +206,7 @@ export function mount(rootEl: HTMLElement, render: () => MountResult): () => voi
 
   const disposeEffect = effect(() => {
     renderCtx.counter = 0;
+    renderCtx.keysThisRender.clear();
     bindingCtx.counter = 0;
     bindingCtx.list = [];
     _setRenderContext(renderCtx);

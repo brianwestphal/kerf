@@ -101,7 +101,17 @@ export function morph(
   const templateEl: Element = isElementNode(template)
     ? template
     : parseTemplate(liveRoot, template);
+  // Some engines (older Safari, happy-dom) blur a focused descendant on
+  // `insertBefore` even though the node survives the move connected. Every
+  // move path in the walk below can hit that — the keyed match, the element
+  // lookahead, the marker run — so capture once here and restore once after,
+  // rather than per move. This is what makes mount()'s documented promise
+  // ("element identity, and thus focus, is preserved wherever the diff
+  // matches") true for moved subtrees and not just morphed-in-place ones.
+  // One activeElement read per morph; `restoreFocus` no-ops when nothing moved.
+  const focusSnap = captureFocus(liveRoot);
   morphChildren(liveRoot, templateEl, ownedItems);
+  if (focusSnap !== null) restoreFocus(focusSnap);
 }
 
 /**

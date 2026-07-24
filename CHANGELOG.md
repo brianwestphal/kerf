@@ -6,6 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **New:** `each()` accepts an options object — `each(items, render, { cacheKey, key })` — and `key` gives a list a **stable identity**. Without one a list is identified by its position among the `each()` calls in a render, so adding or removing a conditional list above it made kerf rebuild it from scratch: rows lost their DOM nodes, and with them focus, scroll position and in-progress IME composition. Keying a list removes that dependency; because a keyed list doesn't occupy a positional slot, keying just the *conditional* list usually stabilizes its siblings too. The existing three-argument `each(items, render, cacheKey)` form is unchanged. In development kerf now warns once per list when it detects such a shift and names the fix.
+- Focus now survives every move the diff makes, not just morph-in-place updates — moving a subtree (a keyed match, a shifted sibling) no longer drops the caret on engines that blur on `insertBefore`.
+
 - An `each()` of `<tr>` written directly inside `<table>` now fails with a clear error instead of silently duplicating rows: the HTML parser inserts a `<tbody>` around the rows, which kerf cannot bind through. The message names both tags and shows the supported shape (`<table><tbody>{each(...)}</tbody></table>`). Previously this also mis-reported the rows as missing `data-key`.
 
 - Fixed: a controlled `checked` / `value` on an `each()` row's own top-level element could stay visibly stale after the user had interacted with it — the row reconciler's attribute-only fast path wrote the attribute without syncing the live property, so whether the control obeyed your data depended on which internal route the update happened to take.

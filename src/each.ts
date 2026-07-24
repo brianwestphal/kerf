@@ -40,6 +40,7 @@
 import type { ArraySignal } from './array-signal.js';
 import { type Binding, captureRowBindings } from './bindings.js';
 import { maybeWarnDuplicateCacheKeys } from './dev-each-warn.js';
+import { maybeWarnListIdShift } from './dev-list-key-warn.js';
 import type { SafeHtml } from './jsx-runtime.js';
 import { granularListSafeHtml, isSafeHtml, listSafeHtml } from './jsx-runtime.js';
 import { decideListPath, deriveListRenderState } from './list-render-state.js';
@@ -116,6 +117,13 @@ export interface RenderContext {
    * rebuild needs (granular segments deliberately carry `items: []`).
    */
   bindingSources: Map<string, object | undefined>;
+  /**
+   * Keys claimed by `each({ key })` calls in the CURRENT render, reset by
+   * `mount()` alongside the counter. Two lists claiming one key would share
+   * every keyed structure — a new silent-corruption footgun introduced by the
+   * feature itself — so the second claim throws instead.
+   */
+  keysThisRender: Set<string>;
 }
 
 let context: RenderContext | null = null;
@@ -124,11 +132,70 @@ export function _setRenderContext(c: RenderContext | null): void {
   context = c;
 }
 
+/**
+ * Options for `each()`. Supplied in place of the bare `cacheKey` third
+ * argument, which remains supported.
+ */
+export interface EachOptions<T> {
+  /**
+   * Passive per-item comparator — the same value the bare third argument
+   * takes. Invalidates an item's cached HTML when external state changes what
+   * the row should render.
+   */
+  cacheKey?: (item: T, index: number) => unknown;
+  /**
+   * A stable identity for THIS list, unique within the mount.
+   *
+   * Without one, a list is identified by its call order ("the n-th `each()`
+   * this render"), so any render that changes how many `each()` calls run
+   * before it reassigns its identity — and the list is rebuilt from scratch,
+   * losing row nodes, focus, scroll position and in-progress IME. Give a key
+   * to any list that can be preceded by a conditional list.
+   *
+   * Keyed lists also do not consume a call-order slot, so keying a
+   * *conditional* list additionally stabilizes its unkeyed siblings.
+   */
+  key?: string;
+}
+
+function isEachOptions<T>(
+  v: ((item: T, index: number) => unknown) | EachOptions<T> | undefined,
+): v is EachOptions<T> {
+  return typeof v === 'object' && v !== null;
+}
+
+/** Claim `key` for this render, or throw if another list already took it. */
+function claimKey(ctx: RenderContext, key: string): string {
+  if (ctx.keysThisRender.has(key)) {
+    throw new Error(
+      `each(): duplicate list key ${JSON.stringify(key)}. Every keyed each() in a mount must `
+      + 'have its own key — two lists sharing one would share the same cache, binding and DOM '
+      + 'anchor. Give each list a distinct key.',
+    );
+  }
+  ctx.keysThisRender.add(key);
+  // Namespaced so an author key can never collide with a call-order id.
+  return `k:${key}`;
+}
+
 export function each<T extends object>(
   items: readonly T[] | ArraySignal<T>,
   render: (item: T, index: number) => SafeHtml | string,
   cacheKey?: (item: T, index: number) => unknown,
+): SafeHtml;
+export function each<T extends object>(
+  items: readonly T[] | ArraySignal<T>,
+  render: (item: T, index: number) => SafeHtml | string,
+  options?: EachOptions<T>,
+): SafeHtml;
+export function each<T extends object>(
+  items: readonly T[] | ArraySignal<T>,
+  render: (item: T, index: number) => SafeHtml | string,
+  cacheKeyOrOptions?: ((item: T, index: number) => unknown) | EachOptions<T>,
 ): SafeHtml {
+  const useOptions = isEachOptions(cacheKeyOrOptions);
+  const cacheKey = useOptions ? cacheKeyOrOptions.cacheKey : cacheKeyOrOptions;
+  const listKey = useOptions ? cacheKeyOrOptions.key : undefined;
   // KF-92 fast path: when items is an ArraySignal AND we're inside a mount
   // render context AND patches have queued since the last drain, emit a
   // granular list segment that the list reconciler applies in O(patches)
@@ -136,22 +203,26 @@ export function each<T extends object>(
   // `arraySignal` class lives in the `kerfjs/array-signal` subpath and is
   // not imported here at runtime.
   if (isArraySignal<T>(items) && context !== null) {
-    return eachGranular(items, render, cacheKey);
+    return eachGranular(items, render, cacheKey, listKey);
   }
   const snapshotItems: readonly T[] = isArraySignal<T>(items)
     ? items.value as readonly T[]
     : items;
-  return eachSnapshot(snapshotItems, render, cacheKey);
+  return eachSnapshot(snapshotItems, render, cacheKey, listKey);
 }
 
 function eachSnapshot<T extends object>(
   items: readonly T[],
   render: (item: T, index: number) => SafeHtml | string,
   cacheKey: ((item: T, index: number) => unknown) | undefined,
+  listKey: string | undefined,
 ): SafeHtml {
   let id: string;
   if (context !== null) {
-    id = String(context.counter++);
+    // A keyed list takes its identity from the key and does NOT consume a
+    // call-order slot — so keying a conditional list also stops it shifting
+    // its unkeyed siblings when it appears or disappears.
+    id = listKey !== undefined ? claimKey(context, listKey) : String(context.counter++);
   } else {
     id = 'orphan';
   }
@@ -172,10 +243,13 @@ function eachGranular<T extends object>(
   sig: ArraySignal<T>,
   render: (item: T, index: number) => SafeHtml | string,
   cacheKey: ((item: T, index: number) => unknown) | undefined,
+  listKey: string | undefined,
 ): SafeHtml {
   // We're inside a mount context (caller-checked).
   const ctx = context as RenderContext;
-  const id = String(ctx.counter++);
+  // Keyed lists are identified by their key and skip the call-order counter
+  // (see eachSnapshot for why that also helps unkeyed siblings).
+  const id = listKey !== undefined ? claimKey(ctx, listKey) : String(ctx.counter++);
   // KF-336: dispatch through the reified state machine (`list-render-state.ts`
   // holds the transition table). The state derives from the count `mount()`
   // recorded after this list's last successful reconcile; the patch queue is
@@ -204,6 +278,7 @@ function eachGranular<T extends object>(
   // rebuilds this container from our own items.
   const previousSource = ctx.bindingSources.get(id);
   const sourceReused = ctx.bindingSources.has(id) && previousSource !== sig;
+  if (sourceReused) maybeWarnListIdShift(id);
   const decision = sourceReused
     ? { path: 'snapshot' as const }
     : decideListPath(
