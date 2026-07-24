@@ -48,6 +48,23 @@ source, falling back to a snapshot rebuild. Before that, a batched
 list's live rows: the second list rendered the first list's data. The DOM now
 always matches the list's own signal.
 
+**Also fixed — the rebuild had to actually be a rebuild.** For a time the shift
+did worse than cost a rebuild: it produced *wrong output*. Two structures keyed
+on the call-order id were read as the arriving list's own — the per-item HTML
+memo, which two lists over one source hit identically (same refs, same
+`cacheKey`), so the surviving list emitted the departed list's row markup; and
+the live list binding, which was reused whenever *a* marker bearing that id was
+still in the tree rather than the same marker *node*, so rows landed inside the
+previous occupant's container. Neither is visible to the source guard, because a
+shared source is identical by construction.
+
+A render that changes the number of unkeyed `each()` calls now drops all
+call-order-keyed state and renders again, so every affected list rebuilds from
+its own data. Keyed lists are deliberately untouched. The extra pass is paid
+only on the render where the count moved — the one that was already going to
+rebuild — and never in steady state. What follows is therefore the true cost of
+a shift, and the ceiling of it.
+
 **Then fixed — the cost.** Before the key existed, an id shift still made the
 affected list rebuild from scratch:
 

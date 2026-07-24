@@ -40,7 +40,7 @@ import { maybeWarnListIdShift } from './dev-list-key-warn.js';
 import { maybeWarnListRebind } from './dev-list-rebind-warn.js';
 import { installListenerRebuildWarn } from './dev-listener-warn.js';
 import { maybeWarnValueOnlyRerender, type ValueOnlyWarnContext } from './dev-rerender-warn.js';
-import { _setRenderContext, type RenderContext } from './each.js';
+import { _resetCallOrderListState, _setRenderContext, type RenderContext } from './each.js';
 import type { SafeHtml } from './jsx-runtime.js';
 import { isSafeHtml } from './jsx-runtime.js';
 import {
@@ -207,7 +207,8 @@ export function mount(rootEl: HTMLElement, render: () => MountResult): () => voi
   // Per-mount one-shot context for the opt-in value-only-re-render warning.
   const valueOnlyWarnCtx: ValueOnlyWarnContext = { warned: false };
 
-  const disposeEffect = effect(() => {
+  /** One pass of the user's render function with both collection contexts fresh. */
+  const runRenderPass = (): MountResult => {
     renderCtx.counter = 0;
     renderCtx.keysThisRender.clear();
     renderCtx.shiftCandidates.length = 0;
@@ -215,12 +216,42 @@ export function mount(rootEl: HTMLElement, render: () => MountResult): () => voi
     bindingCtx.list = [];
     _setRenderContext(renderCtx);
     _setBindingContext(bindingCtx);
-    let result: MountResult;
     try {
-      result = render();
+      return render();
     } finally {
       _setRenderContext(null);
       _setBindingContext(null);
+    }
+  };
+
+  const disposeEffect = effect(() => {
+    let result = runRenderPass();
+
+    // An unkeyed list is identified by its position among the `each()` calls,
+    // so a render that changed how many of them ran may have handed some ids to
+    // a different list. Only now is this render's count known — and by now the
+    // damage is in `result`, because the departed list's per-item HTML memo
+    // lives under the id its successor just rendered with. Two lists over one
+    // source hit each other's memo exactly (same refs, same cacheKey), so the
+    // surviving list emitted the other list's row markup.
+    //
+    // The documented cost of an identity shift is a from-scratch rebuild, not
+    // wrong output, so that is what happens: drop the call-order-keyed state
+    // and render again. The discarded pass costs one extra render on precisely
+    // the render that was already going to rebuild — and never on a steady-state
+    // one, where the count is unchanged.
+    const countChanged = renderCtx.previousCallCount !== undefined
+      && renderCtx.previousCallCount !== renderCtx.counter;
+    if (countChanged) {
+      // Warn from the FIRST pass: the reset clears the recorded sources the
+      // shift detection compares against, so a second pass has nothing to spot.
+      for (const id of renderCtx.shiftCandidates) {
+        if (renderCtx.warnedShiftIds.has(id)) continue;
+        renderCtx.warnedShiftIds.add(id);
+        maybeWarnListIdShift(id);
+      }
+      _resetCallOrderListState(renderCtx);
+      result = runRenderPass();
     }
 
     // The `MountResult` union covers `null`, `undefined`, `false`, `true`,
@@ -297,20 +328,6 @@ export function mount(rootEl: HTMLElement, render: () => MountResult): () => voi
       renderCtx.bindingSources.set(listSeg.id, listSeg.source);
     }
 
-    // KF-394: an unkeyed list's id can only be taken over by a DIFFERENT list
-    // if the number of unkeyed each() calls changed — otherwise the ids line up
-    // exactly as they did last render and a changed source just means that same
-    // list is showing different data. Deciding here rather than inside each()
-    // is what makes the distinction possible: only now is this render's total
-    // call count known.
-    if (renderCtx.previousCallCount !== undefined
-      && renderCtx.previousCallCount !== renderCtx.counter) {
-      for (const id of renderCtx.shiftCandidates) {
-        if (renderCtx.warnedShiftIds.has(id)) continue;
-        renderCtx.warnedShiftIds.add(id);
-        maybeWarnListIdShift(id);
-      }
-    }
     renderCtx.previousCallCount = renderCtx.counter;
   });
 
@@ -442,9 +459,16 @@ function bindListsFromMarkers(
     const id = marker.data.slice(LIST_MARKER_PREFIX.length);
     const existing = bindings.get(id);
     if (existing !== undefined) {
-      // Existing binding whose marker is still inside the mount survives the
-      // diff — the prior render's item nodes stay bound.
-      if (rootEl.contains(existing.marker)) continue;
+      // Existing binding survives the diff — the prior render's item nodes stay
+      // bound — but only when this id is still carried by the SAME marker node.
+      //
+      // Identity of the node, not merely "a marker with this id is somewhere in
+      // the tree": a call-order id can be handed to a different list when the
+      // number of unkeyed `each()` calls changes, and the departed list's own
+      // marker is typically still live under its new id. Accepting that binding
+      // would point the arriving list at the previous occupant's parent and
+      // anchor, so its rows land inside the wrong container.
+      if (existing.marker === marker && rootEl.contains(existing.marker)) continue;
       // KF-377 self-heal: the marker we found is a fresh clone — the list's
       // container was rebuilt by the morph (e.g. an ancestor's tag changed,
       // so replaceChild swapped the whole subtree). The old binding points at

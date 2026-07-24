@@ -30,6 +30,14 @@
  * fast and can never flake. `KERF_FUZZ_DIFF=0` drops the differential check for
  * triage, leaving only the checks a user would actually see fail.
  *
+ * There is currently no quarantine: every generated case is expected to hold.
+ * When this harness finds a defect that isn't fixed in the same change, hold it
+ * in a quarantine scoped by the SHAPE of the case (not the text of the failure),
+ * pin a reproduction that must keep failing so the entry cannot outlive its bug,
+ * and budget the excused fraction so the debt can shrink but never quietly grow.
+ * That is how the three defects it found on day one were carried and retired;
+ * see the KF-399/KF-402 history if you need the pattern again.
+ *
  * Practical ceiling: a single process runs out of heap somewhere between 6k and
  * 15k cases. `mount`/`dispose` itself was measured leak-free over 22k cycles, so
  * this is the harness's own accumulation and not a runtime defect; for a bigger
@@ -37,8 +45,8 @@
  */
 import { afterEach, describe, expect, it } from 'vitest';
 
-import { type CaseFailure, formatRepro, runCase, shrinkCase } from './fuzz/harness.js';
-import { generateSpec, makeWorld, type NodeSpec, type TreeSpec } from './fuzz/model.js';
+import { formatRepro, runCase, shrinkCase } from './fuzz/harness.js';
+import { generateSpec, makeWorld, type TreeSpec } from './fuzz/model.js';
 import { generateMutations, type Mutation } from './fuzz/mutations.js';
 import { Rng } from './fuzz/rng.js';
 
@@ -48,86 +56,6 @@ const BASE_SEED = Number(env.KERF_FUZZ_SEED ?? 20_260_724);
 const MUTATIONS_PER_CASE = 12;
 /** How many distinct failure signatures to shrink and print. Shrinking is the slow part. */
 const MAX_REPORTS = 3;
-/**
- * What fraction of seeds the open defects below are allowed to excuse. Measured,
- * then pinned — a ratio rather than a count so a longer soak uses the same bar.
- * This is the honest number for how much of the shape space is guarded today.
- * Lower it whenever a fix brings it down. It started at 0.78; fixing the
- * end-anchor defect collapsed it to 3/200, so 197 of 200 seeds are now fully
- * checked and the only remaining excuse is the list-identity shift.
- */
-const QUARANTINE_BUDGET = 0.02;
-
-// ---------------------------------------------------------------------------
-// Quarantine
-// ---------------------------------------------------------------------------
-
-/**
- * Defects this harness found that are filed and still open. Cases inside a known
- * defect's blast radius are tallied but do not fail the run, so the gate is
- * green while the *rest* of the space stays guarded — a fuzz suite that is red
- * for a known reason is a fuzz suite nobody reads.
- *
- * This is a debt ledger, not a place bugs go to be forgotten. Three rules:
- *
- *  - **Scoped by the shape of the case, not the text of the failure.** "We make
- *    no promise yet about two lists sharing a parent" has a boundary; "ignore
- *    anything structural" does not. Trees outside the radius stay fully checked,
- *    and *any* failure in them is a hard failure.
- *  - **Each entry must still reproduce.** Its pinned case is replayed every run
- *    and the test fails if it *passes* — so fixing the bug forces you to delete
- *    the entry, and the gate tightens on its own. An entry cannot outlive its bug.
- *  - **The excused count is budgeted.** `QUARANTINE_BUDGET` pins how many of the
- *    default seeds may be excused. A change that pushes more cases into the
- *    radius trips the budget even though every one of them is "known" — so the
- *    debt can shrink but never quietly grow.
- */
-interface QuarantineEntry {
-  ticket: string;
-  what: string;
-  /**
-   * Whether this defect excuses a given failure. Scoped by the *shape of the
-   * case* wherever possible rather than by the text of the failure — "we make no
-   * promise yet about two lists sharing a parent" is a claim with a boundary,
-   * whereas "ignore anything that looks structural" is not.
-   */
-  excuses: (spec: TreeSpec, failure: CaseFailure) => boolean;
-  /** A pinned case that must keep failing for as long as the entry exists. */
-  spec: TreeSpec;
-  mutations: Mutation[];
-}
-
-/**
- * The tree can change how many `each()` calls run before a later list — an
- * unkeyed list plus a conditional that encloses a list. Deliberately scoped on
- * the tree rather than on kerf's own identity-shift warning: that warning cannot
- * fire when the two lists share a data source, which is exactly the case this
- * defect was found in.
- */
-function canShiftListIdentity(spec: TreeSpec): boolean {
-  if (!spec.lists.some((l) => l.key === null)) return false;
-  const containsList = (nodes: readonly NodeSpec[]): boolean => nodes.some((n) => n.kind === 'list'
-    || ((n.kind === 'cond' || n.kind === 'el' || n.kind === 'svg') && containsList(n.children)));
-  const condOverList = (nodes: readonly NodeSpec[]): boolean => nodes.some((n) => {
-    if (n.kind === 'cond') return containsList(n.children) || condOverList(n.children);
-    return (n.kind === 'el' || n.kind === 'svg') && condOverList(n.children);
-  });
-  return condOverList(spec.root);
-}
-
-const QUARANTINE: QuarantineEntry[] = [
-  {
-    ticket: 'KF-403',
-    what: "a list-identity shift leaves rows behind and renders the wrong list's rows",
-    excuses: (spec) => canShiftListIdentity(spec),
-    // An unkeyed list inside a conditional, an unkeyed list after it, one source.
-    spec: JSON.parse('{"sigCount":1,"condCount":2,"sources":[{"kind":"granular","ids":["s0i0"]}],"lists":[{"source":0,"key":null,"rowTag":"li","rowSig":null},{"source":0,"key":null,"rowTag":"li","rowSig":null}],"root":[{"kind":"el","tag":"div","dataKey":null,"special":null,"boundAttr":null,"children":[{"kind":"cond","cond":1,"children":[{"kind":"list","list":0}]},{"kind":"el","tag":"p","dataKey":null,"special":null,"boundAttr":null,"children":[{"kind":"list","list":1}]}]}]}') as TreeSpec,
-    mutations: JSON.parse('[{"k":"cond","i":1}]') as Mutation[],
-  },
-];
-
-const isQuarantined = (spec: TreeSpec, failure: CaseFailure): QuarantineEntry | undefined =>
-  QUARANTINE.find((entry) => entry.excuses(spec, failure));
 
 // ---------------------------------------------------------------------------
 // Sweep
@@ -186,40 +114,14 @@ describe('reconciler fuzz', () => {
 
   it('random trees and mutation sequences hold every reconciler invariant', () => {
     const failures: SeedFailure[] = [];
-    const excused = new Map<string, number>();
     for (let i = 0; i < RUNS; i++) {
       const seed = BASE_SEED + i;
       const { spec, mutations } = caseForSeed(seed);
       const failure = runCase(spec, mutations);
-      if (failure === null) continue;
-      const entry = isQuarantined(spec, failure);
-      if (entry === undefined) failures.push({ seed, signature: signatureOf(failure.message) });
-      else excused.set(entry.ticket, (excused.get(entry.ticket) ?? 0) + 1);
+      if (failure !== null) failures.push({ seed, signature: signatureOf(failure.message) });
     }
     if (failures.length > 0) expect.fail(report(failures, RUNS));
-
-    // Ratchet: the debt may shrink, never grow. A regression that pushes more
-    // cases into a known defect's radius would otherwise be invisible, since
-    // every one of those cases is individually "expected to fail".
-    const total = Array.from(excused.values()).reduce((a, b) => a + b, 0);
-    const breakdown = Array.from(excused).map(([t, n]) => `${t}:${n}`).join(' ');
-    expect(
-      total / RUNS,
-      `${total}/${RUNS} seeds were excused by the quarantine (${breakdown}), over the pinned `
-      + `budget of ${QUARANTINE_BUDGET}. Either a change widened a known defect's blast radius, `
-      + 'or the generator changed shape — investigate before raising the budget.',
-    ).toBeLessThanOrEqual(QUARANTINE_BUDGET);
     // Scaled so a `KERF_FUZZ_RUNS=5000` soak doesn't trip vitest's default 5s.
   }, Math.max(30_000, RUNS * 40));
 
-  // If one of these starts passing, the bug is fixed: delete its entry from
-  // QUARANTINE so the sweep above stops excusing that whole failure class.
-  it.each(QUARANTINE)('quarantined defect $ticket still reproduces — $what', (entry) => {
-    const failure = runCase(entry.spec, entry.mutations);
-    expect(
-      failure,
-      `${entry.ticket} no longer reproduces. If it is fixed, remove its QUARANTINE entry.`,
-    ).not.toBeNull();
-    expect(entry.excuses(entry.spec, failure as CaseFailure)).toBe(true);
-  });
 });

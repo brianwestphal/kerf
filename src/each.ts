@@ -163,6 +163,38 @@ export function _setRenderContext(c: RenderContext | null): void {
 }
 
 /**
+ * Drop every piece of per-list state that is keyed on a CALL-ORDER id, keeping
+ * the keyed (`k:`-prefixed) ones.
+ *
+ * `mount()` calls this when a render changed how many unkeyed `each()` calls
+ * ran, because at that moment every call-order id may be held by a different
+ * list than it was, and each of these structures would otherwise be read as
+ * that list's own:
+ *
+ *  - `caches` — the per-item HTML memo. This is the one that produced visibly
+ *    wrong output: two lists over the same items hit each other's memo (same
+ *    refs, same `cacheKey`) and the surviving list rendered the departed list's
+ *    row markup. The recorded-source guard cannot see it, because a shared
+ *    source is identical by construction.
+ *  - `bindingCounts` — clearing it puts the list in the `unbound` state, so it
+ *    takes the snapshot path and rebuilds from its own items instead of
+ *    applying a patch queue against a stranger's row count.
+ *  - `bindingSources` — the record being invalidated; a stale entry here would
+ *    make the next render believe a genuine continuation was a reuse.
+ *
+ * Keyed lists are deliberately untouched: their identity does not depend on
+ * call order, which is the entire reason `each(…, { key })` exists.
+ */
+export function _resetCallOrderListState(ctx: RenderContext): void {
+  const isCallOrderId = (id: string): boolean => !id.startsWith('k:');
+  for (const map of [ctx.caches, ctx.bindingCounts, ctx.bindingSources]) {
+    for (const id of Array.from(map.keys())) {
+      if (isCallOrderId(id)) map.delete(id);
+    }
+  }
+}
+
+/**
  * Options for `each()`. Supplied in place of the bare `cacheKey` third
  * argument, which remains supported.
  */

@@ -346,14 +346,18 @@ describe('KF-387 seam: each() list identity across a varying call count', () => 
     dispose();
   });
 
-  it('a nested each() inside a row drifts the id counter with cache hits, rebuilding an unrelated sibling list', () => {
-    // KNOWN BUG KF-388 shape C: an each() inside a row render increments the
-    // shared list-id counter only on cache-MISS renders of that row, so an
-    // unrelated signal bump (outer rows all cache-hit) changes how many
-    // each() calls precede the second list — its id flips and it rebuilds.
-    // (Nested-in-row lists themselves flatten to static HTML — the inner
-    // marker never reaches the segment tree — which is a separate boundary
-    // noted on KF-388.) Flip the identity assertion when KF-388 lands.
+  it('a nested each() inside a row drifts the id counter with cache hits, and the unrelated sibling list survives it', () => {
+    // An each() inside a row render increments the shared list-id counter only
+    // on cache-MISS renders of that row, so an unrelated signal bump (outer
+    // rows all cache-hit) changes how many each() calls precede the second
+    // list — its call-order id flips.
+    //
+    // That used to rebuild the second list, discarding its row nodes. It no
+    // longer does: a changed call count now resets the call-order-keyed state
+    // and re-renders, which routes the list through the snapshot path, where
+    // the same refs in the same order are morphed in place. Identity survives.
+    // (Nested-in-row lists themselves still flatten to static HTML — the inner
+    // marker never reaches the segment tree — which is a separate boundary.)
     interface Outer { id: string; subs: { id: string; t: string }[] }
     const outer: Outer[] = [{ id: 'o1', subs: [{ id: 's1', t: 'S1' }] }];
     const others = [{ id: 'x1', t: 'X1' }, { id: 'x2', t: 'X2' }];
@@ -375,8 +379,8 @@ describe('KF-387 seam: each() list identity across a varying call count', () => 
     bump.value = 1; // outer rows cache-hit → inner each() not called → ids shift
     const second = Array.from(root.querySelectorAll('ul.second li')).map((li) => li.textContent);
     expect(second).toEqual(['X1', 'X2']); // content correct
-    // KNOWN BUG KF-388: the unrelated sibling list was rebuilt.
-    expect(root.querySelector('ul.second li[data-key="x1"]')).not.toBe(x1);
+    // …and the unrelated sibling list kept its row nodes.
+    expect(root.querySelector('ul.second li[data-key="x1"]')).toBe(x1);
     dispose();
   });
 });
