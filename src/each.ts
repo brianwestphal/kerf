@@ -136,6 +136,17 @@ export interface RenderContext {
   previousCallCount?: number;
   /** Per-mount dedup for the shift warning — ids are per-mount, so this must be too. */
   warnedShiftIds: Set<string>;
+  /**
+   * KF-411: list ids whose container the morph rebuilt THIS render, so
+   * `bindListsFromMarkers` self-healed their binding to empty. Populated during
+   * the bind pass, read by `mount()` after it. A self-healed binding is empty,
+   * but if that list emitted a GRANULAR segment (it looked `bound` when `each()`
+   * ran, before the morph), the segment carries no items — so a snapshot
+   * reconcile would empty the live rows. `mount()` resets these lists to
+   * unbound and re-renders so `each()` re-emits a full snapshot. Cleared before
+   * each bind pass.
+   */
+  rebuiltLists: Set<string>;
 }
 
 let context: RenderContext | null = null;
@@ -467,6 +478,15 @@ function eachGranular<T extends object>(
       return isSafeHtml(out) ? out.toString() : out;
     }));
   const internalPatches = new Array<ArrayPatchInternal>(patches.length);
+  // KF-414: the per-item HTML memo. The granular path renders fresh HTML for
+  // each insert/update below; it must write that back into the memo too, or a
+  // later snapshot-routed render (the `no-patches` transition on an unrelated
+  // re-render) finds the STALE entry — same ref, same cacheKey — and the
+  // in-place fast path morphs the row back to its old HTML. "What this row
+  // renders" cannot live in two places (`binding.items[].html` and this memo)
+  // that are allowed to diverge. Always populated here (the first render of any
+  // list took the snapshot path, which created it), so the `?.` is belt-only.
+  const cache = ctx.caches.get(id);
   try {
     for (let i = 0; i < patches.length; i++) {
       const p = patches[i];
@@ -475,6 +495,11 @@ function eachGranular<T extends object>(
         internalPatches[i] = {
           type: p.type, index: p.index, item: p.item as object, html, bindings,
         };
+        cache?.set(p.item as object, {
+          cacheKey: cacheKey ? cacheKey(p.item as T, p.index) : undefined,
+          html,
+          bindings,
+        });
       } else {
         internalPatches[i] = p as ArrayPatchInternal;
       }

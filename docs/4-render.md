@@ -151,7 +151,9 @@ Three `data-*` attributes opt portions of the live tree out of the diff. They ov
 | --- | --- | --- | --- | --- |
 | `data-morph-skip` | left verbatim (no attr morph) | left verbatim | n/a (the element is in the template) | Library-owned hosts: xterm / Monaco / D3 — the library mutates classes too, so you don't want kerf undoing them. |
 | `data-morph-skip-children` | attrs morph | left verbatim | n/a | Client-hydrated slots: server emits an empty container, the client fills it asynchronously, but the server's classes / data attrs on the slot itself still need to flow through (e.g. `class="slot is-loading"` → `"slot is-ready"`). |
-| `data-morph-preserve` | attrs morph if matched; otherwise untouched | morphed if matched; otherwise untouched | skipped (element survives even when the new template doesn't emit it) | Imperatively-injected nodes the consumer added AFTER first render — autoplay `<video>`, tooltip layer, analytics pixel — that aren't in the JSX. |
+| `data-morph-preserve` | attrs morph if key-matched; otherwise untouched | morphed if key-matched; otherwise untouched | skipped (element survives even when the new template doesn't emit it) | Imperatively-injected nodes the consumer added AFTER first render — autoplay `<video>`, tooltip layer, analytics pixel — that aren't in the JSX. |
+
+All three attributes also protect the node from **positional repurposing**: the diff will not adopt a `data-morph-skip` / `data-morph-skip-children` / `data-morph-preserve` live node as the positional match for a template element that makes no such claim. So a library-owned widget or an injected preserved node keeps its identity and contents even when a conditional sibling reappears at its exact position — the template element is inserted fresh beside it instead. A keyed match (`id` / `data-key`) is the one way to deliberately morph such a node in place.
 
 ### `data-morph-skip` — library-owned subtree
 

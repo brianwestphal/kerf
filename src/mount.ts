@@ -185,6 +185,7 @@ export function mount(rootEl: HTMLElement, render: () => MountResult): () => voi
     keysThisRender: new Set(),
     shiftCandidates: [],
     warnedShiftIds: new Set(),
+    rebuiltLists: new Set(),
   };
   // KF-294: per-mount fine-grained binding context + live-effect disposers.
   // `bindingCtx` is reset and repopulated each render; `bindingDisposers`
@@ -258,11 +259,9 @@ export function mount(rootEl: HTMLElement, render: () => MountResult): () => voi
 
     // The `MountResult` union covers `null`, `undefined`, `false`, `true`,
     // and `number` so consumers can write `() => cond ? <jsx/> : null` and
-    // `() => cond && <jsx/>` without a cast. `coerceRenderResult` collapses
+    // `() => cond && <jsx/>` without a cast. `resultToSegment` collapses
     // nullish + boolean to `''` (render nothing) and stringifies numbers.
-    const segment: Segment = isSafeHtml(result)
-      ? (result.__segment ?? { kind: 'static', html: result.__html })
-      : { kind: 'static', html: coerceRenderResult(result) };
+    let segment: Segment = resultToSegment(result);
 
     if (isFirst) {
       runFirstRender(rootEl, segment, bindings);
@@ -275,9 +274,27 @@ export function mount(rootEl: HTMLElement, render: () => MountResult): () => voi
       if (isStaleBindingWarnOptedIn()) prevWiredBindings = bindingCtx.list;
       isFirst = false;
     } else {
-      const nextStaticHtml = runSubsequentRender(
+      let nextStaticHtml = runSubsequentRender(
         rootEl, segment, bindings, renderCtx, prevStaticHtml, valueOnlyWarnCtx,
       );
+
+      // KF-411: the morph just rebuilt one or more lists' containers, so their
+      // bindings were self-healed to empty. A list that emitted a granular
+      // segment (it looked `bound` when `each()` ran, before the morph) now has
+      // items:[] against an empty binding — the reconcile below would render it
+      // blank, discarding rows that still live in the arraySignal. Reset those
+      // lists to unbound and render again: `each()` re-emits a full snapshot,
+      // and the second bind pass finds the (now valid) self-healed binding and
+      // reconciles it to the real rows. Only fires on a container-rebuild
+      // render — already O(N) — never in steady state.
+      if (anyRebuiltListIsGranular(segment, renderCtx.rebuiltLists)) {
+        for (const id of renderCtx.rebuiltLists) renderCtx.bindingCounts.delete(id);
+        result = runRenderPass();
+        segment = resultToSegment(result);
+        nextStaticHtml = runSubsequentRender(
+          rootEl, segment, bindings, renderCtx, prevStaticHtml, valueOnlyWarnCtx,
+        );
+      }
       // A changed static-surrounds string means morph() ran, which strips
       // bound attributes (absent from the template) and removes inserted text
       // nodes. Re-wire against the post-morph DOM. When the surrounds are
@@ -407,6 +424,10 @@ function runSubsequentRender(
   prevStaticHtml: string,
   valueOnlyWarnCtx: ValueOnlyWarnContext,
 ): string {
+  // KF-411: reflects only this bind pass. Cleared here — before the fast-path
+  // early return — so the surrounds-unchanged path leaves it empty (no morph,
+  // no bind, no self-heal to record) rather than carrying a stale set forward.
+  renderCtx.rebuiltLists.clear();
   const currentStaticHtml = flattenWithoutListItems(segment);
   if (currentStaticHtml === prevStaticHtml) {
     return prevStaticHtml;
@@ -420,7 +441,7 @@ function runSubsequentRender(
   const template = rootEl.cloneNode(false) as HTMLElement;
   template.innerHTML = currentStaticHtml;
   morph(rootEl, template, collectOwnedItems(bindings));
-  bindListsFromMarkers(rootEl, segment, bindings, false);
+  bindListsFromMarkers(rootEl, segment, bindings, false, renderCtx.rebuiltLists);
   return currentStaticHtml;
 }
 
@@ -435,6 +456,32 @@ function coerceRenderResult(result: unknown): string {
   if (result === null || result === undefined) return '';
   if (result === false || result === true) return '';
   return String(result);
+}
+
+/**
+ * A render result → the `Segment` the pipeline consumes. `SafeHtml` carries its
+ * structured segment (or a plain `__html` for a cross-bundle shim); everything
+ * else is coerced to a static-html segment.
+ */
+function resultToSegment(result: MountResult): Segment {
+  return isSafeHtml(result)
+    ? (result.__segment ?? { kind: 'static', html: result.__html })
+    : { kind: 'static', html: coerceRenderResult(result) };
+}
+
+/**
+ * KF-411: did the morph rebuild a list's container whose `each()` emitted a
+ * GRANULAR segment this render? Such a segment carries `items: []`, so the
+ * freshly self-healed (empty) binding would reconcile the live rows to zero.
+ * `mount()` re-renders those lists onto the snapshot path when this is true.
+ */
+function anyRebuiltListIsGranular(segment: Segment, rebuilt: ReadonlySet<string>): boolean {
+  if (rebuilt.size === 0) return false;
+  const lists = collectLists(segment);
+  for (const id of rebuilt) {
+    if (lists.get(id)?.patches !== undefined) return true;
+  }
+  return false;
 }
 
 /**
@@ -461,6 +508,7 @@ function bindListsFromMarkers(
   segment: Segment,
   bindings: Map<string, ListBinding>,
   inlinedItems: boolean,
+  rebuiltLists?: Set<string>,
 ): void {
   const lists = collectLists(segment);
   const found: Comment[] = [];
@@ -505,6 +553,10 @@ function bindListsFromMarkers(
         }
       }
       bindings.delete(id);
+      // KF-411: record the rebuild so `mount()` can re-render if this list
+      // emitted a granular segment (which carries no items and would otherwise
+      // reconcile the fresh empty binding straight back to zero rows).
+      rebuiltLists?.add(id);
       // Opt-in dev warning (KERF_DEV_WARN_LIST_REBIND=1): the recovery is
       // correct but lossy — row DOM state is discarded — so surface it.
       maybeWarnListRebind(id, marker.parentElement as Element);
