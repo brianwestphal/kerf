@@ -434,27 +434,38 @@ function eachGranular<T extends object>(
   // render fn reads the index, those carried rows now show a stale index. Opt-in
   // dev warning; `previousBindingCount` is the pre-batch row count (defined on
   // the granular path — the snapshot arms above own the `undefined` case).
+  // KF-424: only DETECT the shift here; emit the warning at the granular-commit
+  // point below. A cachekey-drift or render-threw reroute past this block hands
+  // off to the snapshot path, which re-renders every displaced row at its correct
+  // index — so warning here (before the reroute) was a false positive for a list
+  // using the documented `cacheKey: (_, i) => i` workaround.
+  //
+  // Replay the patches over an array holding each row's RENDERED index — carried
+  // rows are rendered at their original index, freshly-inserted rows at their
+  // patch index — then flag if any row's rendered index ends up ≠ its final
+  // position. This is exact where a transient running-length check was not: it
+  // does NOT false-positive on a net-zero batch whose shifts cancel (KF-424), and
+  // it DOES catch a fresh insert displaced by a later same-batch insert, whose
+  // patch-time index the granular path can't retroactively fix (KF-425). The
+  // O(rows) replay runs only in dev under the opt-in for an index-reading list.
+  let staleIndexShift = false;
   if (render.length >= 2 && isOptedInStaleIndex()) {
-    let len = previousBindingCount as number;
+    const rendered: number[] = [];
+    for (let i = 0; i < (previousBindingCount as number); i++) rendered.push(i);
     for (const p of patches) {
-      if (p.type === 'move') {
-        maybeWarnStaleIndex(id);
+      if (p.type === 'insert') rendered.splice(p.index, 0, p.index);
+      else if (p.type === 'remove') rendered.splice(p.index, 1);
+      else if (p.type === 'move') {
+        const [moved] = rendered.splice(p.from, 1);
+        rendered.splice(p.to, 0, moved);
+      }
+      // 'update' re-renders in place (index unchanged); 'replace' routed to snapshot above.
+    }
+    for (let i = 0; i < rendered.length; i++) {
+      if (rendered[i] !== i) {
+        staleIndexShift = true;
         break;
       }
-      if (p.type === 'insert') {
-        if (p.index < len) {
-          maybeWarnStaleIndex(id);
-          break;
-        }
-        len++;
-      } else if (p.type === 'remove') {
-        if (p.index < len - 1) {
-          maybeWarnStaleIndex(id);
-          break;
-        }
-        len--;
-      }
-      // 'update' keeps position; 'replace' routed to snapshot above.
     }
   }
 
@@ -567,6 +578,10 @@ function eachGranular<T extends object>(
     ctx.bindingCounts.delete(id);
     return eachSnapshotById(snapshot, render, cacheKey, id, sig);
   }
+  // KF-424: the render has committed to the granular path (no cachekey-drift or
+  // render-threw reroute fired above), so any detected index shift will actually
+  // reach the DOM as stale HTML — now it's a true positive worth warning about.
+  if (staleIndexShift) maybeWarnStaleIndex(id);
   // The `items` field is left empty for the granular case — the reconciler
   // doesn't need it; every insert/update patch carries pre-rendered HTML.
   return granularListSafeHtml(id, [], internalPatches, sig);

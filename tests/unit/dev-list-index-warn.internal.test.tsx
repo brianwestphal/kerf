@@ -17,7 +17,7 @@ import { arraySignal } from '../../src/array-signal.js';
 import { _resetWarnedForTests, maybeWarnStaleIndex } from '../../src/dev-list-index-warn.js';
 import { each } from '../../src/each.js';
 import { mount } from '../../src/mount.js';
-import { signal } from '../../src/reactive.js';
+import { batch, signal } from '../../src/reactive.js';
 
 const env = (globalThis as { process: { env: Record<string, string | undefined> } }).process.env;
 
@@ -37,6 +37,8 @@ afterEach(() => {
   delete (globalThis as { KERF_DEV?: boolean }).KERF_DEV;
   warnSpy.mockRestore();
 });
+
+const texts = (): (string | null)[] => Array.from(root.querySelectorAll('li')).map((l) => l.textContent);
 
 // render fns: one reads the index (arity 2), one does not (arity 1).
 const withIndex = (it: { id: string }, i: number) => <li data-key={it.id}>{`${i}:${it.id}`}</li>;
@@ -125,6 +127,47 @@ describe('dev-list-index-warn (KERF_DEV_WARN_STALE_INDEX=1)', () => {
     mount(root, () => <ul>{each(data.value, withIndex)}</ul>);
     data.value = [data.value[1], data.value[0]];
     expect(warnSpy).not.toHaveBeenCalled();
+  });
+
+  it('KF-424: the cacheKey:(_,i)=>i workaround suppresses the warn when it reroutes to snapshot', () => {
+    env.KERF_DEV_WARN_STALE_INDEX = '1';
+    const rows = arraySignal([{ id: 'a' }, { id: 'b' }]);
+    const dispose = mount(root, () => (
+      <ul>{each(rows, (r, i) => <li data-key={r.id}>{`${i}:${r.id}`}</li>, { cacheKey: (_, i) => i })}</ul>
+    ));
+    rows.insert(0, { id: 'c' }); // shifts a,b → cachekey drift → snapshot re-renders them correctly
+    expect(texts()).toEqual(['0:c', '1:a', '2:b']); // output is correct...
+    expect(warnSpy).not.toHaveBeenCalled(); // ...so the warn must NOT fire
+    dispose();
+  });
+
+  it('KF-424: a net-zero insert+remove batch (routes to snapshot) does not warn', () => {
+    env.KERF_DEV_WARN_STALE_INDEX = '1';
+    const rows = arraySignal([{ id: 'a' }, { id: 'b' }]);
+    const dispose = mount(root, () => <ul>{each(rows, withIndex)}</ul>);
+    batch(() => { rows.insert(0, { id: 't' }); rows.remove(0); });
+    expect(texts()).toEqual(['0:a', '1:b']);
+    expect(warnSpy).not.toHaveBeenCalled();
+    dispose();
+  });
+
+  it('KF-424: a genuinely-stale granular shift (no cacheKey, stays granular) STILL warns', () => {
+    env.KERF_DEV_WARN_STALE_INDEX = '1';
+    const rows = arraySignal([{ id: 'a' }, { id: 'b' }]);
+    const dispose = mount(root, () => <ul>{each(rows, withIndex)}</ul>);
+    rows.insert(0, { id: 'c' }); // no cacheKey → no reroute → carried rows keep stale index
+    expect(warnSpy).toHaveBeenCalledTimes(1);
+    dispose();
+  });
+
+  it('KF-425: a fresh insert displaced by a later same-batch insert warns (true positive)', () => {
+    env.KERF_DEV_WARN_STALE_INDEX = '1';
+    const rows = arraySignal([{ id: 'x' }]);
+    const dispose = mount(root, () => <ul>{each(rows, withIndex)}</ul>);
+    // 'a' inserted at 1, then 'b' inserted at 1 displaces 'a' to 2 — 'a' rendered at index 1.
+    batch(() => { rows.insert(1, { id: 'a' }); rows.insert(1, { id: 'b' }); });
+    expect(warnSpy).toHaveBeenCalledTimes(1);
+    dispose();
   });
 
   it('direct call: dedup set short-circuits, and a different id gets its own warning', () => {
