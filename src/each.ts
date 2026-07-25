@@ -365,6 +365,24 @@ function eachSnapshot<T extends object>(
 }
 
 /**
+ * The shared `each()` item contract: an item must be a non-null object so it can
+ * key the per-item HTML `WeakMap`. Enforced identically by the snapshot path (over
+ * the whole list) and the granular path (per insert/update patch), so the two
+ * agree on what a valid item is and a bad item throws at the render its mutation
+ * triggered — not at a later, unrelated one (KF-426). Note it rejects functions
+ * too: they are valid WeakMap keys, but not valid `each()` rows, and admitting
+ * them here without also supporting them as rows is the disagreement KF-426 fixed.
+ */
+function assertObjectItem(item: unknown, index: number): asserts item is object {
+  if (typeof item !== 'object' || item === null) {
+    throw new Error(
+      `each(): items must be objects (the per-item HTML cache is a WeakMap), got ${item === null ? 'null' : typeof item} at index ${index}. `
+      + 'Wrap primitives if you need to iterate them, e.g. items.map(v => ({ v })).',
+    );
+  }
+}
+
+/**
  * Granular path for `arraySignal`-backed lists. Drains queued patches and
  * emits a list segment that the reconciler applies to the existing binding
  * directly — no full iteration of the snapshot, no O(N) classify pass.
@@ -552,6 +570,14 @@ function eachGranular<T extends object>(
     for (let i = 0; i < patches.length; i++) {
       const p = patches[i];
       if (p.type === 'insert' || p.type === 'update') {
+        // KF-426: reject a non-object item here, at the render its insert/update
+        // triggered, instead of letting a function item (a valid WeakMap key, so
+        // `cache.set` below wouldn't throw) render and only surface the error on a
+        // later unrelated snapshot render. The throw is caught by the render-threw
+        // recovery below, which reroutes to the snapshot path — matching how a
+        // primitive item already flows (its `cache.set` TypeError takes the same
+        // route) and giving the same message at the same moment.
+        assertObjectItem(p.item, p.index);
         const { html, bindings } = renderRow(p.item as object, p.index);
         internalPatches[i] = {
           type: p.type, index: p.index, item: p.item as object, html, bindings,
@@ -608,12 +634,7 @@ function eachSnapshotById<T extends object>(
   const seen = new Set<object>();
   for (let i = 0; i < items.length; i++) {
     const item = items[i];
-    if (typeof item !== 'object' || item === null) {
-      throw new Error(
-        `each(): items must be objects (the per-item HTML cache is a WeakMap), got ${item === null ? 'null' : typeof item} at index ${i}. `
-        + 'Wrap primitives if you need to iterate them, e.g. items.map(v => ({ v })).',
-      );
-    }
+    assertObjectItem(item, i);
     if (seen.has(item)) {
       throw new Error(
         `each(): the same object reference appears at multiple indices in items (first seen earlier, again at index ${i}). `

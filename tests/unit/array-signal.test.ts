@@ -155,6 +155,24 @@ describe('arraySignal — each() granular integration via mount()', () => {
     expect(root.querySelectorAll('li')[1].textContent).toBe('b');
   });
 
+  it('KF-426: a function item inserted via the granular path throws at THAT insert, not a later render', () => {
+    // A function is a valid WeakMap key, so before KF-426 the granular insert
+    // rendered it and only a later unrelated snapshot render threw. Now the item
+    // contract is enforced on the granular path too, so the throw lands on the
+    // render this insert triggered.
+    const rows = arraySignal<{ id: number; label: string }>([{ id: 1, label: 'a' }]);
+    renderRows(rows);
+    const fnItem = Object.assign(() => 'hi', { id: 2, label: 'f' }) as unknown as { id: number; label: string };
+    expect(() => rows.insert(1, fnItem)).toThrow(/items must be objects.*got function/);
+  });
+
+  it('KF-426: a primitive item inserted via the granular path also throws at that insert (control)', () => {
+    const rows = arraySignal<{ id: number; label: string }>([{ id: 1, label: 'a' }]);
+    renderRows(rows);
+    expect(() => rows.insert(1, 42 as unknown as { id: number; label: string }))
+      .toThrow(/items must be objects.*got number/);
+  });
+
   it('KF-201: update with a tag mismatch falls back to replaceChild (single-update path)', () => {
     // Consumer's render fn returns <li> for some items and <article> for
     // others — same key, different tag. Granular update on the same item
