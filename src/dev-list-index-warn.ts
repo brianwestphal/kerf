@@ -17,7 +17,12 @@
  *  - the granular path, when the applied `arraySignal` patches shift an existing
  *    row's index (a non-tail insert/remove, or any move).
  * Both are gated on the render fn actually declaring an index parameter
- * (`render.length >= 2`), so a list that never reads the index never warns.
+ * (`render.length >= 2`), so a list that never reads the index never warns. This
+ * is a heuristic in both directions: a fn that declares `index` but never uses it
+ * warns spuriously (false positive), and a fn whose index parameter has a DEFAULT
+ * value — `(item, i = 0) => …` — has `Function.length` 1, so it escapes the gate
+ * and a genuine index use goes unwarned (false negative). A fully precise check
+ * would need to parse the fn source; not worth it for a dev diagnostic.
  *
  * Why opt-in: `render.length >= 2` is a heuristic — a render fn may declare the
  * index parameter and not use it in its output, in which case a reorder is
