@@ -11,12 +11,14 @@
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { devHooks } from '../../src/dev-hooks.js';
 import { _resetWarnedForTests } from '../../src/dev-listener-warn.js';
+import { maybeWarnMissingRowKey } from '../../src/dev-row-key-warn.js';
 import { each } from '../../src/each.js';
 import { jsx } from '../../src/jsx-runtime.js';
 import { mount } from '../../src/mount.js';
 import { signal } from '../../src/reactive.js';
-import { maybeWarnMissingRowKey } from '../../src/utils/rowContract.js';
+import { enterProductionShape, restoreDevelopmentShape } from '../helpers/dev-shape.js';
 
 const env = (globalThis as { process: { env: Record<string, string | undefined> } }).process.env;
 
@@ -191,21 +193,27 @@ describe('maybeWarnMissingRowKey (KF-173 helper, branch coverage)', () => {
     warnSpy.mockRestore();
   });
 
-  it('is a no-op in production (NODE_ENV === \'production\')', () => {
-    const prevEnv = env.NODE_ENV;
-    env.NODE_ENV = 'production';
+  it('is unreachable in production — the hook slot is empty without kerfjs/dev', () => {
+    // The warner no longer self-gates on NODE_ENV. "Production" now means the
+    // consumer never imported `kerfjs/dev`, so core's call site short-circuits
+    // on an undefined slot and this module is never even loaded. Assert the
+    // seam rather than an internal env read.
+    enterProductionShape();
     try {
+      expect(devHooks.missingRowKey).toBeUndefined();
       const el = document.createElement('li');
       const binding = {};
-      maybeWarnMissingRowKey(el, '<li>x</li>', binding);
+      devHooks.missingRowKey?.(el, '<li>x</li>', binding);
       expect(warnSpy).not.toHaveBeenCalled();
-      // The flag is NOT set in production — we short-circuit before the
-      // mutation, so a subsequent dev-mode invocation on the same binding
-      // still gets to evaluate.
+      // The flag is untouched, so a later dev-shape call still evaluates.
       expect((binding as { warnedMissingKey?: boolean }).warnedMissingKey).toBeUndefined();
     } finally {
-      env.NODE_ENV = prevEnv;
+      restoreDevelopmentShape();
     }
+  });
+
+  it('is wired into the hook registry when kerfjs/dev is installed', () => {
+    expect(devHooks.missingRowKey).toBe(maybeWarnMissingRowKey);
   });
 
   it('sets the warned flag on first call and short-circuits on subsequent calls', () => {

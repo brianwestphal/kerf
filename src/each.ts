@@ -43,8 +43,7 @@
 
 import type { ArraySignal } from './array-signal.js';
 import { type Binding, captureRowBindings } from './bindings.js';
-import { maybeWarnDuplicateCacheKeys } from './dev-each-warn.js';
-import { isOptedInStaleIndex, maybeWarnStaleIndex } from './dev-list-index-warn.js';
+import { devHooks } from './dev-hooks.js';
 import { itemVersion } from './item-version.js';
 import type { SafeHtml } from './jsx-runtime.js';
 import { granularListSafeHtml, isSafeHtml, listSafeHtml } from './jsx-runtime.js';
@@ -467,7 +466,7 @@ function eachGranular<T extends object>(
   // patch-time index the granular path can't retroactively fix (KF-425). The
   // O(rows) replay runs only in dev under the opt-in for an index-reading list.
   let staleIndexShift = false;
-  if (render.length >= 2 && isOptedInStaleIndex()) {
+  if (render.length >= 2 && devHooks.staleIndexEnabled?.() === true) {
     const rendered: number[] = [];
     for (let i = 0; i < (previousBindingCount as number); i++) rendered.push(i);
     for (const p of patches) {
@@ -607,7 +606,7 @@ function eachGranular<T extends object>(
   // KF-424: the render has committed to the granular path (no cachekey-drift or
   // render-threw reroute fired above), so any detected index shift will actually
   // reach the DOM as stale HTML — now it's a true positive worth warning about.
-  if (staleIndexShift) maybeWarnStaleIndex(id);
+  if (staleIndexShift) devHooks.staleIndex?.(id);
   // The `items` field is left empty for the granular case — the reconciler
   // doesn't need it; every insert/update patch carries pre-rendered HTML.
   return granularListSafeHtml(id, [], internalPatches, sig);
@@ -655,8 +654,8 @@ function eachSnapshotById<T extends object>(
       bindings = cached.bindings;
       // KF-421: this row's HTML was memoized at `cached.index`; serving it at a
       // different `i` means its `index` argument is stale. Opt-in dev warning.
-      if (cached.index !== i && render.length >= 2 && isOptedInStaleIndex()) {
-        maybeWarnStaleIndex(id);
+      if (cached.index !== i && render.length >= 2 && devHooks.staleIndexEnabled?.() === true) {
+        devHooks.staleIndex?.(id);
       }
     } else {
       // KF-294: capture the row's fine-grained bindings (signals in row attrs
@@ -674,7 +673,7 @@ function eachSnapshotById<T extends object>(
     segItems[i] = { ref: item, cacheKey: k, html, bindings };
   }
   if (cacheKey !== undefined) {
-    maybeWarnDuplicateCacheKeys(id, segItems);
+    devHooks.duplicateCacheKeys?.(id, segItems);
   }
   return listSafeHtml(id, segItems, source);
 }

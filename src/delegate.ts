@@ -33,7 +33,7 @@
  *     lifecycle directly. No delegation helper applies.
  */
 
-import { warnIfInsideEffect } from './dev-delegate-warn.js';
+import { devHooks } from './dev-hooks.js';
 
 /**
  * Event types that don't bubble and so wouldn't reach a root-level
@@ -138,7 +138,7 @@ export function delegate<T extends Element = Element>(
   options?: DelegateOptions,
 ): () => void {
   assertValidSelector(selector, 'delegate');
-  warnIfInsideEffect('delegate');
+  devHooks.delegateInEffect?.('delegate');
   const listener = makeListener(rootEl, selector, handler, options?.match ?? 'closest');
   const capture = NON_BUBBLING.has(type);
   rootEl.addEventListener(type, listener, capture);
@@ -176,7 +176,7 @@ export function delegateCapture<T extends Element = Element>(
   options?: DelegateOptions,
 ): () => void {
   assertValidSelector(selector, 'delegateCapture');
-  warnIfInsideEffect('delegateCapture');
+  devHooks.delegateInEffect?.('delegateCapture');
   const listener = makeListener(rootEl, selector, handler, options?.match ?? 'closest');
   rootEl.addEventListener(type, listener, true);
   return () => {

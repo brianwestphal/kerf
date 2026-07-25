@@ -20,6 +20,7 @@ import { _parseCount, html } from '../../src/html.js';
 import { jsx, raw } from '../../src/jsx-runtime.js';
 import { mount } from '../../src/mount.js';
 import { computed, signal } from '../../src/reactive.js';
+import { enterProductionShape, restoreDevelopmentShape } from '../helpers/dev-shape.js';
 
 let root: HTMLElement;
 
@@ -104,15 +105,14 @@ describe('html`` — attribute holes share JSX attribute semantics', () => {
     // Dev (NODE_ENV=test): the screen throws so the mistake fails loudly.
     expect(() => html`<a href="${'javascript:alert(1)'}">c</a>`.toString())
       .toThrow(/javascript:/);
-    // Prod (globalThis.KERF_DEV = false): warn + drop, never crash.
-    const glob = globalThis as { KERF_DEV?: boolean };
+    // Prod (no kerfjs/dev installed): warn + drop, never crash.
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
-    glob.KERF_DEV = false;
+    enterProductionShape();
     try {
       expect(html`<a href="${'javascript:alert(1)'}">c</a>`.toString()).toBe('<a>c</a>');
       expect(warn).toHaveBeenCalledTimes(1);
     } finally {
-      delete glob.KERF_DEV;
+      restoreDevelopmentShape();
       warn.mockRestore();
     }
   });

@@ -25,12 +25,13 @@
  */
 
 import { carryOrRewireRowBindings, disposeRowBindings } from './bindings.js';
+import { devHooks } from './dev-hooks.js';
 import { type BoundItem, type ListBinding } from './list-binding.js';
 import { tryAttributeOnlyFastPath, tryTextContentFastPath } from './list-reconcile-fast-paths.js';
 import { captureFocus, restoreFocus } from './list-reconcile-focus.js';
 import { _morphElement } from './morph.js';
 import type { ListItem, ListSegment } from './segment.js';
-import { maybeWarnMissingRowKey, parseSingleRow } from './utils/rowContract.js';
+import { parseSingleRow } from './utils/rowContract.js';
 
 /**
  * If the new segment has the same refs in the same order as `binding.items`,
@@ -60,7 +61,7 @@ export function tryInPlaceContentUpdate(binding: ListBinding, listSeg: ListSegme
   if (focusSnap !== null) restoreFocus(focusSnap);
 
   binding.items = newRecord;
-  maybeWarnMissingRowKey(newRecord[0].node, newRecord[0].html, binding);
+  devHooks.missingRowKey?.(newRecord[0].node, newRecord[0].html, binding);
   return true;
 }
 

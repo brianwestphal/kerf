@@ -7,6 +7,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { batch, effect } from '../../src/reactive.js';
 import { defineStore, resetAllStores } from '../../src/store.js';
 import { clearStoreRegistry } from '../../src/testing.js';
+import { enterProductionShape, restoreDevelopmentShape } from '../helpers/dev-shape.js';
 
 beforeEach(() => {
   clearStoreRegistry();
@@ -139,6 +140,7 @@ describe('dev-mode read-only guard on get() snapshot', () => {
 
   afterEach(() => {
     delete glob.KERF_DEV;
+    restoreDevelopmentShape();
   });
 
   it('mutating a top-level property of get() throws a read-only TypeError', () => {
@@ -260,8 +262,8 @@ describe('dev-mode read-only guard on get() snapshot', () => {
     expect(() => { (raw as { count: number }).count = 5; }).not.toThrow();
   });
 
-  it('prod mode (globalThis.KERF_DEV = false) returns the raw object with no traps', () => {
-    glob.KERF_DEV = false;
+  it('production shape (no kerfjs/dev installed) returns the raw object with no traps', () => {
+    enterProductionShape();
     const store = defineStore({
       initial: () => ({ count: 0, nested: { x: 1 } }),
       actions: (_set, get) => ({
@@ -275,7 +277,7 @@ describe('dev-mode read-only guard on get() snapshot', () => {
   });
 });
 
-describe('dev-mode freeze respects the globalThis.KERF_DEV override (KF-334)', () => {
+describe('dev-mode freeze follows hook installation, not an ambient override', () => {
   const glob = globalThis as {
     KERF_DEV?: unknown;
     process?: { env?: Record<string, string | undefined> };
@@ -284,12 +286,14 @@ describe('dev-mode freeze respects the globalThis.KERF_DEV override (KF-334)', (
 
   afterEach(() => {
     delete glob.KERF_DEV;
+    restoreDevelopmentShape();
   });
 
-  it('KERF_DEV=false disables the freeze even under a dev NODE_ENV', () => {
-    // NODE_ENV=test here → dev-ON by default, but the explicit override wins,
-    // so the mutation lands silently instead of throwing.
-    glob.KERF_DEV = false;
+  it('uninstalling the dev hooks disables the freeze regardless of NODE_ENV', () => {
+    // kerf no longer reads NODE_ENV: the store snapshot is proxied iff the
+    // consumer installed `kerfjs/dev`. Uninstalled → the mutation lands
+    // silently, which is exactly the production shape.
+    enterProductionShape();
     const counter = defineStore({
       initial: () => ({ count: 0 }),
       actions: (_set, get) => ({
@@ -299,10 +303,12 @@ describe('dev-mode freeze respects the globalThis.KERF_DEV override (KF-334)', (
     expect(() => counter.actions.mutate()).not.toThrow();
   });
 
-  it('KERF_DEV=true enables the freeze even under NODE_ENV=production', () => {
+  it('installing the dev hooks enables the freeze even under NODE_ENV=production', () => {
     const prevNodeEnv = env.NODE_ENV;
     env.NODE_ENV = 'production';
-    glob.KERF_DEV = true;
+    // NODE_ENV is no longer consulted: the hooks are installed (global test
+    // setup), so the guard is active regardless of what the environment says.
+    restoreDevelopmentShape();
     try {
       const counter = defineStore({
         initial: () => ({ count: 0 }),

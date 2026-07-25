@@ -24,11 +24,12 @@
  */
 
 import { disposeRowBindings, wireRowBindings } from './bindings.js';
+import { devHooks } from './dev-hooks.js';
 import { type BoundItem, endAnchor, type ListBinding } from './list-binding.js';
 import { captureFocus, restoreFocus } from './list-reconcile-focus.js';
 import { tryInPlaceContentUpdate } from './list-reconcile-inplace.js';
 import type { ListSegment } from './segment.js';
-import { maybeWarnMissingRowKey, parseRowTemplate, rowContractError } from './utils/rowContract.js';
+import { parseRowTemplate, rowContractError } from './utils/rowContract.js';
 
 interface Classification {
   newRecord: BoundItem[];
@@ -74,7 +75,7 @@ export function reconcileSnapshot(binding: ListBinding, listSeg: ListSegment): v
   if (focusSnap !== null) restoreFocus(focusSnap);
   binding.items = newRecord;
   if (newRecord.length > 0) {
-    maybeWarnMissingRowKey(newRecord[0].node, newRecord[0].html, binding);
+    devHooks.missingRowKey?.(newRecord[0].node, newRecord[0].html, binding);
   }
 }
 

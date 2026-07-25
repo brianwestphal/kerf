@@ -34,14 +34,7 @@ import {
   wireBindings,
   wireRowBindings,
 } from './bindings.js';
-import { isOptedIn as isStaleBindingWarnOptedIn, maybeWarnStaleBinding } from './dev-binding-warn.js';
-import { maybeWarnEachInMorphSkip } from './dev-each-warn.js';
-import { listInvariantsEnabled, maybeCheckListInvariants } from './dev-invariants.js';
-import { maybeWarnListIdShift } from './dev-list-key-warn.js';
-import { maybeWarnListRebind } from './dev-list-rebind-warn.js';
-import { installListenerRebuildWarn } from './dev-listener-warn.js';
-import { maybeWarnParserRepair } from './dev-parser-repair-warn.js';
-import { maybeWarnValueOnlyRerender, type ValueOnlyWarnContext } from './dev-rerender-warn.js';
+import { devHooks, type WarnOnceContext } from './dev-hooks.js';
 import { _resetCallOrderListState, _setRenderContext, type RenderContext } from './each.js';
 import type { SafeHtml } from './jsx-runtime.js';
 import { isSafeHtml } from './jsx-runtime.js';
@@ -60,7 +53,7 @@ import {
   type ListSegment,
   type Segment,
 } from './segment.js';
-import { maybeWarnMissingRowKey, parseRowTemplate, rowContractError } from './utils/rowContract.js';
+import { parseRowTemplate, rowContractError } from './utils/rowContract.js';
 
 /** What `mount()`'s render function may return; non-SafeHtml values coerce (nullish/boolean → render nothing). */
 export type MountResult = SafeHtml | string | number | boolean | null | undefined;
@@ -170,7 +163,7 @@ export function mount(rootEl: HTMLElement, render: () => MountResult): () => voi
   setMounted(rootEl, true);
   // KF-174: opt-in dev MutationObserver that warns when a node carrying an
   // imperative addEventListener listener is removed/rebuilt by the morph.
-  const listenerWarnObserver = installListenerRebuildWarn(rootEl);
+  const listenerWarnObserver = devHooks.listenerRebuild?.(rootEl) ?? null;
   const bindings = new Map<string, ListBinding>();
   // Per-mount render context: the list-id counter is reset at the start of
   // each render (so the n-th `each()` call gets the same id every render);
@@ -208,7 +201,7 @@ export function mount(rootEl: HTMLElement, render: () => MountResult): () => voi
   // path render against the krausest harness.
   let prevStaticHtml = '';
   // Per-mount one-shot context for the opt-in value-only-re-render warning.
-  const valueOnlyWarnCtx: ValueOnlyWarnContext = { warned: false };
+  const valueOnlyWarnCtx: WarnOnceContext = { warned: false };
 
   /** One pass of the user's render function with both collection contexts fresh. */
   const runRenderPass = (): MountResult => {
@@ -251,7 +244,7 @@ export function mount(rootEl: HTMLElement, render: () => MountResult): () => voi
       for (const id of renderCtx.shiftCandidates) {
         if (renderCtx.warnedShiftIds.has(id)) continue;
         renderCtx.warnedShiftIds.add(id);
-        maybeWarnListIdShift(id);
+        devHooks.listIdShift?.(id);
       }
       _resetCallOrderListState(renderCtx);
       result = runRenderPass();
@@ -269,9 +262,9 @@ export function mount(rootEl: HTMLElement, render: () => MountResult): () => voi
       // Opt-in scan for markup the HTML parser silently restructures
       // (KERF_DEV_WARN_PARSER_REPAIR). First render only: the shape is a
       // property of the markup, not of any particular update.
-      maybeWarnParserRepair(prevStaticHtml);
+      devHooks.parserRepair?.(prevStaticHtml);
       bindingDisposers = wireBindings(rootEl, bindingCtx, bindingDisposers);
-      if (isStaleBindingWarnOptedIn()) prevWiredBindings = bindingCtx.list;
+      if (devHooks.staleBindingEnabled?.() === true) prevWiredBindings = bindingCtx.list;
       isFirst = false;
     } else {
       let nextStaticHtml = runSubsequentRender(
@@ -315,13 +308,13 @@ export function mount(rootEl: HTMLElement, render: () => MountResult): () => voi
       // duplicating inserted text nodes, so it's not worth it for an anti-pattern.
       if (nextStaticHtml !== prevStaticHtml) {
         bindingDisposers = wireBindings(rootEl, bindingCtx, bindingDisposers);
-        if (isStaleBindingWarnOptedIn()) prevWiredBindings = bindingCtx.list;
+        if (devHooks.staleBindingEnabled?.() === true) prevWiredBindings = bindingCtx.list;
       } else {
         // KF-338: fast path — the effects stay bound to `prevWiredBindings`.
         // Dev-warn (opt-in) if this render tried to bind a DIFFERENT signal
         // instance to a hole, which silently goes stale (the effect isn't
         // re-wired). The warner short-circuits on its env gate first.
-        maybeWarnStaleBinding(prevWiredBindings, bindingCtx.list);
+        devHooks.staleBinding?.(prevWiredBindings, bindingCtx.list);
       }
       prevStaticHtml = nextStaticHtml;
     }
@@ -329,7 +322,7 @@ export function mount(rootEl: HTMLElement, render: () => MountResult): () => voi
     // KF-416: per-list expected row count, for the dev-mode row-count invariant.
     // Only built when the checks are enabled — otherwise the map would cost an
     // allocation per render for nothing, and this family promises zero prod cost.
-    const expectedCounts = listInvariantsEnabled() ? new Map<string, number>() : null;
+    const expectedCounts = devHooks.listInvariantsEnabled?.() === true ? new Map<string, number>() : null;
 
     for (const listSeg of collectLists(segment).values()) {
       // Invariant: `bindListsFromMarkers` just ran over this segment, so every
@@ -371,7 +364,7 @@ export function mount(rootEl: HTMLElement, render: () => MountResult): () => voi
     // Opt-in structural audit of every list binding against the live DOM
     // (KERF_DEV_INVARIANTS). Placed after the reconcile loop so it sees the
     // render's final state; a no-op, with no DOM walking at all, when unset.
-    maybeCheckListInvariants(rootEl, bindings, expectedCounts ?? undefined);
+    devHooks.listInvariants?.(rootEl, bindings, expectedCounts ?? undefined);
   });
 
   return () => {
@@ -437,7 +430,7 @@ function runSubsequentRender(
   bindings: Map<string, ListBinding>,
   renderCtx: RenderContext,
   prevStaticHtml: string,
-  valueOnlyWarnCtx: ValueOnlyWarnContext,
+  valueOnlyWarnCtx: WarnOnceContext,
 ): string {
   // KF-411: reflects only this bind pass. Cleared here — before the fast-path
   // early return — so the surrounds-unchanged path leaves it empty (no morph,
@@ -451,7 +444,7 @@ function runSubsequentRender(
   // changed render is confined to text/attribute values, every changed hole
   // could have been a fine-grained binding — surface the bound-first guidance
   // once per mount. Gate short-circuits before any parsing.
-  maybeWarnValueOnlyRerender(prevStaticHtml, currentStaticHtml, valueOnlyWarnCtx);
+  devHooks.valueOnlyRerender?.(prevStaticHtml, currentStaticHtml, valueOnlyWarnCtx);
   cleanupOrphanBindings(segment, bindings, renderCtx);
   const template = rootEl.cloneNode(false) as HTMLElement;
   template.innerHTML = currentStaticHtml;
@@ -574,7 +567,7 @@ function bindListsFromMarkers(
       rebuiltLists?.add(id);
       // Opt-in dev warning (KERF_DEV_WARN_LIST_REBIND=1): the recovery is
       // correct but lossy — row DOM state is discarded — so surface it.
-      maybeWarnListRebind(id, marker.parentElement as Element);
+      devHooks.listRebind?.(id, marker.parentElement as Element);
     }
     const listSeg = lists.get(id) as ListSegment;
     const liveParent = marker.parentElement as Element;
@@ -608,11 +601,11 @@ function bindListsFromMarkers(
     const binding: ListBinding = { liveParent, items, marker };
     // KF-173: dev-only one-shot warning if the first row has no id/data-key.
     if (items.length > 0) {
-      maybeWarnMissingRowKey(items[0].node, items[0].html, binding);
+      devHooks.missingRowKey?.(items[0].node, items[0].html, binding);
     }
     // Dev-mode: warn when an each() list is inside a data-morph-skip subtree
     // (list rows still update; static reactive siblings are frozen).
-    maybeWarnEachInMorphSkip(id, liveParent, rootEl);
+    devHooks.eachInMorphSkip?.(id, liveParent, rootEl);
     bindings.set(id, binding);
   }
 }

@@ -22,6 +22,7 @@
  */
 
 import { type Binding, carryOrRewireRowBindings, disposeRowBindings, wireRowBindings } from './bindings.js';
+import { devHooks } from './dev-hooks.js';
 import { type BoundItem, endAnchor, type ListBinding } from './list-binding.js';
 import { tryAttributeOnlyFastPath, tryTextContentFastPath } from './list-reconcile-fast-paths.js';
 import { captureFocus, restoreFocus } from './list-reconcile-focus.js';
@@ -29,7 +30,6 @@ import { _morphElement } from './morph.js';
 import type { InsertPatch, ListSegment, UpdatePatch } from './segment.js';
 import {
   collectTemplateChildren,
-  maybeWarnMissingRowKey,
   parseRowTemplate,
   parseSingleRow,
   rowContractError,
@@ -127,7 +127,7 @@ export function reconcileGranular(
   if (focusSnap !== null) restoreFocus(focusSnap);
   // KF-173: warn once per binding if rows lack id / data-key.
   if (items.length > 0) {
-    maybeWarnMissingRowKey(items[0].node, items[0].html, binding);
+    devHooks.missingRowKey?.(items[0].node, items[0].html, binding);
   }
 }
 

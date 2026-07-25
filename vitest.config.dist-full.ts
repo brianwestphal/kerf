@@ -36,6 +36,11 @@ const SUBPATH_ENTRIES: Record<string, string> = {
   testing: resolve(DIST, 'testing.js'),
   'array-signal': resolve(DIST, 'array-signal.js'),
   html: resolve(DIST, 'html.js'),
+  // The dev entry installs the diagnostics hooks. `tests/setup-dev-hooks.ts`
+  // imports it, and `tests/helpers/dev-shape.ts` reaches the registry through
+  // it, so dist-full must resolve it to the real dist entry rather than the
+  // public barrel.
+  dev: resolve(DIST, 'dev.js'),
 };
 
 export function srcToDistPlugin(): Plugin {
@@ -97,6 +102,9 @@ export default defineConfig({
     // corrupts a list binding fails the run at the render that did it rather
     // than surfacing as a wrong assertion somewhere downstream.
     env: { KERF_DEV_INVARIANTS: 'throw' },
+    // kerf no longer infers dev mode — install the diagnostics so the remapped
+    // suite sees the same behavior it does against src.
+    setupFiles: ['./tests/setup-dev-hooks.ts'],
     environment: 'happy-dom',
     globals: false,
     include: [

@@ -18,11 +18,9 @@
  * of client state should return to its initial shape.
  */
 
-import { maybeWarnNarrowSet, type NarrowSetWarnContext } from './dev-store-warn.js';
+import { devHooks, type WarnOnceContext } from './dev-hooks.js';
 import type { ReadonlySignal, Signal } from './reactive.js';
 import { signal } from './reactive.js';
-import { isDevMode } from './utils/devMode.js';
-import { devReadonlyProxy, toRaw } from './utils/devReadonly.js';
 
 export interface Store<TState, TActions> {
   /** Read-only reactive view. Consumers read `state.value` or subscribe via `effect()`. */
@@ -46,36 +44,32 @@ export function defineStore<TState, TActions>(
   const internal: Signal<TState> = signal(spec.initial());
   // KF-212: per-store one-shot dedup for the opt-in narrow-set warning.
   // Default off; consumers opt in via `KERF_DEV_WARN_NARROW_SET=1` in dev.
-  // Production behavior is unchanged — `maybeWarnNarrowSet` short-circuits
-  // on the env-var read before any per-set work runs.
-  const warnCtx: NarrowSetWarnContext = { warned: false };
-
-  // The dev gate is resolved once per store, lazily on first `set()`/`get()`
-  // (so a runtime `globalThis.KERF_DEV` override set before mount is honored),
-  // then cached — the prod hot path stays a bare boolean read, never a
-  // per-call env probe.
-  let devGate: boolean | undefined;
-  const isDev = (): boolean => (devGate ??= isDevMode());
+  // Allocated only when the diagnostics are installed — production never pays
+  // for an object it will never read.
+  const warnCtx: WarnOnceContext | null = devHooks.narrowSet ? { warned: false } : null;
 
   const set = (next: TState): void => {
-    // In dev, `next` may carry proxies handed back by the `get()` trap (e.g.
-    // `set({ ...get(), count: 1 })`). Unwrap them so the internal signal only
-    // ever holds a plain object — the narrow-set warning and every consumer
-    // read see raw state, never a Proxy. Prod stores the bare reference.
-    const raw = isDev() ? toRaw(next) : next;
-    maybeWarnNarrowSet(internal.value, raw, warnCtx);
+    // With `kerfjs/dev` installed, `next` may carry proxies handed back by the
+    // `get()` trap (e.g. `set({ ...get(), count: 1 })`). Unwrap them so the
+    // internal signal only ever holds a plain object — the narrow-set warning
+    // and every consumer read see raw state, never a Proxy. Production stores
+    // the bare reference.
+    const toRaw = devHooks.storeToRaw;
+    const raw = toRaw ? toRaw(next) : next;
+    if (warnCtx) devHooks.narrowSet?.(internal.value, raw, warnCtx);
     internal.value = raw;
   };
-  // In dev, wrap the reference returned to actions in a deep read-only Proxy so
-  // that `get().count = 42` / `get().nested.x = 1` (documented Rule 8
-  // violations) throw a `TypeError` instead of silently landing on the
-  // underlying state without notifying subscribers. The live state object is
-  // never frozen or mutated, so external references to it stay writable.
-  // Production returns the bare reference for zero overhead (no proxy).
+  // With the diagnostics installed, wrap the reference returned to actions in a
+  // deep read-only Proxy so that `get().count = 42` / `get().nested.x = 1`
+  // (documented Rule 8 violations) throw a `TypeError` instead of silently
+  // landing on the underlying state without notifying subscribers. The live
+  // state object is never frozen or mutated, so external references to it stay
+  // writable. Production returns the bare reference — no proxy, no wrapping.
   const get = (): Readonly<TState> => {
     const v = internal.value;
-    if (isDev() && v !== null && typeof v === 'object') {
-      return devReadonlyProxy(v as TState & object);
+    const readonly = devHooks.storeReadonly;
+    if (readonly && v !== null && typeof v === 'object') {
+      return readonly(v as TState & object);
     }
     return v;
   };

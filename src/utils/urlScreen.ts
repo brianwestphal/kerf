@@ -27,7 +27,7 @@
  *     subtype fails closed.
  */
 
-import { isDevMode } from './devMode.js';
+import { devHooks } from '../dev-hooks.js';
 
 /**
  * URL-bearing HTML/SVG attributes whose plain-string values are screened.
@@ -109,19 +109,17 @@ export function dangerousUrlWarning(name: string, value: string): string {
  * writer's `setBoundAttr`) still DROP the attribute; this only chooses how the
  * screen surfaces the diagnostic:
  *
- *   - **DEV** (`isDevMode()` — default under `NODE_ENV !== 'production'`, or a
- *     `globalThis.KERF_DEV === true` override): THROW an `Error` with the
+ *   - **DEV** (the consumer imported `kerfjs/dev`): THROW an `Error` with the
  *     diagnostic, failing loudly at the developer's desk so a mistyped/unsafe
  *     URL can't slip by unnoticed (nobody reads the console).
- *   - **PRODUCTION** (`globalThis.KERF_DEV === false`, or `NODE_ENV ===
- *     'production'`): `console.warn` and let the caller drop — never crash a
- *     shipped app on attacker-influenced data.
+ *   - **PRODUCTION** (no dev entry installed): `console.warn` and let the
+ *     caller drop — never crash a shipped app on attacker-influenced data.
  *
  * `context` is the caller's prefix (`JSX`/`kerf binding`); the composed message
  * is byte-identical to the pre-KF-340 warn text in production.
  */
 export function reportDangerousUrl(context: string, name: string, value: string): void {
   const message = `${context}: ${dangerousUrlWarning(name, value)}`;
-  if (isDevMode()) throw new Error(message);
+  devHooks.urlScreenThrow?.(message);
   console.warn(message);
 }

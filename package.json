@@ -1,9 +1,12 @@
 {
   "name": "kerfjs",
   "version": "2.0.1",
-  "description": "Tiny reactive UI framework — fine-grained signals + DOM morphing + JSX. Apply the smallest possible cut to update your DOM.",
+  "description": "Tiny reactive UI framework \u2014 fine-grained signals + DOM morphing + JSX. Apply the smallest possible cut to update your DOM.",
   "type": "module",
-  "sideEffects": false,
+  "sideEffects": [
+    "./dist/dev.js",
+    "./src/dev.ts"
+  ],
   "license": "MIT",
   "author": "Brian Westphal <brian.westphal@bleugris.com>",
   "homepage": "https://brianwestphal.github.io/kerf/",
@@ -52,6 +55,10 @@
     "./array-signal": {
       "types": "./dist/array-signal.d.ts",
       "import": "./dist/array-signal.js"
+    },
+    "./dev": {
+      "types": "./dist/dev.d.ts",
+      "import": "./dist/dev.js"
     },
     "./html": {
       "types": "./dist/html.d.ts",

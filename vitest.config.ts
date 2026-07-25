@@ -20,6 +20,10 @@ export default defineConfig({
     // corrupts a list binding fails the run at the render that did it rather
     // than surfacing as a wrong assertion somewhere downstream.
     env: { KERF_DEV_INVARIANTS: 'throw' },
+    // kerf no longer infers dev mode; the diagnostics install via `kerfjs/dev`.
+    // kerf's own suites are development by definition, so install globally —
+    // every existing warning/invariant assertion keeps its previous behavior.
+    setupFiles: ['./tests/setup-dev-hooks.ts'],
     environment: 'happy-dom',
     globals: false,
     include: ['tests/**/*.test.ts', 'tests/**/*.test.tsx', 'src/**/*.test.ts', 'src/**/*.test.tsx'],

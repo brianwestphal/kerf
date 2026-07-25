@@ -15,6 +15,7 @@ import { each } from '../../src/each.js';
 import { jsx, raw } from '../../src/jsx-runtime.js';
 import { mount } from '../../src/mount.js';
 import { computed, signal } from '../../src/reactive.js';
+import { enterProductionShape, restoreDevelopmentShape } from '../helpers/dev-shape.js';
 
 let root: HTMLElement;
 
@@ -150,8 +151,8 @@ describe('fine-grained bindings — attribute holes', () => {
 // These bound-writer tests run under the ambient NODE_ENV=test (dev) and assert
 // the throw; the prod block below forces `KERF_DEV = false` and asserts warn+drop.
 describe('fine-grained bindings — bound-attribute security: throws in dev (KF-297 / KF-340)', () => {
-  beforeEach(() => { (globalThis as Record<string, unknown>).KERF_DEV = true; });
-  afterEach(() => { delete (globalThis as Record<string, unknown>).KERF_DEV; });
+  beforeEach(() => { restoreDevelopmentShape(); });
+  afterEach(() => { restoreDevelopmentShape(); });
 
   it('throws when a bound href resolves to a javascript: URL', () => {
     const url = signal('javascript:alert(1)');
@@ -217,8 +218,8 @@ describe('fine-grained bindings — bound-attribute security: throws in dev (KF-
 describe('fine-grained bindings — bound-attribute security: warn+drop in production (KF-297 / KF-340)', () => {
   // Force production mode so the screen warns + drops instead of throwing. The
   // override wins over the ambient NODE_ENV=test; restore it after each test.
-  beforeEach(() => { (globalThis as Record<string, unknown>).KERF_DEV = false; });
-  afterEach(() => { delete (globalThis as Record<string, unknown>).KERF_DEV; });
+  beforeEach(() => { enterProductionShape(); });
+  afterEach(() => { restoreDevelopmentShape(); });
 
   it('drops a bound href that resolves to a javascript: URL, and warns', () => {
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});

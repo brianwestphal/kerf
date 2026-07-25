@@ -4,25 +4,27 @@
  * later (or fronting it with a hand-rolled implementation) is a one-file
  * change.
  *
- * Two dev-gated wrappers sit in front of the bare re-exports:
+ * Two dev hook slots sit in front of the bare re-exports:
  *
- * - `signal()` returns a `DevSignal` when `KERF_DEV_WARN_UNTRACKED_SIGNALS=1`
- *   (KF-176) — warns on writes to signals with no subscribers.
+ * - `signalFactory` replaces the constructor so writes to never-subscribed
+ *   signals can warn (`KERF_DEV_WARN_UNTRACKED_SIGNALS=1`).
  *
- * - `effect()` wraps the user body in `enterEffect()` / `exitEffect()` calls
- *   when `KERF_DEV_WARN_DELEGATE_IN_EFFECT=1` so `delegate()` can detect when
- *   it's running inside an effect body and fire the appropriate warning.
+ * - `wrapEffect` wraps the user body so `delegate()` can detect that it's
+ *   running inside an effect (`KERF_DEV_WARN_DELEGATE_IN_EFFECT=1`).
  *
- * Both gates short-circuit when `isDevMode()` is false (i.e. under
- * `NODE_ENV === 'production'`, or a `globalThis.KERF_DEV = false` override) —
- * production always sees the bare `@preact/signals-core` exports with zero
- * overhead.
+ * Both are `undefined` unless the consumer imported `kerfjs/dev`, so production
+ * sees the bare `@preact/signals-core` exports behind one property read.
+ *
+ * ORDERING: `signalFactory` is resolved at signal-CREATION time, so signals
+ * created before `kerfjs/dev` is installed stay plain and the untracked-signal
+ * warning never sees them. Static imports hoist above a `await import()`, so a
+ * module-scope signal in an imported module is created first. See
+ * docs/11-dev-warnings.md for the install-ordering rules.
  */
 
 import { effect as coreEffect,Signal,signal as coreSignal } from '@preact/signals-core';
 
-import { enterEffect, exitEffect, isDevWarnDelegateInEffectEnabled } from './dev-delegate-warn.js';
-import { DevSignal, isDevWarnUntrackedEnabled } from './dev-signal.js';
+import { devHooks } from './dev-hooks.js';
 
 export {
   batch,
@@ -43,18 +45,12 @@ export function isSignal(value: unknown): value is Signal<unknown> {
 }
 
 export function signal<T>(value?: T): Signal<T> {
-  if (isDevWarnUntrackedEnabled()) return new DevSignal<T>(value as T) as Signal<T>;
+  const factory = devHooks.signalFactory;
+  if (factory) return factory<T>(value as T);
   return coreSignal(value as T);
 }
 
 export function effect(fn: () => void | (() => void)): () => void {
-  if (!isDevWarnDelegateInEffectEnabled()) return coreEffect(fn);
-  return coreEffect(() => {
-    enterEffect();
-    try {
-      return fn();
-    } finally {
-      exitEffect();
-    }
-  });
+  const wrap = devHooks.wrapEffect;
+  return coreEffect(wrap ? wrap(fn) : fn);
 }

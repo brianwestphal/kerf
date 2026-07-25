@@ -6,6 +6,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { Fragment, isSafeHtml, jsx, raw, SafeHtml } from '../../src/jsx-runtime.js';
+import { enterProductionShape, restoreDevelopmentShape } from '../helpers/dev-shape.js';
 
 describe('SafeHtml', () => {
   it('wraps a string and exposes it via toString()', () => {
@@ -206,13 +207,13 @@ describe('jsx — dangerous URL attribute filter (production warn+drop)', () => 
   let warnSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
-    (globalThis as Record<string, unknown>).KERF_DEV = false;
+    enterProductionShape();
     warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
   });
 
   afterEach(() => {
     warnSpy.mockRestore();
-    delete (globalThis as Record<string, unknown>).KERF_DEV;
+    restoreDevelopmentShape();
   });
 
   it('drops javascript: in href and warns', () => {
