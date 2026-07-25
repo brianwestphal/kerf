@@ -112,6 +112,37 @@ Empties the global store registry. Used by unit tests to isolate cases. Imported
 import { clearStoreRegistry } from 'kerfjs/testing';
 ```
 
+### `kerfjs/dev` subpath — install the development diagnostics
+
+kerf does **not** infer whether it is running in development. Importing this
+subpath is the development signal; omitting it is production. Gate the import
+with your own build's dev flag, in your own code:
+
+```js
+if (import.meta.env.DEV) await import('kerfjs/dev');                   // Vite
+if (process.env.NODE_ENV !== 'production') await import('kerfjs/dev'); // webpack / Node
+```
+
+That condition folds to `false` in your production build, so the statement is
+eliminated and the chunk is never emitted or fetched — a realistic import is
+**12.24 KB min+gzip without it vs 16.91 KB when the diagnostics shipped in the
+main bundle**. A no-build/CDN app imports it from its development page and
+omits it from the production page.
+
+Installing enables: the whole `KERF_DEV_WARN_*` warning family (each still
+requires its own env var), the structural list-invariant checks, the read-only
+`defineStore` `get()` snapshot, and the *throwing* form of the dangerous-URL
+screen (production warns and drops instead).
+
+The subpath also re-exports `clearDevHooks()`, `installDevHooks()` and
+`devHooks` so a consumer's own test suite can assert production-shaped
+behavior without reloading modules.
+
+Order matters in one place: `signal()` chooses its constructor at creation
+time, so signals created before the dev entry runs are invisible to
+`KERF_DEV_WARN_UNTRACKED_SIGNALS`. Every other hook is read at call time. See
+[`docs/11-dev-warnings.md`](/kerf/docs/dev-warnings/) §11.3.6.
+
 ## 8.3 Render
 
 ### `mount(rootEl: HTMLElement, render: () => MountResult): () => void`

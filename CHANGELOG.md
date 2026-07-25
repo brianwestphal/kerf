@@ -6,6 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **Fixed (important): kerf ran in DEVELOPMENT mode inside production browser bundles.** kerf inferred its own dev/prod mode by reading `globalThis.process?.env?.NODE_ENV`. Bundlers substitute the *bare* `process.env.NODE_ENV` token and never create a `globalThis.process` object for browser targets, so that read was `undefined`, `undefined !== 'production'` was `true`, and every production browser build silently took the development path. Consequences that were shipping: every `defineStore` `get()` returned a deep read-only `Proxy` (an allocation on every store read), a screened `javascript:`/`data:` URL **threw** instead of the documented warn-and-drop, and the always-on list-key warnings printed to production consoles. Server/Node builds, where `process` exists, were unaffected.
+
+  **kerf no longer infers dev mode at all.** The diagnostics now install explicitly, gated by *your* build's dev flag in *your* code:
+
+  ```js
+  if (import.meta.env.DEV) await import('kerfjs/dev');                   // Vite
+  if (process.env.NODE_ENV !== 'production') await import('kerfjs/dev'); // webpack / Node
+  ```
+
+  This also shrinks production bundles by **~4.7 KB min+gzip (27%)** — a realistic import (`signal`/`computed`/`effect`/`batch`/`mount`/`each`/`delegate`) goes from 16.91 KB to **12.24 KB**. Previously the dev-warning modules were imported unconditionally by `mount()`/`each()` and gated at runtime, so they shipped to production regardless of build mode and no amount of tree-shaking could reclaim them. With the dev entry absent they are unreachable, and the `import()` statement itself is eliminated — the chunk is never emitted, let alone fetched.
+
+  **Migration.** Add the one-line import above to your entry to keep the dev warnings, the read-only store snapshot, and the throwing URL screen. Nothing else changes; if you never used the dev warnings, you get the smaller bundle and the corrected production behavior for free. `globalThis.KERF_DEV` is no longer consulted — not importing the dev entry is now the (compile-time) way to opt out. One ordering note: `signal()` picks its constructor at creation time, so put the import first if you rely on `KERF_DEV_WARN_UNTRACKED_SIGNALS`.
+
 - Fixed: passing a **function** as an `each()` item through an `arraySignal` insert/update (an unusual mistake, but functions are valid `WeakMap` keys so the per-item cache silently accepted them) rendered the row and then threw `each(): items must be objects…` on a *later, unrelated* re-render — far from the cause. The granular path now enforces the same objects-only item contract the snapshot path does, so the error is thrown on the render the offending mutation triggered, naming the type and index. Primitive items already behaved this way; functions now match.
 
 - New opt-in dev warning `KERF_DEV_WARN_STALE_INDEX=1`: fires when an `each()` list reuses a memoized row at a different index than it rendered at, while the row's render function takes an `index` argument. `each()` memoizes rows by object identity, not position — the `index` argument is not part of the memo key — so a reorder or a non-tail insert/remove/move serves a moved row the HTML it rendered at its old index, and a numbered list, zebra striping, or an "N of M" label silently shows the wrong value on just those rows. The warning names the fix (`each(items, render, { cacheKey: (_, i) => i })`, which folds the index into the memo key so displaced rows re-render). Off by default with zero production cost, like the rest of the `KERF_DEV_WARN_*` family; also newly documented in `docs/4-render.md`.

@@ -1,7 +1,7 @@
 ---
 name: kerf-app
 description: Build UIs in the kerf reactive framework (https://github.com/brianwestphal/kerf). Use this skill whenever the user is writing or modifying code that imports `kerfjs`, asks to add a feature to a kerf app, or asks "how do I do X in kerf?". Use it proactively the moment you spot a kerf import in the file you're editing.
-kerf-skill-version: 1.10.0
+kerf-skill-version: 1.11.0
 ---
 
 # Building apps with kerf
@@ -17,6 +17,7 @@ kerf is a ~11 KB reactive UI framework (~12 KB with `arraySignal`): signals + DO
 - Install: `npm install kerfjs`
 - `tsconfig.json`: `"jsx": "react-jsx"`, `"jsxImportSource": "kerfjs"`
 - Vite / esbuild need no extra config.
+- **Dev diagnostics are opt-in by import.** kerf does not infer dev mode. Add `if (import.meta.env.DEV) await import('kerfjs/dev');` (Vite) or `if (process.env.NODE_ENV !== 'production') await import('kerfjs/dev');` (webpack/Node) to the app entry. That enables the `KERF_DEV_WARN_*` family, the read-only store `get()` snapshot, and the throwing dangerous-URL screen; omitting it is production shape and sheds ~4.7 KB min+gzip because the condition folds away and the chunk is never emitted. Put it FIRST if relying on `KERF_DEV_WARN_UNTRACKED_SIGNALS` — `signal()` picks its constructor at creation time.
 - Recommended companion: `npm install --save-dev eslint-plugin-kerfjs` and add `kerfjs.configs.recommended` to the project's eslint config. Enforces five of the hard rules below (no inline JSX event handlers, require `data-key` in `each()`, capture `delegate()` disposers, no nested `mount()`, prefer module JSX augmentation) at edit time — useful as a self-correction signal when authoring kerf code.
 
 ## Public API — one import path
@@ -33,6 +34,9 @@ import {
 
 // Optional, only when you need granular collection updates:
 import { arraySignal } from 'kerfjs/array-signal';
+
+// Development diagnostics — gate with YOUR build's dev flag, in YOUR code.
+if (import.meta.env.DEV) await import('kerfjs/dev');
 ```
 
 | Export | Use |

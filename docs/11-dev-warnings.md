@@ -1,11 +1,15 @@
 # 11. Dev-mode warnings (opt-in)
 
 A family of opt-in runtime warnings that surface common kerf misuse at the
-moment the developer makes the wrong call. Each warning is gated by both the
-shared **dev-mode gate** (`isDevMode()`, see §11.3.6) *and* a feature-specific
-environment variable, so production behavior is unchanged for zero runtime
-cost; existing dev environments aren't surprised either (every warn is off by
-default).
+moment the developer makes the wrong call.
+
+Two gates stand in front of every one of them. First, the diagnostics must be
+**installed** — kerf does not infer development mode; you import `kerfjs/dev`
+behind your own build's dev flag (§11.3.6). Second, each warning has its own
+feature-specific environment variable, so installing does not flood the
+console. Production is therefore unchanged at zero runtime cost *and* zero
+bundle cost — with the dev entry absent the whole family is unreachable and a
+bundler drops it (§11.3.5).
 
 This doc is the canonical statement of what the family is for, when each
 member fires, and the rules that keep them coherent. New dev-warnings added
@@ -27,9 +31,10 @@ gets disabled and ignored. Opt-in lets CI and dev environments that *want*
 the diagnostic enable it explicitly while leaving the rest of the world
 untouched.
 
-The opt-in shape also means production bundles can short-circuit before any
-per-call work runs — the env-var read is the first thing each warner does,
-so the production-mode cost is one truthy-check at instantiation.
+The opt-in shape also means production bundles short-circuit before any
+per-call work runs: core calls through a nullable hook slot, so with the dev
+entry absent the cost is one property read and the warner code is not in the
+bundle at all.
 
 ### Relationship to the static-check layer
 
@@ -286,8 +291,9 @@ the render, and only when the render's `each()` call count ALSO changed —
 which is what an id shift actually requires. A changed source on its own is
 not a shift: the same list swapping which signal it renders (a filter or tab
 switch) changes source too, and warning there told authors to fix correct
-code. Keyed lists are excluded entirely, since a key is the identity. It short-circuits on
-`isDevMode()`, dedups on a module-level `warnedIds` Set, and names the fix:
+code. Keyed lists are excluded entirely, since a key is the identity. It runs only when
+the dev entry is installed (core reaches it through the `listIdShift` hook slot),
+dedups on a per-render-context `warnedIds` Set, and names the fix:
 `each(items, render, { key: 'my-list' })` — plus the non-obvious part, that
 keying the *conditional* list is usually enough, because a keyed list does not
 occupy a call-order slot.
@@ -297,10 +303,16 @@ context, because ids are per-mount and a module-level set meant the first mount
 to warn for id `'0'` silenced every other mount's genuine shift forever.
 
 **Why always-on rather than env-gated.** Same reasoning as the missing-row-key
-warning (§11.2.12): it fires only when kerf is about to silently discard row
-state, it has no legitimate-use false-positive surface (an author never *wants*
-a list rebuilt by accident), and it names a one-line fix. Opting into a warning
-you would always want is friction with no benefit.
+warning: it fires only when kerf is about to silently discard row state, it has
+no legitimate-use false-positive surface (an author never *wants* a list rebuilt
+by accident), and it names a one-line fix. Opting into a warning you would
+always want is friction with no benefit.
+
+Throughout this doc, **"always-on" means "always on once `kerfjs/dev` is
+installed"** (§11.3.6) — it is the per-warning env var these skip, not the
+install step. The double-mount guard (§11.2.11) is the sole exception: it is
+unconditional in every build, dev entry or not, because it throws on a
+structural error rather than warning about a pattern.
 
 **Known blind spots.** Two shapes stay invisible: a shift between two `each()`
 calls over the *same* `arraySignal` (indistinguishable by source), and two
@@ -315,7 +327,7 @@ message asks for.
 
 **Mechanism.** `mount()` assigns a non-enumerable `Symbol.for('kerfjs.mounted')` marker to the `rootEl` at mount time. `assertNotInsideMountedTree()` checks the element itself (same-element double-mount), all ancestors (descendant-of-mounted mount), and all descendants (ancestor-of-mounted mount) before allowing the mount to proceed. If any check fires, it throws with a message naming the element (`<tagName>` or `<tagName#id>`) and pointing at the disposer as the fix. The disposer returned by `mount()` deletes the marker, so a legitimate unmount + remount cycle never false-positives.
 
-**This guard is always-on (unconditional), not opt-in.** Double-mounting is almost never intentional — it's a programming error in every realistic scenario (hot-reload teardown missing, copy-paste island setup, conditional `mount()` hitting the same element on re-evaluation). A `console.warn` would let the broken two-effect state continue running, which is harder to debug than an immediate throw. The nested-mount cases (`mount(ancestor)` after `mount(descendant)`) are structural errors that must also fail hard. Unlike the opt-in family, there is no env var to silence this guard.
+**This guard is unconditional — it does not even require the dev entry.** Double-mounting is almost never intentional — it's a programming error in every realistic scenario (hot-reload teardown missing, copy-paste island setup, conditional `mount()` hitting the same element on re-evaluation). A `console.warn` would let the broken two-effect state continue running, which is harder to debug than an immediate throw. The nested-mount cases (`mount(ancestor)` after `mount(descendant)`) are structural errors that must also fail hard. Unlike the opt-in family, there is no env var to silence this guard.
 
 **Sibling mounts are allowed.** Two `mount()` calls on independent elements (neither is an ancestor or descendant of the other) work correctly — each manages its own subtree. This is the multi-island pattern for apps with independently reactive regions of the page.
 
@@ -324,7 +336,7 @@ message asks for.
 **Module:** [`src/utils/urlScreen.ts`](../src/utils/urlScreen.ts), applied in [`src/jsx-runtime.ts`](../src/jsx-runtime.ts) (`renderAttr`) and [`src/bindings.ts`](../src/bindings.ts) (`setBoundAttr`).
 **Trigger:** a plain-string URL value that resolves to a `javascript:` / `vbscript:` scheme or a script-executing `data:` document type is written to a URL-bearing attribute (`href`, `src`, `xlink:href`, `formaction`, `action`, `data`). **What it catches:** a stored-XSS payload reaching a `href={...}` interpolation that would otherwise turn into a clickable script vector. See [`docs/6-jsx-runtime.md`](6-jsx-runtime.md) §6.4.1 for the screening details.
 
-**Mechanism.** The attribute is always **dropped** (omitted from the string / removed from the live node). How the drop is reported depends on the mode: in **dev** the screen **throws an `Error`** with the diagnostic; in **prod** it `console.warn`s and drops. Mode comes from the shared [`src/utils/devMode.ts`](../src/utils/devMode.ts) `isDevMode()` probe — `globalThis.KERF_DEV` (boolean) wins when set, otherwise `NODE_ENV !== 'production'` is dev. `raw()` / `SafeHtml` values are the documented bypass in both modes.
+**Mechanism.** The attribute is always **dropped** (omitted from the string / removed from the live node). How the drop is reported depends on the mode: in **dev** the screen **throws an `Error`** with the diagnostic; in **prod** it `console.warn`s and drops. Mode comes from whether the diagnostics are installed: `kerfjs/dev` fills the `urlScreenThrow` hook slot, so importing it selects the throwing behavior and omitting it selects warn+drop. kerf no longer probes the environment to decide (§11.3.6) — which also fixes the case where a production browser bundle inferred DEVELOPMENT and threw on attacker-influenced data. `raw()` / `SafeHtml` values are the documented bypass in both modes.
 
 **Like the double-mount guard, this is always-on (unconditional), not opt-in** — there is no env var to silence it, only the mode split. A dropped-but-silent dangerous URL in dev is the exact failure mode the throw fixes (nobody reads the console; the attribute just quietly vanishes). Production keeps the non-crashing warn+drop so attacker-influenced data can never take down a shipped app — **production output is byte-identical to before this split.** This is the one place kerf changes behavior between dev and prod for the *same* input; it's justified because the dev throw only ever fires on input a correct app would never produce (a dangerous URL that isn't wrapped in `raw()`).
 
@@ -419,11 +431,14 @@ added to the family must too.
 
 ### 11.3.1 Gating
 
-1. **Production short-circuit.** The first thing every warner does is call
-   the shared `isDevMode()` gate (§11.3.6). If it returns `false` — i.e.
-   `NODE_ENV === 'production'`, or the `globalThis.KERF_DEV = false`
-   override is set — the warner returns without any further work. The cost
-   in production is a handful of property reads.
+1. **Reachable only through the dev entry.** Core never imports a warner.
+   It reads a nullable slot off the `devHooks` registry and calls through it
+   (`devHooks.listRebind?.(id, parent)`), and only `kerfjs/dev` fills those
+   slots (§11.3.6). A consumer who never imports the dev entry pays one
+   property read per call site, and the warner module is not in their bundle
+   at all. The gate lives at the CALL SITE, not inside the warner — an
+   unconditional call into a self-gating warner keeps the module reachable no
+   matter how the gate is written, so no dead-code elimination can reclaim it.
 2. **Per-warning env var.** Each warning has its own
    `KERF_DEV_WARN_<NOUN>=1` env var. There is intentionally no umbrella
    `KERF_DEV_WARN=1` flag — opt-in is per-warning, so a consumer can
@@ -466,68 +481,116 @@ so the developer doesn't need to fetch additional docs to act on it.
 ### 11.3.4 No public-API surface
 
 None of the warners are re-exported from the main `kerfjs` barrel.
-Consumers don't import them; the warning is a runtime behavior of the
-host primitive (`signal()`, `mount()`, `defineStore`) when the env var
-is set. The internal modules (`src/dev-listener-warn.ts`,
-`src/dev-signal.ts`, `src/dev-store-warn.ts`) are not in
-`src/index.ts`.
+Consumers don't import them individually; the warning is a runtime behavior
+of the host primitive (`signal()`, `mount()`, `defineStore`) once the dev
+entry is installed and the env var is set. The internal modules
+(`src/dev-listener-warn.ts`, `src/dev-signal.ts`, `src/dev-store-warn.ts`)
+are not in `src/index.ts`.
+
+The one deliberate exception is the `kerfjs/dev` subpath itself, which is a
+side-effect import rather than an API — plus `clearDevHooks` /
+`installDevHooks` / `devHooks` re-exported from it so a consumer's own test
+suite can assert production-shaped behavior without reloading modules.
 
 This keeps the public surface small and means a consumer's IDE
 autocomplete doesn't suggest dev-warning APIs they shouldn't touch.
 
 ### 11.3.5 Zero production cost
 
-The combined effect of the rules above is that a production bundle pays
-nothing for the dev-warn family. The env-var read short-circuits before
-any per-call work; tree-shaking can also drop the warner modules entirely
-if nothing imports them in a particular consumer's bundle. The fast-path
-benchmark numbers in `bench/results.md` are taken with `NODE_ENV=production`
-so production behavior is what's measured.
+A production bundle pays nothing for this family, on both axes — and the
+bundle axis is the one that used to be untrue.
 
-### 11.3.6 The shared dev-mode gate and the runtime override
+**Runtime cost: one property read.** Core call sites are
+`devHooks.someHook?.(...)`. With nothing installed the slot is `undefined`
+and the call short-circuits. The few sites that would otherwise do expensive
+preparatory work — capturing the previous render's binding list, allocating a
+per-render `Map` for the invariant checks — consult a `…Enabled` predicate
+slot first, so they skip the work rather than doing it and discarding it.
 
-Every dev-only path in kerf — this warning family, the `defineStore`
-`get()` snapshot freeze, and the `each()` missing-row-key warning — routes
-its "is this a development build?" decision through one helper,
-[`src/utils/devMode.ts`](../src/utils/devMode.ts) `isDevMode()`.
-It resolves two inputs with a fixed precedence:
-
-1. **`globalThis.KERF_DEV`** — an explicit runtime override. When set to a
-   boolean it **wins unconditionally**: `false` forces production behavior
-   even under `NODE_ENV=development`; `true` forces development behavior
-   even under `NODE_ENV=production`. A non-boolean value is ignored (falls
-   through to NODE_ENV). The global is read **lazily** — on each call, never
-   memoized at import — so a consumer can set it once before mounting and
-   have it take effect.
-2. **`process.env.NODE_ENV`** — the default when no boolean override is
-   present. Development is ON unless `NODE_ENV === 'production'`, read
-   through `globalThis.process` so the source runs untouched in a browser
-   with no `process` binding.
-
-**Why the override exists.** A no-bundler consumer that loads kerf from a
-CDN via an importmap has no `process`, so the NODE_ENV branch resolves to
-development-ON — the correct, unchanged default, but previously with **no
-way to turn it off**. That left the store freeze and (when opted in) the
-warning machinery permanently active in their production deployment.
-Setting `globalThis.KERF_DEV = false` before the first `mount()` is the
-escape hatch:
+**Bundle cost: zero bytes.** Because nothing in the main entry references a
+`dev-*` module, the whole family is unreachable and a bundler drops it. The
+consumer's own dev flag is what makes this work:
 
 ```js
-// index.html of a build-step-free app, before importing your app code:
-globalThis.KERF_DEV = false; // production: skip the store get() freeze
+if (import.meta.env.DEV) await import('kerfjs/dev');
 ```
 
-**Non-breaking.** The override is the only new capability. With no override
-set, `isDevMode()` is exactly the prior `NODE_ENV !== 'production'` check —
-bundled consumers follow NODE_ENV as before, and a bundler that statically
-substitutes `NODE_ENV` still dead-code-eliminates the dev paths. There is
-deliberately **no public export**: `globalThis.KERF_DEV` is the entire
-consumer-facing surface, so nothing new lands on the `kerfjs` barrel.
+In a production build that condition folds to `false`, so the statement is
+eliminated and the chunk is never emitted, let alone fetched. Measured with a
+Rollup consumer: a realistic import (`signal`, `computed`, `effect`, `batch`,
+`mount`, `each`, `delegate`) is **12.24 KB min+gzip with the dev entry absent
+vs 16.91 KB when the family shipped in the main bundle** — 4.67 KB, 27% of the
+bundle.
 
-**Perf.** `isDevMode()` is a handful of optional-chained property reads.
-Hot-path callers that ran a cached boolean before (the store `get()`
-freeze) resolve the gate once per instance on first use and cache it, so
-the hot path stays a bare boolean read rather than a per-call env probe.
+> **This claim was previously false.** Before the family moved behind the
+> registry, `mount.ts` and `each.ts` imported the warners unconditionally and
+> gated them at runtime, so the modules shipped to production regardless of
+> build mode. Worse, the runtime gate itself resolved to DEVELOPMENT inside
+> production browser bundles (§11.3.6), so the store's read-only proxy and the
+> throwing URL screen were live in production too. Both are fixed.
+
+The fast-path benchmark numbers in `bench/results.md` are taken without the
+dev entry installed, so production behavior is what's measured.
+
+### 11.3.6 Installing the diagnostics — kerf does not infer dev mode
+
+kerf has no idea whether it is running in development, and deliberately does
+not try to find out. **Importing `kerfjs/dev` is the development signal.**
+
+```js
+// Your entry file. YOUR flag, YOUR bundler, YOUR build.
+if (import.meta.env.DEV) await import('kerfjs/dev');                   // Vite
+if (process.env.NODE_ENV !== 'production') await import('kerfjs/dev'); // webpack / Node
+```
+
+A no-build/CDN app imports it unconditionally from its development page and
+simply omits it from the production page — there is no bundler to fold a
+condition, and nothing for kerf to detect.
+
+**Why inference was removed.** kerf used to resolve this itself, reading
+`globalThis.process?.env?.NODE_ENV`. That was wrong in the most common case.
+Bundlers substitute the *bare* `process.env.NODE_ENV` token; they do not
+create a `globalThis.process` object for browser targets. So the read returned
+`undefined`, `undefined !== 'production'` evaluated to `true`, and **every
+production browser bundle ran in development mode** — the store's deep
+read-only proxy on every `get()`, and a dangerous URL *throwing* where
+production is documented to warn-and-drop. Verified against webpack 5.109 in
+`mode: 'production'`, whose output leaves the expression untouched.
+
+**Why it could not be fixed by rewriting the expression.** Only the
+*production* answer can be made static. `X && false` folds to a constant for
+any side-effect-free `X`; `X && true` does not fold to `true`. So any form a
+bundler can eliminate must also treat "no `process` binding" as production —
+which silently disables every warning in the no-build/CDN path and in browser
+dev bundles, trading a production bug for a development one. There is no
+expression that is simultaneously foldable, dev-by-default, and safe without a
+`process` binding. Handing the decision to the consumer dissolves the problem
+instead of working around it.
+
+**Install ordering.** Every hook except one is read at *call* time — render,
+reconcile, `set()`, `delegate()` — so installing any time before your first
+`mount()` is enough. The exception is `signal()`, which picks its constructor
+when the signal is *created*. Static imports are hoisted above a top-level
+`await import()`, so module-scope signals in imported modules are created
+before the dev entry runs and `KERF_DEV_WARN_UNTRACKED_SIGNALS` will not see
+them. To cover those, make `import 'kerfjs/dev'` the first static import of a
+dev-only entry file, or load your app through a dynamic import after it.
+
+**Two layers, not one.** Installation decides whether the diagnostics are
+*present*; each individual warner still reads its own `KERF_DEV_WARN_*` env
+var to decide whether it is *switched on* (§11.3.1). Installing the dev entry
+does not flood the console — it makes the opt-in warnings available.
+
+**Uninstalling.** `kerfjs/dev` re-exports `clearDevHooks()` (and
+`installDevHooks()` / `devHooks`) so a consumer's test suite can assert
+production-shaped behavior without module-reload gymnastics. kerf's own suites
+use exactly this — see `tests/helpers/dev-shape.ts`.
+
+**`globalThis.KERF_DEV` is gone as a kerf-wide switch.** It was the escape
+hatch for the CDN consumer who had no way to turn dev mode off; not importing
+the dev entry is now that escape hatch, and it is a compile-time one. The
+`isDevMode()` helper still exists, but only *inside* the dev chunk, where the
+individual warners use it as part of their own opt-in checks.
 
 ## 11.4 Where each warning is referenced
 
