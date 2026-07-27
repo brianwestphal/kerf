@@ -14,7 +14,9 @@ const outDir = resolve(__dirname, '../src/content/docs');
 
 // Source filename → { target path relative to outDir, generated description fallback }.
 // `null` target = skip (rendered elsewhere or replaced by a deploy redirect).
-const MAP = {
+// Exported so `scripts/check-doc-site-tickets.mjs` can derive "which docs/*.md
+// get published" from this single source of truth rather than a second list.
+export const MAP = {
   '1-overview.md': { target: 'docs/overview.md', description: 'What Kerf is, why it exists, when to use it.' },
   '2-reactivity.md': { target: 'docs/reactivity.md', description: 'Signals, computeds, effects, batch.' },
   '3-stores.md': { target: 'docs/stores.md', description: 'defineStore — composable, testable state.' },
@@ -108,8 +110,12 @@ async function main() {
   console.log(`[sync-docs] wrote ${written.length} files`);
 }
 
-main().catch((err) => {
-  // eslint-disable-next-line no-console
-  console.error('[sync-docs] failed:', err);
-  process.exit(1);
-});
+// Only sync when run as a script. Importing this module (the ticket-marker
+// check imports `MAP`) must not write files as a side effect.
+if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  main().catch((err) => {
+    // eslint-disable-next-line no-console
+    console.error('[sync-docs] failed:', err);
+    process.exit(1);
+  });
+}

@@ -132,6 +132,7 @@ npm run typecheck         # tsc --noEmit
 npm run lint              # eslint
 npm run check:docs:test-inventory  # KF-109: ensures docs/ai/code-summary.md mentions every test file in tests/
 npm run check:docs:api-coverage  # KF-162: ensures docs/8-api-reference.md mentions every public export from src/index.ts and its subpaths
+npm run check:docs:site-tickets  # KF-433: fails if a `KF-NN` ticket marker appears in any site-published markdown — every source doc in sync-docs.mjs's MAP plus everything under site/src/content/docs/
 npm run check:docs:api-signatures  # KF-343: builds, then verifies each public function export's signature in docs/8-api-reference.md matches the emitted dist/*.d.ts (param names + arity + return type per overload). In the check chain it runs right after the build step (no rebuild)
 npm run check:features    # KF-284/286/289: ensures every behavior in the docs/14-feature-coverage.md index maps to a live guarding test, AND every public value export is represented by an index row (a behavior/transition axis orthogonal to line coverage)
 npm run check:bundle-size # KF-428: builds, then bundles five representative consumer entries against dist/ (esbuild --bundle --minify + gzip, prod NODE_ENV define) and fails any over budget. Budgets RATCHET — an entry more than 0.35 KB under budget also fails, asking you to lower it so a win can't silently erode. The `main-no-dev-code` entry additionally greps the production bundle for dev-only markers, so any `dev-*` module reaching the main entry fails even if it were free. `--why <entry>` prints the per-module byte breakdown; `--report` prints sizes without failing
@@ -182,14 +183,16 @@ This project is managed via [Hot Sheet](https://github.com/brianwestphal/hotshee
 
 Hot Sheet is local-only, so a bare `KF-NN` reference can't be looked up by anyone but the maintainer. The rules differ by surface:
 
-**Never mention KF-NN anywhere on the published site.** That includes prose in `site/src/content/docs/**`, the source docs that sync into it (`docs/1-overview.md` … `docs/8-api-reference.md`), any HTML comment inside a published markdown file, and any code-block excerpt the site renders. Site readers don't have Hot Sheet, so the number is dead weight at best and noisy at worst. When you'd normally write `(KF-103)` for provenance, drop the marker and keep only the self-contained summary.
+**Never mention KF-NN anywhere on the published site.** That includes prose in `site/src/content/docs/**`, **every source doc listed in `site/scripts/sync-docs.mjs`'s `MAP` with a non-null target** (the set has grown past the original `1`–`8` range — `11-dev-warnings.md` and `13-component-packages.md` are published too), any HTML comment inside a published markdown file, and any code-block excerpt the site renders. Site readers don't have Hot Sheet, so the number is dead weight at best and noisy at worst. When you'd normally write `(KF-103)` for provenance, drop the marker and keep only the self-contained summary.
+
+`npm run check` enforces this via `scripts/check-doc-site-tickets.mjs`, which imports that same `MAP` — so a doc added to the sync map is covered automatically, with no second list to keep in step.
 
 **For everything else (code comments in `src/`, commit messages, source docs that are NOT site-synced):** when you mention a ticket number, **always include a short self-contained summary** in the same sentence or parenthetical so the reference stands alone without the reader resolving the ticket.
 
 - ✅ `data-morph-skip-children (attrs on the host morph, subtree preserved)` — self-contained; no ticket number needed.
 - ✅ `// KF-103 row contract: exactly one top-level element per each() row` — code comment with self-contained summary; the number is provenance.
 - ❌ `(KF-103)` — bare blame marker, unlookable; drop it or expand it.
-- ❌ Any `KF-NN` anywhere under `site/src/content/docs/**` or in the synced source docs (`docs/1-overview.md`, `docs/2-reactivity.md`, `docs/4-render.md`, `docs/8-api-reference.md`).
+- ❌ Any `KF-NN` anywhere under `site/src/content/docs/**` or in any source doc the sync map publishes (run `node scripts/check-doc-site-tickets.mjs` if unsure — it prints every offender with its line).
 - ❌ "See `.hotsheet/worklist.md`" — `.hotsheet/` is local-only; never link to it in user-facing docs.
 
 The same rule applies to commit messages — `git log` is a public-facing surface for any open-source consumer. Use `KF-NN: <short title>` shape so the title makes the commit understandable without a ticket lookup.

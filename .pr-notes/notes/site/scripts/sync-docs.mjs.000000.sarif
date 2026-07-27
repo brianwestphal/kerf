@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "Hot Sheet",
+          "rules": [
+            {
+              "id": "review-note",
+              "name": "ReviewNote",
+              "shortDescription": {
+                "text": "AI-authored, line-anchored review note."
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "review-note",
+          "ruleIndex": 0,
+          "kind": "informational",
+          "level": "none",
+          "guid": "ms2v8f10szk3efpj",
+          "message": {
+            "text": "MAP is exported (and main() now runs only as an entry point) so the ticket-marker gate derives \"which docs are published\" from this file instead of keeping a second list.\n\nThe convention that 18 markers slipped past named a doc range (1-overview … 8-api-reference) that had since grown to 12 synced docs. Duplicating the list into the checker would reproduce exactly that failure mode. Importing MAP means a doc added to the sync map is covered automatically.\n\nThe entry-point guard is what makes the import side-effect-free — without it, importing this module would write all ten Starlight copies as a side effect of running the check.\n",
+            "markdown": "`MAP` is exported (and `main()` now runs only as an entry point) so the ticket-marker gate derives \"which docs are published\" from this file instead of keeping a second list.\n\nThe convention that 18 markers slipped past named a doc range (`1-overview` … `8-api-reference`) that had since grown to 12 synced docs. Duplicating the list into the checker would reproduce exactly that failure mode. Importing `MAP` means a doc added to the sync map is covered automatically.\n\nThe entry-point guard is what makes the import side-effect-free — without it, importing this module would write all ten Starlight copies as a side effect of running the check.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "site/scripts/sync-docs.mjs"
+                },
+                "region": {
+                  "startLine": 113,
+                  "endLine": 115,
+                  "snippet": {
+                    "text": "// Only sync when run as a script. Importing this module (the ticket-marker\n// check imports `MAP`) must not write files as a side effect.\nif (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {"
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "tags": [
+              "rationale"
+            ]
+          },
+          "workItemUris": [
+            "KF-433"
+          ],
+          "partialFingerprints": {
+            "prNoteAnchor/v1": "a4e4dc7e06b843913b99326f5c40c6f2"
+          }
+        }
+      ],
+      "versionControlProvenance": [
+        {
+          "repositoryUri": "git@github.com:brianwestphal/kerf.git",
+          "revisionId": "3d044592d6811a247f167e5a67094ec68bdb60c4",
+          "branch": "main"
+        }
+      ]
+    }
+  ]
+}

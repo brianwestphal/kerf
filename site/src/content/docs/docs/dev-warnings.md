@@ -70,7 +70,7 @@ information no static checker has.
 
 ### 11.2.1 `KERF_DEV_WARN_REBUILT_LISTENERS=1` (Rule 4)
 
-**Module:** [`src/dev-listener-warn.ts`](../src/dev-listener-warn.ts) (KF-174).
+**Module:** [`src/dev-listener-warn.ts`](../src/dev-listener-warn.ts).
 **Trigger:** a node carrying an imperative `addEventListener` listener is
 removed from a `mount()`-managed tree (by the morph, by an explicit
 `each()` removal, or by a parent re-render). **What it catches:** Rule 4
@@ -93,7 +93,7 @@ forgot to wrap in `data-morph-skip`.
 
 ### 11.2.2 `KERF_DEV_WARN_UNTRACKED_SIGNALS=1` (Rule 8)
 
-**Module:** [`src/dev-signal.ts`](../src/dev-signal.ts) (KF-176).
+**Module:** [`src/dev-signal.ts`](../src/dev-signal.ts).
 **Trigger:** a signal's `.value` is written when no subscriber has ever
 attached to that signal. **What it catches:** Rule 8 violations — reading
 `signal.value` outside a render fn or `effect()` callback (so the read
@@ -145,7 +145,7 @@ it the better fix becomes available and the suite says so.
 
 ### 11.2.3 `KERF_DEV_WARN_NARROW_SET=1` (Rule 9)
 
-**Module:** [`src/dev-store-warn.ts`](../src/dev-store-warn.ts) (KF-212).
+**Module:** [`src/dev-store-warn.ts`](../src/dev-store-warn.ts).
 **Trigger:** `defineStore.set(next)` is called with at least one key from
 the current state missing in `next`. **What it catches:** Rule 9
 violations — `set()` REPLACES state, so a partial-set call wipes any keys
@@ -202,18 +202,18 @@ would have missed same-count-different-keys cases.
 
 ### 11.2.6 `KERF_DEV_WARN_DELEGATE_IN_EFFECT=1`
 
-**Module:** [`src/dev-delegate-warn.ts`](../src/dev-delegate-warn.ts) (KF-238).
+**Module:** [`src/dev-delegate-warn.ts`](../src/dev-delegate-warn.ts).
 **Trigger:** `delegate()` or `delegateCapture()` is called while the call stack is inside an `effect()` body. **What it catches:** the listener-stacking pattern documented in `docs/5-event-delegation.md` §5.3 "When capturing the disposer still isn't enough" — every effect re-run executes its body fresh, so a `delegate()` call inside the body installs a NEW root listener on each re-run. The effect's disposer cleans up the reactive subscription but not the side-effects the body produced, so previous listeners stay attached, the per-listener closures pin `rootEl` / `handler` / everything the handler closes over, and listener count grows linearly with signal churn.
 
 **Mechanism.** With the env var set, `reactive.ts`'s `effect()` factory wraps the user body in `enterEffect()` / `exitEffect()` calls that increment and decrement a module-level depth counter in `dev-delegate-warn.ts`. Both `delegate()` and `delegateCapture()` call `warnIfInsideEffect()` at the top of their bodies; the function checks the env-var gate, then the depth counter; if depth > 0 it fires a one-shot `console.warn` naming the caller (`delegate` vs `delegateCapture`) and pointing at "register once at module / setup scope and gate behavior on the signal inside the handler" as the fix. The wrap also uses `try` / `finally` so a body that throws still decrements the counter — a thrown effect doesn't leave the depth permanently incremented.
 
-**Dedup scope.** One warning per process. Structurally identical to KF-174 (rebuilt listeners) — the signal is "your code has this antipattern"; firing once is enough to direct attention. A consumer who fixes the first instance and has another won't be told twice in the same process, but they'll see it on the next run.
+**Dedup scope.** One warning per process. Structurally identical to the rebuilt-listeners warning — the signal is "your code has this antipattern"; firing once is enough to direct attention. A consumer who fixes the first instance and has another won't be told twice in the same process, but they'll see it on the next run.
 
 **Why opt-in.** No realistic kerf code legitimately calls `delegate()` inside an `effect()` body — but the wrap of `effect()` itself adds a microscopic call-frame overhead, so the bare `coreEffect` re-export stays the default path when the env var is unset. Production NODE_ENV short-circuits before the wrap decision; production bundles see the bare re-export with zero overhead.
 
 ### 11.2.7 `KERF_DEV_WARN_STALE_BINDING=1`
 
-**Module:** [`src/dev-binding-warn.ts`](../src/dev-binding-warn.ts) (KF-338).
+**Module:** [`src/dev-binding-warn.ts`](../src/dev-binding-warn.ts).
 **Trigger:** `mount()` takes its fast path (a re-render whose static-surrounds
 HTML is byte-for-byte identical to the previous render, so the morph AND the
 fine-grained binding re-wiring are both skipped) and a GLOBAL (static-surround)
@@ -355,7 +355,7 @@ message asks for.
 
 ### 11.2.11 Double-mount guard (always-on, not opt-in)
 
-**Module:** [`src/mount.ts`](../src/mount.ts) (KF-175, KF-225).
+**Module:** [`src/mount.ts`](../src/mount.ts).
 **Trigger:** `mount(el, render)` is called on an element that is already the root of a live mount, or on a descendant or ancestor of such an element. **What it catches:** the "two competing effects" pattern — two `mount()` calls on the same DOM subtree both install `effect()` watchers that fight over the same live nodes, producing conflicting DOM mutations and unpredictable rendering output with no runtime error.
 
 **Mechanism.** `mount()` assigns a non-enumerable `Symbol.for('kerfjs.mounted')` marker to the `rootEl` at mount time. `assertNotInsideMountedTree()` checks the element itself (same-element double-mount), all ancestors (descendant-of-mounted mount), and all descendants (ancestor-of-mounted mount) before allowing the mount to proceed. If any check fires, it throws with a message naming the element (`<tagName>` or `<tagName#id>`) and pointing at the disposer as the fix. The disposer returned by `mount()` deletes the marker, so a legitimate unmount + remount cycle never false-positives.
@@ -409,7 +409,7 @@ Unlike everything else in this family, this one does not describe a pattern the 
 | **row-order** | rows that no longer follow their own marker in document order |
 | **row-alias** | one row node claimed by two bindings |
 | **region-overlap** | two lists in one parent interleaving their rows |
-| **row-count** | a binding holding a different number of rows than the data it rendered from (KF-416). Every other check is *internal* — it confirms the binding agrees with the live DOM — so a list that reconciled to the wrong count still passes them if it's self-consistent. Comparing against the source length is the one check that catches a list rendering too few or too many rows; it is what would have caught KF-411 (a self-healed empty binding, internally perfect and externally blank) at the render that caused it. Supplied per-list by `mount()` only when the checks are enabled, so production pays nothing. |
+| **row-count** | a binding holding a different number of rows than the data it rendered from. Every other check is *internal* — it confirms the binding agrees with the live DOM — so a list that reconciled to the wrong count still passes them if it's self-consistent. Comparing against the source length is the one check that catches a list rendering too few or too many rows; it is what would have caught the self-healed-empty-binding defect — a binding that was internally perfect and externally blank — at the render that caused it. Supplied per-list by `mount()` only when the checks are enabled, so production pays nothing. |
 
 **Modes.** `KERF_DEV_INVARIANTS=1` warns; `KERF_DEV_INVARIANTS=throw` throws. Unset (the default) is a complete no-op — the DOM is never walked. The `throw` mode exists because a warning inside a passing test is invisible: kerf's own suites set `throw` (in `vitest.config.ts` and both dist configs) so any future corruption fails the run at the render that caused it. Consumers debugging a suspected reconciler bug want `1` first.
 
@@ -482,7 +482,8 @@ added to the family must too.
 ### 11.3.2 One-shot dedup
 
 Each warning fires at most once per "owner": once per `mount()` for
-KF-174, once per signal for KF-176, once per store for KF-212. The dedup
+rebuilt listeners, once per signal for untracked signals, once per store
+for narrow sets. The dedup
 scope is the smallest unit that meaningfully represents "the developer
 has now seen this warning for this owner" — not module-global (which
 would make a second buggy store invisible after the first warns) and not
@@ -627,7 +628,7 @@ individual warners use it as part of their own opt-in checks.
 
 ## 11.4 Where each warning is referenced
 
-| Surface | KF-174 (rebuilt listeners) | KF-176 (untracked signals) | KF-212 (narrow set) | duplicate cacheKey | each-in-morph-skip | KF-238 (delegate-in-effect) | KF-338 (stale binding) | value-only re-render | list rebind | stale index |
+| Surface | rebuilt listeners | untracked signals | narrow set | duplicate cacheKey | each-in-morph-skip | delegate-in-effect | stale binding | value-only re-render | list rebind | stale index |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Source module | `src/dev-listener-warn.ts` | `src/dev-signal.ts` | `src/dev-store-warn.ts` | `src/dev-each-warn.ts` | `src/dev-each-warn.ts` | `src/dev-delegate-warn.ts` | `src/dev-binding-warn.ts` | `src/dev-rerender-warn.ts` | `src/dev-list-rebind-warn.ts` | `src/dev-list-index-warn.ts` |
 | Wired in | `src/mount.ts` | `src/reactive.ts` | `src/store.ts` | `src/each.ts` | `src/mount.ts` | `src/reactive.ts` (effect wrap) + `src/delegate.ts` (check) | `src/mount.ts` (fast path) | `src/mount.ts` (surrounds-changed path) | `src/mount.ts` (self-heal branch) | `src/each.ts` (snapshot + granular) |
