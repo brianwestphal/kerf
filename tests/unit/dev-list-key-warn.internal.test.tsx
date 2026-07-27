@@ -13,6 +13,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { arraySignal } from '../../src/array-signal.js';
 import { each } from '../../src/each.js';
 import { mount, signal } from '../../src/index.js';
+import { enterProductionShape, restoreDevelopmentShape } from '../helpers/dev-shape.js';
 
 let root: HTMLElement;
 let warnSpy: ReturnType<typeof vi.spyOn>;
@@ -25,7 +26,6 @@ beforeEach(() => {
 
 afterEach(() => {
   document.body.innerHTML = '';
-  delete (globalThis as { KERF_DEV?: boolean }).KERF_DEV;
   warnSpy.mockRestore();
 });
 
@@ -97,11 +97,15 @@ describe('dev-list-key-warn (always-on identity-shift warning)', () => {
   });
 
   it('is silent in production mode', () => {
-    (globalThis as { KERF_DEV?: boolean }).KERF_DEV = false;
-    const { cond, b, dispose } = shiftingTree(false);
-    cond.value = false;
-    b.push({ id: 'b2' });
-    expect(shiftWarnings()).toEqual([]);
-    dispose();
+    enterProductionShape();
+    try {
+      const { cond, b, dispose } = shiftingTree(false);
+      cond.value = false;
+      b.push({ id: 'b2' });
+      expect(shiftWarnings()).toEqual([]);
+      dispose();
+    } finally {
+      restoreDevelopmentShape();
+    }
   });
 });

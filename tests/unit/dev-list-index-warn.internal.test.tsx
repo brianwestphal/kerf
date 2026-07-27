@@ -18,6 +18,7 @@ import { _resetWarnedForTests, maybeWarnStaleIndex } from '../../src/dev-list-in
 import { each } from '../../src/each.js';
 import { mount } from '../../src/mount.js';
 import { batch, signal } from '../../src/reactive.js';
+import { enterProductionShape, restoreDevelopmentShape } from '../helpers/dev-shape.js';
 
 const env = (globalThis as { process: { env: Record<string, string | undefined> } }).process.env;
 
@@ -34,7 +35,6 @@ beforeEach(() => {
 afterEach(() => {
   document.body.innerHTML = '';
   delete env.KERF_DEV_WARN_STALE_INDEX;
-  delete (globalThis as { KERF_DEV?: boolean }).KERF_DEV;
   warnSpy.mockRestore();
 });
 
@@ -122,11 +122,15 @@ describe('dev-list-index-warn (KERF_DEV_WARN_STALE_INDEX=1)', () => {
 
   it('is silent in production mode even with the env var set', () => {
     env.KERF_DEV_WARN_STALE_INDEX = '1';
-    (globalThis as { KERF_DEV?: boolean }).KERF_DEV = false;
-    const data = signal([{ id: 'a' }, { id: 'b' }]);
-    mount(root, () => <ul>{each(data.value, withIndex)}</ul>);
-    data.value = [data.value[1], data.value[0]];
-    expect(warnSpy).not.toHaveBeenCalled();
+    enterProductionShape();
+    try {
+      const data = signal([{ id: 'a' }, { id: 'b' }]);
+      mount(root, () => <ul>{each(data.value, withIndex)}</ul>);
+      data.value = [data.value[1], data.value[0]];
+      expect(warnSpy).not.toHaveBeenCalled();
+    } finally {
+      restoreDevelopmentShape();
+    }
   });
 
   it('KF-424: the cacheKey:(_,i)=>i workaround suppresses the warn when it reroutes to snapshot', () => {

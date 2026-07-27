@@ -9,8 +9,15 @@
  */
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { installDevHooks } from '../../src/dev.js';
+import { devHooks } from '../../src/dev-hooks.js';
 import { findListInvariantViolations, maybeCheckListInvariants } from '../../src/dev-invariants.js';
+import { each } from '../../src/each.js';
+import { jsx } from '../../src/jsx-runtime.js';
 import type { BoundItem, ListBinding } from '../../src/list-binding.js';
+import { mount } from '../../src/mount.js';
+import { signal } from '../../src/reactive.js';
+import { enterProductionShape, restoreDevelopmentShape } from '../helpers/dev-shape.js';
 
 const env = (globalThis as { process: { env: Record<string, string | undefined> } }).process.env;
 
@@ -204,15 +211,38 @@ describe('dev invariants: reporting modes', () => {
       .toThrow(/kerf invariant violated after reconcile/);
   });
 
-  it('is off in production even when set', () => {
-    env.KERF_DEV_INVARIANTS = 'throw';
-    (globalThis as { KERF_DEV?: boolean }).KERF_DEV = false;
+  it('hands mount() no expected-count map when the checks are off — the O(rows) counting is not paid', () => {
+    // The env var is unset here (see beforeEach), so `listInvariantsEnabled()`
+    // is false and `mount()` passes `undefined` instead of building a
+    // per-list count map on every render.
+    const seen: unknown[][] = [];
+    const record = (...args: unknown[]): void => { seen.push(args); };
+    installDevHooks({ listInvariants: record as never });
     try {
-      const b = makeList('0', 1);
-      b.marker.remove();
-      expect(() => maybeCheckListInvariants(root, new Map([['0', b]]))).not.toThrow();
+      const items = signal([{ id: 'a' }]);
+      const dispose = mount(root, () => jsx('ul', {
+        children: each(items.value, (it) => jsx('li', { 'data-key': it.id, children: it.id })),
+      }) as never);
+      expect(seen.length).toBe(1);
+      expect(seen[0][2]).toBeUndefined();
+      dispose();
     } finally {
-      delete (globalThis as { KERF_DEV?: boolean }).KERF_DEV;
+      restoreDevelopmentShape();
+    }
+  });
+
+  it('is off in production even when set', () => {
+    // "Production" means the diagnostics are not installed: `mount()` reaches
+    // the checks only through the hook slot, which is empty without
+    // `kerfjs/dev`. The checker itself still works when called directly — that
+    // is the point of the seam, so assert the seam rather than the checker.
+    env.KERF_DEV_INVARIANTS = 'throw';
+    enterProductionShape();
+    try {
+      expect(devHooks.listInvariants).toBeUndefined();
+      expect(devHooks.listInvariantsEnabled).toBeUndefined();
+    } finally {
+      restoreDevelopmentShape();
     }
   });
 });

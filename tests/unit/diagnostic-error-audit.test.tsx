@@ -228,8 +228,8 @@ describe('Diagnostic-error audit (KF-169) — Hard Rules 1–12', () => {
     // stale — the worst silent-misbehavior of all the rules).
     //
     // Production keeps the bare reference for zero overhead — the guard is
-    // gated through `isDevMode()` (`NODE_ENV !== 'production'`, or an explicit
-    // `globalThis.KERF_DEV`).
+    // reached through the `devHooks.readonlySnapshot` slot, so it exists only
+    // when the consumer imported `kerfjs/dev`.
     const counter = defineStore({
       initial: () => ({ count: 0 }),
       actions: (_set, get) => ({

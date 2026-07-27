@@ -12,6 +12,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { arraySignal } from '../../src/array-signal.js';
 import { _resetWarnedForTests, findParagraphRepair } from '../../src/dev-parser-repair-warn.js';
 import { each, mount, signal } from '../../src/index.js';
+import { enterProductionShape, restoreDevelopmentShape } from '../helpers/dev-shape.js';
 
 const env = (globalThis as { process: { env: Record<string, string | undefined> } }).process.env;
 
@@ -121,13 +122,13 @@ describe('parser repair: reporting', () => {
 
   it('is off in production even when set', () => {
     env.KERF_DEV_WARN_PARSER_REPAIR = '1';
-    (globalThis as { KERF_DEV?: boolean }).KERF_DEV = false;
+    enterProductionShape();
     try {
       const dispose = mount(root, () => <p><section>x</section></p>);
       expect(warn).not.toHaveBeenCalled();
       dispose();
     } finally {
-      delete (globalThis as { KERF_DEV?: boolean }).KERF_DEV;
+      restoreDevelopmentShape();
     }
   });
 });

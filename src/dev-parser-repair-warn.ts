@@ -32,8 +32,6 @@
  * the family's opt-in default keeps that judgement with the consumer.
  */
 
-import { isDevMode } from './utils/devMode.js';
-
 /**
  * Elements that close an open `<p>`. Per the HTML spec's "a p element's end tag
  * can be omitted if the p element is immediately followed by…" list.
@@ -51,7 +49,6 @@ const SCAN = new RegExp(`<(/?p|${BLOCK_TAGS.join('|')})[\\s/>]`, 'gi');
 const warnedPairs = new Set<string>();
 
 function isOptedIn(): boolean {
-  if (!isDevMode()) return false;
   const proc = (globalThis as { process?: { env?: Record<string, string | undefined> } }).process;
   return proc?.env?.KERF_DEV_WARN_PARSER_REPAIR === '1';
 }

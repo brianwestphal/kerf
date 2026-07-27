@@ -84,7 +84,7 @@ describe('production shape — no hooks installed', () => {
     }
   });
 
-  it('stays in production shape even with NODE_ENV=development and KERF_DEV=true', () => {
+  it('stays in production shape even with NODE_ENV=development and a KERF_DEV=true nothing reads', () => {
     // The old gate would have reported DEVELOPMENT for both of these. Neither
     // is consulted any more: installation is the only signal.
     const env = (globalThis as { process: { env: Record<string, string | undefined> } }).process.env;

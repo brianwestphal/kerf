@@ -30,15 +30,12 @@
  * Production behavior is unchanged for zero runtime cost.
  */
 
-import { isDevMode } from './utils/devMode.js';
-
 const LISTENER_MARKER = Symbol.for('kerfjs.devListener');
 
 let patched = false;
 let warned = false;
 
 function isOptedIn(): boolean {
-  if (!isDevMode()) return false;
   const proc = (globalThis as { process?: { env?: Record<string, string | undefined> } }).process;
   return proc?.env?.KERF_DEV_WARN_REBUILT_LISTENERS === '1';
 }

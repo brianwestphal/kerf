@@ -20,12 +20,9 @@
  * that intentionally use this pattern.
  */
 
-import { isDevMode } from './utils/devMode.js';
-
 const warnedIds = new Set<string>();
 
 function isOptedIn(): boolean {
-  if (!isDevMode()) return false;
   const proc = (globalThis as { process?: { env?: Record<string, string | undefined> } }).process;
   return proc?.env?.KERF_DEV_WARN_EACH_IN_MORPH_SKIP === '1';
 }
@@ -71,7 +68,6 @@ export function _resetWarnedForTests(): void {
 const warnedDupIds = new Set<string>();
 
 function isOptedInDupKeys(): boolean {
-  if (!isDevMode()) return false;
   const proc = (globalThis as { process?: { env?: Record<string, string | undefined> } }).process;
   return proc?.env?.KERF_DEV_WARN_DUPLICATE_EACH_KEYS === '1';
 }

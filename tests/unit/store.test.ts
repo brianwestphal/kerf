@@ -136,10 +136,8 @@ describe('dev-mode read-only guard on get() snapshot', () => {
   // re-fires effects) is now a loud throw. Production returns the bare
   // reference for zero overhead.
   const READ_ONLY = /read-only/;
-  const glob = globalThis as { KERF_DEV?: unknown };
 
   afterEach(() => {
-    delete glob.KERF_DEV;
     restoreDevelopmentShape();
   });
 
@@ -279,13 +277,11 @@ describe('dev-mode read-only guard on get() snapshot', () => {
 
 describe('dev-mode freeze follows hook installation, not an ambient override', () => {
   const glob = globalThis as {
-    KERF_DEV?: unknown;
     process?: { env?: Record<string, string | undefined> };
   };
   const env = glob.process?.env as Record<string, string | undefined>;
 
   afterEach(() => {
-    delete glob.KERF_DEV;
     restoreDevelopmentShape();
   });
 

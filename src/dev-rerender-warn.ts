@@ -26,8 +26,6 @@
  * the parse itself happens only on the already-slow surrounds-changed path.
  */
 
-import { isDevMode } from './utils/devMode.js';
-
 /** Per-mount one-shot context — created by `mount()`, mirrors NarrowSetWarnContext. */
 export interface ValueOnlyWarnContext {
   warned: boolean;
@@ -35,8 +33,7 @@ export interface ValueOnlyWarnContext {
 
 export function isOptedIn(): boolean {
   const proc = (globalThis as { process?: { env?: Record<string, string | undefined> } }).process;
-  if (proc?.env?.KERF_DEV_WARN_VALUE_ONLY_RERENDER !== '1') return false;
-  return isDevMode();
+  return proc?.env?.KERF_DEV_WARN_VALUE_ONLY_RERENDER === '1';
 }
 
 const ELEMENT_NODE = 1;

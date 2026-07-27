@@ -200,9 +200,9 @@ describe('jsx()', () => {
 
 // KF-340: the URL screen throws in dev, warns + drops in prod. This block pins
 // the PRODUCTION warn+drop behavior across the full obfuscation/subtype matrix;
-// it forces `KERF_DEV = false` (the override wins over the ambient NODE_ENV=test)
-// so the screen warns instead of throwing. The matching dev-throw behavior is
-// covered by the 'throws in dev' block below.
+// it uninstalls the dev hooks (production shape) so the screen warns instead of
+// throwing. The matching dev-throw behavior is covered by the 'throws in dev'
+// block below.
 describe('jsx — dangerous URL attribute filter (production warn+drop)', () => {
   let warnSpy: ReturnType<typeof vi.spyOn>;
 
@@ -412,8 +412,8 @@ describe('Fragment', () => {
 // warns + drops the attribute in prod. `renderAttr` runs eagerly inside `jsx()`,
 // so the dev throw surfaces at the `jsx(...)` call, not at `.toString()`.
 describe('static renderAttr URL screen — throws in dev (KF-297 / KF-340)', () => {
-  beforeEach(() => { (globalThis as Record<string, unknown>).KERF_DEV = true; });
-  afterEach(() => { delete (globalThis as Record<string, unknown>).KERF_DEV; });
+  // No setup needed: the suite installs the dev hooks globally
+  // (tests/setup-dev-hooks.ts), and installation IS the dev signal.
 
   it('throws on a javascript: href', () => {
     expect(() => jsx('a', { href: 'javascript:alert(1)', children: 'x' }))
@@ -441,11 +441,15 @@ describe('static renderAttr URL screen — throws in dev (KF-297 / KF-340)', () 
       .toThrow(/^JSX: dropped dangerous URL value for href/);
   });
 
-  it('falls back to NODE_ENV when no KERF_DEV override is set (ambient dev throws)', () => {
-    // With the override cleared, isDevMode() reads NODE_ENV; the suite runs under
-    // NODE_ENV=test (≠ 'production'), so dev mode is active and the screen throws.
-    delete (globalThis as Record<string, unknown>).KERF_DEV;
-    expect(() => jsx('a', { href: 'javascript:alert(1)', children: 'x' }))
-      .toThrow(/dropped dangerous URL value for href/);
+  it('throws whatever NODE_ENV says — installation is the only signal', () => {
+    const env = (globalThis as { process: { env: Record<string, string | undefined> } }).process.env;
+    const prev = env.NODE_ENV;
+    env.NODE_ENV = 'production';
+    try {
+      expect(() => jsx('a', { href: 'javascript:alert(1)', children: 'x' }))
+        .toThrow(/dropped dangerous URL value for href/);
+    } finally {
+      env.NODE_ENV = prev;
+    }
   });
 });

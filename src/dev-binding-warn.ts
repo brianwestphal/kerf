@@ -40,16 +40,11 @@
  */
 
 import type { Binding } from './bindings.js';
-import { isDevMode } from './utils/devMode.js';
 
 /** Per-hole one-shot dedup — keyed by the stable per-hole binding id. */
 const warnedHoles = new Set<string>();
 
 export function isOptedIn(): boolean {
-  // Route the dev decision through the shared gate (family contract, docs/11
-  // §11.3.1 rule 1) so the `globalThis.KERF_DEV` boolean override governs this
-  // warner like every other member of the KERF_DEV_WARN_* family.
-  if (!isDevMode()) return false;
   const proc = (globalThis as { process?: { env?: Record<string, string | undefined> } }).process;
   return proc?.env?.KERF_DEV_WARN_STALE_BINDING === '1';
 }

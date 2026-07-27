@@ -91,9 +91,8 @@ describe('dev-listener-warn (KF-174, opt-in)', () => {
     expect(warnSpy).not.toHaveBeenCalled();
   });
 
-  it('does NOT warn when NODE_ENV === \'production\' even with the env var set', async () => {
-    const prevEnv = env.NODE_ENV;
-    env.NODE_ENV = 'production';
+  it('does NOT warn in production shape (no kerfjs/dev installed) even with the env var set', async () => {
+    enterProductionShape();
     try {
       const items = signal([{ id: 1 }]);
       mount(root, () => renderList(items.value) as never);
@@ -103,7 +102,7 @@ describe('dev-listener-warn (KF-174, opt-in)', () => {
       await flushMutationObserver();
       expect(warnSpy).not.toHaveBeenCalled();
     } finally {
-      env.NODE_ENV = prevEnv;
+      restoreDevelopmentShape();
     }
   });
 

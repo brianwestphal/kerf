@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "Hot Sheet",
+          "rules": [
+            {
+              "id": "review-note",
+              "name": "ReviewNote",
+              "shortDescription": {
+                "text": "AI-authored, line-anchored review note."
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "review-note",
+          "ruleIndex": 0,
+          "kind": "informational",
+          "level": "none",
+          "guid": "ms2xqizxndslrpct",
+          "message": {
+            "text": "The fifteen tests that asserted \"no warning under NODE_ENV=production\" were testing the gate this change removes, so each was restated as a production-SHAPE assertion through this helper rather than deleted.\n\nThe distinction matters: they now drive the same public API (mount, defineStore, signal) with the hooks UNINSTALLED, which is what production actually is after KF-429. That is a stronger claim than the old one — it exercises the core-to-warner seam rather than a boolean inside the warner — and it keeps the behavior covered instead of trading a stale test for a coverage hole.\n\nTwo KERFDEV=true tests went the other way and now assert the inverse: an installed warner fires even under NODEENV=production. Those pin the property that replaced the gate.\n\nOne genuinely internal case (dev-invariants) could not be restated this way — the checker still works when called directly, since that is the point of the seam — so it asserts the empty hook slots instead.\n",
+            "markdown": "The fifteen tests that asserted \"no warning under NODE_ENV=production\" were testing the gate this change removes, so each was restated as a production-SHAPE assertion through this helper rather than deleted.\n\nThe distinction matters: they now drive the same public API (`mount`, `defineStore`, `signal`) with the hooks UNINSTALLED, which is what production actually is after KF-429. That is a stronger claim than the old one — it exercises the core-to-warner seam rather than a boolean inside the warner — and it keeps the behavior covered instead of trading a stale test for a coverage hole.\n\nTwo `KERF_DEV=true` tests went the other way and now assert the inverse: an installed warner fires even under `NODE_ENV=production`. Those pin the property that replaced the gate.\n\nOne genuinely internal case (`dev-invariants`) could not be restated this way — the checker still works when called directly, since that is the point of the seam — so it asserts the empty hook slots instead.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "tests/helpers/dev-shape.ts"
+                },
+                "region": {
+                  "startLine": 16,
+                  "endLine": 23,
+                  "snippet": {
+                    "text": "/** Uninstall every dev hook — kerf behaves exactly as it does in a production bundle. */\nexport function enterProductionShape(): void {\n  clearDevHooks();\n}\n\n/** Reinstall the standard dev bundle, undoing `enterProductionShape()`. */\nexport function restoreDevelopmentShape(): void {\n  installDevHooks(DEV_HOOKS);"
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "tags": [
+              "rationale"
+            ]
+          },
+          "workItemUris": [
+            "KF-430"
+          ],
+          "partialFingerprints": {
+            "prNoteAnchor/v1": "56abdd3953f597dd39a646171e99f95a"
+          }
+        }
+      ],
+      "versionControlProvenance": [
+        {
+          "repositoryUri": "git@github.com:brianwestphal/kerf.git",
+          "revisionId": "b253c8593c1c459cda87479a38cbfeee9579adf7",
+          "branch": "main"
+        }
+      ]
+    }
+  ]
+}

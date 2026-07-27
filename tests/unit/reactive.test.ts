@@ -7,6 +7,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { batch, computed, effect, signal } from '../../src/reactive.js';
+import { enterProductionShape, restoreDevelopmentShape } from '../helpers/dev-shape.js';
 
 describe('signal()', () => {
   it('exposes initial value via .value', () => {
@@ -146,15 +147,16 @@ describe('dev-mode untracked-write warning (KF-176, opt-in)', () => {
     expect(warnSpy).not.toHaveBeenCalled();
   });
 
-  it('does NOT warn when NODE_ENV === \'production\' even with the opt-in env var set', () => {
-    const prevEnv = env.NODE_ENV;
-    env.NODE_ENV = 'production';
+  it('does NOT warn in production shape (no kerfjs/dev installed) even with the opt-in env var set', () => {
+    enterProductionShape();
     try {
+      // Without the hooks installed, `signal()` returns the plain Signal — the
+      // DevSignal subclass that carries the warning is never chosen.
       const s = signal(0);
       s.value = 1;
       expect(warnSpy).not.toHaveBeenCalled();
     } finally {
-      env.NODE_ENV = prevEnv;
+      restoreDevelopmentShape();
     }
   });
 

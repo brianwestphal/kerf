@@ -148,8 +148,8 @@ describe('fine-grained bindings — attribute holes', () => {
 
 // KF-340: the URL screen throws in dev (fail loudly at the developer's desk),
 // warns + drops in prod (never crash a shipped app on attacker-influenced data).
-// These bound-writer tests run under the ambient NODE_ENV=test (dev) and assert
-// the throw; the prod block below forces `KERF_DEV = false` and asserts warn+drop.
+// These bound-writer tests run with the dev hooks installed and assert the
+// throw; the prod block below uninstalls them and asserts warn+drop.
 describe('fine-grained bindings — bound-attribute security: throws in dev (KF-297 / KF-340)', () => {
   beforeEach(() => { restoreDevelopmentShape(); });
   afterEach(() => { restoreDevelopmentShape(); });

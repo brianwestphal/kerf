@@ -14,6 +14,7 @@ import { each } from '../../src/each.js';
 import { jsx } from '../../src/jsx-runtime.js';
 import { mount } from '../../src/mount.js';
 import { signal } from '../../src/reactive.js';
+import { enterProductionShape, restoreDevelopmentShape } from '../helpers/dev-shape.js';
 
 const env = (globalThis as { process: { env: Record<string, string | undefined> } }).process.env;
 
@@ -79,15 +80,14 @@ describe('dev-each-warn (KERF_DEV_WARN_EACH_IN_MORPH_SKIP=1)', () => {
     expect(warnSpy).not.toHaveBeenCalled();
   });
 
-  it('does NOT warn when NODE_ENV === \'production\' even with the env var set', () => {
+  it('does NOT warn in production shape (no kerfjs/dev installed) even with the env var set', () => {
     env.KERF_DEV_WARN_EACH_IN_MORPH_SKIP = '1';
-    const prevNodeEnv = env.NODE_ENV;
-    env.NODE_ENV = 'production';
+    enterProductionShape();
     try {
       mount(root, () => renderSkippedList() as never);
       expect(warnSpy).not.toHaveBeenCalled();
     } finally {
-      env.NODE_ENV = prevNodeEnv;
+      restoreDevelopmentShape();
     }
   });
 
@@ -211,10 +211,9 @@ describe('dev-each-warn duplicate cacheKey (KERF_DEV_WARN_DUPLICATE_EACH_KEYS=1)
     expect(warnSpy).toHaveBeenCalledTimes(1);
   });
 
-  it('does NOT warn in production mode', () => {
+  it('does NOT warn in production shape (no kerfjs/dev installed)', () => {
     env.KERF_DEV_WARN_DUPLICATE_EACH_KEYS = '1';
-    const prevNodeEnv = env.NODE_ENV;
-    env.NODE_ENV = 'production';
+    enterProductionShape();
     try {
       mount(root, () =>
         jsx('ul', {
@@ -227,7 +226,7 @@ describe('dev-each-warn duplicate cacheKey (KERF_DEV_WARN_DUPLICATE_EACH_KEYS=1)
       );
       expect(warnSpy).not.toHaveBeenCalled();
     } finally {
-      env.NODE_ENV = prevNodeEnv;
+      restoreDevelopmentShape();
     }
   });
 });

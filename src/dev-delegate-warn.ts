@@ -23,13 +23,10 @@
  * `reactive.ts` only wraps when the gate is on.
  */
 
-import { isDevMode } from './utils/devMode.js';
-
 let depth = 0;
 let warned = false;
 
 function isOptedIn(): boolean {
-  if (!isDevMode()) return false;
   const proc = (globalThis as { process?: { env?: Record<string, string | undefined> } }).process;
   return proc?.env?.KERF_DEV_WARN_DELEGATE_IN_EFFECT === '1';
 }

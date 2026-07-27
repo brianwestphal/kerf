@@ -23,12 +23,9 @@
  * available for projects that want it without penalising that pattern.
  */
 
-import { isDevMode } from './utils/devMode.js';
-
 const warnedIds = new Set<string>();
 
 function isOptedIn(): boolean {
-  if (!isDevMode()) return false;
   const proc = (globalThis as { process?: { env?: Record<string, string | undefined> } }).process;
   return proc?.env?.KERF_DEV_WARN_LIST_REBIND === '1';
 }

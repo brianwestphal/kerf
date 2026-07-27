@@ -8,12 +8,12 @@
  * the moment the user makes the wrong write, instead of leaving them to
  * notice that their UI never updates.
  *
- * The gate is `isDevMode()` (NODE_ENV, or a `globalThis.KERF_DEV` override
- * when set) AND `KERF_DEV_WARN_UNTRACKED_SIGNALS === '1'`. Off by default because the
- * heuristic produces false positives for purely imperative signals (used as
- * mutable cells with no UI consumer); opt-in is the right shape until a
- * sharper heuristic is found. Production behavior is unchanged for zero
- * runtime cost.
+ * The gate is `KERF_DEV_WARN_UNTRACKED_SIGNALS === '1'`, on top of the
+ * diagnostics being installed at all — importing `kerfjs/dev` is what makes
+ * this module reachable. Off by default because the heuristic produces false
+ * positives for purely imperative signals (used as mutable cells with no UI
+ * consumer); opt-in is the right shape until a sharper heuristic is found.
+ * Production behavior is unchanged for zero runtime cost.
  *
  * The subclass uses signals-core's `SignalOptions.watched` callback to set a
  * per-instance `__hasSubscriber` flag — fired by signals-core when the first
@@ -23,8 +23,6 @@
  */
 
 import { Signal } from '@preact/signals-core';
-
-import { isDevMode } from './utils/devMode.js';
 
 const WARNING_MESSAGE
   = 'kerf: signal was written but has no subscribers. '
@@ -58,7 +56,6 @@ export class DevSignal<T> extends Signal<T> {
 }
 
 export function isDevWarnUntrackedEnabled(): boolean {
-  if (!isDevMode()) return false;
   const proc = (globalThis as { process?: { env?: Record<string, string | undefined> } }).process;
   return proc?.env?.KERF_DEV_WARN_UNTRACKED_SIGNALS === '1';
 }

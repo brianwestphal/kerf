@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "Hot Sheet",
+          "rules": [
+            {
+              "id": "review-note",
+              "name": "ReviewNote",
+              "shortDescription": {
+                "text": "AI-authored, line-anchored review note."
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "review-note",
+          "ruleIndex": 0,
+          "kind": "informational",
+          "level": "none",
+          "guid": "ms2xqi8u9pzl5drk",
+          "message": {
+            "text": "Each warner's gate is now its own env var and nothing else — the isDevMode() call that used to sit above this line is gone along with src/utils/devMode.ts.\n\nReaching this function at all means the consumer imported kerfjs/dev, which IS the development signal. Re-asking NODEENV was redundant in the browser (where the read is undefined and the answer is always \"dev\") and actively wrong in Node: a consumer who deliberately installed the diagnostics under NODEENV=production got silence from an opt-in they had explicitly requested.\n\nThe same deletion applies to all twelve dev-* modules; this note stands for the set.\n",
+            "markdown": "Each warner's gate is now its own env var and nothing else — the `isDevMode()` call that used to sit above this line is gone along with `src/utils/devMode.ts`.\n\nReaching this function at all means the consumer imported `kerfjs/dev`, which IS the development signal. Re-asking `NODE_ENV` was redundant in the browser (where the read is `undefined` and the answer is always \"dev\") and actively wrong in Node: a consumer who deliberately installed the diagnostics under `NODE_ENV=production` got silence from an opt-in they had explicitly requested.\n\nThe same deletion applies to all twelve `dev-*` modules; this note stands for the set.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/dev-store-warn.ts"
+                },
+                "region": {
+                  "startLine": 49,
+                  "endLine": 52,
+                  "snippet": {
+                    "text": "  + 'Set KERF_DEV_WARN_NARROW_SET=0 (or unset it) to silence this warning.';\n\nexport function isOptedIn(): boolean {\n  const proc = (globalThis as { process?: { env?: Record<string, string | undefined> } }).process;"
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "tags": [
+              "rationale"
+            ]
+          },
+          "workItemUris": [
+            "KF-430"
+          ],
+          "partialFingerprints": {
+            "prNoteAnchor/v1": "ceb7b95044a8f93f345a17592a322aad"
+          }
+        }
+      ],
+      "versionControlProvenance": [
+        {
+          "repositoryUri": "git@github.com:brianwestphal/kerf.git",
+          "revisionId": "b253c8593c1c459cda87479a38cbfeee9579adf7",
+          "branch": "main"
+        }
+      ]
+    }
+  ]
+}

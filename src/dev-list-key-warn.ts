@@ -16,7 +16,8 @@
  * that one: it fires only when kerf is about to silently discard row state, it
  * names a concrete one-line fix, and it is one-shot per list — so it is a
  * diagnostic an author always wants, not one they opt into. Production emits
- * nothing (the shared `isDevMode()` gate).
+ * nothing because the diagnostics are not installed there — reaching this
+ * module at all means the consumer imported `kerfjs/dev`.
  *
  * Detection is deliberately conservative (KF-394). A changed data source alone
  * is NOT a shift — the same list swapping which signal it renders (a filter or
@@ -31,8 +32,6 @@
  * what the message asks for.
  */
 
-import { isDevMode } from './utils/devMode.js';
-
 /**
  * Emit the identity-shift warning for the unkeyed list at `id`.
  *
@@ -41,7 +40,6 @@ import { isDevMode } from './utils/devMode.js';
  * silenced every other mount's genuine shift forever (KF-394).
  */
 export function maybeWarnListIdShift(id: string): void {
-  if (!isDevMode()) return;
   console.warn(
     `kerf each(): list '${id}' is now a different list than it was last render. `
     + 'Lists without a key are identified by call order, so adding or removing an each() call '

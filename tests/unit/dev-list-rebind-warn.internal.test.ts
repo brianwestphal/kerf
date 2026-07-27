@@ -17,6 +17,7 @@ import { each } from '../../src/each.js';
 import { jsx } from '../../src/jsx-runtime.js';
 import { mount } from '../../src/mount.js';
 import { signal } from '../../src/reactive.js';
+import { enterProductionShape, restoreDevelopmentShape } from '../helpers/dev-shape.js';
 
 const env = (globalThis as { process: { env: Record<string, string | undefined> } }).process.env;
 
@@ -33,7 +34,6 @@ beforeEach(() => {
 afterEach(() => {
   document.body.innerHTML = '';
   delete env.KERF_DEV_WARN_LIST_REBIND;
-  delete (globalThis as { KERF_DEV?: boolean }).KERF_DEV;
   warnSpy.mockRestore();
 });
 
@@ -98,11 +98,15 @@ describe('dev-list-rebind-warn (KERF_DEV_WARN_LIST_REBIND=1)', () => {
 
   it('is silent in production mode even with the env var set', () => {
     env.KERF_DEV_WARN_LIST_REBIND = '1';
-    (globalThis as { KERF_DEV?: boolean }).KERF_DEV = false;
-    const { wide } = mountTagSwap();
-    wide.value = true;
-    expect(root.querySelectorAll('li').length).toBe(2);
-    expect(warnSpy).not.toHaveBeenCalled();
+    enterProductionShape();
+    try {
+      const { wide } = mountTagSwap();
+      wide.value = true;
+      expect(root.querySelectorAll('li').length).toBe(2);
+      expect(warnSpy).not.toHaveBeenCalled();
+    } finally {
+      restoreDevelopmentShape();
+    }
   });
 
   it('direct call: dedup set short-circuits before message construction', () => {

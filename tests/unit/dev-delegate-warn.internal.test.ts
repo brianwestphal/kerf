@@ -18,6 +18,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { delegate, delegateCapture } from '../../src/delegate.js';
 import { _resetWarnedForTests } from '../../src/dev-delegate-warn.js';
 import { effect } from '../../src/reactive.js';
+import { enterProductionShape, restoreDevelopmentShape } from '../helpers/dev-shape.js';
 
 const env = (globalThis as { process: { env: Record<string, string | undefined> } }).process.env;
 
@@ -107,19 +108,19 @@ describe('dev-delegate-warn (KF-238, opt-in)', () => {
     stop();
   });
 
-  it('does not warn when NODE_ENV=production even with the gate on', () => {
-    const originalNodeEnv = env.NODE_ENV;
-    env.NODE_ENV = 'production';
+  it('does not warn in production shape (no kerfjs/dev installed) even with the gate on', () => {
+    enterProductionShape();
     _resetWarnedForTests();
     try {
+      // Without the hooks installed, `effect()` never wraps the body, so the
+      // depth counter this warning reads is never incremented.
       const stop = effect(() => {
         delegate(root, 'click', '.x', () => {});
       });
       expect(warnSpy).not.toHaveBeenCalled();
       stop();
     } finally {
-      if (originalNodeEnv === undefined) delete env.NODE_ENV;
-      else env.NODE_ENV = originalNodeEnv;
+      restoreDevelopmentShape();
     }
   });
 

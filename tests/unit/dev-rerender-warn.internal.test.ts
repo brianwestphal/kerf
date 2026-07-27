@@ -1,7 +1,7 @@
 /**
  * KERF_DEV_WARN_VALUE_ONLY_RERENDER=1 — the opt-in value-only-re-render
  * warning (phase 2 of the bound-first consolidation). Covers the gate matrix
- * (off by default, production-off via the KERF_DEV override), the end-to-end
+ * (off by default, production-off with the dev hooks uninstalled), the end-to-end
  * mount wiring for text/attr/boolean-attr value changes, the structural
  * negatives, per-mount one-shot dedup, and the `_isValueOnlyDiff` branch
  * matrix directly. `*.internal.test.ts` — imports non-public modules, so the
@@ -13,6 +13,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { _isValueOnlyDiff, isOptedIn, maybeWarnValueOnlyRerender } from '../../src/dev-rerender-warn.js';
 import { mount, signal } from '../../src/index.js';
 import { jsx } from '../../src/jsx-runtime.js';
+import { enterProductionShape, restoreDevelopmentShape } from '../helpers/dev-shape.js';
 
 const env = (globalThis as { process?: { env?: Record<string, string | undefined> } })
   .process!.env!;
@@ -45,18 +46,20 @@ describe('gating', () => {
     expect(isOptedIn()).toBe(false);
   });
 
-  it('is off when the flag is set but dev mode is overridden off', () => {
-    const glob = globalThis as { KERF_DEV?: boolean };
-    glob.KERF_DEV = false;
-    try {
-      expect(isOptedIn()).toBe(false);
-    } finally {
-      delete glob.KERF_DEV;
-    }
+  it('is on with the flag set — the env var is the whole gate', () => {
+    expect(isOptedIn()).toBe(true);
   });
 
-  it('is on with the flag under dev (NODE_ENV=test)', () => {
-    expect(isOptedIn()).toBe(true);
+  it('does not warn in production shape (no kerfjs/dev installed), flag or not', () => {
+    enterProductionShape();
+    try {
+      const label = signal('a');
+      mounted(() => jsx('span', { children: label.value }));
+      label.value = 'b';
+      expect(warn).not.toHaveBeenCalled();
+    } finally {
+      restoreDevelopmentShape();
+    }
   });
 
   it('does not warn when opted out even for a value-only change', () => {

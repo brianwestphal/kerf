@@ -34,12 +34,10 @@
 
 import type { ListBinding } from './list-binding.js';
 import { LIST_MARKER_PREFIX } from './segment.js';
-import { isDevMode } from './utils/devMode.js';
 
 type Mode = 'off' | 'warn' | 'throw';
 
 function mode(): Mode {
-  if (!isDevMode()) return 'off';
   const proc = (globalThis as { process?: { env?: Record<string, string | undefined> } }).process;
   const value = proc?.env?.KERF_DEV_INVARIANTS;
   if (value === 'throw') return 'throw';

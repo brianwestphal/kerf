@@ -413,7 +413,7 @@ Unlike everything else in this family, this one does not describe a pattern the 
 
 **Modes.** `KERF_DEV_INVARIANTS=1` warns; `KERF_DEV_INVARIANTS=throw` throws. Unset (the default) is a complete no-op — the DOM is never walked. The `throw` mode exists because a warning inside a passing test is invisible: kerf's own suites set `throw` (in `vitest.config.ts` and both dist configs) so any future corruption fails the run at the render that caused it. Consumers debugging a suspected reconciler bug want `1` first.
 
-**Cost.** O(rows) per render when enabled, zero when not. Dev-gated through `isDevMode()` like the rest of the family, so production is untouched.
+**Cost.** O(rows) per render when enabled, zero when not. Like the rest of the family the checks live in the dev chunk, so a production build that never imports `kerfjs/dev` cannot reach them at all.
 
 **Pairs with the reconciler fuzz harness** (`tests/unit/reconciler-fuzz.test.ts`): the harness generates the sequences, these checks notice a sequence went wrong. Neither is redundant — the harness alone only sees final-output mismatches, and the checks alone only fire on shapes someone thought to write.
 
@@ -636,11 +636,16 @@ does not flood the console — it makes the opt-in warnings available.
 production-shaped behavior without module-reload gymnastics. kerf's own suites
 use exactly this — see `tests/helpers/dev-shape.ts`.
 
-**`globalThis.KERF_DEV` is gone as a kerf-wide switch.** It was the escape
-hatch for the CDN consumer who had no way to turn dev mode off; not importing
-the dev entry is now that escape hatch, and it is a compile-time one. The
-`isDevMode()` helper still exists, but only *inside* the dev chunk, where the
-individual warners use it as part of their own opt-in checks.
+**`globalThis.KERF_DEV` and `NODE_ENV` mean nothing to kerf.** `KERF_DEV` was
+the escape hatch for the CDN consumer who had no way to turn dev mode off; not
+importing the dev entry is now that escape hatch, and it is a compile-time one.
+The `isDevMode()` helper that read both is **gone** — it briefly survived inside
+the dev chunk as a second gate in front of each warner's env-var check, which
+was redundant (reaching a warner at all means the consumer installed the
+diagnostics) and occasionally wrong (a Node/SSR consumer who deliberately
+installed the dev entry under `NODE_ENV=production` got silence). Each warner
+now reads only its own `KERF_DEV_WARN_*` variable. Whether the diagnostics run
+is decided in exactly one place: whether you imported them.
 
 ## 11.4 Where each warning is referenced
 

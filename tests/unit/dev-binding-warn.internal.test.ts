@@ -16,6 +16,7 @@ import { _resetWarnedForTests } from '../../src/dev-binding-warn.js';
 import { jsx } from '../../src/jsx-runtime.js';
 import { mount } from '../../src/mount.js';
 import { signal } from '../../src/reactive.js';
+import { enterProductionShape, restoreDevelopmentShape } from '../helpers/dev-shape.js';
 
 const env = (globalThis as { process: { env: Record<string, string | undefined> } }).process.env;
 
@@ -87,7 +88,22 @@ describe('dev-binding-warn (KERF_DEV_WARN_STALE_BINDING=1, opt-in)', () => {
     expect(warnSpy).not.toHaveBeenCalled();
   });
 
-  it('does NOT warn when NODE_ENV === \'production\' even with the env var set', () => {
+  it('does NOT warn in production shape (no kerfjs/dev installed) even with the env var set', () => {
+    env.KERF_DEV_WARN_STALE_BINDING = '1';
+    enterProductionShape();
+    try {
+      const cond = signal(true);
+      const sigA = signal('a');
+      const sigB = signal('b');
+      mount(root, () => jsx('div', { class: cond.value ? sigA : sigB, children: 'x' }) as never);
+      cond.value = false;
+      expect(warnSpy).not.toHaveBeenCalled();
+    } finally {
+      restoreDevelopmentShape();
+    }
+  });
+
+  it('warns once the hooks are installed again, with NODE_ENV untouched', () => {
     env.KERF_DEV_WARN_STALE_BINDING = '1';
     const prevNodeEnv = env.NODE_ENV;
     env.NODE_ENV = 'production';
@@ -97,44 +113,10 @@ describe('dev-binding-warn (KERF_DEV_WARN_STALE_BINDING=1, opt-in)', () => {
       const sigB = signal('b');
       mount(root, () => jsx('div', { class: cond.value ? sigA : sigB, children: 'x' }) as never);
       cond.value = false;
-      expect(warnSpy).not.toHaveBeenCalled();
-    } finally {
-      env.NODE_ENV = prevNodeEnv;
-    }
-  });
-
-  it('globalThis.KERF_DEV=false silences the warning even with the env var set (shared isDevMode gate)', () => {
-    env.KERF_DEV_WARN_STALE_BINDING = '1';
-    const glob = globalThis as { KERF_DEV?: unknown };
-    glob.KERF_DEV = false;
-    try {
-      const cond = signal(true);
-      const sigA = signal('a');
-      const sigB = signal('b');
-      mount(root, () => jsx('div', { class: cond.value ? sigA : sigB, children: 'x' }) as never);
-      cond.value = false;
-      expect(warnSpy).not.toHaveBeenCalled();
-    } finally {
-      delete glob.KERF_DEV;
-    }
-  });
-
-  it('globalThis.KERF_DEV=true re-enables the warning under NODE_ENV=production (shared isDevMode gate)', () => {
-    env.KERF_DEV_WARN_STALE_BINDING = '1';
-    const prevNodeEnv = env.NODE_ENV;
-    env.NODE_ENV = 'production';
-    const glob = globalThis as { KERF_DEV?: unknown };
-    glob.KERF_DEV = true;
-    try {
-      const cond = signal(true);
-      const sigA = signal('a');
-      const sigB = signal('b');
-      mount(root, () => jsx('div', { class: cond.value ? sigA : sigB, children: 'x' }) as never);
-      cond.value = false;
+      // NODE_ENV is no longer consulted anywhere: installation is the signal.
       expect(warnSpy).toHaveBeenCalledTimes(1);
     } finally {
       env.NODE_ENV = prevNodeEnv;
-      delete glob.KERF_DEV;
     }
   });
 
