@@ -37,3 +37,19 @@ Bundled by esbuild for the browser, WITH the define a consumer would reach for:
 
 Only environments with a real `process.env` (Node/SSR, and vitest — where kerf's
 own suite runs) can switch any of these on, which is why the suite is green.
+
+--------------------------------------------------------------------------
+AFTER — the same browser-shaped realm, same built dist/, using enableWarnings():
+
+    import { defineStore } from 'kerfjs';
+    const dev = await import('kerfjs/dev');
+    dev.enableWarnings({ narrowSet: true });
+    ...same narrow set...
+
+    $ node --experimental-vm-modules run2.mjs
+    typeof process in realm: undefined
+    warnings emitted: 1
+    first warning: kerf: defineStore.set() called with keys missing from the current state — `b`. set() REPLA…
+
+No bundler define, no `process` shim, no env var — and the diagnostic the
+consumer asked for fires.
