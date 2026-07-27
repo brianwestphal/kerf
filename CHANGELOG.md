@@ -6,7 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
-### Breaking changes
+## [3.0.0] - 2026-07-27
+
+
 
 - **kerf no longer infers development mode — add one line to your entry to keep the dev diagnostics.**
 
@@ -27,7 +29,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - The `KERF_DEV_WARN_*` diagnostics no longer consult `NODE_ENV` or `globalThis.KERF_DEV` at all. Whether they run is decided in exactly one place: whether you imported `kerfjs/dev`. The previous release stopped kerf's core from inferring dev mode but left a second, inherited gate inside each warner, so a Node/SSR consumer who *deliberately* installed the diagnostics under `NODE_ENV=production` got silence — and `globalThis.KERF_DEV = false` still silenced warnings the consumer had explicitly opted into. Both are gone; each warning is now gated only by its own env var. If you were using `globalThis.KERF_DEV` to turn diagnostics off, remove the dev import instead (which is also what sheds the ~4.7 KB from your bundle).
 
-### Added
 
 - **New:** `each()` accepts an options object — `each(items, render, { cacheKey, key })` — and `key` gives a list a **stable identity**. Without one a list is identified by its position among the `each()` calls in a render, so adding or removing a conditional list above it made kerf rebuild it from scratch: rows lost their DOM nodes, and with them focus, scroll position and in-progress IME composition. Keying a list removes that dependency; because a keyed list doesn't occupy a positional slot, keying just the *conditional* list usually stabilizes its siblings too. The existing three-argument `each(items, render, cacheKey)` form is unchanged. In development kerf now warns once per list when it detects such a shift and names the fix.
 
@@ -53,7 +54,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - New opt-in dev warning `KERF_DEV_WARN_LIST_REBIND=1`: fires (once per list) when an `each()` list's container is rebuilt by the morph — an ancestor's tag changed across renders, so the subtree was replaced and the list self-healed by re-binding and repopulating. The recovery is correct but discards row DOM state (focus, scroll, IME, imperative listeners); the warning names the list and points at keeping ancestor tags stable. Follows the standard `KERF_DEV_WARN_*` family rules: off by default, dev-mode only, zero production cost.
 
-### Changed
 
 - `KERF_DEV_WARN_UNTRACKED_SIGNALS=1` now tells you what it can and cannot see. The warning picks its machinery when a signal is *created*, so it only covers signals created after `kerfjs/dev` is installed — and because static imports are hoisted above a top-level `await import('kerfjs/dev')`, the module-scope signals it most wants to catch are usually created first. Previously that failed silently: you set the env var, saw nothing, and concluded your code was clean. Opting in now prints the coverage boundary once, along with the fix (make `import 'kerfjs/dev'` the first static import of a dev-only entry file). The boundary itself can't be removed — `Signal.prototype`'s `value` accessor is non-configurable, so already-created signals can't be retro-fitted without kerf keeping a registry of every signal, which production would pay for.
 
@@ -63,7 +63,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - Toolchain: the repo now type-checks with the native **TypeScript 7** compiler across every gate (`typecheck`, the dist `.d.ts` typing gates, the docs code-block compile — a full-repo `tsc --noEmit` now takes ~0.3 s), with `typescript@6` (the JS-API bridge release) retained for tsup's `.d.ts` emit and typescript-eslint, which still require the JS compiler API. `@typescript-eslint/*` bumped to 8.65. No shipped-code changes — `dist/` output is unaffected.
 
-### Fixed
 
 - Fixed: passing a **function** as an `each()` item through an `arraySignal` insert/update (an unusual mistake, but functions are valid `WeakMap` keys so the per-item cache silently accepted them) rendered the row and then threw `each(): items must be objects…` on a *later, unrelated* re-render — far from the cause. The granular path now enforces the same objects-only item contract the snapshot path does, so the error is thrown on the render the offending mutation triggered, naming the type and index. Primitive items already behaved this way; functions now match.
 
