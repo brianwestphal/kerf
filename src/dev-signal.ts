@@ -24,6 +24,8 @@
 
 import { Signal } from '@preact/signals-core';
 
+import { devFlag } from './dev-warn-config.js';
+
 const WARNING_MESSAGE
   = 'kerf: signal was written but has no subscribers. '
   + 'Did you read `.value` outside of a render fn / effect()? '
@@ -56,8 +58,7 @@ export class DevSignal<T> extends Signal<T> {
 }
 
 export function isDevWarnUntrackedEnabled(): boolean {
-  const proc = (globalThis as { process?: { env?: Record<string, string | undefined> } }).process;
-  return proc?.env?.KERF_DEV_WARN_UNTRACKED_SIGNALS === '1';
+  return devFlag('KERF_DEV_WARN_UNTRACKED_SIGNALS') === '1';
 }
 
 /**

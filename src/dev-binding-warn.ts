@@ -40,13 +40,13 @@
  */
 
 import type { Binding } from './bindings.js';
+import { devFlag } from './dev-warn-config.js';
 
 /** Per-hole one-shot dedup — keyed by the stable per-hole binding id. */
 const warnedHoles = new Set<string>();
 
 export function isOptedIn(): boolean {
-  const proc = (globalThis as { process?: { env?: Record<string, string | undefined> } }).process;
-  return proc?.env?.KERF_DEV_WARN_STALE_BINDING === '1';
+  return devFlag('KERF_DEV_WARN_STALE_BINDING') === '1';
 }
 
 function describeHole(b: Binding): string {

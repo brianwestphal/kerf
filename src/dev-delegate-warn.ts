@@ -23,12 +23,13 @@
  * `reactive.ts` only wraps when the gate is on.
  */
 
+import { devFlag } from './dev-warn-config.js';
+
 let depth = 0;
 let warned = false;
 
 function isOptedIn(): boolean {
-  const proc = (globalThis as { process?: { env?: Record<string, string | undefined> } }).process;
-  return proc?.env?.KERF_DEV_WARN_DELEGATE_IN_EFFECT === '1';
+  return devFlag('KERF_DEV_WARN_DELEGATE_IN_EFFECT') === '1';
 }
 
 /** Called by the `effect()` wrapper in `reactive.ts` before running the user body. */

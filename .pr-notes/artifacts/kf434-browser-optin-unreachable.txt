@@ -1,0 +1,39 @@
+KF-434 — proof that the KERF_DEV_WARN_* family cannot fire in a browser bundle.
+
+Consumer entry (dist/ + the dev entry, exactly as an app writes it):
+
+    import { defineStore } from 'kerfjs';
+    await import('kerfjs/dev');
+    const s = defineStore({ initial: () => ({a:1,b:2}), actions: (set) => ({ setA: (a) => set({a}) }) });
+    s.actions.setA(9);            // a NARROW set — must warn when opted in
+
+Bundled by esbuild for the browser, WITH the define a consumer would reach for:
+
+    define: {
+      'process.env.KERF_DEV_WARN_NARROW_SET': '"1"',
+      'process.env.NODE_ENV': '"development"',
+    }
+
+1. The define does not reach the read. Bundled output, verbatim:
+
+     function isOptedIn8() {
+       const proc = globalThis.process;
+       return proc?.env?.KERF_DEV_WARN_NARROW_SET === "1";
+     }
+
+   The gate reads `globalThis.process` into a local first, so no substitution
+   of the `process.env.X` token can touch it. (That indirection is deliberate:
+   reading the bare token is what made kerf infer DEVELOPMENT inside production
+   browser bundles, the bug KF-429 fixed.)
+
+2. Evaluated in a realm with no `process` — i.e. a browser:
+
+     $ node --experimental-vm-modules run.mjs
+     warnings emitted: 0
+     has process in ctx: undefined
+
+   The narrow set that the consumer explicitly opted into warns about produces
+   nothing at all. Silent, with no way to tell it apart from "my code is fine".
+
+Only environments with a real `process.env` (Node/SSR, and vitest — where kerf's
+own suite runs) can switch any of these on, which is why the suite is green.

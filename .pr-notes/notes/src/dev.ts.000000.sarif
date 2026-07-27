@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "Hot Sheet",
+          "rules": [
+            {
+              "id": "review-note",
+              "name": "ReviewNote",
+              "shortDescription": {
+                "text": "AI-authored, line-anchored review note."
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "review-note",
+          "ruleIndex": 0,
+          "kind": "informational",
+          "level": "none",
+          "guid": "ms2y8xwyxzwvjy13",
+          "message": {
+            "text": "Chose the ticket's option 3 (a function on the dev entry) over the three alternatives, and kept the env vars alongside it rather than replacing them.\n\nOption 1 (document the globalThis.process = { env: {...} } shim) makes kerf's official browser answer \"monkey-patch a Node global before our module loads,\" with a silent failure if the ordering is wrong. Option 2 (a second magic global, e.g. globalThis.KERFDEVWARN) re-introduces exactly the kind of ambient string switch that KF-429/KF-430 spent two tickets removing, and it would sit one letter away from the retired KERF_DEV with a different meaning. Option 4 (treat installed as opted-in in browsers) reopens the console-flood problem the per-warning gate exists to prevent, and would make the same code behave differently in Node and the browser.\n\nThe deciding argument for a function: the consumer is already holding the module at the moment they opt in (const dev = await import('kerfjs/dev')), so the switch costs them no new concept, and the keys autocomplete — an env-var name has to be recalled exactly and fails silently when misspelled.\n\nEnv vars stay because CI and kerf's own suites want a per-run switch with no code change; the shared lookup (0) resolves both with explicit-call-wins.\n",
+            "markdown": "Chose the ticket's option 3 (a function on the dev entry) over the three alternatives, and kept the env vars alongside it rather than replacing them.\n\nOption 1 (document the `globalThis.process = { env: {...} }` shim) makes kerf's official browser answer \"monkey-patch a Node global before our module loads,\" with a silent failure if the ordering is wrong. Option 2 (a second magic global, e.g. `globalThis.KERF_DEV_WARN`) re-introduces exactly the kind of ambient string switch that KF-429/KF-430 spent two tickets removing, and it would sit one letter away from the retired `KERF_DEV` with a different meaning. Option 4 (treat installed as opted-in in browsers) reopens the console-flood problem the per-warning gate exists to prevent, and would make the same code behave differently in Node and the browser.\n\nThe deciding argument for a function: the consumer is already holding the module at the moment they opt in (`const dev = await import('kerfjs/dev')`), so the switch costs them no new concept, and the keys autocomplete — an env-var name has to be recalled exactly and fails silently when misspelled.\n\nEnv vars stay because CI and kerf's own suites want a per-run switch with no code change; [the shared lookup](0) resolves both with explicit-call-wins.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/dev.ts"
+                },
+                "region": {
+                  "startLine": 70,
+                  "endLine": 100,
+                  "snippet": {
+                    "text": "export { clearDevHooks, type DevHooks, devHooks, installDevHooks } from './dev-hooks.js';\nexport type { DevWarningOptions } from './dev-warn-config.js';\n\n/**\n * Switch individual diagnostics on:\n *\n * ```js\n * if (import.meta.env.DEV) {\n *   const dev = await import('kerfjs/dev');\n *   dev.enableWarnings({ staleBinding: true, narrowSet: true });\n * }\n * ```\n *\n * Installing this module makes the diagnostics PRESENT; this decides which are\n * SWITCHED ON, so the console isn't flooded by warnings you didn't ask for. The\n * `KERF_DEV_WARN_*` environment variables do the same thing for Node, SSR, and\n * CI; an explicit call here wins over the environment in both directions, so\n * `{ narrowSet: false }` silences an ambient var.\n *\n * **In a browser this function is the only switch that works.** A browser realm\n * has no `process` object, and a bundler `define` cannot reach the read (it\n * goes through `globalThis.process` into a local binding), so the environment\n * variables are unreachable there.\n *\n * Call it as early as you can. Every diagnostic reads its switch at call time\n * except the untracked-signal warning, which is chosen when a signal is\n * CREATED — enabling that one prints its coverage boundary once.\n */\nexport function enableWarnings(options: DevWarningOptions): void {\n  applyWarningOptions(options);\n  if (isDevWarnUntrackedEnabled()) noteUntrackedCoverage();"
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "tags": [
+              "alternative-considered"
+            ]
+          },
+          "relatedLocations": [
+            {
+              "id": 0,
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/dev-warn-config.ts"
+                },
+                "region": {
+                  "startLine": 95
+                }
+              }
+            }
+          ],
+          "workItemUris": [
+            "KF-434"
+          ],
+          "partialFingerprints": {
+            "prNoteAnchor/v1": "40fa4687f72741e2080ae19ba89c234b"
+          }
+        }
+      ],
+      "versionControlProvenance": [
+        {
+          "repositoryUri": "git@github.com:brianwestphal/kerf.git",
+          "revisionId": "8730ba2e660f27d6dd034d1f85c6867d0548e86c",
+          "branch": "main"
+        }
+      ]
+    }
+  ]
+}

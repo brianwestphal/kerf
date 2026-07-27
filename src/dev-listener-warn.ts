@@ -30,14 +30,15 @@
  * Production behavior is unchanged for zero runtime cost.
  */
 
+import { devFlag } from './dev-warn-config.js';
+
 const LISTENER_MARKER = Symbol.for('kerfjs.devListener');
 
 let patched = false;
 let warned = false;
 
 function isOptedIn(): boolean {
-  const proc = (globalThis as { process?: { env?: Record<string, string | undefined> } }).process;
-  return proc?.env?.KERF_DEV_WARN_REBUILT_LISTENERS === '1';
+  return devFlag('KERF_DEV_WARN_REBUILT_LISTENERS') === '1';
 }
 
 type ElementProto = { addEventListener: (type: string, listener: EventListenerOrEventListenerObject | null, options?: AddEventListenerOptions | boolean) => void };

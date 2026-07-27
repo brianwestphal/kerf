@@ -36,6 +36,8 @@
  * short-circuits before any per-set work runs).
  */
 
+import { devFlag } from './dev-warn-config.js';
+
 export interface NarrowSetWarnContext {
   /** Set once per store; the warner reads/writes this to enforce the per-store one-shot dedup. */
   warned: boolean;
@@ -49,8 +51,7 @@ const WARNING_SUFFIX
   + 'Set KERF_DEV_WARN_NARROW_SET=0 (or unset it) to silence this warning.';
 
 export function isOptedIn(): boolean {
-  const proc = (globalThis as { process?: { env?: Record<string, string | undefined> } }).process;
-  return proc?.env?.KERF_DEV_WARN_NARROW_SET === '1';
+  return devFlag('KERF_DEV_WARN_NARROW_SET') === '1';
 }
 
 function isPlainObjectState(v: unknown): v is Record<string, unknown> {

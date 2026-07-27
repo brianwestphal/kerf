@@ -23,11 +23,12 @@
  * available for projects that want it without penalising that pattern.
  */
 
+import { devFlag } from './dev-warn-config.js';
+
 const warnedIds = new Set<string>();
 
 function isOptedIn(): boolean {
-  const proc = (globalThis as { process?: { env?: Record<string, string | undefined> } }).process;
-  return proc?.env?.KERF_DEV_WARN_LIST_REBIND === '1';
+  return devFlag('KERF_DEV_WARN_LIST_REBIND') === '1';
 }
 
 /**

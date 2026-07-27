@@ -472,12 +472,37 @@ added to the family must too.
    at all. The gate lives at the CALL SITE, not inside the warner — an
    unconditional call into a self-gating warner keeps the module reachable no
    matter how the gate is written, so no dead-code elimination can reclaim it.
-2. **Per-warning env var.** Each warning has its own
-   `KERF_DEV_WARN_<NOUN>=1` env var. There is intentionally no umbrella
-   `KERF_DEV_WARN=1` flag — opt-in is per-warning, so a consumer can
+2. **Per-warning switch.** Each warning has its own switch, named the same way
+   in both places it can be set: `enableWarnings({ narrowSet: true })` in code,
+   or `KERF_DEV_WARN_NARROW_SET=1` in the environment. There is intentionally
+   no umbrella "all warnings" flag — opt-in is per-warning, so a consumer can
    enable the Rule 4 warner while leaving the Rule 9 warner off.
 3. **Default off.** Every warning is off by default. The env-var
    `=0` and the unset state both mean off.
+
+#### Two switches, one lookup
+
+`enableWarnings()` (exported from `kerfjs/dev`) writes to an in-memory map;
+`globalThis.process?.env?.KERF_DEV_*` is read when nothing has overridden it.
+Both funnel through one `devFlag(name)` in
+[`src/dev-warn-config.ts`](../src/dev-warn-config.ts), and an explicit call wins
+in BOTH directions — `{ narrowSet: false }` silences a warning an ambient
+variable switched on.
+
+**The env var alone could not be the switch, because it is unreachable in the
+majority case.** A browser realm has no `process` object, so every one of these
+warnings was permanently off in exactly the environment — a Vite/webpack dev
+server — where a developer most wants them. A bundler `define` does not rescue
+it either: the read goes through `globalThis.process` into a local binding, so
+nothing substitutes the `process.env.X` token. That indirection is deliberate
+and stays (reading the bare token is what made kerf infer DEVELOPMENT inside
+production browser bundles, §11.3.6). The environment variables remain the
+natural switch for Node, SSR, and CI, including kerf's own suites.
+
+The consumer already holds the module at the moment they opt in
+(`const dev = await import('kerfjs/dev')`), which makes a typed function there
+both the most reachable switch and the most discoverable one — the option keys
+autocomplete, where an env-var name has to be remembered exactly.
 
 ### 11.3.2 One-shot dedup
 

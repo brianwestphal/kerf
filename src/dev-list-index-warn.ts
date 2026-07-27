@@ -33,12 +33,13 @@
  * either shape.
  */
 
+import { devFlag } from './dev-warn-config.js';
+
 const warnedIds = new Set<string>();
 
 /** True when the env var opt-in is set in a dev build. Checked first for zero prod cost. */
 export function isOptedInStaleIndex(): boolean {
-  const proc = (globalThis as { process?: { env?: Record<string, string | undefined> } }).process;
-  return proc?.env?.KERF_DEV_WARN_STALE_INDEX === '1';
+  return devFlag('KERF_DEV_WARN_STALE_INDEX') === '1';
 }
 
 /**

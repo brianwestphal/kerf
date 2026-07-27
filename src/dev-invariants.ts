@@ -32,14 +32,14 @@
  * turn corruption into a failure rather than a line in the log.
  */
 
+import { devFlag } from './dev-warn-config.js';
 import type { ListBinding } from './list-binding.js';
 import { LIST_MARKER_PREFIX } from './segment.js';
 
 type Mode = 'off' | 'warn' | 'throw';
 
 function mode(): Mode {
-  const proc = (globalThis as { process?: { env?: Record<string, string | undefined> } }).process;
-  const value = proc?.env?.KERF_DEV_INVARIANTS;
+  const value = devFlag('KERF_DEV_INVARIANTS');
   if (value === 'throw') return 'throw';
   return value === '1' ? 'warn' : 'off';
 }

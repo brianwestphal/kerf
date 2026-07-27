@@ -26,14 +26,15 @@
  * the parse itself happens only on the already-slow surrounds-changed path.
  */
 
+import { devFlag } from './dev-warn-config.js';
+
 /** Per-mount one-shot context — created by `mount()`, mirrors NarrowSetWarnContext. */
 export interface ValueOnlyWarnContext {
   warned: boolean;
 }
 
 export function isOptedIn(): boolean {
-  const proc = (globalThis as { process?: { env?: Record<string, string | undefined> } }).process;
-  return proc?.env?.KERF_DEV_WARN_VALUE_ONLY_RERENDER === '1';
+  return devFlag('KERF_DEV_WARN_VALUE_ONLY_RERENDER') === '1';
 }
 
 const ELEMENT_NODE = 1;

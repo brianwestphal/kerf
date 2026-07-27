@@ -64,9 +64,41 @@ import { maybeWarnValueOnlyRerender } from './dev-rerender-warn.js';
 import { maybeWarnMissingRowKey } from './dev-row-key-warn.js';
 import { DevSignal, isDevWarnUntrackedEnabled, noteUntrackedCoverage } from './dev-signal.js';
 import { maybeWarnNarrowSet } from './dev-store-warn.js';
+import { applyWarningOptions, type DevWarningOptions } from './dev-warn-config.js';
 import { devReadonlyProxy, toRaw } from './utils/devReadonly.js';
 
 export { clearDevHooks, type DevHooks, devHooks, installDevHooks } from './dev-hooks.js';
+export type { DevWarningOptions } from './dev-warn-config.js';
+
+/**
+ * Switch individual diagnostics on:
+ *
+ * ```js
+ * if (import.meta.env.DEV) {
+ *   const dev = await import('kerfjs/dev');
+ *   dev.enableWarnings({ staleBinding: true, narrowSet: true });
+ * }
+ * ```
+ *
+ * Installing this module makes the diagnostics PRESENT; this decides which are
+ * SWITCHED ON, so the console isn't flooded by warnings you didn't ask for. The
+ * `KERF_DEV_WARN_*` environment variables do the same thing for Node, SSR, and
+ * CI; an explicit call here wins over the environment in both directions, so
+ * `{ narrowSet: false }` silences an ambient var.
+ *
+ * **In a browser this function is the only switch that works.** A browser realm
+ * has no `process` object, and a bundler `define` cannot reach the read (it
+ * goes through `globalThis.process` into a local binding), so the environment
+ * variables are unreachable there.
+ *
+ * Call it as early as you can. Every diagnostic reads its switch at call time
+ * except the untracked-signal warning, which is chosen when a signal is
+ * CREATED — enabling that one prints its coverage boundary once.
+ */
+export function enableWarnings(options: DevWarningOptions): void {
+  applyWarningOptions(options);
+  if (isDevWarnUntrackedEnabled()) noteUntrackedCoverage();
+}
 
 /**
  * The standard bundle of hooks this entry installs. Exported so kerf's own

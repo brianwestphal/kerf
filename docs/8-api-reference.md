@@ -126,9 +126,39 @@ main bundle**. A no-build/CDN app imports it from its development page and
 omits it from the production page.
 
 Installing enables: the whole `KERF_DEV_WARN_*` warning family (each still
-requires its own env var), the structural list-invariant checks, the read-only
+requires its own switch — see `enableWarnings()` below), the structural list-invariant checks, the read-only
 `defineStore` `get()` snapshot, and the *throwing* form of the dangerous-URL
 screen (production warns and drops instead).
+
+#### `enableWarnings(options: DevWarningOptions): void`
+
+Switches individual diagnostics on. Installing makes them PRESENT; this decides
+which are ON, so importing the entry never floods the console:
+
+```js
+if (import.meta.env.DEV) {
+  const dev = await import('kerfjs/dev');
+  dev.enableWarnings({ staleBinding: true, narrowSet: true, invariants: 'throw' });
+}
+```
+
+Keys (all optional, all off unless named): `rebuiltListeners`,
+`untrackedSignals`, `narrowSet`, `delegateInEffect`, `eachInMorphSkip`,
+`duplicateEachKeys`, `staleBinding`, `valueOnlyRerender`, `listRebind`,
+`staleIndex`, `parserRepair`, and `invariants` (`true` warns, `'throw'`
+throws). Each corresponds one-to-one with a `KERF_DEV_WARN_*` environment
+variable — those still work for Node, SSR, and CI — and an explicit call wins
+over the environment in both directions, so `{ narrowSet: false }` silences an
+ambient variable.
+
+**In a browser, this is the only switch there is.** A browser realm has no
+`process` object, and a bundler `define` cannot reach the read, so the
+environment variables are unreachable in the environment where these warnings
+are most wanted.
+
+Call it as early as you can: every diagnostic reads its switch at call time
+except `untrackedSignals`, which is chosen when a signal is created — enabling
+that one prints its coverage boundary once.
 
 The subpath also re-exports `clearDevHooks()`, `installDevHooks()` and
 `devHooks` so a consumer's own test suite can assert production-shaped

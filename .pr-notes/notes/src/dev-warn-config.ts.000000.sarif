@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "Hot Sheet",
+          "rules": [
+            {
+              "id": "review-note",
+              "name": "ReviewNote",
+              "shortDescription": {
+                "text": "AI-authored, line-anchored review note."
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "review-note",
+          "ruleIndex": 0,
+          "kind": "informational",
+          "level": "none",
+          "guid": "ms2y8xqw48qc36kl",
+          "message": {
+            "text": "The env-var-only gate was verified unreachable in a browser before this module was written — the attached artifact is the bundled output and the run.\n\nTwo things had to be true for the ticket's claim to hold, and both were checked rather than assumed. First, esbuild's --define:process.env.KERFDEVWARNNARROWSET='\"1\"' does NOT reach the read: the bundle still contains const proc = globalThis.process; return proc?.env?.KERFDEVWARNNARROWSET === \"1\", because the value passes through a local binding and no process.env.X token survives to substitute. Second, evaluating that bundle in a realm with no process (vm context, typeof process === 'undefined') emitted zero warnings for a narrow set the consumer had explicitly opted into.\n\nSo devFlag() keeps the globalThis.process indirection — removing it would reintroduce the production-browser-infers-DEVELOPMENT bug — and adds the in-memory map as the switch that is reachable everywhere. tests/unit/dev-warn-config.internal.test.ts pins both halves, including a test that deletes globalThis.process and asserts the env-var path stays dead while the API path works.\n",
+            "markdown": "The env-var-only gate was verified unreachable in a browser before this module was written — the attached artifact is the bundled output and the run.\n\nTwo things had to be true for the ticket's claim to hold, and both were checked rather than assumed. First, esbuild's `--define:process.env.KERF_DEV_WARN_NARROW_SET='\"1\"'` does NOT reach the read: the bundle still contains `const proc = globalThis.process; return proc?.env?.KERF_DEV_WARN_NARROW_SET === \"1\"`, because the value passes through a local binding and no `process.env.X` token survives to substitute. Second, evaluating that bundle in a realm with no `process` (`vm` context, `typeof process === 'undefined'`) emitted **zero** warnings for a narrow set the consumer had explicitly opted into.\n\nSo `devFlag()` keeps the `globalThis.process` indirection — removing it would reintroduce the production-browser-infers-DEVELOPMENT bug — and adds the in-memory map as the switch that is reachable everywhere. `tests/unit/dev-warn-config.internal.test.ts` pins both halves, including a test that deletes `globalThis.process` and asserts the env-var path stays dead while the API path works.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/dev-warn-config.ts"
+                },
+                "region": {
+                  "startLine": 95,
+                  "endLine": 108,
+                  "snippet": {
+                    "text": "  }\n}\n\n/**\n * The value of one diagnostic switch, or `undefined` when it is off.\n * Every warner's opt-in check goes through here.\n */\nexport function devFlag(envName: string): string | undefined {\n  const override = overrides.get(envName);\n  if (override !== undefined) return override === false ? undefined : override;\n  const proc = (globalThis as { process?: { env?: Record<string, string | undefined> } }).process;\n  return proc?.env?.[envName];\n}\n"
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "tags": [
+              "proof"
+            ]
+          },
+          "workItemUris": [
+            "KF-434"
+          ],
+          "partialFingerprints": {
+            "prNoteAnchor/v1": "65ca48ead549c0329c7e1617faa4b30b"
+          },
+          "attachments": [
+            {
+              "artifactLocation": {
+                "uri": ".pr-notes/artifacts/kf434-browser-optin-unreachable.txt",
+                "properties": {
+                  "ext-sha256": "d71cd57be69dc769ad2ab4ff409398c5c9236460ef5b2e63d9ed15ae71e0128c"
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "versionControlProvenance": [
+        {
+          "repositoryUri": "git@github.com:brianwestphal/kerf.git",
+          "revisionId": "8730ba2e660f27d6dd034d1f85c6867d0548e86c",
+          "branch": "main"
+        }
+      ]
+    }
+  ]
+}

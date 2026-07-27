@@ -6,6 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **Fixed: none of the `KERF_DEV_WARN_*` diagnostics could be switched on in a browser.** Every one of them read `globalThis.process.env`, which does not exist in a browser realm — and a bundler `define` cannot reach it either, because the read goes through `globalThis.process` into a local binding rather than the substitutable `process.env.X` token. So in a Vite/webpack dev server, the environment where these warnings are most wanted, the entire opt-in family was permanently and silently off. Only Node/SSR (and kerf's own vitest suite, which is why nothing caught it) could turn any of them on.
+
+  `kerfjs/dev` now exports **`enableWarnings()`**, which switches diagnostics on from code — where you already are at the moment you opt in:
+
+  ```js
+  if (import.meta.env.DEV) {
+    const dev = await import('kerfjs/dev');
+    dev.enableWarnings({ staleBinding: true, narrowSet: true, invariants: 'throw' });
+  }
+  ```
+
+  Keys are the same warnings under camelCase names (`rebuiltListeners`, `untrackedSignals`, `narrowSet`, `delegateInEffect`, `eachInMorphSkip`, `duplicateEachKeys`, `staleBinding`, `valueOnlyRerender`, `listRebind`, `staleIndex`, `parserRepair`, plus `invariants: true | 'throw'`), and they autocomplete, which an env-var name never did. The `KERF_DEV_WARN_*` variables keep working for Node, SSR, and CI; an explicit call wins over the environment in both directions, so `{ narrowSet: false }` silences an ambient variable.
+
 - The `KERF_DEV_WARN_*` diagnostics no longer consult `NODE_ENV` or `globalThis.KERF_DEV` at all. Whether they run is decided in exactly one place: whether you imported `kerfjs/dev`. The previous release stopped kerf's core from inferring dev mode but left a second, inherited gate inside each warner, so a Node/SSR consumer who *deliberately* installed the diagnostics under `NODE_ENV=production` got silence — and `globalThis.KERF_DEV = false` still silenced warnings the consumer had explicitly opted into. Both are gone; each warning is now gated only by its own env var. If you were using `globalThis.KERF_DEV` to turn diagnostics off, remove the dev import instead (which is also what sheds the ~4.7 KB from your bundle).
 
 - `KERF_DEV_WARN_UNTRACKED_SIGNALS=1` now tells you what it can and cannot see. The warning picks its machinery when a signal is *created*, so it only covers signals created after `kerfjs/dev` is installed — and because static imports are hoisted above a top-level `await import('kerfjs/dev')`, the module-scope signals it most wants to catch are usually created first. Previously that failed silently: you set the env var, saw nothing, and concluded your code was clean. Opting in now prints the coverage boundary once, along with the fix (make `import 'kerfjs/dev'` the first static import of a dev-only entry file). The boundary itself can't be removed — `Signal.prototype`'s `value` accessor is non-configurable, so already-created signals can't be retro-fitted without kerf keeping a registry of every signal, which production would pay for.

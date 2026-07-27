@@ -20,11 +20,12 @@
  * that intentionally use this pattern.
  */
 
+import { devFlag } from './dev-warn-config.js';
+
 const warnedIds = new Set<string>();
 
 function isOptedIn(): boolean {
-  const proc = (globalThis as { process?: { env?: Record<string, string | undefined> } }).process;
-  return proc?.env?.KERF_DEV_WARN_EACH_IN_MORPH_SKIP === '1';
+  return devFlag('KERF_DEV_WARN_EACH_IN_MORPH_SKIP') === '1';
 }
 
 function hasMorphSkipAncestor(el: Element, root: Element): boolean {
@@ -68,8 +69,7 @@ export function _resetWarnedForTests(): void {
 const warnedDupIds = new Set<string>();
 
 function isOptedInDupKeys(): boolean {
-  const proc = (globalThis as { process?: { env?: Record<string, string | undefined> } }).process;
-  return proc?.env?.KERF_DEV_WARN_DUPLICATE_EACH_KEYS === '1';
+  return devFlag('KERF_DEV_WARN_DUPLICATE_EACH_KEYS') === '1';
 }
 
 /**
