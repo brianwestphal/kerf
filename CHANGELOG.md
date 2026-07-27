@@ -6,6 +6,42 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Breaking changes
+
+- **`draggable`, `spellCheck`, and `contentEditable` no longer accept a boolean — write the keyword string instead.** These three are *enumerated* attributes in HTML, not boolean ones: they take the literal strings `"true"` / `"false"`, and omitting them selects a third state. Rendering them the boolean way produced markup that meant something other than what was written, in both directions:
+
+  | Was written | Rendered | Element actually ended up |
+  | --- | --- | --- |
+  | `draggable={true}` | `<div draggable>` | **not draggable** — the empty value is invalid, so `auto`, and `auto` for a `<div>` is off |
+  | `draggable={false}` | *nothing* | `auto` again — which for `<img>` / `<a href>` means **draggable** |
+  | `spellCheck={false}` | *nothing* | spellchecking **still on** — omission means "inherit", not "off" |
+  | `contentEditable={false}` | *nothing* | inside an editable region, **still editable** |
+
+  ```diff
+  - <div draggable={true} />
+  + <div draggable="true" />
+  - <textarea spellCheck={false} />
+  + <textarea spellCheck="false" />
+  ```
+
+  Omit the attribute to get the default state. Real boolean attributes — `hidden`, `checked`, `disabled`, `autofocus`, `required`, … — are unchanged. The runtime is unchanged too: this is a type-level fix, because translating `{true}` → `="true"` would require the renderer to carry a list of every enumerated attribute in HTML, and any attribute missing from that list would silently reproduce the same bug. One case types can't reach: a signal-valued attribute is opaque, so use `signal('true')` rather than `signal(true)`. Verified against Chromium, Firefox, and WebKit.
+
+- **`<select value>` / `<textarea value>` (and their `defaultValue` forms) no longer typecheck.** Neither element has a `value` content attribute, so kerf was rendering inert markup no browser reads — a select kept showing its first option and a textarea rendered empty. Use `<option value="b" selected>` and `<textarea>{draft}</textarea>`.
+
+- **`autofocus` (the lowercase spelling) no longer accepts `"true"` / `"false"`.** It is a real boolean attribute, so `autofocus="false"` is *present* and therefore **on** — the spelling that reads like "off" turned autofocus on. Use `autofocus={false}` or omit it.
+
+- **`<style scoped>` no longer typecheck**s. The scoped-stylesheet proposal was removed from the HTML standard and never shipped in any engine. `<style blocking="render">` is now typed in its place.
+
+### Fixed
+
+- **`<option defaultSelected>` rendered `defaultselected`** — an attribute no browser has ever read — so the option it named was never pre-selected. It now aliases to `selected`, matching `defaultValue` → `value` and `defaultChecked` → `checked`.
+
+### Changed
+
+- `hidden` now also accepts `"until-found"` (hidden, but revealed by find-in-page and fragment navigation). The boolean form is unchanged and still correct.
+- `cellPadding` / `cellSpacing` are marked `@deprecated` — obsolete presentational attributes, kept typed so legacy markup still compiles.
+- The JSX intrinsic-element types now document their provenance: names, value sets, and per-element membership come from the WHATWG HTML Living Standard and SVG 2 rather than another framework's table, and every deliberate departure from the spec is enumerated with its reason in `src/jsx-types.ts`'s header.
+
 ## [3.0.0] - 2026-07-27
 
 

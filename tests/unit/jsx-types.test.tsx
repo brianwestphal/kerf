@@ -94,14 +94,14 @@ describe('JSX.IntrinsicElements typing (compile-time)', () => {
     // lowercase output (ATTR_ALIASES normalizes the camelCase form). The
     // type system now accepts either spelling so HTML-savvy developers
     // who type the canonical HTML attribute names compile cleanly.
-    const inputCamel = <input autoComplete="off" spellCheck />;
-    const inputLower = <input autocomplete="off" spellcheck />;
-    const formCamel = <form autoComplete="on" spellCheck />;
-    const formLower = <form autocomplete="on" spellcheck />;
+    const inputCamel = <input autoComplete="off" spellCheck="false" />;
+    const inputLower = <input autocomplete="off" spellcheck="false" />;
+    const formCamel = <form autoComplete="on" spellCheck="true" />;
+    const formLower = <form autocomplete="on" spellcheck="true" />;
     const selectCamel = <select autoComplete="off" />;
     const selectLower = <select autocomplete="off" />;
-    const textareaCamel = <textarea autoComplete="off" spellCheck />;
-    const textareaLower = <textarea autocomplete="off" spellcheck />;
+    const textareaCamel = <textarea autoComplete="off" spellCheck="false" />;
+    const textareaLower = <textarea autocomplete="off" spellcheck="false" />;
     expect(inputCamel.toString()).toContain('autocomplete="off"');
     expect(inputLower.toString()).toContain('autocomplete="off"');
     expect(formCamel.toString()).toContain('autocomplete="on"');
@@ -110,8 +110,8 @@ describe('JSX.IntrinsicElements typing (compile-time)', () => {
     expect(selectLower.toString()).toContain('autocomplete="off"');
     expect(textareaCamel.toString()).toContain('autocomplete="off"');
     expect(textareaLower.toString()).toContain('autocomplete="off"');
-    expect(inputCamel.toString()).toContain('spellcheck');
-    expect(inputLower.toString()).toContain('spellcheck');
+    expect(inputCamel.toString()).toContain('spellcheck="false"');
+    expect(inputLower.toString()).toContain('spellcheck="false"');
   });
 
   it('KF-191: accepts both camelCase and lowercase HTML forms for class / for / tabindex / autofocus', () => {
@@ -125,7 +125,6 @@ describe('JSX.IntrinsicElements typing (compile-time)', () => {
     const labelLower = <label for="email">Email</label>;
     const inputCamel = <input autoFocus />;
     const inputLower = <input autofocus />;
-    const inputLowerStr = <input autofocus="true" />;
     const outputCamel = <output htmlFor="x" />;
     const outputLower = <output for="x" />;
     // SVG attribute set picks up the lowercase forms too.
@@ -139,11 +138,91 @@ describe('JSX.IntrinsicElements typing (compile-time)', () => {
     expect(labelLower.toString()).toContain('for="email"');
     expect(inputCamel.toString()).toContain('autofocus');
     expect(inputLower.toString()).toContain('autofocus');
-    expect(inputLowerStr.toString()).toContain('autofocus');
     expect(outputCamel.toString()).toContain('for="x"');
     expect(outputLower.toString()).toContain('for="x"');
     expect(svgCamel.toString()).toContain('class="icon"');
     expect(svgLower.toString()).toContain('class="icon"');
+  });
+
+  it('KF-436: enumerated attributes reject boolean and accept the spec keywords', () => {
+    // `draggable`, `spellcheck`, and `contenteditable` are ENUMERATED, not
+    // boolean: they take the strings "true"/"false" and their missing-value
+    // default is a third state. A boolean renders markup that means something
+    // else — see the rule in src/jsx-types.ts's header — so the type rejects it
+    // and these directives are what keeps that true.
+
+    // @ts-expect-error — `draggable={true}` renders `<div draggable>`, an empty
+    // value, which is INVALID for draggable and falls back to the auto state:
+    // for a <div>, not draggable at all.
+    const bad1 = <div draggable={true} />;
+    // @ts-expect-error — `draggable={false}` omits the attribute, which is auto
+    // again — and auto for <img> / <a href> means draggable.
+    const bad2 = <img src="x.png" alt="x" draggable={false} />;
+    // @ts-expect-error — `spellCheck={false}` omits the attribute, which means
+    // "inherit the default", not off.
+    const bad3 = <textarea spellCheck={false} />;
+    // @ts-expect-error — same for the lowercase spelling.
+    const bad4 = <textarea spellcheck={false} />;
+    // @ts-expect-error — `contentEditable={false}` omits the attribute, so a
+    // child of an editable region stays editable.
+    const bad5 = <div contentEditable={false} />;
+    // @ts-expect-error — same for the lowercase spelling.
+    const bad6 = <div contenteditable={true} />;
+
+    // The correct forms compile and render the keyword verbatim.
+    expect(String(<div draggable="true" />)).toBe('<div draggable="true"></div>');
+    expect(String(<img src="x.png" alt="x" draggable="false" />))
+      .toBe('<img src="x.png" alt="x" draggable="false">');
+    expect(String(<textarea spellCheck="false" />)).toBe('<textarea spellcheck="false"></textarea>');
+    expect(String(<div contentEditable="plaintext-only" />))
+      .toBe('<div contenteditable="plaintext-only"></div>');
+
+    // And the wrong forms really do render the wrong markup — this is the
+    // failure the type now prevents, pinned so the claim stays checkable.
+    expect(bad1.toString()).toBe('<div draggable></div>');
+    expect(bad2.toString()).toBe('<img src="x.png" alt="x">');
+    expect(bad3.toString()).toBe('<textarea></textarea>');
+    expect(bad4.toString()).toBe('<textarea></textarea>');
+    expect(bad5.toString()).toBe('<div></div>');
+    expect(bad6.toString()).toBe('<div contenteditable></div>');
+  });
+
+  it('KF-436: `hidden` stays boolean (a real boolean attribute) and takes `until-found`', () => {
+    expect(String(<div hidden />)).toBe('<div hidden></div>');
+    expect(String(<div hidden={false} />)).toBe('<div></div>');
+    expect(String(<div hidden="until-found">x</div>))
+      .toBe('<div hidden="until-found">x</div>');
+  });
+
+  it('KF-436: lowercase `autofocus` rejects the string forms', () => {
+    // A present boolean attribute is true whatever its value, so
+    // `autofocus="false"` turns autofocus ON. Blessing that spelling in the
+    // types would hand authors a switch wired backwards.
+    // @ts-expect-error — use `{false}` or omit the attribute.
+    const bad = <input autofocus="false" />;
+    expect(bad.toString()).toBe('<input autofocus="false">');
+    expect(String(<input autofocus={false} />)).toBe('<input>');
+  });
+
+  it('KF-436: `<select>` / `<textarea>` reject `value` (no such content attribute)', () => {
+    // @ts-expect-error — a <select>'s selection comes from <option selected>.
+    const bad1 = <select value="b" />;
+    // @ts-expect-error — a <textarea>'s value is its child text.
+    const bad2 = <textarea value="hi" />;
+    // Rendering them proves why: inert markup the browser never reads.
+    expect(bad1.toString()).toBe('<select value="b"></select>');
+    expect(bad2.toString()).toBe('<textarea value="hi"></textarea>');
+
+    // The forms that actually work.
+    expect(String(<option value="b" defaultSelected>b</option>))
+      .toBe('<option value="b" selected>b</option>');
+    expect(String(<textarea>draft</textarea>)).toBe('<textarea>draft</textarea>');
+  });
+
+  it('KF-436: `<style scoped>` is gone (removed from the standard, never shipped)', () => {
+    // @ts-expect-error — the scoped-stylesheet proposal was dropped.
+    const bad = <style scoped />;
+    expect(bad.toString()).toBe('<style scoped></style>');
   });
 
   it('still allows arbitrary data-* and aria-* attributes', () => {

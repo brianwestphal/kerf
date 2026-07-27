@@ -9,6 +9,26 @@
  * Lives in its own module so the alias data stays a separable concern from
  * `src/jsx-runtime.ts`'s runtime logic; the bulk of `jsx-runtime.ts` was this
  * table.
+ *
+ * **When a camelCase attribute needs an entry.** Pass-through is not the same
+ * as "no translation": an unlisted `fooBar` is emitted verbatim, and the HTML
+ * parser then lowercases it to `foobar`. That is silently *correct* whenever
+ * the real attribute name is exactly the lowercased spelling (`fetchPriority`
+ * → `fetchpriority`, `charSet` → `charset`, `playsInline` → `playsinline`), and
+ * silently *wrong* whenever it isn't — `defaultSelected` rendered
+ * `defaultselected`, an attribute no browser has ever read, so the option it
+ * was supposed to pre-select never was. Any camelCase key whose HTML name is
+ * not its own lowercase MUST have a row here.
+ *
+ * `tests/unit/jsx-attr-names.test.ts` pins that rule: it reads every attribute
+ * key declared in `src/jsx-types.ts` and asserts the name kerf would actually
+ * emit for each camelCase one, so a new typed attribute cannot join without
+ * someone stating what it renders as.
+ *
+ * SVG is the reason the lowercasing shortcut can't be relied on in general —
+ * SVG attribute names are case-sensitive, and only the fixed set in the HTML
+ * parser's SVG adjustment table (`viewBox`, `preserveAspectRatio`,
+ * `pathLength`, …) survives the round trip with its case intact.
  */
 
 export const ATTR_ALIASES: Record<string, string> = {
@@ -27,6 +47,7 @@ export const ATTR_ALIASES: Record<string, string> = {
   crossOrigin: 'crossorigin',
   dateTime: 'datetime',
   defaultChecked: 'checked',
+  defaultSelected: 'selected',
   defaultValue: 'value',
   encType: 'enctype',
   formAction: 'formaction',

@@ -30,6 +30,87 @@
  * undefined / `SafeHtml`. Event-handler props (`onClick` etc.) are
  * deliberately omitted: kerf renders to strings, so inline handlers do
  * nothing. Use `delegate()` / `delegateCapture()` instead.
+ *
+ * ---
+ *
+ * ## Provenance — where these types come from
+ *
+ * Attribute names, value sets, and per-element membership are taken from the
+ * **WHATWG HTML Living Standard** (and **SVG 2** for the SVG interfaces), with
+ * MDN used only as a readable index into them. They are NOT derived from
+ * `@types/react`, `lib.dom.d.ts`, or any other framework's table — those model
+ * a *property* surface (`HTMLElement.draggable: boolean`), and kerf emits
+ * *content attributes* into an HTML string, which is a different contract in
+ * exactly the places that bite (see the enumerated-attribute rule below).
+ *
+ * Coverage is deliberately focused rather than exhaustive: the ~100 most-used
+ * elements and their commonly-authored attributes. A missing attribute is a
+ * gap to fill, not a statement that it's invalid — extend via declaration
+ * merging (above) until it lands here.
+ *
+ * ## The rule that governs every value type
+ *
+ * `boolean` in an attribute type means **HTML boolean attribute** — one whose
+ * *presence* is the whole signal. `foo={true}` renders ` foo` and `foo={false}`
+ * renders nothing, so only attributes with those exact semantics may accept a
+ * boolean.
+ *
+ * HTML's **enumerated** attributes look boolean but are not: they take the
+ * literal *strings* `"true"` / `"false"`, and their missing-value default is a
+ * third state. Typing one as `boolean` produces markup that silently means the
+ * opposite of what was written:
+ *
+ *   - `draggable={true}` → `<div draggable>` → empty value is invalid for
+ *     `draggable`, so the element falls to the **auto** state — which for a
+ *     `<div>` means **not draggable**. The attribute that was supposed to turn
+ *     dragging on turns nothing on.
+ *   - `draggable={false}` → attribute omitted → **auto** again, and auto for
+ *     `<img>` / `<a href>` is *draggable*. The disable never happens either.
+ *   - `spellCheck={false}` / `contentEditable={false}` → omitted → the
+ *     **inherit** default, not the false state. (Their `true` direction happens
+ *     to work: the empty string is a spec keyword for the true state on those
+ *     two, unlike `draggable`.)
+ *
+ * So `draggable`, `spellcheck`, and `contenteditable` are typed as string
+ * literal unions here and reject `boolean` outright. The fix is at the type
+ * level rather than in the runtime on purpose: translating `{true}` →
+ * `="true"` would require the renderer to carry a list of every enumerated
+ * attribute in HTML, and any attribute *missing* from that list would silently
+ * regress to precisely this bug. A per-attribute type keeps the knowledge where
+ * the spec knowledge already lives and costs nothing at runtime. The tradeoff
+ * is a compile error on `draggable={true}` — which is the point.
+ *
+ * One residual hole this cannot close: a signal-valued attribute
+ * (`draggable={sig}`) is `ReadonlySignal<unknown>`, so a boolean inside it is
+ * invisible to the type system. Put the string in the signal: `signal('true')`.
+ *
+ * ## Deliberate deviations from the spec
+ *
+ * Each of these is a knowing departure, kept because removing it would cost
+ * more than it buys:
+ *
+ *   - **Lowercase aliases** (`class`, `for`, `tabindex`, `autofocus`,
+ *     `spellcheck`, `contenteditable`, `autocomplete`) sit alongside the
+ *     camelCase forms. Both spellings are accepted because the migration docs
+ *     tell incoming developers to write the real HTML name.
+ *   - **`contentEditable="inherit"`** is accepted but is *not* a spec keyword.
+ *     It lands on the inherit state only via the invalid-value default. Kept
+ *     for React parity; omitting the attribute is the spec-correct way to
+ *     inherit.
+ *   - **`tabindex` / `autofocus` / `capture`** accept a widened value set
+ *     (string ints, plain `boolean`) matching what the parser actually honors.
+ *   - **`cellPadding` / `cellSpacing`** are obsolete presentational attributes,
+ *     marked `@deprecated` rather than removed so legacy markup still compiles.
+ *   - **`xlink:*`** attributes are deprecated in SVG 2 but still typed — real
+ *     documents and icon sprites still carry them.
+ *   - **`data-morph-skip` / `-skip-children` / `-preserve`** are kerf's own
+ *     `data-*` attributes, valid HTML by the `data-*` rule.
+ *
+ * Attributes that are *not* typed because they do nothing when rendered as
+ * markup: `value` / `defaultValue` on `<select>` and `<textarea>` (neither
+ * element has a `value` content attribute — a select's selection comes from
+ * `<option selected>`, a textarea's value is its child text), and any `on*`
+ * handler prop (rejected at runtime — use `delegate()`).
  */
 
 import type { SafeHtml } from './jsx-runtime.js';
@@ -72,26 +153,48 @@ export interface KerfBaseAttrs extends DataAriaAttrs {
   title?: AttrLike;
   lang?: AttrLike;
   dir?: AttrLike<'ltr' | 'rtl' | 'auto'>;
-  hidden?: AttrLike<boolean>;
-  draggable?: AttrLike<boolean>;
-  contentEditable?: AttrLike<boolean | 'true' | 'false' | 'inherit' | 'plaintext-only'>;
   /**
-   * Lowercase HTML form accepted alongside `contentEditable` (same shape as
-   * `class` / `tabindex` / `autofocus` / `spellcheck`). The HTML spec defines
-   * `contenteditable` as a string-valued enumerated attribute; an HTML-savvy
-   * developer typing the lowercase form will reach for `contenteditable="false"`.
+   * A genuine HTML boolean attribute, so `hidden={true}` → ` hidden` is
+   * correct. `'until-found'` is the one non-boolean keyword: the element is
+   * hidden but still findable by find-in-page and fragment navigation, which
+   * reveals it.
    */
-  contenteditable?: AttrLike<boolean | 'true' | 'false' | 'inherit' | 'plaintext-only'>;
+  hidden?: AttrLike<boolean | 'until-found'>;
+  /**
+   * Enumerated, NOT boolean — write `draggable="true"` / `draggable="false"`.
+   * `boolean` is rejected because both directions would render the wrong
+   * state: `{true}` emits an empty value (invalid → the **auto** state, which
+   * for most elements means *not* draggable) and `{false}` omits the attribute
+   * (auto again — and auto for `<img>` / `<a href>` is *draggable*). Omit the
+   * attribute to mean auto. See the enumerated-attribute rule in this file's
+   * header.
+   */
+  draggable?: AttrLike<'true' | 'false'>;
+  /**
+   * Enumerated, NOT boolean — write `contentEditable="true"` / `="false"`.
+   * `contentEditable={false}` would omit the attribute, which means *inherit*,
+   * not false — so a child of an editable region would stay editable.
+   *
+   * `'inherit'` is not a spec keyword; it reaches the inherit state only
+   * through the invalid-value default. Accepted for React parity, but omitting
+   * the attribute is the spec-correct way to inherit.
+   */
+  contentEditable?: AttrLike<'true' | 'false' | 'inherit' | 'plaintext-only'>;
+  /**
+   * KF-191 — lowercase HTML form accepted alongside `contentEditable` (same
+   * shape as `class` / `tabindex` / `autofocus` / `spellcheck`), with the same
+   * enumerated value set.
+   */
+  contenteditable?: AttrLike<'true' | 'false' | 'inherit' | 'plaintext-only'>;
   inputMode?: AttrLike<'none' | 'text' | 'tel' | 'url' | 'email' | 'numeric' | 'decimal' | 'search'>;
-  spellCheck?: AttrLike<boolean>;
   /**
-   * KF-183 — lowercase HTML form accepted alongside `spellCheck`. Widened
-   * to also accept the literal string values `'true'` / `'false'` because
-   * the HTML spec defines `spellcheck` as a string-valued enumerated
-   * attribute, and an HTML-savvy developer typing the lowercase form
-   * will naturally reach for `spellcheck="false"`.
+   * Enumerated, NOT boolean — write `spellCheck="false"` to turn spellchecking
+   * off. `spellCheck={false}` would omit the attribute, which means *inherit
+   * the default*, not off; the disable would silently never happen.
    */
-  spellcheck?: AttrLike<boolean | 'true' | 'false'>;
+  spellCheck?: AttrLike<'true' | 'false'>;
+  /** KF-183 — lowercase HTML form accepted alongside `spellCheck`. */
+  spellcheck?: AttrLike<'true' | 'false'>;
   tabIndex?: AttrLike<number>;
   /**
    * KF-191 — lowercase HTML form accepted alongside `tabIndex`. Widened to
@@ -106,13 +209,14 @@ export interface KerfBaseAttrs extends DataAriaAttrs {
   autoCapitalize?: AttrLike<'off' | 'none' | 'on' | 'sentences' | 'words' | 'characters'>;
   autoFocus?: AttrLike<boolean>;
   /**
-   * KF-191 — lowercase HTML form accepted alongside `autoFocus`. Widened
-   * to also accept `'true'` / `'false'` strings (same rationale as KF-183
-   * for `spellcheck` — HTML boolean-attribute parsing allows the string
-   * forms, and the canonical HTML attribute name lets developers reach
-   * for either spelling).
+   * KF-191 — lowercase HTML form accepted alongside `autoFocus`.
+   *
+   * A real boolean attribute, so only `boolean` is accepted. The string forms
+   * are deliberately NOT allowed: `autofocus="false"` is *present*, and a
+   * present boolean attribute is true regardless of its value — the spelling
+   * that reads like "off" turns autofocus **on**. Use `{false}` or omit it.
    */
-  autofocus?: AttrLike<boolean | 'true' | 'false'>;
+  autofocus?: AttrLike<boolean>;
   accessKey?: AttrLike;
   /** `data-morph-skip` opts a subtree out of kerf's morph. Any value (incl. `true`) is treated as set. */
   'data-morph-skip'?: AttrValue;
@@ -243,10 +347,14 @@ export interface HTMLOptgroupAttrs extends KerfBaseAttrs {
   disabled?: AttrLike<boolean>;
 }
 
+/**
+ * No `value` / `defaultValue`: `<select>` has no `value` content attribute, so
+ * rendering one is inert markup. The selection is expressed on the options —
+ * `<option value="b" selected>` — which is also the form kerf's morph keeps in
+ * sync with the live `selected` property after the user has picked.
+ */
 export interface HTMLSelectAttrs extends KerfBaseAttrs {
   name?: AttrLike;
-  value?: AttrLike;
-  defaultValue?: AttrLike;
   multiple?: AttrLike<boolean>;
   required?: AttrLike<boolean>;
   disabled?: AttrLike<boolean>;
@@ -257,10 +365,13 @@ export interface HTMLSelectAttrs extends KerfBaseAttrs {
   autocomplete?: AttrLike;
 }
 
+/**
+ * No `value` / `defaultValue`: a `<textarea>`'s value is its child text, and
+ * there is no `value` content attribute to render. Write the text as a child —
+ * `<textarea>{draft}</textarea>` — which is what kerf's morph reconciles.
+ */
 export interface HTMLTextareaAttrs extends KerfBaseAttrs {
   name?: AttrLike;
-  value?: AttrLike;
-  defaultValue?: AttrLike;
   placeholder?: AttrLike;
   rows?: AttrLike<number>;
   cols?: AttrLike<number>;
@@ -277,7 +388,9 @@ export interface HTMLTextareaAttrs extends KerfBaseAttrs {
 }
 
 export interface HTMLTableAttrs extends KerfBaseAttrs {
+  /** @deprecated Obsolete presentational attribute — use CSS `padding` on the cells. Typed so legacy markup still compiles. */
   cellPadding?: AttrLike<number | string>;
+  /** @deprecated Obsolete presentational attribute — use CSS `border-spacing`. Typed so legacy markup still compiles. */
   cellSpacing?: AttrLike<number | string>;
 }
 
@@ -326,10 +439,11 @@ export interface HTMLScriptAttrs extends KerfBaseAttrs {
   nonce?: AttrLike;
 }
 
+/** No `scoped`: the proposal was removed from the HTML standard and never shipped in any engine. */
 export interface HTMLStyleAttrs extends KerfBaseAttrs {
   type?: AttrLike;
   media?: AttrLike;
-  scoped?: AttrLike<boolean>;
+  blocking?: AttrLike<'render'>;
 }
 
 export interface HTMLIframeAttrs extends KerfBaseAttrs {

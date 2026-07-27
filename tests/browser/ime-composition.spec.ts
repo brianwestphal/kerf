@@ -129,7 +129,8 @@ test('contenteditable mid-composition: subtree skipped (per docs §4.4)', async 
       jsx('div', {
         className: tick.value ? 'after' : 'before',
         children: jsx('div', {
-          contentEditable: true,
+          // Enumerated, not boolean — see enumerated-attrs.spec.ts.
+          contentEditable: 'true',
           children: 'placeholder',
         }),
       }),

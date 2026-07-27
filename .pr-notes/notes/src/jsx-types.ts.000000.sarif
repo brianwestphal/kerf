@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "Hot Sheet",
+          "rules": [
+            {
+              "id": "review-note",
+              "name": "ReviewNote",
+              "shortDescription": {
+                "text": "AI-authored, line-anchored review note."
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "review-note",
+          "ruleIndex": 0,
+          "kind": "informational",
+          "level": "none",
+          "guid": "ms3vutcg4x3bbx0t",
+          "message": {
+            "text": "Fixed the enumerated-attribute bug in the TYPES rather than in the renderer, because a runtime fix would be a generator for the same bug.\n\nThe obvious alternative — and what React and Preact do — is to special-case these names in renderAttrNamed so draggable={true} emits draggable=\"true\". It costs ~60 bytes gzipped, keeps {true} compiling, and would silently repair every app that has the bug today. Rejected for one reason:\n\n> the table would have to enumerate every true/false-enumerated attribute in HTML, and any attribute missing from it silently regresses to exactly this defect.\n\ndraggable, spellcheck, and contenteditable are the three that are typed today, but translate, autocorrect, and writingsuggestions are the same shape, and the list grows with the spec. A renderer table makes correctness depend on someone remembering to add a row; the type makes it depend on someone choosing a value type, which is the moment they are already looking at the spec.\n\nSecond reason, smaller: the value transformation would also have to reach setBoundAttr in bindings.ts (a signal-valued attribute never passes through renderAttrNamed), so it is two tables, not one — and a signal holding a boolean is invisible to the type system either way, so the runtime fix wouldn't be complete even then.\n\nThe cost accepted is a compile error on draggable={true}, which is the point: the code it rejects was rendering markup that meant the opposite.\n",
+            "markdown": "Fixed the enumerated-attribute bug in the TYPES rather than in the renderer, because a runtime fix would be a generator for the same bug.\n\nThe obvious alternative — and what React and Preact do — is to special-case these names in `renderAttrNamed` so `draggable={true}` emits `draggable=\"true\"`. It costs ~60 bytes gzipped, keeps `{true}` compiling, and would silently repair every app that has the bug today. Rejected for one reason:\n\n> the table would have to enumerate **every** true/false-enumerated attribute in HTML, and any attribute *missing* from it silently regresses to exactly this defect.\n\n`draggable`, `spellcheck`, and `contenteditable` are the three that are typed today, but `translate`, `autocorrect`, and `writingsuggestions` are the same shape, and the list grows with the spec. A renderer table makes correctness depend on someone remembering to add a row; the type makes it depend on someone choosing a value type, which is the moment they are already looking at the spec.\n\nSecond reason, smaller: the value transformation would also have to reach `setBoundAttr` in `bindings.ts` (a signal-valued attribute never passes through `renderAttrNamed`), so it is two tables, not one — and a signal holding a boolean is invisible to the type system either way, so the runtime fix wouldn't be complete even then.\n\nThe cost accepted is a compile error on `draggable={true}`, which is the point: the code it rejects was rendering markup that meant the opposite.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/jsx-types.ts"
+                },
+                "region": {
+                  "startLine": 76,
+                  "endLine": 76,
+                  "snippet": {
+                    "text": " * level rather than in the runtime on purpose: translating `{true}` →"
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "tags": [
+              "alternative-considered"
+            ]
+          },
+          "workItemUris": [
+            "KF-436"
+          ],
+          "partialFingerprints": {
+            "prNoteAnchor/v1": "86d401e216f6402773f9ed9f8c354d33"
+          }
+        }
+      ],
+      "versionControlProvenance": [
+        {
+          "repositoryUri": "git@github.com:brianwestphal/kerf.git",
+          "revisionId": "ee8fb18aa16e4cfb790a81c8048a9f617f215d20",
+          "branch": "main"
+        }
+      ]
+    }
+  ]
+}

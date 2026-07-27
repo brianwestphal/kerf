@@ -1,0 +1,34 @@
+  ✓   3 [chromium] › tests/browser/enumerated-attrs.spec.ts:56:1 › spellcheck: omitting the attribute does NOT turn spellchecking off (259ms)
+  ✓   4 [chromium] › tests/browser/enumerated-attrs.spec.ts:73:1 › contenteditable: omitting the attribute leaves a child of an editable region editable (267ms)
+  ✓   2 [chromium] › tests/browser/enumerated-attrs.spec.ts:89:1 › the kerf-authored keyword forms produce the intended state end to end (277ms)
+  ✓   1 [chromium] › tests/browser/enumerated-attrs.spec.ts:42:1 › draggable: omitting the attribute does NOT disable dragging on an <img> (273ms)
+  ✓   5 [chromium] › tests/browser/enumerated-attrs.spec.ts:25:1 › draggable: the bare attribute does NOT enable dragging; "true" does (284ms)
+  ✓   7 [firefox] › tests/browser/enumerated-attrs.spec.ts:56:1 › spellcheck: omitting the attribute does NOT turn spellchecking off (1.4s)
+  ✓   6 [firefox] › tests/browser/enumerated-attrs.spec.ts:73:1 › contenteditable: omitting the attribute leaves a child of an editable region editable (1.2s)
+  ✓   8 [firefox] › tests/browser/enumerated-attrs.spec.ts:25:1 › draggable: the bare attribute does NOT enable dragging; "true" does (1.4s)
+  ✓  10 [firefox] › tests/browser/enumerated-attrs.spec.ts:89:1 › the kerf-authored keyword forms produce the intended state end to end (1.4s)
+  ✓   9 [firefox] › tests/browser/enumerated-attrs.spec.ts:42:1 › draggable: omitting the attribute does NOT disable dragging on an <img> (1.4s)
+  ✓  11 [webkit] › tests/browser/enumerated-attrs.spec.ts:25:1 › draggable: the bare attribute does NOT enable dragging; "true" does (853ms)
+  ✓  12 [webkit] › tests/browser/enumerated-attrs.spec.ts:42:1 › draggable: omitting the attribute does NOT disable dragging on an <img> (642ms)
+  ✓  13 [webkit] › tests/browser/enumerated-attrs.spec.ts:56:1 › spellcheck: omitting the attribute does NOT turn spellchecking off (546ms)
+  ✓  14 [webkit] › tests/browser/enumerated-attrs.spec.ts:73:1 › contenteditable: omitting the attribute leaves a child of an editable region editable (469ms)
+  ✓  15 [webkit] › tests/browser/enumerated-attrs.spec.ts:89:1 › the kerf-authored keyword forms produce the intended state end to end (421ms)
+  15 passed (9.3s)
+
+--- What each assertion pins (see tests/browser/enumerated-attrs.spec.ts) ---
+
+  <div draggable>              -> el.draggable === false   (invalid empty value -> auto -> off)
+  <div draggable="true">       -> el.draggable === true
+  <img>            (no attr)   -> el.draggable === true    (auto for <img> IS draggable)
+  <img draggable="false">      -> el.draggable === false
+
+  <textarea>       (no attr)   -> el.spellcheck === true   (omission means inherit, not off)
+  <textarea spellcheck="false">-> el.spellcheck === false
+  <textarea spellcheck>        -> el.spellcheck === true   ("" IS a keyword for the true state here)
+
+  <div contenteditable="true"><span>                       -> isContentEditable === true  (inherited)
+  <div contenteditable="true"><span contenteditable="false"> -> isContentEditable === false
+
+So `draggable={true}` and `draggable={false}` were BOTH wrong, while
+`spellCheck={true}` / `contentEditable={true}` happened to work and only the
+`{false}` direction was broken. Identical in Chromium, Firefox and WebKit.

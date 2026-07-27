@@ -77,6 +77,33 @@ This matches HTML semantics — a boolean attribute is "on" by being present, re
 
 For the form-state trio — `checked`, `value`, `selected` — re-renders also carry the mutated attribute onto the live DOM *property*, so controlled form state keeps working after the user has interacted with the control (the browser's dirty-state flags would otherwise detach the visible state from the attribute). See the render doc's "Form-state properties" section for the full rules.
 
+#### Enumerated attributes are not boolean attributes
+
+Three attributes read like booleans and are not: **`draggable`**, **`spellcheck`**, and **`contenteditable`**. HTML calls them *enumerated* — they take the literal strings `"true"` and `"false"`, and leaving them off selects a third state (`auto` for `draggable`, inherit-the-default for the other two). The boolean rendering above therefore lands on the wrong state:
+
+| You write | Renders | Element ends up |
+| --- | --- | --- |
+| `draggable={true}` | `<div draggable>` | **not draggable** — an empty value is invalid, so `auto`, and `auto` for a `<div>` is off |
+| `draggable={false}` | *omitted* | `auto` again — and `auto` for `<img>` / `<a href>` is **draggable** |
+| `spellCheck={false}` | *omitted* | spellchecking **still on** — omission means "inherit", not "off" |
+| `contentEditable={false}` | *omitted* | inside an editable region, **still editable** |
+
+So the types reject `boolean` on these three. Write the keyword:
+
+```tsx
+<div draggable="true" />
+<textarea spellCheck="false" />
+<span contentEditable="false" />
+```
+
+Omit the attribute when you want the default state. `hidden`, `checked`, `disabled`, `autofocus`, and the rest of the real boolean attributes are unaffected — `hidden={isHidden}` is still exactly right.
+
+The fix is in the types rather than in the runtime deliberately. Translating `{true}` → `="true"` would mean the renderer carrying a list of every enumerated attribute in HTML, and any attribute *missing* from that list would silently reproduce this same bug. A per-attribute type keeps the knowledge where the rest of the spec knowledge already lives, and costs nothing at runtime.
+
+One case the types can't reach: a signal-valued attribute (`draggable={sig}`) is opaque to the type system, so put the string in the signal — `signal('true')`, not `signal(true)`.
+
+Two attributes are absent for the same reason: **`<select value>` and `<textarea value>` don't exist in HTML.** A select's selection lives on its options (`<option value="b" selected>`), and a textarea's value is its child text (`<textarea>{draft}</textarea>`). Rendering a `value` attribute on either is inert markup the browser never reads, so the types don't offer it.
+
 ### 6.4.1 Dangerous URL filter
 
 Plain-string values written to URL-bearing attributes are screened by scheme. If a value resolves to a `javascript:` or `vbscript:` scheme, or a script-executing `data:` document type (`data:text/html`, `data:image/svg+xml`, XHTML/XML), kerf **drops the attribute entirely**. The screen runs on these attribute names: `href`, `src`, `xlink:href`, `formaction`, `action`, and `data` (the `<object data>` attribute).
@@ -250,6 +277,8 @@ To ship reusable components as npm packages — including the per-instance-state
 ## 6.10 Typed JSX intrinsic elements
 
 The JSX transform looks at `JSX.IntrinsicElements` in `kerfjs/jsx-runtime` to type-check tags and attributes. The table covers roughly 100 HTML elements (the full sectioning / text / embedded / forms / tables / metadata / interactive sets) and the SVG primitives that `toElement()` supports. Misspelled tags (`<diiv>`) and misspelled attribute names (`<input typo />`) fail to compile.
+
+**Where the types come from.** Names, value sets, and per-element membership are taken from the WHATWG HTML Living Standard and SVG 2, with MDN as a readable index into them — not from another framework's table. That distinction is load-bearing: other tables describe a *property* surface (`HTMLElement.draggable: boolean`), while kerf emits *content attributes* into an HTML string, and the two disagree in exactly the places that cause silent bugs (see [§6.4](#64-boolean-attributes) on enumerated attributes). Coverage is focused rather than exhaustive — a missing attribute is a gap to fill, not a verdict that it's invalid; add it via declaration merging until it lands upstream. The handful of deliberate departures from the spec — lowercase aliases alongside the camelCase forms, `contentEditable="inherit"`, the obsolete presentational attributes kept as `@deprecated` — are enumerated with their reasons in `src/jsx-types.ts`'s header comment.
 
 ### Adding custom elements / web components
 

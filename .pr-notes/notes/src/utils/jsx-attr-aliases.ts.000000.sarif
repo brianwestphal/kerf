@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "Hot Sheet",
+          "rules": [
+            {
+              "id": "review-note",
+              "name": "ReviewNote",
+              "shortDescription": {
+                "text": "AI-authored, line-anchored review note."
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "review-note",
+          "ruleIndex": 0,
+          "kind": "informational",
+          "level": "none",
+          "guid": "ms3vutipp6klx1z6",
+          "message": {
+            "text": "defaultSelected had no alias row, so it rendered defaultselected — an attribute no browser reads — and the option it named was never pre-selected.\n\nFound by asking a different question than \"is this attribute correct?\": what name does kerf actually emit for each camelCase key it types? Pass-through is not the same as no-translation. An unlisted fooBar is written verbatim and lowercased by the HTML parser, which is silently right whenever the HTML name IS the lowercase (fetchPriority, charSet, playsInline) and silently wrong when it isn't. defaultSelected was the only member of the default* family missing its row, while defaultValue → value and defaultChecked → checked were both present.\n\ntests/unit/jsx-attr-names.test.tsx now pins the answer for every camelCase attribute declared in src/jsx-types.ts, read out of the source rather than hand-listed, so a new typed attribute fails the suite until someone states what it renders as. The attached artifact is the three-engine run behind the sibling src/jsx-types.ts change.\n",
+            "markdown": "`defaultSelected` had no alias row, so it rendered `defaultselected` — an attribute no browser reads — and the option it named was never pre-selected.\n\nFound by asking a different question than \"is this attribute correct?\": *what name does kerf actually emit for each camelCase key it types?* Pass-through is not the same as no-translation. An unlisted `fooBar` is written verbatim and lowercased by the HTML parser, which is silently right whenever the HTML name IS the lowercase (`fetchPriority`, `charSet`, `playsInline`) and silently wrong when it isn't. `defaultSelected` was the only member of the `default*` family missing its row, while `defaultValue` → `value` and `defaultChecked` → `checked` were both present.\n\n`tests/unit/jsx-attr-names.test.tsx` now pins the answer for every camelCase attribute declared in `src/jsx-types.ts`, read out of the source rather than hand-listed, so a new typed attribute fails the suite until someone states what it renders as. The attached artifact is the three-engine run behind the sibling `src/jsx-types.ts` change.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/utils/jsx-attr-aliases.ts"
+                },
+                "region": {
+                  "startLine": 45,
+                  "endLine": 45,
+                  "snippet": {
+                    "text": "  colSpan: 'colspan',"
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "tags": [
+              "proof"
+            ]
+          },
+          "workItemUris": [
+            "KF-436"
+          ],
+          "partialFingerprints": {
+            "prNoteAnchor/v1": "b751325bfb9be03726ec48b30aa998d6"
+          },
+          "attachments": [
+            {
+              "artifactLocation": {
+                "uri": ".pr-notes/artifacts/kf436-enumerated-attrs-browser-proof.txt",
+                "properties": {
+                  "ext-sha256": "0495d209a0f99d62329a29edbb37a0dbde1752d20dc002877b60580b32d9c42b"
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "versionControlProvenance": [
+        {
+          "repositoryUri": "git@github.com:brianwestphal/kerf.git",
+          "revisionId": "ee8fb18aa16e4cfb790a81c8048a9f617f215d20",
+          "branch": "main"
+        }
+      ]
+    }
+  ]
+}
