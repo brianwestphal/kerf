@@ -131,4 +131,12 @@ installDevHooks(DEV_HOOKS);
 // only see signals created after this module runs. Say so at install rather
 // than letting an author opt in and silently get nothing (see
 // `noteUntrackedCoverage` for why retro-fitting is impossible).
+//
+// The opted-in arm can't be exercised by the suite: this module evaluates
+// exactly once, at import, before any test can set the env var — and the
+// global test setup imports it. Both `isDevWarnUntrackedEnabled()` and
+// `noteUntrackedCoverage()` are directly unit-tested either side of this line
+// (tests/unit/dev-signal.internal.test.ts); only the one-time wiring between
+// them is unreachable from a test process.
+/* c8 ignore next -- install-time wiring; module evaluates once, before any test can opt in */
 if (isDevWarnUntrackedEnabled()) noteUntrackedCoverage();
