@@ -114,6 +114,35 @@ UI consumer) are legitimate and would always warn under this heuristic.
 The opt-in keeps the diagnostic available for UI-shaped projects without
 penalising data-pipeline-shaped projects.
 
+**Coverage boundary — this is the one warning whose reach depends on
+install order.** Because the constructor is chosen when the signal is
+*created*, only signals created after `kerfjs/dev` is installed can ever
+warn. Static imports are hoisted above a top-level `await import()`, so in
+the common layout
+
+```js
+import { counter } from './store.js';                 // created HERE
+if (import.meta.env.DEV) await import('kerfjs/dev');  // ...installs after
+```
+
+the module-scope signals this warning most wants to catch are created
+first, and it finds nothing. **The fix:** make `import 'kerfjs/dev'` the
+FIRST STATIC import of a dev-only entry file (static imports evaluate in
+order), then load the rest of your app.
+
+Opting in prints this boundary once at install, so the gap is loud rather
+than silent — a diagnostic that quietly covers nothing is worse than no
+diagnostic, because the author concludes their code is clean.
+
+It cannot be closed by retro-fitting the signals that already exist.
+`Signal.prototype`'s `value` accessor is **non-configurable**, so it
+cannot be patched once for every instance; and reaching live instances
+would require kerf to keep a registry of every signal ever created — a
+per-signal production cost paid to serve an opt-in dev warning, which is
+exactly the coupling the hook registry exists to avoid. The
+non-configurability is asserted by a test, so if signals-core ever relaxes
+it the better fix becomes available and the suite says so.
+
 ### 11.2.3 `KERF_DEV_WARN_NARROW_SET=1` (Rule 9)
 
 **Module:** [`src/dev-store-warn.ts`](../src/dev-store-warn.ts) (KF-212).

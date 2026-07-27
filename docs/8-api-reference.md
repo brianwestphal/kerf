@@ -136,8 +136,12 @@ behavior without reloading modules.
 
 Order matters in one place: `signal()` chooses its constructor at creation
 time, so signals created before the dev entry runs are invisible to
-`KERF_DEV_WARN_UNTRACKED_SIGNALS`. Every other hook is read at call time. See
-[`docs/11-dev-warnings.md`](11-dev-warnings.md) §11.3.6.
+`KERF_DEV_WARN_UNTRACKED_SIGNALS` — and since static imports hoist above a
+top-level `await import()`, that is the common case. To cover module-scope
+signals, make `import 'kerfjs/dev'` the first static import of a dev-only entry
+file. Opting into that warning prints the boundary once so the gap is never
+silent. Every other hook is read at call time. See
+[`docs/11-dev-warnings.md`](11-dev-warnings.md) §11.2.2 and §11.3.6.
 
 ## 8.3 Render
 

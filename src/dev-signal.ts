@@ -62,3 +62,50 @@ export function isDevWarnUntrackedEnabled(): boolean {
   const proc = (globalThis as { process?: { env?: Record<string, string | undefined> } }).process;
   return proc?.env?.KERF_DEV_WARN_UNTRACKED_SIGNALS === '1';
 }
+
+/**
+ * This warning is the ONE member of the family whose coverage depends on WHEN
+ * `kerfjs/dev` was installed, because `signal()` picks its constructor at
+ * creation time. Signals created before the install are plain `Signal`s
+ * forever and this warning can never see them.
+ *
+ * That matters in the common layout, because static imports are hoisted above
+ * a top-level `await import()`:
+ *
+ * ```js
+ * import { counter } from './store.js';                 // created HERE
+ * if (import.meta.env.DEV) await import('kerfjs/dev');  // ...installs after
+ * ```
+ *
+ * kerf's state model is module-scope signals, so that ordering can leave the
+ * warning covering almost nothing — and failing SILENTLY, which is the worst
+ * outcome for a diagnostic: the author sets the env var, sees nothing, and
+ * concludes their code is clean.
+ *
+ * Retro-fitting already-created signals is not possible. `Signal.prototype`'s
+ * `value` accessor is **non-configurable**, so it cannot be patched, and
+ * reaching existing instances would need kerf to keep a registry of every
+ * signal — a per-signal production cost paid to serve an opt-in dev warning,
+ * which is exactly the coupling the hook registry removed. So the miss is
+ * converted from silent to loud instead: opting in prints the coverage
+ * boundary once, with the fix.
+ */
+let coverageNoticeShown = false;
+
+export function noteUntrackedCoverage(): void {
+  if (coverageNoticeShown) return;
+  coverageNoticeShown = true;
+  console.warn(
+    'kerf: KERF_DEV_WARN_UNTRACKED_SIGNALS only covers signals created AFTER kerfjs/dev is installed. '
+    + 'Static imports are hoisted above `await import(\'kerfjs/dev\')`, so module-scope signals in the modules '
+    + 'you import are created first and this warning cannot see them — you may get no warnings even where the '
+    + 'bug exists. To cover them, make `import \'kerfjs/dev\'` the FIRST STATIC import of a dev-only entry file '
+    + '(static imports evaluate in order), then load the rest of your app. '
+    + 'Set KERF_DEV_WARN_UNTRACKED_SIGNALS=0 (or unset it) to silence this warning.',
+  );
+}
+
+/** Test helper — re-arms the one-shot coverage notice. */
+export function _resetCoverageNoticeForTests(): void {
+  coverageNoticeShown = false;
+}

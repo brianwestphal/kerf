@@ -28,8 +28,13 @@
  * signal is CREATED. Static imports are hoisted above a top-level
  * `await import()`, so module-scope signals in imported modules are created
  * before this module runs and the untracked-signal warning will not see them.
- * To cover those, make the dev import the first STATIC import of a dev-only
- * entry file, or load your app through a dynamic import after this one.
+ * To cover those, make `import 'kerfjs/dev'` the FIRST STATIC import of a
+ * dev-only entry file, then load the rest of your app.
+ *
+ * Opting into that warning prints this boundary once, so the gap is loud
+ * rather than silent. It cannot be closed by retro-fitting existing signals:
+ * `Signal.prototype`'s `value` accessor is non-configurable, and reaching live
+ * instances would require a per-signal registry that production would pay for.
  *
  * Installation decides whether the diagnostics are PRESENT; each individual
  * warner still reads its own `KERF_DEV_WARN_*` env var to decide whether it is
@@ -57,7 +62,7 @@ import { installListenerRebuildWarn } from './dev-listener-warn.js';
 import { maybeWarnParserRepair } from './dev-parser-repair-warn.js';
 import { maybeWarnValueOnlyRerender } from './dev-rerender-warn.js';
 import { maybeWarnMissingRowKey } from './dev-row-key-warn.js';
-import { DevSignal, isDevWarnUntrackedEnabled } from './dev-signal.js';
+import { DevSignal, isDevWarnUntrackedEnabled, noteUntrackedCoverage } from './dev-signal.js';
 import { maybeWarnNarrowSet } from './dev-store-warn.js';
 import { devReadonlyProxy, toRaw } from './utils/devReadonly.js';
 
@@ -121,3 +126,9 @@ export const DEV_HOOKS: DevHooks = {
 };
 
 installDevHooks(DEV_HOOKS);
+
+// `signal()` picks its constructor at CREATION time, so this one warning can
+// only see signals created after this module runs. Say so at install rather
+// than letting an author opt in and silently get nothing (see
+// `noteUntrackedCoverage` for why retro-fitting is impossible).
+if (isDevWarnUntrackedEnabled()) noteUntrackedCoverage();
