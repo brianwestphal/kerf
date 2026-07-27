@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "Hot Sheet",
+          "rules": [
+            {
+              "id": "review-note",
+              "name": "ReviewNote",
+              "shortDescription": {
+                "text": "AI-authored, line-anchored review note."
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "review-note",
+          "ruleIndex": 0,
+          "kind": "informational",
+          "level": "none",
+          "guid": "ms2x3ay27neeh9cb",
+          "message": {
+            "text": "The no-build app deliberately does NOT install the dev diagnostics — the served page is the production one, and that is the lesson.\n\nConsidered actually importing kerfjs/dev here so the no-build path demonstrated the same idiom as the bundled apps. Rejected: with no bundler there is no flag to fold, so an unconditional import would ship ~25 KB of dev code to every visitor of a page whose entire point is \"what you see is what runs\". Omitting the import IS the no-build production switch, which is a better thing to show than a fake dev/prod branch.\n\nThe middle ground is the importmap entry (0): mapped but never requested, so it costs nothing at runtime and a reader can enable diagnostics by adding one line instead of first discovering that the vendor copy needs another file. No change to the copy contract was required — copyNoBuildApp() already copies the whole dist/, dev.js and its chunks included.\n",
+            "markdown": "The no-build app deliberately does NOT install the dev diagnostics — the served page is the production one, and that is the lesson.\n\nConsidered actually importing `kerfjs/dev` here so the no-build path demonstrated the same idiom as the bundled apps. Rejected: with no bundler there is no flag to fold, so an unconditional import would ship ~25 KB of dev code to every visitor of a page whose entire point is \"what you see is what runs\". Omitting the import IS the no-build production switch, which is a better thing to show than a fake dev/prod branch.\n\nThe middle ground is the [importmap entry](0): mapped but never requested, so it costs nothing at runtime and a reader can enable diagnostics by adding one line instead of first discovering that the vendor copy needs another file. No change to the copy contract was required — `copyNoBuildApp()` already copies the whole `dist/`, `dev.js` and its chunks included.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "site/src/examples/complete/live-poll/main.js"
+                },
+                "region": {
+                  "startLine": 14,
+                  "endLine": 25,
+                  "snippet": {
+                    "text": "// No dev diagnostics here, on purpose: what is served IS the production app.\n// The bundled examples write `if (import.meta.env.DEV) await import('kerfjs/dev')`\n// and let the bundler fold the branch away; with no build step there is no flag\n// to fold, so here the import statement itself is the switch. Add\n//\n//   await import('kerfjs/dev');\n//\n// below while you develop — index.html's importmap already resolves it to the\n// vendored ./vendor/kerfjs/dev.js — and delete the line to ship. Put it above\n// the signals below if you want the untracked-signal warning to see them.\n\nconst OPTIONS = ["
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "tags": [
+              "alternative-considered"
+            ]
+          },
+          "relatedLocations": [
+            {
+              "id": 0,
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "site/src/examples/complete/live-poll/index.html"
+                },
+                "region": {
+                  "startLine": 19
+                }
+              }
+            }
+          ],
+          "workItemUris": [
+            "KF-432"
+          ],
+          "partialFingerprints": {
+            "prNoteAnchor/v1": "53bc74ed87b70554b10ea95178b3e399"
+          }
+        }
+      ],
+      "versionControlProvenance": [
+        {
+          "repositoryUri": "git@github.com:brianwestphal/kerf.git",
+          "revisionId": "f9d6c328ea89c9e8072dd8ebba142719b8e68056",
+          "branch": "main"
+        }
+      ]
+    }
+  ]
+}

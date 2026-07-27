@@ -581,6 +581,22 @@ A no-build/CDN app imports it unconditionally from its development page and
 simply omits it from the production page — there is no bundler to fold a
 condition, and nothing for kerf to detect.
 
+**Where to see it.** Every complete example app in this repo opens with that
+line directly under its imports (`site/src/examples/complete/<name>/main.tsx`,
+plus `examples/reactivity-demo/src/main.tsx`), so the idiom is visible in the
+first screen of any example a reader opens. The no-build app is the deliberate
+counter-example: `live-poll` maps `kerfjs/dev` in its importmap but never
+imports it, because what that page serves is the production app — see
+[doc 15](15-no-build-example.md). A component *package* must not install the
+diagnostics at all; that decision belongs to the consuming app
+([doc 13](/kerf/docs/component-packages/)).
+
+**Two costs the install line carries.** It makes the entry module
+top-level-`await`, which requires an ESM output format (esbuild and Rollup
+support it for `format: 'esm'`; an `iife`/`cjs` build fails to emit). And it
+needs `import.meta.env` to be typed — real apps get that from
+`/// <reference types="vite/client" />`, as `examples/reactivity-demo` does.
+
 **Why inference was removed.** kerf used to resolve this itself, reading
 `globalThis.process?.env?.NODE_ENV`. That was wrong in the most common case.
 Bundlers substitute the *bare* `process.env.NODE_ENV` token; they do not

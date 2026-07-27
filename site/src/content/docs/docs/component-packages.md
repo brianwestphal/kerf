@@ -204,6 +204,21 @@ JSX is already lowered to `kerfjs/jsx-runtime` calls. A consumer who already has
 working kerf app (`jsxImportSource: "kerfjs"`) can `import { Button } from 'my-kerf-buttons'`
 and use it immediately — there's no component-specific toolchain to install.
 
+### Never import `kerfjs/dev` from a package
+
+kerf's development diagnostics are installed, not inferred: an app writes
+`if (import.meta.env.DEV) await import('kerfjs/dev')` in its own entry, gated on
+its own build's dev flag (see [Dev-mode warnings](/kerf/docs/dev-warnings/)). Those
+hooks are process-global — installing them changes `defineStore`'s `get()` to
+return a read-only proxy and makes a screened URL throw rather than warn, for the
+whole application.
+
+That decision belongs to the app. A package that imports the dev entry forces the
+diagnostics on every consumer, including in production, where it also drags
+~4.7 KB min+gzip into a bundle the consumer thought was dev-free. Keep the import
+out of `src/` entirely — put it in your own demo page or test harness, which is
+where you want the diagnostics while developing the package anyway.
+
 ## 13.5 Publishing
 
 The repo publishes `kerfjs`, `eslint-plugin-kerfjs`, and `create-kerf-component`
@@ -223,3 +238,4 @@ requirement — all three publish unscoped.
 - [ ] Events go through `delegate()` at the host root, or a companion `wire(root)` that returns a disposer.
 - [ ] Library-owned subtrees use `data-morph-skip` plus a create/dispose pair.
 - [ ] Build emits ESM + `.d.ts`; `tsconfig` sets `jsxImportSource: "kerfjs"`.
+- [ ] `src/` never imports `kerfjs/dev` — installing the diagnostics is the consuming app's call; keep it in your demo/test harness.

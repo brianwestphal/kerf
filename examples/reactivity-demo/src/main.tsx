@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 import { mountArraySignalSection } from './sections/arraySignalSection.js';
 import { mountCart } from './sections/cartSection.js';
 import { mountCounter } from './sections/counterSection.js';
@@ -7,6 +8,11 @@ import { mountKeyedList } from './sections/keyedListSection.js';
 import { mountMorphSkip } from './sections/morphSkipSection.js';
 import { mountSvgRender } from './sections/svgSection.js';
 import { mountTier2Capture } from './sections/tier2CaptureSection.js';
+
+// Dev diagnostics: kerf never infers dev mode, so the app installs them behind
+// its own build's dev flag. `vite build` folds `import.meta.env.DEV` to `false`,
+// so neither this statement nor the chunk it would load ships to /kerf/demo/.
+if (import.meta.env.DEV) await import('kerfjs/dev');
 
 document.addEventListener('DOMContentLoaded', () => {
   mountCounter(document.getElementById('section-counter')!);

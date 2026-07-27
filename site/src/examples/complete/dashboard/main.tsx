@@ -1,5 +1,10 @@
 import { signal, computed, batch, effect, mount, each } from 'kerfjs';
 
+// Dev diagnostics: kerf never infers dev mode, so the app installs them behind
+// its own build's dev flag. Vite folds this to `false` when it builds for
+// production, so neither the import nor the chunk it loads ships.
+if (import.meta.env.DEV) await import('kerfjs/dev');
+
 interface Ticker { id: string; symbol: string; price: number; prev: number; volume: number }
 
 const ROW_COUNT = 500;

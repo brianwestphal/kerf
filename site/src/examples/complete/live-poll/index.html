@@ -9,12 +9,19 @@
       below resolves kerfjs to plain static files (copied next to this page by
       the site build — see site/scripts/lib/copy-no-build-app.mjs). There is no
       bundler and no transform; view-source shows exactly what runs.
+
+      `kerfjs/dev` is mapped but never imported: an importmap entry costs
+      nothing until something requests it, and this served page is the
+      PRODUCTION one. With no bundler there is no dev flag to fold away, so in
+      the no-build path the import statement itself is the switch — main.js
+      shows where to add it while developing.
     -->
     <script type="importmap">
       {
         "imports": {
           "kerfjs": "./vendor/kerfjs/index.js",
           "kerfjs/html": "./vendor/kerfjs/html.js",
+          "kerfjs/dev": "./vendor/kerfjs/dev.js",
           "@preact/signals-core": "./vendor/signals-core.mjs"
         }
       }

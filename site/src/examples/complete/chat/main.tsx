@@ -1,5 +1,10 @@
 import { signal, mount, each, delegate, effect, attr, type AttrSpec } from 'kerfjs';
 
+// Dev diagnostics: kerf never infers dev mode, so the app installs them behind
+// its own build's dev flag. Vite folds this to `false` when it builds for
+// production, so neither the import nor the chunk it loads ships.
+if (import.meta.env.DEV) await import('kerfjs/dev');
+
 const ACTIONS = { copy: attr('data-action', 'copy') } as const satisfies Record<string, AttrSpec<'data-action'>>;
 const ITEM = { id: attr('data-id') } as const;
 

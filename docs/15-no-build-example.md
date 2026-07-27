@@ -32,6 +32,12 @@ Consequences of "copied, not compiled":
 - The doc/source import-drift check (`scripts/check-docs-examples.mjs` check 3) pairs docs with `main.tsx` and therefore skips this app.
 - The vendored `dist/` tracks whatever `npm run build` last produced — the copy helper fails loudly if `dist/` is missing.
 
+### Dev diagnostics in the no-build path
+
+The served page is the **production** app, and that is the teaching point. Everywhere else, kerf's diagnostics install behind the app's own build flag (`if (import.meta.env.DEV) await import('kerfjs/dev')`, doc 11 §11.3.6) and the bundler folds the branch away for the shipped build. With no build step there is no flag to fold, so the import statement itself is the switch: add `await import('kerfjs/dev')` while developing, delete it to ship.
+
+`index.html`'s importmap therefore carries a `kerfjs/dev` entry that nothing imports. That costs nothing — an importmap entry is a resolution rule, not a fetch — and it means a reader can uncomment one line in `main.js` and have working diagnostics, rather than having to first discover that the vendor copy needs another file. The copy helper already vendors the whole `dist/` (including `dev.js` and the chunks it imports), so no change to the copy contract was needed.
+
 ## 15.3 Testing and capture
 
 - **Browser smoke spec** — `tests/browser/example-apps.spec.ts` › `live-poll`: loads the copied app through the importmap (a broken vendor copy or map fails the first assertion), votes, asserts bound counts / total / bar style, asserts the renders badge stays `1`, and asserts Reset zeroes everything without a re-render. Runs on Chromium, Firefox, and WebKit.
@@ -40,4 +46,4 @@ Consequences of "copied, not compiled":
 ## 15.4 Boundaries
 
 - One no-build app is enough; the other complete apps stay Vite-built `.tsx` on purpose (they demonstrate the with-a-bundler path most consumers use).
-- The importmap pins nothing kerf doesn't control: it maps only `kerfjs`, `kerfjs/html`, and `@preact/signals-core` to files the build copies. No CDN dependency — the site serves everything it references.
+- The importmap pins nothing kerf doesn't control: it maps only `kerfjs`, `kerfjs/html`, `kerfjs/dev`, and `@preact/signals-core` to files the build copies. No CDN dependency — the site serves everything it references.

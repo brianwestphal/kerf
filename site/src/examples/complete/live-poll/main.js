@@ -11,6 +11,17 @@
 import { batch, computed, delegate, each, mount, signal } from 'kerfjs';
 import { html } from 'kerfjs/html';
 
+// No dev diagnostics here, on purpose: what is served IS the production app.
+// The bundled examples write `if (import.meta.env.DEV) await import('kerfjs/dev')`
+// and let the bundler fold the branch away; with no build step there is no flag
+// to fold, so here the import statement itself is the switch. Add
+//
+//   await import('kerfjs/dev');
+//
+// below while you develop — index.html's importmap already resolves it to the
+// vendored ./vendor/kerfjs/dev.js — and delete the line to ship. Put it above
+// the signals below if you want the untracked-signal warning to see them.
+
 const OPTIONS = [
   { id: 'tabs', label: 'Tabs' },
   { id: 'spaces', label: 'Spaces' },

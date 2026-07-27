@@ -1,0 +1,41 @@
+KF-432 — proof that `if (import.meta.env.DEV) await import('kerfjs/dev')` is safe
+in the example apps' build path (Vite 7 + esbuild, format esm).
+
+1. Production build (what the site and the Playwright suite actually serve)
+   $ node tests/dist/example-apps/build.mjs
+   [example-apps] built 9 apps → tests/dist/example-apps/
+
+   $ ls tests/dist/example-apps/todomvc/assets
+   index-fsNE8lKa.js                     # one chunk, no dev-*.js emitted
+
+   $ grep -c "await import" tests/dist/example-apps/todomvc/assets/*.js
+   0
+   $ grep -o "KERF_DEV_WARN\|installDevHooks\|devHooks" .../assets/*.js | wc -l
+   0
+
+   The branch folds away completely: no statement, no chunk, no dev strings.
+
+2. Same build with the branch FORCED to survive (define import.meta.env.DEV=true)
+   $ ls assets/
+   chunk-YHH7OUFA-B8Uc03oJ.js
+   dev-D0FIp_4n.js                       # 24692 bytes unminified
+   index-DvS6pI7K.js
+
+   $ grep -no 'await __vitePreload' assets/index-*.js
+   2119:await __vitePreload                # TOP-LEVEL await preserved
+   $ grep -c KERF_DEV_WARN_REBUILT_LISTENERS assets/dev-D0FIp_4n.js
+   2
+
+   So the bundler accepts top-level await in the entry (the ticket's stated
+   risk), resolves the `kerfjs/dev` subpath through the file: link, and emits
+   the dev code as its own chunk — exactly the intended dev/prod split.
+
+3. examples/reactivity-demo (its own Vite project, separate config)
+   $ npm run build
+   dist/assets/index-CQCucX_Q.js   64.68 kB │ gzip: 21.18 kB
+   $ grep -c "await import\|KERF_DEV_WARN" dist/assets/*.js
+   0
+
+4. Real browsers
+   $ npm run test:browser
+   192 passed (26.1s)     # chromium + firefox + webkit, incl. example-apps.spec.ts

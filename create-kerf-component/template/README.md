@@ -44,6 +44,11 @@ have to:
   string-builders; emit `data-action` hooks and let the host wire events with
   `delegate()` (see `wireCounter`), which returns a disposer.
 - **Build emits ESM + `.d.ts`; `tsconfig` sets `jsxImportSource: "kerfjs"`.**
+- **Never import `kerfjs/dev`.** kerf's dev diagnostics install global hooks, so
+  installing them is the consuming *app's* call, not a library's — the app
+  writes `if (import.meta.env.DEV) await import('kerfjs/dev')` in its own entry.
+  To get the diagnostics while developing this package, add that line to your own
+  test harness or demo page instead (it belongs to the harness, not to `src/`).
 
 ## Publish
 

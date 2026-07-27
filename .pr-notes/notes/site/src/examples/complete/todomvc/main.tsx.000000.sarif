@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "Hot Sheet",
+          "rules": [
+            {
+              "id": "review-note",
+              "name": "ReviewNote",
+              "shortDescription": {
+                "text": "AI-authored, line-anchored review note."
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "review-note",
+          "ruleIndex": 0,
+          "kind": "informational",
+          "level": "none",
+          "guid": "ms2x34kwm6yvtf0b",
+          "message": {
+            "text": "Verified both halves of the claim this line makes: the branch disappears from the production bundle, and the bundler accepts the top-level await it introduces.\n\nThe ticket flagged TLA as the risk — esbuild supports it for format: 'esm' but not iife/cjs. Vite emits ESM here, and forcing the branch to survive (define: {'import.meta.env.DEV': 'true'}) produced a separate dev-*.js chunk plus a top-level await __vitePreload(...) in the entry, so the path works rather than merely being elided. With the real DEV value the production output has no await import, no dev chunk, and no dev-only strings at all.\n\nThe same check passes for examples/reactivity-demo, which is a separate Vite project. Attached artifact has the commands and output; npm run test:browser is green on all three engines.\n",
+            "markdown": "Verified both halves of the claim this line makes: the branch disappears from the production bundle, and the bundler accepts the top-level `await` it introduces.\n\nThe ticket flagged TLA as the risk — esbuild supports it for `format: 'esm'` but not `iife`/`cjs`. Vite emits ESM here, and forcing the branch to survive (`define: {'import.meta.env.DEV': 'true'}`) produced a separate `dev-*.js` chunk plus a top-level `await __vitePreload(...)` in the entry, so the path works rather than merely being elided. With the real `DEV` value the production output has no `await import`, no dev chunk, and no dev-only strings at all.\n\nThe same check passes for `examples/reactivity-demo`, which is a separate Vite project. Attached artifact has the commands and output; `npm run test:browser` is green on all three engines.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "site/src/examples/complete/todomvc/main.tsx"
+                },
+                "region": {
+                  "startLine": 3,
+                  "endLine": 15,
+                  "snippet": {
+                    "text": "// Dev diagnostics. kerf does not infer development mode — the app installs the\n// diagnostics behind its own build's dev flag, and `vite build` folds\n// `import.meta.env.DEV` to `false`, so neither this statement nor the ~4.7 KB\n// chunk it would load reaches production.\n//\n// Installing turns on kerf's always-on dev behavior: the missing-`data-key` and\n// list-identity warnings, a read-only store snapshot from `get()`, and a\n// screened `javascript:` URL that throws instead of warning. The per-warning\n// `KERF_DEV_WARN_*` family (docs/11-dev-warnings.md) is a second, separate\n// switch on top of that.\n//\n// It sits directly under the imports on purpose: the untracked-signals warning\n// chooses its machinery when a signal is CREATED, so any signal created before"
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "tags": [
+              "test-evidence"
+            ]
+          },
+          "workItemUris": [
+            "KF-432"
+          ],
+          "partialFingerprints": {
+            "prNoteAnchor/v1": "5b41ad64f05c1ce45bce2d6eb3a6e6b2"
+          },
+          "attachments": [
+            {
+              "artifactLocation": {
+                "uri": ".pr-notes/artifacts/kf432-dev-import-fold.txt",
+                "properties": {
+                  "ext-sha256": "f9c6e6946ca15b5962de573b26e855fec66c677661d2bd7cf3a04f683c5cbb63"
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "versionControlProvenance": [
+        {
+          "repositoryUri": "git@github.com:brianwestphal/kerf.git",
+          "revisionId": "f9d6c328ea89c9e8072dd8ebba142719b8e68056",
+          "branch": "main"
+        }
+      ]
+    }
+  ]
+}

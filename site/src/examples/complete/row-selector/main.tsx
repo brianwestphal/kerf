@@ -16,6 +16,11 @@
 
 import { attr, computed, delegate, mount, signal, type AttrSpec } from 'kerfjs';
 
+// Dev diagnostics: kerf never infers dev mode, so the app installs them behind
+// its own build's dev flag. Vite folds this to `false` when it builds for
+// production, so neither the import nor the chunk it loads ships.
+if (import.meta.env.DEV) await import('kerfjs/dev');
+
 interface Host {
   id: string;
   name: string;

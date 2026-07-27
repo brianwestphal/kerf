@@ -2,6 +2,11 @@ import { signal, computed, mount, raw, delegate } from 'kerfjs';
 import { marked } from 'marked';
 import DOMPurify from 'dompurify';
 
+// Dev diagnostics: kerf never infers dev mode, so the app installs them behind
+// its own build's dev flag. Vite folds this to `false` when it builds for
+// production, so neither the import nor the chunk it loads ships.
+if (import.meta.env.DEV) await import('kerfjs/dev');
+
 const SAMPLE = `# Type fast. The cursor stays put.
 
 This is the live preview on the right. The editor on the left is a

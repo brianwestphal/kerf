@@ -1,5 +1,22 @@
 import { defineStore, mount, each, delegate, delegateCapture, effect, attr, type AttrSpec } from 'kerfjs';
 
+// Dev diagnostics. kerf does not infer development mode — the app installs the
+// diagnostics behind its own build's dev flag, and `vite build` folds
+// `import.meta.env.DEV` to `false`, so neither this statement nor the ~4.7 KB
+// chunk it would load reaches production.
+//
+// Installing turns on kerf's always-on dev behavior: the missing-`data-key` and
+// list-identity warnings, a read-only store snapshot from `get()`, and a
+// screened `javascript:` URL that throws instead of warning. The per-warning
+// `KERF_DEV_WARN_*` family (docs/11-dev-warnings.md) is a second, separate
+// switch on top of that.
+//
+// It sits directly under the imports on purpose: the untracked-signals warning
+// chooses its machinery when a signal is CREATED, so any signal created before
+// this line — in this file or in a statically-imported module — is outside what
+// it can see.
+if (import.meta.env.DEV) await import('kerfjs/dev');
+
 const ACTIONS = {
   toggle:    attr('data-action', 'toggle'),
   remove:    attr('data-action', 'remove'),
