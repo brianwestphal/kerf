@@ -6,55 +6,31 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
-### Breaking changes
+## [4.0.0] - 2026-07-28
 
-- **`draggable`, `spellCheck`, and `contentEditable` no longer accept a boolean — write the keyword string instead.** These three are *enumerated* attributes in HTML, not boolean ones: they take the literal strings `"true"` / `"false"`, and omitting them selects a third state. Rendering them the boolean way produced markup that meant something other than what was written, in both directions:
 
-  | Was written | Rendered | Element actually ended up |
-  | --- | --- | --- |
-  | `draggable={true}` | `<div draggable>` | **not draggable** — the empty value is invalid, so `auto`, and `auto` for a `<div>` is off |
-  | `draggable={false}` | *nothing* | `auto` again — which for `<img>` / `<a href>` means **draggable** |
-  | `spellCheck={false}` | *nothing* | spellchecking **still on** — omission means "inherit", not "off" |
-  | `contentEditable={false}` | *nothing* | inside an editable region, **still editable** |
 
-  ```diff
-  - <div draggable={true} />
-  + <div draggable="true" />
-  - <textarea spellCheck={false} />
-  + <textarea spellCheck="false" />
-  ```
+- `draggable`, `spellCheck`, and `contentEditable` no longer accept booleans — they are enumerated HTML attributes, so write the keyword string (`draggable="true"`, `spellCheck="false"`). The boolean forms rendered markup that meant the opposite of what was written; real boolean attributes like `hidden`/`checked`/`disabled` are unchanged.
+- `<select value>` / `<textarea value>` (and their `defaultValue` forms) no longer typecheck — neither element has a `value` content attribute, so kerf was emitting markup no browser reads. Use `<option selected>` and `<textarea>{draft}</textarea>`.
+- Lowercase `autofocus` no longer accepts `"true"` / `"false"` — it is a real boolean attribute, so `autofocus="false"` turned autofocus *on*. Use `autofocus={false}` or omit it.
 
-  Omit the attribute to get the default state. Real boolean attributes — `hidden`, `checked`, `disabled`, `autofocus`, `required`, … — are unchanged. The runtime is unchanged too: this is a type-level fix, because translating `{true}` → `="true"` would require the renderer to carry a list of every enumerated attribute in HTML, and any attribute missing from that list would silently reproduce the same bug. One case types can't reach: a signal-valued attribute is opaque, so use `signal('true')` rather than `signal(true)`. Verified against Chromium, Firefox, and WebKit.
 
-- **`<select value>` / `<textarea value>` (and their `defaultValue` forms) no longer typecheck.** Neither element has a `value` content attribute, so kerf was rendering inert markup no browser reads — a select kept showing its first option and a textarea rendered empty. Use `<option value="b" selected>` and `<textarea>{draft}</textarea>`.
+- `href="javascript:void(0)"` and its five sibling spellings are no longer dropped by the URL screen. Dropping the `href` unmade the anchor — it lost `:link` styling, keyboard focus, and its pointer cursor. Matching is against the whole normalized value, so nothing can ride along after an inert body.
+- `defaultSelected` rendered as `defaultselected`, an attribute no browser reads, so the option it named was never pre-selected. It now correctly emits `selected`.
 
-- **`autofocus` (the lowercase spelling) no longer accepts `"true"` / `"false"`.** It is a real boolean attribute, so `autofocus="false"` is *present* and therefore **on** — the spelling that reads like "off" turned autofocus on. Use `autofocus={false}` or omit it.
 
-- **`<button command>` is narrowed to the spec keywords plus custom `--*` commands.** It was a plain string; it now accepts `show-modal` / `close` / `request-close` (dialog targets), `toggle-popover` / `show-popover` / `hide-popover` (popover targets), and any `` `--${string}` `` custom command, which is the form the spec requires for those. This catches the real typo — a custom command missing its `--` prefix — at the cost of a known tradeoff: the Invoker Commands keyword set is still being extended, so a keyword can ship in browsers before it is listed here. If you hit that, the compile error is kerf being out of date rather than your markup being wrong; please file an issue, and use the custom `--*` form or a one-site assertion until the union catches up.
+- Typed JSX gained a wide set of modern attributes: globals `inert`, `popover`, `nonce`, `part`/`exportparts`, `enterKeyHint`, `translate`, `autocorrect`, and the full microdata family; per-element `<button popoverTarget/popoverTargetAction/command>`, `<input popoverTarget/popoverTargetAction>`, `<form rel>`, `<source width/height>`, and `writingsuggestions`.
+- `<button command>` is now typed to the spec keywords (`show-modal`, `close`, `request-close`, `toggle-popover`, `show-popover`, `hide-popover`) plus any `--custom` command, catching a custom command written without its required `--` prefix.
+- `<a download>` and `<area download>` accept the bare boolean form as well as a string filename, so `<a href="/report.pdf" download>` compiles.
 
-- **`<style scoped>` no longer typecheck**s. The scoped-stylesheet proposal was removed from the HTML standard and never shipped in any engine. `<style blocking="render">` is now typed in its place.
 
-### Added
+- The advertised bundle size is corrected everywhere: ~12 KB min+gzip for a realistic import, ~13 KB with `arraySignal` (previously stated as ~11/~12 KB, and ~6.1 KB in the Cursor rules). Every migration page's delta row was recomputed against the new figure.
+- The JSX runtime doc gained a section on enumerated vs. boolean attributes, and the API reference now records where the JSX types come from (WHATWG HTML Living Standard + SVG 2, not another framework's property table).
+- The dev-warning sections in the dev-warnings doc were renumbered by family so the `11.2.N` headings run in document order; cross-references elsewhere in the docs were updated to match.
 
-- **The modern global attributes are now typed**: `inert`, `popover`, `nonce` (global now — previously only `<script>` had it), `part` / `exportparts`, `enterKeyHint`, `translate`, `autocorrect`, and the microdata set (`itemScope` / `itemProp` / `itemType` / `itemId` / `itemRef`). Two of them are enumerated, not boolean — write `translate="no"` (keywords `yes` / `no`) and `autocorrect="off"` (keywords `on` / `off`); the boolean forms are rejected because omitting either attribute means *inherit*, not off — the same trap as `spellcheck`. `popover` keeps its boolean forms alongside the `auto` / `hint` / `manual` keywords, because the bare attribute's empty value is a spec keyword for the `auto` state (`<div popover>` is the canonical spelling) and omission means "not a popover" — both directions land where they read.
-- **Per-element gaps filled**: `<button popoverTarget / popoverTargetAction / command / commandFor>` (popover invokers + Invoker Commands), `<input dirName>` and `<textarea dirName>`, `<img isMap>`, `<link disabled / imageSrcSet / imageSizes / blocking>`, `<script blocking / fetchPriority>`, `<area download / ping / referrerPolicy>` (already typed on `<a>`), and `<meta media / property>` — `property` is Open Graph vocabulary, not in the HTML standard, typed because every social-preview `<head>` carries it.
-- **A second round of standards-audit additions**: the popover invokers `popoverTarget` / `popoverTargetAction` are now typed on `<input>` too (the standard allows them on button-state inputs, not just `<button>`); the global `writingsuggestions` is typed as the enumerated attribute it is (keywords `"true"` / `"false"`, boolean rejected — omission means *inherit the default*, not off, the same trap as `spellcheck`); `<form rel>` (the `noopener` / `noreferrer` pairing a `target="_blank"` form warrants); and `<source width / height>` (valid inside `<picture>` so layout is stable before the browser picks a candidate). Evaluated and deliberately left out: the declarative-shadow-DOM `<template shadowrootmode>` family (kerf's `innerHTML`-based pipeline never instantiates declarative shadow roots, so the typed form would be blessed-but-inert markup), `<video disablepictureinpicture / disableremoteplayback>` and `<iframe credentialless>` (outside the HTML Living Standard / engine-specific), and `<iframe allowpaymentrequest>` (removed from the standard). `<button command>` stays a plain string — the Invoker Commands keyword set is still growing upstream.
 
-### Fixed
-
-- **`<a download>` / `<area download>` now accept the bare form.** `<a href="/report.pdf" download>` — download the resource and let the server name the file — is valid HTML and the commoner spelling, but the type was string-only, so it didn't compile and authors had to write `download=""`. Both elements now take `boolean | string`: bare downloads with the default filename, a string overrides the filename, and `{false}` omits the attribute for ordinary navigation. This is a third attribute shape — presence-or-value, which `capture` on `<input type="file">` already had — now described in `src/jsx-types.ts`'s header alongside the boolean and enumerated ones.
-
-- **The dangerous-URL screen no longer drops `href="javascript:void(0)"`.** The placeholder-link idiom — `javascript:void(0)`, `javascript:void(0);`, `javascript:void 0`, `javascript:;`, and a bare `javascript:` — is a no-op, not an attack, and screening it had a bad failure mode: the `href` was dropped, so the anchor stopped being a link (no keyboard focus, no `:link` styling, no pointer cursor), and in production the whole failure was a `console.warn`.
-
-  The carve-out is exact — the match is against the entire normalized value, so `javascript:void(0)` passes and `javascript:void(0);alert(1)` does not. Everything else the screen blocked, it still blocks. The narrowness matters for a second reason: the previous workaround was `raw('javascript:void(0)')`, which teaches the general-purpose escape hatch as the answer to a benign case, and an author who has learned `raw()` for one `href` will reach for it on the next one.
-
-- **`<option defaultSelected>` rendered `defaultselected`** — an attribute no browser has ever read — so the option it named was never pre-selected. It now aliases to `selected`, matching `defaultValue` → `value` and `defaultChecked` → `checked`.
-
-### Changed
-
-- `hidden` now also accepts `"until-found"` (hidden, but revealed by find-in-page and fragment navigation). The boolean form is unchanged and still correct.
-- `cellPadding` / `cellSpacing` are marked `@deprecated` — obsolete presentational attributes, kept typed so legacy markup still compiles.
-- The JSX intrinsic-element types now document their provenance: names, value sets, and per-element membership come from the WHATWG HTML Living Standard and SVG 2 rather than another framework's table, and every deliberate departure from the spec is enumerated with its reason in `src/jsx-types.ts`'s header.
+- The bundle-size check now gates the *prose* as well as the build: every place the docs advertise a size is matched against the measured figure, and a reworded claim that stops matching fails rather than going silently unchecked.
+- New repo checks wired into `npm run check`: `check:docs:dev-warns` (the dev-warning doc and `ENV_NAME` must name the same set, with monotonic section numbers), `check:design-rule-5` (every top-level `let` in `src/` must be accounted for by the documented rule), and `check:skills` (a skill file restating a threshold its owner disagrees with fails).
 
 ## [3.0.0] - 2026-07-27
 
