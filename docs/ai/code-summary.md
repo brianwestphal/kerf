@@ -290,7 +290,7 @@ The JSX runtime is a separate subpath export at `kerfjs/jsx-runtime`. It's refer
 
 Outputs:
 
-- `dist/index.js` (ESM bundle, ~11 KB min+gz including `@preact/signals-core`; ~12 KB if a consumer also imports `arraySignal` from `kerfjs/array-signal`. See `bench/results.md` for the per-shape numbers.)
+- `dist/index.js` (ESM bundle, ~12 KB min+gz including `@preact/signals-core`; ~13 KB if a consumer also imports `arraySignal` from `kerfjs/array-signal`. See `bench/results.md` for the per-shape numbers.)
 - `dist/index.d.ts` (types)
 - `dist/jsx-runtime.js`
 - `dist/jsx-runtime.d.ts`

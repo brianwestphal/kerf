@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-kerf is a tiny reactive UI framework: fine-grained signals + a custom DOM diff specialized for keyed lists + a tiny JSX runtime. The whole runtime is roughly 11 KB minified + gzipped without `arraySignal`, 12 KB with it, including its sole runtime dependency (`@preact/signals-core`).
+kerf is a tiny reactive UI framework: fine-grained signals + a custom DOM diff specialized for keyed lists + a tiny JSX runtime. The whole runtime is roughly 12 KB minified + gzipped without `arraySignal`, 13 KB with it, including its sole runtime dependency (`@preact/signals-core`).
 
 The name *kerf* is a woodworking term — the narrow strip a saw blade removes. The framework's job is the same: apply the smallest possible cut to update your DOM.
 

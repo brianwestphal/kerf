@@ -15,7 +15,7 @@
 > Introducing Kerf.
 > The smallest cut.
 >
-> ~11 KB. No virtual DOM. No compiler. No magic.
+> ~12 KB. No virtual DOM. No compiler. No magic.
 > Reactive UI that touches only the bytes that changed.
 
 ```ts
@@ -39,7 +39,7 @@ Here's the whole development loop — write a component, run the dev server, cli
 
 ## Why Kerf
 
-1. **Small bundle.** ~11 KB minified + gzipped including `@preact/signals-core` (~12 KB with `arraySignal`). One runtime dependency. No virtual DOM, no scheduler, no concurrent-mode machinery. On the official [krausest js-framework-benchmark](https://krausest.github.io/js-framework-benchmark/current.html) — where kerf is a listed entry, measured on the same reference machine as every competitor ([local mirror](./bench/results.md)) — kerf is in the same cluster as Vue, vanjs, and Lit on most operations; Solid's compiler leads the update-path benchmarks (notably `partial update`), which kerf doesn't try to match by design — no compiler.
+1. **Small bundle.** ~12 KB minified + gzipped including `@preact/signals-core` (~13 KB with `arraySignal`). One runtime dependency. No virtual DOM, no scheduler, no concurrent-mode machinery. On the official [krausest js-framework-benchmark](https://krausest.github.io/js-framework-benchmark/current.html) — where kerf is a listed entry, measured on the same reference machine as every competitor ([local mirror](./bench/results.md)) — kerf is in the same cluster as Vue, vanjs, and Lit on most operations; Solid's compiler leads the update-path benchmarks (notably `partial update`), which kerf doesn't try to match by design — no compiler.
 
 2. **No virtual DOM, no compiler.** JSX → HTML strings → native diff. DevTools shows the real DOM because it *is* the DOM.
 
@@ -49,11 +49,13 @@ Here's the whole development loop — write a component, run the dev server, cli
 
 5. **Safe by default.** Text and attribute values are HTML-escaped automatically, URL attributes are scheme-screened (`javascript:` / script-carrying `data:` dropped), inline `on*` handlers are rejected outright, and the same screening covers the fine-grained bound path — so untrusted data stays inert even when kerf is dropped into someone else's page. The URL screen fails loudly at your desk (throws in development) and degrades safely in the field (warns and drops in production). `raw()` is the explicit, auditable opt-out.
 
-6. **Small public API.** ~17 exports from the main barrel (plus `arraySignal` and the `html` tagged template on their own subpaths). No hooks, no lifecycle, no per-instance state. Components are plain functions that return JSX.
+6. **JSX typed against HTML, not against React.** Tags and attributes are checked at compile time — `<diiv>` and `<input typo />` don't build. The attribute types are derived from the HTML standard rather than another framework's property table, and that distinction has teeth: `draggable` and `spellcheck` are *enumerated* attributes that take the strings `"true"` / `"false"`, so kerf rejects `draggable={true}` rather than quietly emitting markup that means the opposite. Custom elements and web components slot in with one declaration merge.
 
-7. **Plain TS, plain JSX, plain ESM.** Drops into anything using esbuild / Vite / tsup. No plugin chain. And with the `html` tagged template (`import { html } from 'kerfjs/html'` — identical runtime semantics to JSX), a CDN / importmap project needs no build step at all.
+7. **Small public API.** ~17 exports from the main barrel (plus `arraySignal` and the `html` tagged template on their own subpaths). No hooks, no lifecycle, no per-instance state. Components are plain functions that return JSX.
 
-8. **Grown-up tooling around a tiny core.** An [ESLint plugin](https://brianwestphal.github.io/kerf/docs/eslint-plugin/) that enforces the hard rules at edit time, an opt-in family of `KERF_DEV_WARN_*` runtime warnings that catch the classic mistakes in development (with zero production cost), a `create-kerf-component` scaffold for publishable component packages, drop-in AI-assistant configs, and side-by-side migration guides for a dozen-plus frameworks — none of which grows the core runtime past ~11 KB.
+8. **Plain TS, plain JSX, plain ESM.** Drops into anything using esbuild / Vite / tsup. No plugin chain. And with the `html` tagged template (`import { html } from 'kerfjs/html'` — identical runtime semantics to JSX), a CDN / importmap project needs no build step at all.
+
+9. **Grown-up tooling around a tiny core.** An [ESLint plugin](https://brianwestphal.github.io/kerf/docs/eslint-plugin/) that enforces the hard rules at edit time, an opt-in family of `KERF_DEV_WARN_*` runtime warnings that catch the classic mistakes in development (with zero production cost), a `create-kerf-component` scaffold for publishable component packages, drop-in AI-assistant configs, and side-by-side migration guides for a dozen-plus frameworks — none of which grows the core runtime past ~12 KB.
 
 ## When to use Kerf
 
@@ -75,7 +77,7 @@ Here's the whole development loop — write a component, run the dev server, cli
 ## Quick tour
 
 ```ts
-import { signal, computed, effect, defineStore, mount, each, delegate } from 'kerfjs';
+import { signal, computed, defineStore, mount, each, delegate } from 'kerfjs';
 
 // 1. A signal — single piece of reactive state.
 const count = signal(0);

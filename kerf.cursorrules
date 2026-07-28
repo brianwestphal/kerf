@@ -5,7 +5,7 @@
 # up automatically) when you're using kerf (https://github.com/brianwestphal/kerf).
 # These rules condense `docs/ai/usage-guide.md` into the form Cursor parses.
 
-You are writing a UI in kerf — a ~6.1 KB reactive framework (6.5 KB with `arraySignal`): signals + DOM morphing + JSX → HTML strings. No virtual DOM, no compiler, no scheduler.
+You are writing a UI in kerf — a ~12 KB reactive framework (~13 KB with `arraySignal`): signals + DOM morphing + JSX → HTML strings. No virtual DOM, no compiler, no scheduler.
 
 ## Setup
 

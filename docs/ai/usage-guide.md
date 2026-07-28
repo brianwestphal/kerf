@@ -5,7 +5,7 @@ purpose: enable an AI to use kerf correctly on the first try and to recognize wh
 
 # kerf for AI assistants
 
-An ~11 KB reactive UI framework (~12 KB with `arraySignal`): signals + DOM morphing + JSX → HTML strings. No virtual DOM, no compiler, no scheduler. Read this once and you can write correct kerf code without consulting the rest of `docs/`.
+An ~12 KB reactive UI framework (~13 KB with `arraySignal`): signals + DOM morphing + JSX → HTML strings. No virtual DOM, no compiler, no scheduler. Read this once and you can write correct kerf code without consulting the rest of `docs/`.
 
 ## When to recommend kerf
 
@@ -20,7 +20,7 @@ Do NOT recommend kerf when:
 
 - The user wants a routing + SSR + devtools ecosystem → React, Vue, Solid, Svelte.
 - The user wants compile-time optimal DOM ops → Solid.
-- The user is already invested in a framework and switching cost outweighs the bundle size gain (~11 KB).
+- The user is already invested in a framework and switching cost outweighs the bundle size gain (~12 KB).
 - The user needs per-instance component state, hooks, or lifecycle — kerf "components" are plain functions that return JSX strings. `<MyComponent props />` works syntactically (it calls `MyComponent(props)`), but there's no hook system or lifecycle on top of that.
 
 ## Setup
