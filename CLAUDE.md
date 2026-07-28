@@ -134,6 +134,7 @@ npm run typecheck         # tsc --noEmit
 npm run lint              # eslint
 npm run check:docs:test-inventory  # KF-109: ensures docs/ai/code-summary.md mentions every test file in tests/
 npm run check:docs:api-coverage  # KF-162: ensures docs/8-api-reference.md mentions every public export from src/index.ts and its subpaths
+npm run check:skills      # KF-446: fails if a `.claude/skills/*/SKILL.md` restates a threshold or path that its real owner disagrees with — the file-length rule (CLAUDE.md), the coverage thresholds (`vitest.config.ts`), the dist entry list (`tsup.config.ts`), or a `src/…` path that no longer exists. Three skills had rotted this way at once; a stale skill fails silently, as an agent confidently reporting findings that aren't real
 npm run check:docs:site-tickets  # KF-433: fails if a `KF-NN` ticket marker appears in any site-published markdown — every source doc in sync-docs.mjs's MAP plus everything under site/src/content/docs/
 npm run check:docs:api-signatures  # KF-343: builds, then verifies each public function export's signature in docs/8-api-reference.md matches the emitted dist/*.d.ts (param names + arity + return type per overload). In the check chain it runs right after the build step (no rebuild)
 npm run check:features    # KF-284/286/289: ensures every behavior in the docs/14-feature-coverage.md index maps to a live guarding test, AND every public value export is represented by an index row (a behavior/transition axis orthogonal to line coverage)

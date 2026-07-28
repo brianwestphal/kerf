@@ -8,7 +8,7 @@ Comprehensively compare the requirements documents in `docs/` against the actual
 
 ## Steps
 
-1. **Read all requirements documents** in `docs/`. Note every stated requirement, behavior, and constraint. The numbered set is `1-overview.md` through `9-live-demo.md`. If new numbered docs have been added since this skill was written, include them too. Also read `README.md` and `llms.txt` at repo root since both enumerate the public API and link to the docs — they drift the same way.
+1. **Read all requirements documents** in `docs/`. Note every stated requirement, behavior, and constraint. Enumerate the numbered set from disk (`ls docs/[0-9]*.md`) rather than from a range written here — the set grows, and a hardcoded upper bound silently stops covering whatever was added last. It was 1–9 when this skill was written and 1–16 as of 2026-07. Also read `llms.txt` at repo root, which enumerates the public API and links to every doc, and drifts the same way. `README.md` is a narrative quick-tour, NOT an API enumeration — do not flag exports missing from it.
 
 2. **For each requirement**, verify it against the implementation:
    - Search the codebase for the relevant code (everything lives under `src/`)

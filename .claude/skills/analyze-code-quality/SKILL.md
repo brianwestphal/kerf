@@ -4,6 +4,8 @@ description: Run all available tests and linters, check for anti-patterns, and g
 allowed-tools: Read, Grep, Glob, Bash, Agent
 ---
 
+> **Thresholds and file lists live in the config files, not here.** `vitest.config.ts` owns the coverage bar, `tsup.config.ts` owns the entry list, CLAUDE.md owns the conventions. Every one of those has been out of sync with a copy in this skill at least once. Read the source of truth; treat figures below as pointers to where to look. The mechanical recipes are the durable part.
+
 Analyze the overall quality of the kerf source code. Generate a comprehensive report.
 
 ## Steps
@@ -12,7 +14,7 @@ Analyze the overall quality of the kerf source code. Generate a comprehensive re
    ```
    npm test
    ```
-   Report: total tests, pass/fail count, coverage percentage by file. CLAUDE.md mandates 100% lines/branches/functions/statements; flag any file under that bar.
+   Report: total tests, pass/fail count, coverage percentage by file. **Read the thresholds out of `vitest.config.ts`** rather than trusting a number quoted here — they are the enforcement, so anything that passes `npm test` is by definition at or above the bar. As of writing: 100% lines / functions / statements, **99% branches**. The branch allowance is deliberate and documented in CLAUDE.md — a handful of `c8 ignore` defensive returns whose loop-completion branches v8 tracks but which cannot be exercised by construction. Do NOT flag a file for sitting under the branch bar; flag only a file that drags the total below the configured threshold — which would have failed the run anyway.
 
    **Coverage is a floor, not a ceiling.** 100% line/branch coverage proves every line *executed* — not that every *behavior* or every *sequence* of behaviors is *asserted*. Line coverage is structurally blind to a missing state transition (KF-125: two critical reconciler bugs shipped under 100% coverage). Do NOT treat a green coverage report as proof of correctness — treat it as the trigger for the **behavioral / state-transition audit** in step 7 below.
 
@@ -44,7 +46,7 @@ Analyze the overall quality of the kerf source code. Generate a comprehensive re
 
    Read `CLAUDE.md`, `docs/8-api-reference.md`, and `docs/ai/usage-guide.md`. Look for violations in `src/` of documented conventions:
 
-   - **Files exceeding ~200 LOC**. CLAUDE.md says: *"the largest file in `src/` should stay under ~200 LOC."* Use `wc -l src/**/*.ts`.
+   - **File length**. Read CLAUDE.md § *Code Quality Gates* for the current rule instead of a number quoted here. As of writing it is "one coherent concern per file", with ~500 LOC a *smell* worth a second look, **not a gate** — and a large file housing one algorithm (the keyed list reconciler is named explicitly) is not a finding. Rank with `wc -l src/*.ts src/utils/*.ts | sort -rn`, then judge each large file on concern count.
    - **Missing `.js` extension on relative imports**. CLAUDE.md says: *"Import paths use `.js` extension (TypeScript convention for ESM resolution)."* Grep `src/` and `tests/` for relative imports without `.js`.
    - **Files violating one-primary-export-per-file**. CLAUDE.md design rule #4. A few legitimate exceptions exist (`delegate.ts` exports the paired `delegate` + `delegateCapture`; `escapeHtml.ts` exports paired escapers; `jsx-runtime.ts` exports the JSX-spec-required cluster `jsx`/`jsxs`/`jsxDEV`/`Fragment`). Anything else with multiple unrelated exports is a violation.
    - **`any` type leaks**. Grep `src/` for `: any\b`, `as any\b`, `<any>`. Permitted only behind a type guard (we use `unknown` and `isSafeHtml(...)` pattern).
@@ -66,9 +68,12 @@ Analyze the overall quality of the kerf source code. Generate a comprehensive re
    npm run build && ls dist/
    ```
    Verify (confirm the exact entry list against `tsup.config.ts` — it drives what ships):
-   - One each of `dist/index.js`, `dist/jsx-runtime.js`, `dist/testing.js`, `dist/array-signal.js` (the four entry points).
+   - One `dist/<name>.js` for **every** entry in `tsup.config.ts`'s `entry` array. Derive the list — do not use one written here. A hardcoded list is how this check silently stopped covering `html` and `dev`, and `dist/dev.js` missing is exactly the regression that would disable every diagnostic without failing a test:
+     ```
+     node -e "const c=require('fs').readFileSync('tsup.config.ts','utf8');const m=/entry:\s*\[([^\]]*)\]/.exec(c);console.log(m[1].match(/src\/([\w-]+)\.ts/g).map(e=>e.replace(/src\/|\.ts/g,'')).join(' '))"
+     ```
    - At least one `dist/chunk-*.js` (proof that `splitting: true` is in effect — a regression here resurrects KF-14/KF-15).
-   - A matching `.d.ts` for each entry point (`index`, `jsx-runtime`, `testing`, `array-signal`).
+   - A matching `.d.ts` for each of those same entries.
 
    `npm pack --dry-run` for the published file list (skip if it errors due to local npm cache permissions; the CI run is authoritative).
 
@@ -77,7 +82,7 @@ Analyze the overall quality of the kerf source code. Generate a comprehensive re
 Generate a structured report with:
 - **Summary**: Overall health (tests pass/fail across the three test layers, lint clean, coverage %, typecheck clean).
 - **Test Results**: pass rates for `npm test` / `npm run test:dist` / `npm run test:dist:full`.
-- **Coverage**: per-file table, highlighting any file below 100% (CLAUDE.md threshold).
+- **Coverage**: per-file table. Highlight a file only if it drags a metric under the threshold configured in `vitest.config.ts` — several files sit below 100% branches by design (the documented `c8 ignore` defensive returns) and are not findings.
 - **Lint Issues**: grouped by rule.
 - **Type Issues**: grouped by file.
 - **Anti-Pattern Violations**: specific files and lines with severity (high/medium/low) and a one-line fix suggestion each.
