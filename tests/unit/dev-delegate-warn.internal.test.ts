@@ -13,7 +13,7 @@
  * If any gate fails, the warn is silent.
  */
 
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, type MockInstance, vi } from 'vitest';
 
 import { delegate, delegateCapture } from '../../src/delegate.js';
 import { _resetWarnedForTests } from '../../src/dev-delegate-warn.js';
@@ -23,7 +23,7 @@ import { enterProductionShape, restoreDevelopmentShape } from '../helpers/dev-sh
 const env = (globalThis as { process: { env: Record<string, string | undefined> } }).process.env;
 
 let root: HTMLElement;
-let warnSpy: ReturnType<typeof vi.spyOn>;
+let warnSpy: MockInstance<typeof console.warn>;
 
 beforeEach(() => {
   env.KERF_DEV_WARN_DELEGATE_IN_EFFECT = '1';

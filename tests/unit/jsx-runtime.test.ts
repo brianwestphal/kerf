@@ -3,7 +3,7 @@
  * pipeline produces correctly-escaped, alias-translated, void-tag-aware HTML.
  */
 
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, type MockInstance, vi } from 'vitest';
 
 import { Fragment, isSafeHtml, jsx, raw, SafeHtml } from '../../src/jsx-runtime.js';
 import { enterProductionShape, restoreDevelopmentShape } from '../helpers/dev-shape.js';
@@ -204,7 +204,7 @@ describe('jsx()', () => {
 // throwing. The matching dev-throw behavior is covered by the 'throws in dev'
 // block below.
 describe('jsx — dangerous URL attribute filter (production warn+drop)', () => {
-  let warnSpy: ReturnType<typeof vi.spyOn>;
+  let warnSpy: MockInstance<typeof console.warn>;
 
   beforeEach(() => {
     enterProductionShape();

@@ -8,7 +8,7 @@
  * dist-full suite excludes it.
  */
 
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, type MockInstance, vi } from 'vitest';
 
 import { _isValueOnlyDiff, isOptedIn, maybeWarnValueOnlyRerender } from '../../src/dev-rerender-warn.js';
 import { mount, signal } from '../../src/index.js';
@@ -18,7 +18,7 @@ import { enterProductionShape, restoreDevelopmentShape } from '../helpers/dev-sh
 const env = (globalThis as { process?: { env?: Record<string, string | undefined> } })
   .process!.env!;
 
-let warn: ReturnType<typeof vi.spyOn>;
+let warn: MockInstance<typeof console.warn>;
 let disposers: Array<() => void>;
 
 beforeEach(() => {

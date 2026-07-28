@@ -12,7 +12,7 @@
  * excludes it.
  */
 
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, type MockInstance, vi } from 'vitest';
 
 import { enableWarnings } from '../../src/dev.js';
 import { maybeCheckListInvariants } from '../../src/dev-invariants.js';
@@ -23,7 +23,7 @@ import { defineStore } from '../../src/store.js';
 
 const env = (globalThis as { process: { env: Record<string, string | undefined> } }).process.env;
 
-let warnSpy: ReturnType<typeof vi.spyOn>;
+let warnSpy: MockInstance<typeof console.warn>;
 
 /** A store whose one action performs a NARROW set — warns when opted in. */
 function narrowSettingStore(): { setA: (a: number) => void } {

@@ -4,7 +4,7 @@
  * their semantics.
  */
 
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, type MockInstance, vi } from 'vitest';
 
 import { batch, computed, effect, signal } from '../../src/reactive.js';
 import { enterProductionShape, restoreDevelopmentShape } from '../helpers/dev-shape.js';
@@ -90,7 +90,7 @@ describe('dev-mode untracked-write warning (KF-176, opt-in)', () => {
   // reload required. Routes via `globalThis.process` to keep the test file
   // working under the same lint config as `src/` (no bare `process` ref).
   const env = (globalThis as { process: { env: Record<string, string | undefined> } }).process.env;
-  let warnSpy: ReturnType<typeof vi.spyOn>;
+  let warnSpy: MockInstance<typeof console.warn>;
 
   beforeEach(() => {
     env.KERF_DEV_WARN_UNTRACKED_SIGNALS = '1';

@@ -9,7 +9,7 @@
  * before asserting on the warn spy.
  */
 
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, type MockInstance, vi } from 'vitest';
 
 import { devHooks } from '../../src/dev-hooks.js';
 import { _resetWarnedForTests } from '../../src/dev-listener-warn.js';
@@ -23,7 +23,7 @@ import { enterProductionShape, restoreDevelopmentShape } from '../helpers/dev-sh
 const env = (globalThis as { process: { env: Record<string, string | undefined> } }).process.env;
 
 let root: HTMLElement;
-let warnSpy: ReturnType<typeof vi.spyOn>;
+let warnSpy: MockInstance<typeof console.warn>;
 
 beforeEach(() => {
   env.KERF_DEV_WARN_REBUILT_LISTENERS = '1';
@@ -182,7 +182,7 @@ describe('dev-listener-warn (KF-174, opt-in)', () => {
 });
 
 describe('maybeWarnMissingRowKey (KF-173 helper, branch coverage)', () => {
-  let warnSpy: ReturnType<typeof vi.spyOn>;
+  let warnSpy: MockInstance<typeof console.warn>;
 
   beforeEach(() => {
     warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});

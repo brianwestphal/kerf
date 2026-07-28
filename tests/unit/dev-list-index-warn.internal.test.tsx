@@ -11,7 +11,7 @@
  * paths through the real pipeline.
  */
 
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, type MockInstance, vi } from 'vitest';
 
 import { arraySignal } from '../../src/array-signal.js';
 import { _resetWarnedForTests, maybeWarnStaleIndex } from '../../src/dev-list-index-warn.js';
@@ -23,7 +23,7 @@ import { enterProductionShape, restoreDevelopmentShape } from '../helpers/dev-sh
 const env = (globalThis as { process: { env: Record<string, string | undefined> } }).process.env;
 
 let root: HTMLElement;
-let warnSpy: ReturnType<typeof vi.spyOn>;
+let warnSpy: MockInstance<typeof console.warn>;
 
 beforeEach(() => {
   _resetWarnedForTests();

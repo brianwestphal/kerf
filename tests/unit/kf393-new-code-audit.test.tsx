@@ -20,14 +20,14 @@
  * loudly in either direction of change and flips to the correct assertion when
  * its ticket lands.
  */
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, type MockInstance, vi } from 'vitest';
 
 import { arraySignal } from '../../src/array-signal.js';
 import { html } from '../../src/html.js';
 import { batch, each, mount, signal } from '../../src/index.js';
 
 let root: HTMLElement;
-let warnSpy: ReturnType<typeof vi.spyOn>;
+let warnSpy: MockInstance<typeof console.warn>;
 
 beforeEach(() => {
   root = document.createElement('div');

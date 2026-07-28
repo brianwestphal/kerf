@@ -16,11 +16,11 @@
  */
 
 import { Signal } from '@preact/signals-core';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, type MockInstance, vi } from 'vitest';
 
 import { _resetCoverageNoticeForTests, noteUntrackedCoverage } from '../../src/dev-signal.js';
 
-let warnSpy: ReturnType<typeof vi.spyOn>;
+let warnSpy: MockInstance<typeof console.warn>;
 
 beforeEach(() => {
   _resetCoverageNoticeForTests();

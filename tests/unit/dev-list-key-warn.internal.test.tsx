@@ -8,7 +8,7 @@
  * never triggers it, an ordinary render never triggers it, and production mode
  * is silent.
  */
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, type MockInstance, vi } from 'vitest';
 
 import { arraySignal } from '../../src/array-signal.js';
 import { each } from '../../src/each.js';
@@ -16,7 +16,7 @@ import { mount, signal } from '../../src/index.js';
 import { enterProductionShape, restoreDevelopmentShape } from '../helpers/dev-shape.js';
 
 let root: HTMLElement;
-let warnSpy: ReturnType<typeof vi.spyOn>;
+let warnSpy: MockInstance<typeof console.warn>;
 
 beforeEach(() => {
   root = document.createElement('div');

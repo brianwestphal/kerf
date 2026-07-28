@@ -10,7 +10,7 @@
  * dedup / production-mode paths and the wiring-path retention.
  */
 
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, type MockInstance, vi } from 'vitest';
 
 import { _resetWarnedForTests } from '../../src/dev-binding-warn.js';
 import { jsx } from '../../src/jsx-runtime.js';
@@ -21,7 +21,7 @@ import { enterProductionShape, restoreDevelopmentShape } from '../helpers/dev-sh
 const env = (globalThis as { process: { env: Record<string, string | undefined> } }).process.env;
 
 let root: HTMLElement;
-let warnSpy: ReturnType<typeof vi.spyOn>;
+let warnSpy: MockInstance<typeof console.warn>;
 
 beforeEach(() => {
   _resetWarnedForTests();

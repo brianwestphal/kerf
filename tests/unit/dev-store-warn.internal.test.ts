@@ -16,7 +16,7 @@
  * public dist barrel.
  */
 
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, type MockInstance, vi } from 'vitest';
 
 import { _resetWarnContext, type NarrowSetWarnContext } from '../../src/dev-store-warn.js';
 import { defineStore } from '../../src/store.js';
@@ -24,7 +24,7 @@ import { enterProductionShape, restoreDevelopmentShape } from '../helpers/dev-sh
 
 const env = (globalThis as { process: { env: Record<string, string | undefined> } }).process.env;
 
-let warnSpy: ReturnType<typeof vi.spyOn>;
+let warnSpy: MockInstance<typeof console.warn>;
 
 beforeEach(() => {
   delete env.KERF_DEV_WARN_NARROW_SET;

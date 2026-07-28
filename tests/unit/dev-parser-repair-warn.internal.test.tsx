@@ -7,7 +7,7 @@
  * its siblings. The tests below pin both halves of the claim: that the repair
  * really happens (and what it costs), and that the warning names it.
  */
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, type MockInstance, vi } from 'vitest';
 
 import { arraySignal } from '../../src/array-signal.js';
 import { _resetWarnedForTests, findParagraphRepair } from '../../src/dev-parser-repair-warn.js';
@@ -17,7 +17,7 @@ import { enterProductionShape, restoreDevelopmentShape } from '../helpers/dev-sh
 const env = (globalThis as { process: { env: Record<string, string | undefined> } }).process.env;
 
 let root: HTMLElement;
-let warn: ReturnType<typeof vi.spyOn>;
+let warn: MockInstance<typeof console.warn>;
 
 beforeEach(() => {
   document.body.innerHTML = '';
