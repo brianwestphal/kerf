@@ -427,6 +427,36 @@ describe('JSX.IntrinsicElements typing (compile-time)', () => {
     )).toContain('<source srcset="a.avif" type="image/avif" width="800" height="600">');
   });
 
+  it('KF-441: `<button command>` is narrowed to the spec keywords plus custom `--*`', () => {
+    // Every keyword the standard defines today. (`commandFor` is emitted
+    // verbatim and lowercased by the parser — proven separately in the
+    // per-element test above; here the concern is the `command` value.)
+    for (const kw of ['show-modal', 'close', 'request-close'] as const) {
+      expect(String(<button command={kw} commandFor="dlg">x</button>))
+        .toBe(`<button command="${kw}" commandFor="dlg">x</button>`);
+    }
+    for (const kw of ['toggle-popover', 'show-popover', 'hide-popover'] as const) {
+      expect(String(<button command={kw} commandFor="tip">x</button>))
+        .toBe(`<button command="${kw}" commandFor="tip">x</button>`);
+    }
+
+    // Custom commands are part of the design — the spec requires the `--`
+    // prefix, and the template-literal arm is what accepts them.
+    expect(String(<button command="--archive" commandFor="row-9">x</button>))
+      .toBe('<button command="--archive" commandFor="row-9">x</button>');
+
+    // @ts-expect-error — a custom command without the `--` prefix is invalid
+    // per the spec, and is the typo this narrowing exists to catch.
+    const bad1 = <button command="archive">x</button>;
+    // @ts-expect-error — a keyword the standard does not define. NOTE: this is
+    // also what a keyword that ships in browsers before kerf lists it looks
+    // like. The union is a snapshot of a moving target — see the attribute's
+    // JSDoc for the escape hatches and why that tradeoff was taken knowingly.
+    const bad2 = <button command="show-picker">x</button>;
+    expect(bad1.toString()).toBe('<button command="archive">x</button>');
+    expect(bad2.toString()).toBe('<button command="show-picker">x</button>');
+  });
+
   it('still allows arbitrary data-* and aria-* attributes', () => {
     const ok1 = <div data-action="add" data-id="42" />;
     const ok2 = <button aria-label="close" aria-pressed={false} />;

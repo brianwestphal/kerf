@@ -30,6 +30,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - **`autofocus` (the lowercase spelling) no longer accepts `"true"` / `"false"`.** It is a real boolean attribute, so `autofocus="false"` is *present* and therefore **on** — the spelling that reads like "off" turned autofocus on. Use `autofocus={false}` or omit it.
 
+- **`<button command>` is narrowed to the spec keywords plus custom `--*` commands.** It was a plain string; it now accepts `show-modal` / `close` / `request-close` (dialog targets), `toggle-popover` / `show-popover` / `hide-popover` (popover targets), and any `` `--${string}` `` custom command, which is the form the spec requires for those. This catches the real typo — a custom command missing its `--` prefix — at the cost of a known tradeoff: the Invoker Commands keyword set is still being extended, so a keyword can ship in browsers before it is listed here. If you hit that, the compile error is kerf being out of date rather than your markup being wrong; please file an issue, and use the custom `--*` form or a one-site assertion until the union catches up.
+
 - **`<style scoped>` no longer typecheck**s. The scoped-stylesheet proposal was removed from the HTML standard and never shipped in any engine. `<style blocking="render">` is now typed in its place.
 
 ### Added

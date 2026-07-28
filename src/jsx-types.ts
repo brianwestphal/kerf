@@ -418,12 +418,29 @@ export interface HTMLButtonAttrs extends KerfBaseAttrs {
   popoverTarget?: AttrLike;
   popoverTargetAction?: AttrLike<'toggle' | 'show' | 'hide'>;
   /**
-   * Invoker Commands: a spec keyword (`show-modal` / `close` / `request-close`
-   * for a dialog target, `toggle-popover` / `show-popover` / `hide-popover`
-   * for a popover target) or a custom `--*` command. Typed as a plain string
-   * because the spec's keyword set is still growing.
+   * Invoker Commands: a spec keyword — `show-modal` / `close` / `request-close`
+   * for a `<dialog>` target, `toggle-popover` / `show-popover` / `hide-popover`
+   * for a popover target — or a custom command, which the spec requires to
+   * start with `--`.
+   *
+   * **This union is a snapshot of a moving target.** The keyword set is still
+   * being extended (menu elements and `interestfor` are open in the HTML
+   * standard's invoker pipeline; `show-picker`, media, and fullscreen commands
+   * are staged behind them), so a keyword can ship in browsers before it is
+   * listed here. When that happens the compile error is kerf being out of
+   * date, not your markup being wrong — please file an issue so the union can
+   * be updated.
+   *
+   * Two ways through in the meantime, in preference order: use the custom
+   * `--*` form if the behavior is yours to define, or assert the value
+   * (`command={'show-picker' as never}`) at the one call site. The custom-command
+   * arm below is part of the design, not a workaround.
    */
-  command?: AttrLike;
+  command?: AttrLike<
+    | 'show-modal' | 'close' | 'request-close'
+    | 'toggle-popover' | 'show-popover' | 'hide-popover'
+    | `--${string}`
+  >;
   commandFor?: AttrLike;
 }
 
