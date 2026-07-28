@@ -126,8 +126,23 @@
  * Attributes that are *not* typed because they do nothing when rendered as
  * markup: `value` / `defaultValue` on `<select>` and `<textarea>` (neither
  * element has a `value` content attribute — a select's selection comes from
- * `<option selected>`, a textarea's value is its child text), and any `on*`
- * handler prop (rejected at runtime — use `delegate()`).
+ * `<option selected>`, a textarea's value is its child text), any `on*`
+ * handler prop (rejected at runtime — use `delegate()`), and the declarative
+ * shadow DOM attributes on `<template>` (`shadowrootmode` and its
+ * `shadowrootdelegatesfocus` / `shadowrootclonable` companions): the fragment
+ * parsing behind `innerHTML` — kerf's entire client render path — never
+ * instantiates declarative shadow roots (only the document parser and
+ * `setHTMLUnsafe` do), so through `mount()` the template would sit inert in
+ * the DOM instead of becoming a shadow root. Declaration-merge them if you
+ * emit full-document SSR strings, where the document parser does honor them.
+ *
+ * Attributes outside the Living Standard stay out even when browsers ship
+ * them: `<video disablepictureinpicture / disableremoteplayback>` live in
+ * separate W3C specs and only appear in video-player code, `<iframe
+ * credentialless>` is engine-specific (in the standard only as a COEP value,
+ * not an iframe attribute), and `<iframe allowpaymentrequest>` was removed
+ * from the standard outright. Declaration merging is the path for all of
+ * them.
  */
 
 import type { SafeHtml } from './jsx-runtime.js';
@@ -269,6 +284,14 @@ export interface KerfBaseAttrs extends DataAriaAttrs {
    * default* (on, for most editable elements), not off.
    */
   autocorrect?: AttrLike<'on' | 'off'>;
+  /**
+   * Enumerated, NOT boolean — write `writingsuggestions="false"` to turn the
+   * browser's writing suggestions off. `writingsuggestions={false}` would omit
+   * the attribute, which means *inherit the default* (on, ultimately), not
+   * off — the same trap as `spellcheck`. Keywords are `true` / `false`.
+   * All-lowercase in HTML — there is no camelCase form to alias.
+   */
+  writingsuggestions?: AttrLike<'true' | 'false'>;
   // Microdata (the itemscope family — all five, they only make sense together).
   /** A genuine HTML boolean attribute: presence declares the item. */
   itemScope?: AttrLike<boolean>;
@@ -372,6 +395,13 @@ export interface HTMLInputAttrs extends KerfBaseAttrs {
   capture?: AttrLike<boolean | 'user' | 'environment'>;
   /** Submits the field's text direction alongside its value, under this name. */
   dirName?: AttrLike;
+  /**
+   * Popover invokers apply to button-state `<input>`s (`type="button"` /
+   * `"submit"` / `"reset"` / `"image"`) exactly as they do to `<button>` —
+   * the standard lists both elements.
+   */
+  popoverTarget?: AttrLike;
+  popoverTargetAction?: AttrLike<'toggle' | 'show' | 'hide'>;
 }
 
 export interface HTMLButtonAttrs extends KerfBaseAttrs {
@@ -404,6 +434,8 @@ export interface HTMLFormAttrs extends KerfBaseAttrs {
   target?: AttrLike;
   name?: AttrLike;
   noValidate?: AttrLike<boolean>;
+  /** Link types for the form's submission navigation — `noopener` / `noreferrer` / `opener`, the pairing `target` warrants. */
+  rel?: AttrLike;
   acceptCharset?: AttrLike;
   autoComplete?: AttrLike;
   /** KF-183 — lowercase HTML form accepted alongside `autoComplete`. */
@@ -581,6 +613,9 @@ export interface HTMLSourceAttrs extends KerfBaseAttrs {
   srcSet?: AttrLike;
   sizes?: AttrLike;
   media?: AttrLike;
+  /** Valid when the parent is `<picture>`: intrinsic dimensions for the candidate image, so layout is stable before selection. */
+  width?: AttrLike<number | string>;
+  height?: AttrLike<number | string>;
 }
 
 export interface HTMLTrackAttrs extends KerfBaseAttrs {

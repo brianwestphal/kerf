@@ -75,7 +75,7 @@ For the form-state trio — `checked`, `value`, `selected` — re-renders also c
 
 #### Enumerated attributes are not boolean attributes
 
-Five attributes read like booleans and are not: **`draggable`**, **`spellcheck`**, **`contenteditable`**, **`translate`**, and **`autocorrect`**. HTML calls them *enumerated* — they take literal keyword strings (`"true"` / `"false"` for the first three, `"yes"` / `"no"` for `translate`, `"on"` / `"off"` for `autocorrect`), and leaving them off selects a third state (`auto` for `draggable`, inherit-the-default for the rest). The boolean rendering above therefore lands on the wrong state:
+Six attributes read like booleans and are not: **`draggable`**, **`spellcheck`**, **`contenteditable`**, **`writingsuggestions`**, **`translate`**, and **`autocorrect`**. HTML calls them *enumerated* — they take literal keyword strings (`"true"` / `"false"` for the first four, `"yes"` / `"no"` for `translate`, `"on"` / `"off"` for `autocorrect`), and leaving them off selects a third state (`auto` for `draggable`, inherit-the-default for the rest). The boolean rendering above therefore lands on the wrong state:
 
 | You write | Renders | Element ends up |
 | --- | --- | --- |
@@ -83,15 +83,17 @@ Five attributes read like booleans and are not: **`draggable`**, **`spellcheck`*
 | `draggable={false}` | *omitted* | `auto` again — and `auto` for `<img>` / `<a href>` is **draggable** |
 | `spellCheck={false}` | *omitted* | spellchecking **still on** — omission means "inherit", not "off" |
 | `contentEditable={false}` | *omitted* | inside an editable region, **still editable** |
+| `writingsuggestions={false}` | *omitted* | suggestions **still offered** — omission means "inherit the default" |
 | `translate={false}` | *omitted* | **still translated** — omission means "inherit", not "no" |
 | `autocorrect={false}` | *omitted* | autocorrection **still on** — omission means "inherit the default" |
 
-So the types reject `boolean` on these five. Write the keyword:
+So the types reject `boolean` on these six. Write the keyword:
 
 ```tsx
 <div draggable="true" />
 <textarea spellCheck="false" />
 <span contentEditable="false" />
+<textarea writingsuggestions="false" />
 <code translate="no" />
 <input autocorrect="off" />
 ```

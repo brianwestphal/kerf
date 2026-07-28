@@ -372,6 +372,61 @@ describe('JSX.IntrinsicElements typing (compile-time)', () => {
     expect(String(<input type="file" capture="user" />)).toBe('<input type="file" capture="user">');
   });
 
+  it('KF-440: `writingsuggestions` is enumerated — boolean rejected, keywords accepted', () => {
+    // Same family as `spellcheck` (KF-436): keywords are the STRINGS
+    // "true" / "false", and the missing-value default is a third state
+    // (inherit the default — on, ultimately). The `{true}` direction happens
+    // to land on the true state (the empty value defaults to true, like
+    // spellcheck), but `{false}` omits the attribute, which means inherit,
+    // not off — so boolean is rejected in both directions per the rule.
+
+    // @ts-expect-error — `writingsuggestions={false}` omits the attribute,
+    // which means *inherit the default*, not off; the opt-out never happens.
+    const bad1 = <textarea writingsuggestions={false} />;
+    // @ts-expect-error — write the keyword string, not the boolean.
+    const bad2 = <input writingsuggestions={true} />;
+
+    // The correct forms compile and render the keyword verbatim.
+    expect(String(<textarea writingsuggestions="false" />))
+      .toBe('<textarea writingsuggestions="false"></textarea>');
+    expect(String(<input writingsuggestions="true" />))
+      .toBe('<input writingsuggestions="true">');
+
+    // And the wrong forms really do render the wrong markup — pinned so the
+    // claim stays checkable.
+    expect(bad1.toString()).toBe('<textarea></textarea>');
+    expect(bad2.toString()).toBe('<input writingsuggestions>');
+  });
+
+  it('KF-440: popover invokers are typed on <input> (button-state inputs), matching <button>', () => {
+    // The standard lists popovertarget / popovertargetaction on <input> as
+    // well as <button>; KF-438 typed only the latter. Proved through
+    // innerHTML so the real lowercase DOM names are what's asserted.
+    const host = document.createElement('div');
+    host.innerHTML = String(
+      <input type="button" value="Open" popoverTarget="menu" popoverTargetAction="show" />,
+    );
+    const input = host.firstElementChild!;
+    expect(input.getAttribute('popovertarget')).toBe('menu');
+    expect(input.getAttribute('popovertargetaction')).toBe('show');
+  });
+
+  it('KF-440: <form rel> and <source width / height> render', () => {
+    // `rel` on <form> is the pairing `target="_blank"` warrants
+    // (noopener / noreferrer / opener), standard since forms got link types.
+    expect(String(<form action="/go" target="_blank" rel="noopener" />))
+      .toBe('<form action="/go" target="_blank" rel="noopener"></form>');
+
+    // width / height on <source> are valid inside <picture> so layout is
+    // stable before the browser picks a candidate.
+    expect(String(
+      <picture>
+        <source srcSet="a.avif" type="image/avif" width={800} height={600} />
+        <img src="a.jpg" alt="a" width={800} height={600} />
+      </picture>,
+    )).toContain('<source srcset="a.avif" type="image/avif" width="800" height="600">');
+  });
+
   it('still allows arbitrary data-* and aria-* attributes', () => {
     const ok1 = <div data-action="add" data-id="42" />;
     const ok2 = <button aria-label="close" aria-pressed={false} />;
