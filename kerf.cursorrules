@@ -1,4 +1,4 @@
-<!-- kerf-skill-version: 1.14.0 -->
+<!-- kerf-skill-version: 1.14.1 -->
 # kerf.cursorrules — rules for building apps with kerf
 #
 # Drop this file into your project as `.cursorrules` (Cursor will pick it
@@ -162,7 +162,7 @@ mount(listEl, () => (
 ## Common errors → fixes
 
 - `JSX: DOM elements cannot be passed as children` → you passed a `toElement()` result inside JSX. Build the whole tree in JSX; get refs via `querySelector` after rendering.
-- `draggable={true}` / `spellCheck={false}` / `contentEditable={false}` won't typecheck → these are HTML **enumerated** attributes, not boolean ones: they take the strings `"true"` / `"false"`, and omitting one selects a third state, so the boolean form rendered the opposite of what was meant. Write the keyword (`draggable="true"`, `spellCheck="false"`) and omit the attribute for the default state. Real boolean attributes (`hidden`, `checked`, `disabled`, `autofocus`, `required`) are unaffected; for a signal, put the string in it (`signal('true')`).
+- `draggable={true}` / `spellCheck={false}` / `contentEditable={false}` / `translate={false}` / `autocorrect={false}` won't typecheck → these are HTML **enumerated** attributes, not boolean ones: they take keyword strings (`"true"` / `"false"`; `"yes"` / `"no"` for `translate`; `"on"` / `"off"` for `autocorrect`), and omitting one selects a third state, so the boolean form rendered the opposite of what was meant. Write the keyword (`draggable="true"`, `spellCheck="false"`, `translate="no"`, `autocorrect="off"`) and omit the attribute for the default state. Real boolean attributes (`hidden`, `checked`, `disabled`, `autofocus`, `required`, `inert`) are unaffected, and so is `popover` (its bare form is the spec's `auto` state); for a signal, put the string in it (`signal('true')`).
 - `<select value={x}>` / `<textarea value={x}>` won't typecheck → neither element has a `value` content attribute, so that markup was inert. Use `<option value="b" selected>` and `<textarea>{draft}</textarea>`.
 - Focus / cursor lost on every keystroke → list items lack `data-key`. Add it.
 - Click handler stops firing after re-render → `el.addEventListener` was used. Replace with `delegate(rootEl, 'click', ACTIONS.foo.selector, ...)` (or a string literal `'[data-action="foo"]'` for ad-hoc cases).

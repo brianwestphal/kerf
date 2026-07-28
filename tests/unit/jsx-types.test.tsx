@@ -225,6 +225,128 @@ describe('JSX.IntrinsicElements typing (compile-time)', () => {
     expect(bad.toString()).toBe('<style scoped></style>');
   });
 
+  it('KF-438: `translate` / `autocorrect` are enumerated — boolean rejected, keywords accepted', () => {
+    // Same trap as `spellcheck` (KF-436): both take keyword STRINGS, and the
+    // missing-value default is a third state, so the boolean forms render
+    // markup that means something else.
+
+    // @ts-expect-error — `translate={false}` omits the attribute, which means
+    // *inherit*, not "no" — the opt-out silently never happens.
+    const bad1 = <div translate={false} />;
+    // @ts-expect-error — the keywords are "yes"/"no", not "true"/"false"; the
+    // boolean spelling is rejected in both directions.
+    const bad2 = <div translate={true} />;
+    // @ts-expect-error — `autocorrect={false}` omits the attribute, which means
+    // *inherit the default* (on, for most editable elements), not off.
+    const bad3 = <input autocorrect={false} />;
+    // @ts-expect-error — same in the other direction.
+    const bad4 = <input autocorrect={true} />;
+
+    // The correct forms compile and render the keyword verbatim.
+    expect(String(<div translate="no" />)).toBe('<div translate="no"></div>');
+    expect(String(<p translate="yes" />)).toBe('<p translate="yes"></p>');
+    expect(String(<input autocorrect="off" />)).toBe('<input autocorrect="off">');
+    expect(String(<textarea autocorrect="on" />)).toBe('<textarea autocorrect="on"></textarea>');
+
+    // And the wrong forms really do render the wrong markup — pinned so the
+    // claim stays checkable.
+    expect(bad1.toString()).toBe('<div></div>');
+    expect(bad2.toString()).toBe('<div translate></div>');
+    expect(bad3.toString()).toBe('<input>');
+    expect(bad4.toString()).toBe('<input autocorrect>');
+  });
+
+  it('KF-438: `popover` takes the keywords AND the bare form (empty value is the spec keyword for auto)', () => {
+    // Unlike `draggable`, boolean popover lands on spec states in both
+    // directions: `{true}` renders the bare attribute → the auto state
+    // (`<div popover>` is the canonical spelling), `{false}` omits it → not a
+    // popover. So boolean stays allowed here.
+    expect(String(<div popover />)).toBe('<div popover></div>');
+    expect(String(<div popover={false} />)).toBe('<div></div>');
+    expect(String(<div popover="manual" />)).toBe('<div popover="manual"></div>');
+    expect(String(<div popover="hint" />)).toBe('<div popover="hint"></div>');
+    expect(String(<div popover="auto" />)).toBe('<div popover="auto"></div>');
+  });
+
+  it('KF-438: modern global attributes — inert, nonce, part/exportparts, enterKeyHint, microdata', () => {
+    // `inert` and `itemScope` are genuine boolean attributes.
+    expect(String(<div inert />)).toBe('<div inert></div>');
+    expect(String(<div inert={false} />)).toBe('<div></div>');
+    expect(String(<script nonce="r4nd0m">{'x()'}</script>)).toContain('nonce="r4nd0m"');
+    expect(String(<span part="label" exportparts="inner: outer" />))
+      .toBe('<span part="label" exportparts="inner: outer"></span>');
+    expect(String(<input enterKeyHint="send" />)).toContain('enterKeyHint="send"');
+
+    // The camelCase spellings reach the real lowercase names through the HTML
+    // parser (pinned per-name in jsx-attr-names.test.tsx).
+    const host = document.createElement('div');
+    host.innerHTML = String(
+      <div itemScope itemType="https://schema.org/Person" itemId="urn:p:1" itemRef="extra">
+        <span itemProp="name">Ada</span>
+        <input enterKeyHint="go" />
+      </div>,
+    );
+    const item = host.firstElementChild!;
+    expect(item.hasAttribute('itemscope')).toBe(true);
+    expect(item.getAttribute('itemtype')).toBe('https://schema.org/Person');
+    expect(item.getAttribute('itemid')).toBe('urn:p:1');
+    expect(item.getAttribute('itemref')).toBe('extra');
+    expect(item.querySelector('span')!.getAttribute('itemprop')).toBe('name');
+    expect(item.querySelector('input')!.getAttribute('enterkeyhint')).toBe('go');
+  });
+
+  it('KF-438: per-element additions render their real HTML names', () => {
+    const host = document.createElement('div');
+
+    // <button> popover-invoker + Invoker Commands attributes.
+    host.innerHTML = String(
+      <button popoverTarget="menu" popoverTargetAction="show" command="show-modal" commandFor="dlg">open</button>,
+    );
+    const button = host.firstElementChild!;
+    expect(button.getAttribute('popovertarget')).toBe('menu');
+    expect(button.getAttribute('popovertargetaction')).toBe('show');
+    expect(button.getAttribute('command')).toBe('show-modal');
+    expect(button.getAttribute('commandfor')).toBe('dlg');
+
+    // <input dirname> / <textarea dirname>, <img ismap>.
+    host.innerHTML = String(<input name="comment" dirName="comment.dir" />);
+    expect(host.firstElementChild!.getAttribute('dirname')).toBe('comment.dir');
+    host.innerHTML = String(<textarea name="bio" dirName="bio.dir" />);
+    expect(host.firstElementChild!.getAttribute('dirname')).toBe('bio.dir');
+    host.innerHTML = String(<img src="map.png" alt="map" isMap />);
+    expect(host.firstElementChild!.hasAttribute('ismap')).toBe(true);
+
+    // <link disabled / imagesrcset / imagesizes / blocking>.
+    host.innerHTML = String(
+      <link rel="preload" as="image" imageSrcSet="a.png 1x, b.png 2x" imageSizes="100vw" blocking="render" disabled />,
+    );
+    const link = host.firstElementChild!;
+    expect(link.getAttribute('imagesrcset')).toBe('a.png 1x, b.png 2x');
+    expect(link.getAttribute('imagesizes')).toBe('100vw');
+    expect(link.getAttribute('blocking')).toBe('render');
+    expect(link.hasAttribute('disabled')).toBe(true);
+
+    // <script blocking / fetchpriority>.
+    expect(String(<script src="/app.js" blocking="render" fetchPriority="high" />))
+      .toContain('blocking="render" fetchPriority="high"');
+
+    // <area download / ping / referrerpolicy> — typed on <a>, now on <area> too.
+    host.innerHTML = String(
+      <area alt="zone" href="/z" download="zone.png" ping="https://log.example/a" referrerPolicy="no-referrer" />,
+    );
+    const area = host.firstElementChild!;
+    expect(area.getAttribute('download')).toBe('zone.png');
+    expect(area.getAttribute('ping')).toBe('https://log.example/a');
+    expect(area.getAttribute('referrerpolicy')).toBe('no-referrer');
+
+    // <meta media / property> (property is Open Graph — not in the HTML
+    // standard, typed because it is universal; see jsx-types.ts's deviations).
+    expect(String(<meta property="og:title" content="kerf" />))
+      .toBe('<meta property="og:title" content="kerf">');
+    expect(String(<meta name="theme-color" content="#000" media="(prefers-color-scheme: dark)" />))
+      .toContain('media="(prefers-color-scheme: dark)"');
+  });
+
   it('still allows arbitrary data-* and aria-* attributes', () => {
     const ok1 = <div data-action="add" data-id="42" />;
     const ok2 = <button aria-label="close" aria-pressed={false} />;

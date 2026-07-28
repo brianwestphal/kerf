@@ -1,7 +1,7 @@
 ---
 name: kerf-app
 description: Build UIs in the kerf reactive framework (https://github.com/brianwestphal/kerf). Use this skill whenever the user is writing or modifying code that imports `kerfjs`, asks to add a feature to a kerf app, or asks "how do I do X in kerf?". Use it proactively the moment you spot a kerf import in the file you're editing.
-kerf-skill-version: 1.14.0
+kerf-skill-version: 1.14.1
 ---
 
 # Building apps with kerf
@@ -176,7 +176,7 @@ mount(rootEl, () => html`
 | Error / symptom | Root cause | Fix |
 | --- | --- | --- |
 | `JSX: DOM elements cannot be passed as children` | passed a `toElement()` result inside JSX | Build the whole tree in JSX; refs via `querySelector` after rendering |
-| `draggable={true}` / `spellCheck={false}` / `contentEditable={false}` won't typecheck | these are HTML **enumerated** attributes, not boolean ones — they take `"true"` / `"false"` strings, and omitting one selects a third state, so the boolean form rendered the opposite of what was meant | Write the keyword: `draggable="true"`, `spellCheck="false"`. Omit for the default state. Real boolean attrs (`hidden`, `checked`, `disabled`, `autofocus`, `required`) are unaffected; for a signal use `signal('true')` |
+| `draggable={true}` / `spellCheck={false}` / `contentEditable={false}` / `translate={false}` / `autocorrect={false}` won't typecheck | these are HTML **enumerated** attributes, not boolean ones — they take keyword strings (`"true"`/`"false"`; `"yes"`/`"no"` for `translate`; `"on"`/`"off"` for `autocorrect`), and omitting one selects a third state, so the boolean form rendered the opposite of what was meant | Write the keyword: `draggable="true"`, `spellCheck="false"`, `translate="no"`, `autocorrect="off"`. Omit for the default state. Real boolean attrs (`hidden`, `checked`, `disabled`, `autofocus`, `required`, `inert`) are unaffected, as is `popover` (bare form = the spec's `auto` state); for a signal use `signal('true')` |
 | `<select value={x}>` / `<textarea value={x}>` won't typecheck | neither element has a `value` content attribute — the markup was inert | `<option value="b" selected>`; `<textarea>{draft}</textarea>` |
 | Focus / cursor lost on every keystroke | list items lack `data-key` | Add `data-key` (or `id`) to each list item |
 | Click handler stops firing after re-render | `el.addEventListener` was used | Replace with `delegate(rootEl, 'click', ACTIONS.foo.selector, ...)` (or a string literal for ad-hoc cases) |

@@ -105,6 +105,9 @@
  *     documents and icon sprites still carry them.
  *   - **`data-morph-skip` / `-skip-children` / `-preserve`** are kerf's own
  *     `data-*` attributes, valid HTML by the `data-*` rule.
+ *   - **`<meta property>`** is Open Graph vocabulary, not an attribute in the
+ *     HTML standard. Typed anyway because it is universal in real documents —
+ *     every social-preview `<head>` carries `og:*` meta tags.
  *
  * Attributes that are *not* typed because they do nothing when rendered as
  * markup: `value` / `defaultValue` on `<select>` and `<textarea>` (neither
@@ -218,6 +221,47 @@ export interface KerfBaseAttrs extends DataAriaAttrs {
    */
   autofocus?: AttrLike<boolean>;
   accessKey?: AttrLike;
+  /**
+   * A genuine HTML boolean attribute (the subtree becomes non-interactive and
+   * invisible to assistive tech), so `inert={true}` → ` inert` is correct.
+   */
+  inert?: AttrLike<boolean>;
+  /**
+   * Enumerated: `auto` / `hint` / `manual` — but the boolean forms are ALSO
+   * accepted, because both land on spec states, unlike `draggable`:
+   * `popover={true}` renders the bare attribute, whose empty value is a spec
+   * keyword for the **auto** state (`<div popover>` is the canonical
+   * spelling), and `popover={false}` omits it — the not-a-popover state.
+   */
+  popover?: AttrLike<'auto' | 'hint' | 'manual' | boolean>;
+  /** CSP nonce. A global attribute — most useful on `<script>` / `<style>` / `<link>`. */
+  nonce?: AttrLike;
+  /** Shadow-DOM part name(s) this element exposes for `::part()` styling. */
+  part?: AttrLike;
+  /** All-lowercase in HTML (`exportparts`) — there is no camelCase form to alias. */
+  exportparts?: AttrLike;
+  enterKeyHint?: AttrLike<'enter' | 'done' | 'go' | 'next' | 'previous' | 'search' | 'send'>;
+  /**
+   * Enumerated, NOT boolean — write `translate="yes"` / `translate="no"`.
+   * `translate={false}` would omit the attribute, which means *inherit*, not
+   * "no" — the opt-out would silently never happen. (The keywords are
+   * `yes` / `no`, not `true` / `false`.) See the enumerated-attribute rule in
+   * this file's header.
+   */
+  translate?: AttrLike<'yes' | 'no'>;
+  /**
+   * Enumerated, NOT boolean — write `autocorrect="on"` / `autocorrect="off"`.
+   * `autocorrect={false}` would omit the attribute, which means *inherit the
+   * default* (on, for most editable elements), not off.
+   */
+  autocorrect?: AttrLike<'on' | 'off'>;
+  // Microdata (the itemscope family — all five, they only make sense together).
+  /** A genuine HTML boolean attribute: presence declares the item. */
+  itemScope?: AttrLike<boolean>;
+  itemProp?: AttrLike;
+  itemType?: AttrLike;
+  itemId?: AttrLike;
+  itemRef?: AttrLike;
   /** `data-morph-skip` opts a subtree out of kerf's morph. Any value (incl. `true`) is treated as set. */
   'data-morph-skip'?: AttrValue;
   /** `data-morph-skip-children` (KF-152) — morph the element's attributes but leave its children verbatim. For client-hydrated slots whose loading/state classes still need to flow through. Any value (incl. `true`) is treated as set. */
@@ -247,6 +291,9 @@ export interface HTMLAreaAttrs extends KerfBaseAttrs {
   href?: AttrLike;
   target?: AttrLike;
   rel?: AttrLike;
+  download?: AttrLike;
+  ping?: AttrLike;
+  referrerPolicy?: AttrLike;
 }
 
 export interface HTMLImgAttrs extends KerfBaseAttrs {
@@ -262,6 +309,8 @@ export interface HTMLImgAttrs extends KerfBaseAttrs {
   referrerPolicy?: AttrLike;
   useMap?: AttrLike;
   fetchPriority?: AttrLike<'high' | 'low' | 'auto'>;
+  /** A genuine HTML boolean attribute: inside `<a href>`, clicks send the click coordinates to the server. */
+  isMap?: AttrLike<boolean>;
 }
 
 export interface HTMLInputAttrs extends KerfBaseAttrs {
@@ -299,6 +348,8 @@ export interface HTMLInputAttrs extends KerfBaseAttrs {
   height?: AttrLike<number | string>;
   accept?: AttrLike;
   capture?: AttrLike<boolean | 'user' | 'environment'>;
+  /** Submits the field's text direction alongside its value, under this name. */
+  dirName?: AttrLike;
 }
 
 export interface HTMLButtonAttrs extends KerfBaseAttrs {
@@ -312,6 +363,16 @@ export interface HTMLButtonAttrs extends KerfBaseAttrs {
   formTarget?: AttrLike;
   formEncType?: AttrLike;
   formNoValidate?: AttrLike<boolean>;
+  popoverTarget?: AttrLike;
+  popoverTargetAction?: AttrLike<'toggle' | 'show' | 'hide'>;
+  /**
+   * Invoker Commands: a spec keyword (`show-modal` / `close` / `request-close`
+   * for a dialog target, `toggle-popover` / `show-popover` / `hide-popover`
+   * for a popover target) or a custom `--*` command. Typed as a plain string
+   * because the spec's keyword set is still growing.
+   */
+  command?: AttrLike;
+  commandFor?: AttrLike;
 }
 
 export interface HTMLFormAttrs extends KerfBaseAttrs {
@@ -381,6 +442,8 @@ export interface HTMLTextareaAttrs extends KerfBaseAttrs {
   maxLength?: AttrLike<number>;
   minLength?: AttrLike<number>;
   wrap?: AttrLike<'hard' | 'soft' | 'off'>;
+  /** Submits the field's text direction alongside its value, under this name. */
+  dirName?: AttrLike;
   autoComplete?: AttrLike;
   /** KF-183 — lowercase HTML form accepted alongside `autoComplete`. */
   autocomplete?: AttrLike;
@@ -411,6 +474,13 @@ export interface HTMLMetaAttrs extends KerfBaseAttrs {
   content?: AttrLike;
   charSet?: AttrLike;
   httpEquiv?: AttrLike;
+  media?: AttrLike;
+  /**
+   * Open Graph (`og:title` etc.) — NOT in the HTML standard, typed because it
+   * is universal in real documents. See the deviations list in this file's
+   * header.
+   */
+  property?: AttrLike;
 }
 
 export interface HTMLLinkAttrs extends KerfBaseAttrs {
@@ -425,6 +495,12 @@ export interface HTMLLinkAttrs extends KerfBaseAttrs {
   integrity?: AttrLike;
   referrerPolicy?: AttrLike;
   fetchPriority?: AttrLike<'high' | 'low' | 'auto'>;
+  /** A genuine HTML boolean attribute on `<link>`: the stylesheet is not applied (and for a stylesheet link, not fetched) until it's removed. */
+  disabled?: AttrLike<boolean>;
+  /** For `rel="preload" as="image"`: the srcset the preload should match. */
+  imageSrcSet?: AttrLike;
+  imageSizes?: AttrLike;
+  blocking?: AttrLike<'render'>;
 }
 
 export interface HTMLScriptAttrs extends KerfBaseAttrs {
@@ -436,7 +512,8 @@ export interface HTMLScriptAttrs extends KerfBaseAttrs {
   integrity?: AttrLike;
   crossOrigin?: AttrLike;
   referrerPolicy?: AttrLike;
-  nonce?: AttrLike;
+  blocking?: AttrLike<'render'>;
+  fetchPriority?: AttrLike<'high' | 'low' | 'auto'>;
 }
 
 /** No `scoped`: the proposal was removed from the HTML standard and never shipped in any engine. */

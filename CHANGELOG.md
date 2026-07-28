@@ -32,6 +32,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - **`<style scoped>` no longer typecheck**s. The scoped-stylesheet proposal was removed from the HTML standard and never shipped in any engine. `<style blocking="render">` is now typed in its place.
 
+### Added
+
+- **The modern global attributes are now typed**: `inert`, `popover`, `nonce` (global now — previously only `<script>` had it), `part` / `exportparts`, `enterKeyHint`, `translate`, `autocorrect`, and the microdata set (`itemScope` / `itemProp` / `itemType` / `itemId` / `itemRef`). Two of them are enumerated, not boolean — write `translate="no"` (keywords `yes` / `no`) and `autocorrect="off"` (keywords `on` / `off`); the boolean forms are rejected because omitting either attribute means *inherit*, not off — the same trap as `spellcheck`. `popover` keeps its boolean forms alongside the `auto` / `hint` / `manual` keywords, because the bare attribute's empty value is a spec keyword for the `auto` state (`<div popover>` is the canonical spelling) and omission means "not a popover" — both directions land where they read.
+- **Per-element gaps filled**: `<button popoverTarget / popoverTargetAction / command / commandFor>` (popover invokers + Invoker Commands), `<input dirName>` and `<textarea dirName>`, `<img isMap>`, `<link disabled / imageSrcSet / imageSizes / blocking>`, `<script blocking / fetchPriority>`, `<area download / ping / referrerPolicy>` (already typed on `<a>`), and `<meta media / property>` — `property` is Open Graph vocabulary, not in the HTML standard, typed because every social-preview `<head>` carries it.
+
 ### Fixed
 
 - **The dangerous-URL screen no longer drops `href="javascript:void(0)"`.** The placeholder-link idiom — `javascript:void(0)`, `javascript:void(0);`, `javascript:void 0`, `javascript:;`, and a bare `javascript:` — is a no-op, not an attack, and screening it had a bad failure mode: the `href` was dropped, so the anchor stopped being a link (no keyboard focus, no `:link` styling, no pointer cursor), and in production the whole failure was a `console.warn`.

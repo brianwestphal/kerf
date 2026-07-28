@@ -79,7 +79,7 @@ For the form-state trio — `checked`, `value`, `selected` — re-renders also c
 
 #### Enumerated attributes are not boolean attributes
 
-Three attributes read like booleans and are not: **`draggable`**, **`spellcheck`**, and **`contenteditable`**. HTML calls them *enumerated* — they take the literal strings `"true"` and `"false"`, and leaving them off selects a third state (`auto` for `draggable`, inherit-the-default for the other two). The boolean rendering above therefore lands on the wrong state:
+Five attributes read like booleans and are not: **`draggable`**, **`spellcheck`**, **`contenteditable`**, **`translate`**, and **`autocorrect`**. HTML calls them *enumerated* — they take literal keyword strings (`"true"` / `"false"` for the first three, `"yes"` / `"no"` for `translate`, `"on"` / `"off"` for `autocorrect`), and leaving them off selects a third state (`auto` for `draggable`, inherit-the-default for the rest). The boolean rendering above therefore lands on the wrong state:
 
 | You write | Renders | Element ends up |
 | --- | --- | --- |
@@ -87,16 +87,20 @@ Three attributes read like booleans and are not: **`draggable`**, **`spellcheck`
 | `draggable={false}` | *omitted* | `auto` again — and `auto` for `<img>` / `<a href>` is **draggable** |
 | `spellCheck={false}` | *omitted* | spellchecking **still on** — omission means "inherit", not "off" |
 | `contentEditable={false}` | *omitted* | inside an editable region, **still editable** |
+| `translate={false}` | *omitted* | **still translated** — omission means "inherit", not "no" |
+| `autocorrect={false}` | *omitted* | autocorrection **still on** — omission means "inherit the default" |
 
-So the types reject `boolean` on these three. Write the keyword:
+So the types reject `boolean` on these five. Write the keyword:
 
 ```tsx
 <div draggable="true" />
 <textarea spellCheck="false" />
 <span contentEditable="false" />
+<code translate="no" />
+<input autocorrect="off" />
 ```
 
-Omit the attribute when you want the default state. `hidden`, `checked`, `disabled`, `autofocus`, and the rest of the real boolean attributes are unaffected — `hidden={isHidden}` is still exactly right.
+Omit the attribute when you want the default state. `hidden`, `checked`, `disabled`, `autofocus`, and the rest of the real boolean attributes are unaffected — `hidden={isHidden}` is still exactly right. So is **`popover`**: it is technically enumerated (`auto` / `hint` / `manual`), but the bare attribute's empty value is a spec keyword for the `auto` state and omission means "not a popover", so `popover={true}` / `popover={false}` both land exactly where they read — the boolean forms stay allowed alongside the keywords.
 
 The fix is in the types rather than in the runtime deliberately. Translating `{true}` → `="true"` would mean the renderer carrying a list of every enumerated attribute in HTML, and any attribute *missing* from that list would silently reproduce this same bug. A per-attribute type keeps the knowledge where the rest of the spec knowledge already lives, and costs nothing at runtime.
 
