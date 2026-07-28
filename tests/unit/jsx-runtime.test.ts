@@ -348,6 +348,48 @@ describe('jsx — dangerous URL attribute filter (production warn+drop)', () => 
     expect(warnSpy).not.toHaveBeenCalled();
   });
 
+  // KF-437: the placeholder-link idiom is a no-op, not an attack. Screening it
+  // dropped the `href`, so the anchor stopped being a link — and in production
+  // that happened behind a console.warn nobody reads.
+  it('preserves the javascript: no-op placeholders (every accepted spelling)', () => {
+    const inert = [
+      'javascript:void(0)',
+      'javascript:void(0);',
+      'javascript:void 0',
+      'javascript:void 0;',
+      'javascript:;',
+      'javascript:',
+      // Case and surrounding whitespace are normalized before the match.
+      'JavaScript:void(0)',
+      '  javascript:void(0)  ',
+    ];
+    for (const href of inert) {
+      expect(jsx('a', { href, children: 'x' }).toString()).toBe(`<a href="${href}">x</a>`);
+    }
+    expect(warnSpy).not.toHaveBeenCalled();
+  });
+
+  it('the no-op allowlist matches the WHOLE value — nothing can ride along', () => {
+    // This is what keeps the carve-out safe: the comparison is against the
+    // entire normalized value, so a payload appended to (or wrapped around) an
+    // inert body never matches. A control char is stripped by normalization
+    // first, which is precisely why the check must run on the normalized form.
+    const dangerous = [
+      'javascript:void(0);alert(1)',
+      'javascript:void(0)/**/alert(1)',
+      'javascript:void(alert(1))',
+      'javascript:void(0)\nalert(1)',
+      'javascript:;alert(1)',
+      'javascript:alert(1);void(0)',
+      'javascript:void0',           // not one of the listed spellings
+      'vbscript:void(0)',           // the allowlist is javascript:-only
+    ];
+    for (const href of dangerous) {
+      expect(jsx('a', { href, children: 'x' }).toString(), href).toBe('<a>x</a>');
+    }
+    expect(warnSpy).toHaveBeenCalledTimes(dangerous.length);
+  });
+
   // KF-312: <object data> is a URL-bearing, document-loading attribute.
   it('screens the data attribute on <object> (data:text/html XSS)', () => {
     const out = jsx('object', { data: 'data:text/html,<script>alert(1)</script>' });

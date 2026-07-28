@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "Hot Sheet",
+          "rules": [
+            {
+              "id": "review-note",
+              "name": "ReviewNote",
+              "shortDescription": {
+                "text": "AI-authored, line-anchored review note."
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "review-note",
+          "ruleIndex": 0,
+          "kind": "informational",
+          "level": "none",
+          "guid": "ms3w7xeac8trm765",
+          "message": {
+            "text": "Allowlisting the javascript: no-op placeholders is a security-positive change, not a relaxation — the alternative was teaching raw().\n\nThe screen was dropping href=\"javascript:void(0)\", so the documented way to keep the idiom working was raw('javascript:void(0)'). That is the general-purpose escape hatch, and it does not stay scoped to the benign case: an author who has learned raw() for one href reaches for it on the next one, which may well be user input. Carving out a handful of provably inert literals removes the reason to reach for the bypass at all.\n\nTwo properties keep the carve-out from becoming a hole:\n\n1. The match is against the whole normalized value. Not a prefix, not a substring — javascript:void(0) is in the set and javascript:void(0);alert(1) is not. There is no interpolation point inside any listed body, so nothing attacker-supplied can survive the comparison.\n2. It runs on the normalized string, after control-char stripping. That ordering is deliberate: javascript:void(0)\\nalert(1) normalizes to javascript:void(0)alert(1), which is not in the set. Comparing against the raw value instead would let a control char split an inert prefix from a payload.\n\nWhitespace is not collapsed, so each accepted spelling is listed explicitly rather than derived. That costs six lines and buys an allowlist a reviewer can verify by reading it — collapsing whitespace would silently fold javascript:void 0 into javascript:void0, a different program.\n\nThe failure mode being fixed is worth naming, because it is what made this more than a cosmetic false positive: dropping href does not merely disable navigation, it unmakes the anchor. It stops matching :link, stops being keyboard-focusable, and loses its pointer cursor. In production that happened behind a console.warn. Proved in all three engines in tests/browser/trusted-html-bridges.spec.ts.\n",
+            "markdown": "Allowlisting the `javascript:` no-op placeholders is a security-*positive* change, not a relaxation — the alternative was teaching `raw()`.\n\nThe screen was dropping `href=\"javascript:void(0)\"`, so the documented way to keep the idiom working was `raw('javascript:void(0)')`. That is the general-purpose escape hatch, and it does not stay scoped to the benign case: an author who has learned `raw()` for one `href` reaches for it on the next one, which may well be user input. Carving out a handful of provably inert literals removes the reason to reach for the bypass at all.\n\nTwo properties keep the carve-out from becoming a hole:\n\n1. **The match is against the whole normalized value.** Not a prefix, not a substring — `javascript:void(0)` is in the set and `javascript:void(0);alert(1)` is not. There is no interpolation point inside any listed body, so nothing attacker-supplied can survive the comparison.\n2. **It runs on the normalized string, after control-char stripping.** That ordering is deliberate: `javascript:void(0)\\nalert(1)` normalizes to `javascript:void(0)alert(1)`, which is not in the set. Comparing against the raw value instead would let a control char split an inert prefix from a payload.\n\nWhitespace is not collapsed, so each accepted spelling is listed explicitly rather than derived. That costs six lines and buys an allowlist a reviewer can verify by reading it — collapsing whitespace would silently fold `javascript:void 0` into `javascript:void0`, a different program.\n\nThe failure mode being fixed is worth naming, because it is what made this more than a cosmetic false positive: dropping `href` does not merely disable navigation, it unmakes the anchor. It stops matching `:link`, stops being keyboard-focusable, and loses its pointer cursor. In production that happened behind a `console.warn`. Proved in all three engines in `tests/browser/trusted-html-bridges.spec.ts`.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/utils/urlScreen.ts"
+                },
+                "region": {
+                  "startLine": 46,
+                  "endLine": 76,
+                  "snippet": {
+                    "text": "\n/** Schemes that execute script when a browser resolves them as a URL. */\nconst DANGEROUS_SCHEMES = new Set(['javascript', 'vbscript']);\n\n/**\n * `javascript:` URLs that are provably no-ops — the placeholder-link idiom\n * (`<a href=\"javascript:void(0)\">`) that a decade of jQuery-era markup, CMS\n * output, and ported templates is full of.\n *\n * Screening them out was a false positive with a bad failure mode: the `href`\n * is dropped, so the anchor stops being a link — no keyboard focus, no `:link`\n * styling, no pointer cursor — and in production that happens behind a\n * `console.warn` nobody reads.\n *\n * Allowing them costs nothing. The match is against the **whole** normalized\n * value, so no attacker-supplied suffix survives it: `javascript:void(0)` is in\n * the set and `javascript:void(0);alert(1)` is not. The bodies here evaluate to\n * `undefined` or to nothing at all, and they carry no interpolation point.\n *\n * The alternative — telling authors to write `raw('javascript:void(0)')` — is\n * strictly worse for security: it teaches the general-purpose escape hatch as\n * the answer to a benign case, and an author who has learned `raw()` for one\n * `href` will reach for it on the next one.\n *\n * Matching is exact after `normalizeUrl` + lowercase + trailing-whitespace trim.\n * Internal whitespace is NOT collapsed, so each accepted spelling is listed\n * explicitly and the set stays auditable at a glance.\n */\nconst INERT_JAVASCRIPT_URLS = new Set([\n  'javascript:',\n  'javascript:;',"
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "tags": [
+              "rationale"
+            ]
+          },
+          "workItemUris": [
+            "KF-437"
+          ],
+          "partialFingerprints": {
+            "prNoteAnchor/v1": "0853ac9f59f1aeba110f6f59a1b6156b"
+          }
+        }
+      ],
+      "versionControlProvenance": [
+        {
+          "repositoryUri": "git@github.com:brianwestphal/kerf.git",
+          "revisionId": "4736e142a371699e1f1b8426f42a06cb97f927f2",
+          "branch": "main"
+        }
+      ]
+    }
+  ]
+}

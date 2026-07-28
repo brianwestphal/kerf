@@ -88,3 +88,47 @@ test('<iframe srcdoc={string}> re-parses its value as a document and executes', 
     .poll(() => page.evaluate(() => (window as unknown as KerfGlobals).__srcdocRan))
     .toBe(true);
 });
+
+/**
+ * KF-437 — the counterpart to everything above: the screen must not fire on a
+ * value that is not a bridge at all. Dropping `href` is not a neutral act; it
+ * unmakes the anchor. These pin why the `javascript:` no-op carve-out matters,
+ * in engines that decide it for real.
+ */
+test('a javascript: no-op href survives, and the anchor stays a real link', async ({ page }) => {
+  const result = await page.evaluate(() => {
+    const w = window as unknown as KerfGlobals;
+    const root = document.getElementById('root')!;
+    root.innerHTML = '';
+    const kept = w.kerf.toElement(
+      w.jsxRuntime.jsx('a', { href: 'javascript:void(0)', children: 'placeholder' }),
+    );
+    const dropped = w.kerf.toElement(
+      w.jsxRuntime.jsx('a', { href: 'javascript:alert(1)', children: 'blocked' }),
+    );
+    root.append(kept, dropped);
+
+    // An <a> is focusable and matches :link only while it HAS an href — which
+    // is exactly what the screen used to take away.
+    (kept as HTMLElement).focus();
+    const keptFocused = document.activeElement === kept;
+    (dropped as HTMLElement).focus();
+    const droppedFocused = document.activeElement === dropped;
+
+    return {
+      keptHref: kept.getAttribute('href'),
+      droppedHref: dropped.getAttribute('href'),
+      keptIsLink: kept.matches(':link'),
+      droppedIsLink: dropped.matches(':link'),
+      keptFocused,
+      droppedFocused,
+    };
+  });
+  expect(result.keptHref).toBe('javascript:void(0)');
+  expect(result.keptIsLink).toBe(true);
+  expect(result.keptFocused).toBe(true);
+  // The blocked value still loses its href — and with it the link semantics.
+  expect(result.droppedHref).toBeNull();
+  expect(result.droppedIsLink).toBe(false);
+  expect(result.droppedFocused).toBe(false);
+});

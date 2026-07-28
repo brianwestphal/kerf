@@ -112,6 +112,12 @@ Plain-string values written to URL-bearing attributes are screened by scheme. If
 
 Inert `data:` media — raster images (`data:image/png`, …), fonts, audio, video, and plain text/CSS — pass through, so `<img src="data:image/png;base64,…">` still works. Every other `data:` subtype (including unknown ones) fails closed.
 
+**The `javascript:` no-op placeholders pass too.** `href="javascript:void(0)"` and its handful of spellings — `javascript:void(0);`, `javascript:void 0`, `javascript:;`, and a bare `javascript:` — are the placeholder-link idiom, not an attack, and screening them was a false positive with a bad failure mode: the `href` was dropped, so the anchor stopped being a link (no keyboard focus, no `:link` styling, no pointer cursor) behind a `console.warn` nobody reads.
+
+The match is against the **whole** normalized value, so nothing can ride along with one: `javascript:void(0)` passes and `javascript:void(0);alert(1)` does not. The carve-out is deliberately narrow for a second reason — the alternative, telling authors to write `raw('javascript:void(0)')`, teaches the general-purpose escape hatch as the answer to a benign case, and an author who has learned `raw()` for one `href` will reach for it on the next one.
+
+(For what it's worth, a link that goes nowhere is usually better written as `<button type="button">`. kerf doesn't enforce that — a security screen is the wrong place for an accessibility opinion.)
+
 The scheme match sees through the obfuscations a browser sees through — and then some: every C0 control character and `DEL` is stripped from anywhere in the value, then leading whitespace is trimmed, before the scheme is read. So `java&#9;script:`, a leading `\x01`, or `javascript\x00:` are all recognized and dropped, not just a clean `javascript:`. (Kerf is deliberately stricter here than the browser's own TAB/LF/CR-only stripping.)
 
 ```tsx

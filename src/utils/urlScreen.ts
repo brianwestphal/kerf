@@ -19,6 +19,11 @@
  *     way (strip every C0 control 0x00-0x1F + DEL, trim leading whitespace)
  *     BEFORE extracting the scheme, so none of those slip past.
  *
+ *   - **The `javascript:` no-op placeholders are allowed.** `javascript:void(0)`
+ *     and its handful of spellings are the placeholder-link idiom, not an
+ *     attack; matching is against the whole normalized value so nothing can be
+ *     appended to them. See `INERT_JAVASCRIPT_URLS`.
+ *
  *   - **`data:` is subtype-specific.** `data:image/png` in `<img src>` is safe
  *     and common; `data:text/html` / `data:image/svg+xml` / `data:*xml` load as
  *     a document and run script (SVG `<script>`, HTML/XHTML `<script>`). We
@@ -42,6 +47,39 @@ const URL_ATTRS = new Set(['href', 'src', 'xlink:href', 'formaction', 'action', 
 /** Schemes that execute script when a browser resolves them as a URL. */
 const DANGEROUS_SCHEMES = new Set(['javascript', 'vbscript']);
 
+/**
+ * `javascript:` URLs that are provably no-ops — the placeholder-link idiom
+ * (`<a href="javascript:void(0)">`) that a decade of jQuery-era markup, CMS
+ * output, and ported templates is full of.
+ *
+ * Screening them out was a false positive with a bad failure mode: the `href`
+ * is dropped, so the anchor stops being a link — no keyboard focus, no `:link`
+ * styling, no pointer cursor — and in production that happens behind a
+ * `console.warn` nobody reads.
+ *
+ * Allowing them costs nothing. The match is against the **whole** normalized
+ * value, so no attacker-supplied suffix survives it: `javascript:void(0)` is in
+ * the set and `javascript:void(0);alert(1)` is not. The bodies here evaluate to
+ * `undefined` or to nothing at all, and they carry no interpolation point.
+ *
+ * The alternative — telling authors to write `raw('javascript:void(0)')` — is
+ * strictly worse for security: it teaches the general-purpose escape hatch as
+ * the answer to a benign case, and an author who has learned `raw()` for one
+ * `href` will reach for it on the next one.
+ *
+ * Matching is exact after `normalizeUrl` + lowercase + trailing-whitespace trim.
+ * Internal whitespace is NOT collapsed, so each accepted spelling is listed
+ * explicitly and the set stays auditable at a glance.
+ */
+const INERT_JAVASCRIPT_URLS = new Set([
+  'javascript:',
+  'javascript:;',
+  'javascript:void(0)',
+  'javascript:void(0);',
+  'javascript:void 0',
+  'javascript:void 0;',
+]);
+
 /** Matches every C0 control character (0x00-0x1F) and DEL (0x7F). */
 // eslint-disable-next-line no-control-regex -- deliberately matching C0 + DEL.
 const CONTROL_CHARS = /[\u0000-\u001F\u007F]/g;
@@ -60,20 +98,24 @@ function normalizeUrl(value: string): string {
   return value.replace(CONTROL_CHARS, '').replace(/^\s+/, '');
 }
 
-/** The lowercased URL scheme (text before the first `:`), or null if none. */
-function extractScheme(value: string): string | null {
-  const m = /^([a-zA-Z][a-zA-Z0-9+.-]*):/.exec(normalizeUrl(value));
+/**
+ * The lowercased URL scheme (text before the first `:`) of an ALREADY-NORMALIZED
+ * value, or null if none.
+ */
+function schemeOf(normalized: string): string | null {
+  const m = /^([a-zA-Z][a-zA-Z0-9+.-]*):/.exec(normalized);
   return m ? m[1].toLowerCase() : null;
 }
 
 /**
- * True if a `data:` URL is a script-executing document type. Allowlists the
- * inert media families and fails closed on everything else — so `text/html`,
- * `image/svg+xml`, XHTML/XML, and any unknown/novel subtype are all treated as
- * dangerous, while `data:image/png` / fonts / audio / video / plain text pass.
+ * True if a `data:` URL (already normalized) is a script-executing document
+ * type. Allowlists the inert media families and fails closed on everything else
+ * — so `text/html`, `image/svg+xml`, XHTML/XML, and any unknown/novel subtype
+ * are all treated as dangerous, while `data:image/png` / fonts / audio / video
+ * / plain text pass.
  */
-function isDangerousDataUrl(value: string): boolean {
-  const media = /^data:([^;,]*)/.exec(normalizeUrl(value).toLowerCase())?.[1].trim() ?? '';
+function isDangerousDataUrl(normalized: string): boolean {
+  const media = /^data:([^;,]*)/.exec(normalized.toLowerCase())?.[1].trim() ?? '';
   if (media === '' || media === 'text/plain' || media === 'text/css') return false;
   if (media === 'image/svg+xml') return true; // SVG can carry <script>
   if (media.startsWith('image/')) return false;
@@ -85,10 +127,15 @@ function isDangerousDataUrl(value: string): boolean {
 /** True if `value` is a dangerous URL for the URL-bearing attribute `name`. */
 export function isDangerousUrlValue(name: string, value: string): boolean {
   if (!URL_ATTRS.has(name)) return false;
-  const scheme = extractScheme(value);
+  // Normalized once here — every helper below reasons about the same string the
+  // browser's scheme resolution would see.
+  const normalized = normalizeUrl(value);
+  const scheme = schemeOf(normalized);
   if (scheme === null) return false;
-  if (DANGEROUS_SCHEMES.has(scheme)) return true;
-  return scheme === 'data' && isDangerousDataUrl(value);
+  if (DANGEROUS_SCHEMES.has(scheme)) {
+    return !INERT_JAVASCRIPT_URLS.has(normalized.trimEnd().toLowerCase());
+  }
+  return scheme === 'data' && isDangerousDataUrl(normalized);
 }
 
 /**

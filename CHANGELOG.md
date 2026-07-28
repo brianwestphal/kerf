@@ -34,6 +34,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- **The dangerous-URL screen no longer drops `href="javascript:void(0)"`.** The placeholder-link idiom — `javascript:void(0)`, `javascript:void(0);`, `javascript:void 0`, `javascript:;`, and a bare `javascript:` — is a no-op, not an attack, and screening it had a bad failure mode: the `href` was dropped, so the anchor stopped being a link (no keyboard focus, no `:link` styling, no pointer cursor), and in production the whole failure was a `console.warn`.
+
+  The carve-out is exact — the match is against the entire normalized value, so `javascript:void(0)` passes and `javascript:void(0);alert(1)` does not. Everything else the screen blocked, it still blocks. The narrowness matters for a second reason: the previous workaround was `raw('javascript:void(0)')`, which teaches the general-purpose escape hatch as the answer to a benign case, and an author who has learned `raw()` for one `href` will reach for it on the next one.
+
 - **`<option defaultSelected>` rendered `defaultselected`** — an attribute no browser has ever read — so the option it named was never pre-selected. It now aliases to `selected`, matching `defaultValue` → `value` and `defaultChecked` → `checked`.
 
 ### Changed
