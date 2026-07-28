@@ -71,8 +71,13 @@
  *     to work: the empty string is a spec keyword for the true state on those
  *     two, unlike `draggable`.)
  *
- * So `draggable`, `spellcheck`, and `contenteditable` are typed as string
- * literal unions here and reject `boolean` outright. The fix is at the type
+ * So these are typed as string literal unions and reject `boolean` outright.
+ * Six attributes have this shape; they do NOT all share one type, because the
+ * keywords differ — `EnumeratedBool` (`"true"`/`"false"`) covers `draggable`,
+ * `spellcheck` and `writingsuggestions`, `ContentEditableValue` adds
+ * `plaintext-only`, and `translate` (`"yes"`/`"no"`) and `autocorrect`
+ * (`"on"`/`"off"`) spell their keywords differently again. Grep `EnumeratedBool`
+ * for the largest group. The fix is at the type
  * level rather than in the runtime on purpose: translating `{true}` →
  * `="true"` would require the renderer to carry a list of every enumerated
  * attribute in HTML, and any attribute *missing* from that list would silently
@@ -161,6 +166,52 @@ export type AttrValue = string | number | boolean | null | undefined | SafeHtml
 export type AttrLike<T = string> = T | SafeHtml | null | undefined | ReadonlySignal<unknown>;
 
 /**
+ * An HTML **enumerated** attribute whose keywords are the literal strings
+ * `"true"` / `"false"` — NOT a boolean attribute.
+ *
+ * This is the shape that has to be got right more than any other in this file,
+ * because getting it wrong is silent: omitting the attribute selects a third
+ * state (inherit, or auto), so `boolean` would render markup meaning something
+ * other than what was written. `draggable`, `spellcheck`, `contenteditable`,
+ * `translate`, `autocorrect`, and `writingsuggestions` are all this shape, and
+ * each was typed as a boolean at some point before being corrected.
+ *
+ * Naming it makes the classification greppable — `EnumeratedBool` answers
+ * "which attributes are in this family?" in one command, which is a question
+ * the docs repeatedly got wrong while it was six separate inline unions.
+ *
+ * The per-attribute JSDoc stays at the attribute: this alias says *what shape
+ * it is*, the attribute says *what omitting it means for that attribute*.
+ */
+type EnumeratedBool = AttrLike<'true' | 'false'>;
+
+/**
+ * `contenteditable`'s value set — the enumerated-bool keywords plus
+ * `plaintext-only`, and `inherit`, which is NOT a spec keyword (it reaches the
+ * inherit state only via the invalid-value default; kept for React parity).
+ */
+type ContentEditableValue = AttrLike<'true' | 'false' | 'inherit' | 'plaintext-only'>;
+
+/** Resource-loading priority hint: `<img>` / `<link>` / `<script>`. */
+type FetchPriority = AttrLike<'high' | 'low' | 'auto'>;
+
+/**
+ * The `blocking` token list. `render` is the only token the standard defines
+ * today — a union rather than a plain string so a typo fails to compile, and a
+ * one-line edit when the set grows.
+ */
+type BlockingToken = AttrLike<'render'>;
+
+/** Lazy-loading behavior: `<img>` / `<iframe>`. */
+type LoadingBehavior = AttrLike<'eager' | 'lazy'>;
+
+/** Form submission method, on `<form method>` and the `form*` overrides. */
+type FormMethod = AttrLike<'get' | 'post' | 'dialog'>;
+
+/** What a popover invoker does to its target: `<button>` / `<input>`. */
+type PopoverTargetAction = AttrLike<'toggle' | 'show' | 'hide'>;
+
+/**
  * `data-*` and `aria-*` index signatures. Applied via `KerfBaseAttrs` so
  * every typed element accepts them without per-element enumeration.
  */
@@ -201,7 +252,7 @@ export interface KerfBaseAttrs extends DataAriaAttrs {
    * attribute to mean auto. See the enumerated-attribute rule in this file's
    * header.
    */
-  draggable?: AttrLike<'true' | 'false'>;
+  draggable?: EnumeratedBool;
   /**
    * Enumerated, NOT boolean — write `contentEditable="true"` / `="false"`.
    * `contentEditable={false}` would omit the attribute, which means *inherit*,
@@ -211,22 +262,22 @@ export interface KerfBaseAttrs extends DataAriaAttrs {
    * through the invalid-value default. Accepted for React parity, but omitting
    * the attribute is the spec-correct way to inherit.
    */
-  contentEditable?: AttrLike<'true' | 'false' | 'inherit' | 'plaintext-only'>;
+  contentEditable?: ContentEditableValue;
   /**
    * KF-191 — lowercase HTML form accepted alongside `contentEditable` (same
    * shape as `class` / `tabindex` / `autofocus` / `spellcheck`), with the same
    * enumerated value set.
    */
-  contenteditable?: AttrLike<'true' | 'false' | 'inherit' | 'plaintext-only'>;
+  contenteditable?: ContentEditableValue;
   inputMode?: AttrLike<'none' | 'text' | 'tel' | 'url' | 'email' | 'numeric' | 'decimal' | 'search'>;
   /**
    * Enumerated, NOT boolean — write `spellCheck="false"` to turn spellchecking
    * off. `spellCheck={false}` would omit the attribute, which means *inherit
    * the default*, not off; the disable would silently never happen.
    */
-  spellCheck?: AttrLike<'true' | 'false'>;
+  spellCheck?: EnumeratedBool;
   /** KF-183 — lowercase HTML form accepted alongside `spellCheck`. */
-  spellcheck?: AttrLike<'true' | 'false'>;
+  spellcheck?: EnumeratedBool;
   tabIndex?: AttrLike<number>;
   /**
    * KF-191 — lowercase HTML form accepted alongside `tabIndex`. Widened to
@@ -291,7 +342,7 @@ export interface KerfBaseAttrs extends DataAriaAttrs {
    * off — the same trap as `spellcheck`. Keywords are `true` / `false`.
    * All-lowercase in HTML — there is no camelCase form to alias.
    */
-  writingsuggestions?: AttrLike<'true' | 'false'>;
+  writingsuggestions?: EnumeratedBool;
   // Microdata (the itemscope family — all five, they only make sense together).
   /** A genuine HTML boolean attribute: presence declares the item. */
   itemScope?: AttrLike<boolean>;
@@ -348,12 +399,12 @@ export interface HTMLImgAttrs extends KerfBaseAttrs {
   height?: AttrLike<number | string>;
   srcSet?: AttrLike;
   sizes?: AttrLike;
-  loading?: AttrLike<'eager' | 'lazy'>;
+  loading?: LoadingBehavior;
   decoding?: AttrLike<'sync' | 'async' | 'auto'>;
   crossOrigin?: AttrLike<'anonymous' | 'use-credentials' | ''>;
   referrerPolicy?: AttrLike;
   useMap?: AttrLike;
-  fetchPriority?: AttrLike<'high' | 'low' | 'auto'>;
+  fetchPriority?: FetchPriority;
   /** A genuine HTML boolean attribute: inside `<a href>`, clicks send the click coordinates to the server. */
   isMap?: AttrLike<boolean>;
 }
@@ -382,7 +433,7 @@ export interface HTMLInputAttrs extends KerfBaseAttrs {
   autocomplete?: AttrLike;
   form?: AttrLike;
   formAction?: AttrLike;
-  formMethod?: AttrLike<'get' | 'post' | 'dialog'>;
+  formMethod?: FormMethod;
   formTarget?: AttrLike;
   formEncType?: AttrLike;
   formNoValidate?: AttrLike<boolean>;
@@ -401,7 +452,7 @@ export interface HTMLInputAttrs extends KerfBaseAttrs {
    * the standard lists both elements.
    */
   popoverTarget?: AttrLike;
-  popoverTargetAction?: AttrLike<'toggle' | 'show' | 'hide'>;
+  popoverTargetAction?: PopoverTargetAction;
 }
 
 export interface HTMLButtonAttrs extends KerfBaseAttrs {
@@ -416,7 +467,7 @@ export interface HTMLButtonAttrs extends KerfBaseAttrs {
   formEncType?: AttrLike;
   formNoValidate?: AttrLike<boolean>;
   popoverTarget?: AttrLike;
-  popoverTargetAction?: AttrLike<'toggle' | 'show' | 'hide'>;
+  popoverTargetAction?: PopoverTargetAction;
   /**
    * Invoker Commands: a spec keyword — `show-modal` / `close` / `request-close`
    * for a `<dialog>` target, `toggle-popover` / `show-popover` / `hide-popover`
@@ -446,7 +497,7 @@ export interface HTMLButtonAttrs extends KerfBaseAttrs {
 
 export interface HTMLFormAttrs extends KerfBaseAttrs {
   action?: AttrLike;
-  method?: AttrLike<'get' | 'post' | 'dialog'>;
+  method?: FormMethod;
   encType?: AttrLike;
   target?: AttrLike;
   name?: AttrLike;
@@ -565,13 +616,13 @@ export interface HTMLLinkAttrs extends KerfBaseAttrs {
   crossOrigin?: AttrLike;
   integrity?: AttrLike;
   referrerPolicy?: AttrLike;
-  fetchPriority?: AttrLike<'high' | 'low' | 'auto'>;
+  fetchPriority?: FetchPriority;
   /** A genuine HTML boolean attribute on `<link>`: the stylesheet is not applied (and for a stylesheet link, not fetched) until it's removed. */
   disabled?: AttrLike<boolean>;
   /** For `rel="preload" as="image"`: the srcset the preload should match. */
   imageSrcSet?: AttrLike;
   imageSizes?: AttrLike;
-  blocking?: AttrLike<'render'>;
+  blocking?: BlockingToken;
 }
 
 export interface HTMLScriptAttrs extends KerfBaseAttrs {
@@ -583,15 +634,15 @@ export interface HTMLScriptAttrs extends KerfBaseAttrs {
   integrity?: AttrLike;
   crossOrigin?: AttrLike;
   referrerPolicy?: AttrLike;
-  blocking?: AttrLike<'render'>;
-  fetchPriority?: AttrLike<'high' | 'low' | 'auto'>;
+  blocking?: BlockingToken;
+  fetchPriority?: FetchPriority;
 }
 
 /** No `scoped`: the proposal was removed from the HTML standard and never shipped in any engine. */
 export interface HTMLStyleAttrs extends KerfBaseAttrs {
   type?: AttrLike;
   media?: AttrLike;
-  blocking?: AttrLike<'render'>;
+  blocking?: BlockingToken;
 }
 
 export interface HTMLIframeAttrs extends KerfBaseAttrs {
@@ -603,7 +654,7 @@ export interface HTMLIframeAttrs extends KerfBaseAttrs {
   allowFullScreen?: AttrLike<boolean>;
   width?: AttrLike<number | string>;
   height?: AttrLike<number | string>;
-  loading?: AttrLike<'eager' | 'lazy'>;
+  loading?: LoadingBehavior;
   referrerPolicy?: AttrLike;
 }
 
