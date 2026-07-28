@@ -21,6 +21,12 @@ All but one rule are AST-only — no `@typescript-eslint/parser` *service* depen
 npm install --save-dev eslint-plugin-kerfjs
 ```
 
+### Supported ESLint versions
+
+`peerDependencies` declares `^8.57.0 || ^9.0.0 || ^10.0.0`, and that is a **tested** range rather than an optimistic one: the rule suite runs against the latest release of each of those majors in CI on every push. A major is added to the range only after the suite has passed on it.
+
+That means a version outside the range is not "probably fine" — it is one nobody has run. If you need a newer major, open an issue rather than forcing the peer; expanding the range is a one-line change once the matrix is green.
+
 ## Configure (flat config, ESLint v9+)
 
 ```js

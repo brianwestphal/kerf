@@ -320,6 +320,27 @@ These root files are the **source of truth**. A `npm install kerfjs` lands gener
 
 **The marker.** The last line of each root file's canonical content is `<!-- KERF-APP-CANONICAL-END · your customizations below -->`. Don't restyle or rephrase it — the eslint rule's parser is a strict-text match. Add or remove content above the marker; the consumer's append zone lives below it in *their* installed copy.
 
+## The `eslint-plugin-kerfjs` peer range is a tested range
+
+The plugin's `peerDependencies.eslint` names **only** ESLint majors its rule suite has actually been executed against — currently `^8.57.0 || ^9.0.0 || ^10.0.0`, verified against the latest release of each.
+
+This replaced an open `>=8`, which is worth remembering as the cautionary case: it promised every ESLint that would ever exist while the suite ran on 9 alone, and eslint 8 was in fact **failing 7 tests** the whole time. An open range cannot be wrong in a way npm will report — the consumer installs cleanly and finds out themselves.
+
+**Adding a major is a deliberate, verified act, and it is four edits in one commit:**
+
+1. `SUPPORTED` in `eslint-plugin/scripts/eslint-matrix.mjs` — the pinned latest patch of that major.
+2. `peerDependencies.eslint` in `eslint-plugin/package.json`.
+3. The `eslint:` matrix in `.github/workflows/ci.yml`.
+4. The supported-versions note in `eslint-plugin/README.md`.
+
+`npm run test:eslint-matrix` (from `eslint-plugin/`) runs the suite against every supported major **and** refuses to pass unless those three declarations name the same set — in both directions, so a range that promises an untested major fails just as loudly as a matrix that skips a tested one. An open-ended range (`>=`, `*`) is rejected outright.
+
+**Never widen the range to make an install work.** If a consumer needs a major that isn't listed, run the matrix against it first; if the suite passes, the widening is trivial and now true.
+
+**The plugin's range and the repo's own ESLint are unrelated.** `eslint.config.js` ignores `eslint-plugin/**` and never loads the local plugin, so upgrading the root devDependency gives zero signal about plugin compatibility — and the two may legitimately diverge (the repo lints with the newest while the plugin keeps supporting older majors for consumers). The plugin's own suite is the only evidence that counts.
+
+Compatibility across majors lives in one place: `eslint-plugin/tests/helpers/rule-tester.js`. RuleTester's config shape changed at ESLint 9 (`languageOptions` vs top-level `parserOptions`, parser module vs resolved path), and the helper branches on the installed version so the rule tests themselves stay version-agnostic.
+
 ## Releasing
 
 ```bash

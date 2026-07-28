@@ -1,18 +1,8 @@
-import { RuleTester } from 'eslint';
-import tsParser from '@typescript-eslint/parser';
+import { createRuleTester } from '../helpers/rule-tester.js';
 
 import rule from '../../lib/rules/no-nested-mount.js';
 
-const ruleTester = new RuleTester({
-  languageOptions: {
-    parser: tsParser,
-    parserOptions: {
-      ecmaVersion: 'latest',
-      sourceType: 'module',
-      ecmaFeatures: { jsx: true },
-    },
-  },
-});
+const ruleTester = createRuleTester();
 
 ruleTester.run('no-nested-mount', rule, {
   valid: [

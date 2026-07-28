@@ -36,10 +36,11 @@
     "LICENSE"
   ],
   "scripts": {
-    "test": "node --test tests/rules/*.test.js"
+    "test": "node --test tests/rules/*.test.js",
+    "test:eslint-matrix": "node scripts/eslint-matrix.mjs"
   },
   "peerDependencies": {
-    "eslint": ">=8"
+    "eslint": "^8.57.0 || ^9.0.0 || ^10.0.0"
   },
   "devDependencies": {
     "@typescript-eslint/parser": "^8.0.0",

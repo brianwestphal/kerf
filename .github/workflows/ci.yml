@@ -53,8 +53,16 @@ jobs:
       - run: npx vitest run --config vitest.config.dist-full.ts
       - run: npm pack --dry-run
 
+  # The plugin's peerDependencies range is a TESTED range: every ESLint major
+  # it names is exercised here. Adding a major to the range means adding it to
+  # this matrix in the same commit — see CLAUDE.md § "The eslint-plugin peer
+  # range is a tested range".
   eslint-plugin:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        eslint: ['8.57.1', '9.39.5', '10.8.0']
     defaults:
       run:
         working-directory: eslint-plugin
@@ -63,6 +71,10 @@ jobs:
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with: { node-version: '${{ env.NODE_VERSION }}', cache: npm, cache-dependency-path: eslint-plugin/package-lock.json }
       - run: npm ci
+      # --no-save so the committed lockfile stays the source of truth for every
+      # other dependency; only ESLint itself varies across the matrix.
+      - run: npm install --no-save eslint@${{ matrix.eslint }}
+      - run: node -e "console.log('eslint', require('eslint').ESLint.version)"
       - run: npm test
 
   create-kerf-component:

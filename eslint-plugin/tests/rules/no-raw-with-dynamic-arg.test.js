@@ -1,18 +1,8 @@
-import { RuleTester } from 'eslint';
-import tsParser from '@typescript-eslint/parser';
+import { createRuleTester } from '../helpers/rule-tester.js';
 
 import rule from '../../lib/rules/no-raw-with-dynamic-arg.js';
 
-const ruleTester = new RuleTester({
-  languageOptions: {
-    parser: tsParser,
-    parserOptions: {
-      ecmaVersion: 'latest',
-      sourceType: 'module',
-      ecmaFeatures: { jsx: true },
-    },
-  },
-});
+const ruleTester = createRuleTester();
 
 ruleTester.run('no-raw-with-dynamic-arg', rule, {
   valid: [
