@@ -140,5 +140,16 @@
     "typescript": "^6.0.3",
     "typescript7": "npm:typescript@^7.0.2",
     "vitest": "^3.0.0"
+  },
+  "gitgist": {
+    "exclude": [
+      "site/public/demos/*.svg",
+      "site/src/content/docs/docs/*",
+      "site/src/content/docs/api.md",
+      "ai/*",
+      "site/public/llms.txt",
+      "bench/results.json",
+      "bench/results.md"
+    ]
   }
 }

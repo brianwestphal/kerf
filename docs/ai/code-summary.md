@@ -321,7 +321,7 @@ Runtime dep (`@preact/signals-core`) is external — consumers' bundlers pick it
 | Store reset semantics | `src/store.ts` (`REGISTRY`, `resetAllStores`) |
 | Delegation tier docs | `docs/5-event-delegation.md` |
 | Test coverage thresholds | `vitest.config.ts` |
-| Release flow / version bumping | `scripts/release.sh` (release notes drafted via gitgist) |
+| Release flow / version bumping | `scripts/release.sh` (release notes drafted via gitgist, which since 1.2.0 reads the actual code diff — `package.json#gitgist.exclude` holds back this repo's generated surfaces so they can't crowd out real changes; rationale table in CLAUDE.md § Releasing) |
 | Commit-message drafting | `npm run commit:msg` → `gitgist --staged --commit-message` (gitgist is a devDependency) |
 | GitHub Pages live-demo deploy | `.github/workflows/pages.yml` + `examples/reactivity-demo/vite.config.ts` (`base: '/kerf/demo/'`) + `site/astro.config.mjs` (`base: '/kerf'`) + `docs/9-live-demo.md` |
 | Benchmark harness / perf numbers | `bench/` (`bench/README.md` + `setup.sh` / `run.sh` / `results.sh` / `aggregate-results.mjs` are the LOCAL dev-only harness → gitignored `results.local.*`). PUBLISHED numbers come from `bench/import-krausest.mjs` (KF-291), which fetches the official upstream krausest results and writes the git-tracked `bench/results.json` + `results.md`; homepage's `site/src/components/PerfTable.astro` imports `bench/results.json` — refresh by re-running the importer and committing. |
