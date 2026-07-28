@@ -91,7 +91,7 @@
     "bench:serve": "bash bench/site.sh",
     "lint": "eslint src tests",
     "typecheck": "node node_modules/typescript7/bin/tsc --noEmit",
-    "check": "npm run lint && npm run typecheck && node scripts/check-doc-test-inventory.mjs && node scripts/check-doc-api-coverage.mjs && node scripts/check-doc-site-tickets.mjs && node scripts/check-skill-freshness.mjs && node scripts/check-feature-coverage.mjs && node scripts/check-ai-bundle.mjs && npm test && npm run build && node scripts/check-bundle-size.mjs && node scripts/check-doc-api-signatures.mjs && vitest run --config vitest.config.dist.ts && vitest run --config vitest.config.dist-full.ts && node node_modules/typescript7/bin/tsc -p tests/dist/jsx-typing/tsconfig.json && node node_modules/typescript7/bin/tsc -p site/src/examples/complete/tsconfig.json && node node_modules/typescript7/bin/tsc -p tests/dist/scaffold-typing/tsconfig.json && node scripts/check-docs-examples.mjs",
+    "check": "npm run lint && npm run typecheck && node scripts/check-doc-test-inventory.mjs && node scripts/check-doc-api-coverage.mjs && node scripts/check-doc-site-tickets.mjs && node scripts/check-skill-freshness.mjs && node scripts/check-design-rule-5.mjs && node scripts/check-feature-coverage.mjs && node scripts/check-ai-bundle.mjs && npm test && npm run build && node scripts/check-bundle-size.mjs && node scripts/check-doc-api-signatures.mjs && vitest run --config vitest.config.dist.ts && vitest run --config vitest.config.dist-full.ts && node node_modules/typescript7/bin/tsc -p tests/dist/jsx-typing/tsconfig.json && node node_modules/typescript7/bin/tsc -p site/src/examples/complete/tsconfig.json && node node_modules/typescript7/bin/tsc -p tests/dist/scaffold-typing/tsconfig.json && node scripts/check-docs-examples.mjs",
     "check:docs:examples": "node scripts/check-docs-examples.mjs",
     "check:full": "npm run check && playwright test",
     "check:docs:test-inventory": "node scripts/check-doc-test-inventory.mjs",
@@ -114,7 +114,8 @@
     "site:dev:hmr": "cd site && npm install && npm run dev:hmr",
     "site:build": "cd site && npm install && npm run build",
     "check:bundle-size": "npm run build && node scripts/check-bundle-size.mjs",
-    "check:skills": "node scripts/check-skill-freshness.mjs"
+    "check:skills": "node scripts/check-skill-freshness.mjs",
+    "check:design-rule-5": "node scripts/check-design-rule-5.mjs"
   },
   "dependencies": {
     "@preact/signals-core": "^1.14.1"
