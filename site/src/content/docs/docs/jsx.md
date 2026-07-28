@@ -106,6 +106,20 @@ The fix is in the types rather than in the runtime deliberately. Translating `{t
 
 One case the types can't reach: a signal-valued attribute (`draggable={sig}`) is opaque to the type system, so put the string in the signal — `signal('true')`, not `signal(true)`.
 
+#### Presence-or-value attributes take both forms
+
+A third shape sits between the two: attributes where the **presence** carries the meaning and a **value** refines it. `download` is the clearest case, and all three of its states are real and distinct:
+
+```tsx
+<a href="/report.pdf" download />                      {/* download; server names the file */}
+<a href="/report.pdf" download="q3-summary.pdf" />     {/* download under this filename    */}
+<a href="/report.pdf" download={false} />              {/* ordinary navigation             */}
+```
+
+`capture` on `<input type="file">` is the same shape — bare means the default capture device, `"user"` / `"environment"` pick one. Both are typed `boolean | string`.
+
+The test that tells this shape apart from an enumerated attribute: ask what `{true}` and `{false}` each render, then what those markups *mean*. Here they mean three different things. For `draggable` they collapse onto the same `auto` state, which is why `boolean` is rejected there and accepted here.
+
 Two attributes are absent for the same reason: **`<select value>` and `<textarea value>` don't exist in HTML.** A select's selection lives on its options (`<option value="b" selected>`), and a textarea's value is its child text (`<textarea>{draft}</textarea>`). Rendering a `value` attribute on either is inert markup the browser never reads, so the types don't offer it.
 
 ### 6.4.1 Dangerous URL filter

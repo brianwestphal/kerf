@@ -347,6 +347,31 @@ describe('JSX.IntrinsicElements typing (compile-time)', () => {
       .toContain('media="(prefers-color-scheme: dark)"');
   });
 
+  it('KF-439: presence-or-value attributes accept BOTH the bare and valued forms', () => {
+    // `download` is neither a plain boolean attribute nor an enumerated one:
+    // its presence means "download this", and a value refines it to a filename.
+    // All three states are real and distinct, which is exactly what separates
+    // this shape from `draggable` — there, `{true}` and `{false}` collapse onto
+    // the same `auto` state, so boolean is rejected. Here it isn't.
+    expect(String(<a href="/report.pdf" download>Get it</a>))
+      .toBe('<a href="/report.pdf" download>Get it</a>');
+    expect(String(<a href="/report.pdf" download="q3-summary.pdf">Get it</a>))
+      .toBe('<a href="/report.pdf" download="q3-summary.pdf">Get it</a>');
+    expect(String(<a href="/report.pdf" download={false}>Open it</a>))
+      .toBe('<a href="/report.pdf">Open it</a>');
+
+    // Same on <area>, which shares the hyperlink attribute set.
+    expect(String(<area alt="z" href="/z.png" download />))
+      .toBe('<area alt="z" href="/z.png" download>');
+    expect(String(<area alt="z" href="/z.png" download="zone.png" />))
+      .toBe('<area alt="z" href="/z.png" download="zone.png">');
+
+    // `capture` on a file input is the same shape and already worked; pinned
+    // here so the two stay described by one rule.
+    expect(String(<input type="file" capture />)).toBe('<input type="file" capture>');
+    expect(String(<input type="file" capture="user" />)).toBe('<input type="file" capture="user">');
+  });
+
   it('still allows arbitrary data-* and aria-* attributes', () => {
     const ok1 = <div data-action="add" data-id="42" />;
     const ok2 = <button aria-label="close" aria-pressed={false} />;

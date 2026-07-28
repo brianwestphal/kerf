@@ -84,6 +84,20 @@
  * (`draggable={sig}`) is `ReadonlySignal<unknown>`, so a boolean inside it is
  * invisible to the type system. Put the string in the signal: `signal('true')`.
  *
+ * A third shape sits between the two and accepts `boolean | string`
+ * legitimately: **presence-or-value** attributes, where the presence carries
+ * the meaning and a value refines it. `download` is the clearest case — bare,
+ * it means "download this and let the server name the file"; with a value, the
+ * value is the filename; absent, it's ordinary navigation. `capture` on
+ * `<input type="file">` is the same shape (bare = the default capture device,
+ * `user`/`environment` pick one).
+ *
+ * The test that separates this shape from the enumerated one: ask what
+ * `{true}` and `{false}` each render, then what those markups MEAN. Here all
+ * three states are real and distinct, so both forms are typed. For `draggable`
+ * they collapse onto the same `auto` state, which is why `boolean` is rejected
+ * there.
+ *
  * ## Deliberate deviations from the spec
  *
  * Each of these is a knowing departure, kept because removing it would cost
@@ -277,7 +291,14 @@ export interface HTMLAnchorAttrs extends KerfBaseAttrs {
   href?: AttrLike;
   target?: AttrLike<'_self' | '_blank' | '_parent' | '_top'>;
   rel?: AttrLike;
-  download?: AttrLike;
+  /**
+   * Presence-or-value (see the third shape in this file's header):
+   * `download={true}` renders the bare attribute — download the resource and
+   * let the server's `Content-Disposition` / the URL decide the filename —
+   * while a string overrides the filename. `download={false}` omits it, which
+   * is ordinary navigation. All three are real states, so both forms are typed.
+   */
+  download?: AttrLike<boolean | string>;
   hrefLang?: AttrLike;
   ping?: AttrLike;
   referrerPolicy?: AttrLike;
@@ -291,7 +312,8 @@ export interface HTMLAreaAttrs extends KerfBaseAttrs {
   href?: AttrLike;
   target?: AttrLike;
   rel?: AttrLike;
-  download?: AttrLike;
+  /** Presence-or-value, same as `<a download>` — see that attribute's note. */
+  download?: AttrLike<boolean | string>;
   ping?: AttrLike;
   referrerPolicy?: AttrLike;
 }
