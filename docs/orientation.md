@@ -33,8 +33,8 @@ One tier below: a signal handed *itself* into a JSX hole (`class={sig}`) binds t
 
 ## Conventions
 
-One coherent concern per file, one primary export per file, ESM-only, kebab-case filenames. Module-level mutable state is confined to three documented spots (`store.ts:REGISTRY`, `each.ts:context`, `bindings.ts:context`/`rowSink`). `npm run check` is the fast gate (lint + typecheck + tests + build + dist suites); `npm run check:full` adds Playwright. Coverage is enforced at 100% lines/functions/statements, 99% branches on `src/`. Ticket numbers (`KF-NN`) are local-only — always include a self-contained summary when referencing them. See `CLAUDE.md` § Hot Sheet integration.
+One coherent concern per file, one primary export per file, ESM-only, kebab-case filenames. Module-level mutable state is confined to four documented spots (`store.ts:REGISTRY`, `each.ts:context`, `bindings.ts:context`/`rowSink`, `dev-hooks.ts:devHooks`). `npm run check` is the fast gate (lint + typecheck + tests + build + dist suites); `npm run check:full` adds Playwright. Coverage is enforced at 100% lines/functions/statements, 99% branches on `src/`. Ticket numbers (`KF-NN`) are local-only — always include a self-contained summary when referencing them. See `CLAUDE.md` § Hot Sheet integration.
 
 ## Deeper reading
 
-`docs/1-overview.md` → `docs/15-no-build-example.md` (design); `docs/ai/usage-guide.md` (AI-first reference); `CLAUDE.md` (canonical agent doc).
+`docs/1-overview.md` → `docs/16-list-identity.md` (design); `docs/ai/usage-guide.md` (AI-first reference); `CLAUDE.md` (canonical agent doc).
