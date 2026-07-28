@@ -322,9 +322,11 @@ These root files are the **source of truth**. A `npm install kerfjs` lands gener
 
 ## The `eslint-plugin-kerfjs` peer range is a tested range
 
-The plugin's `peerDependencies.eslint` names **only** ESLint majors its rule suite has actually been executed against — currently `^8.57.0 || ^9.0.0 || ^10.0.0`, verified against the latest release of each.
+The plugin's `peerDependencies.eslint` names **only** ESLint majors its rule suite has actually been executed against — currently `^9.0.0 || ^10.0.0`, verified against the latest release of each.
 
-This replaced an open `>=8`, which is worth remembering as the cautionary case: it promised every ESLint that would ever exist while the suite ran on 9 alone, and eslint 8 was in fact **failing 7 tests** the whole time. An open range cannot be wrong in a way npm will report — the consumer installs cleanly and finds out themselves.
+This replaced an open `>=8`, worth remembering as the cautionary case. It promised every ESLint that would ever exist while the suite ran on 9 alone — and ESLint 8 was not merely untested but **unusable**: the package is ESM-only, and ESLint 8 loads `.eslintrc` plugins with `require()`, so `extends: ["plugin:kerfjs/…"]` fails to resolve the plugin at all. (8's opt-in flat-config mode does work, but that is not the path an ESLint 8 project is on by default, so the range does not claim it.) An open range cannot be wrong in a way npm will report — the consumer installs cleanly and finds out themselves.
+
+The lesson generalizes past version numbers: **passing rule tests are not proof of support.** `RuleTester` is handed the rule object directly, so it never exercises plugin *loading* or config resolution — the two things that actually broke on 8. When adding a major, lint a scratch project with the published shape as well as running the suite.
 
 **Adding a major is a deliberate, verified act, and it is four edits in one commit:**
 

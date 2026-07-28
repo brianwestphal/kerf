@@ -23,9 +23,11 @@ npm install --save-dev eslint-plugin-kerfjs
 
 ### Supported ESLint versions
 
-`peerDependencies` declares `^8.57.0 || ^9.0.0 || ^10.0.0`, and that is a **tested** range rather than an optimistic one: the rule suite runs against the latest release of each of those majors in CI on every push. A major is added to the range only after the suite has passed on it.
+`peerDependencies` declares `^9.0.0 || ^10.0.0`, and that is a **tested** range rather than an optimistic one: the rule suite runs against the latest release of each of those majors in CI on every push. A major is added to the range only after the suite has passed on it.
 
-That means a version outside the range is not "probably fine" — it is one nobody has run. If you need a newer major, open an issue rather than forcing the peer; expanding the range is a one-line change once the matrix is green.
+A version outside the range is not "probably fine" — it is one nobody has run. If you need a newer major, open an issue rather than forcing the peer; expanding the range is a one-line change once the matrix is green.
+
+**ESLint 8 is not supported.** This package is ESM-only, and ESLint 8 loads plugins for `.eslintrc` configs with `require()` — so `extends: ["plugin:kerfjs/..."]` fails to resolve the plugin at all. ESLint 8's opt-in flat-config mode can load it, but that is not the default path an ESLint 8 project is on, so the range does not claim it.
 
 ## Configure (flat config, ESLint v9+)
 
@@ -46,15 +48,12 @@ export default [
 ];
 ```
 
-## Configure (legacy `.eslintrc`)
+## Legacy `.eslintrc` configs are not supported
 
-```json
-{
-  "parser": "@typescript-eslint/parser",
-  "parserOptions": { "ecmaFeatures": { "jsx": true } },
-  "extends": ["plugin:kerfjs/legacy-recommended"]
-}
-```
+The package is ESM-only. ESLint's `.eslintrc` system loads plugins with `require()`, which cannot load an ESM package, so `extends: ["plugin:kerfjs/legacy-recommended"]` fails with *"couldn't find the config to extend from"* on ESLint 8 **and** on ESLint 9's legacy mode.
+
+Use flat config (`eslint.config.js`), shown above. The `legacy-recommended` export still exists in the package but is unreachable through any config system — treat it as deprecated.
+
 
 ## Rules
 

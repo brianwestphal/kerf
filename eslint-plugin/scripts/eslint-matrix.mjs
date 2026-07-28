@@ -36,7 +36,7 @@ const REPO = resolve(PLUGIN, '..');
  * a matrix that silently starts testing something else is not a record of what
  * was verified. Bump these deliberately when a new patch lands.
  */
-const SUPPORTED = ['8.57.1', '9.39.5', '10.8.0'];
+const SUPPORTED = ['9.39.5', '10.8.0'];
 
 const run = (cmd, args, opts = {}) =>
   execFileSync(cmd, args, { cwd: PLUGIN, encoding: 'utf8', stdio: 'pipe', ...opts });

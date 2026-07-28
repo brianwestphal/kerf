@@ -62,7 +62,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        eslint: ['8.57.1', '9.39.5', '10.8.0']
+        eslint: ['9.39.5', '10.8.0']
     defaults:
       run:
         working-directory: eslint-plugin
