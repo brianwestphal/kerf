@@ -46,7 +46,7 @@
  * Wired into `npm run check` (after the build step).
  */
 import { build } from 'esbuild';
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { gzipSync } from 'node:zlib';
@@ -116,6 +116,188 @@ const BUDGETS = [
     `,
   },
 ];
+
+/**
+ * The two figures the docs advertise. Measured, never budgeted — a budget
+ * would ratchet these and they exist only to be compared against prose.
+ *
+ * `withArraySignal` is the `main` shape plus the optional subpath, which is
+ * what "~N KB with `arraySignal`" means everywhere it appears.
+ */
+const ADVERTISED = {
+  main: BUDGETS.find((b) => b.name === 'main').entry,
+  withArraySignal: `
+    import { signal, computed, effect, batch, mount, each, delegate } from '${DIST}/index.js';
+    import { arraySignal } from '${DIST}/array-signal.js';
+    globalThis.__k = { signal, computed, effect, batch, mount, each, delegate, arraySignal };
+  `,
+};
+
+/** How far a rounded prose claim may sit from the measured value. */
+const CLAIM_TOLERANCE_KB = 0.55;
+
+/**
+ * Where kerf's own size is advertised, and the pattern that finds it.
+ *
+ * This is an allow-list on purpose. These files are full of OTHER kilobyte
+ * figures — the ~4.7 KB the dev chunk sheds, the ~1 KB `arraySignal` subpath,
+ * every competitor's runtime on the migration pages — so a blanket "check
+ * every `~N KB`" would be noise. Each entry names one claim and which figure
+ * it must match.
+ *
+ * A pattern that stops matching is a FAILURE, not a skip. Prose gets reworded;
+ * a check that silently stops checking is worse than no check, because it
+ * still reads green.
+ *
+ * Not listed, because they are generated from entries that are: `ai/skill.md`
+ * and `ai/cursorrules` (from the root files, gated by check-ai-bundle) and
+ * `site/public/llms.txt` (from `llms.txt`, via site/scripts/gen-llms-txt.mjs).
+ */
+const MIGRATION_PAGES = ['vue', 'alpine', 'solid', 'preact', 'lit', 'react', 'jquery', 'vanjs', 'svelte']
+  .map((name) => ({
+    file: `site/src/content/docs/migrating/${name}.md`,
+    // The kerf row of each page's bundle-delta table.
+    pattern: /\|\s*`kerfjs` \(incl\. signals\)\s*\|\s*~([\d.]+) KB\s*\|/,
+    figure: 'main',
+  }));
+
+const DOC_CLAIMS = [
+  { file: 'README.md', pattern: /^> ~([\d.]+) KB\. No virtual DOM\./m, figure: 'main' },
+  { file: 'README.md', pattern: /\*\*Small bundle\.\*\* ~([\d.]+) KB minified \+ gzipped/, figure: 'main' },
+  { file: 'README.md', pattern: /minified \+ gzipped including `@preact\/signals-core` \(~([\d.]+) KB with `arraySignal`\)/, figure: 'withArraySignal' },
+  { file: 'README.md', pattern: /grows the core runtime past ~([\d.]+) KB/, figure: 'main' },
+  { file: 'CLAUDE.md', pattern: /roughly ([\d.]+) KB minified \+ gzipped without `arraySignal`/, figure: 'main' },
+  { file: 'CLAUDE.md', pattern: /without `arraySignal`, ([\d.]+) KB with it/, figure: 'withArraySignal' },
+  { file: 'llms.txt', pattern: /A tiny \(~([\d.]+) KB minified \+ gzipped/, figure: 'main' },
+  { file: 'llms.txt', pattern: /~([\d.]+) KB with `arraySignal`\)/, figure: 'withArraySignal' },
+  { file: 'docs/1-overview.md', pattern: /Roughly ([\d.]+) KB minified \+ gzipped/, figure: 'main' },
+  { file: 'docs/1-overview.md', pattern: /~([\d.]+) KB if you also import `arraySignal`/, figure: 'withArraySignal' },
+  { file: 'docs/ai/usage-guide.md', pattern: /An ~([\d.]+) KB reactive UI framework/, figure: 'main' },
+  { file: 'docs/ai/usage-guide.md', pattern: /switching cost outweighs the bundle size gain \(~([\d.]+) KB\)/, figure: 'main' },
+  { file: 'docs/ai/requirements-summary.md', pattern: /tiny reactive UI framework, ~([\d.]+) KB/, figure: 'main' },
+  { file: 'docs/ai/code-summary.md', pattern: /~([\d.]+) KB min\+gz including `@preact\/signals-core`/, figure: 'main' },
+  { file: 'kerf.claude-skill.md', pattern: /kerf is a ~([\d.]+) KB reactive UI framework/, figure: 'main' },
+  { file: 'kerf.cursorrules', pattern: /a ~([\d.]+) KB reactive framework/, figure: 'main' },
+  { file: 'site/src/content/docs/why-kerf.md', pattern: /\*\*~([\d.]+) KB minified \+ gzipped, signals included\.\*\*/, figure: 'main' },
+  { file: 'site/src/content/docs/use-cases.md', pattern: /Adding ~([\d.]+) KB is reasonable/, figure: 'main' },
+  { file: 'site/src/content/docs/migrating/astro.md', pattern: /\| Per-island runtime cost \|[^|]*\| ~([\d.]+) KB \|/, figure: 'main' },
+  { file: 'site/src/content/docs/migrating/angular.md', pattern: /\*\*Kerf\*\* is a ~([\d.]+) KB reactive runtime/, figure: 'main' },
+  { file: 'site/src/content/docs/migrating/lit.md', pattern: /is lighter than kerf \(~([\d.]+) KB\)/, figure: 'main' },
+  { file: 'site/src/content/docs/migrating/svelte.md', pattern: /land well below kerf's ~([\d.]+) KB/, figure: 'main' },
+  ...MIGRATION_PAGES,
+];
+
+/**
+ * Migration pages whose bundle-delta table states a NUMERIC delta, and which
+ * therefore has to stay consistent with the two rows it is derived from.
+ *
+ * Checking this needs no opinion about whether the competitor figures are
+ * right — only that the page's own arithmetic holds. That is the failure this
+ * catches: updating kerf's row and forgetting the Delta row leaves the page
+ * confidently stating a subtraction that no longer works. It happened to two
+ * pages the same afternoon the kerf figure moved (jquery said 19 when 30 - 12
+ * is 18; vanjs said 9 when 12 - 1.6 is 10), which is precisely how much
+ * attention a row like that gets by hand.
+ *
+ * `svelte` is deliberately absent: its delta is qualitative ("kerf is heavier",
+ * because Svelte's compiled output varies per app), so there is nothing to
+ * check. `astro` states a per-island cost rather than a delta.
+ */
+const DELTA_PAGES = ['alpine', 'jquery', 'lit', 'preact', 'react', 'solid', 'vanjs', 'vue'];
+
+/** Rounding slack — a stated delta is rounded, and both operands are too. */
+const DELTA_TOLERANCE_KB = 0.6;
+
+/**
+ * Verify each migration page's stated delta equals the gap between kerf's row
+ * and one of the other rows in the same table.
+ *
+ * "One of" rather than "the row above" because `preact` lists two baselines
+ * (bare Preact, and Preact + signals) and its delta is explicitly against the
+ * second. Matching any row keeps the check honest without encoding which one
+ * each page happens to mean.
+ */
+function checkMigrationDeltas() {
+  const problems = [];
+  for (const name of DELTA_PAGES) {
+    const file = `site/src/content/docs/migrating/${name}.md`;
+    const text = readFileSync(resolve(ROOT, file), 'utf8');
+
+    const deltaRow = /\|\s*\*\*Delta[^|]*\*\*\s*\|([^|]*)\|/.exec(text);
+    if (deltaRow === null) {
+      problems.push(`${file}: no **Delta** row found — update DELTA_PAGES if the table was restructured.`);
+      continue;
+    }
+    const stated = /~([\d.]+) KB/.exec(deltaRow[1]);
+    if (stated === null) {
+      problems.push(
+        `${file}: the Delta row states no number (${deltaRow[1].trim()}).\n`
+        + '      If it became qualitative on purpose, drop this page from DELTA_PAGES.',
+      );
+      continue;
+    }
+
+    const rows = [...text.matchAll(/\|\s*([^|]*?)\s*\|\s*~([\d.]+) KB\s*\|/g)]
+      .map((m) => ({ label: m[1], kb: Number(m[2]) }))
+      .filter((r) => !/\*\*Delta/.test(r.label));
+    const kerfRow = rows.find((r) => r.label.includes('kerfjs'));
+    const others = rows.filter((r) => r !== kerfRow);
+    if (kerfRow === undefined || others.length === 0) {
+      problems.push(`${file}: could not read both a kerf row and a comparison row from the bundle table.`);
+      continue;
+    }
+
+    const statedKb = Number(stated[1]);
+    const matches = others.some((o) => Math.abs(Math.abs(o.kb - kerfRow.kb) - statedKb) <= DELTA_TOLERANCE_KB);
+    if (!matches) {
+      const options = others.map((o) => `${o.label.trim()} ${o.kb} KB -> ${Math.abs(o.kb - kerfRow.kb).toFixed(1)}`).join('; ');
+      problems.push(
+        `${file}: states a delta of ~${statedKb} KB, which matches no row against kerf's ${kerfRow.kb} KB.\n`
+        + `      candidates: ${options}`,
+      );
+    }
+  }
+  return problems;
+}
+
+/**
+ * Compare every advertised size claim against what the bundle actually weighs.
+ *
+ * This file's own header records the regression that motivated the budget
+ * gate: a realistic import grew to 16.9 KB "while the docs still advertised
+ * ~12 KB". The budget half of that was fixed; the docs half was not, and drift
+ * reappeared in the other direction — the prose said ~11 KB against a measured
+ * 12.29, and one file said ~6.1 KB. Understating is the worse direction: a
+ * reader who measures stops trusting every other number on the page.
+ */
+async function checkDocClaims(measured) {
+  const problems = [];
+  for (const claim of DOC_CLAIMS) {
+    const path = resolve(ROOT, claim.file);
+    if (!existsSync(path)) {
+      problems.push(`${claim.file}: file not found — update DOC_CLAIMS in ${'scripts/check-bundle-size.mjs'}.`);
+      continue;
+    }
+    const match = claim.pattern.exec(readFileSync(path, 'utf8'));
+    if (match === null) {
+      problems.push(
+        `${claim.file}: no size claim matched ${claim.pattern}.\n`
+        + '      The prose was reworded, or the claim was removed. Update the pattern in DOC_CLAIMS — '
+        + 'a claim that stops being checked is how this drifted in the first place.',
+      );
+      continue;
+    }
+    const claimed = Number(match[1]);
+    const actual = measured[claim.figure];
+    if (Math.abs(claimed - actual) > CLAIM_TOLERANCE_KB) {
+      problems.push(
+        `${claim.file}: advertises ~${claimed} KB, but ${claim.figure} measures ${actual.toFixed(2)} KB.\n`
+        + `      ${match[0].trim()}`,
+      );
+    }
+  }
+  return problems;
+}
 
 async function measure(spec, { metafile = false } = {}) {
   const result = await build({
@@ -198,7 +380,30 @@ async function main() {
     }
   }
 
+  // The advertised numbers, measured the same way as the budgets above.
+  const advertised = {
+    main: (await measure({ entry: ADVERTISED.main })).gzipKb,
+    withArraySignal: (await measure({ entry: ADVERTISED.withArraySignal })).gzipKb,
+  };
+  console.log(
+    `\n[check-bundle-size] advertised figures: main ${advertised.main.toFixed(2)} KB, `
+    + `with arraySignal ${advertised.withArraySignal.toFixed(2)} KB`,
+  );
+
   if (reportOnly) return;
+
+  const claimProblems = [...(await checkDocClaims(advertised)), ...checkMigrationDeltas()];
+  if (claimProblems.length > 0) {
+    console.error('\n[check-bundle-size] docs advertise a size the bundle does not weigh:\n');
+    for (const p of claimProblems) console.error(`  - ${p}`);
+    console.error(
+      `\nRound to the nearest KB, and round UP rather than down — understating is the worse\n`
+      + 'direction to be wrong in. Then update every surface: `grep -rn "KB" README.md CLAUDE.md\n'
+      + 'llms.txt docs/ site/src/content/docs/`. The migration pages also carry a Delta row\n'
+      + "computed against kerf's size, which needs recalculating by hand.\n",
+    );
+    process.exit(1);
+  }
 
   if (wins.length > 0) {
     console.log('\n[check-bundle-size] budgets are now too loose:\n');
@@ -216,7 +421,10 @@ async function main() {
   }
   if (wins.length > 0) process.exit(1);
 
-  console.log('\n[check-bundle-size] OK — every entry within budget.');
+  console.log(
+    `\n[check-bundle-size] OK — every entry within budget, and ${DOC_CLAIMS.length} advertised `
+    + `size claims match what the bundle weighs, and ${DELTA_PAGES.length} migration deltas add up.`,
+  );
 }
 
 await main();
