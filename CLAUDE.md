@@ -146,7 +146,8 @@ npm run check:bundle-size # KF-428: builds, then bundles five representative con
 npm run check:docs:examples  # ensures /kerf/run/ doc links resolve to built+tested examples, doc/source example pairs match, and self-contained kerf code blocks compile
 npm run fuzz:soak         # long fuzz soak — windows of seeds in fresh processes, no total limit (`-- --total 200000`)
 npm run check             # local pre-commit gate: lint + typecheck + doc inventory + api/feature coverage + ai-bundle sync + test + build + both dist:* suites + jsx-typing/examples/scaffold typing gates + docs-examples check
-npm run check:full        # KF-118: pre-push gate — `check` plus the Playwright browser suite (chromium/firefox/webkit), which exercises tests/dist/consumer-app/ end-to-end
+npm run check:audit       # KF-450: `npm audit --omit=dev --audit-level=high` — the PUBLISHED tree, which is the only surface a consumer inherits (`@preact/signals-core` and nothing else). Dev-tree advisories get their own tickets rather than gating here, because a permanently-red audit is one nobody reads. Runs in `check:full`, NOT `check`: audit needs the network and `check` is the pre-commit hook, which has to work offline
+npm run check:full        # KF-118: pre-push gate — `check` plus the production audit and the Playwright browser suite (chromium/firefox/webkit), which exercises tests/dist/consumer-app/ end-to-end
 ```
 
 `npm run check` is what the husky pre-commit hook runs — the canonical "is everything green" command for fast local turnaround. `npm run check:full` is the heavier opt-in gate: run it before `git push` to also exercise the Playwright tests (SVG/MathML namespacing, IME composition, mutation counts, stateful attributes — anything the happy-dom unit tests can't model truthfully). CI runs both on every push/PR (see `.github/workflows/ci.yml`); locally the split keeps the inner loop fast and lets you opt into the full gate when you want push-day confidence.

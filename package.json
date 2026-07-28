@@ -93,7 +93,7 @@
     "typecheck": "node node_modules/typescript7/bin/tsc --noEmit",
     "check": "npm run lint && npm run typecheck && node scripts/check-doc-test-inventory.mjs && node scripts/check-doc-api-coverage.mjs && node scripts/check-doc-site-tickets.mjs && node scripts/check-dev-warn-docs.mjs && node scripts/check-skill-freshness.mjs && node scripts/check-design-rule-5.mjs && node scripts/check-feature-coverage.mjs && node scripts/check-ai-bundle.mjs && npm test && npm run build && node scripts/check-bundle-size.mjs && node scripts/check-doc-api-signatures.mjs && vitest run --config vitest.config.dist.ts && vitest run --config vitest.config.dist-full.ts && node node_modules/typescript7/bin/tsc -p tests/dist/jsx-typing/tsconfig.json && node node_modules/typescript7/bin/tsc -p site/src/examples/complete/tsconfig.json && node node_modules/typescript7/bin/tsc -p tests/dist/scaffold-typing/tsconfig.json && node scripts/check-docs-examples.mjs",
     "check:docs:examples": "node scripts/check-docs-examples.mjs",
-    "check:full": "npm run check && playwright test",
+    "check:full": "npm run check && npm run --silent check:audit && playwright test",
     "check:docs:test-inventory": "node scripts/check-doc-test-inventory.mjs",
     "check:docs:api-coverage": "node scripts/check-doc-api-coverage.mjs",
     "check:docs:site-tickets": "node scripts/check-doc-site-tickets.mjs",
@@ -116,7 +116,8 @@
     "check:bundle-size": "npm run build && node scripts/check-bundle-size.mjs",
     "check:skills": "node scripts/check-skill-freshness.mjs",
     "check:design-rule-5": "node scripts/check-design-rule-5.mjs",
-    "check:docs:dev-warns": "node scripts/check-dev-warn-docs.mjs"
+    "check:docs:dev-warns": "node scripts/check-dev-warn-docs.mjs",
+    "check:audit": "npm audit --omit=dev --audit-level=high"
   },
   "dependencies": {
     "@preact/signals-core": "^1.14.1"
