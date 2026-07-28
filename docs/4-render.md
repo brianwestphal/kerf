@@ -85,7 +85,7 @@ import { each } from 'kerfjs';
 > // combine with your own key if you use one: { key: 'list', cacheKey: (_, i) => i }
 > ```
 >
-> This trades the memo's benefit for those rows (a reorder now re-renders every displaced row, O(n) on a structural change) for correctness — pay it only when the index actually appears in the output. The opt-in dev warning `KERF_DEV_WARN_STALE_INDEX=1` fires the first time a list reuses a memoized row at a changed index while its render function reads the index (see [`docs/11-dev-warnings.md`](11-dev-warnings.md) §11.2.15).
+> This trades the memo's benefit for those rows (a reorder now re-renders every displaced row, O(n) on a structural change) for correctness — pay it only when the index actually appears in the output. The opt-in dev warning `KERF_DEV_WARN_STALE_INDEX=1` fires the first time a list reuses a memoized row at a changed index while its render function reads the index (see [`docs/11-dev-warnings.md`](11-dev-warnings.md) §11.2.10).
 >
 > One edge the `cacheKey` fix does *not* cover: a single `arraySignal` batch in which freshly-inserted rows displace *each other* — e.g. `batch(() => { rows.insert(1, a); rows.insert(1, b) })`, where the second insert pushes the first to a later index. The workaround re-renders rows that already existed, but a row inserted earlier in the same batch is rendered once at its insert-time index and isn't revisited, so it can show a stale index until the next unrelated re-render heals it. The DOM order is correct; only the `index` value on those brand-new rows lags. The dev warning still flags it. If you index-label rows *and* do multi-insert batches at the same position, prefer immutable whole-array updates (`signal<T[]>` + `each(items.value, …)`), which always render every row at its final index.
 
@@ -394,7 +394,7 @@ mount(footerEl, () => <div>{cartTotal.value.toFixed(2)}</div>);
 
 Each region re-renders only when its own dependencies change. Adding an item to the cart triggers all three; changing an unrelated piece of state triggers none.
 
-The regions must be disjoint: mounting the same element twice, or an element inside (or containing) an already-mounted tree, throws immediately — one mount per tree. Compose with plain functions that return JSX instead of nesting mounts; see §11.2.11 in `docs/11-dev-warnings.md` for the guard's details.
+The regions must be disjoint: mounting the same element twice, or an element inside (or containing) an already-mounted tree, throws immediately — one mount per tree. Compose with plain functions that return JSX instead of nesting mounts; see §11.2.13 in `docs/11-dev-warnings.md` for the guard's details.
 
 ## 4.6 Server-rendering
 

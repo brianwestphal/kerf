@@ -49,11 +49,13 @@ before the program runs:
   Hard Rule 9 partial-set bugs as type errors. All complete example apps in
   this repo are under that gate.
 - **`eslint-plugin-kerfjs`** — a separate publishable package, in
-  [`eslint-plugin/`](../eslint-plugin/README.md), with five rules
+  [`eslint-plugin/`](../eslint-plugin/README.md), with eight rules
   that fire at edit time for hard-rule violations the dev-warns can't see
-  syntactically: `no-inline-jsx-event-handlers` (Rule 10),
-  `require-data-key-in-each` (Rule 2), `require-delegate-disposer` (Rule 5),
-  `no-nested-mount` (Rule 6), `prefer-module-jsx-augmentation` (Rule 12).
+  syntactically. Four are errors: `no-inline-jsx-event-handlers` (Rule 10),
+  `require-data-key-in-each` (Rule 2), `no-nested-mount` (Rule 6),
+  `prefer-module-jsx-augmentation` (Rule 12). Four warn:
+  `require-delegate-disposer` (Rule 5), `prefer-attr-selector`,
+  `no-raw-with-dynamic-arg`, `ai-assistant-configs`.
   Three additional rules cover non-hard-rule patterns:
   `no-raw-with-dynamic-arg` (XSS audit trail — warns on every dynamic `raw()`
   argument so the `eslint-disable` suppression becomes the permanent
@@ -69,6 +71,7 @@ information no static checker has.
 ## 11.2 The warning family
 
 ### 11.2.1 `KERF_DEV_WARN_REBUILT_LISTENERS=1` (Rule 4)
+
 
 **Module:** [`src/dev-listener-warn.ts`](../src/dev-listener-warn.ts).
 **Trigger:** a node carrying an imperative `addEventListener` listener is
@@ -92,6 +95,7 @@ listeners in their constructor and library-owned subtrees the consumer
 forgot to wrap in `data-morph-skip`.
 
 ### 11.2.2 `KERF_DEV_WARN_UNTRACKED_SIGNALS=1` (Rule 8)
+
 
 **Module:** [`src/dev-signal.ts`](../src/dev-signal.ts).
 **Trigger:** a signal's `.value` is written when no subscriber has ever
@@ -145,6 +149,7 @@ it the better fix becomes available and the suite says so.
 
 ### 11.2.3 `KERF_DEV_WARN_NARROW_SET=1` (Rule 9)
 
+
 **Module:** [`src/dev-store-warn.ts`](../src/dev-store-warn.ts).
 **Trigger:** `defineStore.set(next)` is called with at least one key from
 the current state missing in `next`. **What it catches:** Rule 9
@@ -178,6 +183,7 @@ would have missed same-count-different-keys cases.
 
 ### 11.2.4 `KERF_DEV_WARN_DUPLICATE_EACH_KEYS=1`
 
+
 **Module:** [`src/dev-each-warn.ts`](../src/dev-each-warn.ts).
 **Trigger:** `eachSnapshotById` (the core render path of `each()`) discovers that two or more items in the same list produce the same value from the `cacheKey` function. Only fires when a `cacheKey` function was actually provided (if no third arg is passed to `each()`, the check is skipped entirely).
 
@@ -191,6 +197,7 @@ would have missed same-count-different-keys cases.
 
 ### 11.2.5 `KERF_DEV_WARN_EACH_IN_MORPH_SKIP=1`
 
+
 **Module:** [`src/dev-each-warn.ts`](../src/dev-each-warn.ts).
 **Trigger:** `bindListsFromMarkers` (called by `mount()` on every first-render or newly-appearing list) discovers that a new list binding's `liveParent` has a `data-morph-skip` ancestor between it and the mount `rootEl`. **What it catches:** the asymmetric-freeze pattern — `each()` rows inside a `data-morph-skip` subtree still update (the keyed reconciler operates directly on the live parent independently of the morph), but static signal-reactive JSX inside the same skipped ancestor is frozen because the morph short-circuits before visiting that element's children.
 
@@ -202,6 +209,7 @@ would have missed same-count-different-keys cases.
 
 ### 11.2.6 `KERF_DEV_WARN_DELEGATE_IN_EFFECT=1`
 
+
 **Module:** [`src/dev-delegate-warn.ts`](../src/dev-delegate-warn.ts).
 **Trigger:** `delegate()` or `delegateCapture()` is called while the call stack is inside an `effect()` body. **What it catches:** the listener-stacking pattern documented in `docs/5-event-delegation.md` §5.3 "When capturing the disposer still isn't enough" — every effect re-run executes its body fresh, so a `delegate()` call inside the body installs a NEW root listener on each re-run. The effect's disposer cleans up the reactive subscription but not the side-effects the body produced, so previous listeners stay attached, the per-listener closures pin `rootEl` / `handler` / everything the handler closes over, and listener count grows linearly with signal churn.
 
@@ -212,6 +220,7 @@ would have missed same-count-different-keys cases.
 **Why opt-in.** No realistic kerf code legitimately calls `delegate()` inside an `effect()` body — but the wrap of `effect()` itself adds a microscopic call-frame overhead, so the bare `coreEffect` re-export stays the default path when the env var is unset. Production NODE_ENV short-circuits before the wrap decision; production bundles see the bare re-export with zero overhead.
 
 ### 11.2.7 `KERF_DEV_WARN_STALE_BINDING=1`
+
 
 **Module:** [`src/dev-binding-warn.ts`](../src/dev-binding-warn.ts).
 **Trigger:** `mount()` takes its fast path (a re-render whose static-surrounds
@@ -250,6 +259,7 @@ removal, so they never reach this warner.)
 
 ### 11.2.8 `KERF_DEV_WARN_VALUE_ONLY_RERENDER=1`
 
+
 **Module:** [`src/dev-rerender-warn.ts`](../src/dev-rerender-warn.ts).
 **Trigger:** a `mount()` re-render whose static-surrounds HTML *changed* (the byte-compare failed, so the full morph pass runs) but where every difference is confined to **text content and attribute values** — no element added, removed, moved, or retagged.
 **What it catches:** value holes written as `.value` reads that could have been fine-grained bindings. Under the "values bind, structure re-renders" idiom (`docs/2-reactivity.md` §2.9), a value-only re-render means the whole render + parse + morph pass was avoidable: passing the signal/computed itself (`{count}`, `class={sig}`) updates just the changed nodes — and a mount whose render reads no `.value` never re-renders at all.
@@ -261,6 +271,7 @@ removal, so they never reach this warner.)
 **Why opt-in.** Re-rendering on `.value` reads is *correct* — this is a migration aid for adopting the bound-first idiom, not a lint on broken code. The parse-and-compare also has real (dev-only) cost, so it runs only when asked, and only on the already-slow surrounds-changed path; the env read short-circuits everything else.
 
 ### 11.2.9 `KERF_DEV_WARN_LIST_REBIND=1`
+
 
 **Module:** [`src/dev-list-rebind-warn.ts`](../src/dev-list-rebind-warn.ts).
 **Trigger:** `bindListsFromMarkers` takes its **self-heal branch** — a list
@@ -305,119 +316,8 @@ element changes driven by state — and the rebuild-with-repopulate behavior is
 then exactly what the author wants. The opt-in keeps the diagnostic available
 for projects that want it without penalising that pattern.
 
-### 11.2.10 List identity shift (always-on, not opt-in)
+### 11.2.10 `KERF_DEV_WARN_STALE_INDEX=1`
 
-**Module:** [`src/dev-list-key-warn.ts`](../src/dev-list-key-warn.ts).
-**Trigger:** `eachGranular` finds that a list id's recorded data source has
-changed — i.e. this call-order id is now a *different* list than it was last
-render.
-**What it catches:** the silent cost of unkeyed list identity. A list without
-an explicit key is identified by its call order, so any render that changes how
-many `each()` calls run before it reassigns its identity; the list is then
-rebuilt from scratch and its rows lose DOM identity, focus, scroll position and
-in-progress IME composition, at O(rows) instead of O(changes). See
-[`docs/16-list-identity.md`](16-list-identity.md).
-
-**Mechanism.** `eachGranular` records an unkeyed list id as a *candidate* when
-its recorded data source changed; `mount()` reports candidates at the end of
-the render, and only when the render's `each()` call count ALSO changed —
-which is what an id shift actually requires. A changed source on its own is
-not a shift: the same list swapping which signal it renders (a filter or tab
-switch) changes source too, and warning there told authors to fix correct
-code. Keyed lists are excluded entirely, since a key is the identity. It runs only when
-the dev entry is installed (core reaches it through the `listIdShift` hook slot),
-dedups on a per-render-context `warnedIds` Set, and names the fix:
-`each(items, render, { key: 'my-list' })` — plus the non-obvious part, that
-keying the *conditional* list is usually enough, because a keyed list does not
-occupy a call-order slot.
-
-**Dedup scope.** Per list id, **per mount** — the set lives on the render
-context, because ids are per-mount and a module-level set meant the first mount
-to warn for id `'0'` silenced every other mount's genuine shift forever.
-
-**Why always-on rather than env-gated.** Same reasoning as the missing-row-key
-warning: it fires only when kerf is about to silently discard row state, it has
-no legitimate-use false-positive surface (an author never *wants* a list rebuilt
-by accident), and it names a one-line fix. Opting into a warning you would
-always want is friction with no benefit.
-
-Throughout this doc, **"always-on" means "always on once `kerfjs/dev` is
-installed"** (§11.3.6) — it is the per-warning env var these skip, not the
-install step. The double-mount guard (§11.2.11) is the sole exception: it is
-unconditional in every build, dev entry or not, because it throws on a
-structural error rather than warning about a pattern.
-
-**Known blind spots.** Two shapes stay invisible: a shift between two `each()`
-calls over the *same* `arraySignal` (indistinguishable by source), and two
-unkeyed lists swapping order at a constant call count. Both are the price of a
-conservative trigger, and keys close both by construction — which is what the
-message asks for.
-
-### 11.2.11 Double-mount guard (always-on, not opt-in)
-
-**Module:** [`src/mount.ts`](../src/mount.ts).
-**Trigger:** `mount(el, render)` is called on an element that is already the root of a live mount, or on a descendant or ancestor of such an element. **What it catches:** the "two competing effects" pattern — two `mount()` calls on the same DOM subtree both install `effect()` watchers that fight over the same live nodes, producing conflicting DOM mutations and unpredictable rendering output with no runtime error.
-
-**Mechanism.** `mount()` assigns a non-enumerable `Symbol.for('kerfjs.mounted')` marker to the `rootEl` at mount time. `assertNotInsideMountedTree()` checks the element itself (same-element double-mount), all ancestors (descendant-of-mounted mount), and all descendants (ancestor-of-mounted mount) before allowing the mount to proceed. If any check fires, it throws with a message naming the element (`<tagName>` or `<tagName#id>`) and pointing at the disposer as the fix. The disposer returned by `mount()` deletes the marker, so a legitimate unmount + remount cycle never false-positives.
-
-**This guard is unconditional — it does not even require the dev entry.** Double-mounting is almost never intentional — it's a programming error in every realistic scenario (hot-reload teardown missing, copy-paste island setup, conditional `mount()` hitting the same element on re-evaluation). A `console.warn` would let the broken two-effect state continue running, which is harder to debug than an immediate throw. The nested-mount cases (`mount(ancestor)` after `mount(descendant)`) are structural errors that must also fail hard. Unlike the opt-in family, there is no env var to silence this guard.
-
-**Sibling mounts are allowed.** Two `mount()` calls on independent elements (neither is an ancestor or descendant of the other) work correctly — each manages its own subtree. This is the multi-island pattern for apps with independently reactive regions of the page.
-
-### 11.2.12 Dangerous-URL screen (throws in dev, warns in prod)
-
-**Module:** [`src/utils/urlScreen.ts`](../src/utils/urlScreen.ts), applied in [`src/jsx-runtime.ts`](../src/jsx-runtime.ts) (`renderAttr`) and [`src/bindings.ts`](../src/bindings.ts) (`setBoundAttr`).
-**Trigger:** a plain-string URL value that resolves to a `javascript:` / `vbscript:` scheme or a script-executing `data:` document type is written to a URL-bearing attribute (`href`, `src`, `xlink:href`, `formaction`, `action`, `data`). **What it catches:** a stored-XSS payload reaching a `href={...}` interpolation that would otherwise turn into a clickable script vector. See [`docs/6-jsx-runtime.md`](/kerf/docs/jsx/) §6.4.1 for the screening details.
-
-**Mechanism.** The attribute is always **dropped** (omitted from the string / removed from the live node). How the drop is reported depends on the mode: in **dev** the screen **throws an `Error`** with the diagnostic; in **prod** it `console.warn`s and drops. Mode comes from whether the diagnostics are installed: `kerfjs/dev` fills the `urlScreenThrow` hook slot, so importing it selects the throwing behavior and omitting it selects warn+drop. kerf no longer probes the environment to decide (§11.3.6) — which also fixes the case where a production browser bundle inferred DEVELOPMENT and threw on attacker-influenced data. `raw()` / `SafeHtml` values are the documented bypass in both modes.
-
-**Like the double-mount guard, this is always-on (unconditional), not opt-in** — there is no env var to silence it, only the mode split. A dropped-but-silent dangerous URL in dev is the exact failure mode the throw fixes (nobody reads the console; the attribute just quietly vanishes). Production keeps the non-crashing warn+drop so attacker-influenced data can never take down a shipped app — **production output is byte-identical to before this split.** This is the one place kerf changes behavior between dev and prod for the *same* input; it's justified because the dev throw only ever fires on input a correct app would never produce (a dangerous URL that isn't wrapped in `raw()`).
-
-### 11.2.14 Parser repairs (`KERF_DEV_WARN_PARSER_REPAIR=1`)
-
-**Module:** [`src/dev-parser-repair-warn.ts`](../src/dev-parser-repair-warn.ts), called from [`src/mount.ts`](../src/mount.ts) on first render.
-**Trigger:** the rendered markup puts a block-level element inside a `<p>`. **What it catches:** the structure you wrote silently not being the structure you get.
-
-kerf renders JSX to an HTML string and lets the parser build the DOM, so the parser's content-model repairs apply. `<p>` may contain only phrasing content, so the parser **closes it** before a block-level child:
-
-```tsx
-<p><section>head</section><ul>{each(rows, …)}</ul></p>
-```
-
-parses as `<p></p><section>head</section><ul>…</ul>` — an empty `<p>`, with every child hoisted to be its *sibling*.
-
-**What it costs, precisely.** Less than it looks. kerf reconciles the tree the parser actually produced, and does so consistently: updates, list inserts and conditional toggles all behave correctly afterwards. Nothing is corrupted in the ordinary case. What you lose is the *shape you wrote* — your `<p>` is empty, your children are elsewhere, and any CSS or `querySelector` that assumed the nesting quietly stops matching.
-
-**Why it warrants a warning rather than a doc note:** distance. The symptom is "my list isn't inside the element I put it in", three levels away from the `<p>` that caused it, and nothing in the JSX looks wrong. The fix is a one-liner (use a `<div>`, or move the block content out) once you know which tag pair to look at.
-
-**Why opt-in:** detection scans the emitted HTML rather than re-parsing it. A block-level open tag before a `</p>` is an unambiguous repair signal in kerf's own well-formed output, but it is a heuristic rather than a proof, so the family's opt-in default keeps that judgement with the consumer. One-shot per offending tag pair.
-
-Related: the `each()` row contract already throws for the `<table>`/implicit-`<tbody>` case, which is the same family of repair reaching kerf's row binding rather than its static surrounds.
-
-### 11.2.13 Structural invariant checks (`KERF_DEV_INVARIANTS`)
-
-**Module:** [`src/dev-invariants.ts`](../src/dev-invariants.ts), called from [`src/mount.ts`](../src/mount.ts) after each render's reconcile pass.
-**Trigger:** a list binding disagrees with the live DOM. **What it catches:** the *state* that precedes a wrong render, at the render that created it.
-
-Unlike everything else in this family, this one does not describe a pattern the author should change — it reports a **kerf bug**. It exists because every reconciler defect found so far shared one property: kerf kept running happily in a corrupt state, and the damage surfaced several operations later as a wrong render, far from its cause. Each check below is the negation of a defect that actually shipped:
-
-| Check | The defect it would have caught |
-| --- | --- |
-| **marker-live** | a binding whose marker left the tree — every later reconcile mutates a detached parent |
-| **marker-id** | an id carried by a *different* marker node, which pointed an arriving list at the previous occupant's container |
-| **row-parent / row-live** | a binding holding rows that are detached or attached elsewhere — the "stranded rows" shape |
-| **row-order** | rows that no longer follow their own marker in document order |
-| **row-alias** | one row node claimed by two bindings |
-| **region-overlap** | two lists in one parent interleaving their rows |
-| **row-count** | a binding holding a different number of rows than the data it rendered from. Every other check is *internal* — it confirms the binding agrees with the live DOM — so a list that reconciled to the wrong count still passes them if it's self-consistent. Comparing against the source length is the one check that catches a list rendering too few or too many rows; it is what would have caught the self-healed-empty-binding defect — a binding that was internally perfect and externally blank — at the render that caused it. Supplied per-list by `mount()` only when the checks are enabled, so production pays nothing. |
-
-**Modes.** `KERF_DEV_INVARIANTS=1` warns; `KERF_DEV_INVARIANTS=throw` throws. Unset (the default) is a complete no-op — the DOM is never walked. The `throw` mode exists because a warning inside a passing test is invisible: kerf's own suites set `throw` (in `vitest.config.ts` and both dist configs) so any future corruption fails the run at the render that caused it. Consumers debugging a suspected reconciler bug want `1` first.
-
-**Cost.** O(rows) per render when enabled, zero when not. Like the rest of the family the checks live in the dev chunk, so a production build that never imports `kerfjs/dev` cannot reach them at all.
-
-**Pairs with the reconciler fuzz harness** (`tests/unit/reconciler-fuzz.test.ts`): the harness generates the sequences, these checks notice a sequence went wrong. Neither is redundant — the harness alone only sees final-output mismatches, and the checks alone only fire on shapes someone thought to write.
-
-### 11.2.15 `KERF_DEV_WARN_STALE_INDEX=1`
 
 **Module:** [`src/dev-list-index-warn.ts`](../src/dev-list-index-warn.ts).
 **Trigger:** an `each()` reconcile reuses a memoized row at an index different from
@@ -456,6 +356,123 @@ the index into the memo key means a shift re-renders every displaced row (O(n) o
 a structural change), which a list whose index only labels never-reordered rows
 should not pay. Opt-in keeps the diagnostic available without penalising either
 shape.
+
+### 11.2.11 Parser repairs (`KERF_DEV_WARN_PARSER_REPAIR=1`)
+
+
+**Module:** [`src/dev-parser-repair-warn.ts`](../src/dev-parser-repair-warn.ts), called from [`src/mount.ts`](../src/mount.ts) on first render.
+**Trigger:** the rendered markup puts a block-level element inside a `<p>`. **What it catches:** the structure you wrote silently not being the structure you get.
+
+kerf renders JSX to an HTML string and lets the parser build the DOM, so the parser's content-model repairs apply. `<p>` may contain only phrasing content, so the parser **closes it** before a block-level child:
+
+```tsx
+<p><section>head</section><ul>{each(rows, …)}</ul></p>
+```
+
+parses as `<p></p><section>head</section><ul>…</ul>` — an empty `<p>`, with every child hoisted to be its *sibling*.
+
+**What it costs, precisely.** Less than it looks. kerf reconciles the tree the parser actually produced, and does so consistently: updates, list inserts and conditional toggles all behave correctly afterwards. Nothing is corrupted in the ordinary case. What you lose is the *shape you wrote* — your `<p>` is empty, your children are elsewhere, and any CSS or `querySelector` that assumed the nesting quietly stops matching.
+
+**Why it warrants a warning rather than a doc note:** distance. The symptom is "my list isn't inside the element I put it in", three levels away from the `<p>` that caused it, and nothing in the JSX looks wrong. The fix is a one-liner (use a `<div>`, or move the block content out) once you know which tag pair to look at.
+
+**Why opt-in:** detection scans the emitted HTML rather than re-parsing it. A block-level open tag before a `</p>` is an unambiguous repair signal in kerf's own well-formed output, but it is a heuristic rather than a proof, so the family's opt-in default keeps that judgement with the consumer. One-shot per offending tag pair.
+
+Related: the `each()` row contract already throws for the `<table>`/implicit-`<tbody>` case, which is the same family of repair reaching kerf's row binding rather than its static surrounds.
+
+### 11.2.12 List identity shift (always-on, not opt-in)
+
+
+**Module:** [`src/dev-list-key-warn.ts`](../src/dev-list-key-warn.ts).
+**Trigger:** `eachGranular` finds that a list id's recorded data source has
+changed — i.e. this call-order id is now a *different* list than it was last
+render.
+**What it catches:** the silent cost of unkeyed list identity. A list without
+an explicit key is identified by its call order, so any render that changes how
+many `each()` calls run before it reassigns its identity; the list is then
+rebuilt from scratch and its rows lose DOM identity, focus, scroll position and
+in-progress IME composition, at O(rows) instead of O(changes). See
+[`docs/16-list-identity.md`](16-list-identity.md).
+
+**Mechanism.** `eachGranular` records an unkeyed list id as a *candidate* when
+its recorded data source changed; `mount()` reports candidates at the end of
+the render, and only when the render's `each()` call count ALSO changed —
+which is what an id shift actually requires. A changed source on its own is
+not a shift: the same list swapping which signal it renders (a filter or tab
+switch) changes source too, and warning there told authors to fix correct
+code. Keyed lists are excluded entirely, since a key is the identity. It runs only when
+the dev entry is installed (core reaches it through the `listIdShift` hook slot),
+dedups on a per-render-context `warnedIds` Set, and names the fix:
+`each(items, render, { key: 'my-list' })` — plus the non-obvious part, that
+keying the *conditional* list is usually enough, because a keyed list does not
+occupy a call-order slot.
+
+**Dedup scope.** Per list id, **per mount** — the set lives on the render
+context, because ids are per-mount and a module-level set meant the first mount
+to warn for id `'0'` silenced every other mount's genuine shift forever.
+
+**Why always-on rather than env-gated.** Same reasoning as the missing-row-key
+warning: it fires only when kerf is about to silently discard row state, it has
+no legitimate-use false-positive surface (an author never *wants* a list rebuilt
+by accident), and it names a one-line fix. Opting into a warning you would
+always want is friction with no benefit.
+
+Throughout this doc, **"always-on" means "always on once `kerfjs/dev` is
+installed"** (§11.3.6) — it is the per-warning env var these skip, not the
+install step. The double-mount guard (§11.2.13) is the sole exception: it is
+unconditional in every build, dev entry or not, because it throws on a
+structural error rather than warning about a pattern.
+
+**Known blind spots.** Two shapes stay invisible: a shift between two `each()`
+calls over the *same* `arraySignal` (indistinguishable by source), and two
+unkeyed lists swapping order at a constant call count. Both are the price of a
+conservative trigger, and keys close both by construction — which is what the
+message asks for.
+
+### 11.2.13 Double-mount guard (always-on, not opt-in)
+
+
+**Module:** [`src/mount.ts`](../src/mount.ts).
+**Trigger:** `mount(el, render)` is called on an element that is already the root of a live mount, or on a descendant or ancestor of such an element. **What it catches:** the "two competing effects" pattern — two `mount()` calls on the same DOM subtree both install `effect()` watchers that fight over the same live nodes, producing conflicting DOM mutations and unpredictable rendering output with no runtime error.
+
+**Mechanism.** `mount()` assigns a non-enumerable `Symbol.for('kerfjs.mounted')` marker to the `rootEl` at mount time. `assertNotInsideMountedTree()` checks the element itself (same-element double-mount), all ancestors (descendant-of-mounted mount), and all descendants (ancestor-of-mounted mount) before allowing the mount to proceed. If any check fires, it throws with a message naming the element (`<tagName>` or `<tagName#id>`) and pointing at the disposer as the fix. The disposer returned by `mount()` deletes the marker, so a legitimate unmount + remount cycle never false-positives.
+
+**This guard is unconditional — it does not even require the dev entry.** Double-mounting is almost never intentional — it's a programming error in every realistic scenario (hot-reload teardown missing, copy-paste island setup, conditional `mount()` hitting the same element on re-evaluation). A `console.warn` would let the broken two-effect state continue running, which is harder to debug than an immediate throw. The nested-mount cases (`mount(ancestor)` after `mount(descendant)`) are structural errors that must also fail hard. Unlike the opt-in family, there is no env var to silence this guard.
+
+**Sibling mounts are allowed.** Two `mount()` calls on independent elements (neither is an ancestor or descendant of the other) work correctly — each manages its own subtree. This is the multi-island pattern for apps with independently reactive regions of the page.
+
+### 11.2.14 Dangerous-URL screen (throws in dev, warns in prod)
+
+
+**Module:** [`src/utils/urlScreen.ts`](../src/utils/urlScreen.ts), applied in [`src/jsx-runtime.ts`](../src/jsx-runtime.ts) (`renderAttr`) and [`src/bindings.ts`](../src/bindings.ts) (`setBoundAttr`).
+**Trigger:** a plain-string URL value that resolves to a `javascript:` / `vbscript:` scheme or a script-executing `data:` document type is written to a URL-bearing attribute (`href`, `src`, `xlink:href`, `formaction`, `action`, `data`). **What it catches:** a stored-XSS payload reaching a `href={...}` interpolation that would otherwise turn into a clickable script vector. See [`docs/6-jsx-runtime.md`](/kerf/docs/jsx/) §6.4.1 for the screening details.
+
+**Mechanism.** The attribute is always **dropped** (omitted from the string / removed from the live node). How the drop is reported depends on the mode: in **dev** the screen **throws an `Error`** with the diagnostic; in **prod** it `console.warn`s and drops. Mode comes from whether the diagnostics are installed: `kerfjs/dev` fills the `urlScreenThrow` hook slot, so importing it selects the throwing behavior and omitting it selects warn+drop. kerf no longer probes the environment to decide (§11.3.6) — which also fixes the case where a production browser bundle inferred DEVELOPMENT and threw on attacker-influenced data. `raw()` / `SafeHtml` values are the documented bypass in both modes.
+
+**Like the double-mount guard, this is always-on (unconditional), not opt-in** — there is no env var to silence it, only the mode split. A dropped-but-silent dangerous URL in dev is the exact failure mode the throw fixes (nobody reads the console; the attribute just quietly vanishes). Production keeps the non-crashing warn+drop so attacker-influenced data can never take down a shipped app — **production output is byte-identical to before this split.** This is the one place kerf changes behavior between dev and prod for the *same* input; it's justified because the dev throw only ever fires on input a correct app would never produce (a dangerous URL that isn't wrapped in `raw()`).
+
+### 11.2.15 Structural invariant checks (`KERF_DEV_INVARIANTS`)
+
+
+**Module:** [`src/dev-invariants.ts`](../src/dev-invariants.ts), called from [`src/mount.ts`](../src/mount.ts) after each render's reconcile pass.
+**Trigger:** a list binding disagrees with the live DOM. **What it catches:** the *state* that precedes a wrong render, at the render that created it.
+
+Unlike everything else in this family, this one does not describe a pattern the author should change — it reports a **kerf bug**. It exists because every reconciler defect found so far shared one property: kerf kept running happily in a corrupt state, and the damage surfaced several operations later as a wrong render, far from its cause. Each check below is the negation of a defect that actually shipped:
+
+| Check | The defect it would have caught |
+| --- | --- |
+| **marker-live** | a binding whose marker left the tree — every later reconcile mutates a detached parent |
+| **marker-id** | an id carried by a *different* marker node, which pointed an arriving list at the previous occupant's container |
+| **row-parent / row-live** | a binding holding rows that are detached or attached elsewhere — the "stranded rows" shape |
+| **row-order** | rows that no longer follow their own marker in document order |
+| **row-alias** | one row node claimed by two bindings |
+| **region-overlap** | two lists in one parent interleaving their rows |
+| **row-count** | a binding holding a different number of rows than the data it rendered from. Every other check is *internal* — it confirms the binding agrees with the live DOM — so a list that reconciled to the wrong count still passes them if it's self-consistent. Comparing against the source length is the one check that catches a list rendering too few or too many rows; it is what would have caught the self-healed-empty-binding defect — a binding that was internally perfect and externally blank — at the render that caused it. Supplied per-list by `mount()` only when the checks are enabled, so production pays nothing. |
+
+**Modes.** `KERF_DEV_INVARIANTS=1` warns; `KERF_DEV_INVARIANTS=throw` throws. Unset (the default) is a complete no-op — the DOM is never walked. The `throw` mode exists because a warning inside a passing test is invisible: kerf's own suites set `throw` (in `vitest.config.ts` and both dist configs) so any future corruption fails the run at the render that caused it. Consumers debugging a suspected reconciler bug want `1` first.
+
+**Cost.** O(rows) per render when enabled, zero when not. Like the rest of the family the checks live in the dev chunk, so a production build that never imports `kerfjs/dev` cannot reach them at all.
+
+**Pairs with the reconciler fuzz harness** (`tests/unit/reconciler-fuzz.test.ts`): the harness generates the sequences, these checks notice a sequence went wrong. Neither is redundant — the harness alone only sees final-output mismatches, and the checks alone only fire on shapes someone thought to write.
 
 ## 11.3 Design rules for the family
 
