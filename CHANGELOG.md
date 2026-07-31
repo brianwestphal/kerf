@@ -6,6 +6,25 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [4.1.0] - 2026-07-31
+
+
+
+- ESLint 10 is now supported: `eslint-plugin-kerfjs` declares `peerDependencies.eslint` as `^9.0.0 || ^10.0.0`, and every named major is exercised by the rule suite in CI.
+- The plugin now runs its rule suite against each supported ESLint major via `npm run test:eslint-matrix`, which also fails if the declared peer range, the tested set, and the CI matrix disagree — or if the range is left open-ended.
+
+
+- **ESLint 8 is no longer supported by `eslint-plugin-kerfjs`.** The package is ESM-only and ESLint 8 resolves `.eslintrc` plugins with `require()`, so `extends: ["plugin:kerfjs/…"]` could never load it.
+- **Legacy `.eslintrc` configuration is documented as unsupported.** Use flat config (`eslint.config.js`); the `legacy-recommended` export remains in the package but is unreachable through any config system and should be treated as deprecated.
+
+
+- Generated Hot Sheet skill and rule files no longer hardcode a machine's local API port or shared secret. The curl fallbacks read `$HOTSHEET_PORT` / `$HOTSHEET_SECRET` from `.hotsheet/settings.local.json` and `.hotsheet/secret.json` instead, with `.hotsheet/settings.json` as the fallback for older projects.
+- A new `npm run check:audit` gate runs `npm audit --omit=dev --audit-level=high` against the published dependency tree and is wired into the pre-push `check:full` gate.
+
+
+- Test tooling moved to vitest 4 and ESLint 10; coverage thresholds were recalibrated to 98.5% branches / 99.5% statements (lines and functions stay at 100%) after vitest 4's sharper AST-based coverage mapping resolved seventeen previously-miscredited defensive branches.
+- Removed the `hs-m` marketing-ticket skill and Cursor rule.
+
 ## [4.0.0] - 2026-07-28
 
 
