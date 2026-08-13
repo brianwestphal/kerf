@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "Hot Sheet",
+          "rules": [
+            {
+              "id": "review-note",
+              "name": "ReviewNote",
+              "shortDescription": {
+                "text": "AI-authored, line-anchored review note."
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "review-note",
+          "ruleIndex": 0,
+          "kind": "informational",
+          "level": "none",
+          "guid": "mss3x574g8t3g9gq",
+          "message": {
+            "text": "Checks the MAJOR only (not the exact version) because the docs pin CDN URLs to a major (kerfjs@4) on purpose — that's the design decision, and this gate enforces it.\n\nThree options were on the table (see the ticket). Option 1 — a gate asserting the pinned version equals package.json's exact version — was rejected: the pinned version changes meaning at every release, so that gate would fail on every single release and force a manual URL edit each time (more friction than the size/api gates, which only change when the underlying value actually moves). Option 2 — auto-rewriting the URLs in the release script — was rejected as riskier surgery on the resumable release state machine, and it only fires at release (manual drift between releases goes uncaught).\n\nMajor-only pins (chosen) resolve to the latest of that major, so they stay correct across every minor/patch and only go stale at a major bump. This gate catches exactly that boundary — plus any hand-edit typo — on every npm run check, not just at release. An illustrative exact pin in the prose (kerfjs@4.1.0 in the \"for reproducibility\" note) still passes, because major 4 matches; it correctly starts failing only once the major moves.\n",
+            "markdown": "Checks the MAJOR only (not the exact version) because the docs pin CDN URLs to a major (`kerfjs@4`) on purpose — that's the design decision, and this gate enforces it.\n\nThree options were on the table (see the ticket). Option 1 — a gate asserting the pinned version equals `package.json`'s *exact* version — was rejected: the pinned version changes meaning at **every** release, so that gate would fail on every single release and force a manual URL edit each time (more friction than the size/api gates, which only change when the underlying value actually moves). Option 2 — auto-rewriting the URLs in the release script — was rejected as riskier surgery on the resumable release state machine, and it only fires at release (manual drift between releases goes uncaught).\n\nMajor-only pins (chosen) resolve to the latest of that major, so they stay correct across every minor/patch and only go stale at a major bump. This gate catches exactly that boundary — plus any hand-edit typo — on every `npm run check`, not just at release. An illustrative exact pin in the prose (`kerfjs@4.1.0` in the \"for reproducibility\" note) still passes, because major 4 matches; it correctly starts failing only once the major moves.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "scripts/check-cdn-versions.mjs"
+                },
+                "region": {
+                  "startLine": 39,
+                  "endLine": 39,
+                  "snippet": {
+                    "text": "const SCANNED = ['README.md', 'docs/6-jsx-runtime.md', 'docs/ai/usage-guide.md'];"
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "tags": [
+              "alternative-considered"
+            ],
+            "ext-ai-tool-confidence": 0.8
+          },
+          "workItemUris": [
+            "KF-458"
+          ],
+          "partialFingerprints": {
+            "prNoteAnchor/v1": "e76ab481d515396239349b6285535262"
+          }
+        }
+      ],
+      "versionControlProvenance": [
+        {
+          "repositoryUri": "git@github.com:brianwestphal/kerf.git",
+          "revisionId": "c41df13784e9998c9eeab124d1ed6d3531afb9a4",
+          "branch": "main"
+        }
+      ]
+    }
+  ]
+}
