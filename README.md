@@ -189,8 +189,8 @@ Same algorithm `mount()` uses internally — `data-morph-skip`, `data-morph-skip
 
 ```html
 <script type="module">
-  import { signal, mount, each } from 'https://esm.sh/kerfjs';
-  import { html } from 'https://esm.sh/kerfjs/html';
+  import { signal, mount, each } from 'https://esm.sh/kerfjs@4.1.0';
+  import { html } from 'https://esm.sh/kerfjs@4.1.0/html';
 
   const items = signal([{ id: 1, label: 'no build step' }]);
 
@@ -200,7 +200,7 @@ Same algorithm `mount()` uses internally — `data-morph-skip`, `data-morph-skip
 </script>
 ```
 
-Attribute names are written verbatim (`class`, not `className`), and holes are only legal in text positions or as a complete attribute value — anything ambiguous throws with an actionable message. Static template parts parse once per call site. See [`docs/6-jsx-runtime.md`](./docs/6-jsx-runtime.md) §6.11 — or the [live-poll example](https://brianwestphal.github.io/kerf/examples/complete/live-poll/), a complete app served exactly as authored: no bundler ever touches it.
+Nothing is self-hosted — `kerfjs` is on npm, so every ESM CDN (esm.sh, jsDelivr, unpkg) mirrors it automatically. esm.sh works with a direct import as shown; jsDelivr / unpkg want an importmap so the internal `@preact/signals-core` import resolves. Pin a version (`@4.1.0`, or `@4` for minor/patch updates) rather than floating on `latest`. Attribute names are written verbatim (`class`, not `className`), and holes are only legal in text positions or as a complete attribute value — anything ambiguous throws with an actionable message. See [`docs/6-jsx-runtime.md`](./docs/6-jsx-runtime.md) §6.11 (§6.11.1 for the full CDN / importmap recipes) — or the [live-poll example](https://brianwestphal.github.io/kerf/examples/complete/live-poll/), a complete app served exactly as authored: no bundler ever touches it.
 
 ## Install
 

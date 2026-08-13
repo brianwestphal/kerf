@@ -419,3 +419,50 @@ html`<!-- ${note} -->`          // ✗ hole inside a comment
 The static parts of the template are **author-written markup and pass through verbatim** — the same trust model as JSX tag and attribute names. Only hole *values* are escaped/screened; never splice untrusted text into the static side of a template.
 
 Performance: the static strings are parsed once per call site (tagged-template string arrays have stable identity, so the parse is cached in a `WeakMap`) and each render is a chunk walk with string concatenation — the same cost shape as the JSX runtime. Server-side (`.toString()`, outside `mount()`) works like JSX too: signal holes snapshot their current value.
+
+### 6.11.1 Loading kerf from a CDN (no install)
+
+kerf is published to npm as `kerfjs`, so it is automatically mirrored by every npm-backed ESM CDN — [esm.sh](https://esm.sh), [jsDelivr](https://www.jsdelivr.com/), [unpkg](https://unpkg.com/). Nothing is self-hosted; there is no kerf CDN to sign up for. Paired with the `html` tagged template above, a single `<script type="module">` is a complete, buildless kerf app.
+
+**One thing decides which CDN URL forms work: the bare import.** kerf's built `dist/` keeps its one runtime dependency external, so the shared chunk contains a bare specifier — `import … from '@preact/signals-core'`. A browser can't resolve a bare specifier on its own, so the URL you load kerf from must either rewrite that import for you or you must map it yourself. That splits the options in two:
+
+**Option A — esm.sh (simplest).** esm.sh rewrites the bare `@preact/signals-core` import to a full URL for you, so a direct import "just works" with no importmap:
+
+```html
+<script type="module">
+  import { signal, mount, each } from 'https://esm.sh/kerfjs@4.1.0';
+  import { html } from 'https://esm.sh/kerfjs@4.1.0/html';
+
+  const items = signal([{ id: 1, label: 'no build step' }]);
+
+  mount(document.getElementById('app'), () => html`
+    <ul>${each(items.value, (i) => html`<li id="${i.id}">${i.label}</li>`)}</ul>
+  `);
+</script>
+```
+
+**Option B — jsDelivr / unpkg + an importmap (explicit pins).** An [importmap](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/script/type/importmap) lets you keep bare `kerfjs` / `kerfjs/html` specifiers in your code and pin every URL — including `@preact/signals-core` — in one place. This is the same shape the [live-poll example](https://brianwestphal.github.io/kerf/examples/complete/live-poll/) uses, except pointing at a CDN instead of vendored files. jsDelivr's `+esm` suffix (and unpkg's `?module`) resolves the package's ESM entry per subpath:
+
+```html
+<script type="importmap">
+{
+  "imports": {
+    "kerfjs": "https://cdn.jsdelivr.net/npm/kerfjs@4.1.0/+esm",
+    "kerfjs/html": "https://cdn.jsdelivr.net/npm/kerfjs@4.1.0/html/+esm",
+    "kerfjs/array-signal": "https://cdn.jsdelivr.net/npm/kerfjs@4.1.0/array-signal/+esm",
+    "@preact/signals-core": "https://cdn.jsdelivr.net/npm/@preact/signals-core@1/+esm"
+  }
+}
+</script>
+<script type="module">
+  import { signal, mount, each } from 'kerfjs';
+  import { html } from 'kerfjs/html';
+  // …app as above; bare specifiers now resolve through the map
+</script>
+```
+
+Every subpath is available the same way — `kerfjs/jsx-runtime`, `kerfjs/dev`, `kerfjs/testing`. Add a map entry only for the ones you actually import.
+
+**The trap to avoid: a raw file path.** `https://cdn.jsdelivr.net/npm/kerfjs@4.1.0/dist/index.js` (or the unpkg equivalent *without* `?module`) serves the file byte-for-byte — so the bare `@preact/signals-core` import inside it reaches the browser unrewritten and the module fails to load. Use `+esm` / `?module` / esm.sh, or map the specifier in an importmap; don't link the raw `dist/*.js` path directly.
+
+**Pin the version.** All the examples pin (`@4.1.0`, or `@4` to accept minor/patch updates within the major). An unpinned `https://esm.sh/kerfjs` floats on `latest` and will silently jump across a major on the next release — fine for a scratch prototype, wrong for anything you ship. For production a fully static, exact pin (or vendoring `dist/` yourself, as the live-poll example does — see [15-no-build-example.md](15-no-build-example.md)) removes the CDN from your runtime critical path entirely.

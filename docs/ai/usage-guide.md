@@ -41,7 +41,7 @@ npm install kerfjs
 
 Vite / esbuild need no extra config. The `jsx-runtime` and `jsx-dev-runtime` subpaths are both exposed.
 
-**No build tool at all?** (CDN / importmap page, `<script type="module">` island): skip JSX and author with the `html` tagged template from `kerfjs/html` — same runtime semantics as JSX, no transform needed. See the `html` row below.
+**No build tool at all?** (CDN / importmap page, `<script type="module">` island): skip JSX and author with the `html` tagged template from `kerfjs/html` — same runtime semantics as JSX, no transform needed. See the `html` row below. To load kerf itself from a CDN, import a **version-pinned** `https://esm.sh/kerfjs@4.1.0` (esm.sh rewrites kerf's internal `@preact/signals-core` import for you), or use jsDelivr / unpkg behind an importmap that also maps `@preact/signals-core`. Don't link a raw `dist/*.js` path — the unrewritten bare import fails to load. Full recipes: `docs/6-jsx-runtime.md` §6.11.1.
 
 ## Public API — everything is in one import
 
