@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [4.1.1] - 2026-08-14
+
+
+
+- Added a CDN / importmap quickstart (`docs/6-jsx-runtime.md` §6.11.1) covering three no-install ways to load kerf from an ESM CDN: a direct `esm.sh` import, and jsDelivr / unpkg behind an importmap that also maps `@preact/signals-core`. Explains why a raw `dist/*.js` path fails (its unrewritten bare `@preact/signals-core` import won't resolve in the browser) and recommends pinning to a major version.
+- Updated the README no-build example to use version-pinned CDN URLs (`kerfjs@4`) and noted that jsDelivr / unpkg need an importmap while esm.sh works with a direct import.
+
 ## [4.1.0] - 2026-07-31
 
 
