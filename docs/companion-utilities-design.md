@@ -51,10 +51,10 @@ Ship in two waves, ordered by demand × cost:
 - `kerfjs/overlay` — the modal/overlay + dismiss manager (6/6 demand; the Tauri `confirm` gap makes it load-bearing).
 - `kerfjs/actions` — `delegateActions` + an `action()` helper (5/6 demand; pure ergonomics over `delegate` + `attr`, trivial surface).
 
-**Wave 2 (clear demand, but each needs a design decision first):**
+**Wave 2 (clear demand; scope now decided — see §8):**
 - `kerfjs/scope` — the dispose-scope registry (interacts with how consumers already hold disposers).
-- `kerfjs/async` — the async-state container (must decide how opinionated to be about fetching vs. just modeling state).
-- `kerfjs/list` — keyed `bindList` + virtualization. **Highest effort and the one real design hazard**: it overlaps `each()` / `arraySignal`. It needs its own design doc answering "why does a kerf app reach for `bindList` instead of `each()`?" before any code. (The honest answer from the field: `each()` memoizes rows by object identity and won't re-run a row render when *external* state — sort, filter, selection — changes, so teams that drive rows from external signals rejected it. That's a docs/`each()` question as much as a new-primitive question — see KF-465.)
+- `kerfjs/async` — the async-state container. **Decided:** `.run(fetcher)` owns status transitions + the stale-guard, the app writes the fetch, and the shape carries an optional progress channel (§8.2, §6).
+- `kerfjs/list` — a **distinct** keyed `bindList` + virtualization. **Highest effort.** It deliberately does two things `each()` structurally cannot: surgical per-row patching (a per-row effect, no full re-render+morph) and viewport windowing. It does *not* replace `each()` — `each()` stays for item-owned-state lists, and its `cacheKey` still covers the common external-state case (docs: KF-465). (§8.3)
 
 ## 5. API sketches — Wave 1
 
@@ -124,12 +124,25 @@ scope.dispose();                          // runs all, idempotent
 disposeSubtree(root);                     // sweep el + descendants before removal
 
 // kerfjs/async — model async state + guard stale responses.
+// DECIDED: .run(fetcher) owns the status transitions AND the stale-guard;
+// YOU write the fetch (Node fetch for SSR, browser fetch client-side).
 import { resource } from 'kerfjs/async';
-const r = resource<Data>();               // signal<{status,error,data}>
+const r = resource<Data>();               // signal<{status,error,data,progress?}>
 r.run(() => fetch(url).then(toData));     // idle->running->completed|failed, stale-guarded
 // render off r.value.status; the generation guard is built in, not hand-rolled.
+// Optional progress channel for long work / uploads:
+//   r.value.progress -> { completed, total } (undefined when not reported)
+// Docs MUST show BOTH transports:
+//   SSR:     r.run(() => fetch(apiUrl))              // Node 18+ global fetch
+//   Browser: r.run(() => fetch('/api/...', { headers }))
+// Error auto-clear (cue-car's setTimeout) stays the app's job, out of scope.
 
-// kerfjs/list — keyed reconcile + optional virtualization (needs its own design first).
+// kerfjs/list — DECIDED: a distinct primitive (not folded into each()).
+// bindList runs a per-row EFFECT (fine-grained surgical patch, no full row
+// re-render+morph) and adds viewport virtualization each() structurally can't do.
+// each() stays the choice for item-owned-state lists; bindList is for
+// externally-driven and/or very long lists. (KF-465 still teaches each()'s
+// cacheKey for the COMMON external-state case, so bindList isn't over-reached for.)
 import { bindList } from 'kerfjs/list';
 const dispose = bindList(parent, itemsSignal, {
   key: (item) => item.id,
@@ -142,13 +155,13 @@ const dispose = bindList(parent, itemsSignal, {
 
 Per the investigation contract, the primitives are filed as their own feature tickets rather than built here. Each references this design doc and KF-461:
 
-- **Wave 1:** `kerfjs/overlay` (overlay/modal + dismiss + `confirm`/`toast`); `kerfjs/actions` (`delegateActions` + `action()`).
-- **Wave 2:** `kerfjs/scope` (dispose-scope registry); `kerfjs/async` (`resource` async-state container); `kerfjs/list` (keyed `bindList` + virtualization) — the last gated on its own design doc resolving the `each()` overlap.
+- **Wave 1:** `kerfjs/overlay` (overlay/modal + dismiss + `confirm`/`toast`) — KF-468; `kerfjs/actions` (`delegateActions` + `action()`) — KF-469.
+- **Wave 2:** `kerfjs/scope` (dispose-scope registry) — KF-470; `kerfjs/async` (`resource` async-state container) — KF-471; `kerfjs/list` (distinct `bindList` + virtualization) — KF-472.
 
-Each Wave-1 ticket carries the full subpath checklist (entry in `tsup.config.ts`, `dist` + `.d.ts`, `exports` key, `check:bundle-size` budget, `docs/8-api-reference.md` row, tests) as its definition of done.
+Each ticket carries the full subpath checklist (entry in `tsup.config.ts`, `dist` + `.d.ts`, `exports` key, `check:bundle-size` budget, `docs/8-api-reference.md` row, tests) as its definition of done.
 
-## 8. Open questions for the maintainer
+## 8. Resolved decisions (maintainer, 2026-08-18)
 
-1. **Subpaths confirmed?** This doc recommends `kerfjs/*` subpaths over a separate package. If the intent is instead a clearly-separated `@kerfjs/kit` (e.g. for marketing/discoverability reasons), that changes the follow-up tickets' packaging steps.
-2. **How opinionated should `kerfjs/async` be?** Pure state container (consumer calls fetch) vs. a `resource(fetcher)` that owns the call. The field evidence is all "state container + hand-rolled fetch," which argues for the minimal version.
-3. **`kerfjs/list` vs. `each()`** — is a second list primitive acceptable, or should the effort go into making `each()` cover the external-state-driven case (and shipping virtualization as a companion to it)? This is the one genuine architecture fork and deserves its own investigation.
+1. **Packaging: `kerfjs/*` subpaths** — confirmed. Not a separate `@kerfjs/kit`, not micro-packages. (The one revisit trigger stands: a util that drags in a heavy dependency — e.g. a virtualization lib for `kerfjs/list` — could justify isolating just that one.)
+2. **`kerfjs/async` scope: `.run(fetcher)` owns status + stale-guard; the app writes the fetch.** Not a pure passive holder, and not an auto-refetch-on-deps resource. The state shape carries an **optional progress channel** (`{ completed, total }`) for long work / uploads; error auto-clear stays the app's concern. **Docs must include both transports** — Node global `fetch` (SSR) and browser `fetch` — since the same primitive serves both.
+3. **`kerfjs/list`: ship a distinct `bindList`** (fine-grained per-row effects + viewport virtualization), positioned for externally-driven and/or very long lists; `each()` stays for item-owned-state lists. This is a deliberate second list API — justified because `bindList` does two things `each()` structurally cannot: surgical per-row patching without a full re-render, and viewport windowing. `each()`'s `cacheKey` still covers the *common* external-state case (documented by KF-465), so `bindList` is reserved for where fine-grained patching or virtualization actually pays.
