@@ -1,8 +1,6 @@
 # Companion utilities — design proposal
 
-**Status:** Design only (proposal). Nothing here is shipped. This document is the deliverable of the KF-461 investigation ("Companion utilities: scope & packaging decision"), which was surfaced by a cross-project analysis of six real kerf apps — hotsheet, glassbox, cue-car, domotion, languages, kids-events.
-
-The per-primitive build work is tracked by the follow-up feature tickets listed under [Sequencing](#7-sequencing--follow-up-tickets); this doc is the rationale + API sketches those tickets implement against.
+**Status:** **Shipped** (2026-08-18). All five primitives now ship as `kerfjs/*` subpaths — `kerfjs/actions`, `kerfjs/overlay`, `kerfjs/scope`, `kerfjs/async`, `kerfjs/list`. See `docs/8-api-reference.md` §§8.8–8.11 (and §8.4 for actions) for the shipped APIs; this document is the original rationale + design record. It was the deliverable of the KF-461 investigation ("Companion utilities: scope & packaging decision"), surfaced by a cross-project analysis of six real kerf apps — hotsheet, glassbox, cue-car, domotion, languages, kids-events.
 
 ---
 
@@ -153,10 +151,10 @@ const dispose = bindList(parent, itemsSignal, {
 
 ## 7. Sequencing → follow-up tickets
 
-Per the investigation contract, the primitives are filed as their own feature tickets rather than built here. Each references this design doc and KF-461:
+All shipped 2026-08-18. Each was built under its own feature ticket referencing this design doc and KF-461:
 
-- **Wave 1:** `kerfjs/overlay` (overlay/modal + dismiss + `confirm`/`toast`) — KF-468; `kerfjs/actions` (`delegateActions` + `action()`) — KF-469.
-- **Wave 2:** `kerfjs/scope` (dispose-scope registry) — KF-470; `kerfjs/async` (`resource` async-state container) — KF-471; `kerfjs/list` (distinct `bindList` + virtualization) — KF-472.
+- **Wave 1 (shipped):** `kerfjs/overlay` (overlay/modal + dismiss + `confirm`/`toast`) — KF-468; `kerfjs/actions` (`delegateActions` + `action()`) — KF-469.
+- **Wave 2 (shipped):** `kerfjs/scope` (dispose-scope registry) — KF-470; `kerfjs/async` (`resource` async-state container) — KF-471; `kerfjs/list` (distinct `bindList` + virtualization) — KF-472. One deferred optimization: KF-478 (apply arraySignal structural patches to `bindList` in O(patches) instead of a keyed diff).
 
 Each ticket carries the full subpath checklist (entry in `tsup.config.ts`, `dist` + `.d.ts`, `exports` key, `check:bundle-size` budget, `docs/8-api-reference.md` row, tests) as its definition of done.
 
