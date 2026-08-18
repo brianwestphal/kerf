@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 
 import { arraySignal } from '../../src/array-signal.js';
 import { bindList } from '../../src/list.js';
-import { signal } from '../../src/reactive.js';
+import { batch, signal } from '../../src/reactive.js';
 
 interface Item { id: number; label: string }
 
@@ -89,6 +89,107 @@ describe('bindList() — keyed reconcile', () => {
     expect(parent.children.length).toBe(0);
     items.value = [{ id: 1, label: 'a' }, { id: 2, label: 'b' }]; // ignored after dispose
     expect(parent.children.length).toBe(0);
+  });
+});
+
+describe('bindList() — arraySignal granular patch path (KF-478)', () => {
+  it('applies insert / move / remove patches, preserving unchanged rows\' element identity', () => {
+    const parent = host();
+    const items = arraySignal<Item>([
+      { id: 1, label: 'a' },
+      { id: 2, label: 'b' },
+      { id: 3, label: 'c' },
+    ]);
+    const dispose = bindList(parent, items, { key: (i) => i.id, render: (i) => i.label });
+    const rA = parent.children[0];
+    const rB = parent.children[1];
+    const rC = parent.children[2];
+
+    items.insert(1, { id: 4, label: 'x' }); // a, x, b, c
+    expect(texts(parent)).toEqual(['a', 'x', 'b', 'c']);
+    expect(parent.children[0]).toBe(rA); // unchanged rows kept their exact nodes
+    expect(parent.children[2]).toBe(rB);
+    expect(parent.children[3]).toBe(rC);
+
+    items.move(0, 3); // x, b, c, a  (move to the tail)
+    expect(texts(parent)).toEqual(['x', 'b', 'c', 'a']);
+    expect(parent.children[3]).toBe(rA); // the moved node is the SAME element
+
+    items.move(3, 1); // x, a, b, c  (move to the middle)
+    expect(texts(parent)).toEqual(['x', 'a', 'b', 'c']);
+    expect(parent.children[1]).toBe(rA);
+
+    items.remove(2); // x, a, c  (b removed)
+    expect(texts(parent)).toEqual(['x', 'a', 'c']);
+    expect(Array.from(parent.children).includes(rB)).toBe(false);
+    dispose();
+  });
+
+  it('update with a NEW object identity rebuilds the row; a same-ref update does not', () => {
+    const parent = host();
+    const items = arraySignal([{ id: 1, on: signal(false) }, { id: 2, on: signal(false) }]);
+    const dispose = bindList(parent, items, {
+      key: (i) => i.id,
+      render: (i) => (i.on.value ? 'on' : 'off'),
+    });
+    const original = parent.firstElementChild;
+    expect(texts(parent)).toEqual(['off', 'off']);
+
+    // Same-ref update (mutate in place) — row NOT rebuilt; content follows the signal.
+    items.update(0, (i) => { i.on.value = true; return i; });
+    expect(parent.firstElementChild).toBe(original);
+    expect(texts(parent)).toEqual(['on', 'off']);
+
+    // New-object update at a NON-last index — row rebuilt, re-inserted before its successor.
+    items.update(0, () => ({ id: 1, on: signal(false) }));
+    expect(parent.firstElementChild).not.toBe(original);
+    expect(texts(parent)).toEqual(['off', 'off']);
+
+    // New-object update at the LAST index — rebuilt row appended (no successor).
+    const last = parent.children[1];
+    items.update(1, () => ({ id: 2, on: signal(true) }));
+    expect(parent.children[1]).not.toBe(last);
+    expect(texts(parent)).toEqual(['off', 'on']);
+    dispose();
+  });
+
+  it('a replace() patch falls back to the keyed diff (snapshot)', () => {
+    const parent = host();
+    const items = arraySignal<Item>([{ id: 1, label: 'a' }, { id: 2, label: 'b' }]);
+    const dispose = bindList(parent, items, { key: (i) => i.id, render: (i) => i.label });
+    items.replace([{ id: 3, label: 'c' }, { id: 1, label: 'a' }]);
+    expect(texts(parent)).toEqual(['c', 'a']);
+    dispose();
+  });
+
+  it('applies a batch of patches in order (multi-insert at the same position)', () => {
+    const parent = host();
+    const items = arraySignal<Item>([{ id: 1, label: 'a' }]);
+    const dispose = bindList(parent, items, { key: (i) => i.id, render: (i) => i.label });
+    batch(() => {
+      items.push({ id: 2, label: 'b' });
+      items.insert(0, { id: 3, label: 'c' });
+    });
+    expect(texts(parent)).toEqual(['c', 'a', 'b']);
+    dispose();
+  });
+
+  it('two bindLists sharing one arraySignal both stay correct (one goes granular, the other snapshots)', () => {
+    const p1 = host();
+    const p2 = host();
+    const items = arraySignal<Item>([{ id: 1, label: 'a' }]);
+    const d1 = bindList(p1, items, { key: (i) => i.id, render: (i) => i.label });
+    const d2 = bindList(p2, items, { key: (i) => i.id, render: (i) => i.label });
+
+    items.push({ id: 2, label: 'b' });
+    expect(texts(p1)).toEqual(['a', 'b']);
+    expect(texts(p2)).toEqual(['a', 'b']);
+
+    items.remove(0);
+    expect(texts(p1)).toEqual(['b']);
+    expect(texts(p2)).toEqual(['b']);
+    d1();
+    d2();
   });
 });
 

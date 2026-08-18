@@ -30,6 +30,7 @@
  * OWNS `parent`'s children. It reads `itemsSignal.value`, so a plain
  * `signal<T[]>` or an `arraySignal<T>` both work.
  */
+import { ARRAY_SIGNAL_BRAND, type ArrayPatch } from './array-signal.js';
 import { mount, type MountResult } from './mount.js';
 import { effect } from './reactive.js';
 
@@ -79,9 +80,25 @@ export function bindList<T>(
   const overscan = virtualize?.overscan ?? 3;
 
   const rows = new Map<ListKey, Row<T>>();
+  // The current DOM order of rows, kept in step by both the keyed-diff and the
+  // granular patch paths so index-based patches can address rows directly.
+  const order: Array<Row<T>> = [];
   let items: readonly T[] = [];
   let disposed = false;
   let rafPending = false;
+  let firstRender = true;
+
+  // Granular fast path (KF-478): when the source is an `arraySignal` and the
+  // list is NOT virtualized, apply its insert/remove/move/update patches
+  // directly in O(patches) instead of diffing the whole snapshot. Virtualized
+  // lists keep the keyed diff — their visible set is just the window (cheap),
+  // and absolute-index patches don't compose with a shifting window. A plain
+  // `signal<T[]>` has no patches, so it always uses the keyed diff.
+  const patchSource = source as {
+    [ARRAY_SIGNAL_BRAND]?: boolean;
+    _consumePatches?: () => ArrayPatch<T>[];
+  };
+  const granularEligible = virtualize === undefined && patchSource[ARRAY_SIGNAL_BRAND] === true;
 
   // Virtualized lists put the windowing padding + rows on an INNER sizer, so the
   // padding never inflates the scroll container's clientHeight (padding counts
@@ -114,7 +131,7 @@ export function bindList<T>(
     }
 
     // Create missing rows (and rebuild a row whose item OBJECT changed identity).
-    const ordered: HTMLElement[] = [];
+    order.length = 0;
     for (const item of visible) {
       const k = key(item);
       let row = rows.get(k);
@@ -128,13 +145,13 @@ export function bindList<T>(
         row = makeRow(item);
         rows.set(k, row);
       }
-      ordered.push(row.el);
+      order.push(row);
     }
 
     // Reverse pass: move only rows that are out of position.
     let ref: Node | null = null;
-    for (let i = ordered.length - 1; i >= 0; i--) {
-      const el = ordered[i];
+    for (let i = order.length - 1; i >= 0; i--) {
+      const el = order[i].el;
       if (el.parentNode !== container || el.nextSibling !== ref) {
         container.insertBefore(el, ref);
       }
@@ -142,9 +159,66 @@ export function bindList<T>(
     }
   };
 
+  // Apply arraySignal structural patches directly to `order` + the DOM, in
+  // O(patches). Indices are always valid by construction: `order` reflects the
+  // last-rendered state and the patches are exactly the delta from it (bindList
+  // drains the queue every render, and `replace` is filtered out by the caller,
+  // which snapshots instead). The `splice()`s mirror `arraySignal`'s own
+  // `_items` mutations exactly.
+  const applyPatches = (patches: readonly ArrayPatch<T>[]): void => {
+    for (const patch of patches) {
+      if (patch.type === 'insert') {
+        const row = makeRow(patch.item);
+        rows.set(key(patch.item), row);
+        order.splice(patch.index, 0, row);
+        container.insertBefore(row.el, order[patch.index + 1]?.el ?? null);
+      } else if (patch.type === 'remove') {
+        const [row] = order.splice(patch.index, 1);
+        row.dispose();
+        row.el.remove();
+        rows.delete(key(row.item));
+      } else if (patch.type === 'move') {
+        const [row] = order.splice(patch.from, 1);
+        order.splice(patch.to, 0, row);
+        container.insertBefore(row.el, order[patch.to + 1]?.el ?? null);
+      } else if (patch.type === 'update') {
+        // Decision #3: an item whose OBJECT identity changed rebuilds the row
+        // (matching the keyed-diff rule). A same-ref update needs nothing here —
+        // the row's own mount reacts to whatever signals its render reads.
+        const current = order[patch.index];
+        if (current.item !== patch.item) {
+          current.dispose();
+          current.el.remove();
+          rows.delete(key(current.item));
+          const row = makeRow(patch.item);
+          rows.set(key(patch.item), row);
+          order[patch.index] = row;
+          container.insertBefore(row.el, order[patch.index + 1]?.el ?? null);
+        }
+      }
+      // 'replace' never reaches here — the caller snapshots on it.
+    }
+  };
+
   const renderWindow = (): void => {
     if (virtualize === undefined) {
+      if (granularEligible) {
+        // Always drain to keep the single patch queue clean (so patches never
+        // double-apply). Take the granular path past the first render, when
+        // there are patches, and none is a `replace` (which reshapes the whole
+        // array — snapshot instead). Otherwise fall through to a keyed diff.
+        const patches = patchSource._consumePatches!();
+        if (
+          !firstRender
+          && patches.length > 0
+          && !patches.some((p) => p.type === 'replace')
+        ) {
+          applyPatches(patches);
+          return;
+        }
+      }
       syncRows(items);
+      firstRender = false;
       return;
     }
     const { rowHeight } = virtualize;
