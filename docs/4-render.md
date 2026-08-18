@@ -305,6 +305,28 @@ Two patterns are supported. Pick one per field:
 
 - **Controlled.** Bind `value={sig}` and write the signal back on `input` (usually `delegate(root, 'input', selector, …)`). The signal is the source of truth; while the field is focused, both morph and the binding writer skip its `value`, so your keystrokes and caret are never overwritten mid-edit. Use this when something *other* than the user also sets the field — a "clear" button, a preset, a value derived from another signal.
 
+```tsx
+import { signal, mount, delegate } from 'kerfjs';
+
+const name = signal('');
+
+mount(root, () => (
+  <label>
+    Name
+    {/* value binds one-way (signal -> DOM); the input event carries DOM -> signal */}
+    <input class="name-field" value={name} />
+  </label>
+));
+
+// DOM -> signal. A direct listener would be dropped on re-render, so delegate
+// from a stable root; the handler survives every morph.
+delegate<HTMLInputElement>(root, 'input', '.name-field', (_e, el) => {
+  name.value = el.value;
+});
+```
+
+There is deliberately no `bindValue(el, signal)` helper: real controlled handlers almost never just mirror the value — they transform, derive sibling fields, normalize in place, or fire side effects (e.g. deriving a slug from a label, upper-casing, clamping length, scheduling a save). The `delegate('input', …)` handler is where that logic lives, so a mirror-only helper would help the rare trivial case and mislead the rest. For a field where nothing but the user writes it, prefer the uncontrolled pattern and skip the binding entirely.
+
 **The boundary.** The preservation guarantee holds while the input's **own DOM node is matched** across the reconcile. It is lost only when that node is *replaced* — a top-level tag change on the row, a dropped ancestor, or a keyed row whose HTML changed enough to be re-created (see *Across `each()` reorders* above). This is the same rule every preserved thing follows. Practically: give an input that lives inside a list row or a conditionally-rendered region a stable `id` or `data-key` so the reconciler matches it instead of replacing it.
 
 **The one caveat.** A controlled `value={sig}` *does* update while the field is **not** focused — correct controlled-input behavior, but it means a background signal change can replace text a user typed and then tabbed away from before committing. If you don't want that, use the uncontrolled pattern.
