@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **New `kerfjs/overlay` subpath** — the blessed modal/overlay + dismiss manager that every real kerf app hand-rolls. `overlay(content, options?)` appends a wrapper, `mount()`s content inside it (owning the disposal), wires dismissals (Escape / backdrop / outside-click, with `outsideIgnore`), a focus trap (`role="dialog"` / `aria-modal`, Tab wrap-around, restore-focus-on-close), and returns `{ el, close(result?), result }`. `confirm(message, options?)` is a promise-based `window.confirm` replacement (that global is a no-op in Tauri webviews); `toast(content, options?)` is an auto-dismissing notification. Structural only — kerf ships no CSS. Optional and tree-shakeable; shares the core with the main barrel via code-splitting.
 - **New `kerfjs/actions` subpath** — the blessed delegated action-table helper. `action(value)` returns a `data-action` `AttrSpec` (a thin specialization of `attr()`); `delegateActions(root, eventType, table, options?)` wires a whole table of `data-action` handlers with one delegated listener (built on `delegate()`) and returns a disposer. Formalizes the most-reinvented idiom in real kerf apps — one `attr('data-action', …)` table as the single source of truth for both the JSX attribute and the delegate dispatch. Optional and tree-shakeable; adds nothing to the main barrel.
 
 ## [4.1.1] - 2026-08-14

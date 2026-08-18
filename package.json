@@ -68,6 +68,10 @@
       "types": "./dist/actions.d.ts",
       "import": "./dist/actions.js"
     },
+    "./overlay": {
+      "types": "./dist/overlay.d.ts",
+      "import": "./dist/overlay.js"
+    },
     "./ai/*": "./ai/*"
   },
   "files": [

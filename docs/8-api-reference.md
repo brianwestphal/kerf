@@ -508,3 +508,40 @@ The returned node is always adopted into the live `document` (`node.ownerDocumen
 | --- | --- |
 | `<details>` `open` | The morph never removes `open` from a live `<details>` — the user agent toggles it on summary click and the diff treats it as user-owned. Trade-off: controlled-style `<details open={false}>` won't auto-collapse a previously-opened details element; drive `.open` imperatively if you need controlled behavior. See `docs/4-render.md` §4.4.1. |
 | `<dialog>` `open` | Same as `<details>`. The browser sets `open=""` when `.show()` / `.showModal()` is called; the morph leaves it alone. |
+
+## 8.8 Overlays — `kerfjs/overlay` subpath
+
+Optional subpath (`import { overlay, confirm, toast } from 'kerfjs/overlay'`) that blesses the modal/overlay pattern every real kerf app hand-rolls. Structural only — kerf ships no CSS; you style the wrapper. Each function owns its DOM + listeners in a closure and returns a handle (no per-instance framework state). Because `overlay()` owns its content's `mount()` (so `close()` disposes it), this subpath pulls in the core renderer — but an app already importing `kerfjs` shares that via code-splitting, so the marginal cost is ~2 KB.
+
+### `overlay(content, options?): OverlayHandle`
+
+```ts
+const dialog = overlay(<Settings />, { dismiss: ['escape', 'backdrop'], initialFocus: 'input' });
+await dialog.result;      // resolves when closed
+dialog.close(value);      // or close it yourself
+```
+
+Appends a wrapper (class from `options.className`, default `'kerf-overlay'`) to `options.container` (default `document.body`), `mount()`s `content` inside it, wires the requested dismissals, and returns an [`OverlayHandle`](#overlay-types) `{ el, close(result?), result }`. `content` is an [`OverlayContent`](#overlay-types) — a `SafeHtml` (static) or a `() => MountResult` render function (driven reactively). `close()` is idempotent: it disposes the mount, removes the listeners + node, restores focus to the previously-focused element, and resolves `result`.
+
+Options ([`OverlayOptions`](#overlay-types)): `dismiss` (`'escape' | 'backdrop' | 'outside'`, an array, or `false`; default `['escape', 'backdrop']` — `'backdrop'` is a click on the wrapper itself, `'outside'` a click anywhere outside it for popovers); `initialFocus` (selector, `true` = first focusable, or `false`; default `true`); `trap` (trap Tab/Shift+Tab within + set `role="dialog"` / `aria-modal`; default `true`); `role`; `onDismiss`; and `outsideIgnore` (elements whose clicks don't count as outside, e.g. the trigger). A user dismissal resolves `result` with `undefined`.
+
+### `confirm(message, options?): Promise<boolean>`
+
+```ts
+if (await confirm('Delete this file?', { danger: true })) remove();
+```
+
+A promise-based `window.confirm` replacement (that global is a no-op in Tauri WKWebViews). Renders a two-button dialog on top of `overlay()` and resolves `true` for OK, `false` for Cancel or any dismissal. `message` + labels are auto-escaped through the JSX runtime. Options ([`ConfirmOptions`](#overlay-types)): `title`, `okText` (default `'OK'`), `cancelText` (default `'Cancel'`), `danger` (adds a `kerf-confirm--danger` class), plus `container` / `className`.
+
+### `toast(content, options?): () => void`
+
+```ts
+toast('Saved');
+const dismiss = toast('Uploading…', { duration: 0 }); // sticky; dismiss() when done
+```
+
+Shows a non-modal, auto-dismissing notification, stacked in a shared body-level region (lazily created, or `options.container`). `content` is a [`ToastContent`](#overlay-types) (text, `SafeHtml`, or a render function). Returns a `() => void` that dismisses it early. Options ([`ToastOptions`](#overlay-types)): `duration` (ms; `0` = sticky; default `4000`), `className` (default `'kerf-toast'`), `role` (default `'status'`), `container`.
+
+### Overlay types
+
+`OverlayHandle`, `OverlayContent`, `OverlayOptions`, `DismissTrigger`, `ConfirmOptions`, `ToastContent`, and `ToastOptions` are all exported from `kerfjs/overlay` for annotating handles, content, and option bags.

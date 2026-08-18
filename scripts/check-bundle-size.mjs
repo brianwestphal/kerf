@@ -112,6 +112,21 @@ const BUDGETS = [
     `,
   },
   {
+    // ISOLATED size — includes the shared core, because overlay OWNS its
+    // content's mount() (so close() disposes it), and mount pulls in the
+    // render/morph machinery. This is NOT the marginal cost: any app using
+    // kerfjs/overlay also imports the core barrel, and `splitting: true` puts
+    // mount in one shared chunk, so overlay adds only ~2 KB over an app that
+    // already uses kerf. The budget still guards overlay's OWN growth.
+    name: 'overlay',
+    budgetKb: 14.4,
+    description: 'the overlay/modal subpath (overlay + confirm + toast) — includes shared core',
+    entry: `
+      import { overlay, confirm, toast } from '${DIST}/overlay.js';
+      globalThis.__k = [overlay, confirm, toast];
+    `,
+  },
+  {
     // Guards the KF-429 invariant directly: with the dev entry absent, NO
     // dev-warning code may appear in a production bundle. The size budget
     // above would catch a large regression; this catches any at all.

@@ -12,6 +12,7 @@
         "kerfjs": "/dist/index.js",
         "kerfjs/jsx-runtime": "/dist/jsx-runtime.js",
         "kerfjs/html": "/dist/html.js",
+        "kerfjs/overlay": "/dist/overlay.js",
         "@preact/signals-core": "/node_modules/@preact/signals-core/dist/signals-core.mjs"
       }
     }
@@ -20,10 +21,12 @@
     import * as kerf from 'kerfjs';
     import * as jsxRuntime from 'kerfjs/jsx-runtime';
     import { html } from 'kerfjs/html';
+    import * as overlay from 'kerfjs/overlay';
     // Expose for `page.evaluate` tests.
     window.kerf = kerf;
     window.jsxRuntime = jsxRuntime;
     window.kerfHtml = html;
+    window.kerfOverlay = overlay;
     window.kerfReady = true;
   </script>
 </body>
