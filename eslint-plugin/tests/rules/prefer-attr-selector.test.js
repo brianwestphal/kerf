@@ -23,6 +23,15 @@ ruleTester.run('prefer-attr-selector', rule, {
     { code: "el.matches('[data-action=\"x\"]');" },
     // Selector argument is a variable, not a literal.
     { code: "delegate(root, 'click', selector, fn);" },
+    // kerfjs/actions: delegateActions() takes a handler TABLE (an object), not a
+    // literal selector arg, so it is never flagged — the action strings live in
+    // the table keys, and the [data-action] wiring is internal to the helper.
+    { code: "delegateActions(root, 'click', { 'select-file': fn, remove: fn2 });" },
+    { code: "delegateActions(root, 'input', table, { attr: 'data-action' });" },
+    // action('x').selector is a member expression (the blessed attr-table form),
+    // not a literal — not flagged, same as attr('data-action','x').selector.
+    { code: "delegate(root, 'click', action('select-file').selector, fn);" },
+    { code: "delegate(root, 'click', A.select.selector, fn);" },
   ],
   invalid: [
     {

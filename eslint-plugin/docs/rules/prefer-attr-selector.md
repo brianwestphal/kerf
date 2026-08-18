@@ -41,6 +41,7 @@ These are intentionally left alone because `attr()` isn't a 1:1 swap for them:
 - Tag-qualified attribute selectors: `'button[data-action="x"]'`.
 - Compound attribute selectors: `'[data-action="x"][data-id="y"]'` — for these, concatenate two `.selector` strings (`A.selector + B.selector`) or use `attr()` only for one of the legs.
 - Selectors held in variables (not string literals) — already abstracted.
+- `kerfjs/actions`: `delegateActions(root, event, table, opts?)` — its 3rd argument is a handler **table** (an object), not a selector, so it is never flagged. The blessed `action('x')` / `attr('data-action','x')` forms pass `.selector` (a member expression, not a literal), which this rule already leaves alone.
 
 ## Severity
 
