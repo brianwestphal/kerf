@@ -27,6 +27,15 @@ The structural payoff: a thousand-row list where 100 rows changed runs ~100 cach
 
 Everything above is the **coarse** update path: a signal change re-runs `render()`, then kerf diffs down to the changed nodes. For a hot hole driven by an external signal (a `selectedId` flipping one row's class), you can opt that hole into a **fine-grained binding** — pass the signal itself into the attribute/text and the update skips both the re-render and the reconcile, touching only that node. See [`docs/2-reactivity.md`](2-reactivity.md) §2.9.
 
+### Values bind, structure re-renders
+
+This is kerf's governing update model, worth stating outright. When a signal changes, two things can happen — and *how you reference the signal* decides which:
+
+- **A value binding** — pass the signal or `computed` *itself* into a text hole or attribute (`<span>{count}</span>`, `class={selected}`). kerf updates that one node directly: no `render()` re-run, no morph, no reconcile.
+- **A structural re-render** — read `.value` *inside* the render body (`() => <span>{count.value}</span>`). The change re-runs `render()` and kerf morphs the result. This is the right path when the signal changes the *shape* of the tree (which rows exist, whether a panel is shown), not just a value inside it.
+
+The rule of thumb: **bind values, re-render structure.** A signal handed straight to a hole is the cheapest possible update; a `.value` read in the render body is the general path. Keep per-frame or high-frequency state (a playhead label, a live count, a scrubbing position) in a bound hole the render body never reads, so playback/typing never triggers a full morph. One catch: the `.value` read must happen *inside* the render function to be tracked — `const x = count.value` captured before `mount()` runs never re-renders. See [`docs/2-reactivity.md`](2-reactivity.md) §2.9 for the binding mechanics.
+
 ## 4.2 Morph keys
 
 `morph()` matches elements across the reconciliation by:
@@ -77,6 +86,10 @@ import { each } from 'kerfjs';
 ```
 
 > **Memo cache invariant.** The memo cache invalidates *purely* on the third argument (the `cacheKey` function's return value) plus item identity. If a row's rendered output depends on external state that the memo doesn't include, the row will go stale — kerf will return cached HTML even though the render function would produce something different now. The fix is either: (a) bake that state into the memo (`(r) => \`${r.id}-${selectedId === r.id ? 'on' : 'off'}\``), or (b) own the changing DOM imperatively under `data-morph-skip` and let kerf cache the surrounding shell. The kanban example chooses (b) for the live drag transform; the TodoMVC example chooses (a) for the per-row view/edit flip.
+
+> **The identity trap — memoization is keyed on object identity, both directions bite.** `each()` caches a row by the *item object's identity*, never by its `data-key` (that attribute is only the DOM-diff hint the reconciler uses to match nodes). Two symmetric mistakes follow, and both have been misread as reconciler bugs:
+> - **Accidentally *changing* identity destroys the cache.** A `.map((x) => ({ ...x }))` — or a sort/filter/transform that returns fresh objects — *inside or upstream of* the `each()` argument hands every row a brand-new reference, so every row misses the cache and re-renders on every pass. It looks like "`each()` is slow" or "the reconciler rebuilds everything"; it is actually the items being cloned. Keep the same object references across renders — immutable updates should replace only the rows that changed, not clone the whole array.
+> - **Not changing identity *hides* an update.** The mirror image: when a row's appearance depends on *external* state (a `selectedId`, a sort dimension, a "show scores" flag) but the item object is untouched, its identity is unchanged, the cache hits, and the row keeps its old HTML. Dropping to `.map()` (no cache) *appears* to fix "my rows won't update" — but the real fix keeps the cache and folds that state into `cacheKey` (see the invariant above), or opts the one hot hole into a fine-grained binding (§4.1, *Values bind, structure re-renders*).
 
 > **The `index` argument is a special case of that invariant.** The render function receives the row's position — `each(items, (item, index) => …)` — but `index` is **not** part of the memo key (only item identity, `cacheKey`, and content version are). So a row that keeps its identity while its *position* changes — a reorder, or an insert/remove/move ahead of it — keeps the HTML it rendered at its old index. A numbered list (`{index + 1}. …`), zebra striping, or an "N of M" label then silently shows the wrong value on the moved rows, while everything else looks right. If the row's output depends on the index, fold the index into the memo key so a shift re-renders the displaced rows:
 >

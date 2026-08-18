@@ -8,6 +8,15 @@
 
 ## 16.1 The concept that isn't named
 
+> **Two different "identities" — don't conflate them.** This document is about a
+> *list's* identity: which `each()` call this is, so kerf can find the same
+> list's cache and DOM binding next render (call-order based, the subject
+> below). That is **not** the same as a *row's* identity, which is the item
+> **object's** reference and is what the per-item HTML memo is keyed on
+> (`data-key` is neither — it is only the reconciler's DOM-match hint). Row
+> memoization, and the traps of accidentally changing or failing to change an
+> item's object identity, live in [`docs/4-render.md`](4-render.md) §4.2.
+
 Every `each()` list needs an identity that is **stable across renders**, so
 kerf can find the same list's cache, its recorded row count, its data source,
 and its DOM binding on the next render.
