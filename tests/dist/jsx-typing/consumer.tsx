@@ -10,7 +10,7 @@
  * Runtime never executes — `tsc --noEmit` is the only check.
  */
 
-import { each, Fragment, isSafeHtml, mount, raw, signal, type SafeHtml } from 'kerfjs';
+import { delegate, delegateCapture, each, Fragment, isSafeHtml, mount, raw, signal, type SafeHtml } from 'kerfjs';
 import { arraySignal } from 'kerfjs/array-signal';
 
 const count = signal(0);
@@ -67,3 +67,18 @@ const safeRef: SafeHtml = (
 
 declare const root: HTMLElement;
 mount(root, () => safeRef);
+
+// KF-464: delegate<T> / delegateCapture<T> narrow the handler's target against
+// dist/index.d.ts, so consumers annotate the element type instead of casting.
+delegate<HTMLInputElement>(root, 'input', 'input.field', (_e, el) => {
+  const v: string = el.value; // el is HTMLInputElement — `.value` with no cast
+  void v;
+});
+delegateCapture<HTMLButtonElement>(root, 'click', 'button', (_e, btn) => {
+  btn.disabled = true; // btn is HTMLButtonElement
+});
+// Default (no generic) stays Element.
+delegate(root, 'click', '.x', (_e, el) => {
+  const t: Element = el;
+  void t;
+});
