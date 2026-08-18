@@ -123,7 +123,7 @@ The warn is off by default because narrow-set IS legal — a `reset()` that drop
 
 `get()` is typed as `() => Readonly<TState>` — a compile-time counterpart to the dev-mode runtime guard. Actions that try to mutate `get().count = 42` fail `tsc --noEmit` before they ever reach the runtime.
 
-In a non-production build, the value returned by `get()` is also wrapped in a **deep read-only `Proxy`** at runtime. Any write to it — a top-level assignment, a `delete`, an `Object.defineProperty`, **or a nested mutation like `get().nested.x = 1`** — throws a `TypeError` at the call site rather than landing on the underlying state and slowly desyncing the reactive consumers. The proxy wraps nested plain objects and arrays lazily on access, so the guard is deep at O(1) per property read with no cloning. Reads are transparent: spread (`{ ...get() }`), `JSON.stringify(get())`, `Object.keys(get())`, `instanceof`, and array iteration all behave exactly as on the raw object. Production returns the bare reference for zero overhead — no proxy is ever constructed, so prod perf and semantics are byte-identical to a plain object.
+This runtime guard is active only when the development diagnostics are installed — `import 'kerfjs/dev'`. kerf does **not** infer development mode from `NODE_ENV`, so without that import `get()` returns the bare object even in a dev build (and a store audit or test that relies on the throwing `get()` proxy must install `kerfjs/dev` first). When the diagnostics are installed, the value returned by `get()` is wrapped in a **deep read-only `Proxy`** at runtime. Any write to it — a top-level assignment, a `delete`, an `Object.defineProperty`, **or a nested mutation like `get().nested.x = 1`** — throws a `TypeError` at the call site rather than landing on the underlying state and slowly desyncing the reactive consumers. The proxy wraps nested plain objects and arrays lazily on access, so the guard is deep at O(1) per property read with no cloning. Reads are transparent: spread (`{ ...get() }`), `JSON.stringify(get())`, `Object.keys(get())`, `instanceof`, and array iteration all behave exactly as on the raw object. Production returns the bare reference for zero overhead — no proxy is ever constructed, so prod perf and semantics are byte-identical to a plain object.
 
 Two things changed versus the earlier `Object.freeze(get())` guard:
 
@@ -155,3 +155,41 @@ function makeWidget(store: Store<{ open: boolean }, { toggle(): void }>) {
 ```
 
 Useful when you pass a store as an argument or store it on a class.
+
+## 3.10 Stores across bundles (multi-entry / islands)
+
+A store **is** its state: `defineStore()` returns a module-scope singleton holding a `signal` and its actions. That makes it a singleton within **one module graph** — which is exactly what you want, until a build splits your app into several.
+
+**The constraint.** If your build emits a **separate bundle per entry point** and inlines shared modules into each (an islands setup — e.g. esbuild with several entry points and no shared chunking), the store's module is *duplicated*: each bundle ships its own instance, with its own `signal`. A write in one bundle's store is invisible to the other's. Unlike `SafeHtml` and `arraySignal` — value types that carry a `Symbol.for(...)` brand so multiple copies interoperate — a store **cannot** be reconciled by identity, because two instances are two separate states. The duplication itself is the problem.
+
+**The fix: keep it one instance.** The right answer for most apps is to stop the duplication at the build. Configure the bundler so the store's module is *shared*, not inlined per entry — a shared code-split chunk, or marking it external and injecting it once. Then every entry imports the same store and state is shared for free, with no runtime machinery.
+
+**When you truly can't share the module** (genuinely independent bundles on the same page), mirror writes across the copies with a `BroadcastChannel` (or a `storage` event), guarding against the echo:
+
+```ts
+import { defineStore, effect } from 'kerfjs';
+
+export const prefs = defineStore({
+  initial: () => ({ theme: 'light' as 'light' | 'dark' }),
+  actions: (set, get) => ({ setTheme: (theme: 'light' | 'dark') => set({ ...get(), theme }) }),
+});
+
+// One channel per logical store, shared by name across bundle copies.
+const channel = new BroadcastChannel('prefs');
+let applying = false;
+
+// Broadcast local changes…
+effect(() => {
+  const snapshot = prefs.state.value;
+  if (!applying) channel.postMessage(snapshot);
+});
+
+// …and apply remote ones without re-broadcasting (the echo guard).
+channel.onmessage = (e) => {
+  applying = true;
+  prefs.actions.setTheme(e.data.theme);
+  applying = false;
+};
+```
+
+This is the "shared state doesn't span the boundary I assumed" problem in general — the same shape shows up any time module-scope state needs to cross a boundary the module graph doesn't (bundles here; a scoped context or a per-tenant partition elsewhere). The store primitive stays deliberately small; reach for a transport like the above only at the boundary that needs it.
