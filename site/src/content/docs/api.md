@@ -365,6 +365,28 @@ delegate<HTMLButtonElement>(root, 'click', 'button[data-action]', (e, btn) => {
 
 The default is `Element` (untyped call sites are unaffected).
 
+### `action<V extends string>(value: V): AttrSpec<'data-action', V>` — `kerfjs/actions` subpath
+
+```ts
+import { action, delegateActions } from 'kerfjs/actions';
+```
+
+`action('select-file')` is a thin specialization of `attr('data-action', 'select-file')` — it returns the same [`AttrSpec`](#attrspec-n-v-type). Spread its `.attrs` in JSX and use its `.value` as the handler-table key, so the action name lives in exactly one place and can't drift between the markup and the dispatcher. Lives in its own subpath so apps that don't use it pay nothing.
+
+### `delegateActions<E extends Element = Element>(root, eventType, table, options?): () => void`
+
+```ts
+const A = { select: action('select'), remove: action('remove') };
+
+// JSX:  <button {...A.select.attrs} data-id={id}>…</button>
+const dispose = delegateActions(root, 'click', {
+  [A.select.value]: (_e, el) => select(el.getAttribute('data-id')),
+  [A.remove.value]: (_e, el) => remove(el.getAttribute('data-id')),
+});
+```
+
+Wires a whole table of `data-action` handlers with ONE delegated listener (built on `delegate()`, so it inherits the single-listener dispatch and the capture auto-promotion for non-bubbling event types). On `eventType`, the nearest element carrying the action attribute (walk-up `closest()` by default; `{ match: 'direct' }` for an exact match) is looked up in `table` by its attribute value and the matching handler runs; an action absent from the table is ignored, like a `switch (dataset.action)` with no matching `case`. Returns a `() => void` disposer. One event type per call (mirroring `delegate()`) — collect the disposers when a root needs several. Options: `{ attr?: string; match?: 'closest' | 'direct' }` — `attr` (default `'data-action'`) overrides the keyed attribute; `match` is inherited from [`DelegateOptions`](#delegateoptions-type). The `ActionHandler<E>` and `DelegateActionsOptions` types are exported for annotating handlers and options.
+
 ## 8.5 JSX runtime
 
 ### `import 'kerfjs/jsx-runtime'` — TypeScript / esbuild config

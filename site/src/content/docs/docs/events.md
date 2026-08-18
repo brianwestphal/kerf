@@ -381,6 +381,32 @@ delegate<HTMLButtonElement>(root, 'click', 'button[data-action]', (_e, btn) => {
 
 The default is `Element`, so untyped call sites are unaffected.
 
+### The `kerfjs/actions` action-table shortcut
+
+The `attr()` + `delegate()` pattern above has one recurring shape: a table of `data-action` specs used as the single source of truth for both the JSX attribute and the delegate selector, plus a `switch (dataset.action)` that routes each event to a handler. It is the most-reinvented idiom in real kerf apps, so it ships blessed at the optional `kerfjs/actions` subpath — two thin helpers over `attr()` and `delegate()` that don't replace either.
+
+```ts
+import { action, delegateActions } from 'kerfjs/actions';
+
+// One table = the attribute in JSX AND the dispatch key. They can't drift.
+const A = {
+  select: action('select'),   // = attr('data-action', 'select')
+  remove: action('remove'),
+};
+
+// JSX (possibly in another file — no co-location required):
+//   <button {...A.select.attrs} data-id={id}>Select</button>
+//   <button {...A.remove.attrs} data-id={id}>Remove</button>
+
+// One delegated listener dispatches the whole table; returns a disposer:
+const dispose = delegateActions(root, 'click', {
+  [A.select.value]: (_e, el) => select(el.getAttribute('data-id')),
+  [A.remove.value]: (_e, el) => remove(el.getAttribute('data-id')),
+});
+```
+
+`delegateActions` is built on `delegate()`, so it inherits everything above: one root listener that survives re-renders, `closest()`-style walk-up matching (pass `{ match: 'direct' }` for exact-element matching), and capture auto-promotion for non-bubbling event types. It matches the nearest element carrying the action attribute and runs `table[value]`; an action absent from the table is ignored, exactly like a `switch` with no matching `case`. It takes **one event type per call** — for a root that needs several (say `click` and `input`), call it once per type and collect the disposers. The keyed attribute defaults to `data-action`; override it with `{ attr: 'data-cmd' }` (and author the specs with `attr('data-cmd', …)` to match). See [`docs/8-api-reference.md`](/kerf/api/) §8.4 for the full signatures.
+
 ## 5.5 What you should NOT do
 
 - **Don't `addEventListener` on individual rendered elements** unless they're inside a `data-morph-skip` subtree. Listeners attached to nodes the diff rebuilds will silently disappear on the next re-render.

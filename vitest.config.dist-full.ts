@@ -36,6 +36,7 @@ const SUBPATH_ENTRIES: Record<string, string> = {
   testing: resolve(DIST, 'testing.js'),
   'array-signal': resolve(DIST, 'array-signal.js'),
   html: resolve(DIST, 'html.js'),
+  actions: resolve(DIST, 'actions.js'),
   // The dev entry installs the diagnostics hooks. `tests/setup-dev-hooks.ts`
   // imports it, and `tests/helpers/dev-shape.ts` reaches the registry through
   // it, so dist-full must resolve it to the real dist entry rather than the

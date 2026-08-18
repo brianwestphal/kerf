@@ -103,6 +103,15 @@ const BUDGETS = [
     `,
   },
   {
+    name: 'actions',
+    budgetKb: 1.2,
+    description: 'the delegated action-table subpath (action + delegateActions)',
+    entry: `
+      import { action, delegateActions } from '${DIST}/actions.js';
+      globalThis.__k = [action, delegateActions];
+    `,
+  },
+  {
     // Guards the KF-429 invariant directly: with the dev entry absent, NO
     // dev-warning code may appear in a production bundle. The size budget
     // above would catch a large regression; this catches any at all.

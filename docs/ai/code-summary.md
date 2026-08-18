@@ -40,6 +40,7 @@ kerf/
 │   ├── list-reconcile-focus.ts   ← focus snapshot/restore around the move pass (engine-quirk fix); also reused by morph.ts's 2.6 marker-run move (KF-382), since that move can carry a focused row too
 │   ├── attrSelector.ts           ← attr / AttrSpec<N,V> — two overloads: static attr(name,value)→AttrSpec (with .attrs spreadable JSX object), dynamic attr(name)→factory; cssEscapeIdent + escapeCSSString internals
 │   ├── delegate.ts               ← delegate<T> + delegateCapture<T> (generic element type for handler arg) + DelegateOptions; BOTH helpers default to closest()-style walk-up matching and pass the matched ancestor — delegateCapture unified onto closest() (BREAKING; opt into old direct-match via { match: 'direct' }); shared makeListener() applies match mode + rootEl.contains() guard; calls warnIfInsideEffect() at the top of both helpers when KF-238's gate is on
+│   ├── actions.ts                ← action() + delegateActions() at the kerfjs/actions subpath — the blessed data-action table idiom. action(v) = attr('data-action', v); delegateActions(root, event, table, opts?) wraps ONE delegate() on `[data-action]` and dispatches by the matched element's attribute value (custom attr via opts.attr; match inherited). Thin layer over attr + delegate; returns a disposer; no per-instance state.
 │   ├── dev-delegate-warn.ts      ← KF-238 — opt-in dev warn when `delegate()` / `delegateCapture()` is called inside an `effect()` body (each effect re-run installs a fresh listener; effect disposer cleans only the subscription). `reactive.ts`'s `effect()` wrap increments/decrements a depth counter when the gate is on; `delegate.ts` checks it. Opt-in via `KERF_DEV_WARN_DELEGATE_IN_EFFECT=1` in dev; production unchanged.
 │   ├── dev-each-warn.ts          ← KERF_DEV_WARN_DUPLICATE_EACH_KEYS + KERF_DEV_WARN_EACH_IN_MORPH_SKIP opt-in warnings
 │   ├── dev-list-key-warn.ts      ← KF-392 — ALWAYS-ON dev warn (no env var, like the missing-row-key warning) when an unkeyed each() list's call-order id is taken over by a different list, so its rows were rebuilt (DOM identity/focus/scroll/IME lost, O(rows)). Names `each(…, { key })` as the fix, incl. that keying the CONDITIONAL list is usually enough. One-shot per list id; blind to shifts between two each() over the SAME arraySignal (keys close that by construction).
@@ -62,6 +63,7 @@ kerf/
 │   │   ├── array-signal.test.ts
 │   │   ├── audit-gap-coverage.test.tsx     ← regression-net for v8-only branches found via coverage gaps
 │   │   ├── delegate.test.ts
+│   │   ├── actions.test.ts                 ← kerfjs/actions: action() AttrSpec + delegateActions dispatch/closest/direct/custom-attr/unknown-action/disposer/multi-event
 │   │   ├── attr.test.ts
 │   │   ├── dev-delegate-warn.internal.test.ts ← KF-238 — opt-in `KERF_DEV_WARN_DELEGATE_IN_EFFECT=1` dev-mode warning when `delegate()` / `delegateCapture()` is called inside an `effect()` body; covers depth tracking, throw-still-decrements, env-var gate off, production-mode short-circuit, nested effects, one-shot dedup. `.internal.test.ts` so dist-full excludes it.
 │   │   ├── dev-each-warn.internal.test.ts ← opt-in `KERF_DEV_WARN_EACH_IN_MORPH_SKIP=1` (each() inside data-morph-skip) and `KERF_DEV_WARN_DUPLICATE_EACH_KEYS=1` (duplicate cacheKey values) warnings; covers env-var gates, dedup, production-mode short-circuit.
@@ -129,7 +131,8 @@ kerf/
 │   │   ├── toElement.test.ts
 │   │   └── url-screen-corpus.internal.test.ts ← KF-437 — the dangerous-URL screen's two corpora (must-block AND must-pass) exercised against every screened attribute. The must-pass list is the standing guard against a FALSE POSITIVE, which a suite that only tests attacks is structurally blind to — that is the gap `javascript:void(0)` fell into
 │   ├── integration/
-│   │   └── full-pipeline.test.ts ← end-to-end cart UI exercising every primitive
+│   │   ├── full-pipeline.test.ts ← end-to-end cart UI exercising every primitive
+│   │   └── actions.test.ts       ← kerfjs/actions through the pipeline: delegateActions handlers keep firing across mount() re-renders (morph)
 │   ├── browser/                  ← Playwright real-browser tests (chromium/firefox/webkit) — run via `npm run test:browser`
 │   │   ├── fixtures/index.html         ← importmap-based page that loads kerf from dist/
 │   │   ├── consumer-app.spec.ts        ← KF-123 — drives `tests/dist/consumer-app/` (real esbuild-bundled app against dist/) across Chromium / Firefox / WebKit
@@ -249,6 +252,7 @@ Every export reachable via `import { ... } from 'kerfjs'`:
 | `delegate<T>` | `delegate.ts` | Event delegation; auto-promotes known non-bubblers (focus/blur/scroll/load/error/mouseenter/mouseleave) to capture, keeps `closest()` matching; generic `T extends Element` narrows the `target` arg; optional `{ match: 'closest' \| 'direct' }` (default `'closest'`) |
 | `delegateCapture<T>` | `delegate.ts` | Explicit-capture escape hatch; `closest()`-style walk-up matching by default (unified with `delegate()`), passes the matched ancestor; same `T` generic; opt into strict `matches()` via `{ match: 'direct' }` |
 | `DelegateOptions` | `delegate.ts` | Options for both delegation helpers: `{ match?: 'closest' \| 'direct' }` — `'closest'` (default) walks up via `closest()`, `'direct'` matches only `event.target` |
+| `action`, `delegateActions`, `ActionHandler`, `DelegateActionsOptions` | `actions.ts` (`kerfjs/actions` subpath) | The blessed data-action table idiom. `action(v)` → `attr('data-action', v)` AttrSpec; `delegateActions(root, event, table, opts?)` wires ONE `delegate()` on `[data-action]` and dispatches by the matched element's attribute value (unknown actions ignored; `opts.attr` overrides the attribute; `match` inherited from `DelegateOptions`). Returns a disposer; no per-instance state |
 | `toElement` | `toElement.ts` | JSX → DOM (SVG-aware) |
 | `SafeHtml` | `jsx-runtime.ts` | The JSX result type |
 | `isSafeHtml` | `jsx-runtime.ts` | Cross-bundle type guard for `SafeHtml` (preferred over `instanceof`) |

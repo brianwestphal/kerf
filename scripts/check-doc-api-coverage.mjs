@@ -38,6 +38,7 @@ const PUBLIC_EXPORT_SOURCES = [
   { path: 'src/array-signal.ts', label: 'kerfjs/array-signal' },
   { path: 'src/testing.ts', label: 'kerfjs/testing' },
   { path: 'src/html.ts', label: 'kerfjs/html' },
+  { path: 'src/actions.ts', label: 'kerfjs/actions' },
 ];
 
 // JSX-runtime subpath exports (`jsx`, `jsxs`, `jsxDEV`) are consumed by the

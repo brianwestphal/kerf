@@ -64,6 +64,10 @@
       "types": "./dist/html.d.ts",
       "import": "./dist/html.js"
     },
+    "./actions": {
+      "types": "./dist/actions.d.ts",
+      "import": "./dist/actions.js"
+    },
     "./ai/*": "./ai/*"
   },
   "files": [
