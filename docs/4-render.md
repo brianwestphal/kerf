@@ -282,6 +282,20 @@ When the keyed list reconciler moves a row whose descendant is the focused eleme
 
 Replaced rows (cache miss — the row's HTML changed) are a different story: the old node is removed before the new one is inserted, so focus that lived inside it is genuinely gone. That matches the behavior of any framework that re-renders a row.
 
+### Choosing a form pattern
+
+The rules above add up to one practical guarantee for app authors: **you do not need to pull form state out of signals to keep it from being clobbered.** A focused `<input>`, `<textarea>`, or `[contenteditable]` keeps its value and caret across any re-render — a full `mount()` re-render, a sibling update, or a keyed list reorder alike. Reactivity and live text entry coexist; the common instinct to route input state through a plain (non-reactive) object "so typing never resets the field" is unnecessary.
+
+Two patterns are supported. Pick one per field:
+
+- **Uncontrolled (the default for text entry).** Don't bind `value` at all. The DOM owns the field; you read it when you need it — typically from a `delegate()` handler at submit or change time (`e.target.value`). Because the template never mentions `value`, no re-render can touch it (see *Form-state properties* above). This is the simplest, fastest path and what most fields want.
+
+- **Controlled.** Bind `value={sig}` and write the signal back on `input` (usually `delegate(root, 'input', selector, …)`). The signal is the source of truth; while the field is focused, both morph and the binding writer skip its `value`, so your keystrokes and caret are never overwritten mid-edit. Use this when something *other* than the user also sets the field — a "clear" button, a preset, a value derived from another signal.
+
+**The boundary.** The preservation guarantee holds while the input's **own DOM node is matched** across the reconcile. It is lost only when that node is *replaced* — a top-level tag change on the row, a dropped ancestor, or a keyed row whose HTML changed enough to be re-created (see *Across `each()` reorders* above). This is the same rule every preserved thing follows. Practically: give an input that lives inside a list row or a conditionally-rendered region a stable `id` or `data-key` so the reconciler matches it instead of replacing it.
+
+**The one caveat.** A controlled `value={sig}` *does* update while the field is **not** focused — correct controlled-input behavior, but it means a background signal change can replace text a user typed and then tabbed away from before committing. If you don't want that, use the uncontrolled pattern.
+
 ## 4.4.1 User-agent-owned state attributes
 
 A handful of HTML elements have boolean attributes that the *user agent* sets in response to user interaction — `<details open>` and `<dialog open>` are the canonical pair. When a user expands a `<details>`, the browser adds `open=""` to the element. If kerf's morph treated that attribute like any other developer-authored attribute, the next re-render would see the live `open=""` against a template without it and remove it — collapsing the user's expansion.
