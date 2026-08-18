@@ -127,6 +127,7 @@
     "prepare": "husky",
     "release": "bash scripts/release.sh",
     "release:beta": "bash scripts/release.sh --beta",
+    "release:beta:auto": "bash scripts/release-beta-auto.sh",
     "commit:msg": "gitgist --staged --commit-message",
     "prepublishOnly": "npm run build",
     "example:reactivity-demo": "cd examples/reactivity-demo && npm install && npm run dev",
