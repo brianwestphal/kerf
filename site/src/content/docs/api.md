@@ -512,3 +512,140 @@ The returned node is always adopted into the live `document` (`node.ownerDocumen
 | --- | --- |
 | `<details>` `open` | The morph never removes `open` from a live `<details>` — the user agent toggles it on summary click and the diff treats it as user-owned. Trade-off: controlled-style `<details open={false}>` won't auto-collapse a previously-opened details element; drive `.open` imperatively if you need controlled behavior. See `docs/4-render.md` §4.4.1. |
 | `<dialog>` `open` | Same as `<details>`. The browser sets `open=""` when `.show()` / `.showModal()` is called; the morph leaves it alone. |
+
+## 8.8 Overlays — `kerfjs/overlay` subpath
+
+Optional subpath (`import { overlay, confirm, toast } from 'kerfjs/overlay'`) that blesses the modal/overlay pattern every real kerf app hand-rolls. Structural only — kerf ships no CSS; you style the wrapper. Each function owns its DOM + listeners in a closure and returns a handle (no per-instance framework state). Because `overlay()` owns its content's `mount()` (so `close()` disposes it), this subpath pulls in the core renderer — but an app already importing `kerfjs` shares that via code-splitting, so the marginal cost is ~2 KB.
+
+### `overlay(content, options?): OverlayHandle`
+
+```ts
+const dialog = overlay(<Settings />, { dismiss: ['escape', 'backdrop'], initialFocus: 'input' });
+await dialog.result;      // resolves when closed
+dialog.close(value);      // or close it yourself
+```
+
+Appends a wrapper (class from `options.className`, default `'kerf-overlay'`) to `options.container` (default `document.body`), `mount()`s `content` inside it, wires the requested dismissals, and returns an [`OverlayHandle`](#overlay-types) `{ el, close(result?), result }`. `content` is an [`OverlayContent`](#overlay-types) — a `SafeHtml` (static) or a `() => MountResult` render function (driven reactively). `close()` is idempotent: it disposes the mount, removes the listeners + node, restores focus to the previously-focused element, and resolves `result`.
+
+Options ([`OverlayOptions`](#overlay-types)): `dismiss` (`'escape' | 'backdrop' | 'outside'`, an array, or `false`; default `['escape', 'backdrop']` — `'backdrop'` is a click on the wrapper itself, `'outside'` a click anywhere outside it for popovers); `initialFocus` (selector, `true` = first focusable, or `false`; default `true`); `trap` (trap Tab/Shift+Tab within + set `role="dialog"` / `aria-modal`; default `true`); `role`; `onDismiss`; and `outsideIgnore` (elements whose clicks don't count as outside, e.g. the trigger). A user dismissal resolves `result` with `undefined`.
+
+### `confirm(message, options?): Promise<boolean>`
+
+```ts
+if (await confirm('Delete this file?', { danger: true })) remove();
+```
+
+A promise-based `window.confirm` replacement (that global is a no-op in Tauri WKWebViews). Renders a two-button dialog on top of `overlay()` and resolves `true` for OK, `false` for Cancel or any dismissal. `message` + labels are auto-escaped through the JSX runtime. Options ([`ConfirmOptions`](#overlay-types)): `title`, `okText` (default `'OK'`), `cancelText` (default `'Cancel'`), `danger` (adds a `kerf-confirm--danger` class), plus `container` / `className`.
+
+### `toast(content, options?): () => void`
+
+```ts
+toast('Saved');
+const dismiss = toast('Uploading…', { duration: 0 }); // sticky; dismiss() when done
+```
+
+Shows a non-modal, auto-dismissing notification, stacked in a shared body-level region (lazily created, or `options.container`). `content` is a [`ToastContent`](#overlay-types) (text, `SafeHtml`, or a render function). Returns a `() => void` that dismisses it early. Options ([`ToastOptions`](#overlay-types)): `duration` (ms; `0` = sticky; default `4000`), `className` (default `'kerf-toast'`), `role` (default `'status'`), `container`.
+
+### Overlay types
+
+`OverlayHandle`, `OverlayContent`, `OverlayOptions`, `DismissTrigger`, `ConfirmOptions`, `ToastContent`, and `ToastOptions` are all exported from `kerfjs/overlay` for annotating handles, content, and option bags.
+
+## 8.9 Dispose scopes — `kerfjs/scope` subpath
+
+Optional subpath (`import { disposeScope, disposeSubtree, observeRemovals } from 'kerfjs/scope'`) that ties a set of disposers to a DOM element's lifetime. kerf hands out disposers (`mount()` / `effect()` / `delegate()` all return `() => void`), but nothing scopes them to a subtree, so append-heavy UIs leak detached-but-subscribed effects and listeners. No module-level mutable state — scopes live in a `WeakMap` keyed by element.
+
+### `disposeScope(el): Scope`
+
+```ts
+const s = disposeScope(card);
+s.mount(card, renderCard);            // mounts AND registers the disposer
+s.effect(() => sync(card));
+s.delegate(card, 'click', '.del', del);
+s.add(() => observer.disconnect());   // any () => void disposer
+// …later:
+s.dispose();                          // runs them all, best-effort, idempotent
+```
+
+Returns the per-element [`Scope`](#scope-type). Calling `disposeScope(el)` again for the same element returns the **same** scope (so disparate code paths register into one place); after `dispose()`, a later call starts fresh. `Scope` has `add(dispose)` (register any disposer, returns it), the convenience wrappers `mount(el, render)` / `effect(fn)` / `delegate(root, type, selector, handler, options?)` (which call the kerf primitive **and** register its disposer), and `dispose()` (runs every registered disposer best-effort — a throwing one won't strand the rest — then resets; idempotent).
+
+### `disposeSubtree(root): void`
+
+```ts
+disposeSubtree(feed);  // dispose every scope in feed, root included
+feed.remove();
+```
+
+Disposes `root`'s own scope and every descendant scope, then leaves the DOM removal to you. Call it right before removing a subtree. Finds scopes by walking the subtree against the `WeakMap` — it adds no marker attributes to your DOM.
+
+### `observeRemovals(root): () => void`
+
+```ts
+const stop = observeRemovals(document.body); // auto-dispose on removal, app-wide
+```
+
+Installs a `MutationObserver` on `root` that auto-runs a node's scope (via `disposeSubtree`) when that node — or an ancestor — is removed from the subtree. One observer covers the whole tree. Returns a disconnect function. `MutationObserver` fires asynchronously, so disposal runs a microtask after the removal.
+
+### `Scope` (type)
+
+The handle returned by `disposeScope`, exported for annotation: `{ add, mount, effect, delegate, dispose }` (see `disposeScope` above).
+
+## 8.10 Async state — `kerfjs/async` subpath
+
+Optional subpath (`import { resource } from 'kerfjs/async'`) that models async state — the `{ status, data, error }` shape every app reproduces — with the stale-response guard built in. You still write the fetch; `.run()` owns the status transitions and drops out-of-order responses. Signals only, no render core, so it's tiny.
+
+### `resource<T>(): Resource<T>`
+
+```ts
+const users = resource<User[]>();
+
+// Browser (client-side fetch):
+users.run(() => fetch('/api/users', { headers: auth() }).then((r) => r.json()));
+
+// SSR (Node 18+ global fetch — same primitive):
+await users.run(() => fetch(apiUrl).then((r) => r.json() as Promise<User[]>));
+
+// render off users.value.status
+users.value.status; // 'idle' | 'running' | 'completed' | 'failed'
+```
+
+Returns a [`Resource<T>`](#resource-types). `resource.value` is a **tracking read** of `ResourceState<T>` (`{ status, data, error, progress }`) — drive UI off `value.status`, exactly like reading a signal inside `mount()`/`computed()`/`effect()`. Methods:
+
+- **`run(fetcher): Promise<T | undefined>`** — sets `running`, then `completed` (with `data`) or `failed` (with `error`), guarding against stale responses: **only the latest `run` may resolve the state**, so a slow response can't clobber a newer one. It **never rejects** — a failure lands in `value.error`; the returned promise resolves the data (or `undefined` on failure) for callers who want to await. Previous `data` is preserved across a re-run and on failure (stale-while-revalidate).
+- **`reset(): void`** — back to `idle`, clearing data/error/progress and invalidating any in-flight run.
+
+**Progress** is opt-in: your fetcher receives a `report(completed, total)` callback (a plain `() => Promise<T>` is assignable — ignore it if unused). Reports from a superseded run are dropped.
+
+```ts
+upload.run((report) => putWithProgress(file, (sent, size) => report(sent, size)));
+// upload.value.progress -> { completed, total } | undefined
+```
+
+### Resource types
+
+`Resource<T>`, `ResourceState<T>`, `ResourceStatus`, `ResourceProgress`, and `ResourceFetcher<T>` are all exported from `kerfjs/async`.
+
+## 8.11 Keyed reactive list — `kerfjs/list` subpath
+
+Optional subpath (`import { bindList } from 'kerfjs/list'`) providing `bindList` — a keyed list with a **live per-row mount** and optional **viewport virtualization**. It is a deliberate second list API, distinct from [`each()`](#eacht-items-render-cachekey-safehtml): reach for it when you need surgical per-row updates or windowing; `each()` stays the default for item-owned-state lists rendered to HTML strings. See `docs/4-render.md` §4.2 for the tradeoff.
+
+### `bindList<T>(parent, source, options): () => void`
+
+```ts
+const dispose = bindList(listEl, itemsSignal, {
+  key: (row) => row.id,
+  render: (row) => <span class={selected} data-id={row.id}>{row.label}</span>,
+  tag: 'li',                       // row element tag (default 'div')
+  virtualize: { rowHeight: 32 },   // optional windowing
+});
+```
+
+Binds a keyed list to `parent` (which `bindList` owns the children of), driven by `source` — anything with a tracking `.value` array read, so a `signal<readonly T[]>` **or** an `arraySignal<T>` both work. Returns a disposer that tears down every row mount, the scroll listener, and the source subscription.
+
+- **Per-row reactivity.** Each row is individually `mount()`ed, so a signal the row's `render` reads updates just that row (a fine-grained binding or a one-row morph) — its siblings don't re-render. Read signals in `render` for reactivity (external state like a `selectedId`, or signals the item carries); keep item **objects** stable and drive structure (add/remove/move) through the source. A row whose item object identity changes is rebuilt (same rule as `each()`'s memo).
+- **Virtualization.** With `virtualize: { rowHeight, overscan? }` only the rows in the scroll viewport are rendered. `bindList` renders the rows into an inner **sizer** element it creates inside `parent` and sets that sizer's `padding-top`/`padding-bottom` so `parent`'s `scrollHeight` stays honest — the padding lives on the sizer, not on `parent`, because padding counts toward `clientHeight` and would otherwise break the window math. It also sizes each row to `rowHeight` for you. `overscan` (default 3) renders extra rows above/below the viewport. Give `parent` a fixed height + `overflow: auto` in your CSS (the rows are `parent > sizer > row`).
+
+Options ([`BindListOptions<T>`](#list-types)): `key` (stable per-row key — a `ListKey`, i.e. `string | number`), `render` (returns the row content — a `MountResult`), `tag`, `virtualize`.
+
+### List types
+
+`ListKey`, `ListSource<T>`, and `BindListOptions<T>` are exported from `kerfjs/list`.

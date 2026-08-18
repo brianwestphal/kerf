@@ -40,6 +40,7 @@ const SUBPATH_ENTRIES: Record<string, string> = {
   overlay: resolve(DIST, 'overlay.js'),
   scope: resolve(DIST, 'scope.js'),
   async: resolve(DIST, 'async.js'),
+  list: resolve(DIST, 'list.js'),
   // The dev entry installs the diagnostics hooks. `tests/setup-dev-hooks.ts`
   // imports it, and `tests/helpers/dev-shape.ts` reaches the registry through
   // it, so dist-full must resolve it to the real dist entry rather than the

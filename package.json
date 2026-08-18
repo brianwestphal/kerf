@@ -80,6 +80,10 @@
       "types": "./dist/async.d.ts",
       "import": "./dist/async.js"
     },
+    "./list": {
+      "types": "./dist/list.d.ts",
+      "import": "./dist/list.js"
+    },
     "./ai/*": "./ai/*"
   },
   "files": [

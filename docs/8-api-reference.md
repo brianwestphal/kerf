@@ -619,3 +619,29 @@ upload.run((report) => putWithProgress(file, (sent, size) => report(sent, size))
 ### Resource types
 
 `Resource<T>`, `ResourceState<T>`, `ResourceStatus`, `ResourceProgress`, and `ResourceFetcher<T>` are all exported from `kerfjs/async`.
+
+## 8.11 Keyed reactive list — `kerfjs/list` subpath
+
+Optional subpath (`import { bindList } from 'kerfjs/list'`) providing `bindList` — a keyed list with a **live per-row mount** and optional **viewport virtualization**. It is a deliberate second list API, distinct from [`each()`](#eacht-items-render-cachekey-safehtml): reach for it when you need surgical per-row updates or windowing; `each()` stays the default for item-owned-state lists rendered to HTML strings. See `docs/4-render.md` §4.2 for the tradeoff.
+
+### `bindList<T>(parent, source, options): () => void`
+
+```ts
+const dispose = bindList(listEl, itemsSignal, {
+  key: (row) => row.id,
+  render: (row) => <span class={selected} data-id={row.id}>{row.label}</span>,
+  tag: 'li',                       // row element tag (default 'div')
+  virtualize: { rowHeight: 32 },   // optional windowing
+});
+```
+
+Binds a keyed list to `parent` (which `bindList` owns the children of), driven by `source` — anything with a tracking `.value` array read, so a `signal<readonly T[]>` **or** an `arraySignal<T>` both work. Returns a disposer that tears down every row mount, the scroll listener, and the source subscription.
+
+- **Per-row reactivity.** Each row is individually `mount()`ed, so a signal the row's `render` reads updates just that row (a fine-grained binding or a one-row morph) — its siblings don't re-render. Read signals in `render` for reactivity (external state like a `selectedId`, or signals the item carries); keep item **objects** stable and drive structure (add/remove/move) through the source. A row whose item object identity changes is rebuilt (same rule as `each()`'s memo).
+- **Virtualization.** With `virtualize: { rowHeight, overscan? }` only the rows in the scroll viewport are rendered. `bindList` renders the rows into an inner **sizer** element it creates inside `parent` and sets that sizer's `padding-top`/`padding-bottom` so `parent`'s `scrollHeight` stays honest — the padding lives on the sizer, not on `parent`, because padding counts toward `clientHeight` and would otherwise break the window math. It also sizes each row to `rowHeight` for you. `overscan` (default 3) renders extra rows above/below the viewport. Give `parent` a fixed height + `overflow: auto` in your CSS (the rows are `parent > sizer > row`).
+
+Options ([`BindListOptions<T>`](#list-types)): `key` (stable per-row key — a `ListKey`, i.e. `string | number`), `render` (returns the row content — a `MountResult`), `tag`, `virtualize`.
+
+### List types
+
+`ListKey`, `ListSource<T>`, and `BindListOptions<T>` are exported from `kerfjs/list`.

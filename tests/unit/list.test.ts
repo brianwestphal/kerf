@@ -1,0 +1,209 @@
+import { afterEach, describe, expect, it } from 'vitest';
+
+import { arraySignal } from '../../src/array-signal.js';
+import { bindList } from '../../src/list.js';
+import { signal } from '../../src/reactive.js';
+
+interface Item { id: number; label: string }
+
+afterEach(() => {
+  document.body.innerHTML = '';
+});
+
+function host(): HTMLElement {
+  const el = document.createElement('div');
+  document.body.appendChild(el);
+  return el;
+}
+
+const texts = (parent: HTMLElement) => Array.from(parent.children).map((c) => c.textContent);
+
+describe('bindList() — keyed reconcile', () => {
+  it('renders one row element per item (using the configured tag)', () => {
+    const parent = host();
+    const items = signal<Item[]>([{ id: 1, label: 'a' }, { id: 2, label: 'b' }]);
+    const dispose = bindList(parent, items, { key: (i) => i.id, render: (i) => i.label, tag: 'li' });
+    expect(parent.children.length).toBe(2);
+    expect(parent.firstElementChild?.tagName).toBe('LI');
+    expect(texts(parent)).toEqual(['a', 'b']);
+    dispose();
+  });
+
+  it('appends new rows and removes gone rows (disposing them)', () => {
+    const parent = host();
+    const items = signal<Item[]>([{ id: 1, label: 'a' }]);
+    const dispose = bindList(parent, items, { key: (i) => i.id, render: (i) => i.label });
+
+    items.value = [{ id: 1, label: 'a' }, { id: 2, label: 'b' }];
+    expect(texts(parent)).toEqual(['a', 'b']);
+
+    items.value = [{ id: 2, label: 'b' }];
+    expect(texts(parent)).toEqual(['b']);
+    dispose();
+  });
+
+  it('reorders by key, preserving the SAME row element (no rebuild)', () => {
+    const parent = host();
+    const a = { id: 1, label: 'a' };
+    const b = { id: 2, label: 'b' };
+    const c = { id: 3, label: 'c' };
+    const items = signal<Item[]>([a, b, c]);
+    const dispose = bindList(parent, items, { key: (i) => i.id, render: (i) => i.label });
+    const rowB = parent.children[1];
+
+    items.value = [c, b, a]; // reverse
+    expect(texts(parent)).toEqual(['c', 'b', 'a']);
+    expect(parent.children[1]).toBe(rowB); // B kept its element (moved, not rebuilt)
+    dispose();
+  });
+
+  it('rebuilds a row when its item OBJECT identity changes at the same key', () => {
+    const parent = host();
+    const items = signal<Item[]>([{ id: 1, label: 'a' }]);
+    const dispose = bindList(parent, items, { key: (i) => i.id, render: (i) => i.label });
+    const first = parent.firstElementChild;
+
+    items.value = [{ id: 1, label: 'A' }]; // same key, new object
+    expect(texts(parent)).toEqual(['A']);
+    expect(parent.firstElementChild).not.toBe(first); // rebuilt
+    dispose();
+  });
+
+  it('accepts an arraySignal source and reconciles on its mutations', () => {
+    const parent = host();
+    const items = arraySignal<Item>([{ id: 1, label: 'a' }]);
+    const dispose = bindList(parent, items, { key: (i) => i.id, render: (i) => i.label });
+    expect(texts(parent)).toEqual(['a']);
+    items.push({ id: 2, label: 'b' });
+    expect(texts(parent)).toEqual(['a', 'b']);
+    items.remove(0);
+    expect(texts(parent)).toEqual(['b']);
+    dispose();
+  });
+
+  it('dispose() removes every row and stops reacting', () => {
+    const parent = host();
+    const items = signal<Item[]>([{ id: 1, label: 'a' }]);
+    const dispose = bindList(parent, items, { key: (i) => i.id, render: (i) => i.label });
+    dispose();
+    expect(parent.children.length).toBe(0);
+    items.value = [{ id: 1, label: 'a' }, { id: 2, label: 'b' }]; // ignored after dispose
+    expect(parent.children.length).toBe(0);
+  });
+});
+
+describe('bindList() — per-row reactivity (the each() cannot)', () => {
+  it('updates only the row whose signal changed; siblings do not even re-render', () => {
+    const parent = host();
+    const data = [
+      { id: 1, on: signal(false) },
+      { id: 2, on: signal(false) },
+      { id: 3, on: signal(false) },
+    ];
+    const renderCalls = new Map<number, number>();
+    const items = signal(data);
+    const dispose = bindList(parent, items, {
+      key: (i) => i.id,
+      render: (i) => {
+        renderCalls.set(i.id, (renderCalls.get(i.id) ?? 0) + 1);
+        return i.on.value ? 'on' : 'off';
+      },
+    });
+    expect(texts(parent)).toEqual(['off', 'off', 'off']);
+    expect([...renderCalls.values()]).toEqual([1, 1, 1]);
+    const rowEls = Array.from(parent.children);
+
+    data[1].on.value = true; // flip ONLY row 2's signal
+    expect(texts(parent)).toEqual(['off', 'on', 'off']);
+    // Only row 2's mount re-ran render; rows 1 and 3 were untouched.
+    expect(renderCalls.get(1)).toBe(1);
+    expect(renderCalls.get(2)).toBe(2);
+    expect(renderCalls.get(3)).toBe(1);
+    // Every row kept its element (surgical, not rebuilt).
+    expect(Array.from(parent.children)).toEqual(rowEls);
+    dispose();
+  });
+});
+
+describe('bindList() — virtualization', () => {
+  const withHeight = (el: HTMLElement, h: number) =>
+    Object.defineProperty(el, 'clientHeight', { configurable: true, value: h });
+
+  it('renders only the viewport window and sets padding to keep scrollHeight honest', () => {
+    const parent = host();
+    withHeight(parent, 100); // viewport shows 5 rows at rowHeight 20
+    parent.scrollTop = 0;
+    const items = signal<Item[]>(
+      Array.from({ length: 100 }, (_, i) => ({ id: i, label: `r${i}` })),
+    );
+    const dispose = bindList(parent, items, {
+      key: (i) => i.id,
+      render: (i) => i.label,
+      virtualize: { rowHeight: 20, overscan: 2 },
+    });
+
+    // Rows live in an inner sizer so the padding never inflates parent.clientHeight.
+    const sizer = parent.firstElementChild as HTMLElement;
+    // window: [0, ceil(100/20)+2] = [0, 7] → 7 rows rendered, not 100
+    expect(sizer.children.length).toBe(7);
+    expect(sizer.firstElementChild?.textContent).toBe('r0');
+    expect(sizer.style.paddingTop).toBe('0px');
+    expect(sizer.style.paddingBottom).toBe(`${(100 - 7) * 20}px`); // 1860px
+    dispose();
+  });
+
+  it('shifts the window on scroll (rAF-throttled) and updates padding', async () => {
+    const parent = host();
+    withHeight(parent, 100);
+    parent.scrollTop = 0;
+    const items = signal<Item[]>(
+      Array.from({ length: 100 }, (_, i) => ({ id: i, label: `r${i}` })),
+    );
+    const dispose = bindList(parent, items, {
+      key: (i) => i.id,
+      render: (i) => i.label,
+      virtualize: { rowHeight: 20, overscan: 2 },
+    });
+
+    parent.scrollTop = 400; // scroll down 20 rows
+    parent.dispatchEvent(new Event('scroll'));
+    await new Promise((r) => setTimeout(r, 30)); // let the rAF fire
+
+    const sizer = parent.firstElementChild as HTMLElement;
+    // window start = floor(400/20) - 2 = 18
+    expect(sizer.firstElementChild?.textContent).toBe('r18');
+    expect(sizer.style.paddingTop).toBe(`${18 * 20}px`); // 360px
+    dispose();
+  });
+
+  it('coalesces rapid scrolls into one rAF and skips a rAF that fires after dispose', async () => {
+    const parent = host();
+    withHeight(parent, 100);
+    const items = signal<Item[]>(Array.from({ length: 50 }, (_, i) => ({ id: i, label: `r${i}` })));
+    const dispose = bindList(parent, items, {
+      key: (i) => i.id,
+      render: (i) => i.label,
+      virtualize: { rowHeight: 20 },
+    });
+    parent.scrollTop = 100;
+    parent.dispatchEvent(new Event('scroll')); // schedules a rAF
+    parent.dispatchEvent(new Event('scroll')); // coalesced — rafPending is already true
+    dispose(); // before the rAF fires
+    await new Promise((r) => setTimeout(r, 30)); // the rAF fires but is a no-op (disposed)
+    expect(parent.children.length).toBe(0); // the inner sizer (and its rows) were removed
+  });
+
+  it('dispose() removes the inner sizer and stops the scroll handler', () => {
+    const parent = host();
+    withHeight(parent, 100);
+    const items = signal<Item[]>(Array.from({ length: 50 }, (_, i) => ({ id: i, label: `r${i}` })));
+    const dispose = bindList(parent, items, {
+      key: (i) => i.id,
+      render: (i) => i.label,
+      virtualize: { rowHeight: 20 },
+    });
+    expect((parent.firstElementChild as HTMLElement).style.paddingBottom).not.toBe('');
+    dispose();
+    expect(parent.children.length).toBe(0); // sizer + rows removed
+  });
+});

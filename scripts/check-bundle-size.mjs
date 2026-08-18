@@ -149,6 +149,17 @@ const BUDGETS = [
     `,
   },
   {
+    // ISOLATED size — bindList mounts each row, so it pulls in the render core;
+    // marginal cost for an app already using kerf is ~1.5 KB via code-splitting.
+    name: 'list',
+    budgetKb: 10.9,
+    description: 'the bindList subpath (keyed per-row mount + virtualization) — includes shared core',
+    entry: `
+      import { bindList } from '${DIST}/list.js';
+      globalThis.__k = bindList;
+    `,
+  },
+  {
     // Guards the KF-429 invariant directly: with the dev entry absent, NO
     // dev-warning code may appear in a production bundle. The size budget
     // above would catch a large regression; this catches any at all.
