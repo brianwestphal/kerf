@@ -45,6 +45,7 @@ describe('public export surface (KF-286)', () => {
       'morph',
       'mount',
       'raw',
+      'renderDocument',
       'resetAllStores',
       'signal',
       'toElement',

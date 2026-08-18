@@ -170,6 +170,7 @@ axis (`cacheKey` reading an external signal) crosses all of them.
 | ID | Behavior | Implements | Guarding test(s) |
 | --- | --- | --- | --- |
 | FC-RN1 | `mount()` renders initial JSX and re-renders on tracked-signal change | `src/mount.ts` | `tests/unit/mount.test.ts` › "mount()" |
+| FC-RN1b | `renderDocument(node, options?)` prepends the doctype to a `SafeHtml` or string (SSR); a custom `doctype` overrides the default `html` | `src/renderDocument.ts` | `tests/unit/renderDocument.test.ts` › "prepends <!DOCTYPE html> to a SafeHtml document"; `tests/unit/renderDocument.test.ts` › "honors a custom doctype" |
 | FC-RN2 | `mount()` does NOT re-render on an unread signal change | `src/mount.ts` | `tests/unit/mount.test.ts` › "does NOT re-render when an unread signal changes" |
 | FC-RN3 | Keyed row DOM identity preserved across re-renders | `src/mount.ts`, `src/list-reconcile*.ts` | `tests/unit/mount.test.ts` › "preserves element identity across re-renders for keyed list rows" |
 | FC-RN4 | Focused text input value + cursor preserved across re-render | `src/mount.ts`, `src/list-reconcile-focus.ts` | `tests/unit/mount.test.ts` › "preserves cursor position in a focused text input across an attribute-changing re-render" |

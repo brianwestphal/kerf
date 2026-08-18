@@ -296,6 +296,16 @@ To ship reusable components as npm packages — including the per-instance-state
 
 `SafeHtml.toString()` works in any JS environment — Node, Deno, Bun, edge runtimes. There's no DOM dependency. Build your page server-side, write the string into the response, then call `mount()` on the same root in the browser to wire up reactivity.
 
+For a full document, `renderDocument(node)` prepends the doctype so routes don't reinvent `"<!DOCTYPE html>" + page.toString()`:
+
+```tsx
+import { renderDocument } from 'kerfjs';
+
+app.get('/', (c) => c.html(renderDocument(<Page />))); // "<!DOCTYPE html><html>…"
+```
+
+It takes a `SafeHtml` (JSX or the `html` tagged template) or a raw string, and an optional `{ doctype }` (default `'html'`). See [`docs/8-api-reference.md`](8-api-reference.md) §8.3.
+
 ## 6.10 Typed JSX intrinsic elements
 
 The JSX transform looks at `JSX.IntrinsicElements` in `kerfjs/jsx-runtime` to type-check tags and attributes. The table covers roughly 100 HTML elements (the full sectioning / text / embedded / forms / tables / metadata / interactive sets) and the SVG primitives that `toElement()` supports. Misspelled tags (`<diiv>`) and misspelled attribute names (`<input typo />`) fail to compile.

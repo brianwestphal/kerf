@@ -22,6 +22,7 @@ export {
   type Signal,
   signal,
 } from './reactive.js';
+export { renderDocument, type RenderDocumentOptions } from './renderDocument.js';
 export {
   defineStore,
   resetAllStores,

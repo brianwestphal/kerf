@@ -224,6 +224,15 @@ A `null` / `undefined` `liveRoot` throws immediately with a descriptive error (t
 
 > **Security — trusted templates only.** A `string` / `SafeHtml` template is parsed as HTML with **no escaping and no URL screening** — the same trust model as `innerHTML` / `raw()`. An `Element` template's attributes are copied to the live tree **verbatim**, including `on*` inline handlers and `javascript:` URLs. So a `morph()` template must be markup you trust: built via JSX, or sanitized upstream (DOMPurify). Never pass unsanitized user input as a `morph()` template. (This is distinct from the `mount()` render path, where JSX escapes values and screens dangerous URLs — `morph()` bypasses that because its template is already-built markup.)
 
+### `renderDocument(node: SafeHtml | string, options?: RenderDocumentOptions): string`
+
+```ts
+import { renderDocument } from 'kerfjs';
+return c.html(renderDocument(<Page />)); // "<!DOCTYPE html><html>…"
+```
+
+SSR convenience: prepends the doctype to a rendered document so routes don't reinvent `"<!DOCTYPE html>" + page.toString()`. `node` is a `SafeHtml` (JSX or the `html` tagged template) or a raw string — both are stringified via `.toString()`. `RenderDocumentOptions` is `{ doctype?: string }` (default `'html'`). Pure string work; no DOM dependency.
+
 ### `each<T>(items, render, cacheKey?): SafeHtml`
 
 The third argument may instead be an options object —
