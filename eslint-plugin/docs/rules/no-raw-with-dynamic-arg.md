@@ -35,6 +35,10 @@ Sanitization pipelines (`DOMPurify`, `sanitize-html`, server-rendered trusted co
 - Bare `raw(expr)` calls
 - Member-expression calls `kerf.raw(expr)` and `kerfjs.raw(expr)`
 
+## The blessed escape hatch: `trustedRaw()`
+
+When a dynamic value is genuinely server-trusted — a CSRF token, a trusted `<script src>`, a server-issued id — use `trustedRaw()` (exported from `kerfjs`) instead of `raw()`. It is identical at runtime but is **not** named `raw`, so this rule leaves it alone. That replaces scattered `eslint-disable` comments with one intention-revealing call. `trustedRaw()` is not a sanitizer — only pass values you control, never raw user input.
+
 ## What this rule does NOT catch
 
 - `raw()` calls where the binding was renamed via a local alias (`const inject = raw; inject(expr)`)

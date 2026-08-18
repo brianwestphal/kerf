@@ -49,6 +49,7 @@ describe('public export surface (KF-286)', () => {
       'resetAllStores',
       'signal',
       'toElement',
+      'trustedRaw',
     ]);
   });
 

@@ -81,6 +81,7 @@ import { html } from 'kerfjs/html';
 | `attr(name)` | `(value: V) => { readonly [name]: V }` | **Dynamic form.** Pre-validates the attribute name, returns a per-render factory. Both generics off → `N` inferred, `V` defaults to `string`. Specify both explicitly (`attr<'data-sort', 'asc'\|'desc'>('data-sort')`) to constrain the value set. Result is spreadable into JSX. |
 | `toElement(jsx)` | `Element \| DocumentFragment` | parse JSX/HTML string into a DOM node (SVG-aware). Single-root inputs return an `Element`; multi-root (`<><svg/> label</>`, two icons side by side) returns a `DocumentFragment` that DOM insertion APIs (`appendChild` / `replaceChildren` / `append`) inline into the parent. |
 | `raw(html)` | `SafeHtml` | inject pre-escaped HTML (icons, server fragments) |
+| `trustedRaw(html)` | `SafeHtml` | identical to `raw()`, but the lint-exempt escape hatch for a server-trusted DYNAMIC value (CSRF token, trusted `<script src>`, server id) — `kerfjs/no-raw-with-dynamic-arg` leaves it alone. Not a sanitizer; only pass values you control |
 | `isSafeHtml(v)` | `boolean` (type guard) | cross-bundle-safe `SafeHtml` check; prefer over `instanceof` |
 | `Fragment` | `(props) => SafeHtml` | JSX `<>...</>` tag; useful when composing `Fragment` manually |
 | `arraySignal<T>(initial?)` *(subpath: `kerfjs/array-signal`)* | `ArraySignal<T>` (`.value` snapshot, `update`/`insert`/`push`/`remove`/`move`/`replace` mutators) | granular keyed-list signal — `each(arraySig, ...)` reconciles in O(patches) instead of O(N) |

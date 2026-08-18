@@ -18,6 +18,10 @@ ruleTester.run('no-raw-with-dynamic-arg', rule, {
     { code: 'other.raw("<b>ok</b>");' },
     // Unrelated function.
     { code: 'sanitize(userInput);' },
+    // trustedRaw() is the blessed intention-revealing escape hatch for a
+    // server-trusted DYNAMIC value — it is not `raw`, so it is never flagged.
+    { code: 'trustedRaw(csrfToken);' },
+    { code: 'trustedRaw(`<script src="${trustedSrc}"></script>`);' },
   ],
   invalid: [
     {

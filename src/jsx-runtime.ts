@@ -96,6 +96,21 @@ export function raw(html: string): SafeHtml {
 }
 
 /**
+ * `trustedRaw(html)` — identical to {@link raw} at runtime, but names your intent:
+ * "this dynamic value is server-trusted, inject it verbatim." The
+ * `kerfjs/no-raw-with-dynamic-arg` lint rule flags a `raw()` with a NON-literal
+ * argument (unsanitized user input is the common XSS mistake) but leaves
+ * `trustedRaw()` alone — so a CSRF token, a trusted `<script src>`, or a
+ * server-issued id can be injected without scattering `eslint-disable` comments.
+ *
+ * It is NOT a sanitizer — it bypasses escaping exactly like `raw()`. Only pass
+ * values you control (server output, config, hard-coded), never raw user input.
+ */
+export function trustedRaw(html: string): SafeHtml {
+  return new SafeHtml(html);
+}
+
+/**
  * Internal: build a `SafeHtml` representing a list segment. Used by
  * `each()` so the JSX runtime is the sole owner of `SafeHtml` construction.
  */

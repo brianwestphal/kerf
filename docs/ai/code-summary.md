@@ -69,6 +69,7 @@ kerf/
 │   │   ├── audit-gap-coverage.test.tsx     ← regression-net for v8-only branches found via coverage gaps
 │   │   ├── delegate.test.ts
 │   │   ├── renderDocument.test.ts          ← renderDocument(): doctype prefix on SafeHtml + string + custom doctype
+│   │   ├── trustedRaw.test.ts              ← trustedRaw(): verbatim SafeHtml, identical output to raw() (the lint-exempt trusted-dynamic escape hatch)
 │   │   ├── actions.test.ts                 ← kerfjs/actions: action() AttrSpec + delegateActions dispatch/closest/direct/custom-attr/unknown-action/disposer/multi-event
 │   │   ├── overlay.test.ts                 ← kerfjs/overlay: overlay() wrapper/aria/mount/close/result/reactive-content/idempotent + dismiss (escape/backdrop/outside/false) + confirm() true/false/escape/escaping + toast() region/auto-dismiss/sticky/custom-container
 │   │   ├── list.test.ts                    ← kerfjs/list: bindList keyed reconcile (tag/add/remove/reorder-preserves-element/rebuild-on-identity/arraySignal), per-row reactivity (only changed row re-renders), virtualization (window+padding, scroll shift, rAF coalesce, dispose)
@@ -277,6 +278,7 @@ Every export reachable via `import { ... } from 'kerfjs'`:
 | `toElement` | `toElement.ts` | JSX → DOM (SVG-aware) |
 | `SafeHtml` | `jsx-runtime.ts` | The JSX result type |
 | `isSafeHtml` | `jsx-runtime.ts` | Cross-bundle type guard for `SafeHtml` (preferred over `instanceof`) |
+| `raw`, `trustedRaw` | `jsx-runtime.ts` | Inject a pre-escaped HTML string. `trustedRaw` is runtime-identical but the lint-exempt (`no-raw-with-dynamic-arg`) escape hatch for server-trusted DYNAMIC values — not a sanitizer |
 | `raw` | `jsx-runtime.ts` | Wrap a pre-escaped HTML string |
 | `Fragment` | `jsx-runtime.ts` | JSX `<>...</>` tag; also re-exported from the barrel for manual composition |
 

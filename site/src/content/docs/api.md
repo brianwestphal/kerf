@@ -431,6 +431,10 @@ Cross-bundle-safe type guard. Returns `true` for any object carrying the `Symbol
 
 Wrap a pre-escaped HTML string. Useful for icons, rendered Markdown, server-included fragments.
 
+### `trustedRaw(html: string): SafeHtml`
+
+Identical to `raw()` at runtime, but names your intent: *this dynamic value is server-trusted, inject it verbatim.* The `kerfjs/no-raw-with-dynamic-arg` lint rule flags a `raw()` whose argument is **not** a literal (unsanitized user input is the usual XSS mistake) but leaves `trustedRaw()` alone — so a CSRF token, a trusted `<script src>`, or a server-issued id injects without scattering `eslint-disable` comments. It is **not** a sanitizer (it bypasses escaping exactly like `raw()`); only pass values you control (server output, config, hard-coded), never raw user input.
+
 ### `Fragment` (component)
 
 JSX `<>...</>` — concatenates children without a wrapper tag. Available from both `kerfjs/jsx-runtime` (used by the JSX transform) and the main `kerfjs` barrel (when you need to compose `Fragment` manually, e.g. `jsx(Fragment, { children })`).

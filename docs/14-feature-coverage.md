@@ -176,6 +176,7 @@ axis (`cacheKey` reading an external signal) crosses all of them.
 | FC-RN4 | Focused text input value + cursor preserved across re-render | `src/mount.ts`, `src/list-reconcile-focus.ts` | `tests/unit/mount.test.ts` › "preserves cursor position in a focused text input across an attribute-changing re-render" |
 | FC-RN5 | Stateful attributes (`<details open>`) preserved across re-render unless the template changes | `src/morph.ts` | `tests/unit/mount.test.ts` › `preserves user-set <details open> across re-renders (KF-84)` |
 | FC-RN6 | `raw()` injects HTML through mount without escaping | `src/jsx-runtime.ts`, `src/mount.ts` | `tests/unit/mount.test.ts` › "raw() injects HTML through mount without escaping" |
+| FC-RN6b | `trustedRaw()` wraps a pre-escaped HTML string identically to `raw()` (the intention-revealing, lint-exempt escape hatch for server-trusted dynamic values) | `src/jsx-runtime.ts` | `tests/unit/trustedRaw.test.ts` › "returns SafeHtml with the verbatim html — identical output to raw()" |
 | FC-RN7 | Tier 3 direct listeners inside `data-morph-skip` survive re-renders | `src/morph.ts` | `tests/unit/mount.test.ts` › "direct event listeners inside data-morph-skip subtrees survive parent re-renders (Tier 3)" |
 | FC-RN8 | `morph()` inserts / removes / reorders keyed children | `src/morph.ts` | `tests/unit/morph.internal.test.ts` › "reorders children matched by id" |
 | FC-RN9 | `morph()` matches by `data-key` when ids are absent | `src/morph.ts` | `tests/unit/morph.internal.test.ts` › "matches by data-key when ids are absent" |
