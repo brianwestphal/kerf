@@ -41,6 +41,7 @@ const PUBLIC_EXPORT_SOURCES = [
   { path: 'src/actions.ts', label: 'kerfjs/actions' },
   { path: 'src/overlay.ts', label: 'kerfjs/overlay' },
   { path: 'src/scope.ts', label: 'kerfjs/scope' },
+  { path: 'src/async.ts', label: 'kerfjs/async' },
 ];
 
 // JSX-runtime subpath exports (`jsx`, `jsxs`, `jsxDEV`) are consumed by the

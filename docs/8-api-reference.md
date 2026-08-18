@@ -584,3 +584,38 @@ Installs a `MutationObserver` on `root` that auto-runs a node's scope (via `disp
 ### `Scope` (type)
 
 The handle returned by `disposeScope`, exported for annotation: `{ add, mount, effect, delegate, dispose }` (see `disposeScope` above).
+
+## 8.10 Async state — `kerfjs/async` subpath
+
+Optional subpath (`import { resource } from 'kerfjs/async'`) that models async state — the `{ status, data, error }` shape every app reproduces — with the stale-response guard built in. You still write the fetch; `.run()` owns the status transitions and drops out-of-order responses. Signals only, no render core, so it's tiny.
+
+### `resource<T>(): Resource<T>`
+
+```ts
+const users = resource<User[]>();
+
+// Browser (client-side fetch):
+users.run(() => fetch('/api/users', { headers: auth() }).then((r) => r.json()));
+
+// SSR (Node 18+ global fetch — same primitive):
+await users.run(() => fetch(apiUrl).then((r) => r.json() as Promise<User[]>));
+
+// render off users.value.status
+users.value.status; // 'idle' | 'running' | 'completed' | 'failed'
+```
+
+Returns a [`Resource<T>`](#resource-types). `resource.value` is a **tracking read** of `ResourceState<T>` (`{ status, data, error, progress }`) — drive UI off `value.status`, exactly like reading a signal inside `mount()`/`computed()`/`effect()`. Methods:
+
+- **`run(fetcher): Promise<T | undefined>`** — sets `running`, then `completed` (with `data`) or `failed` (with `error`), guarding against stale responses: **only the latest `run` may resolve the state**, so a slow response can't clobber a newer one. It **never rejects** — a failure lands in `value.error`; the returned promise resolves the data (or `undefined` on failure) for callers who want to await. Previous `data` is preserved across a re-run and on failure (stale-while-revalidate).
+- **`reset(): void`** — back to `idle`, clearing data/error/progress and invalidating any in-flight run.
+
+**Progress** is opt-in: your fetcher receives a `report(completed, total)` callback (a plain `() => Promise<T>` is assignable — ignore it if unused). Reports from a superseded run are dropped.
+
+```ts
+upload.run((report) => putWithProgress(file, (sent, size) => report(sent, size)));
+// upload.value.progress -> { completed, total } | undefined
+```
+
+### Resource types
+
+`Resource<T>`, `ResourceState<T>`, `ResourceStatus`, `ResourceProgress`, and `ResourceFetcher<T>` are all exported from `kerfjs/async`.

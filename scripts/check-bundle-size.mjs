@@ -140,6 +140,15 @@ const BUDGETS = [
     `,
   },
   {
+    name: 'async',
+    budgetKb: 2.0,
+    description: 'the async-state subpath (resource) — signals only, no render core',
+    entry: `
+      import { resource } from '${DIST}/async.js';
+      globalThis.__k = resource;
+    `,
+  },
+  {
     // Guards the KF-429 invariant directly: with the dev entry absent, NO
     // dev-warning code may appear in a production bundle. The size budget
     // above would catch a large regression; this catches any at all.

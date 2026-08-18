@@ -76,6 +76,10 @@
       "types": "./dist/scope.d.ts",
       "import": "./dist/scope.js"
     },
+    "./async": {
+      "types": "./dist/async.d.ts",
+      "import": "./dist/async.js"
+    },
     "./ai/*": "./ai/*"
   },
   "files": [

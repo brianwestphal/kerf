@@ -18,7 +18,7 @@ Status markers:
 | §2 | Reactivity (`signal` / `computed` / `effect` / `batch`) | Shipped |
 | §3 | Stores (`defineStore` / `resetAllStores`) | Shipped |
 | §4 | Render (`mount` + native diff + list reconciler) | Shipped |
-| §5 | Event delegation (Tier 1 / 2 / 3); companion subpaths `kerfjs/actions` (action-table), `kerfjs/overlay` (overlay / confirm / toast), `kerfjs/scope` (dispose-scope registry) | Shipped |
+| §5 | Event delegation (Tier 1 / 2 / 3); companion subpaths `kerfjs/actions` (action-table), `kerfjs/overlay` (overlay / confirm / toast), `kerfjs/scope` (dispose-scope registry), `kerfjs/async` (resource async-state) | Shipped |
 | §6 | JSX runtime (`SafeHtml` / `raw` / `Fragment`) + `kerfjs/html` tagged templates | Shipped |
 | §7 | SVG (`toElement` SVG-aware) | Shipped |
 | §8 | API reference | Shipped |

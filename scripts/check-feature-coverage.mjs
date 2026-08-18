@@ -42,7 +42,7 @@ const INDEX_DOC = resolve(REPO_ROOT, 'docs/14-feature-coverage.md');
 // must be named by at least one index row, so adding a public export forces a
 // behavior row. Type-only exports have no behavior; internal/JSX-transform
 // symbols are exempt.
-const EXPORT_SOURCES = ['src/index.ts', 'src/array-signal.ts', 'src/html.ts', 'src/actions.ts', 'src/overlay.ts', 'src/scope.ts'];
+const EXPORT_SOURCES = ['src/index.ts', 'src/array-signal.ts', 'src/html.ts', 'src/actions.ts', 'src/overlay.ts', 'src/scope.ts', 'src/async.ts'];
 const EXPORT_EXEMPT = new Set([
   'ARRAY_SIGNAL_BRAND', // internal cross-bundle brand symbol, not a user behavior
   'jsx', 'jsxs', 'jsxDEV', // JSX-transform entry points, not called by hand
