@@ -72,6 +72,10 @@
       "types": "./dist/overlay.d.ts",
       "import": "./dist/overlay.js"
     },
+    "./scope": {
+      "types": "./dist/scope.d.ts",
+      "import": "./dist/scope.js"
+    },
     "./ai/*": "./ai/*"
   },
   "files": [

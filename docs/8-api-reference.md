@@ -545,3 +545,42 @@ Shows a non-modal, auto-dismissing notification, stacked in a shared body-level 
 ### Overlay types
 
 `OverlayHandle`, `OverlayContent`, `OverlayOptions`, `DismissTrigger`, `ConfirmOptions`, `ToastContent`, and `ToastOptions` are all exported from `kerfjs/overlay` for annotating handles, content, and option bags.
+
+## 8.9 Dispose scopes — `kerfjs/scope` subpath
+
+Optional subpath (`import { disposeScope, disposeSubtree, observeRemovals } from 'kerfjs/scope'`) that ties a set of disposers to a DOM element's lifetime. kerf hands out disposers (`mount()` / `effect()` / `delegate()` all return `() => void`), but nothing scopes them to a subtree, so append-heavy UIs leak detached-but-subscribed effects and listeners. No module-level mutable state — scopes live in a `WeakMap` keyed by element.
+
+### `disposeScope(el): Scope`
+
+```ts
+const s = disposeScope(card);
+s.mount(card, renderCard);            // mounts AND registers the disposer
+s.effect(() => sync(card));
+s.delegate(card, 'click', '.del', del);
+s.add(() => observer.disconnect());   // any () => void disposer
+// …later:
+s.dispose();                          // runs them all, best-effort, idempotent
+```
+
+Returns the per-element [`Scope`](#scope-type). Calling `disposeScope(el)` again for the same element returns the **same** scope (so disparate code paths register into one place); after `dispose()`, a later call starts fresh. `Scope` has `add(dispose)` (register any disposer, returns it), the convenience wrappers `mount(el, render)` / `effect(fn)` / `delegate(root, type, selector, handler, options?)` (which call the kerf primitive **and** register its disposer), and `dispose()` (runs every registered disposer best-effort — a throwing one won't strand the rest — then resets; idempotent).
+
+### `disposeSubtree(root): void`
+
+```ts
+disposeSubtree(feed);  // dispose every scope in feed, root included
+feed.remove();
+```
+
+Disposes `root`'s own scope and every descendant scope, then leaves the DOM removal to you. Call it right before removing a subtree. Finds scopes by walking the subtree against the `WeakMap` — it adds no marker attributes to your DOM.
+
+### `observeRemovals(root): () => void`
+
+```ts
+const stop = observeRemovals(document.body); // auto-dispose on removal, app-wide
+```
+
+Installs a `MutationObserver` on `root` that auto-runs a node's scope (via `disposeSubtree`) when that node — or an ancestor — is removed from the subtree. One observer covers the whole tree. Returns a disconnect function. `MutationObserver` fires asynchronously, so disposal runs a microtask after the removal.
+
+### `Scope` (type)
+
+The handle returned by `disposeScope`, exported for annotation: `{ add, mount, effect, delegate, dispose }` (see `disposeScope` above).

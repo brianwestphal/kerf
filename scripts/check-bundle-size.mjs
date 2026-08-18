@@ -127,6 +127,19 @@ const BUDGETS = [
     `,
   },
   {
+    // ISOLATED size — the scope convenience wrappers (scope.mount/effect/
+    // delegate) pull in the core, same as `overlay`. Marginal cost for an app
+    // already using kerf is ~1 KB via code-splitting; this guards scope's own
+    // growth.
+    name: 'scope',
+    budgetKb: 10.9,
+    description: 'the dispose-scope subpath (disposeScope + disposeSubtree + observeRemovals) — includes shared core',
+    entry: `
+      import { disposeScope, disposeSubtree, observeRemovals } from '${DIST}/scope.js';
+      globalThis.__k = [disposeScope, disposeSubtree, observeRemovals];
+    `,
+  },
+  {
     // Guards the KF-429 invariant directly: with the dev entry absent, NO
     // dev-warning code may appear in a production bundle. The size budget
     // above would catch a large regression; this catches any at all.
