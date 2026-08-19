@@ -480,6 +480,69 @@
           "branch": "main"
         }
       ]
+    },
+    {
+      "tool": {
+        "driver": {
+          "name": "Hot Sheet",
+          "rules": [
+            {
+              "id": "review-note",
+              "name": "ReviewNote",
+              "shortDescription": {
+                "text": "AI-authored, line-anchored review note."
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "review-note",
+          "ruleIndex": 0,
+          "kind": "informational",
+          "level": "none",
+          "guid": "mt0q825jz2fbxou4",
+          "message": {
+            "text": "removeNow deliberately does NOT go through fadeOut's dismissed guard — that guard is exactly what made a mid-fade toast un-collapsible.\n\nThe KF-495 shape routed both paths through one finish(instant) that early-returned when state.dismissed was already set. That broke the action-button pattern: click -> dismiss() starts A's fade (dismissed=true, exit timer pending), then the action's toast(..., mode:'replace', collapse:'instant') calls A's collapser — which hit the guard and no-oped, so A lingered its full exitDuration and cross-faded through B. Splitting them fixes it: fadeOut() keeps the dismissed guard (a fade is idempotent), while removeNow() is guard-free and force-removes NOW, cancelling the auto-dismiss timer. Idempotency moves to remove() via a separate state.removed flag (plus clearing the tracked exitTimer), so a stale exit timer, a double instant-dismiss, and a dismiss() after removal are all safe. remove() also sets dismissed so a post-removal fadeOut short-circuits instead of adding classes to a detached node.\n",
+            "markdown": "`removeNow` deliberately does NOT go through `fadeOut`'s `dismissed` guard — that guard is exactly what made a mid-fade toast un-collapsible.\n\nThe KF-495 shape routed both paths through one `finish(instant)` that early-returned when `state.dismissed` was already set. That broke the action-button pattern: click -> `dismiss()` starts A's fade (dismissed=true, exit timer pending), then the action's `toast(..., mode:'replace', collapse:'instant')` calls A's collapser — which hit the guard and no-oped, so A lingered its full `exitDuration` and cross-faded through B. Splitting them fixes it: `fadeOut()` keeps the `dismissed` guard (a fade is idempotent), while `removeNow()` is guard-free and force-removes NOW, cancelling the auto-dismiss timer. Idempotency moves to `remove()` via a separate `state.removed` flag (plus clearing the tracked `exitTimer`), so a stale exit timer, a double instant-dismiss, and a `dismiss()` after removal are all safe. `remove()` also sets `dismissed` so a post-removal `fadeOut` short-circuits instead of adding classes to a detached node.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/overlay.ts"
+                },
+                "region": {
+                  "startLine": 1104,
+                  "endLine": 1104,
+                  "snippet": {
+                    "text": "  };"
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "tags": [
+              "rationale"
+            ]
+          },
+          "workItemUris": [
+            "KF-497"
+          ],
+          "partialFingerprints": {
+            "prNoteAnchor/v1": "df3982fd610173599241fca93c7c8666"
+          }
+        }
+      ],
+      "versionControlProvenance": [
+        {
+          "repositoryUri": "git@github.com:brianwestphal/kerf.git",
+          "revisionId": "56a6e94929c966b62430fcbaec6da06f9dfbf4f4",
+          "branch": "main"
+        }
+      ]
     }
   ]
 }

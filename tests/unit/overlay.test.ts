@@ -1045,3 +1045,55 @@ describe('choice() — N-way dialog', () => {
     (document.querySelector('[data-choice]') as HTMLElement).click(); // clean up
   });
 });
+
+describe("toast() — KF-497 instant single-toast dismiss", () => {
+  it('dismiss({ instant: true }) removes synchronously, skipping the exit transition', () => {
+    vi.useFakeTimers();
+    const { el, dismiss } = toast('x', { exitClass: 'hide', exitDuration: 300, duration: 0 });
+    dismiss({ instant: true });
+    expect(el.classList.contains('hide')).toBe(false); // no exit class added
+    expect(document.querySelector('.kerf-toast')).toBeNull(); // gone NOW, no 300ms wait
+  });
+
+  it("mode:'replace' collapse:'instant' cleans up a toast that is ALREADY fading (action-button pattern)", () => {
+    vi.useFakeTimers();
+    const a = toast('A', { exitClass: 'hide', exitDuration: 300, duration: 0 });
+    a.dismiss(); // A starts its fade — node lingers for exitDuration
+    expect(document.querySelector('.kerf-toast')).not.toBeNull();
+
+    // The action shows a replacement in the SAME centered slot.
+    toast('B', { mode: 'replace', collapse: 'instant', exitClass: 'hide', exitDuration: 300, duration: 0 });
+    // A (mid-fade) is removed synchronously — only B remains, no cross-fade.
+    const toasts = document.querySelectorAll('.kerf-toast');
+    expect(toasts.length).toBe(1);
+    expect(toasts[0].textContent).toBe('B');
+  });
+
+  it('a stale exit timer after an instant dismiss is a no-op (idempotent)', () => {
+    vi.useFakeTimers();
+    const { dismiss } = toast('x', { exitClass: 'hide', exitDuration: 300, duration: 0 });
+    dismiss(); // fade → exit timer scheduled
+    dismiss({ instant: true }); // force-remove now
+    expect(document.querySelector('.kerf-toast')).toBeNull();
+    vi.advanceTimersByTime(300); // the cleared/stale exit timer must not re-run
+    expect(document.querySelector('.kerf-toast')).toBeNull();
+  });
+
+  it('instant dismiss cancels a pending auto-dismiss timer', () => {
+    vi.useFakeTimers();
+    const { dismiss } = toast('x', { duration: 4000 }); // has an auto-dismiss timer pending
+    dismiss({ instant: true });
+    expect(document.querySelector('.kerf-toast')).toBeNull();
+    expect(() => vi.advanceTimersByTime(4000)).not.toThrow(); // the auto timer was cleared
+    expect(document.querySelector('.kerf-toast')).toBeNull();
+  });
+
+  it('further dismiss calls after removal are no-ops (idempotent both ways)', () => {
+    vi.useFakeTimers();
+    const { dismiss } = toast('x', { exitClass: 'hide', exitDuration: 300, duration: 0 });
+    dismiss({ instant: true });
+    expect(document.querySelector('.kerf-toast')).toBeNull();
+    expect(() => { dismiss({ instant: true }); dismiss(); }).not.toThrow(); // removed → guarded
+    expect(document.querySelector('.kerf-toast')).toBeNull();
+  });
+});

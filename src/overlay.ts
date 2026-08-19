@@ -1014,8 +1014,13 @@ export interface ToastOptions {
 export interface ToastHandle {
   /** The toast element — inspect it, or run your own entrance/exit transitions. */
   el: HTMLElement;
-  /** Dismiss it early (running the `exitClass` transition if set). Idempotent. */
-  dismiss(): void;
+  /**
+   * Dismiss it early. Default runs the `exitClass` transition (removed after
+   * `exitDuration`); pass `{ instant: true }` to remove it **synchronously** with
+   * no exit — for an action button that immediately shows a replacement toast in a
+   * single centered slot (no cross-fade). Idempotent.
+   */
+  dismiss(options?: { instant?: boolean }): void;
 }
 
 /** The region's active toasts live on the region element (in the DOM), not in module state. */
@@ -1077,8 +1082,10 @@ export function toast(content: ToastContent, options: ToastOptions = {}): ToastH
   const disposeMount = mount(el, typeof content === 'function' ? content : () => content);
   const state: {
     dismissed: boolean;
+    removed: boolean;
     timer: ReturnType<typeof setTimeout> | undefined;
-  } = { dismissed: false, timer: undefined };
+    exitTimer: ReturnType<typeof setTimeout> | undefined;
+  } = { dismissed: false, removed: false, timer: undefined, exitTimer: undefined };
 
   if (enterClass !== undefined) {
     globalThis.requestAnimationFrame(() => {
@@ -1087,37 +1094,46 @@ export function toast(content: ToastContent, options: ToastOptions = {}): ToastH
   }
 
   const remove = (): void => {
+    if (state.removed) return;
+    state.removed = true;
+    state.dismissed = true; // once removed, a later dismiss() is a clean no-op
+    if (state.exitTimer !== undefined) clearTimeout(state.exitTimer);
     disposeMount();
     el.remove();
     active.delete(dismiss as Dismisser);
   };
 
-  const finish = (instant: boolean): void => {
+  // Force synchronous teardown NOW, with no exit transition — even if a fade is
+  // already in flight (so `mode:'replace'` collapse can clean up a mid-exit toast,
+  // and `dismiss({ instant: true })` drops it immediately).
+  const removeNow = (): void => {
+    if (state.timer !== undefined) clearTimeout(state.timer);
+    remove();
+  };
+
+  const fadeOut = (): void => {
     if (state.dismissed) return;
     state.dismissed = true;
     if (state.timer !== undefined) clearTimeout(state.timer);
-    if (instant) {
-      remove();
-      return;
-    }
     // Reverse the entrance (drop enterClass so exitClass needn't out-specify it),
     // add exitClass, and delay removal for the transition — including the
     // single-class idiom (enterClass removed + exitDuration, no exitClass).
     if (enterClass !== undefined) el.classList.remove(enterClass);
     if (exitClass !== undefined) el.classList.add(exitClass);
     if (exitClass !== undefined || exitDuration > 0) {
-      setTimeout(remove, exitDuration);
+      state.exitTimer = setTimeout(remove, exitDuration);
     } else {
       remove();
     }
   };
 
-  function dismiss(): void {
-    finish(false);
+  function dismiss(options?: { instant?: boolean }): void {
+    if (options?.instant === true) removeNow();
+    else fadeOut();
   }
-  (dismiss as Dismisser).removeNow = () => finish(true);
+  (dismiss as Dismisser).removeNow = removeNow;
 
   active.add(dismiss as Dismisser);
-  if (duration > 0) state.timer = setTimeout(dismiss, duration);
+  if (duration > 0) state.timer = setTimeout(fadeOut, duration);
   return { el, dismiss };
 }
