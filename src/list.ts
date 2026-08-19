@@ -27,8 +27,10 @@
  * signals the item carries) — keep the item OBJECTS stable across renders and
  * drive structure (add/remove/move) through `itemsSignal`. A row whose item
  * object identity changes is rebuilt (same rule as `each()`'s memo). `bindList`
- * OWNS `parent`'s children. It reads `itemsSignal.value`, so a plain
- * `signal<T[]>` or an `arraySignal<T>` both work.
+ * OWNS `parent`'s children by default (append/move to the end) — to share
+ * `parent` with fixed trailing siblings (an "add" button, an indicator), pass
+ * `before` so the rows end just before that node. It reads `itemsSignal.value`,
+ * so a plain `signal<T[]>` or an `arraySignal<T>` both work.
  */
 import { ARRAY_SIGNAL_BRAND, type ArrayPatch } from './array-signal.js';
 import { mount, type MountResult } from './mount.js';
@@ -74,6 +76,16 @@ export interface BindListOptions<T> {
   /** Row element tag for **content mode**. Default `'div'` (use `'li'` inside a `<ul>`, `'tr'` inside a `<tbody>`, …). Ignored in element mode. */
   tag?: string;
   /**
+   * Keep the rows as a contiguous block that ENDS just before this node, instead
+   * of at the very end of `parent`. Use it when `parent` also holds non-row
+   * siblings that must stay put — a trailing "add" button, a sliding indicator:
+   * `before: () => addButton`. The node (a function is re-read each reconcile, or
+   * pass the node directly) must be a child of `parent`. Without it, bindList
+   * assumes exclusive ownership and appends rows to the end. Ignored when
+   * virtualized (the rows own bindList's inner sizer exclusively).
+   */
+  before?: Node | (() => Node | null);
+  /**
    * Turn on viewport virtualization. `rowHeight` is the fixed pixel height of
    * every row; `overscan` (default 3) is how many extra rows to render above and
    * below the viewport. `parent` must be a scroll container (your CSS: a fixed
@@ -103,8 +115,16 @@ export function bindList<T>(
   source: ListSource<T>,
   options: BindListOptions<T>,
 ): () => void {
-  const { key, render, tag = 'div', virtualize } = options;
+  const { key, render, tag = 'div', virtualize, before } = options;
   const overscan = virtualize?.overscan ?? 3;
+
+  // The node the row block ends before — `before` (KF-496) when the list shares
+  // `parent` with trailing siblings, else the end of the container. Never applies
+  // when virtualized: the rows own bindList's inner sizer exclusively.
+  const endAnchor = (): Node | null => {
+    if (virtualize !== undefined || before === undefined) return null;
+    return (typeof before === 'function' ? before() : before) ?? null;
+  };
 
   const rows = new Map<ListKey, Row<T>>();
   // The current DOM order of rows, kept in step by both the keyed-diff and the
@@ -227,7 +247,7 @@ export function bindList<T>(
     }
 
     // Reverse pass: move only rows that are out of position.
-    let ref: Node | null = null;
+    let ref: Node | null = endAnchor();
     for (let i = order.length - 1; i >= 0; i--) {
       const el = order[i].el;
       if (el.parentNode !== container || el.nextSibling !== ref) {
@@ -249,7 +269,7 @@ export function bindList<T>(
         const row = makeRow(patch.item);
         rows.set(key(patch.item), row);
         order.splice(patch.index, 0, row);
-        container.insertBefore(row.el, order[patch.index + 1]?.el ?? null);
+        container.insertBefore(row.el, order[patch.index + 1]?.el ?? endAnchor());
       } else if (patch.type === 'remove') {
         const [row] = order.splice(patch.index, 1);
         row.dispose();
@@ -258,7 +278,7 @@ export function bindList<T>(
       } else if (patch.type === 'move') {
         const [row] = order.splice(patch.from, 1);
         order.splice(patch.to, 0, row);
-        container.insertBefore(row.el, order[patch.to + 1]?.el ?? null);
+        container.insertBefore(row.el, order[patch.to + 1]?.el ?? endAnchor());
       } else if (patch.type === 'update') {
         // An item whose OBJECT identity changed: content rows rebuild (their mount
         // re-renders the fresh item); element rows are REUSED — keep the caller's
@@ -282,7 +302,7 @@ export function bindList<T>(
             const row = makeRow(patch.item);
             rows.set(key(patch.item), row);
             order[patch.index] = row;
-            container.insertBefore(row.el, order[patch.index + 1]?.el ?? null);
+            container.insertBefore(row.el, order[patch.index + 1]?.el ?? endAnchor());
           }
         }
       }

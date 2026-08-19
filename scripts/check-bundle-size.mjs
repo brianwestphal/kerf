@@ -152,7 +152,7 @@ const BUDGETS = [
     // ISOLATED size — bindList mounts each row, so it pulls in the render core;
     // marginal cost for an app already using kerf is ~1.5 KB via code-splitting.
     name: 'list',
-    budgetKb: 11.5,
+    budgetKb: 11.8,
     description: 'the bindList subpath (keyed per-row mount + virtualization) — includes shared core',
     entry: `
       import { bindList } from '${DIST}/list.js';

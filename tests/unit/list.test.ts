@@ -575,3 +575,91 @@ describe('bindList() — element mode (render returns the row element)', () => {
     dispose();
   });
 });
+
+describe('bindList() — before (rows sharing a parent with trailing controls)', () => {
+  const idsOf = (parent: HTMLElement) =>
+    Array.from(parent.children).map((c) => (c as HTMLElement).dataset.id ?? (c as HTMLElement).className.toUpperCase());
+  const elRow = (i: { id: number }) => {
+    const el = document.createElement('div');
+    el.dataset.id = String(i.id);
+    return el;
+  };
+
+  it('keeps rows before a trailing sibling across append / remove / reorder', () => {
+    const parent = host();
+    const addBtn = document.createElement('button');
+    addBtn.className = 'add';
+    parent.appendChild(addBtn); // trailing control — NOT a row
+
+    const items = signal([{ id: 1 }, { id: 2 }]);
+    const dispose = bindList(parent, items, { key: (i) => i.id, render: elRow, before: () => addBtn });
+    expect(idsOf(parent)).toEqual(['1', '2', 'ADD']); // rows before the button
+
+    items.value = [{ id: 1 }, { id: 2 }, { id: 3 }]; // append → new row before the button, not after
+    expect(idsOf(parent)).toEqual(['1', '2', '3', 'ADD']);
+
+    items.value = [{ id: 2 }, { id: 3 }]; // remove 1
+    expect(idsOf(parent)).toEqual(['2', '3', 'ADD']);
+
+    items.value = [{ id: 3 }, { id: 2 }]; // reorder
+    expect(idsOf(parent)).toEqual(['3', '2', 'ADD']);
+
+    dispose();
+    expect(parent.querySelector('.add')).not.toBeNull(); // the trailing control survives dispose
+  });
+
+  it('accepts a Node directly (not just a getter)', () => {
+    const parent = host();
+    const tail = document.createElement('span');
+    tail.className = 'tail';
+    parent.appendChild(tail);
+    const items = signal([{ id: 1 }]);
+    const dispose = bindList(parent, items, { key: (i) => i.id, render: elRow, before: tail });
+    items.value = [{ id: 1 }, { id: 2 }];
+    expect(idsOf(parent)).toEqual(['1', '2', 'TAIL']);
+    dispose();
+  });
+
+  it('the arraySignal granular path inserts before the anchor too (end + front inserts)', () => {
+    const parent = host();
+    const addBtn = document.createElement('button');
+    addBtn.className = 'add';
+    parent.appendChild(addBtn);
+    const items = arraySignal([{ id: 1 }, { id: 2 }]);
+    const dispose = bindList(parent, items, { key: (i) => i.id, render: elRow, before: () => addBtn });
+
+    items.push({ id: 3 }); // granular insert at the END → before the button
+    expect(idsOf(parent)).toEqual(['1', '2', '3', 'ADD']);
+    items.insert(0, { id: 0 }); // granular insert at the FRONT
+    expect(idsOf(parent)).toEqual(['0', '1', '2', '3', 'ADD']);
+    dispose();
+  });
+
+  it('content mode respects before as well', () => {
+    const parent = host();
+    const tail = document.createElement('button');
+    tail.className = 'tail';
+    parent.appendChild(tail);
+    const items = signal([{ id: 1, label: 'a' }]);
+    const dispose = bindList(parent, items, {
+      key: (i) => i.id,
+      render: (i) => i.label, // content mode
+      tag: 'span',
+      before: () => tail,
+    });
+    items.value = [{ id: 1, label: 'a' }, { id: 2, label: 'b' }];
+    const texts = Array.from(parent.children).map((c) => c.textContent);
+    expect(texts).toEqual(['a', 'b', '']); // the trailing button (empty text) stays last
+    expect((parent.lastElementChild as HTMLElement).className).toBe('tail');
+    dispose();
+  });
+
+  it('a before() returning null falls back to appending at the end', () => {
+    const parent = host();
+    const items = signal([{ id: 1 }]);
+    const dispose = bindList(parent, items, { key: (i) => i.id, render: elRow, before: () => null });
+    items.value = [{ id: 1 }, { id: 2 }];
+    expect(idsOf(parent)).toEqual(['1', '2']);
+    dispose();
+  });
+});

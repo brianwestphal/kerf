@@ -127,6 +127,69 @@
           "branch": "main"
         }
       ]
+    },
+    {
+      "tool": {
+        "driver": {
+          "name": "Hot Sheet",
+          "rules": [
+            {
+              "id": "review-note",
+              "name": "ReviewNote",
+              "shortDescription": {
+                "text": "AI-authored, line-anchored review note."
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "review-note",
+          "ruleIndex": 0,
+          "kind": "informational",
+          "level": "none",
+          "guid": "mt0q098k1wnguefd",
+          "message": {
+            "text": "endAnchor() is the single \"where does the row block end\" decision, threaded through BOTH reconcile paths — so before can't be honored in one and forgotten in the other.\n\nbindList anchors rows to the container end via insertBefore(el, ref) with ref defaulting to null (append). That default is spread across four sites: the snapshot reverse-pass seed, and the granular insert / move / content-rebuild fallbacks (order[i+1]?.el ?? null). Replacing every literal null there with endAnchor() means one function decides the tail marker: before (a Node or a re-read getter) when the list shares its parent with trailing siblings, else null. It returns null when virtualized because a virtualized list renders into bindList's OWN inner sizer, which it owns exclusively — there are no foreign siblings to anchor before, and before would point at a node in parent, not the sizer, so honoring it would throw. The getter form is re-read each reconcile so the anchor can move (or vanish → falls back to append) without re-binding the list.\n",
+            "markdown": "`endAnchor()` is the single \"where does the row block end\" decision, threaded through BOTH reconcile paths — so `before` can't be honored in one and forgotten in the other.\n\nbindList anchors rows to the container end via `insertBefore(el, ref)` with `ref` defaulting to `null` (append). That default is spread across four sites: the snapshot reverse-pass seed, and the granular insert / move / content-rebuild fallbacks (`order[i+1]?.el ?? null`). Replacing every literal `null` there with `endAnchor()` means one function decides the tail marker: `before` (a Node or a re-read getter) when the list shares its parent with trailing siblings, else `null`. It returns `null` when virtualized because a virtualized list renders into bindList's OWN inner sizer, which it owns exclusively — there are no foreign siblings to anchor before, and `before` would point at a node in `parent`, not the sizer, so honoring it would throw. The getter form is re-read each reconcile so the anchor can move (or vanish → falls back to append) without re-binding the list.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/list.ts"
+                },
+                "region": {
+                  "startLine": 119,
+                  "endLine": 125,
+                  "snippet": {
+                    "text": "  const overscan = virtualize?.overscan ?? 3;\n\n  // The node the row block ends before — `before` (KF-496) when the list shares\n  // `parent` with trailing siblings, else the end of the container. Never applies\n  // when virtualized: the rows own bindList's inner sizer exclusively.\n  const endAnchor = (): Node | null => {\n    if (virtualize !== undefined || before === undefined) return null;"
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "tags": [
+              "rationale"
+            ]
+          },
+          "workItemUris": [
+            "KF-496"
+          ],
+          "partialFingerprints": {
+            "prNoteAnchor/v1": "c0f1a35ab385cc7b86e6d785c5ea754d"
+          }
+        }
+      ],
+      "versionControlProvenance": [
+        {
+          "repositoryUri": "git@github.com:brianwestphal/kerf.git",
+          "revisionId": "6f3bb35a73c21ed4ccc7e62651a8155d71735095",
+          "branch": "main"
+        }
+      ]
     }
   ]
 }
