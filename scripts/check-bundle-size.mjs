@@ -119,11 +119,11 @@ const BUDGETS = [
     // mount in one shared chunk, so overlay adds only ~2 KB over an app that
     // already uses kerf. The budget still guards overlay's OWN growth.
     name: 'overlay',
-    budgetKb: 14.4,
-    description: 'the overlay/modal subpath (overlay + confirm + toast) — includes shared core',
+    budgetKb: 15.1,
+    description: 'the overlay/modal subpath (overlay + confirm + prompt + form + toast) — includes shared core',
     entry: `
-      import { overlay, confirm, toast } from '${DIST}/overlay.js';
-      globalThis.__k = [overlay, confirm, toast];
+      import { overlay, confirm, prompt, form, toast } from '${DIST}/overlay.js';
+      globalThis.__k = [overlay, confirm, prompt, form, toast];
     `,
   },
   {

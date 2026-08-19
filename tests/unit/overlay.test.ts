@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { jsx, raw } from '../../src/jsx-runtime.js';
-import { confirm, overlay, toast } from '../../src/overlay.js';
+import { confirm, form, overlay, prompt, toast } from '../../src/overlay.js';
 import { signal } from '../../src/reactive.js';
 
 function key(target: EventTarget, k: string, init: KeyboardEventInit = {}): void {
@@ -261,5 +261,172 @@ describe('toast()', () => {
     expect(box.querySelector('.kerf-toast')).not.toBeNull();
     expect(document.querySelector('.kerf-toasts')).toBeNull(); // no shared region created
     dismiss();
+  });
+});
+
+const clickBtn = (sel: string): void => {
+  document.querySelector<HTMLElement>(sel)?.click();
+};
+
+describe('prompt()', () => {
+  it('prefills defaultValue and resolves the live entered string on OK', async () => {
+    const p = prompt('Name?', { defaultValue: 'ada' });
+    const input = document.querySelector<HTMLInputElement>('.kerf-prompt__input')!;
+    expect(input.value).toBe('ada');
+    input.value = 'grace';
+    clickBtn('[data-prompt="ok"]');
+    await expect(p).resolves.toBe('grace');
+    expect(document.querySelector('.kerf-prompt')).toBeNull(); // closed
+  });
+
+  it('an empty string is a valid OK result (not null)', async () => {
+    const p = prompt('X', { defaultValue: '' });
+    clickBtn('[data-prompt="ok"]');
+    await expect(p).resolves.toBe('');
+  });
+
+  it('resolves null on Cancel', async () => {
+    const p = prompt('X', { defaultValue: 'ignored' });
+    clickBtn('[data-prompt="cancel"]');
+    await expect(p).resolves.toBeNull();
+  });
+
+  it('resolves null on Escape dismissal', async () => {
+    const p = prompt('X');
+    key(document, 'Escape');
+    await expect(p).resolves.toBeNull();
+  });
+
+  it('Enter in the field submits, like the native prompt', async () => {
+    const p = prompt('X', { defaultValue: 'v' });
+    const input = document.querySelector<HTMLInputElement>('.kerf-prompt__input')!;
+    key(input, 'Enter');
+    await expect(p).resolves.toBe('v');
+  });
+
+  it('validate blocks OK inline and keeps the dialog open, then allows once it passes', async () => {
+    const p = prompt('Email', { validate: (v) => (v.includes('@') ? '' : 'need @') });
+    const input = document.querySelector<HTMLInputElement>('.kerf-prompt__input')!;
+    const err = document.querySelector<HTMLElement>('.kerf-prompt__error')!;
+    expect(err.hidden).toBe(true);
+
+    input.value = 'nope';
+    clickBtn('[data-prompt="ok"]');
+    expect(err.hidden).toBe(false);
+    expect(err.textContent).toBe('need @');
+    expect(document.querySelector('.kerf-prompt')).not.toBeNull(); // still open
+
+    input.value = 'a@b';
+    clickBtn('[data-prompt="ok"]');
+    await expect(p).resolves.toBe('a@b');
+  });
+
+  it('auto-escapes the message (no HTML injection)', async () => {
+    const p = prompt('<img src=x onerror=alert(1)>');
+    const label = document.querySelector('.kerf-prompt__message')!;
+    expect(label.querySelector('img')).toBeNull();
+    expect(label.textContent).toContain('<img');
+    clickBtn('[data-prompt="cancel"]'); // clean up the pending overlay
+    await p;
+  });
+
+  it('renders an optional title, placeholder, and a custom inputType', async () => {
+    const p = prompt('Email please', { title: 'Sign in', placeholder: 'you@example.com', inputType: 'email' });
+    expect(document.querySelector('.kerf-prompt__title')?.textContent).toBe('Sign in');
+    const input = document.querySelector<HTMLInputElement>('.kerf-prompt__input')!;
+    expect(input.getAttribute('type')).toBe('email');
+    expect(input.getAttribute('placeholder')).toBe('you@example.com');
+    clickBtn('[data-prompt="cancel"]');
+    await p;
+  });
+
+  it('Enter on a non-field element (the Cancel button) does not submit', async () => {
+    const p = prompt('X', { defaultValue: 'v' });
+    key(document.querySelector('[data-prompt="cancel"]')!, 'Enter');
+    expect(document.querySelector('.kerf-prompt')).not.toBeNull(); // still open — not submitted
+    clickBtn('[data-prompt="cancel"]');
+    await expect(p).resolves.toBeNull();
+  });
+});
+
+describe('form()', () => {
+  it('renders one labeled input per field (label defaults to name) and resolves a record on OK', async () => {
+    const p = form([
+      { name: 'host', label: 'Host', defaultValue: 'localhost' },
+      { name: 'port', defaultValue: '80' },
+    ]);
+    const labels = Array.from(document.querySelectorAll('.kerf-form__label')).map((l) => l.textContent);
+    expect(labels).toEqual(['Host', 'port']); // second falls back to the name
+
+    document.querySelector<HTMLInputElement>('[data-field="host"]')!.value = 'db.example';
+    clickBtn('[data-form="ok"]');
+    await expect(p).resolves.toEqual({ host: 'db.example', port: '80' });
+    expect(document.querySelector('.kerf-form')).toBeNull();
+  });
+
+  it('resolves null on Cancel and on Escape', async () => {
+    const pCancel = form([{ name: 'x' }]);
+    clickBtn('[data-form="cancel"]');
+    await expect(pCancel).resolves.toBeNull();
+
+    const pEsc = form([{ name: 'x' }]);
+    key(document, 'Escape');
+    await expect(pEsc).resolves.toBeNull();
+  });
+
+  it('per-field validate blocks OK, shows each error, focuses the first invalid, then passes once fixed', async () => {
+    const p = form([
+      { name: 'user', validate: (v) => (v ? '' : 'required') },
+      { name: 'token', validate: (v) => (v.length >= 3 ? '' : 'too short') },
+    ]);
+    clickBtn('[data-form="ok"]');
+
+    const uErr = document.querySelector<HTMLElement>('[data-field-error="user"]')!;
+    const tErr = document.querySelector<HTMLElement>('[data-field-error="token"]')!;
+    expect(uErr.hidden).toBe(false);
+    expect(uErr.textContent).toBe('required');
+    expect(tErr.textContent).toBe('too short');
+    expect(document.activeElement).toBe(document.querySelector('[data-field="user"]'));
+    expect(document.querySelector('.kerf-form')).not.toBeNull(); // still open
+
+    document.querySelector<HTMLInputElement>('[data-field="user"]')!.value = 'ada';
+    document.querySelector<HTMLInputElement>('[data-field="token"]')!.value = 'abcd';
+    clickBtn('[data-form="ok"]');
+    await expect(p).resolves.toEqual({ user: 'ada', token: 'abcd' });
+  });
+
+  it('clears a previously-shown error once the field validates, on the next OK', async () => {
+    const p = form([{ name: 'a', validate: (v) => (v ? '' : 'req') }]);
+    clickBtn('[data-form="ok"]');
+    const err = document.querySelector<HTMLElement>('[data-field-error="a"]')!;
+    expect(err.hidden).toBe(false);
+
+    document.querySelector<HTMLInputElement>('[data-field="a"]')!.value = 'x';
+    clickBtn('[data-form="ok"]');
+    await expect(p).resolves.toEqual({ a: 'x' });
+  });
+
+  it('Enter in a field submits', async () => {
+    const p = form([{ name: 'q', defaultValue: 'hi' }]);
+    key(document.querySelector('[data-field="q"]')!, 'Enter');
+    await expect(p).resolves.toEqual({ q: 'hi' });
+  });
+
+  it('renders an optional title, a field placeholder, and a custom input type', async () => {
+    const p = form([{ name: 'pw', label: 'Password', type: 'password', placeholder: '••••' }], { title: 'Login' });
+    expect(document.querySelector('.kerf-form__title')?.textContent).toBe('Login');
+    const input = document.querySelector<HTMLInputElement>('[data-field="pw"]')!;
+    expect(input.getAttribute('type')).toBe('password');
+    expect(input.getAttribute('placeholder')).toBe('••••');
+    clickBtn('[data-form="ok"]');
+    await expect(p).resolves.toEqual({ pw: '' }); // empty submit is still a record
+  });
+
+  it('Enter on a non-field element (the Cancel button) does not submit', async () => {
+    const p = form([{ name: 'x' }]);
+    key(document.querySelector('[data-form="cancel"]')!, 'Enter');
+    expect(document.querySelector('.kerf-form')).not.toBeNull(); // still open
+    clickBtn('[data-form="cancel"]');
+    await expect(p).resolves.toBeNull();
   });
 });

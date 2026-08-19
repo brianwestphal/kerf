@@ -84,6 +84,8 @@ const ok: boolean = await confirm('Delete this file?', { danger: true });
 
 Implementation is the field pattern, blessed once: `toElement → appendChild → mount(content) → wire dismissal via delegateCapture → return handle`. `close()` runs the mount disposer, removes the node, and resolves `result`. Dismissal wiring (escape key, backdrop click, outside click) is the part every app got subtly wrong (glassbox's `dismissOnOutsideClick` `alsoInside` allowlist; hotsheet's orphan-on-project-switch sweep) — centralizing it is most of the value. `overlay()` owns nothing global; a `toast()` sibling (single, replaceable, auto-dismiss) can live in the same subpath since it shares the mount+remove core.
 
+**Follow-up (KF-484):** the `window.*` dialog replacements were rounded out beyond boolean-only `confirm()` — `prompt(message, options?) → Promise<string | null>` (the one-field sibling; `window.prompt` is also a Tauri no-op) and `form(fields, options?) → Promise<Record<string, string> | null>` (the two-or-three-field case). Both reuse `overlay()`'s trap/dismiss internals, submit on Enter, and take an inline `validate` per field. The anchored-`popover()` idea noted in that ticket stays deferred (overlay's non-modal mode covers dismissal; only anchored *positioning* is missing) — filed separately if adopted.
+
 ### 5.2 `kerfjs/actions`
 
 ```ts

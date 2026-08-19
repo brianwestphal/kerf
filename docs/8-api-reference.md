@@ -546,6 +546,27 @@ if (await confirm('Delete this file?', { danger: true })) remove();
 
 A promise-based `window.confirm` replacement (that global is a no-op in Tauri WKWebViews). Renders a two-button dialog on top of `overlay()` and resolves `true` for OK, `false` for Cancel or any dismissal. `message` + labels are auto-escaped through the JSX runtime. Options ([`ConfirmOptions`](#overlay-types)): `title`, `okText` (default `'OK'`), `cancelText` (default `'Cancel'`), `danger` (adds a `kerf-confirm--danger` class), plus `container` / `className`.
 
+### `prompt(message, options?): Promise<string | null>`
+
+```ts
+const name = await prompt('Rename layer', { defaultValue: layer.name });
+if (name !== null) rename(name);
+```
+
+The symmetric sibling of `confirm()` — a promise-based `window.prompt` replacement (also a no-op in Tauri webviews). Renders a one-field dialog on top of `overlay()` and resolves the entered **string** on OK (an empty string is a valid result), or `null` on Cancel / dismissal. **Enter** in the input submits. `message`, the default value, and labels are auto-escaped. Options ([`PromptOptions`](#overlay-types)): `defaultValue` (default `''`), `placeholder`, `inputType` (default `'text'`), `title`, `okText` / `cancelText`, `validate` (return a non-empty error string to block OK — it shows inline), plus `container` / `className`.
+
+### `form(fields, options?): Promise<Record<string, string> | null>`
+
+```ts
+const creds = await form([
+  { name: 'host', label: 'Host', defaultValue: 'localhost' },
+  { name: 'token', label: 'API token', type: 'password', validate: (v) => v ? '' : 'required' },
+]);
+if (creds !== null) connect(creds.host, creds.token);
+```
+
+The two-or-three-input generalization of `prompt()`: renders one labeled input per [`FormField`](#overlay-types) and resolves a `Record<name, value>` on OK (after **every** field's `validate` passes) or `null` on Cancel / dismissal. Enter in any field submits; the first invalid field is focused. Each `FormField` has `name` (the record key + input `name`), optional `label` (defaults to `name`), `defaultValue`, `placeholder`, `type` (default `'text'`), and `validate`. Options ([`FormOptions`](#overlay-types)): `title`, `okText` / `cancelText`, `container` / `className`.
+
 ### `toast(content, options?): () => void`
 
 ```ts
@@ -557,7 +578,7 @@ Shows a non-modal, auto-dismissing notification, stacked in a shared body-level 
 
 ### Overlay types
 
-`OverlayHandle`, `OverlayContent`, `OverlayOptions`, `DismissTrigger`, `ConfirmOptions`, `ToastContent`, and `ToastOptions` are all exported from `kerfjs/overlay` for annotating handles, content, and option bags.
+`OverlayHandle`, `OverlayContent`, `OverlayOptions`, `DismissTrigger`, `ConfirmOptions`, `PromptOptions`, `FormField`, `FormOptions`, `FieldValidator`, `ToastContent`, and `ToastOptions` are all exported from `kerfjs/overlay` for annotating handles, content, and option bags.
 
 ## 8.9 Dispose scopes — `kerfjs/scope` subpath
 

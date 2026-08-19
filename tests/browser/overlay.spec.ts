@@ -45,6 +45,25 @@ test('focus trap: initial focus, Tab cycles + wraps within, Escape restores focu
   expect(await activeId(page)).toBe('trigger'); // focus restored on close
 });
 
+test('prompt(): real focus lands in the field, typing + Enter resolves the entered string', async ({ page }) => {
+  await page.evaluate(() => {
+    const { prompt } = (window as any).kerfOverlay;
+    (window as any)._result = prompt('Rename', { defaultValue: 'old' });
+  });
+
+  // Initial focus is the input (real browser focus, not a synthetic .focus()).
+  expect(await page.evaluate(() => document.activeElement?.className ?? null)).toBe('kerf-prompt__input');
+
+  // Select-all + retype, then submit with a real Enter keypress.
+  await page.keyboard.press('ControlOrMeta+a');
+  await page.keyboard.type('new name');
+  await page.keyboard.press('Enter');
+
+  const result = await page.evaluate(() => (window as any)._result);
+  expect(result).toBe('new name');
+  await expect(page.locator('.kerf-prompt')).toHaveCount(0); // closed
+});
+
 test('outside click dismisses a non-modal popover; content + an outsideIgnore trigger do not', async ({ page }) => {
   await page.evaluate(() => {
     const trigger = document.createElement('button');

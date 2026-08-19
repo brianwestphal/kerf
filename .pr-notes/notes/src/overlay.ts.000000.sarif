@@ -1,0 +1,107 @@
+{
+  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "Hot Sheet",
+          "rules": [
+            {
+              "id": "review-note",
+              "name": "ReviewNote",
+              "shortDescription": {
+                "text": "AI-authored, line-anchored review note."
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "review-note",
+          "ruleIndex": 0,
+          "kind": "informational",
+          "level": "none",
+          "guid": "mszggv7xtlf43q6s",
+          "message": {
+            "text": "The result mapping keys on typeof value === 'string', not truthiness — so an empty string is a valid OK result, distinct from null dismissal.\n\nprompt() resolves three distinct DOM outcomes onto two logical ones: OK → close(value) (a string, possibly ''), Cancel → close(null), and Escape/backdrop dismissal → the overlay's default close(undefined). Mapping typeof value === 'string' ? value : null collapses both cancel and dismissal to null while preserving '' as a genuine result. A truthiness check (value || null) would be wrong here: it would turn a user who cleared the field and pressed OK into a null, indistinguishable from cancel. The unit test \"an empty string is a valid OK result (not null)\" pins exactly this. form() uses the analogous value !== null && typeof value === 'object' guard for the same reason — a {} record from an all-empty form is still a submit, not a cancel.\n",
+            "markdown": "The result mapping keys on `typeof value === 'string'`, not truthiness — so an empty string is a valid OK result, distinct from `null` dismissal.\n\n`prompt()` resolves three distinct DOM outcomes onto two logical ones: OK → `close(value)` (a string, possibly `''`), Cancel → `close(null)`, and Escape/backdrop dismissal → the overlay's default `close(undefined)`. Mapping `typeof value === 'string' ? value : null` collapses both cancel and dismissal to `null` while preserving `''` as a genuine result. A truthiness check (`value || null`) would be wrong here: it would turn a user who cleared the field and pressed OK into a `null`, indistinguishable from cancel. The unit test \"an empty string is a valid OK result (not null)\" pins exactly this. `form()` uses the analogous `value !== null && typeof value === 'object'` guard for the same reason — a `{}` record from an all-empty form is still a submit, not a cancel.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/overlay.ts"
+                },
+                "region": {
+                  "startLine": 394,
+                  "endLine": 394,
+                  "snippet": {
+                    "text": "  return handle.result.then((value) => (typeof value === 'string' ? value : null));"
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "tags": [
+              "rationale"
+            ]
+          },
+          "workItemUris": [
+            "KF-484"
+          ],
+          "partialFingerprints": {
+            "prNoteAnchor/v1": "51c97aca10f98234cbaa11de6e2607dc"
+          }
+        },
+        {
+          "ruleId": "review-note",
+          "ruleIndex": 0,
+          "kind": "informational",
+          "level": "none",
+          "guid": "mszgmyto0liwdjhb",
+          "message": {
+            "text": "Non-null assertions here are correctness-honest, not laziness — and they keep coverage truthful.\n\nprompt()/form() render [data-prompt-input], [data-prompt-error], [data-field], and [data-field-error] unconditionally into their OWN handle.el wrapper before these queries run, so the lookups cannot return null. The first draft guarded each with if (el !== null) / el?.x ?? ''. Those guards were dead by construction — every one added an else/nullish branch the tests could never reach, which dropped global branch coverage below the 98.5% gate. Asserting non-null (querySelector(...)!, find(...)!) states the real invariant and removes the phantom branches, so the coverage number reflects genuinely-unreachable code rather than being padded by guards for a null that can't occur. no-non-null-assertion is off in eslint.config.js, so this is a sanctioned, deliberate use — not a lint escape.\n",
+            "markdown": "Non-null assertions here are correctness-honest, not laziness — and they keep coverage truthful.\n\n`prompt()`/`form()` render `[data-prompt-input]`, `[data-prompt-error]`, `[data-field]`, and `[data-field-error]` unconditionally into their OWN `handle.el` wrapper before these queries run, so the lookups cannot return null. The first draft guarded each with `if (el !== null)` / `el?.x ?? ''`. Those guards were dead by construction — every one added an else/nullish branch the tests could never reach, which dropped global branch coverage below the 98.5% gate. Asserting non-null (`querySelector(...)!`, `find(...)!`) states the real invariant and removes the phantom branches, so the coverage number reflects genuinely-unreachable code rather than being padded by guards for a null that can't occur. `no-non-null-assertion` is off in `eslint.config.js`, so this is a sanctioned, deliberate use — not a lint escape.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/overlay.ts"
+                },
+                "region": {
+                  "startLine": 362,
+                  "endLine": 365,
+                  "snippet": {
+                    "text": "\n  // Both elements are rendered unconditionally into this call's own wrapper, so\n  // the queries cannot miss (asserted non-null rather than guarded).\n  const input = handle.el.querySelector<HTMLInputElement>('[data-prompt-input]')!;"
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "tags": [
+              "rationale"
+            ]
+          },
+          "workItemUris": [
+            "KF-484"
+          ],
+          "partialFingerprints": {
+            "prNoteAnchor/v1": "0fc0b6a921086df621a3655c64ed7536"
+          }
+        }
+      ],
+      "versionControlProvenance": [
+        {
+          "repositoryUri": "git@github.com:brianwestphal/kerf.git",
+          "revisionId": "dbf262bcf4a8a9eb600b241f90e0489a7077fbd1",
+          "branch": "main"
+        }
+      ]
+    }
+  ]
+}

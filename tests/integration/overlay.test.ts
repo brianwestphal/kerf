@@ -8,7 +8,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { delegate } from '../../src/delegate.js';
 import { jsx } from '../../src/jsx-runtime.js';
 import { mount } from '../../src/mount.js';
-import { confirm, overlay } from '../../src/overlay.js';
+import { confirm, form, overlay, prompt } from '../../src/overlay.js';
 import { signal } from '../../src/reactive.js';
 
 afterEach(() => {
@@ -50,6 +50,57 @@ describe('overlay — full pipeline', () => {
     expect(app.querySelector('.count')?.textContent).toBe('1');
     // The dialog is gone from the DOM afterward.
     expect(document.querySelector('.kerf-confirm')).toBeNull();
+  });
+
+  it('a delegated button opens prompt(), and the entered string drives a mount() region', async () => {
+    const label = signal('untitled');
+    const app = document.createElement('div');
+    document.body.appendChild(app);
+
+    mount(app, () =>
+      jsx('div', {
+        children: [
+          jsx('span', { class: 'label', children: label.value }),
+          jsx('button', { class: 'rename', children: 'rename' }),
+        ],
+      }),
+    );
+
+    delegate(app, 'click', '.rename', () => {
+      void prompt('New name', { defaultValue: label.value }).then((name) => {
+        if (name !== null) label.value = name;
+      });
+    });
+
+    (app.querySelector('.rename') as HTMLElement).click();
+    const input = document.querySelector('.kerf-prompt__input') as HTMLInputElement;
+    input.value = 'diagram';
+    (document.querySelector('[data-prompt="ok"]') as HTMLElement).click();
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(app.querySelector('.label')?.textContent).toBe('diagram');
+    expect(document.querySelector('.kerf-prompt')).toBeNull();
+  });
+
+  it('a form() collects a multi-field record that drives a mount() region', async () => {
+    const conn = signal('none');
+    const app = document.createElement('div');
+    document.body.appendChild(app);
+
+    mount(app, () => jsx('span', { class: 'conn', children: conn.value }));
+
+    void form([
+      { name: 'host', defaultValue: 'localhost' },
+      { name: 'port', defaultValue: '5432' },
+    ]).then((rec) => {
+      if (rec !== null) conn.value = `${rec.host}:${rec.port}`;
+    });
+
+    (document.querySelector('[data-field="host"]') as HTMLInputElement).value = 'db';
+    (document.querySelector('[data-form="ok"]') as HTMLElement).click();
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(app.querySelector('.conn')?.textContent).toBe('db:5432');
   });
 
   it('overlay content mounted reactively updates while open, and is disposed on close', () => {
