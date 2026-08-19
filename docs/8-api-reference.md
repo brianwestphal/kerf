@@ -593,18 +593,19 @@ const stop = tooltip(buttonEl, 'Delete this item'); // hover/focus tooltip, abov
 
 A hover/focus-triggered, non-modal, auto-hiding tooltip anchored to `anchor`. Shows after `delay` on `pointerenter`/`focus`, hides after `hideDelay` on `pointerleave`/`blur`, and keeps itself positioned with `autoReposition` (`placement` defaults to `'top'`). No click-dismiss model — it follows the pointer/focus. `content` is a [`TooltipContent`](#overlay-types) (a string is auto-escaped, or pass `SafeHtml` / a render fn). Returns a disposer that removes the anchor listeners and hides any shown tooltip. Options ([`TooltipOptions`](#overlay-types), extends `AnchorPositionOptions`): `delay` (default `400`), `hideDelay` (default `100`), `role` (default `'tooltip'`), `container` / `className` (default `'kerf-tooltip'`).
 
-### `toast(content, options?): () => void`
+### `toast(content, options?): ToastHandle`
 
 ```ts
-toast('Saved');
-const dismiss = toast('Uploading…', { duration: 0 }); // sticky; dismiss() when done
+toast('Saved', { variant: 'success' });
+const { el, dismiss } = toast('Uploading…', { duration: 0 }); // sticky; dismiss() when done
+toast('Only the latest shows', { mode: 'replace' });          // collapse-to-latest
 ```
 
-Shows a non-modal, auto-dismissing notification, stacked in a shared body-level region (lazily created, or `options.container`). `content` is a [`ToastContent`](#overlay-types) (text, `SafeHtml`, or a render function). Returns a `() => void` that dismisses it early. Options ([`ToastOptions`](#overlay-types)): `duration` (ms; `0` = sticky; default `4000`), `className` (default `'kerf-toast'`), `role` (default `'status'`), `container`.
+Shows a non-modal, auto-dismissing notification, stacked in a shared body-level region (lazily created, or `options.container`). `content` is a [`ToastContent`](#overlay-types) (text, `SafeHtml`, or a render function). Returns a [`ToastHandle`](#overlay-types) `{ el, dismiss }` — `el` is the node (inspect it, wire an action button, or run your own entrance/exit transitions) and `dismiss()` removes it early (idempotent). Options ([`ToastOptions`](#overlay-types)): `duration` (ms; `0` = sticky; default `4000`), `mode` (`'stack'` default, or `'replace'` — dismiss the region's current toast(s) first for collapse-to-latest), `variant` (`'info'` | `'success'` | `'warning'` → adds a `${className}--${variant}` accent class), `enterClass` (added on the next animation frame, so a CSS **entrance** transition runs), `exitClass` + `exitDuration` (added on dismiss so CSS owns the **exit**; the node is removed `exitDuration` ms later), `className` (default `'kerf-toast'`), `role` (default `'status'`), `container`.
 
 ### Overlay types
 
-`OverlayHandle`, `OverlayContent`, `OverlayOptions`, `DismissTrigger`, `ConfirmOptions`, `PromptOptions`, `FormField`, `FormOptions`, `FieldValidator`, `PopoverOptions`, `PopoverPlacement`, `AnchorPositionOptions`, `TooltipContent`, `TooltipOptions`, `ToastContent`, and `ToastOptions` are all exported from `kerfjs/overlay` for annotating handles, content, and option bags.
+`OverlayHandle`, `OverlayContent`, `OverlayOptions`, `DismissTrigger`, `ConfirmOptions`, `PromptOptions`, `FormField`, `FormOptions`, `FieldValidator`, `PopoverOptions`, `PopoverPlacement`, `AnchorPositionOptions`, `TooltipContent`, `TooltipOptions`, `ToastContent`, `ToastOptions`, `ToastVariant`, and `ToastHandle` are all exported from `kerfjs/overlay` for annotating handles, content, and option bags.
 
 ## 8.9 Dispose scopes — `kerfjs/scope` subpath
 

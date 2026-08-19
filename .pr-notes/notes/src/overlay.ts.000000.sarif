@@ -228,6 +228,69 @@
           "branch": "main"
         }
       ]
+    },
+    {
+      "tool": {
+        "driver": {
+          "name": "Hot Sheet",
+          "rules": [
+            {
+              "id": "review-note",
+              "name": "ReviewNote",
+              "shortDescription": {
+                "text": "AI-authored, line-anchored review note."
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "review-note",
+          "ruleIndex": 0,
+          "kind": "informational",
+          "level": "none",
+          "guid": "mszscb0mn38yn8zj",
+          "message": {
+            "text": "mode:'replace' needs to dismiss the region's OTHER toasts, but that active set is stored ON the region element (a Symbol prop), not in a module-level variable — so toast() keeps zero module state, consistent with toastRegion() which already keeps \"the region\" in the DOM rather than a module singleton.\n\nA mode:'replace' toast can't just region.innerHTML = '' to clear the others: that would strip their DOM without running each one's mount() disposer (leaking the mount) and without honoring an in-flight exitClass transition. It needs their real dismiss fns. The obvious place to keep them is a module-level WeakMap<region, Set<dismiss>>, but that reintroduces module-level mutable state this file was designed to avoid (Design rule 5). Hanging the Set off the region element via region[TOAST_SET] puts the state where its lifetime already lives — GC'd with the region, scoped per region for free (a custom container gets its own set), and invisible to grep '^let'. Iterating a COPY ([...active]) before dismissing matters: each dismiss calls active.delete(itself), which would corrupt a live iteration.\n",
+            "markdown": "`mode:'replace'` needs to dismiss the region's OTHER toasts, but that active set is stored ON the region element (a Symbol prop), not in a module-level variable — so toast() keeps zero module state, consistent with `toastRegion()` which already keeps \"the region\" in the DOM rather than a module singleton.\n\nA `mode:'replace'` toast can't just `region.innerHTML = ''` to clear the others: that would strip their DOM without running each one's `mount()` disposer (leaking the mount) and without honoring an in-flight `exitClass` transition. It needs their real `dismiss` fns. The obvious place to keep them is a module-level `WeakMap<region, Set<dismiss>>`, but that reintroduces module-level mutable state this file was designed to avoid (Design rule 5). Hanging the `Set` off the region element via `region[TOAST_SET]` puts the state where its lifetime already lives — GC'd with the region, scoped per region for free (a custom `container` gets its own set), and invisible to `grep '^let'`. Iterating a COPY (`[...active]`) before dismissing matters: each `dismiss` calls `active.delete(itself)`, which would corrupt a live iteration.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/overlay.ts"
+                },
+                "region": {
+                  "startLine": 838,
+                  "endLine": 842,
+                  "snippet": {
+                    "text": "\n  const region = toastRegion(container) as ToastCarrier;\n  const active = (region[TOAST_SET] ??= new Set<() => void>());\n  if (mode === 'replace') for (const d of [...active]) d(); // collapse-to-latest\n"
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "tags": [
+              "rationale"
+            ]
+          },
+          "workItemUris": [
+            "KF-487"
+          ],
+          "partialFingerprints": {
+            "prNoteAnchor/v1": "59aa32e4999d21277d3ee4f89587a28f"
+          }
+        }
+      ],
+      "versionControlProvenance": [
+        {
+          "repositoryUri": "git@github.com:brianwestphal/kerf.git",
+          "revisionId": "d4bfb65b9a559f3643278d6461557b42ecbca5ca",
+          "branch": "main"
+        }
+      ]
     }
   ]
 }

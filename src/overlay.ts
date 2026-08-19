@@ -764,6 +764,9 @@ export function tooltip(anchor: Element, content: TooltipContent, options: Toolt
 /** Content for a {@link toast}: text, `SafeHtml`, or a render function. */
 export type ToastContent = string | SafeHtml | (() => MountResult);
 
+/** Accent variant for a {@link toast} — mapped to a `${className}--${variant}` class. */
+export type ToastVariant = 'info' | 'success' | 'warning';
+
 /** Options for {@link toast}. */
 export interface ToastOptions {
   /** Where toasts stack. Default: a lazily-created `<div class="kerf-toasts">` on `document.body`. */
@@ -774,7 +777,32 @@ export interface ToastOptions {
   duration?: number;
   /** ARIA role. Default `'status'`. */
   role?: string;
+  /**
+   * `'stack'` (default) shows toasts stacked in the region; `'replace'` dismisses
+   * the region's current toast(s) first (collapse-to-latest for a rapid sequence).
+   */
+  mode?: 'stack' | 'replace';
+  /** Accent variant — adds a `${className}--${variant}` class (kerf ships no CSS; you style it). */
+  variant?: ToastVariant;
+  /** Class added on the next animation frame after mount, so a CSS **entrance** transition can run. */
+  enterClass?: string;
+  /** Class added when dismissing, so CSS owns the **exit** — the node is removed `exitDuration` ms later. */
+  exitClass?: string;
+  /** ms to wait after `exitClass` is added before removing the node. Default `0`. */
+  exitDuration?: number;
 }
+
+/** Handle returned by {@link toast}. */
+export interface ToastHandle {
+  /** The toast element — inspect it, or run your own entrance/exit transitions. */
+  el: HTMLElement;
+  /** Dismiss it early (running the `exitClass` transition if set). Idempotent. */
+  dismiss(): void;
+}
+
+/** The region's active toasts live on the region element (in the DOM), not in module state. */
+const TOAST_SET = Symbol('kerf.toasts');
+type ToastCarrier = Element & { [TOAST_SET]?: Set<() => void> };
 
 /** The singleton toast region lives in the DOM (queried, not held in a module variable). */
 function toastRegion(container?: Element): Element {
@@ -790,30 +818,65 @@ function toastRegion(container?: Element): Element {
 
 /**
  * Show a non-modal, auto-dismissing notification. Stacks in a shared body-level
- * region (or your `container`). Returns a `() => void` that dismisses it early.
+ * region (or your `container`). Returns a {@link ToastHandle} (`{ el, dismiss }`)
+ * so you can run entrance/exit transitions, wire an action button, or inspect the
+ * node. `mode: 'replace'` collapses a rapid sequence to the latest; `variant`
+ * adds an accent class; `enterClass`/`exitClass` let CSS own the animation.
  */
-export function toast(content: ToastContent, options: ToastOptions = {}): () => void {
-  const { container, className = 'kerf-toast', duration = 4000, role = 'status' } = options;
+export function toast(content: ToastContent, options: ToastOptions = {}): ToastHandle {
+  const {
+    container,
+    className = 'kerf-toast',
+    duration = 4000,
+    role = 'status',
+    mode = 'stack',
+    variant,
+    enterClass,
+    exitClass,
+    exitDuration = 0,
+  } = options;
+
+  const region = toastRegion(container) as ToastCarrier;
+  const active = (region[TOAST_SET] ??= new Set<() => void>());
+  if (mode === 'replace') for (const d of [...active]) d(); // collapse-to-latest
 
   const el = document.createElement('div');
   el.className = className;
+  if (variant !== undefined) el.classList.add(`${className}--${variant}`);
   el.setAttribute('role', role);
-  toastRegion(container).appendChild(el);
+  region.appendChild(el);
 
   const disposeMount = mount(el, typeof content === 'function' ? content : () => content);
-  const state: { dismissed: boolean; timer: ReturnType<typeof setTimeout> | undefined } = {
-    dismissed: false,
-    timer: undefined,
+  const state: {
+    dismissed: boolean;
+    timer: ReturnType<typeof setTimeout> | undefined;
+  } = { dismissed: false, timer: undefined };
+
+  if (enterClass !== undefined) {
+    globalThis.requestAnimationFrame(() => {
+      if (!state.dismissed) el.classList.add(enterClass);
+    });
+  }
+
+  const remove = (): void => {
+    disposeMount();
+    el.remove();
+    active.delete(dismiss);
   };
 
   function dismiss(): void {
     if (state.dismissed) return;
     state.dismissed = true;
     if (state.timer !== undefined) clearTimeout(state.timer);
-    disposeMount();
-    el.remove();
+    if (exitClass !== undefined) {
+      el.classList.add(exitClass);
+      setTimeout(remove, exitDuration);
+    } else {
+      remove();
+    }
   }
 
+  active.add(dismiss);
   if (duration > 0) state.timer = setTimeout(dismiss, duration);
-  return dismiss;
+  return { el, dismiss };
 }

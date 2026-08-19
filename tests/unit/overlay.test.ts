@@ -235,9 +235,10 @@ describe('toast()', () => {
     expect(document.querySelector('.kerf-toast .bold')?.textContent).toBe('hi');
   });
 
-  it('returns a dismiss function that removes it early', () => {
+  it('returns { el, dismiss } — el is the node, dismiss removes it early (idempotent)', () => {
     vi.useFakeTimers();
-    const dismiss = toast('Hi', { className: 'my-toast' });
+    const { el, dismiss } = toast('Hi', { className: 'my-toast' });
+    expect(el).toBe(document.querySelector('.my-toast'));
     expect(document.querySelector('.my-toast')).not.toBeNull();
     dismiss();
     expect(document.querySelector('.my-toast')).toBeNull();
@@ -246,7 +247,7 @@ describe('toast()', () => {
 
   it('duration 0 keeps it until dismissed by hand', () => {
     vi.useFakeTimers();
-    const dismiss = toast('Sticky', { duration: 0 });
+    const { dismiss } = toast('Sticky', { duration: 0 });
     vi.advanceTimersByTime(100000);
     expect(document.querySelector('.kerf-toast')).not.toBeNull();
     dismiss();
@@ -257,10 +258,55 @@ describe('toast()', () => {
     const box = document.createElement('div');
     box.id = 'box';
     document.body.appendChild(box);
-    const dismiss = toast('X', { container: box, duration: 0 });
+    const { dismiss } = toast('X', { container: box, duration: 0 });
     expect(box.querySelector('.kerf-toast')).not.toBeNull();
     expect(document.querySelector('.kerf-toasts')).toBeNull(); // no shared region created
     dismiss();
+  });
+
+  it("variant adds a `${className}--${variant}` accent class", () => {
+    vi.useFakeTimers();
+    toast('done', { variant: 'success', duration: 0 });
+    const el = document.querySelector('.kerf-toast') as HTMLElement;
+    expect(el.classList.contains('kerf-toast--success')).toBe(true);
+  });
+
+  it("mode:'replace' collapses to the latest — a rapid sequence leaves one toast", () => {
+    vi.useFakeTimers();
+    toast('one', { duration: 0 });
+    toast('two', { duration: 0 });
+    expect(document.querySelectorAll('.kerf-toast').length).toBe(2); // default stacks
+
+    toast('three', { mode: 'replace', duration: 0 });
+    const toasts = document.querySelectorAll('.kerf-toast');
+    expect(toasts.length).toBe(1);
+    expect(toasts[0].textContent).toBe('three');
+  });
+
+  it('enterClass is added on the next animation frame (CSS entrance hook)', () => {
+    vi.useFakeTimers();
+    const { el } = toast('hi', { enterClass: 'is-in', duration: 0 });
+    expect(el.classList.contains('is-in')).toBe(false); // not yet — waits a frame
+    vi.advanceTimersByTime(20); // flush the rAF
+    expect(el.classList.contains('is-in')).toBe(true);
+  });
+
+  it('exitClass is added on dismiss and the node is removed after exitDuration (CSS exit hook)', () => {
+    vi.useFakeTimers();
+    const { el, dismiss } = toast('bye', { exitClass: 'is-out', exitDuration: 200, duration: 0 });
+    dismiss();
+    expect(el.classList.contains('is-out')).toBe(true); // exit class applied
+    expect(document.querySelector('.kerf-toast')).not.toBeNull(); // still present during the transition
+    vi.advanceTimersByTime(200);
+    expect(document.querySelector('.kerf-toast')).toBeNull(); // removed after exitDuration
+  });
+
+  it('a dismissed toast never adds its enterClass (a frame after removal)', () => {
+    vi.useFakeTimers();
+    const { el, dismiss } = toast('x', { enterClass: 'is-in', duration: 0 });
+    dismiss(); // before the rAF fires
+    vi.advanceTimersByTime(20);
+    expect(el.classList.contains('is-in')).toBe(false);
   });
 });
 
