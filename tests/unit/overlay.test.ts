@@ -910,3 +910,54 @@ describe('confirm / prompt / form — bring-your-own markup (render)', () => {
     await expect(p).resolves.toEqual({ a: 'x' });
   });
 });
+
+describe("toast() — KF-495 replace collapse + symmetric exit", () => {
+  it("mode:'replace' collapse:'instant' removes the prior toast synchronously (no cross-fade)", () => {
+    vi.useFakeTimers();
+    toast('First', { mode: 'replace', exitClass: 'hide', exitDuration: 300, duration: 0 });
+    expect(document.querySelectorAll('.kerf-toast').length).toBe(1);
+
+    toast('Second', { mode: 'replace', collapse: 'instant', exitClass: 'hide', exitDuration: 300, duration: 0 });
+    const toasts = document.querySelectorAll('.kerf-toast');
+    expect(toasts.length).toBe(1); // First removed immediately — never overlaps
+    expect(toasts[0].textContent).toBe('Second');
+  });
+
+  it("mode:'replace' default collapse:'fade' keeps the prior through its exit transition", () => {
+    vi.useFakeTimers();
+    toast('First', { mode: 'replace', exitClass: 'hide', exitDuration: 300, duration: 0 });
+    toast('Second', { mode: 'replace', exitClass: 'hide', exitDuration: 300, duration: 0 }); // default fade
+
+    expect(document.querySelectorAll('.kerf-toast').length).toBe(2); // both present during the fade
+    const first = Array.from(document.querySelectorAll('.kerf-toast')).find((t) => t.textContent === 'First')!;
+    expect(first.classList.contains('hide')).toBe(true); // First is exiting
+    vi.advanceTimersByTime(300);
+    expect(document.querySelectorAll('.kerf-toast').length).toBe(1); // First gone after exitDuration
+  });
+
+  it('exit removes the enterClass and adds the exitClass', () => {
+    vi.useFakeTimers();
+    const { el, dismiss } = toast('x', { enterClass: 'show', exitClass: 'hide', exitDuration: 100, duration: 0 });
+    vi.advanceTimersByTime(20); // entrance applied
+    expect(el.classList.contains('show')).toBe(true);
+
+    dismiss();
+    expect(el.classList.contains('show')).toBe(false); // enterClass removed on exit
+    expect(el.classList.contains('hide')).toBe(true); // exitClass added
+    vi.advanceTimersByTime(100);
+    expect(document.querySelector('.kerf-toast')).toBeNull();
+  });
+
+  it('exitDuration delays removal even without an exitClass (symmetric single-class fade)', () => {
+    vi.useFakeTimers();
+    const { el, dismiss } = toast('x', { enterClass: 'visible', exitDuration: 200, duration: 0 });
+    vi.advanceTimersByTime(20);
+    expect(el.classList.contains('visible')).toBe(true);
+
+    dismiss();
+    expect(el.classList.contains('visible')).toBe(false); // entrance reversed
+    expect(document.querySelector('.kerf-toast')).not.toBeNull(); // still present during the fade-out
+    vi.advanceTimersByTime(200);
+    expect(document.querySelector('.kerf-toast')).toBeNull(); // removed after exitDuration
+  });
+});

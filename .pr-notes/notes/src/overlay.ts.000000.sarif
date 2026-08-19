@@ -354,6 +354,69 @@
           "branch": "main"
         }
       ]
+    },
+    {
+      "tool": {
+        "driver": {
+          "name": "Hot Sheet",
+          "rules": [
+            {
+              "id": "review-note",
+              "name": "ReviewNote",
+              "shortDescription": {
+                "text": "AI-authored, line-anchored review note."
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "review-note",
+          "ruleIndex": 0,
+          "kind": "informational",
+          "level": "none",
+          "guid": "mszzdlu3qmxnxxrv",
+          "message": {
+            "text": "finish(instant) unifies dismissal so mode:'replace' can drop a prior toast WITHOUT its exit transition — the fix for a centered single-slot region.\n\nThe old dismiss() always ran the exit (add exitClass, wait exitDuration, remove). That's right for a stacking region, but for a single position:fixed; left:50% slot the outgoing message fades out at the exact coordinates the incoming one fades in, so for exitDuration ms two different messages cross-fade through each other. collapse:'instant' needs a synchronous teardown path, so each toast now exposes .removeNow() (finish(true) → immediate remove()) alongside the public dismiss() (finish(false) → transition), and mode:'replace' picks between them. Two smaller corrections live in the same finish(false) branch: the entrance enterClass is REMOVED before exitClass is added (so exitClass no longer has to out-specify a still-present enter class — the KF-495 footgun), and removal is delayed whenever exitClass is set OR exitDuration > 0, which makes the symmetric single-class idiom (enter = add .visible, exit = remove it, no separate exit class) actually fade out instead of vanishing instantly.\n",
+            "markdown": "`finish(instant)` unifies dismissal so `mode:'replace'` can drop a prior toast WITHOUT its exit transition — the fix for a centered single-slot region.\n\nThe old `dismiss()` always ran the exit (add `exitClass`, wait `exitDuration`, remove). That's right for a stacking region, but for a single `position:fixed; left:50%` slot the outgoing message fades out at the exact coordinates the incoming one fades in, so for `exitDuration` ms two different messages cross-fade through each other. `collapse:'instant'` needs a synchronous teardown path, so each toast now exposes `.removeNow()` (`finish(true)` → immediate `remove()`) alongside the public `dismiss()` (`finish(false)` → transition), and `mode:'replace'` picks between them. Two smaller corrections live in the same `finish(false)` branch: the entrance `enterClass` is REMOVED before `exitClass` is added (so `exitClass` no longer has to out-specify a still-present enter class — the KF-495 footgun), and removal is delayed whenever `exitClass` is set OR `exitDuration > 0`, which makes the symmetric single-class idiom (enter = add `.visible`, exit = remove it, no separate exit class) actually fade out instead of vanishing instantly.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/overlay.ts"
+                },
+                "region": {
+                  "startLine": 988,
+                  "endLine": 1004,
+                  "snippet": {
+                    "text": "    if (state.dismissed) return;\n    state.dismissed = true;\n    if (state.timer !== undefined) clearTimeout(state.timer);\n    if (instant) {\n      remove();\n      return;\n    }\n    // Reverse the entrance (drop enterClass so exitClass needn't out-specify it),\n    // add exitClass, and delay removal for the transition — including the\n    // single-class idiom (enterClass removed + exitDuration, no exitClass).\n    if (enterClass !== undefined) el.classList.remove(enterClass);\n    if (exitClass !== undefined) el.classList.add(exitClass);\n    if (exitClass !== undefined || exitDuration > 0) {\n      setTimeout(remove, exitDuration);\n    } else {\n      remove();\n    }"
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "tags": [
+              "rationale"
+            ]
+          },
+          "workItemUris": [
+            "KF-495"
+          ],
+          "partialFingerprints": {
+            "prNoteAnchor/v1": "82401b73336b11e13612fb830b2bf905"
+          }
+        }
+      ],
+      "versionControlProvenance": [
+        {
+          "repositoryUri": "git@github.com:brianwestphal/kerf.git",
+          "revisionId": "0ccc726a2c13a67e52839d1c8db976370173251d",
+          "branch": "main"
+        }
+      ]
     }
   ]
 }
