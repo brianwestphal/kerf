@@ -185,6 +185,8 @@ Three `data-*` attributes opt portions of the live tree out of the diff. They ov
 
 All three attributes also protect the node from **positional repurposing**: the diff will not adopt a `data-morph-skip` / `data-morph-skip-children` / `data-morph-preserve` live node as the positional match for a template element that makes no such claim. So a library-owned widget or an injected preserved node keeps its identity and contents even when a conditional sibling reappears at its exact position — the template element is inserted fresh beside it instead. A keyed match (`id` / `data-key`) is the one way to deliberately morph such a node in place.
 
+> **Forcing the opposite — replace, don't morph.** Sometimes you specifically want a subtree torn down and rebuilt on fresh DOM when its identity changes (so a library re-initializes cleanly), rather than morphed in place. The blessed API for that is [`remountOn(parent, key, render)`](/kerf/api/#813-keyed-subtree-replacement--kerfjsremount-subpath) from the optional `kerfjs/remount` subpath: when `key` changes it disposes the old subtree + its mounts and mounts a fresh one; an unchanged key leaves it alone. It names (and replaces) the hand-rolled `data-key={`gen-${n}`}` + `data-morph-skip` counter trick. Pair it with `kerfjs/imperative` to bind the widget's setup/teardown to the freshly-created node.
+
 ### `data-morph-skip` — library-owned subtree
 
 Apply this attribute to any element whose subtree AND attributes you DON'T want kerf to touch:

@@ -425,11 +425,15 @@ Cross-bundle-safe type guard. Returns `true` for any object carrying the `Symbol
 
 ### `raw(html: string): SafeHtml`
 
-Wrap a pre-escaped HTML string. Useful for icons, rendered Markdown, server-included fragments.
+Wrap a pre-escaped HTML string, bypassing kerf's auto-escaping. Useful for icons, rendered Markdown, or server-included fragments.
 
-### `trustedRaw(html: string): SafeHtml`
+**Reach for `raw()` rarely.** kerf escapes automatically everywhere else, so a codebase with a lot of `raw()` is usually reaching past a safer first-class tool:
 
-Identical to `raw()` at runtime, but names your intent: *this dynamic value is server-trusted, inject it verbatim.* The `kerfjs/no-raw-with-dynamic-arg` lint rule flags a `raw()` whose argument is **not** a literal (unsanitized user input is the usual XSS mistake) but leaves `trustedRaw()` alone — so a CSRF token, a trusted `<script src>`, or a server-issued id injects without scattering `eslint-disable` comments. It is **not** a sanitizer (it bypasses escaping exactly like `raw()`); only pass values you control (server output, config, hard-coded), never raw user input.
+- **Interpolating dynamic text or attributes?** Plain JSX already escapes it (`<p>{value}</p>`, `class={sig}`) — you don't need `raw()`.
+- **Composing markup?** Build a `SafeHtml` the normal way — a JSX expression, the `html` tagged template (`kerfjs/html`), `each()`, or a component function returning JSX. All produce trusted `SafeHtml` without hand-writing an HTML string.
+- **A genuinely trusted, pre-escaped *dynamic* value** (server output, config, a hard-coded string) is the one legitimate use. The `kerfjs/no-raw-with-dynamic-arg` lint rule flags a `raw()` whose argument is **not** a literal — because unsanitized user input is the canonical XSS mistake. Acknowledge a call you've reviewed with an explicit `// eslint-disable-next-line kerfjs/no-raw-with-dynamic-arg`. That override is the single sanctioned way to say "this is trusted," and it leaves a searchable audit trail. (The rule ships at `warn` in `configs.recommended`, so an un-acknowledged dynamic `raw()` is a nudge, not a hard failure — but the disable comment is how you signal intent.)
+
+`raw()` is **not** a sanitizer — it does no escaping. For user-controlled input, sanitize first (`raw(DOMPurify.sanitize(marked(userMarkdown)))`) or, better, render it through escaping JSX instead.
 
 ### `Fragment` (component)
 

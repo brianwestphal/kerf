@@ -429,11 +429,15 @@ Cross-bundle-safe type guard. Returns `true` for any object carrying the `Symbol
 
 ### `raw(html: string): SafeHtml`
 
-Wrap a pre-escaped HTML string. Useful for icons, rendered Markdown, server-included fragments.
+Wrap a pre-escaped HTML string, bypassing kerf's auto-escaping. Useful for icons, rendered Markdown, or server-included fragments.
 
-### `trustedRaw(html: string): SafeHtml`
+**Reach for `raw()` rarely.** kerf escapes automatically everywhere else, so a codebase with a lot of `raw()` is usually reaching past a safer first-class tool:
 
-Identical to `raw()` at runtime, but names your intent: *this dynamic value is server-trusted, inject it verbatim.* The `kerfjs/no-raw-with-dynamic-arg` lint rule flags a `raw()` whose argument is **not** a literal (unsanitized user input is the usual XSS mistake) but leaves `trustedRaw()` alone — so a CSRF token, a trusted `<script src>`, or a server-issued id injects without scattering `eslint-disable` comments. It is **not** a sanitizer (it bypasses escaping exactly like `raw()`); only pass values you control (server output, config, hard-coded), never raw user input.
+- **Interpolating dynamic text or attributes?** Plain JSX already escapes it (`<p>{value}</p>`, `class={sig}`) — you don't need `raw()`.
+- **Composing markup?** Build a `SafeHtml` the normal way — a JSX expression, the `html` tagged template (`kerfjs/html`), `each()`, or a component function returning JSX. All produce trusted `SafeHtml` without hand-writing an HTML string.
+- **A genuinely trusted, pre-escaped *dynamic* value** (server output, config, a hard-coded string) is the one legitimate use. The `kerfjs/no-raw-with-dynamic-arg` lint rule flags a `raw()` whose argument is **not** a literal — because unsanitized user input is the canonical XSS mistake. Acknowledge a call you've reviewed with an explicit `// eslint-disable-next-line kerfjs/no-raw-with-dynamic-arg`. That override is the single sanctioned way to say "this is trusted," and it leaves a searchable audit trail. (The rule ships at `warn` in `configs.recommended`, so an un-acknowledged dynamic `raw()` is a nudge, not a hard failure — but the disable comment is how you signal intent.)
+
+`raw()` is **not** a sanitizer — it does no escaping. For user-controlled input, sanitize first (`raw(DOMPurify.sanitize(marked(userMarkdown)))`) or, better, render it through escaping JSX instead.
 
 ### `Fragment` (component)
 
@@ -550,18 +554,98 @@ if (await confirm('Delete this file?', { danger: true })) remove();
 
 A promise-based `window.confirm` replacement (that global is a no-op in Tauri WKWebViews). Renders a two-button dialog on top of `overlay()` and resolves `true` for OK, `false` for Cancel or any dismissal. `message` + labels are auto-escaped through the JSX runtime. Options ([`ConfirmOptions`](#overlay-types)): `title`, `okText` (default `'OK'`), `cancelText` (default `'Cancel'`), `danger` (adds a `kerf-confirm--danger` class), plus `container` / `className`.
 
-### `toast(content, options?): () => void`
+### `prompt(message, options?): Promise<string | null>`
 
 ```ts
-toast('Saved');
-const dismiss = toast('Uploading…', { duration: 0 }); // sticky; dismiss() when done
+const name = await prompt('Rename layer', { defaultValue: layer.name });
+if (name !== null) rename(name);
 ```
 
-Shows a non-modal, auto-dismissing notification, stacked in a shared body-level region (lazily created, or `options.container`). `content` is a [`ToastContent`](#overlay-types) (text, `SafeHtml`, or a render function). Returns a `() => void` that dismisses it early. Options ([`ToastOptions`](#overlay-types)): `duration` (ms; `0` = sticky; default `4000`), `className` (default `'kerf-toast'`), `role` (default `'status'`), `container`.
+The symmetric sibling of `confirm()` — a promise-based `window.prompt` replacement (also a no-op in Tauri webviews). Renders a one-field dialog on top of `overlay()` and resolves the entered **string** on OK (an empty string is a valid result), or `null` on Cancel / dismissal. **Enter** in the input submits. `message`, the default value, and labels are auto-escaped. Options ([`PromptOptions`](#overlay-types)): `defaultValue` (default `''`), `placeholder`, `inputType` (default `'text'`), `title`, `okText` / `cancelText`, `validate` (return a non-empty error string to block OK — it shows inline), plus `container` / `className`.
+
+### `form(fields, options?): Promise<Record<string, string> | null>`
+
+```ts
+const creds = await form([
+  { name: 'host', label: 'Host', defaultValue: 'localhost' },
+  { name: 'token', label: 'API token', type: 'password', validate: (v) => v ? '' : 'required' },
+]);
+if (creds !== null) connect(creds.host, creds.token);
+```
+
+The two-or-three-input generalization of `prompt()`: renders one labeled input per [`FormField`](#overlay-types) and resolves a `Record<name, value>` on OK (after **every** field's `validate` passes) or `null` on Cancel / dismissal. Enter in any field submits; the first invalid field is focused. Each `FormField` has `name` (the record key + input `name`), optional `label` (defaults to `name`), `defaultValue`, `placeholder`, `type` (default `'text'`), and `validate`. Options ([`FormOptions`](#overlay-types)): `title`, `okText` / `cancelText`, `container` / `className`.
+
+### `choice<R>(message, actions, options?): Promise<R | null>`
+
+```ts
+const r = await choice('Unsaved changes', [
+  { value: 'save', label: 'Save Draft' },
+  { value: 'discard', label: 'Discard', className: 'btn-danger' },
+  { value: 'cancel', label: 'Keep Editing' },
+], { defaultValue: 'cancel' });
+// r is 'save' | 'discard' | 'cancel' | null (Escape/backdrop)
+```
+
+The **N-way** sibling of `confirm()`: renders one button per [`ChoiceAction<R>`](#overlay-types) and resolves that action's `value` on click, or `null` on Cancel / dismissal. Pass **`defaultValue`** to make **Enter** (pressed anywhere in the dialog) resolve a default action — the "global Enter-to-confirm" model — without holding the overlay handle. An action's `value` may itself be `null`/`undefined` and stays distinct from a dismissal (the promise resolves on the click, not via the overlay's result). `message` + labels auto-escape; `render` gives BYO markup (spread each `slots.actions[i]` onto your buttons). kerf owns dismiss / focus-trap / focus-restore. Options ([`ChoiceOptions<R>`](#overlay-types)): `title`, `defaultValue`, `render`, `container` / `className`. For fully bespoke keyboard/close control, drive [`overlay()`](#overlaycontent-options-overlayhandle) directly.
+
+### Bring your own markup (`render`) — design-system dialogs
+
+`confirm` / `prompt` / `form` render kerf's own button/field DOM with kerf class names. When you have a **design system** and want its markup + classes, pass a `render` option: it returns the full dialog body, and you spread the provided **wiring slots** onto your own elements. kerf keeps owning the promise, `validate`, Enter-submit, dismiss, focus-trap, and focus-restore — you only own the look. (The generic `overlay()` is the other route: mount any markup and drive dismiss/focus yourself.)
+
+```tsx
+// confirm with your design system's buttons — { message, ok, cancel } are attribute bags
+await confirm('Delete this file?', {
+  render: ({ message, ok, cancel }) => (
+    <div class="modal">
+      <p>{message}</p>
+      <button {...cancel} class="btn btn-sm">No</button>
+      <button {...ok} class="btn btn-danger">Yes</button>
+    </div>
+  ),
+});
+```
+
+`prompt`'s slots are `{ message, input, error, ok, cancel }` (spread `input` onto your `<input>`, `error` optional); `form`'s are `{ fields, ok, cancel }` where each `fields[i]` is `{ name, label, input, error }`. Omitting an `error` slot just skips that inline message — `validate` still blocks and focuses. Slot types: [`ConfirmRenderSlots`](#overlay-types), [`PromptRenderSlots`](#overlay-types), [`FormRenderSlots`](#overlay-types) / [`FormRenderField`](#overlay-types).
+
+### `popover(anchor, content, options?): OverlayHandle`
+
+```ts
+const trigger = document.querySelector('#menu-btn')!;
+const pop = popover(trigger, <Menu />); // opens below the button, dismisses on outside click
+```
+
+An **anchored, non-modal** overlay: positions `content` relative to `anchor` (below by default, flipping above if it would overflow the viewport, and clamped horizontally) and repositions on scroll / resize while open. It's a thin wrapper over `overlay()` with non-modal defaults — `trap: false`, `dismiss: ['outside']`, and the anchor added to `outsideIgnore` so the click that opened it doesn't immediately close it. Returns the same [`OverlayHandle`](#overlay-types); `close()` also drops the reposition listeners. `position: fixed` is set inline (you style everything else — kerf ships no CSS). Options ([`PopoverOptions`](#overlay-types)): `placement` (`'bottom'` | `'top'`, default `'bottom'`, auto-flips), `align` (`'start'` | `'end'`, default `'start'`), `gap` (px, default `4`), `dismiss`, `initialFocus` (default `false`), `outsideIgnore` (merged with the anchor), `onDismiss`, `container` / `className`. The positioning is dependency-free (below/above + clamp); for complex cases (arrow, collision on both axes) drive `overlay()` yourself.
+
+### `positionAnchored(el, anchor, options?): void` / `autoReposition(el, anchor, options?): () => void`
+
+```ts
+positionAnchored(hintEl, badgeEl, { placement: 'top' });        // one-shot
+const stop = autoReposition(hintEl, badgeEl, { gap: 6 });       // stays glued; stop() to unbind
+```
+
+`popover()`'s placement core, exported for positioning your **own** element against an anchor with no overlay lifecycle (an inline hint, a floating label). `positionAnchored` sets `el.style` `position: fixed`, `margin: 0`, `left`, `top` — below the anchor by default, flipping above on overflow, aligned to a horizontal edge and clamped into view. `autoReposition` positions once, then re-runs on `scroll` (capture — catches inner scroll containers) and `resize`, returning a disposer that removes the listeners. Both take [`AnchorPositionOptions`](#overlay-types) (`placement`, `align`, `gap`).
+
+### `tooltip(anchor, content, options?): () => void`
+
+```ts
+const stop = tooltip(buttonEl, 'Delete this item'); // hover/focus tooltip, above by default
+```
+
+A hover/focus-triggered, non-modal, auto-hiding tooltip anchored to `anchor`. Shows after `delay` on `pointerenter`/`focus`, hides after `hideDelay` on `pointerleave`/`blur`, and keeps itself positioned with `autoReposition` (`placement` defaults to `'top'`). No click-dismiss model — it follows the pointer/focus. `content` is a [`TooltipContent`](#overlay-types) (a string is auto-escaped, or pass `SafeHtml` / a render fn). Returns a disposer that removes the anchor listeners and hides any shown tooltip. Options ([`TooltipOptions`](#overlay-types), extends `AnchorPositionOptions`): `delay` (default `400`), `hideDelay` (default `100`), `role` (default `'tooltip'`), `container` / `className` (default `'kerf-tooltip'`).
+
+### `toast(content, options?): ToastHandle`
+
+```ts
+toast('Saved', { variant: 'success' });
+const { el, dismiss } = toast('Uploading…', { duration: 0 }); // sticky; dismiss() when done
+toast('Only the latest shows', { mode: 'replace' });          // collapse-to-latest
+```
+
+Shows a non-modal, auto-dismissing notification, stacked in a shared body-level region (lazily created, or `options.container`). `content` is a [`ToastContent`](#overlay-types) (text, `SafeHtml`, or a render function). Returns a [`ToastHandle`](#overlay-types) `{ el, dismiss }` — `el` is the node (inspect it, wire an action button, or run your own entrance/exit transitions) and `dismiss()` removes it early (idempotent). `dismiss({ instant: true })` removes it **synchronously**, skipping the exit transition — for an action button that immediately shows a replacement toast in a single centered slot (no cross-fade); `mode: 'replace'` with `collapse: 'instant'` likewise cleans up a toast that is already mid-fade. Options ([`ToastOptions`](#overlay-types)): `duration` (ms; `0` = sticky; default `4000`), `mode` (`'stack'` default, or `'replace'` — dismiss the region's current toast(s) first for collapse-to-latest), `collapse` (how `'replace'` drops the prior toast(s): `'fade'` default = run their exit transition, good for a **stacking** region; `'instant'` = remove them synchronously, what a single **centered** slot wants so messages never cross-fade in the same spot), `variant` (`'info'` | `'success'` | `'warning'` → adds a `${className}--${variant}` accent class), `enterClass` (added on the next animation frame, so a CSS **entrance** transition runs), `exitClass` + `exitDuration` (CSS owns the **exit**: on dismiss the `enterClass` is REMOVED — so `exitClass` needn't out-specify it, and a symmetric single-class fade works by setting only `enterClass` + `exitDuration` — then the node is removed `exitDuration` ms later, delayed whenever `exitClass` is set OR `exitDuration > 0`), `className` (default `'kerf-toast'`), `role` (default `'status'`), `container`.
 
 ### Overlay types
 
-`OverlayHandle`, `OverlayContent`, `OverlayOptions`, `DismissTrigger`, `ConfirmOptions`, `ToastContent`, and `ToastOptions` are all exported from `kerfjs/overlay` for annotating handles, content, and option bags.
+`OverlayHandle`, `OverlayContent`, `OverlayOptions`, `DismissTrigger`, `ConfirmOptions`, `ConfirmRenderSlots`, `PromptOptions`, `PromptRenderSlots`, `FormField`, `FormOptions`, `FormRenderSlots`, `FormRenderField`, `FieldValidator`, `ChoiceAction`, `ChoiceOptions`, `ChoiceRenderSlots`, `PopoverOptions`, `PopoverPlacement`, `AnchorPositionOptions`, `TooltipContent`, `TooltipOptions`, `ToastContent`, `ToastOptions`, `ToastVariant`, and `ToastHandle` are all exported from `kerfjs/overlay` for annotating handles, content, and option bags.
 
 ## 8.9 Dispose scopes — `kerfjs/scope` subpath
 
@@ -606,7 +690,7 @@ The handle returned by `disposeScope`, exported for annotation: `{ add, mount, e
 
 Optional subpath (`import { resource } from 'kerfjs/async'`) that models async state — the `{ status, data, error }` shape every app reproduces — with the stale-response guard built in. You still write the fetch; `.run()` owns the status transitions and drops out-of-order responses. Signals only, no render core, so it's tiny.
 
-### `resource<T>(): Resource<T>`
+### `resource<T, I = void>(options?): Resource<T, I>`
 
 ```ts
 const users = resource<User[]>();
@@ -621,21 +705,42 @@ await users.run(() => fetch(apiUrl).then((r) => r.json() as Promise<User[]>));
 users.value.status; // 'idle' | 'running' | 'completed' | 'failed'
 ```
 
-Returns a [`Resource<T>`](#resource-types). `resource.value` is a **tracking read** of `ResourceState<T>` (`{ status, data, error, progress }`) — drive UI off `value.status`, exactly like reading a signal inside `mount()`/`computed()`/`effect()`. Methods:
+Returns a [`Resource<T, I>`](#resource-types). `resource.value` is a **tracking read** of `ResourceState<T, I>` (`{ status, data, error, progress, input, revision }`) — drive UI off `value.status`, exactly like reading a signal inside `mount()`/`computed()`/`effect()`. Methods:
 
 - **`run(fetcher): Promise<T | undefined>`** — sets `running`, then `completed` (with `data`) or `failed` (with `error`), guarding against stale responses: **only the latest `run` may resolve the state**, so a slow response can't clobber a newer one. It **never rejects** — a failure lands in `value.error`; the returned promise resolves the data (or `undefined` on failure) for callers who want to await. Previous `data` is preserved across a re-run and on failure (stale-while-revalidate).
-- **`reset(): void`** — back to `idle`, clearing data/error/progress and invalidating any in-flight run.
+- **`run(input, fetcher): Promise<T | undefined>`** — same as above, plus records `input` as `value.input` for the `running`/`completed`/`failed` states of this run (again latest-wins under the stale guard). Use it when the failure UI must know **which request failed** — e.g. an inline error keyed by `value.input.fileId` — so you don't reintroduce module-scope bookkeeping. Parametrize the input type via the second type argument (`resource<Diff, { fileId: string }>()`).
+- **`reset(): void`** — back to `idle`, clearing data/error/progress/input **and the per-key cache**, and invalidating any in-flight run.
+- **`cached(key): T | undefined`** / **`cachedKeys(): string[]`** / **`clearCache(key?): void`** — a read-only view of the `cacheKey` cache, plus eviction. `cached(key)` returns a slice without running it (so a test or app can ask "is this window cached?"); `cachedKeys()` lists the cached keys (`.length` is the size); `clearCache(key)` evicts one key (or the whole cache with no argument) **without** touching `value`.
+
+**Per-input cache + SWR** ([`ResourceOptions`](#resource-types)): pass `cacheKey(input)` to keep the last value **per key**. Starting a run for a previously-loaded key paints its cached slice immediately (still `running`) while it revalidates; a never-loaded key starts with no `data`. Without `cacheKey`, a run keeps the previous run's `data` (single-slot stale-while-revalidate), as before.
+
+**Paint dedup** (`value.revision`): a counter that bumps **only when `data` actually changes** — by `options.equals` (default `Object.is`). Compare it to the revision you last painted to skip a redundant re-render (a poll returning identical data leaves it untouched, so you don't wipe scroll / sort / hover). Pass a structural `equals` to dedup a fresh-but-equal object.
+
+```ts
+const win = resource<Slice, string>({ cacheKey: (w) => w, equals: (a, b) => a.etag === b.etag });
+win.run(tab, () => fetchSlice(tab)); // revisiting a loaded tab paints instantly, then revalidates
+effect(() => {
+  if (win.value.revision === lastPainted) return; // identical data → keep the DOM
+  lastPainted = win.value.revision;
+  paint(win.value.data);
+});
+```
 
 **Progress** is opt-in: your fetcher receives a `report(completed, total)` callback (a plain `() => Promise<T>` is assignable — ignore it if unused). Reports from a superseded run are dropped.
 
 ```ts
 upload.run((report) => putWithProgress(file, (sent, size) => report(sent, size)));
 // upload.value.progress -> { completed, total } | undefined
+
+// input threading — recover the failed request in the error branch:
+const diff = resource<Diff, { fileId: string }>();
+diff.run({ fileId }, (report) => fetchDiff(fileId, report));
+// on failure: diff.value.status === 'failed' && diff.value.input?.fileId
 ```
 
 ### Resource types
 
-`Resource<T>`, `ResourceState<T>`, `ResourceStatus`, `ResourceProgress`, and `ResourceFetcher<T>` are all exported from `kerfjs/async`.
+`Resource<T, I>`, `ResourceState<T, I>`, `ResourceOptions<T, I>`, `ResourceStatus`, `ResourceProgress`, and `ResourceFetcher<T>` are all exported from `kerfjs/async`. The input type `I` defaults to `void` (so `resource<T>()` keeps `value.input` as `undefined`).
 
 ## 8.11 Keyed reactive list — `kerfjs/list` subpath
 
@@ -652,13 +757,102 @@ const dispose = bindList(listEl, itemsSignal, {
 });
 ```
 
-Binds a keyed list to `parent` (which `bindList` owns the children of), driven by `source` — anything with a tracking `.value` array read, so a `signal<readonly T[]>` **or** an `arraySignal<T>` both work. When the source is an `arraySignal` and the list is **not** virtualized, bindList applies its insert/remove/move/update patches **granularly** (O(patches)) instead of diffing the snapshot; a plain `signal<T[]>`, a virtualized list, a `replace()`, or an `arraySignal` shared with another consumer fall back to the keyed diff (all correct — the granular path is a transparent optimization). Returns a disposer that tears down every row mount, the scroll listener, and the source subscription.
+Binds a keyed list to `parent` (whose children `bindList` owns — by default it appends/moves rows to the very end; pass **`before`** to keep the rows as a block ending before a fixed trailing sibling, so a list can share its `parent` with an "add" button or indicator), driven by `source` — anything with a tracking `.value` array read, so a `signal<readonly T[]>` **or** an `arraySignal<T>` both work. When the source is an `arraySignal` and the list is **not** virtualized, bindList applies its insert/remove/move/update patches **granularly** (O(patches)) instead of diffing the snapshot; a plain `signal<T[]>`, a virtualized list, a `replace()`, or an `arraySignal` shared with another consumer fall back to the keyed diff (all correct — the granular path is a transparent optimization). Returns a disposer that tears down every row mount, the scroll listener, and the source subscription.
 
-- **Per-row reactivity.** Each row is individually `mount()`ed, so a signal the row's `render` reads updates just that row (a fine-grained binding or a one-row morph) — its siblings don't re-render. Read signals in `render` for reactivity (external state like a `selectedId`, or signals the item carries); keep item **objects** stable and drive structure (add/remove/move) through the source. A row whose item object identity changes is rebuilt (same rule as `each()`'s memo).
+- **Per-row reactivity (content mode).** Return a `MountResult` (JSX / `SafeHtml`) and each row is individually `mount()`ed, so a signal the row's `render` reads updates just that row (a fine-grained binding or a one-row morph) — its siblings don't re-render. Read signals in `render` for reactivity (external state like a `selectedId`, or signals the item carries); keep item **objects** stable and drive structure (add/remove/move) through the source. A row whose item object identity changes is rebuilt (same rule as `each()`'s memo).
+- **Own the row element (element mode).** Return an `HTMLElement` (or `{ el, update?, dispose? }`) and that element **is** the row — so the app owns its tag, class, `data-*`, and listeners, exactly how apps already build keyed rows (`<div class="ticket-row" data-id=…>`, a `<tr>` in a `<tbody>`). kerf **keys / moves / reuses** it: the SAME element survives an append, a remove elsewhere, a reorder, **or a fresh item object at the same key** (so focus / scroll / selection / imperative listeners are preserved). Your `dispose` runs **only** when the row is genuinely removed (or the list disposes) — not for surviving rows. Refresh a reused element's content by reading signals inside it, or by returning an `update(item)` that kerf calls on the existing element whenever the item changes at that key. A list may mix the two modes per row. (Content-mode `render` runs once extra at row creation for the mode probe, so keep `render` a pure projection — which bindList already requires.)
 - **Virtualization.** With `virtualize: { rowHeight, overscan? }` only the rows in the scroll viewport are rendered. `bindList` renders the rows into an inner **sizer** element it creates inside `parent` and sets that sizer's `padding-top`/`padding-bottom` so `parent`'s `scrollHeight` stays honest — the padding lives on the sizer, not on `parent`, because padding counts toward `clientHeight` and would otherwise break the window math. It also sizes each row to `rowHeight` for you. `overscan` (default 3) renders extra rows above/below the viewport. Give `parent` a fixed height + `overflow: auto` in your CSS (the rows are `parent > sizer > row`).
 
-Options ([`BindListOptions<T>`](#list-types)): `key` (stable per-row key — a `ListKey`, i.e. `string | number`), `render` (returns the row content — a `MountResult`), `tag`, `virtualize`.
+Options ([`BindListOptions<T>`](#list-types)): `key` (stable per-row key — a `ListKey`, i.e. `string | number`), `render` (returns the row — a `MountResult` for content mode, or a `RowElement<T>` (`HTMLElement` / `{ el, update?, dispose? }`) for element mode), `tag` (content mode only), `before` (a `Node` or `() => Node | null` — keep the rows as a contiguous block ending just before it, for a `parent` shared with trailing controls; the node must be a child of `parent`; ignored when virtualized), `virtualize`.
 
 ### List types
 
-`ListKey`, `ListSource<T>`, and `BindListOptions<T>` are exported from `kerfjs/list`.
+`ListKey`, `ListSource<T>`, `RowElement<T>`, and `BindListOptions<T>` are exported from `kerfjs/list`.
+
+## 8.12 Timing primitives — `kerfjs/timing` subpath
+
+Optional subpath (`import { debounce, throttle, debouncedSignal } from 'kerfjs/timing'`) for the `let timer; clearTimeout(timer); timer = setTimeout(…)` pattern every app hand-rolls, with disposer-shaped ergonomics. `debounce`/`throttle` are dependency-free; only `debouncedSignal` pulls in signals (no render core), so the subpath is tiny.
+
+### `debounce<A>(fn, ms): Debounced<A>`
+
+```ts
+const save = debounce(() => persist(state), 300);
+input.addEventListener('input', save);
+// …on teardown: save.cancel();
+```
+
+Trailing-edge debounce: `fn` runs `ms` after calls **stop**, with the most recent arguments; each call within the quiet window resets the timer. Returns a [`Debounced<A>`](#timing-types) — callable like `fn`, plus `cancel()` (drop a pending call) and `flush()` (run it immediately and clear the timer). The argument tuple `A` is inferred from `fn`.
+
+### `throttle<A>(fn, ms): Throttled<A>`
+
+```ts
+const onScroll = throttle(() => measure(), 100);
+window.addEventListener('scroll', onScroll);
+```
+
+Leading-plus-trailing throttle: `fn` runs immediately on the first call, then **at most once per `ms`**; calls during a cooldown collapse to a single trailing call (with the latest arguments) at the window's end. Returns a [`Throttled<A>`](#timing-types) with the same `cancel()` / `flush()` shape.
+
+### `debouncedSignal<T>(source, ms): ReadonlySignal<T>`
+
+```ts
+const query = signal('');
+const debouncedQuery = debouncedSignal(query, 250); // trails query by 250ms
+// render / computed / effect off debouncedQuery.value — repaints only after typing settles
+```
+
+A read-only signal that trails `source` by `ms` (trailing-edge): writes to `source` reschedule, and the derived value settles once writes go quiet, so it composes inside the reactive graph (`computed`/`effect`/`mount`) instead of beside it. It holds a **live subscription** to `source` for its lifetime (like a module-scope `effect`) — intended for app-lifetime signals; for a disposable variant, drive your own `effect` with `debounce`.
+
+### Timing types
+
+`Debounced<A>` and `Throttled<A>` are exported from `kerfjs/timing` for annotating the returned callables.
+
+## 8.13 Keyed subtree replacement — `kerfjs/remount` subpath
+
+Optional subpath (`import { remountOn } from 'kerfjs/remount'`) for the opposite of kerf's morph-by-default: **replace** a subtree wholesale when a key changes instead of morphing it in place. The folk pattern is a monotonic counter spent as `data-key={`gen-${n}`}` on a `data-morph-skip` div; `remountOn` names it. Reach for it when a library-owned subtree (a highlighted diff, a chart, an editor) must be torn down and rebuilt on fresh DOM so the library re-initializes rather than the morph patching stale internals underneath it. See `docs/4-render.md` §4.3.
+
+### `remountOn<K>(parent, key, render, options?): () => void`
+
+```ts
+// Replace the diff pane whenever the file (or diff mode) changes:
+const stop = remountOn(paneEl, () => fileId.value, () => <DiffView id={fileId.value} />);
+// same key  → the subtree is left entirely alone (no morph, no rebuild)
+// key change → the old subtree + its mounts are disposed, a fresh one is mounted
+```
+
+`remountOn` **owns `parent`'s children** (like `mount()` / `bindList`). It watches `key` — a `ReadonlySignal<K>` **or** a thunk `() => K` that reads signals — and, whenever the key changes (by `Object.is`), disposes the current subtree (and its nested mounts) and renders a fresh one via `mount(parent, render)`. An unchanged key (including a thunk whose inputs moved but whose value stayed equal) leaves the subtree untouched, so per-row reactivity inside `render` still updates in place. Returns a disposer that tears down the current subtree and stops watching.
+
+Options ([`RemountOptions`](#remount-types)): **`onMount(root)`** runs after each (re)mount with the live subtree (`parent`) — the blessed place to bind an imperative widget, since `render` returns a string with no live node yet. It may return a cleanup that runs before the next remount and on dispose. Returning `imperative`'s disposer here makes teardown **synchronous** (before the DOM is cleared) rather than relying on its `MutationObserver`:
+
+```ts
+import { imperative } from 'kerfjs/imperative';
+
+remountOn(paneEl, () => fileId.value, () => <div class="pane" data-morph-skip />, {
+  onMount: (root) => imperative(root.querySelector('.pane')!, (el) => {
+    const chart = Chart.mount(el);
+    return () => chart.destroy(); // runs on the next key change and on dispose
+  }),
+});
+```
+
+### Remount types
+
+`RemountKey<K>` (`ReadonlySignal<K> | (() => K)`) and `RemountOptions` (`{ onMount?: (root: HTMLElement) => (() => void) | void }`) are exported from `kerfjs/remount`.
+
+## 8.14 Node-lifecycle adapter — `kerfjs/imperative` subpath
+
+Optional subpath (`import { imperative } from 'kerfjs/imperative'`) that binds a non-kerf widget's lifecycle to a single DOM node — a `useEffect`-with-cleanup for one element. `data-morph-skip` lets a library own a subtree so kerf won't touch it, but nothing tears that widget down when the node is replaced/removed; `imperative` closes that seam. DOM only (a `MutationObserver`) — no signals, no render core, so it's the smallest subpath.
+
+### `imperative(node, setup): () => void`
+
+```ts
+imperative(canvasEl, (el) => {
+  const chart = D3.mount(el);
+  return () => chart.destroy(); // runs when el leaves the DOM (or on dispose)
+});
+```
+
+`setup(node)` runs **immediately** and may return a teardown function. The teardown runs **once** — whichever comes first — when `node` leaves the document (detected by a `MutationObserver`, so a morph swap, a [`remountOn`](#813-keyed-subtree-replacement--kerfjsremount-subpath) replacement, or any removal all trigger it) or when the returned disposer is called. The disposer is idempotent, so a `mount()` / [`Scope`](#disposescopeel-scope) can drive teardown explicitly without double-firing. Re-creation is **not** handled here — a fresh node is a fresh `imperative()` call; pair it with `kerfjs/remount`, which replaces the node and re-runs your bind on the new one. Setup type: [`ImperativeSetup`](#imperative-types).
+
+### Imperative types
+
+`ImperativeSetup` (`(node: Element) => (() => void) | void`) is exported from `kerfjs/imperative`.

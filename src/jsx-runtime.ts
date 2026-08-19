@@ -90,23 +90,32 @@ export function isSafeHtml(value: unknown): value is SafeHtml {
     && (value as Record<symbol, unknown>)[SAFE_HTML_BRAND] === true;
 }
 
-/** Inject a pre-escaped HTML string. Use sparingly — caller is responsible for escaping. */
-export function raw(html: string): SafeHtml {
-  return new SafeHtml(html);
-}
-
 /**
- * `trustedRaw(html)` — identical to {@link raw} at runtime, but names your intent:
- * "this dynamic value is server-trusted, inject it verbatim." The
- * `kerfjs/no-raw-with-dynamic-arg` lint rule flags a `raw()` with a NON-literal
- * argument (unsanitized user input is the common XSS mistake) but leaves
- * `trustedRaw()` alone — so a CSRF token, a trusted `<script src>`, or a
- * server-issued id can be injected without scattering `eslint-disable` comments.
+ * Inject a pre-escaped HTML string verbatim, bypassing kerf's auto-escaping.
  *
- * It is NOT a sanitizer — it bypasses escaping exactly like `raw()`. Only pass
- * values you control (server output, config, hard-coded), never raw user input.
+ * **Reach for this rarely.** kerf escapes automatically everywhere else, so a lot
+ * of `raw()` in a codebase is usually a sign the wrong tool is being used — the
+ * common cases have a safer, first-class answer:
+ *  - Interpolating dynamic text/attributes? Plain JSX (`<p>{value}</p>`,
+ *    `class={sig}`) already escapes it; you don't need `raw()`.
+ *  - Composing markup? Build a {@link SafeHtml} the normal way — a JSX expression,
+ *    the `html` tagged template (`kerfjs/html`), `each()`, or a component function
+ *    that returns JSX. Those all produce trusted `SafeHtml` without hand-writing
+ *    an HTML string.
+ *  - A genuinely trusted, pre-escaped **dynamic** value (server output, config, a
+ *    hard-coded string)? That's the one legitimate use. The
+ *    `kerfjs/no-raw-with-dynamic-arg` lint rule flags a `raw()` whose argument is
+ *    not a literal — because unsanitized user input is the canonical XSS mistake —
+ *    so acknowledge it with a `// eslint-disable-next-line
+ *    kerfjs/no-raw-with-dynamic-arg` at that call. That explicit override is the
+ *    single sanctioned way to say "I've reviewed this; it's trusted," and it
+ *    leaves a searchable audit trail.
+ *
+ * `raw()` is NOT a sanitizer — it does no escaping. For user-controlled input,
+ * sanitize first (`raw(DOMPurify.sanitize(marked(userMarkdown)))`) or, better,
+ * render it through escaping JSX instead.
  */
-export function trustedRaw(html: string): SafeHtml {
+export function raw(html: string): SafeHtml {
   return new SafeHtml(html);
 }
 

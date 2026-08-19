@@ -35,9 +35,18 @@ Sanitization pipelines (`DOMPurify`, `sanitize-html`, server-rendered trusted co
 - Bare `raw(expr)` calls
 - Member-expression calls `kerf.raw(expr)` and `kerfjs.raw(expr)`
 
-## The blessed escape hatch: `trustedRaw()`
+## The sanctioned escape hatch: an explicit `eslint-disable`
 
-When a dynamic value is genuinely server-trusted — a CSRF token, a trusted `<script src>`, a server-issued id — use `trustedRaw()` (exported from `kerfjs`) instead of `raw()`. It is identical at runtime but is **not** named `raw`, so this rule leaves it alone. That replaces scattered `eslint-disable` comments with one intention-revealing call. `trustedRaw()` is not a sanitizer — only pass values you control, never raw user input.
+There is one sanctioned way to inject a genuinely-trusted dynamic value — a CSRF token, a trusted `<script src>`, a server-issued id, a sanitized Markdown render: call `raw()` and acknowledge it with an inline `// eslint-disable-next-line kerfjs/no-raw-with-dynamic-arg` on that call. The disable comment is the audit marker — it says "a human reviewed this and it's trusted," and it's greppable across the codebase. There is deliberately no separate lint-exempt function; a second name that silently bypasses this rule would remove exactly the audit trail the rule exists to create.
+
+## A lot of `raw()` is a smell
+
+If a codebase reaches for `raw()` often, that's usually a sign the wrong tool is being used. kerf escapes automatically everywhere else, and the common cases have a safer, first-class answer:
+
+- **Interpolating dynamic text or attributes?** Plain JSX escapes it (`<p>{value}</p>`, `class={sig}`) — no `raw()` needed.
+- **Composing markup?** Build a `SafeHtml` the normal way — a JSX expression, the `html` tagged template (`kerfjs/html`), `each()`, or a component function returning JSX. All produce trusted `SafeHtml` without hand-writing an HTML string.
+
+Prefer steering those call sites toward `SafeHtml`/JSX rather than suppressing the warning. Reserve `raw()` (with its `eslint-disable`) for the genuinely-trusted dynamic value that has no first-class form.
 
 ## What this rule does NOT catch
 

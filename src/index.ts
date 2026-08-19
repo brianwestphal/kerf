@@ -11,7 +11,7 @@
 export { attr, type AttrSpec } from './attrSelector.js';
 export { delegate, delegateCapture, type DelegateOptions } from './delegate.js';
 export { each } from './each.js';
-export { Fragment, isSafeHtml, raw, SafeHtml, trustedRaw } from './jsx-runtime.js';
+export { Fragment, isSafeHtml, raw, SafeHtml } from './jsx-runtime.js';
 export { morph } from './morph.js';
 export { mount, type MountResult } from './mount.js';
 export {
