@@ -773,3 +773,140 @@ describe('tooltip()', () => {
     stop2();
   });
 });
+
+describe('confirm / prompt / form — bring-your-own markup (render)', () => {
+  it('confirm render: spreading ok/cancel wires the buttons; default markup is not used', async () => {
+    const p = confirm('Delete?', {
+      render: ({ message, ok, cancel }) => jsx('div', {
+        class: 'my-dialog',
+        children: [
+          jsx('p', { children: message }),
+          jsx('button', { ...cancel, class: 'btn', children: 'No' }),
+          jsx('button', { ...ok, class: 'btn btn-danger', children: 'Yes' }),
+        ],
+      }),
+    });
+    expect(document.querySelector('.my-dialog')).not.toBeNull();
+    expect(document.querySelector('.kerf-confirm')).toBeNull(); // default markup skipped
+    const yes = document.querySelector('.btn-danger') as HTMLElement;
+    expect(yes.getAttribute('data-confirm')).toBe('ok'); // wiring spread through
+    yes.click();
+    await expect(p).resolves.toBe(true);
+
+    const p2 = confirm('Delete?', {
+      render: ({ ok, cancel }) => jsx('div', {
+        children: [
+          jsx('button', { ...cancel, class: 'no-btn', children: 'No' }),
+          jsx('button', { ...ok, children: 'Yes' }),
+        ],
+      }),
+    });
+    (document.querySelector('.no-btn') as HTMLElement).click();
+    await expect(p2).resolves.toBe(false);
+  });
+
+  it('prompt render: input/error/ok wiring — validate blocks in the BYO error slot, then OK resolves', async () => {
+    const p = prompt('Name', {
+      defaultValue: 'seed',
+      validate: (v) => (v.length > 0 ? '' : 'required'),
+      render: ({ message, input, error, ok, cancel }) => jsx('div', {
+        class: 'my-prompt',
+        children: [
+          jsx('label', { children: message }),
+          jsx('input', { ...input, class: 'my-input' }),
+          jsx('span', { ...error, class: 'my-err' }),
+          jsx('button', { ...cancel, class: 'my-cancel', children: 'X' }),
+          jsx('button', { ...ok, class: 'my-ok', children: 'Go' }),
+        ],
+      }),
+    });
+    const input = document.querySelector('.my-input') as HTMLInputElement;
+    expect(input.getAttribute('data-prompt-input')).toBe('');
+    expect(input.value).toBe('seed'); // input attrs (value) spread through
+
+    input.value = '';
+    (document.querySelector('.my-ok') as HTMLElement).click();
+    const err = document.querySelector('.my-err') as HTMLElement;
+    expect(err.hidden).toBe(false);
+    expect(err.textContent).toBe('required');
+    expect(document.querySelector('.my-prompt')).not.toBeNull(); // still open
+
+    input.value = 'ada';
+    (document.querySelector('.my-ok') as HTMLElement).click();
+    await expect(p).resolves.toBe('ada');
+  });
+
+  it('prompt render without an error slot: validate re-focuses without a message (no crash)', async () => {
+    const p = prompt('Name', {
+      validate: (v) => (v ? '' : 'nope'),
+      render: ({ input, ok, cancel }) => jsx('div', {
+        children: [
+          jsx('input', { ...input, class: 'bare-input' }),
+          jsx('button', { ...cancel, class: 'bc', children: 'X' }),
+          jsx('button', { ...ok, class: 'bo', children: 'Go' }),
+        ],
+      }),
+    });
+    (document.querySelector('.bo') as HTMLElement).click(); // empty → validate blocks
+    expect(document.querySelector('.bare-input')).not.toBeNull(); // still open, no throw
+
+    (document.querySelector('.bare-input') as HTMLInputElement).value = 'ada';
+    (document.querySelector('.bo') as HTMLElement).click();
+    await expect(p).resolves.toBe('ada');
+  });
+
+  it('form render: per-field input/error wiring, validate blocks in the BYO slot, resolves a record', async () => {
+    const p = form(
+      [
+        { name: 'host', label: 'Host', defaultValue: 'localhost' },
+        { name: 'token', validate: (v) => (v.length >= 3 ? '' : 'short') },
+      ],
+      {
+        render: ({ fields, ok, cancel }) => jsx('div', {
+          class: 'my-form',
+          children: [
+            ...fields.map((f) => jsx('div', {
+              children: [
+                jsx('label', { children: f.label }),
+                jsx('input', { ...f.input, class: `fi-${f.name}` }),
+                jsx('span', { ...f.error, class: `fe-${f.name}` }),
+              ],
+            })),
+            jsx('button', { ...cancel, class: 'fc', children: 'X' }),
+            jsx('button', { ...ok, class: 'fo', children: 'Go' }),
+          ],
+        }),
+      },
+    );
+    const host = document.querySelector('.fi-host') as HTMLInputElement;
+    expect(host.value).toBe('localhost');
+    expect(host.getAttribute('data-field')).toBe('host');
+
+    (document.querySelector('.fo') as HTMLElement).click(); // token empty → blocks
+    const tErr = document.querySelector('.fe-token') as HTMLElement;
+    expect(tErr.hidden).toBe(false);
+    expect(tErr.textContent).toBe('short');
+
+    (document.querySelector('.fi-token') as HTMLInputElement).value = 'abcd';
+    (document.querySelector('.fo') as HTMLElement).click();
+    await expect(p).resolves.toEqual({ host: 'localhost', token: 'abcd' });
+  });
+
+  it('form render without error slots: blocks + focuses first invalid, then resolves (no crash)', async () => {
+    const p = form([{ name: 'a', validate: (v) => (v ? '' : 'req') }], {
+      render: ({ fields, ok, cancel }) => jsx('div', {
+        children: [
+          ...fields.map((f) => jsx('input', { ...f.input, class: `bare-${f.name}` })),
+          jsx('button', { ...cancel, class: 'bfc', children: 'X' }),
+          jsx('button', { ...ok, class: 'bfo', children: 'Go' }),
+        ],
+      }),
+    });
+    (document.querySelector('.bfo') as HTMLElement).click(); // empty → blocks, no error slot
+    expect(document.querySelector('.bare-a')).not.toBeNull(); // still open
+
+    (document.querySelector('.bare-a') as HTMLInputElement).value = 'x';
+    (document.querySelector('.bfo') as HTMLElement).click();
+    await expect(p).resolves.toEqual({ a: 'x' });
+  });
+});

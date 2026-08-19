@@ -291,6 +291,69 @@
           "branch": "main"
         }
       ]
+    },
+    {
+      "tool": {
+        "driver": {
+          "name": "Hot Sheet",
+          "rules": [
+            {
+              "id": "review-note",
+              "name": "ReviewNote",
+              "shortDescription": {
+                "text": "AI-authored, line-anchored review note."
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "review-note",
+          "ruleIndex": 0,
+          "kind": "informational",
+          "level": "none",
+          "guid": "mszsnm5xs9u27k44",
+          "message": {
+            "text": "The BYO render API is small because the dialogs were already wired by DATA ATTRIBUTE, not by class — render only swaps the body; nothing in the resolve/validate path changed.\n\nconfirm/prompt/form delegate on [data-confirm] / [data-prompt] / [data-form] and look up fields via [data-prompt-input] / [data-field] / [data-field-error]. So supporting caller-supplied markup needed exactly three things, none of them touching the promise/validate/Enter logic: (1) branch body to the caller's render(slots) when provided; (2) hand the caller the wiring as spreadable attribute bags (ok: { 'data-confirm': 'ok' }, etc.) so their elements carry the same hooks; (3) move initialFocus from the kerf class selectors (.kerf-confirm__ok) to the data-attribute selectors ([data-confirm=\"ok\"]) so focus lands in BYO markup too. The one behavioral softening: the error slot became optional (nullable-guarded in prompt/form) because a design-system dialog without validate shouldn't be forced to include an error element — covered by the \"render without an error slot\" tests, which exercise the null arms the default-markup tests can't reach.\n",
+            "markdown": "The BYO `render` API is small because the dialogs were already wired by DATA ATTRIBUTE, not by class — `render` only swaps the body; nothing in the resolve/validate path changed.\n\n`confirm`/`prompt`/`form` delegate on `[data-confirm]` / `[data-prompt]` / `[data-form]` and look up fields via `[data-prompt-input]` / `[data-field]` / `[data-field-error]`. So supporting caller-supplied markup needed exactly three things, none of them touching the promise/validate/Enter logic: (1) branch `body` to the caller's `render(slots)` when provided; (2) hand the caller the wiring as spreadable attribute bags (`ok: { 'data-confirm': 'ok' }`, etc.) so their elements carry the same hooks; (3) move `initialFocus` from the kerf class selectors (`.kerf-confirm__ok`) to the data-attribute selectors (`[data-confirm=\"ok\"]`) so focus lands in BYO markup too. The one behavioral softening: the error slot became optional (nullable-guarded in prompt/form) because a design-system dialog without `validate` shouldn't be forced to include an error element — covered by the \"render without an error slot\" tests, which exercise the null arms the default-markup tests can't reach.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/overlay.ts"
+                },
+                "region": {
+                  "startLine": 265,
+                  "endLine": 267,
+                  "snippet": {
+                    "text": "  const body: OverlayContent = render !== undefined\n    ? render({ message, ok: { 'data-confirm': 'ok' }, cancel: { 'data-confirm': 'cancel' } })\n    : jsx('div', {"
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "tags": [
+              "rationale"
+            ]
+          },
+          "workItemUris": [
+            "KF-490"
+          ],
+          "partialFingerprints": {
+            "prNoteAnchor/v1": "0265eaa23c235c89e7ffeb95b301a036"
+          }
+        }
+      ],
+      "versionControlProvenance": [
+        {
+          "repositoryUri": "git@github.com:brianwestphal/kerf.git",
+          "revisionId": "e2f25d1ce8e9454aa841b0b2cba282f56008160a",
+          "branch": "main"
+        }
+      ]
     }
   ]
 }

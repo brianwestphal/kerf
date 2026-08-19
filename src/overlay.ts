@@ -208,6 +208,20 @@ export function overlay(content: OverlayContent, options: OverlayOptions = {}): 
   return { el: wrapper, close, result };
 }
 
+/**
+ * Wiring slots passed to a {@link ConfirmOptions.render} — spread `ok` / `cancel`
+ * onto your own clickable elements so `confirm()` still resolves them (they are
+ * `data-confirm` attribute bags). `message` is the raw message (escape it by
+ * interpolating through JSX).
+ */
+export interface ConfirmRenderSlots {
+  message: string;
+  /** Spread onto the confirm control. */
+  ok: Record<string, string>;
+  /** Spread onto the cancel control. */
+  cancel: Record<string, string>;
+}
+
 /** Options for {@link confirm}. */
 export interface ConfirmOptions {
   /** Where to append the overlay. Default `document.body`. */
@@ -222,13 +236,20 @@ export interface ConfirmOptions {
   cancelText?: string;
   /** Add a `kerf-confirm--danger` class to the wrapper for destructive actions. */
   danger?: boolean;
+  /**
+   * Bring your own markup (design-system dialogs): return the full dialog body,
+   * spreading the provided `ok`/`cancel` wiring onto your buttons. Overrides the
+   * default two-button markup; `confirm()` keeps owning dismiss / focus-trap /
+   * focus-restore and still resolves `true`/`false` for OK/Cancel/dismissal.
+   */
+  render?: (slots: ConfirmRenderSlots) => OverlayContent;
 }
 
 /**
  * A promise-based `window.confirm` replacement (that global is a no-op in Tauri
  * webviews). Renders a two-button dialog and resolves `true` for OK, `false`
  * for Cancel or any dismissal (Escape / backdrop). Message + labels are
- * auto-escaped (rendered through the JSX runtime).
+ * auto-escaped (rendered through the JSX runtime). Pass `render` for your own markup.
  */
 export function confirm(message: string, options: ConfirmOptions = {}): Promise<boolean> {
   const {
@@ -238,33 +259,36 @@ export function confirm(message: string, options: ConfirmOptions = {}): Promise<
     okText = 'OK',
     cancelText = 'Cancel',
     danger = false,
+    render,
   } = options;
 
-  const body: SafeHtml = jsx('div', {
-    class: 'kerf-confirm',
-    children: [
-      title !== undefined ? jsx('h2', { class: 'kerf-confirm__title', children: title }) : '',
-      jsx('p', { class: 'kerf-confirm__message', children: message }),
-      jsx('div', {
-        class: 'kerf-confirm__actions',
-        children: [
-          jsx('button', { type: 'button', 'data-confirm': 'cancel', children: cancelText }),
-          jsx('button', {
-            type: 'button',
-            'data-confirm': 'ok',
-            class: 'kerf-confirm__ok',
-            children: okText,
-          }),
-        ],
-      }),
-    ],
-  });
+  const body: OverlayContent = render !== undefined
+    ? render({ message, ok: { 'data-confirm': 'ok' }, cancel: { 'data-confirm': 'cancel' } })
+    : jsx('div', {
+      class: 'kerf-confirm',
+      children: [
+        title !== undefined ? jsx('h2', { class: 'kerf-confirm__title', children: title }) : '',
+        jsx('p', { class: 'kerf-confirm__message', children: message }),
+        jsx('div', {
+          class: 'kerf-confirm__actions',
+          children: [
+            jsx('button', { type: 'button', 'data-confirm': 'cancel', children: cancelText }),
+            jsx('button', {
+              type: 'button',
+              'data-confirm': 'ok',
+              class: 'kerf-confirm__ok',
+              children: okText,
+            }),
+          ],
+        }),
+      ],
+    });
 
   const handle = overlay(body, {
     container,
     className: danger ? `${className} kerf-confirm--danger` : className,
     dismiss: ['escape', 'backdrop'],
-    initialFocus: '.kerf-confirm__ok',
+    initialFocus: '[data-confirm="ok"]',
     trap: true,
   });
 
@@ -302,6 +326,27 @@ export interface PromptOptions {
   cancelText?: string;
   /** Block OK while this returns an error string; the message shows inline. */
   validate?: FieldValidator;
+  /**
+   * Bring your own markup: return the full dialog body, spreading the provided
+   * `input` (the text field), `ok`/`cancel` (buttons), and optional `error` (the
+   * inline-error slot) wiring. `prompt()` still reads the input, runs `validate`,
+   * submits on Enter, and owns dismiss / focus. If you omit the `error` slot,
+   * `validate` simply re-focuses the input without an inline message.
+   */
+  render?: (slots: PromptRenderSlots) => OverlayContent;
+}
+
+/** Wiring slots for a {@link PromptOptions.render} — spread each onto your own markup. */
+export interface PromptRenderSlots {
+  message: string;
+  /** Spread onto your `<input>` — carries the marker, `type`, `value`, and `placeholder`. */
+  input: Record<string, string>;
+  /** Spread onto your inline-error element (optional). */
+  error: Record<string, string>;
+  /** Spread onto the confirm control. */
+  ok: Record<string, string>;
+  /** Spread onto the cancel control. */
+  cancel: Record<string, string>;
 }
 
 /**
@@ -309,7 +354,8 @@ export interface PromptOptions {
  * webviews). Renders a one-field dialog and resolves the entered **string** on OK
  * (an empty string is a valid result) or `null` on Cancel / dismissal. Enter in
  * the input submits. `message`, the default value, and labels are auto-escaped
- * (rendered through the JSX runtime). Optional `validate` blocks OK inline.
+ * (rendered through the JSX runtime). Optional `validate` blocks OK inline. Pass
+ * `render` for your own markup.
  */
 export function prompt(message: string, options: PromptOptions = {}): Promise<string | null> {
   const {
@@ -322,56 +368,67 @@ export function prompt(message: string, options: PromptOptions = {}): Promise<st
     okText = 'OK',
     cancelText = 'Cancel',
     validate,
+    render,
   } = options;
 
-  const body: SafeHtml = jsx('div', {
-    class: 'kerf-prompt',
-    children: [
-      title !== undefined ? jsx('h2', { class: 'kerf-prompt__title', children: title }) : '',
-      jsx('label', { class: 'kerf-prompt__message', children: message }),
-      jsx('input', {
-        class: 'kerf-prompt__input',
-        type: inputType,
-        value: defaultValue,
-        ...(placeholder !== undefined ? { placeholder } : {}),
-        'data-prompt-input': '',
-      }),
-      jsx('p', { class: 'kerf-prompt__error', 'data-prompt-error': '', children: '' }),
-      jsx('div', {
-        class: 'kerf-prompt__actions',
-        children: [
-          jsx('button', { type: 'button', 'data-prompt': 'cancel', children: cancelText }),
-          jsx('button', {
-            type: 'button',
-            'data-prompt': 'ok',
-            class: 'kerf-prompt__ok',
-            children: okText,
-          }),
-        ],
-      }),
-    ],
-  });
+  const inputAttrs: Record<string, string> = {
+    'data-prompt-input': '',
+    type: inputType,
+    value: defaultValue,
+    ...(placeholder !== undefined ? { placeholder } : {}),
+  };
+
+  const body: OverlayContent = render !== undefined
+    ? render({
+      message,
+      input: inputAttrs,
+      error: { 'data-prompt-error': '' },
+      ok: { 'data-prompt': 'ok' },
+      cancel: { 'data-prompt': 'cancel' },
+    })
+    : jsx('div', {
+      class: 'kerf-prompt',
+      children: [
+        title !== undefined ? jsx('h2', { class: 'kerf-prompt__title', children: title }) : '',
+        jsx('label', { class: 'kerf-prompt__message', children: message }),
+        jsx('input', { class: 'kerf-prompt__input', ...inputAttrs }),
+        jsx('p', { class: 'kerf-prompt__error', 'data-prompt-error': '', children: '' }),
+        jsx('div', {
+          class: 'kerf-prompt__actions',
+          children: [
+            jsx('button', { type: 'button', 'data-prompt': 'cancel', children: cancelText }),
+            jsx('button', {
+              type: 'button',
+              'data-prompt': 'ok',
+              class: 'kerf-prompt__ok',
+              children: okText,
+            }),
+          ],
+        }),
+      ],
+    });
 
   const handle = overlay(body, {
     container,
     className,
     dismiss: ['escape', 'backdrop'],
-    initialFocus: '.kerf-prompt__input',
+    initialFocus: '[data-prompt-input]',
     trap: true,
   });
 
-  // Both elements are rendered unconditionally into this call's own wrapper, so
-  // the queries cannot miss (asserted non-null rather than guarded).
+  // The input is required; the error slot is optional (BYO markup may omit it).
   const input = handle.el.querySelector<HTMLInputElement>('[data-prompt-input]')!;
-  const errorEl = handle.el.querySelector<HTMLElement>('[data-prompt-error]')!;
-  errorEl.hidden = true;
+  const errorEl = handle.el.querySelector<HTMLElement>('[data-prompt-error]');
+  if (errorEl !== null) errorEl.hidden = true;
 
   function attemptOk(): void {
     const value = input.value;
     const error = validate?.(value);
     if (typeof error === 'string' && error.length > 0) {
-      errorEl.textContent = error;
-      errorEl.hidden = false;
+      if (errorEl !== null) {
+        errorEl.textContent = error;
+        errorEl.hidden = false;
+      }
       input.focus();
       return;
     }
@@ -410,6 +467,25 @@ export interface FormField {
   validate?: FieldValidator;
 }
 
+/** One field's wiring in a {@link FormRenderSlots} — spread `input`/`error` onto your markup. */
+export interface FormRenderField {
+  name: string;
+  label: string;
+  /** Spread onto your `<input>` — carries the marker, `name`, `type`, `value`, `placeholder`. */
+  input: Record<string, string>;
+  /** Spread onto your inline-error element (optional). */
+  error: Record<string, string>;
+}
+
+/** Wiring slots for a {@link FormOptions.render}. */
+export interface FormRenderSlots {
+  fields: FormRenderField[];
+  /** Spread onto the confirm control. */
+  ok: Record<string, string>;
+  /** Spread onto the cancel control. */
+  cancel: Record<string, string>;
+}
+
 /** Options for {@link form}. */
 export interface FormOptions {
   /** Where to append the overlay. Default `document.body`. */
@@ -422,6 +498,14 @@ export interface FormOptions {
   okText?: string;
   /** Cancel button label. Default `'Cancel'`. */
   cancelText?: string;
+  /**
+   * Bring your own markup: return the full form body, laying out `slots.fields`
+   * (each with `input`/`error` wiring to spread) and the `ok`/`cancel` buttons.
+   * `form()` still reads each input, runs per-field `validate`, focuses the first
+   * invalid field, submits on Enter, and owns dismiss / focus. Omit a field's
+   * `error` slot to skip its inline message.
+   */
+  render?: (slots: FormRenderSlots) => OverlayContent;
 }
 
 /**
@@ -435,67 +519,78 @@ export function form(
   fields: readonly FormField[],
   options: FormOptions = {},
 ): Promise<Record<string, string> | null> {
-  const { container, className = 'kerf-overlay', title, okText = 'OK', cancelText = 'Cancel' } = options;
+  const { container, className = 'kerf-overlay', title, okText = 'OK', cancelText = 'Cancel', render } = options;
 
-  const body: SafeHtml = jsx('div', {
-    class: 'kerf-form',
-    children: [
-      title !== undefined ? jsx('h2', { class: 'kerf-form__title', children: title }) : '',
-      ...fields.map((field) =>
+  const fieldAttrs = (field: FormField): Record<string, string> => ({
+    'data-field': field.name,
+    name: field.name,
+    type: field.type ?? 'text',
+    value: field.defaultValue ?? '',
+    ...(field.placeholder !== undefined ? { placeholder: field.placeholder } : {}),
+  });
+
+  const body: OverlayContent = render !== undefined
+    ? render({
+      fields: fields.map((field) => ({
+        name: field.name,
+        label: field.label ?? field.name,
+        input: fieldAttrs(field),
+        error: { 'data-field-error': field.name },
+      })),
+      ok: { 'data-form': 'ok' },
+      cancel: { 'data-form': 'cancel' },
+    })
+    : jsx('div', {
+      class: 'kerf-form',
+      children: [
+        title !== undefined ? jsx('h2', { class: 'kerf-form__title', children: title }) : '',
+        ...fields.map((field) =>
+          jsx('div', {
+            class: 'kerf-form__field',
+            children: [
+              jsx('label', { class: 'kerf-form__label', children: field.label ?? field.name }),
+              jsx('input', { class: 'kerf-form__input', ...fieldAttrs(field) }),
+              jsx('p', { class: 'kerf-form__error', 'data-field-error': field.name, children: '' }),
+            ],
+          }),
+        ),
         jsx('div', {
-          class: 'kerf-form__field',
+          class: 'kerf-form__actions',
           children: [
-            jsx('label', { class: 'kerf-form__label', children: field.label ?? field.name }),
-            jsx('input', {
-              class: 'kerf-form__input',
-              type: field.type ?? 'text',
-              name: field.name,
-              value: field.defaultValue ?? '',
-              ...(field.placeholder !== undefined ? { placeholder: field.placeholder } : {}),
-              'data-field': field.name,
-            }),
-            jsx('p', {
-              class: 'kerf-form__error',
-              'data-field-error': field.name,
-              children: '',
+            jsx('button', { type: 'button', 'data-form': 'cancel', children: cancelText }),
+            jsx('button', {
+              type: 'button',
+              'data-form': 'ok',
+              class: 'kerf-form__ok',
+              children: okText,
             }),
           ],
         }),
-      ),
-      jsx('div', {
-        class: 'kerf-form__actions',
-        children: [
-          jsx('button', { type: 'button', 'data-form': 'cancel', children: cancelText }),
-          jsx('button', {
-            type: 'button',
-            'data-form': 'ok',
-            class: 'kerf-form__ok',
-            children: okText,
-          }),
-        ],
-      }),
-    ],
-  });
+      ],
+    });
 
   const handle = overlay(body, {
     container,
     className,
     dismiss: ['escape', 'backdrop'],
-    initialFocus: '.kerf-form__input',
+    initialFocus: '[data-field]',
     trap: true,
   });
 
-  // Look up a field's input / error node by attribute value (no selector
-  // escaping needed — field names are developer-supplied identifiers). Every
-  // field renders both nodes into this wrapper, so the lookup cannot miss.
+  // Inputs are required; error nodes are optional (BYO markup may omit them).
   const byAttr = <E extends HTMLElement>(attr: string, name: string): E =>
     Array.from(handle.el.querySelectorAll<E>(`[${attr}]`)).find(
       (el) => el.getAttribute(attr) === name,
     )!;
+  const errorFor = (name: string): HTMLElement | null =>
+    Array.from(handle.el.querySelectorAll<HTMLElement>('[data-field-error]')).find(
+      (el) => el.getAttribute('data-field-error') === name,
+    ) ?? null;
 
   // Start with every field's error hidden.
   for (const field of fields) {
-    byAttr<HTMLElement>('data-field-error', field.name).hidden = true;
+    const errorEl = errorFor(field.name);
+    if (errorEl !== null) errorEl.hidden = true;
   }
 
   function attemptOk(): void {
@@ -506,12 +601,14 @@ export function form(
       const value = el.value;
       record[field.name] = value;
       const error = field.validate?.(value);
-      const errorEl = byAttr<HTMLElement>('data-field-error', field.name);
+      const errorEl = errorFor(field.name);
       if (typeof error === 'string' && error.length > 0) {
-        errorEl.textContent = error;
-        errorEl.hidden = false;
+        if (errorEl !== null) {
+          errorEl.textContent = error;
+          errorEl.hidden = false;
+        }
         if (firstInvalid === null) firstInvalid = el;
-      } else {
+      } else if (errorEl !== null) {
         errorEl.hidden = true;
       }
     }

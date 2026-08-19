@@ -567,6 +567,25 @@ if (creds !== null) connect(creds.host, creds.token);
 
 The two-or-three-input generalization of `prompt()`: renders one labeled input per [`FormField`](#overlay-types) and resolves a `Record<name, value>` on OK (after **every** field's `validate` passes) or `null` on Cancel / dismissal. Enter in any field submits; the first invalid field is focused. Each `FormField` has `name` (the record key + input `name`), optional `label` (defaults to `name`), `defaultValue`, `placeholder`, `type` (default `'text'`), and `validate`. Options ([`FormOptions`](#overlay-types)): `title`, `okText` / `cancelText`, `container` / `className`.
 
+### Bring your own markup (`render`) — design-system dialogs
+
+`confirm` / `prompt` / `form` render kerf's own button/field DOM with kerf class names. When you have a **design system** and want its markup + classes, pass a `render` option: it returns the full dialog body, and you spread the provided **wiring slots** onto your own elements. kerf keeps owning the promise, `validate`, Enter-submit, dismiss, focus-trap, and focus-restore — you only own the look. (The generic `overlay()` is the other route: mount any markup and drive dismiss/focus yourself.)
+
+```tsx
+// confirm with your design system's buttons — { message, ok, cancel } are attribute bags
+await confirm('Delete this file?', {
+  render: ({ message, ok, cancel }) => (
+    <div class="modal">
+      <p>{message}</p>
+      <button {...cancel} class="btn btn-sm">No</button>
+      <button {...ok} class="btn btn-danger">Yes</button>
+    </div>
+  ),
+});
+```
+
+`prompt`'s slots are `{ message, input, error, ok, cancel }` (spread `input` onto your `<input>`, `error` optional); `form`'s are `{ fields, ok, cancel }` where each `fields[i]` is `{ name, label, input, error }`. Omitting an `error` slot just skips that inline message — `validate` still blocks and focuses. Slot types: [`ConfirmRenderSlots`](#overlay-types), [`PromptRenderSlots`](#overlay-types), [`FormRenderSlots`](#overlay-types) / [`FormRenderField`](#overlay-types).
+
 ### `popover(anchor, content, options?): OverlayHandle`
 
 ```ts
@@ -605,7 +624,7 @@ Shows a non-modal, auto-dismissing notification, stacked in a shared body-level 
 
 ### Overlay types
 
-`OverlayHandle`, `OverlayContent`, `OverlayOptions`, `DismissTrigger`, `ConfirmOptions`, `PromptOptions`, `FormField`, `FormOptions`, `FieldValidator`, `PopoverOptions`, `PopoverPlacement`, `AnchorPositionOptions`, `TooltipContent`, `TooltipOptions`, `ToastContent`, `ToastOptions`, `ToastVariant`, and `ToastHandle` are all exported from `kerfjs/overlay` for annotating handles, content, and option bags.
+`OverlayHandle`, `OverlayContent`, `OverlayOptions`, `DismissTrigger`, `ConfirmOptions`, `ConfirmRenderSlots`, `PromptOptions`, `PromptRenderSlots`, `FormField`, `FormOptions`, `FormRenderSlots`, `FormRenderField`, `FieldValidator`, `PopoverOptions`, `PopoverPlacement`, `AnchorPositionOptions`, `TooltipContent`, `TooltipOptions`, `ToastContent`, `ToastOptions`, `ToastVariant`, and `ToastHandle` are all exported from `kerfjs/overlay` for annotating handles, content, and option bags.
 
 ## 8.9 Dispose scopes — `kerfjs/scope` subpath
 
