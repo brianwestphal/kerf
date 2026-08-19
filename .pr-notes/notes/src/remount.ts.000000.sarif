@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "Hot Sheet",
+          "rules": [
+            {
+              "id": "review-note",
+              "name": "ReviewNote",
+              "shortDescription": {
+                "text": "AI-authored, line-anchored review note."
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "review-note",
+          "ruleIndex": 0,
+          "kind": "informational",
+          "level": "none",
+          "guid": "mszhpy050eitpidb",
+          "message": {
+            "text": "The outer key-watching effect and the inner mount() effect are independent — which is exactly why remountOn remounts on the KEY and not on the content.\n\n@preact/signals-core nested effect() calls do not compose: when mount(parent, render) creates its own effect inside this outer effect's run, render's signal reads attach to that inner effect, not the outer one. So the outer effect's only tracked dependency is readKey() — a content signal the render reads updates in place through the inner mount's fine-grained binding, without tripping a remount. The test \"renders once, and on an unchanged key leaves the subtree (its DOM identity) alone\" proves it: a content-signal write mutates the same DOM node; only a key change swaps the node.\n\nTwo consequences worth noting for a future reader:\n- Independence also means the inner mount is NOT auto-disposed when the outer effect re-runs — tearDown() must dispose it explicitly (and stopWatch() + tearDown() on the returned disposer), or the old subtree's effects leak.\n- If render also reads the key (common), both effects subscribe to it; the outer runs first and disposes the inner before it can redundantly morph, so the extra subscription is harmless. Object.is (not ===) guards the comparison so a NaN key doesn't remount forever.\n",
+            "markdown": "The outer key-watching effect and the inner `mount()` effect are independent — which is exactly why `remountOn` remounts on the KEY and not on the content.\n\n`@preact/signals-core` nested `effect()` calls do not compose: when `mount(parent, render)` creates its own effect inside this outer effect's run, `render`'s signal reads attach to that inner effect, not the outer one. So the outer effect's only tracked dependency is `readKey()` — a content signal the render reads updates in place through the inner mount's fine-grained binding, without tripping a remount. The test \"renders once, and on an unchanged key leaves the subtree (its DOM identity) alone\" proves it: a content-signal write mutates the same DOM node; only a key change swaps the node.\n\nTwo consequences worth noting for a future reader:\n- Independence also means the inner mount is NOT auto-disposed when the outer effect re-runs — `tearDown()` must dispose it explicitly (and `stopWatch()` + `tearDown()` on the returned disposer), or the old subtree's effects leak.\n- If `render` also reads the key (common), both effects subscribe to it; the outer runs first and disposes the inner before it can redundantly morph, so the extra subscription is harmless. `Object.is` (not `===`) guards the comparison so a `NaN` key doesn't remount forever.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/remount.ts"
+                },
+                "region": {
+                  "startLine": 56,
+                  "endLine": 63,
+                  "snippet": {
+                    "text": "  const stopWatch = effect(() => {\n    const next = readKey();\n    if (!Object.is(next, currentKey)) {\n      currentKey = next;\n      tearDown();\n      disposeMount = mount(parent, render);\n    }\n  });"
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "tags": [
+              "rationale"
+            ]
+          },
+          "workItemUris": [
+            "KF-482"
+          ],
+          "partialFingerprints": {
+            "prNoteAnchor/v1": "65aedbeeb5f257c1cc0ae42ac082b948"
+          }
+        }
+      ],
+      "versionControlProvenance": [
+        {
+          "repositoryUri": "git@github.com:brianwestphal/kerf.git",
+          "revisionId": "6ed8f063a11b63ebc552666d305e2747e65271ca",
+          "branch": "main"
+        }
+      ]
+    }
+  ]
+}

@@ -88,6 +88,10 @@
       "types": "./dist/timing.d.ts",
       "import": "./dist/timing.js"
     },
+    "./remount": {
+      "types": "./dist/remount.d.ts",
+      "import": "./dist/remount.js"
+    },
     "./ai/*": "./ai/*"
   },
   "files": [

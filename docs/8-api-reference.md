@@ -722,3 +722,22 @@ A read-only signal that trails `source` by `ms` (trailing-edge): writes to `sour
 ### Timing types
 
 `Debounced<A>` and `Throttled<A>` are exported from `kerfjs/timing` for annotating the returned callables.
+
+## 8.13 Keyed subtree replacement — `kerfjs/remount` subpath
+
+Optional subpath (`import { remountOn } from 'kerfjs/remount'`) for the opposite of kerf's morph-by-default: **replace** a subtree wholesale when a key changes instead of morphing it in place. The folk pattern is a monotonic counter spent as `data-key={`gen-${n}`}` on a `data-morph-skip` div; `remountOn` names it. Reach for it when a library-owned subtree (a highlighted diff, a chart, an editor) must be torn down and rebuilt on fresh DOM so the library re-initializes rather than the morph patching stale internals underneath it. See `docs/4-render.md` §4.3.
+
+### `remountOn<K>(parent, key, render): () => void`
+
+```ts
+// Replace the diff pane whenever the file (or diff mode) changes:
+const stop = remountOn(paneEl, () => fileId.value, () => <DiffView id={fileId.value} />);
+// same key  → the subtree is left entirely alone (no morph, no rebuild)
+// key change → the old subtree + its mounts are disposed, a fresh one is mounted
+```
+
+`remountOn` **owns `parent`'s children** (like `mount()` / `bindList`). It watches `key` — a `ReadonlySignal<K>` **or** a thunk `() => K` that reads signals — and, whenever the key changes (by `Object.is`), disposes the current subtree (and its nested mounts) and renders a fresh one via `mount(parent, render)`. An unchanged key (including a thunk whose inputs moved but whose value stayed equal) leaves the subtree untouched, so per-row reactivity inside `render` still updates in place. Returns a disposer that tears down the current subtree and stops watching. Pairs with `imperative` (`kerfjs/imperative`, §8.14) — put the widget's setup/teardown on the fresh node, and `remountOn` drives its re-creation. Options type: [`RemountKey<K>`](#remount-types).
+
+### Remount types
+
+`RemountKey<K>` (`ReadonlySignal<K> | (() => K)`) is exported from `kerfjs/remount`.

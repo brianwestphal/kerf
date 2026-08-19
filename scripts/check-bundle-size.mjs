@@ -171,6 +171,17 @@ const BUDGETS = [
     `,
   },
   {
+    // ISOLATED size — remountOn mounts each fresh subtree, so it pulls in the
+    // render core; marginal cost for an app already using kerf is ~1 KB.
+    name: 'remount',
+    budgetKb: 10.4,
+    description: 'the remount subpath (remountOn — keyed subtree replacement) — includes shared core',
+    entry: `
+      import { remountOn } from '${DIST}/remount.js';
+      globalThis.__k = remountOn;
+    `,
+  },
+  {
     // Guards the KF-429 invariant directly: with the dev entry absent, NO
     // dev-warning code may appear in a production bundle. The size budget
     // above would catch a large regression; this catches any at all.
