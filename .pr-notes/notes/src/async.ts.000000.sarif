@@ -64,6 +64,69 @@
           "branch": "main"
         }
       ]
+    },
+    {
+      "tool": {
+        "driver": {
+          "name": "Hot Sheet",
+          "rules": [
+            {
+              "id": "review-note",
+              "name": "ReviewNote",
+              "shortDescription": {
+                "text": "AI-authored, line-anchored review note."
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "review-note",
+          "ruleIndex": 0,
+          "kind": "informational",
+          "level": "none",
+          "guid": "mszrv1zeuj9r72r6",
+          "message": {
+            "text": "changed() guards undefined transitions by reference and only calls the user's equals with two DEFINED values — so equals: (a, b) => a.n === b.n never has to handle undefined.\n\nvalue.revision is the skip-redundant-paint hook, so its bump decision runs the caller-supplied equals. But data is T | undefined (idle, cleared cache key, reset), and equals is typed (a: T, b: T) => boolean — calling it with undefined would both violate the type and force every caller to null-check. The lastData === undefined || next === undefined ? lastData !== next : !eq(...) split resolves undefined→defined, defined→undefined, and undefined→undefined by identity (so idle→idle and same-cache-miss don't bump), and reserves eq for the defined→defined case the caller actually reasons about. The tests \"revision bumps only when data changes (Object.is by default)\" and \"a custom equals dedups structurally-equal payloads\" cover the defined path; \"reset() clears the cache\" exercises the defined→undefined transition.\n",
+            "markdown": "`changed()` guards undefined transitions by reference and only calls the user's `equals` with two DEFINED values — so `equals: (a, b) => a.n === b.n` never has to handle `undefined`.\n\n`value.revision` is the skip-redundant-paint hook, so its bump decision runs the caller-supplied `equals`. But `data` is `T | undefined` (idle, cleared cache key, reset), and `equals` is typed `(a: T, b: T) => boolean` — calling it with `undefined` would both violate the type and force every caller to null-check. The `lastData === undefined || next === undefined ? lastData !== next : !eq(...)` split resolves undefined→defined, defined→undefined, and undefined→undefined by identity (so idle→idle and same-cache-miss don't bump), and reserves `eq` for the defined→defined case the caller actually reasons about. The tests \"revision bumps only when data changes (Object.is by default)\" and \"a custom equals dedups structurally-equal payloads\" cover the defined path; \"reset() clears the cache\" exercises the defined→undefined transition.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/async.ts"
+                },
+                "region": {
+                  "startLine": 135,
+                  "endLine": 137,
+                  "snippet": {
+                    "text": "  const changed = (next: T | undefined): boolean =>\n    // undefined transitions are handled by reference; two defined values by `eq`.\n    lastData === undefined || next === undefined ? lastData !== next : !eq(lastData, next);"
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "tags": [
+              "rationale"
+            ]
+          },
+          "workItemUris": [
+            "KF-489"
+          ],
+          "partialFingerprints": {
+            "prNoteAnchor/v1": "22a43404d7eb017b79698f2be4f7c0f9"
+          }
+        }
+      ],
+      "versionControlProvenance": [
+        {
+          "repositoryUri": "git@github.com:brianwestphal/kerf.git",
+          "revisionId": "e6548767c57e2f22401e0e223294644055b19add",
+          "branch": "main"
+        }
+      ]
     }
   ]
 }

@@ -16,7 +16,7 @@ function deferred<T>() {
 describe('resource()', () => {
   it('starts idle', () => {
     const r = resource<number>();
-    expect(r.value).toEqual({ status: 'idle', data: undefined, error: undefined, progress: undefined, input: undefined });
+    expect(r.value).toEqual({ status: 'idle', data: undefined, error: undefined, progress: undefined, input: undefined, revision: 0 });
   });
 
   it('run(): idle → running → completed with data, and resolves the data', async () => {
@@ -82,7 +82,7 @@ describe('resource()', () => {
     expect(r.value.status).toBe('idle');
     d.resolve(9);
     await p;
-    expect(r.value).toEqual({ status: 'idle', data: undefined, error: undefined, progress: undefined, input: undefined });
+    expect(r.value).toEqual({ status: 'idle', data: undefined, error: undefined, progress: undefined, input: undefined, revision: 0 });
   });
 
   it('progress: the fetcher can report while running; cleared on completion; a stale report is ignored', async () => {
@@ -181,6 +181,87 @@ describe('resource()', () => {
       expect(r.value.input).toBe('y');
       r.reset();
       expect(r.value.input).toBeUndefined();
+    });
+  });
+
+  describe('per-input cache (cacheKey) + revision', () => {
+    it('caches data per input key: paints the cached slice instantly on return, and clears for a never-loaded key', async () => {
+      const r = resource<string, string>({ cacheKey: (id) => id });
+      await r.run('a', () => Promise.resolve('DATA-A'));
+      expect(r.value.data).toBe('DATA-A');
+
+      // Switch to an uncached key: no stale 'a' data leaks while 'b' loads.
+      const dB = deferred<string>();
+      const pB = r.run('b', () => dB.promise);
+      expect(r.value.status).toBe('running');
+      expect(r.value.data).toBeUndefined();
+      dB.resolve('DATA-B');
+      await pB;
+      expect(r.value.data).toBe('DATA-B');
+
+      // Switch back to 'a': its cached value paints immediately (still running).
+      const dA2 = deferred<string>();
+      const pA2 = r.run('a', () => dA2.promise);
+      expect(r.value.status).toBe('running');
+      expect(r.value.data).toBe('DATA-A'); // instant from cache
+      dA2.resolve('DATA-A2');
+      await pA2;
+      expect(r.value.data).toBe('DATA-A2');
+    });
+
+    it('revision starts at 0 and reflects the first successful load', async () => {
+      const r = resource<number>();
+      expect(r.value.revision).toBe(0);
+      await r.run(() => Promise.resolve(1));
+      expect(r.value.revision).toBe(1);
+    });
+
+    it('revision bumps only when data changes (Object.is by default)', async () => {
+      const r = resource<{ n: number }>();
+      const obj = { n: 1 };
+      await r.run(() => Promise.resolve(obj));
+      const rev1 = r.value.revision;
+      await r.run(() => Promise.resolve(obj)); // same reference → no change
+      expect(r.value.revision).toBe(rev1);
+      await r.run(() => Promise.resolve({ n: 1 })); // new reference → change
+      expect(r.value.revision).toBe(rev1 + 1);
+    });
+
+    it('a custom equals dedups structurally-equal payloads (the skip-repaint hook)', async () => {
+      const r = resource<{ n: number }>({ equals: (a, b) => a.n === b.n });
+      await r.run(() => Promise.resolve({ n: 5 }));
+      const rev = r.value.revision;
+      await r.run(() => Promise.resolve({ n: 5 })); // structurally equal → no bump
+      expect(r.value.revision).toBe(rev);
+      await r.run(() => Promise.resolve({ n: 6 }));
+      expect(r.value.revision).toBe(rev + 1);
+    });
+
+    it('a cacheKey resource called via the no-input run(fetcher) form has no key, so it does not cache', async () => {
+      const r = resource<string, string>({ cacheKey: (id) => id });
+      await r.run(() => Promise.resolve('X')); // no input → no key
+      expect(r.value.data).toBe('X');
+
+      const d = deferred<string>();
+      const p = r.run(() => d.promise); // no input again
+      expect(r.value.data).toBeUndefined(); // key undefined → no cached slice to paint
+      d.resolve('Y');
+      await p;
+      expect(r.value.data).toBe('Y');
+    });
+
+    it('reset() clears the cache — a revisited key reloads instead of painting a stale slice', async () => {
+      const r = resource<string, string>({ cacheKey: (id) => id });
+      await r.run('a', () => Promise.resolve('A1'));
+      r.reset();
+      expect(r.value.data).toBeUndefined();
+
+      const d = deferred<string>();
+      const p = r.run('a', () => d.promise);
+      expect(r.value.data).toBeUndefined(); // cache cleared → no instant paint
+      d.resolve('A2');
+      await p;
+      expect(r.value.data).toBe('A2');
     });
   });
 });
