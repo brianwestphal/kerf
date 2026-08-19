@@ -567,6 +567,19 @@ if (creds !== null) connect(creds.host, creds.token);
 
 The two-or-three-input generalization of `prompt()`: renders one labeled input per [`FormField`](#overlay-types) and resolves a `Record<name, value>` on OK (after **every** field's `validate` passes) or `null` on Cancel / dismissal. Enter in any field submits; the first invalid field is focused. Each `FormField` has `name` (the record key + input `name`), optional `label` (defaults to `name`), `defaultValue`, `placeholder`, `type` (default `'text'`), and `validate`. Options ([`FormOptions`](#overlay-types)): `title`, `okText` / `cancelText`, `container` / `className`.
 
+### `choice<R>(message, actions, options?): Promise<R | null>`
+
+```ts
+const r = await choice('Unsaved changes', [
+  { value: 'save', label: 'Save Draft' },
+  { value: 'discard', label: 'Discard', className: 'btn-danger' },
+  { value: 'cancel', label: 'Keep Editing' },
+], { defaultValue: 'cancel' });
+// r is 'save' | 'discard' | 'cancel' | null (Escape/backdrop)
+```
+
+The **N-way** sibling of `confirm()`: renders one button per [`ChoiceAction<R>`](#overlay-types) and resolves that action's `value` on click, or `null` on Cancel / dismissal. Pass **`defaultValue`** to make **Enter** (pressed anywhere in the dialog) resolve a default action — the "global Enter-to-confirm" model — without holding the overlay handle. An action's `value` may itself be `null`/`undefined` and stays distinct from a dismissal (the promise resolves on the click, not via the overlay's result). `message` + labels auto-escape; `render` gives BYO markup (spread each `slots.actions[i]` onto your buttons). kerf owns dismiss / focus-trap / focus-restore. Options ([`ChoiceOptions<R>`](#overlay-types)): `title`, `defaultValue`, `render`, `container` / `className`. For fully bespoke keyboard/close control, drive [`overlay()`](#overlaycontent-options-overlayhandle) directly.
+
 ### Bring your own markup (`render`) — design-system dialogs
 
 `confirm` / `prompt` / `form` render kerf's own button/field DOM with kerf class names. When you have a **design system** and want its markup + classes, pass a `render` option: it returns the full dialog body, and you spread the provided **wiring slots** onto your own elements. kerf keeps owning the promise, `validate`, Enter-submit, dismiss, focus-trap, and focus-restore — you only own the look. (The generic `overlay()` is the other route: mount any markup and drive dismiss/focus yourself.)
@@ -624,7 +637,7 @@ Shows a non-modal, auto-dismissing notification, stacked in a shared body-level 
 
 ### Overlay types
 
-`OverlayHandle`, `OverlayContent`, `OverlayOptions`, `DismissTrigger`, `ConfirmOptions`, `ConfirmRenderSlots`, `PromptOptions`, `PromptRenderSlots`, `FormField`, `FormOptions`, `FormRenderSlots`, `FormRenderField`, `FieldValidator`, `PopoverOptions`, `PopoverPlacement`, `AnchorPositionOptions`, `TooltipContent`, `TooltipOptions`, `ToastContent`, `ToastOptions`, `ToastVariant`, and `ToastHandle` are all exported from `kerfjs/overlay` for annotating handles, content, and option bags.
+`OverlayHandle`, `OverlayContent`, `OverlayOptions`, `DismissTrigger`, `ConfirmOptions`, `ConfirmRenderSlots`, `PromptOptions`, `PromptRenderSlots`, `FormField`, `FormOptions`, `FormRenderSlots`, `FormRenderField`, `FieldValidator`, `ChoiceAction`, `ChoiceOptions`, `ChoiceRenderSlots`, `PopoverOptions`, `PopoverPlacement`, `AnchorPositionOptions`, `TooltipContent`, `TooltipOptions`, `ToastContent`, `ToastOptions`, `ToastVariant`, and `ToastHandle` are all exported from `kerfjs/overlay` for annotating handles, content, and option bags.
 
 ## 8.9 Dispose scopes — `kerfjs/scope` subpath
 

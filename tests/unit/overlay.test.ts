@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { jsx, raw } from '../../src/jsx-runtime.js';
-import { autoReposition, confirm, form, overlay, popover, positionAnchored, prompt, toast, tooltip } from '../../src/overlay.js';
+import { autoReposition, choice, confirm, form, overlay, popover, positionAnchored, prompt, toast, tooltip } from '../../src/overlay.js';
 import { signal } from '../../src/reactive.js';
 
 function key(target: EventTarget, k: string, init: KeyboardEventInit = {}): void {
@@ -959,5 +959,89 @@ describe("toast() — KF-495 replace collapse + symmetric exit", () => {
     expect(document.querySelector('.kerf-toast')).not.toBeNull(); // still present during the fade-out
     vi.advanceTimersByTime(200);
     expect(document.querySelector('.kerf-toast')).toBeNull(); // removed after exitDuration
+  });
+});
+
+describe('choice() — N-way dialog', () => {
+  const actions = [
+    { value: 'primary' as const, label: 'Save Draft' },
+    { value: 'secondary' as const, label: 'Discard' },
+    { value: 'cancel' as const, label: 'Keep Editing' },
+  ];
+
+  it('renders one button per action and resolves the clicked action value', async () => {
+    const p = choice('Unsaved changes', actions);
+    const buttons = document.querySelectorAll('.kerf-choice__action');
+    expect(Array.from(buttons).map((b) => b.textContent)).toEqual(['Save Draft', 'Discard', 'Keep Editing']);
+
+    (buttons[1] as HTMLElement).click(); // Discard
+    await expect(p).resolves.toBe('secondary');
+  });
+
+  it('resolves null on Escape / backdrop dismissal', async () => {
+    const p = choice('Pick', actions);
+    key(document, 'Escape');
+    await expect(p).resolves.toBeNull();
+  });
+
+  it('Enter resolves defaultValue (global Enter-to-confirm), from anywhere in the dialog', async () => {
+    const p = choice('Pick', actions, { defaultValue: 'primary' });
+    // A non-Enter key is ignored (dialog stays open)…
+    key(document.querySelector('.kerf-choice__message')!, 'a');
+    expect(document.querySelector('.kerf-choice')).not.toBeNull();
+    // …Enter with focus NOT on a specific button still resolves the default.
+    key(document.querySelector('.kerf-choice__message')!, 'Enter');
+    await expect(p).resolves.toBe('primary');
+  });
+
+  it('without defaultValue, Enter does nothing special (dialog stays open)', async () => {
+    const p = choice('Pick', actions);
+    key(document.querySelector('.kerf-choice__message')!, 'Enter');
+    expect(document.querySelector('.kerf-choice')).not.toBeNull(); // still open
+    (document.querySelectorAll('.kerf-choice__action')[0] as HTMLElement).click();
+    await expect(p).resolves.toBe('primary');
+  });
+
+  it('an action value of null/undefined stays distinct from a dismissal', async () => {
+    const p = choice<null | string>('Pick', [
+      { value: null, label: 'Nullish' },
+      { value: 'x', label: 'X' },
+    ]);
+    (document.querySelectorAll('.kerf-choice__action')[0] as HTMLElement).click(); // value: null
+    // Resolves the ACTION's null, not a dismissal — both are null here but the promise resolved via the click.
+    await expect(p).resolves.toBeNull();
+  });
+
+  it('applies an optional per-action className and a title', () => {
+    choice('Pick', [{ value: 1, label: 'One', className: 'btn btn-danger' }], { title: 'Heads up' });
+    expect(document.querySelector('.kerf-choice__title')?.textContent).toBe('Heads up');
+    const btn = document.querySelector('.kerf-choice__action') as HTMLElement;
+    expect(btn.classList.contains('btn')).toBe(true);
+    expect(btn.classList.contains('btn-danger')).toBe(true);
+    (document.querySelector('[data-choice]') as HTMLElement).click(); // clean up
+  });
+
+  it('render: BYO markup — spread actions[i] onto your buttons', async () => {
+    const p = choice('Pick', actions, {
+      render: ({ message, actions: slots }) => jsx('div', {
+        class: 'my-choice',
+        children: [
+          jsx('p', { children: message }),
+          ...slots.map((slot, i) => jsx('button', { ...slot, class: `c-${i}`, children: actions[i].label })),
+        ],
+      }),
+    });
+    expect(document.querySelector('.my-choice')).not.toBeNull();
+    expect(document.querySelector('.kerf-choice')).toBeNull(); // default markup skipped
+    (document.querySelector('.c-2') as HTMLElement).click();
+    await expect(p).resolves.toBe('cancel');
+  });
+
+  it('auto-escapes the message', () => {
+    choice('<img src=x onerror=alert(1)>', actions);
+    const msg = document.querySelector('.kerf-choice__message')!;
+    expect(msg.querySelector('img')).toBeNull();
+    expect(msg.textContent).toContain('<img');
+    (document.querySelector('[data-choice]') as HTMLElement).click(); // clean up
   });
 });

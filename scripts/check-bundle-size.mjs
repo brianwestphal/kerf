@@ -120,10 +120,10 @@ const BUDGETS = [
     // already uses kerf. The budget still guards overlay's OWN growth.
     name: 'overlay',
     budgetKb: 16.1,
-    description: 'the overlay/modal subpath (overlay + confirm + prompt + form + popover + tooltip + positioning + toast) — includes shared core',
+    description: 'the overlay/modal subpath (overlay + confirm + prompt + form + choice + popover + tooltip + positioning + toast) — includes shared core',
     entry: `
-      import { overlay, confirm, prompt, form, popover, tooltip, positionAnchored, autoReposition, toast } from '${DIST}/overlay.js';
-      globalThis.__k = [overlay, confirm, prompt, form, popover, tooltip, positionAnchored, autoReposition, toast];
+      import { overlay, confirm, prompt, form, choice, popover, tooltip, positionAnchored, autoReposition, toast } from '${DIST}/overlay.js';
+      globalThis.__k = [overlay, confirm, prompt, form, choice, popover, tooltip, positionAnchored, autoReposition, toast];
     `,
   },
   {

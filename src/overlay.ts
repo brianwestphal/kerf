@@ -636,6 +636,114 @@ export function form(
   );
 }
 
+/** One choosable action in a {@link choice} dialog. */
+export interface ChoiceAction<R> {
+  /** The value this action resolves. */
+  value: R;
+  /** Button label (auto-escaped). */
+  label: string;
+  /** Extra class on this action's button. */
+  className?: string;
+}
+
+/** Wiring slots for a {@link ChoiceOptions.render} — spread `actions[i]` onto your i-th button. */
+export interface ChoiceRenderSlots {
+  message: string;
+  /** One attribute bag per action (in order) — spread onto that action's control. */
+  actions: Array<Record<string, string>>;
+}
+
+/** Options for {@link choice}. */
+export interface ChoiceOptions<R> {
+  /** Where to append the overlay. Default `document.body`. */
+  container?: Element;
+  /** Wrapper class. Default `'kerf-overlay'`. */
+  className?: string;
+  /** Optional heading above the message. */
+  title?: string;
+  /** The value resolved when **Enter** is pressed anywhere in the dialog (the default action). */
+  defaultValue?: R;
+  /** Bring your own markup: return the full body, spreading each `slots.actions[i]` onto your buttons. */
+  render?: (slots: ChoiceRenderSlots) => OverlayContent;
+}
+
+/**
+ * The **N-way** sibling of {@link confirm}: renders one button per {@link ChoiceAction}
+ * and resolves that action's `value` on click, or `null` on Cancel / dismissal.
+ * Pass `defaultValue` to make **Enter** (anywhere in the dialog) resolve a default
+ * action — the "global Enter-to-confirm" model — without you having to hold the
+ * overlay handle. `message` + labels are auto-escaped; pass `render` for your own
+ * markup. kerf owns dismiss / focus-trap / focus-restore. For fully bespoke
+ * keyboard/close control, drive {@link overlay} directly.
+ */
+export function choice<R>(
+  message: string,
+  actions: ReadonlyArray<ChoiceAction<R>>,
+  options: ChoiceOptions<R> = {},
+): Promise<R | null> {
+  const { container, className = 'kerf-overlay', title, defaultValue, render } = options;
+  const hasDefault = 'defaultValue' in options;
+
+  const actionAttrs = actions.map((_, i) => ({ 'data-choice': String(i) }));
+
+  const body: OverlayContent = render !== undefined
+    ? render({ message, actions: actionAttrs })
+    : jsx('div', {
+      class: 'kerf-choice',
+      children: [
+        title !== undefined ? jsx('h2', { class: 'kerf-choice__title', children: title }) : '',
+        jsx('p', { class: 'kerf-choice__message', children: message }),
+        jsx('div', {
+          class: 'kerf-choice__actions',
+          children: actions.map((action, i) =>
+            jsx('button', {
+              type: 'button',
+              class: action.className !== undefined ? `kerf-choice__action ${action.className}` : 'kerf-choice__action',
+              ...actionAttrs[i],
+              children: action.label,
+            }),
+          ),
+        }),
+      ],
+    });
+
+  // Own the promise (not overlay's result value) so an action `value` of
+  // `undefined`/`null` stays distinct from a dismissal.
+  let resolveChoice!: (r: R | null) => void;
+  const result = new Promise<R | null>((resolve) => {
+    resolveChoice = resolve;
+  });
+
+  const handle = overlay(body, {
+    container,
+    className,
+    dismiss: ['escape', 'backdrop'],
+    initialFocus: '[data-choice]',
+    trap: true,
+  });
+
+  delegate(handle.el, 'click', '[data-choice]', (_event, el) => {
+    resolveChoice(actions[Number(el.getAttribute('data-choice'))].value);
+    handle.close();
+  });
+
+  if (hasDefault) {
+    handle.el.addEventListener('keydown', (event: KeyboardEvent) => {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        resolveChoice(defaultValue as R);
+        handle.close();
+      }
+    });
+  }
+
+  // Any close without a pick (Escape / backdrop / programmatic) → null. First
+  // resolve wins, so a prior click/Enter value stands.
+  void handle.result.then(() => resolveChoice(null));
+
+  return result;
+}
+
 /** Vertical placement relative to an anchor (used by {@link popover}, {@link positionAnchored}, {@link tooltip}). */
 export type PopoverPlacement = 'bottom' | 'top';
 

@@ -417,6 +417,69 @@
           "branch": "main"
         }
       ]
+    },
+    {
+      "tool": {
+        "driver": {
+          "name": "Hot Sheet",
+          "rules": [
+            {
+              "id": "review-note",
+              "name": "ReviewNote",
+              "shortDescription": {
+                "text": "AI-authored, line-anchored review note."
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "review-note",
+          "ruleIndex": 0,
+          "kind": "informational",
+          "level": "none",
+          "guid": "mszzqm4k6u88j05s",
+          "message": {
+            "text": "choice() resolves its OWN promise instead of mapping overlay's result value — so an action whose value is null or undefined stays distinct from a dismissal.\n\nconfirm/prompt/form map the value passed to handle.close() (dismissal arrives as undefined), which works because their result domains never include undefined. choice<R> is generic — an action's value can legitimately BE null or undefined (a \"none\"/\"skip\" outcome), so overlay's dismissal-undefined and a real undefined value would collide. The fix is a private promise: a click/Enter calls resolveChoice(actions[i].value) and handle.result.then(() => resolveChoice(null)) supplies the dismissal fallback. Promise resolution is first-wins, so a click's value stands and the later fallback null is ignored; a dismissal reaches only the fallback. This also gives the \"global Enter-to-confirm\" model (defaultValue resolved on Enter anywhere in the dialog) without exposing the overlay handle — the specific thing KF-494 said confirm couldn't do. 'defaultValue' in options (not !== undefined) gates the Enter handler so defaultValue: undefined still opts in.\n",
+            "markdown": "`choice()` resolves its OWN promise instead of mapping `overlay`'s result value — so an action whose `value` is `null` or `undefined` stays distinct from a dismissal.\n\n`confirm`/`prompt`/`form` map the value passed to `handle.close()` (dismissal arrives as `undefined`), which works because their result domains never include `undefined`. `choice<R>` is generic — an action's `value` can legitimately BE `null` or `undefined` (a \"none\"/\"skip\" outcome), so overlay's dismissal-`undefined` and a real `undefined` value would collide. The fix is a private promise: a click/Enter calls `resolveChoice(actions[i].value)` and `handle.result.then(() => resolveChoice(null))` supplies the dismissal fallback. Promise resolution is first-wins, so a click's value stands and the later fallback `null` is ignored; a dismissal reaches only the fallback. This also gives the \"global Enter-to-confirm\" model (`defaultValue` resolved on Enter anywhere in the dialog) without exposing the overlay handle — the specific thing KF-494 said `confirm` couldn't do. `'defaultValue' in options` (not `!== undefined`) gates the Enter handler so `defaultValue: undefined` still opts in.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/overlay.ts"
+                },
+                "region": {
+                  "startLine": 710,
+                  "endLine": 735,
+                  "snippet": {
+                    "text": "  // Own the promise (not overlay's result value) so an action `value` of\n  // `undefined`/`null` stays distinct from a dismissal.\n  let resolveChoice!: (r: R | null) => void;\n  const result = new Promise<R | null>((resolve) => {\n    resolveChoice = resolve;\n  });\n\n  const handle = overlay(body, {\n    container,\n    className,\n    dismiss: ['escape', 'backdrop'],\n    initialFocus: '[data-choice]',\n    trap: true,\n  });\n\n  delegate(handle.el, 'click', '[data-choice]', (_event, el) => {\n    resolveChoice(actions[Number(el.getAttribute('data-choice'))].value);\n    handle.close();\n  });\n\n  if (hasDefault) {\n    handle.el.addEventListener('keydown', (event: KeyboardEvent) => {\n      if (event.key === 'Enter') {\n        event.preventDefault();\n        resolveChoice(defaultValue as R);\n        handle.close();"
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "tags": [
+              "rationale"
+            ]
+          },
+          "workItemUris": [
+            "KF-494"
+          ],
+          "partialFingerprints": {
+            "prNoteAnchor/v1": "e26587ebbd56b908e9d9b7333ca483f6"
+          }
+        }
+      ],
+      "versionControlProvenance": [
+        {
+          "repositoryUri": "git@github.com:brianwestphal/kerf.git",
+          "revisionId": "2b0cc5bda8cec604d294a70e25e7c4d33ac8ce58",
+          "branch": "main"
+        }
+      ]
     }
   ]
 }
