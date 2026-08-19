@@ -74,7 +74,7 @@ const REPO_ROOT = dirname(dirname(fileURLToPath(import.meta.url)));
 const DIST = resolve(REPO_ROOT, 'dist');
 const API_DOC = resolve(REPO_ROOT, 'docs/8-api-reference.md');
 
-const ENTRY_DTS = ['index.d.ts', 'array-signal.d.ts', 'jsx-runtime.d.ts', 'testing.d.ts', 'html.d.ts', 'actions.d.ts', 'overlay.d.ts', 'scope.d.ts', 'async.d.ts', 'list.d.ts'];
+const ENTRY_DTS = ['index.d.ts', 'array-signal.d.ts', 'jsx-runtime.d.ts', 'testing.d.ts', 'html.d.ts', 'actions.d.ts', 'overlay.d.ts', 'scope.d.ts', 'async.d.ts', 'list.d.ts', 'timing.d.ts'];
 
 // Internal function exports the JSX transform consumes but users never call by
 // hand, plus JSX sugar with no user-facing parameter signature. Presence of

@@ -685,3 +685,40 @@ Options ([`BindListOptions<T>`](#list-types)): `key` (stable per-row key — a `
 ### List types
 
 `ListKey`, `ListSource<T>`, and `BindListOptions<T>` are exported from `kerfjs/list`.
+
+## 8.12 Timing primitives — `kerfjs/timing` subpath
+
+Optional subpath (`import { debounce, throttle, debouncedSignal } from 'kerfjs/timing'`) for the `let timer; clearTimeout(timer); timer = setTimeout(…)` pattern every app hand-rolls, with disposer-shaped ergonomics. `debounce`/`throttle` are dependency-free; only `debouncedSignal` pulls in signals (no render core), so the subpath is tiny.
+
+### `debounce<A>(fn, ms): Debounced<A>`
+
+```ts
+const save = debounce(() => persist(state), 300);
+input.addEventListener('input', save);
+// …on teardown: save.cancel();
+```
+
+Trailing-edge debounce: `fn` runs `ms` after calls **stop**, with the most recent arguments; each call within the quiet window resets the timer. Returns a [`Debounced<A>`](#timing-types) — callable like `fn`, plus `cancel()` (drop a pending call) and `flush()` (run it immediately and clear the timer). The argument tuple `A` is inferred from `fn`.
+
+### `throttle<A>(fn, ms): Throttled<A>`
+
+```ts
+const onScroll = throttle(() => measure(), 100);
+window.addEventListener('scroll', onScroll);
+```
+
+Leading-plus-trailing throttle: `fn` runs immediately on the first call, then **at most once per `ms`**; calls during a cooldown collapse to a single trailing call (with the latest arguments) at the window's end. Returns a [`Throttled<A>`](#timing-types) with the same `cancel()` / `flush()` shape.
+
+### `debouncedSignal<T>(source, ms): ReadonlySignal<T>`
+
+```ts
+const query = signal('');
+const debouncedQuery = debouncedSignal(query, 250); // trails query by 250ms
+// render / computed / effect off debouncedQuery.value — repaints only after typing settles
+```
+
+A read-only signal that trails `source` by `ms` (trailing-edge): writes to `source` reschedule, and the derived value settles once writes go quiet, so it composes inside the reactive graph (`computed`/`effect`/`mount`) instead of beside it. It holds a **live subscription** to `source` for its lifetime (like a module-scope `effect`) — intended for app-lifetime signals; for a disposable variant, drive your own `effect` with `debounce`.
+
+### Timing types
+
+`Debounced<A>` and `Throttled<A>` are exported from `kerfjs/timing` for annotating the returned callables.

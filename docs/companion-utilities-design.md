@@ -157,6 +157,7 @@ All shipped 2026-08-18. Each was built under its own feature ticket referencing 
 
 - **Wave 1 (shipped):** `kerfjs/overlay` (overlay/modal + dismiss + `confirm`/`toast`) — KF-468; `kerfjs/actions` (`delegateActions` + `action()`) — KF-469.
 - **Wave 2 (shipped):** `kerfjs/scope` (dispose-scope registry) — KF-470; `kerfjs/async` (`resource` async-state container) — KF-471; `kerfjs/list` (distinct `bindList` + virtualization) — KF-472. One deferred optimization: KF-478 (apply arraySignal structural patches to `bindList` in O(patches) instead of a keyed diff).
+- **Wave 3 (follow-ups from real adoption):** `kerfjs/timing` (`debounce` / `throttle` / `debouncedSignal`) — KF-481, a sixth subpath beyond the original five, surfaced as the most-repeated leftover imperative pattern (the `let timer` dance) in app code; `resource.run(input, fetcher)` input threading — KF-480; `prompt()` / `form()` on `kerfjs/overlay` — KF-484.
 
 Each ticket carries the full subpath checklist (entry in `tsup.config.ts`, `dist` + `.d.ts`, `exports` key, `check:bundle-size` budget, `docs/8-api-reference.md` row, tests) as its definition of done.
 

@@ -160,6 +160,17 @@ const BUDGETS = [
     `,
   },
   {
+    // ISOLATED size — debounce/throttle are dependency-free; debouncedSignal
+    // pulls in signals only (no render core), so the whole subpath is tiny.
+    name: 'timing',
+    budgetKb: 2.0,
+    description: 'the timing subpath (debounce + throttle + debouncedSignal) — signals only, no render core',
+    entry: `
+      import { debounce, throttle, debouncedSignal } from '${DIST}/timing.js';
+      globalThis.__k = [debounce, throttle, debouncedSignal];
+    `,
+  },
+  {
     // Guards the KF-429 invariant directly: with the dev entry absent, NO
     // dev-warning code may appear in a production bundle. The size budget
     // above would catch a large regression; this catches any at all.

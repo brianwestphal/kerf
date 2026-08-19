@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "Hot Sheet",
+          "rules": [
+            {
+              "id": "review-note",
+              "name": "ReviewNote",
+              "shortDescription": {
+                "text": "AI-authored, line-anchored review note."
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "review-note",
+          "ruleIndex": 0,
+          "kind": "informational",
+          "level": "none",
+          "guid": "mszgx2nx84hegdev",
+          "message": {
+            "text": "startCooldown re-arms itself after a trailing call so the rate limit survives the trailing edge, not just the leading one.\n\nWithout the re-arm, a trailing invocation would clear the timer and leave the throttle \"open\" — the very next call would fire immediately, allowing two invocations closer together than ms. Re-arming means: leading fires at t0, a burst collapses to one trailing fire at t0+ms, and the window stays closed until t0+2ms, so nothing beats the ms spacing. When the follow-up cooldown ends with no pending args, trailingArgs === undefined short-circuits the recursion and the throttle goes idle (timer cleared) — the next call leads again. The test \"holds the rate limit for a beat after a trailing call, then a fresh call leads again\" walks exactly this two-window sequence; \"no trailing call when only the leading happened\" pins the idle-exit path.\n",
+            "markdown": "`startCooldown` re-arms itself after a trailing call so the rate limit survives the trailing edge, not just the leading one.\n\nWithout the re-arm, a trailing invocation would clear the timer and leave the throttle \"open\" — the very next call would fire immediately, allowing two invocations closer together than `ms`. Re-arming means: leading fires at t0, a burst collapses to one trailing fire at t0+ms, and the window stays closed until t0+2ms, so nothing beats the `ms` spacing. When the follow-up cooldown ends with no pending args, `trailingArgs === undefined` short-circuits the recursion and the throttle goes idle (timer cleared) — the next call leads again. The test \"holds the rate limit for a beat after a trailing call, then a fresh call leads again\" walks exactly this two-window sequence; \"no trailing call when only the leading happened\" pins the idle-exit path.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/timing.ts"
+                },
+                "region": {
+                  "startLine": 96,
+                  "endLine": 104,
+                  "snippet": {
+                    "text": "  const startCooldown = (): void => {\n    timer = setTimeout(() => {\n      timer = undefined;\n      if (trailingArgs !== undefined) {\n        runTrailing();\n        startCooldown(); // hold the rate limit for a beat after a trailing call\n      }\n    }, ms);\n  };"
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "tags": [
+              "rationale"
+            ]
+          },
+          "workItemUris": [
+            "KF-481"
+          ],
+          "partialFingerprints": {
+            "prNoteAnchor/v1": "69f1ae24106d4ecd7f1eb816803748b8"
+          }
+        }
+      ],
+      "versionControlProvenance": [
+        {
+          "repositoryUri": "git@github.com:brianwestphal/kerf.git",
+          "revisionId": "1bd0842f08617c74833563073ad4052b55b7eaf3",
+          "branch": "main"
+        }
+      ]
+    }
+  ]
+}
