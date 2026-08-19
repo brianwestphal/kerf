@@ -567,6 +567,15 @@ if (creds !== null) connect(creds.host, creds.token);
 
 The two-or-three-input generalization of `prompt()`: renders one labeled input per [`FormField`](#overlay-types) and resolves a `Record<name, value>` on OK (after **every** field's `validate` passes) or `null` on Cancel / dismissal. Enter in any field submits; the first invalid field is focused. Each `FormField` has `name` (the record key + input `name`), optional `label` (defaults to `name`), `defaultValue`, `placeholder`, `type` (default `'text'`), and `validate`. Options ([`FormOptions`](#overlay-types)): `title`, `okText` / `cancelText`, `container` / `className`.
 
+### `popover(anchor, content, options?): OverlayHandle`
+
+```ts
+const trigger = document.querySelector('#menu-btn')!;
+const pop = popover(trigger, <Menu />); // opens below the button, dismisses on outside click
+```
+
+An **anchored, non-modal** overlay: positions `content` relative to `anchor` (below by default, flipping above if it would overflow the viewport, and clamped horizontally) and repositions on scroll / resize while open. It's a thin wrapper over `overlay()` with non-modal defaults — `trap: false`, `dismiss: ['outside']`, and the anchor added to `outsideIgnore` so the click that opened it doesn't immediately close it. Returns the same [`OverlayHandle`](#overlay-types); `close()` also drops the reposition listeners. `position: fixed` is set inline (you style everything else — kerf ships no CSS). Options ([`PopoverOptions`](#overlay-types)): `placement` (`'bottom'` | `'top'`, default `'bottom'`, auto-flips), `align` (`'start'` | `'end'`, default `'start'`), `gap` (px, default `4`), `dismiss`, `initialFocus` (default `false`), `outsideIgnore` (merged with the anchor), `onDismiss`, `container` / `className`. The positioning is dependency-free (below/above + clamp); for complex cases (arrow, collision on both axes) drive `overlay()` yourself.
+
 ### `toast(content, options?): () => void`
 
 ```ts
@@ -578,7 +587,7 @@ Shows a non-modal, auto-dismissing notification, stacked in a shared body-level 
 
 ### Overlay types
 
-`OverlayHandle`, `OverlayContent`, `OverlayOptions`, `DismissTrigger`, `ConfirmOptions`, `PromptOptions`, `FormField`, `FormOptions`, `FieldValidator`, `ToastContent`, and `ToastOptions` are all exported from `kerfjs/overlay` for annotating handles, content, and option bags.
+`OverlayHandle`, `OverlayContent`, `OverlayOptions`, `DismissTrigger`, `ConfirmOptions`, `PromptOptions`, `FormField`, `FormOptions`, `FieldValidator`, `PopoverOptions`, `PopoverPlacement`, `ToastContent`, and `ToastOptions` are all exported from `kerfjs/overlay` for annotating handles, content, and option bags.
 
 ## 8.9 Dispose scopes — `kerfjs/scope` subpath
 

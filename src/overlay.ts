@@ -539,6 +539,109 @@ export function form(
   );
 }
 
+/** Vertical placement of a {@link popover} relative to its anchor. */
+export type PopoverPlacement = 'bottom' | 'top';
+
+/** Options for {@link popover}. */
+export interface PopoverOptions {
+  /** Where to append the popover wrapper. Default `document.body`. */
+  container?: Element;
+  /** Class on the wrapper. Default `'kerf-popover'`. */
+  className?: string;
+  /** Preferred side of the anchor. Flips to the other side if it would overflow the viewport. Default `'bottom'`. */
+  placement?: PopoverPlacement;
+  /** Horizontal edge to line up with the anchor: `'start'` (left edges) or `'end'` (right edges). Default `'start'`. */
+  align?: 'start' | 'end';
+  /** Gap in px between the anchor and the popover. Default `4`. */
+  gap?: number;
+  /**
+   * Which user actions dismiss the popover. Default `['outside']` (a click
+   * outside the popover, the anchor exempt). Pass `false` to close only via `close()`.
+   */
+  dismiss?: DismissTrigger | DismissTrigger[] | false;
+  /** Focus behavior on open. Default `false` (non-modal — leave focus alone). */
+  initialFocus?: string | boolean;
+  /** Extra elements (besides the anchor) whose clicks do NOT count as outside. */
+  outsideIgnore?: Element | readonly Element[];
+  /** Called on any user-initiated dismissal. */
+  onDismiss?: () => void;
+}
+
+/**
+ * Anchored, non-modal overlay: positions `content` relative to `anchor` (below by
+ * default, flipping above if it would overflow, and clamped horizontally to the
+ * viewport) and repositions on scroll / resize while open. A thin wrapper over
+ * {@link overlay} with non-modal defaults — `trap: false`, `dismiss: ['outside']`,
+ * and the anchor added to `outsideIgnore` so the trigger click doesn't self-close.
+ * Returns the same {@link OverlayHandle}; `close()` also drops the reposition
+ * listeners. `position: fixed` is set inline (you style everything else).
+ */
+export function popover(
+  anchor: Element,
+  content: OverlayContent,
+  options: PopoverOptions = {},
+): OverlayHandle {
+  const {
+    container,
+    className = 'kerf-popover',
+    placement = 'bottom',
+    align = 'start',
+    gap = 4,
+    dismiss = ['outside'],
+    initialFocus = false,
+    outsideIgnore,
+    onDismiss,
+  } = options;
+
+  const extraIgnore = outsideIgnore === undefined
+    ? []
+    : Array.isArray(outsideIgnore) ? [...outsideIgnore] : [outsideIgnore];
+
+  const handle = overlay(content, {
+    container,
+    className,
+    dismiss,
+    trap: false,
+    initialFocus,
+    onDismiss,
+    outsideIgnore: [anchor, ...extraIgnore],
+  });
+
+  handle.el.style.position = 'fixed';
+  handle.el.style.margin = '0';
+
+  const reposition = (): void => {
+    const a = anchor.getBoundingClientRect();
+    const p = handle.el.getBoundingClientRect();
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+
+    // Vertical: preferred side, flipped only if it overflows and the other side fits.
+    const belowTop = a.bottom + gap;
+    const aboveTop = a.top - gap - p.height;
+    let below = placement !== 'top';
+    if (below && belowTop + p.height > vh && aboveTop >= 0) below = false;
+    else if (!below && aboveTop < 0 && belowTop + p.height <= vh) below = true;
+
+    // Horizontal: align to an anchor edge, then clamp into the viewport.
+    let left = align === 'end' ? a.right - p.width : a.left;
+    left = Math.max(0, Math.min(left, vw - p.width));
+
+    handle.el.style.left = `${left}px`;
+    handle.el.style.top = `${below ? belowTop : aboveTop}px`;
+  };
+
+  reposition();
+  window.addEventListener('scroll', reposition, true); // capture: catch scrolls in any container
+  window.addEventListener('resize', reposition);
+  void handle.result.then(() => {
+    window.removeEventListener('scroll', reposition, true);
+    window.removeEventListener('resize', reposition);
+  });
+
+  return handle;
+}
+
 /** Content for a {@link toast}: text, `SafeHtml`, or a render function. */
 export type ToastContent = string | SafeHtml | (() => MountResult);
 

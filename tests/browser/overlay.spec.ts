@@ -64,6 +64,30 @@ test('prompt(): real focus lands in the field, typing + Enter resolves the enter
   await expect(page.locator('.kerf-prompt')).toHaveCount(0); // closed
 });
 
+test('popover(): positions below a real anchor, left-aligned (real layout)', async ({ page }) => {
+  await page.evaluate(() => {
+    const anchor = document.createElement('button');
+    anchor.id = 'pop-anchor';
+    anchor.textContent = 'open';
+    Object.assign(anchor.style, { position: 'absolute', left: '120px', top: '240px' });
+    document.body.appendChild(anchor);
+    const { popover } = (window as any).kerfOverlay;
+    const { raw } = (window as any).jsxRuntime;
+    (window as any)._pop = popover(
+      anchor,
+      raw('<div class="pop-body" style="width:140px;height:48px">menu</div>'),
+      { gap: 6 },
+    );
+  });
+
+  const anchorBox = (await page.locator('#pop-anchor').boundingBox())!;
+  const popBox = (await page.locator('.pop-body').boundingBox())!;
+  // Below the anchor by ~gap, and left edges aligned (both within a couple px).
+  expect(popBox.y).toBeGreaterThanOrEqual(anchorBox.y + anchorBox.height);
+  expect(Math.abs(popBox.y - (anchorBox.y + anchorBox.height + 6))).toBeLessThan(2);
+  expect(Math.abs(popBox.x - anchorBox.x)).toBeLessThan(2);
+});
+
 test('outside click dismisses a non-modal popover; content + an outsideIgnore trigger do not', async ({ page }) => {
   await page.evaluate(() => {
     const trigger = document.createElement('button');

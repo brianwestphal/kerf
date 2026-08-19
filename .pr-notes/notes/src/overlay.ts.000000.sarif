@@ -102,6 +102,69 @@
           "branch": "main"
         }
       ]
+    },
+    {
+      "tool": {
+        "driver": {
+          "name": "Hot Sheet",
+          "rules": [
+            {
+              "id": "review-note",
+              "name": "ReviewNote",
+              "shortDescription": {
+                "text": "AI-authored, line-anchored review note."
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "review-note",
+          "ruleIndex": 0,
+          "kind": "informational",
+          "level": "none",
+          "guid": "mszl3fh5qz7gy07y",
+          "message": {
+            "text": "The reposition listeners are torn down via handle.result.then(...), not by reaching into overlay()'s private close path — so popover composes over overlay without a new coupling.\n\noverlay() resolves its result promise on EVERY close path (Escape, backdrop/outside click, or a programmatic close()), so awaiting it is a public, path-agnostic \"when this overlay goes away\" hook. Using it to remove the scroll/resize listeners means popover needs no privileged access to overlay's internal removers array and can't fall out of sync with a future dismissal trigger. The scroll listener is registered with capture: true because scrolling happens on inner scroll containers, not just window — a bubbling scroll listener would miss those and the popover would drift off its anchor. The unit test \"removes the reposition listeners on close\" asserts both removeEventListener calls fire (with the matching capture flag) after close.\n",
+            "markdown": "The reposition listeners are torn down via `handle.result.then(...)`, not by reaching into `overlay()`'s private close path — so `popover` composes over `overlay` without a new coupling.\n\n`overlay()` resolves its `result` promise on EVERY close path (Escape, backdrop/outside click, or a programmatic `close()`), so awaiting it is a public, path-agnostic \"when this overlay goes away\" hook. Using it to remove the `scroll`/`resize` listeners means `popover` needs no privileged access to `overlay`'s internal `removers` array and can't fall out of sync with a future dismissal trigger. The `scroll` listener is registered with `capture: true` because scrolling happens on inner scroll containers, not just `window` — a bubbling `scroll` listener would miss those and the popover would drift off its anchor. The unit test \"removes the reposition listeners on close\" asserts both `removeEventListener` calls fire (with the matching `capture` flag) after close.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/overlay.ts"
+                },
+                "region": {
+                  "startLine": 634,
+                  "endLine": 640,
+                  "snippet": {
+                    "text": "  reposition();\n  window.addEventListener('scroll', reposition, true); // capture: catch scrolls in any container\n  window.addEventListener('resize', reposition);\n  void handle.result.then(() => {\n    window.removeEventListener('scroll', reposition, true);\n    window.removeEventListener('resize', reposition);\n  });"
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "tags": [
+              "rationale"
+            ]
+          },
+          "workItemUris": [
+            "KF-485"
+          ],
+          "partialFingerprints": {
+            "prNoteAnchor/v1": "bd5117d4afbad7df62e50d9a197093cc"
+          }
+        }
+      ],
+      "versionControlProvenance": [
+        {
+          "repositoryUri": "git@github.com:brianwestphal/kerf.git",
+          "revisionId": "871e2229d729af9c402bdf9b78f524651a673aaf",
+          "branch": "main"
+        }
+      ]
     }
   ]
 }
