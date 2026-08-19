@@ -64,6 +64,69 @@
           "branch": "main"
         }
       ]
+    },
+    {
+      "tool": {
+        "driver": {
+          "name": "Hot Sheet",
+          "rules": [
+            {
+              "id": "review-note",
+              "name": "ReviewNote",
+              "shortDescription": {
+                "text": "AI-authored, line-anchored review note."
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "review-note",
+          "ruleIndex": 0,
+          "kind": "informational",
+          "level": "none",
+          "guid": "mszz5qyte9g1wthh",
+          "message": {
+            "text": "Element and content rows diverge on a same-key item change: content rebuilds, element REUSES — because the two modes refresh their content by opposite means.\n\nThe KF-488 cut rebuilt BOTH modes when row.item !== item (inherited from each()'s identity-based memo). For content mode that's correct: kerf owns the element and re-mount()ing is how it re-projects the fresh item. For element mode it's a bug (KF-492): the caller built the element, so rebuilding destroys the focus/scroll/selection/listeners that a keyed list exists to preserve, and fires dispose for rows that didn't actually leave — and real callers pass fresh object literals every update (data.map(...)), so \"same object identity\" almost never holds. So element rows must be reused by KEY: keep the element, refresh via the optional update(item), and dispose only on genuine removal. This reconcileItem split is the fix, applied in both reconcile paths (syncRows and the granular update patch). The tell that the original tests missed it: they used STABLE object references (const a = {id:1}; items.value = [b, a]), so row.item === item held and the rebuild path never ran — the \"KF-492 repro\" tests use fresh literals precisely to walk it.\n",
+            "markdown": "Element and content rows diverge on a same-key item change: content rebuilds, element REUSES — because the two modes refresh their content by opposite means.\n\nThe KF-488 cut rebuilt BOTH modes when `row.item !== item` (inherited from each()'s identity-based memo). For content mode that's correct: kerf owns the element and re-`mount()`ing is how it re-projects the fresh item. For element mode it's a bug (KF-492): the caller built the element, so rebuilding destroys the focus/scroll/selection/listeners that a keyed list exists to preserve, and fires `dispose` for rows that didn't actually leave — and real callers pass fresh object literals every update (`data.map(...)`), so \"same object identity\" almost never holds. So element rows must be reused by KEY: keep the element, refresh via the optional `update(item)`, and dispose only on genuine removal. This `reconcileItem` split is the fix, applied in both reconcile paths (`syncRows` and the granular `update` patch). The tell that the original tests missed it: they used STABLE object references (`const a = {id:1}; items.value = [b, a]`), so `row.item === item` held and the rebuild path never ran — the \"KF-492 repro\" tests use fresh literals precisely to walk it.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/list.ts"
+                },
+                "region": {
+                  "startLine": 184,
+                  "endLine": 199,
+                  "snippet": {
+                    "text": "  const reconcileItem = (row: Row<T>, k: ListKey, item: T): Row<T> => {\n    if (row.item === item) return row;\n    if (row.elementMode) {\n      row.item = item;\n      row.update?.(item);\n      return row;\n    }\n    row.dispose();\n    row.el.remove();\n    rows.delete(k);\n    const fresh = makeRow(item);\n    rows.set(k, fresh);\n    return fresh;\n  };\n\n  // Reconcile the live rows to exactly `visible`, in order, keyed."
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "tags": [
+              "rationale"
+            ]
+          },
+          "workItemUris": [
+            "KF-492"
+          ],
+          "partialFingerprints": {
+            "prNoteAnchor/v1": "b92901413da2d0d300d36f6ee8c4fd72"
+          }
+        }
+      ],
+      "versionControlProvenance": [
+        {
+          "repositoryUri": "git@github.com:brianwestphal/kerf.git",
+          "revisionId": "645fe3a9127755fcce8331d37e820dd9b64b5bef",
+          "branch": "main"
+        }
+      ]
     }
   ]
 }

@@ -44,10 +44,14 @@ export interface ListSource<T> {
 
 /**
  * A row built imperatively by `render`: return the row **element** itself (kerf
- * keys/moves/reuses it and owns nothing inside it), or `{ el, dispose? }` to also
- * hand back a teardown that runs when the row is removed or rebuilt.
+ * keys/moves/reuses it and owns nothing inside it), or `{ el, update?, dispose? }`
+ * to also hand back an `update(item)` — called on the SAME element when the row's
+ * key persists but its item changes — and a `dispose` that runs only when the row
+ * is removed.
  */
-export type RowElement = HTMLElement | { el: HTMLElement; dispose?: () => void };
+export type RowElement<T> =
+  | HTMLElement
+  | { el: HTMLElement; update?: (item: T) => void; dispose?: () => void };
 
 /** Options for {@link bindList}. */
 export interface BindListOptions<T> {
@@ -58,12 +62,15 @@ export interface BindListOptions<T> {
    *  - **Content mode** (a `MountResult` — JSX / `SafeHtml`): kerf creates the
    *    row element (`tag`) and `mount()`s your content inside it, so signals your
    *    content reads drive per-row reactivity.
-   *  - **Element mode** (an `HTMLElement`, or `{ el, dispose? }`): the element you
-   *    return IS the row, so you own its tag, class, `data-*`, and listeners
-   *    (kerf keys/moves/reuses it). Reactivity + cleanup are yours — return a
-   *    `dispose` to tear down listeners when the row is removed or rebuilt.
+   *  - **Element mode** (an `HTMLElement`, or `{ el, update?, dispose? }`): the
+   *    element you return IS the row, so you own its tag, class, `data-*`, and
+   *    listeners. kerf **keys/moves/reuses** it — the SAME element survives an
+   *    append/remove/reorder or a fresh item object at the same key. Refresh its
+   *    content by reading signals inside it, or by returning an `update(item)`
+   *    that kerf calls on the existing element when the item changes. `dispose`
+   *    runs only when the row is genuinely removed.
    */
-  render: (item: T) => MountResult | RowElement;
+  render: (item: T) => MountResult | RowElement<T>;
   /** Row element tag for **content mode**. Default `'div'` (use `'li'` inside a `<ul>`, `'tr'` inside a `<tbody>`, …). Ignored in element mode. */
   tag?: string;
   /**
@@ -79,6 +86,10 @@ interface Row<T> {
   el: HTMLElement;
   item: T;
   dispose: () => void;
+  /** True for element-mode rows (the caller owns the element — reuse it, don't rebuild on item change). */
+  elementMode: boolean;
+  /** Element mode only: refresh the existing element when the item changes at the same key. */
+  update?: (item: T) => void;
 }
 
 /**
@@ -129,8 +140,8 @@ export function bindList<T>(
   // `{ el, dispose? }` object. Everything else (SafeHtml / string / nullish) is
   // content mode. SafeHtml is an object but has no `el`, so it never matches.
   const asElementRow = (
-    rendered: MountResult | RowElement,
-  ): { el: HTMLElement; dispose: () => void } | null => {
+    rendered: MountResult | RowElement<T>,
+  ): { el: HTMLElement; dispose: () => void; update?: (item: T) => void } | null => {
     if (rendered instanceof HTMLElement) return { el: rendered, dispose: NOOP };
     if (
       rendered !== null
@@ -138,8 +149,8 @@ export function bindList<T>(
       && 'el' in rendered
       && (rendered as { el: unknown }).el instanceof HTMLElement
     ) {
-      const r = rendered as { el: HTMLElement; dispose?: () => void };
-      return { el: r.el, dispose: r.dispose ?? NOOP };
+      const r = rendered as { el: HTMLElement; update?: (item: T) => void; dispose?: () => void };
+      return { el: r.el, dispose: r.dispose ?? NOOP, update: r.update };
     }
     return null;
   };
@@ -151,7 +162,7 @@ export function bindList<T>(
       // Element mode: the returned element IS the row; the caller owns its
       // content + cleanup. bindList still sizes it for the windowing math.
       if (virtualize !== undefined) elementRow.el.style.height = `${virtualize.rowHeight}px`;
-      return { el: elementRow.el, item, dispose: elementRow.dispose };
+      return { el: elementRow.el, item, dispose: elementRow.dispose, elementMode: true, update: elementRow.update };
     }
     // Content mode: kerf creates the row element and mounts `render` inside it,
     // so the content is per-row reactive. (In content mode `render` runs once
@@ -162,7 +173,27 @@ export function bindList<T>(
     // Content mode: `render` returns a MountResult here (element results were
     // handled above), so narrowing it for `mount` is sound.
     const dispose = mount(el, () => render(item) as MountResult);
-    return { el, item, dispose };
+    return { el, item, dispose, elementMode: false };
+  };
+
+  // A row whose KEY persists but whose item object changed. Content-mode rows are
+  // rebuilt (their mount re-renders the fresh item); element-mode rows are REUSED
+  // — the caller owns the element, so we keep it (preserving focus / scroll /
+  // listeners) and refresh via the optional `update(item)`. Returns the row to
+  // use at that key (a fresh one for content, the same one for element).
+  const reconcileItem = (row: Row<T>, k: ListKey, item: T): Row<T> => {
+    if (row.item === item) return row;
+    if (row.elementMode) {
+      row.item = item;
+      row.update?.(item);
+      return row;
+    }
+    row.dispose();
+    row.el.remove();
+    rows.delete(k);
+    const fresh = makeRow(item);
+    rows.set(k, fresh);
+    return fresh;
   };
 
   // Reconcile the live rows to exactly `visible`, in order, keyed.
@@ -179,18 +210,16 @@ export function bindList<T>(
       }
     }
 
-    // Create missing rows (and rebuild a row whose item OBJECT changed identity).
+    // Create missing rows; reuse existing ones by key (element rows keep their
+    // element across item changes; content rows rebuild on identity change).
     order.length = 0;
     for (const item of visible) {
       const k = key(item);
-      let row = rows.get(k);
-      if (row !== undefined && row.item !== item) {
-        row.dispose();
-        row.el.remove();
-        rows.delete(k);
-        row = undefined;
-      }
-      if (row === undefined) {
+      const existing = rows.get(k);
+      let row: Row<T>;
+      if (existing !== undefined) {
+        row = reconcileItem(existing, k, item);
+      } else {
         row = makeRow(item);
         rows.set(k, row);
       }
@@ -231,18 +260,30 @@ export function bindList<T>(
         order.splice(patch.to, 0, row);
         container.insertBefore(row.el, order[patch.to + 1]?.el ?? null);
       } else if (patch.type === 'update') {
-        // Decision #3: an item whose OBJECT identity changed rebuilds the row
-        // (matching the keyed-diff rule). A same-ref update needs nothing here —
-        // the row's own mount reacts to whatever signals its render reads.
+        // An item whose OBJECT identity changed: content rows rebuild (their mount
+        // re-renders the fresh item); element rows are REUSED — keep the caller's
+        // element and refresh via update(), re-keying if the key changed. A
+        // same-ref update needs nothing (the row's mount reacts to its signals).
         const current = order[patch.index];
         if (current.item !== patch.item) {
-          current.dispose();
-          current.el.remove();
-          rows.delete(key(current.item));
-          const row = makeRow(patch.item);
-          rows.set(key(patch.item), row);
-          order[patch.index] = row;
-          container.insertBefore(row.el, order[patch.index + 1]?.el ?? null);
+          if (current.elementMode) {
+            const oldKey = key(current.item);
+            const newKey = key(patch.item);
+            current.item = patch.item;
+            if (newKey !== oldKey) {
+              rows.delete(oldKey);
+              rows.set(newKey, current);
+            }
+            current.update?.(patch.item);
+          } else {
+            current.dispose();
+            current.el.remove();
+            rows.delete(key(current.item));
+            const row = makeRow(patch.item);
+            rows.set(key(patch.item), row);
+            order[patch.index] = row;
+            container.insertBefore(row.el, order[patch.index + 1]?.el ?? null);
+          }
         }
       }
       // 'replace' never reaches here — the caller snapshots on it.
