@@ -211,15 +211,17 @@ describe('bindList() — per-row reactivity (the each() cannot)', () => {
       },
     });
     expect(texts(parent)).toEqual(['off', 'off', 'off']);
-    expect([...renderCalls.values()]).toEqual([1, 1, 1]);
+    // Content-mode render runs once for the element/content mode probe + once
+    // for the mount's first paint = 2 per row at creation.
+    expect([...renderCalls.values()]).toEqual([2, 2, 2]);
     const rowEls = Array.from(parent.children);
 
     data[1].on.value = true; // flip ONLY row 2's signal
     expect(texts(parent)).toEqual(['off', 'on', 'off']);
-    // Only row 2's mount re-ran render; rows 1 and 3 were untouched.
-    expect(renderCalls.get(1)).toBe(1);
-    expect(renderCalls.get(2)).toBe(2);
-    expect(renderCalls.get(3)).toBe(1);
+    // Only row 2's mount re-ran render (+1); rows 1 and 3 were untouched.
+    expect(renderCalls.get(1)).toBe(2);
+    expect(renderCalls.get(2)).toBe(3);
+    expect(renderCalls.get(3)).toBe(2);
     // Every row kept its element (surgical, not rebuilt).
     expect(Array.from(parent.children)).toEqual(rowEls);
     dispose();
@@ -306,5 +308,167 @@ describe('bindList() — virtualization', () => {
     expect((parent.firstElementChild as HTMLElement).style.paddingBottom).not.toBe('');
     dispose();
     expect(parent.children.length).toBe(0); // sizer + rows removed
+  });
+});
+
+describe('bindList() — element mode (render returns the row element)', () => {
+  it('uses the returned HTMLElement as the row (app owns tag / class / data-attrs)', () => {
+    const parent = host();
+    const items = signal([{ id: 1, label: 'a' }, { id: 2, label: 'b' }]);
+    const dispose = bindList(parent, items, {
+      key: (i) => i.id,
+      tag: 'div', // ignored in element mode
+      render: (i) => {
+        const li = document.createElement('li');
+        li.className = 'ticket-row';
+        li.dataset.id = String(i.id);
+        li.textContent = i.label;
+        return li;
+      },
+    });
+    const rows = Array.from(parent.children) as HTMLElement[];
+    expect(rows.map((r) => r.tagName)).toEqual(['LI', 'LI']); // app's tag, not the default div
+    expect(rows[0].className).toBe('ticket-row');
+    expect(rows[0].dataset.id).toBe('1');
+    expect(rows.map((r) => r.textContent)).toEqual(['a', 'b']);
+    dispose();
+  });
+
+  it('{ el, dispose } runs the caller teardown on removal and on final dispose', () => {
+    const parent = host();
+    const torn: number[] = [];
+    const one = { id: 1 };
+    const two = { id: 2 };
+    const items = signal([one, two]);
+    const dispose = bindList(parent, items, {
+      key: (i) => i.id,
+      render: (i) => {
+        const el = document.createElement('div');
+        el.dataset.id = String(i.id);
+        return { el, dispose: () => torn.push(i.id) };
+      },
+    });
+    items.value = [two]; // remove id 1 (keep the SAME `two` object → no rebuild)
+    expect(torn).toEqual([1]); // caller dispose ran for the removed row
+    dispose();
+    expect(torn).toEqual([1, 2]); // and for the survivor on teardown
+  });
+
+  it('keyed reorder reuses the SAME element (no rebuild)', () => {
+    const parent = host();
+    const a = { id: 1 };
+    const b = { id: 2 };
+    const items = signal([a, b]);
+    const dispose = bindList(parent, items, {
+      key: (i) => i.id,
+      render: (i) => {
+        const el = document.createElement('div');
+        el.dataset.id = String(i.id);
+        return el;
+      },
+    });
+    const first = parent.querySelector('[data-id="1"]');
+    items.value = [b, a]; // reorder
+    expect(parent.querySelector('[data-id="1"]')).toBe(first); // same element, moved
+    expect(Array.from(parent.children).map((c) => (c as HTMLElement).dataset.id)).toEqual(['2', '1']);
+    dispose();
+  });
+
+  it('a row whose item identity changes is rebuilt (old disposed, fresh element)', () => {
+    const parent = host();
+    const torn: number[] = [];
+    const items = signal([{ id: 1, v: 'x' }]);
+    const dispose = bindList(parent, items, {
+      key: (i) => i.id,
+      render: (i) => {
+        const el = document.createElement('div');
+        el.textContent = i.v;
+        return { el, dispose: () => torn.push(i.id) };
+      },
+    });
+    const first = parent.querySelector('div');
+    items.value = [{ id: 1, v: 'y' }]; // same key, new object → rebuild
+    expect(torn).toEqual([1]); // old disposed
+    expect(parent.querySelector('div')).not.toBe(first); // fresh element
+    expect(parent.textContent).toBe('y');
+    dispose();
+  });
+
+  it('a list may mix element rows and content rows', () => {
+    const parent = host();
+    const items = signal<Array<{ id: number; kind: 'el' | 'content' }>>([
+      { id: 1, kind: 'el' },
+      { id: 2, kind: 'content' },
+    ]);
+    const dispose = bindList(parent, items, {
+      key: (i) => i.id,
+      tag: 'p',
+      render: (i) => {
+        if (i.kind === 'el') {
+          const el = document.createElement('section');
+          el.textContent = 'E';
+          return el;
+        }
+        return 'C';
+      },
+    });
+    const rows = Array.from(parent.children) as HTMLElement[];
+    expect(rows[0].tagName).toBe('SECTION'); // element mode
+    expect(rows[0].textContent).toBe('E');
+    expect(rows[1].tagName).toBe('P'); // content mode — the default tag
+    expect(rows[1].textContent).toBe('C');
+    dispose();
+  });
+
+  it('{ el } without a dispose is fine (no teardown to run)', () => {
+    const parent = host();
+    const one = { id: 1 };
+    const items = signal([one]);
+    const dispose = bindList(parent, items, {
+      key: (i) => i.id,
+      render: (i) => ({ el: Object.assign(document.createElement('div'), { textContent: `r${i.id}` }) }),
+    });
+    expect(parent.textContent).toBe('r1');
+    items.value = []; // remove — no caller dispose, must not throw
+    expect(parent.children.length).toBe(0);
+    dispose();
+  });
+
+  it('element mode + virtualization sizes each returned element to rowHeight', () => {
+    const parent = host();
+    Object.defineProperty(parent, 'clientHeight', { configurable: true, value: 100 }); // 5 rows at rowHeight 20
+    parent.scrollTop = 0;
+    const items = signal(Array.from({ length: 30 }, (_, i) => ({ id: i })));
+    const dispose = bindList(parent, items, {
+      virtualize: { rowHeight: 20, overscan: 1 },
+      key: (i) => i.id,
+      render: (i) => {
+        const el = document.createElement('div');
+        el.dataset.id = String(i.id);
+        return el;
+      },
+    });
+    const sizer = parent.firstElementChild as HTMLElement;
+    const firstRow = sizer.querySelector('[data-id="0"]') as HTMLElement;
+    expect(firstRow.style.height).toBe('20px'); // bindList sized the caller's element
+    dispose();
+  });
+
+  it('element rows work through the arraySignal granular patch path (insert/remove)', () => {
+    const parent = host();
+    const items = arraySignal([{ id: 1 }, { id: 2 }]);
+    const dispose = bindList(parent, items, {
+      key: (i) => i.id,
+      render: (i) => {
+        const el = document.createElement('a');
+        el.dataset.id = String(i.id);
+        return el;
+      },
+    });
+    items.insert(1, { id: 3 }); // granular insert
+    expect(Array.from(parent.children).map((c) => (c as HTMLElement).dataset.id)).toEqual(['1', '3', '2']);
+    items.remove(0); // granular remove
+    expect(Array.from(parent.children).map((c) => (c as HTMLElement).dataset.id)).toEqual(['3', '2']);
+    dispose();
   });
 });

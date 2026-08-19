@@ -42,13 +42,29 @@ export interface ListSource<T> {
   readonly value: readonly T[];
 }
 
+/**
+ * A row built imperatively by `render`: return the row **element** itself (kerf
+ * keys/moves/reuses it and owns nothing inside it), or `{ el, dispose? }` to also
+ * hand back a teardown that runs when the row is removed or rebuilt.
+ */
+export type RowElement = HTMLElement | { el: HTMLElement; dispose?: () => void };
+
 /** Options for {@link bindList}. */
 export interface BindListOptions<T> {
   /** Stable per-row key. Rows are matched, moved, and reused by this. */
   key: (item: T) => ListKey;
-  /** Renders a row's content into its (individually mounted) row element. Read signals here for per-row reactivity. */
-  render: (item: T) => MountResult;
-  /** Row element tag. Default `'div'` (use `'li'` inside a `<ul>`, `'tr'` inside a `<tbody>`, …). */
+  /**
+   * Build a row. Two modes, chosen per call by what you return:
+   *  - **Content mode** (a `MountResult` — JSX / `SafeHtml`): kerf creates the
+   *    row element (`tag`) and `mount()`s your content inside it, so signals your
+   *    content reads drive per-row reactivity.
+   *  - **Element mode** (an `HTMLElement`, or `{ el, dispose? }`): the element you
+   *    return IS the row, so you own its tag, class, `data-*`, and listeners
+   *    (kerf keys/moves/reuses it). Reactivity + cleanup are yours — return a
+   *    `dispose` to tear down listeners when the row is removed or rebuilt.
+   */
+  render: (item: T) => MountResult | RowElement;
+  /** Row element tag for **content mode**. Default `'div'` (use `'li'` inside a `<ul>`, `'tr'` inside a `<tbody>`, …). Ignored in element mode. */
   tag?: string;
   /**
    * Turn on viewport virtualization. `rowHeight` is the fixed pixel height of
@@ -107,12 +123,45 @@ export function bindList<T>(
   const container: HTMLElement = virtualize === undefined ? parent : document.createElement('div');
   if (virtualize !== undefined) parent.appendChild(container);
 
+  const NOOP = (): void => { /* element-mode rows with no caller teardown */ };
+
+  // Detect element mode from a render result: a raw `HTMLElement`, or a
+  // `{ el, dispose? }` object. Everything else (SafeHtml / string / nullish) is
+  // content mode. SafeHtml is an object but has no `el`, so it never matches.
+  const asElementRow = (
+    rendered: MountResult | RowElement,
+  ): { el: HTMLElement; dispose: () => void } | null => {
+    if (rendered instanceof HTMLElement) return { el: rendered, dispose: NOOP };
+    if (
+      rendered !== null
+      && typeof rendered === 'object'
+      && 'el' in rendered
+      && (rendered as { el: unknown }).el instanceof HTMLElement
+    ) {
+      const r = rendered as { el: HTMLElement; dispose?: () => void };
+      return { el: r.el, dispose: r.dispose ?? NOOP };
+    }
+    return null;
+  };
+
   const makeRow = (item: T): Row<T> => {
+    // One call decides the mode per row (so a list may mix element + content rows).
+    const elementRow = asElementRow(render(item));
+    if (elementRow !== null) {
+      // Element mode: the returned element IS the row; the caller owns its
+      // content + cleanup. bindList still sizes it for the windowing math.
+      if (virtualize !== undefined) elementRow.el.style.height = `${virtualize.rowHeight}px`;
+      return { el: elementRow.el, item, dispose: elementRow.dispose };
+    }
+    // Content mode: kerf creates the row element and mounts `render` inside it,
+    // so the content is per-row reactive. (In content mode `render` runs once
+    // more here for the mode probe than the mount itself needs — keep it a pure
+    // projection, which bindList already requires.)
     const el = document.createElement(tag);
-    // bindList knows the fixed row height, so it sizes rows itself — no
-    // consumer CSS needed for the windowing math to line up.
     if (virtualize !== undefined) el.style.height = `${virtualize.rowHeight}px`;
-    const dispose = mount(el, () => render(item));
+    // Content mode: `render` returns a MountResult here (element results were
+    // handled above), so narrowing it for `mount` is sound.
+    const dispose = mount(el, () => render(item) as MountResult);
     return { el, item, dispose };
   };
 

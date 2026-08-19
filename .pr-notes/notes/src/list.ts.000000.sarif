@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "Hot Sheet",
+          "rules": [
+            {
+              "id": "review-note",
+              "name": "ReviewNote",
+              "shortDescription": {
+                "text": "AI-authored, line-anchored review note."
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "review-note",
+          "ruleIndex": 0,
+          "kind": "informational",
+          "level": "none",
+          "guid": "mszt3r08o57kt4ef",
+          "message": {
+            "text": "Element vs content mode is probed by calling render once and sniffing the return — which unavoidably makes CONTENT-mode render run one extra time at row creation. That's the accepted cost of overloading a single reactive render for both modes.\n\nContent-mode rows need render to run INSIDE mount()'s effect so its signal reads subscribe (per-row reactivity). But we can't know it's content mode until we've called render and inspected the return. Reusing that probe result as the mount's first paint doesn't work: the probe call runs outside any effect, so its signal reads don't subscribe, and a first paint built from it would never react. So the probe call is discarded and mount(() => render(item)) calls render again (subscribing) — two calls at creation for content rows, one for element rows. The per-row-reactivity test pins the counts (2 at creation, +1 only on the changed row's signal), and the docs require render to be a pure projection (it already is — content mode re-runs it on every reactive update). Probing PER ROW (not once for the list) is deliberate: it lets a single list mix element and content rows, which the \"mixed\" test covers.\n",
+            "markdown": "Element vs content mode is probed by calling `render` once and sniffing the return — which unavoidably makes CONTENT-mode `render` run one extra time at row creation. That's the accepted cost of overloading a single reactive `render` for both modes.\n\nContent-mode rows need `render` to run INSIDE `mount()`'s effect so its signal reads subscribe (per-row reactivity). But we can't know it's content mode until we've called `render` and inspected the return. Reusing that probe result as the mount's first paint doesn't work: the probe call runs outside any effect, so its signal reads don't subscribe, and a first paint built from it would never react. So the probe call is discarded and `mount(() => render(item))` calls `render` again (subscribing) — two calls at creation for content rows, one for element rows. The per-row-reactivity test pins the counts (2 at creation, +1 only on the changed row's signal), and the docs require `render` to be a pure projection (it already is — content mode re-runs it on every reactive update). Probing PER ROW (not once for the list) is deliberate: it lets a single list mix element and content rows, which the \"mixed\" test covers.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/list.ts"
+                },
+                "region": {
+                  "startLine": 147,
+                  "endLine": 166,
+                  "snippet": {
+                    "text": "  const makeRow = (item: T): Row<T> => {\n    // One call decides the mode per row (so a list may mix element + content rows).\n    const elementRow = asElementRow(render(item));\n    if (elementRow !== null) {\n      // Element mode: the returned element IS the row; the caller owns its\n      // content + cleanup. bindList still sizes it for the windowing math.\n      if (virtualize !== undefined) elementRow.el.style.height = `${virtualize.rowHeight}px`;\n      return { el: elementRow.el, item, dispose: elementRow.dispose };\n    }\n    // Content mode: kerf creates the row element and mounts `render` inside it,\n    // so the content is per-row reactive. (In content mode `render` runs once\n    // more here for the mode probe than the mount itself needs — keep it a pure\n    // projection, which bindList already requires.)\n    const el = document.createElement(tag);\n    if (virtualize !== undefined) el.style.height = `${virtualize.rowHeight}px`;\n    // Content mode: `render` returns a MountResult here (element results were\n    // handled above), so narrowing it for `mount` is sound.\n    const dispose = mount(el, () => render(item) as MountResult);\n    return { el, item, dispose };\n  };"
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "tags": [
+              "rationale"
+            ]
+          },
+          "workItemUris": [
+            "KF-488"
+          ],
+          "partialFingerprints": {
+            "prNoteAnchor/v1": "2e0135a499d4742c48df0135f7f81497"
+          }
+        }
+      ],
+      "versionControlProvenance": [
+        {
+          "repositoryUri": "git@github.com:brianwestphal/kerf.git",
+          "revisionId": "3d36ffd32610e28059c1fd987b1dc485f5e02125",
+          "branch": "main"
+        }
+      ]
+    }
+  ]
+}
