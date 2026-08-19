@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "Hot Sheet",
+          "rules": [
+            {
+              "id": "review-note",
+              "name": "ReviewNote",
+              "shortDescription": {
+                "text": "AI-authored, line-anchored review note."
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "review-note",
+          "ruleIndex": 0,
+          "kind": "informational",
+          "level": "none",
+          "guid": "mszhzdolvfpkb14h",
+          "message": {
+            "text": "Observing node.getRootNode() with subtree:true (not the node's parent) is what makes ANCESTOR removal fire teardown, not just direct removal.\n\nThe teardown must run whenever the node leaves the document — a morph replacing it, remountOn clearing its parent, or a grandparent being unmounted. A childList observer on the node's direct parent would miss the last case: removing an ancestor higher up mutates that ancestor's child list, not the node's parent's, yet node.isConnected still flips to false. Observing the root with subtree:true means every structural mutation anywhere in the tree re-checks isConnected, so all three removal shapes converge on one check. The test \"runs teardown when an ANCESTOR is removed (subtree observation)\" pins the case a parent-only observer would silently drop; \"a mutation elsewhere while the node stays connected does NOT tear down\" pins the other side (a fired observer with the node still attached is a no-op).\n\nCost note: this is one document-wide observer per imperative() call. Fine for the handful of library-owned widgets a page has; if a page created hundreds, a single shared observer keyed by a WeakSet would be the optimization — deliberately not done here (KISS for v1).\n",
+            "markdown": "Observing `node.getRootNode()` with `subtree:true` (not the node's parent) is what makes ANCESTOR removal fire teardown, not just direct removal.\n\nThe teardown must run whenever the node leaves the document — a morph replacing it, `remountOn` clearing its parent, or a grandparent being unmounted. A `childList` observer on the node's direct parent would miss the last case: removing an ancestor higher up mutates *that* ancestor's child list, not the node's parent's, yet `node.isConnected` still flips to false. Observing the root with `subtree:true` means every structural mutation anywhere in the tree re-checks `isConnected`, so all three removal shapes converge on one check. The test \"runs teardown when an ANCESTOR is removed (subtree observation)\" pins the case a parent-only observer would silently drop; \"a mutation elsewhere while the node stays connected does NOT tear down\" pins the other side (a fired observer with the node still attached is a no-op).\n\nCost note: this is one document-wide observer per `imperative()` call. Fine for the handful of library-owned widgets a page has; if a page created hundreds, a single shared observer keyed by a WeakSet would be the optimization — deliberately not done here (KISS for v1).\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/imperative.ts"
+                },
+                "region": {
+                  "startLine": 45,
+                  "endLine": 53,
+                  "snippet": {
+                    "text": "  // Observe the node's live tree (the document when connected) with subtree, so\n  // an ANCESTOR removal — not just a direct one — is caught. Each mutation just\n  // re-checks `node.isConnected`, which is true until the node (or an ancestor)\n  // is removed, so a morph swap / remountOn replacement / manual removal all fire.\n  const observer = new MutationObserver(() => {\n    if (!node.isConnected) finish();\n  });\n  observer.observe(node.getRootNode(), { childList: true, subtree: true });\n"
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "tags": [
+              "rationale"
+            ]
+          },
+          "workItemUris": [
+            "KF-483"
+          ],
+          "partialFingerprints": {
+            "prNoteAnchor/v1": "5488869b9ecb09d0c1b479f8407b1d45"
+          }
+        }
+      ],
+      "versionControlProvenance": [
+        {
+          "repositoryUri": "git@github.com:brianwestphal/kerf.git",
+          "revisionId": "a300e40c41c280ee952e586eb2a2e623d4ce93ee",
+          "branch": "main"
+        }
+      ]
+    }
+  ]
+}

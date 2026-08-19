@@ -741,3 +741,22 @@ const stop = remountOn(paneEl, () => fileId.value, () => <DiffView id={fileId.va
 ### Remount types
 
 `RemountKey<K>` (`ReadonlySignal<K> | (() => K)`) is exported from `kerfjs/remount`.
+
+## 8.14 Node-lifecycle adapter — `kerfjs/imperative` subpath
+
+Optional subpath (`import { imperative } from 'kerfjs/imperative'`) that binds a non-kerf widget's lifecycle to a single DOM node — a `useEffect`-with-cleanup for one element. `data-morph-skip` lets a library own a subtree so kerf won't touch it, but nothing tears that widget down when the node is replaced/removed; `imperative` closes that seam. DOM only (a `MutationObserver`) — no signals, no render core, so it's the smallest subpath.
+
+### `imperative(node, setup): () => void`
+
+```ts
+imperative(canvasEl, (el) => {
+  const chart = D3.mount(el);
+  return () => chart.destroy(); // runs when el leaves the DOM (or on dispose)
+});
+```
+
+`setup(node)` runs **immediately** and may return a teardown function. The teardown runs **once** — whichever comes first — when `node` leaves the document (detected by a `MutationObserver`, so a morph swap, a [`remountOn`](#813-keyed-subtree-replacement--kerfjsremount-subpath) replacement, or any removal all trigger it) or when the returned disposer is called. The disposer is idempotent, so a `mount()` / [`Scope`](#disposescopeel-scope) can drive teardown explicitly without double-firing. Re-creation is **not** handled here — a fresh node is a fresh `imperative()` call; pair it with `kerfjs/remount`, which replaces the node and re-runs your bind on the new one. Setup type: [`ImperativeSetup`](#imperative-types).
+
+### Imperative types
+
+`ImperativeSetup` (`(node: Element) => (() => void) | void`) is exported from `kerfjs/imperative`.

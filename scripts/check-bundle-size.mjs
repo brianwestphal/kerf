@@ -182,6 +182,17 @@ const BUDGETS = [
     `,
   },
   {
+    // ISOLATED size — imperative() is pure DOM (a MutationObserver), no signals
+    // and no render core, so it's the smallest subpath.
+    name: 'imperative',
+    budgetKb: 0.4,
+    description: 'the imperative subpath (imperative — node-lifecycle adapter) — DOM only, no core',
+    entry: `
+      import { imperative } from '${DIST}/imperative.js';
+      globalThis.__k = imperative;
+    `,
+  },
+  {
     // Guards the KF-429 invariant directly: with the dev entry absent, NO
     // dev-warning code may appear in a production bundle. The size budget
     // above would catch a large regression; this catches any at all.
