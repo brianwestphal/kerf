@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "Hot Sheet",
+          "rules": [
+            {
+              "id": "review-note",
+              "name": "ReviewNote",
+              "shortDescription": {
+                "text": "AI-authored, line-anchored review note."
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "review-note",
+          "ruleIndex": 0,
+          "kind": "informational",
+          "level": "none",
+          "guid": "mszg4ar4wqy6sjlf",
+          "message": {
+            "text": "Overloads disambiguate by argument arity, not by inspecting the value's type — so input may itself be undefined or a function.\n\nrun(fetcher) vs run(input, fetcher) is resolved by maybeFetcher === undefined: a fetcher is always a function and is always the LAST argument, so its presence in the second slot uniquely marks the two-arg form. This is deliberately not a typeof inputOrFetcher === 'function' check — that would misroute run(fn, fetcher) where the input is itself a callable, and would make run(undefined, fetcher) indistinguishable from run(fetcher). The test run(undefined, fetcher) is still the two-arg form pins exactly that boundary: passing undefined as an explicit input still records value.input === undefined via the two-arg path, identical observable state to the one-arg form but reached deliberately.\n\nThe captured input is read again inside the .then success/failure handlers rather than from state.value — correct because the stale guard (gen === generation) already discards a superseded run before it writes, so the closed-over input is always the input of the run that is allowed to resolve.\n",
+            "markdown": "Overloads disambiguate by argument arity, not by inspecting the value's type — so `input` may itself be `undefined` or a function.\n\n`run(fetcher)` vs `run(input, fetcher)` is resolved by `maybeFetcher === undefined`: a fetcher is always a function and is always the LAST argument, so its presence in the second slot uniquely marks the two-arg form. This is deliberately *not* a `typeof inputOrFetcher === 'function'` check — that would misroute `run(fn, fetcher)` where the input is itself a callable, and would make `run(undefined, fetcher)` indistinguishable from `run(fetcher)`. The test `run(undefined, fetcher) is still the two-arg form` pins exactly that boundary: passing `undefined` as an explicit input still records `value.input === undefined` via the two-arg path, identical observable state to the one-arg form but reached deliberately.\n\nThe captured `input` is read again inside the `.then` success/failure handlers rather than from `state.value` — correct because the stale guard (`gen === generation`) already discards a superseded run before it writes, so the closed-over `input` is always the input of the run that is allowed to resolve.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/async.ts"
+                },
+                "region": {
+                  "startLine": 105,
+                  "endLine": 113,
+                  "snippet": {
+                    "text": "    inputOrFetcher: I | ResourceFetcher<T>,\n    maybeFetcher?: ResourceFetcher<T>,\n  ): Promise<T | undefined> {\n    // Two-arg form is (input, fetcher); one-arg form is (fetcher) with no input.\n    // A fetcher is always a function, so `maybeFetcher === undefined` uniquely\n    // identifies the one-arg call — even when the input value is itself undefined.\n    const fetcher = (maybeFetcher ?? inputOrFetcher) as ResourceFetcher<T>;\n    const input = (maybeFetcher === undefined ? undefined : inputOrFetcher) as I | undefined;\n"
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "tags": [
+              "rationale"
+            ]
+          },
+          "workItemUris": [
+            "KF-480"
+          ],
+          "partialFingerprints": {
+            "prNoteAnchor/v1": "263e71e781515827a3053b843add351a"
+          }
+        }
+      ],
+      "versionControlProvenance": [
+        {
+          "repositoryUri": "git@github.com:brianwestphal/kerf.git",
+          "revisionId": "a1bba9ce1cd626593a9cafa15695c3e922940541",
+          "branch": "main"
+        }
+      ]
+    }
+  ]
+}

@@ -46,4 +46,26 @@ describe('async — full pipeline', () => {
     expect(app.querySelectorAll('.state li').length).toBe(2);
     expect(app.querySelector('.state li')?.textContent).toBe('ada');
   });
+
+  it('renders an inline error keyed by the FAILED run input (the Glassbox diff-pane shape)', async () => {
+    // A resource fetched by id, where the error UI must name the id that failed.
+    const diff = resource<string, { fileId: string }>();
+    const app = document.createElement('div');
+    document.body.appendChild(app);
+
+    mount(app, () => {
+      const s = diff.value;
+      if (s.status === 'failed') {
+        return jsx('p', { class: 'state err', children: `failed: ${s.input?.fileId}` });
+      }
+      if (s.status === 'completed') return jsx('pre', { class: 'state', children: s.data });
+      return jsx('p', { class: 'state', children: 'idle' });
+    });
+
+    const err = await diff.run({ fileId: 'src/x.ts' }, () => Promise.reject(new Error('nope')));
+    expect(err).toBeUndefined();
+    await Promise.resolve();
+    // The projection reads value.input.fileId on the failed branch — no separate bookkeeping.
+    expect(app.querySelector('.state.err')?.textContent).toBe('failed: src/x.ts');
+  });
 });

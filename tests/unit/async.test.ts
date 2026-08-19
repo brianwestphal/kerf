@@ -16,7 +16,7 @@ function deferred<T>() {
 describe('resource()', () => {
   it('starts idle', () => {
     const r = resource<number>();
-    expect(r.value).toEqual({ status: 'idle', data: undefined, error: undefined, progress: undefined });
+    expect(r.value).toEqual({ status: 'idle', data: undefined, error: undefined, progress: undefined, input: undefined });
   });
 
   it('run(): idle → running → completed with data, and resolves the data', async () => {
@@ -82,7 +82,7 @@ describe('resource()', () => {
     expect(r.value.status).toBe('idle');
     d.resolve(9);
     await p;
-    expect(r.value).toEqual({ status: 'idle', data: undefined, error: undefined, progress: undefined });
+    expect(r.value).toEqual({ status: 'idle', data: undefined, error: undefined, progress: undefined, input: undefined });
   });
 
   it('progress: the fetcher can report while running; cleared on completion; a stale report is ignored', async () => {
@@ -114,5 +114,73 @@ describe('resource()', () => {
     expect(seen).toContain('running');
     expect(seen[seen.length - 1]).toBe('completed');
     stop();
+  });
+
+  describe('run(input, fetcher): input threading', () => {
+    it('carries input through running → completed', async () => {
+      const r = resource<number, { fileId: string }>();
+      const d = deferred<number>();
+      const p = r.run({ fileId: 'a' }, () => d.promise);
+      expect(r.value.status).toBe('running');
+      expect(r.value.input).toEqual({ fileId: 'a' });
+      d.resolve(1);
+      await p;
+      expect(r.value.status).toBe('completed');
+      expect(r.value.input).toEqual({ fileId: 'a' }); // still available after success
+    });
+
+    it('carries input through to the FAILED state (the whole point)', async () => {
+      const r = resource<number, string>();
+      const err = new Error('boom');
+      const result = await r.run('doc-7', () => Promise.reject(err));
+      expect(result).toBeUndefined();
+      expect(r.value.status).toBe('failed');
+      expect(r.value.error).toBe(err);
+      expect(r.value.input).toBe('doc-7'); // recover which request failed
+    });
+
+    it('input is the LATEST run under the stale guard', async () => {
+      const r = resource<string, number>();
+      const slow = deferred<string>();
+      const fast = deferred<string>();
+      const pSlow = r.run(1, () => slow.promise);
+      const pFast = r.run(2, () => fast.promise);
+      expect(r.value.input).toBe(2); // reflects the newest run immediately
+
+      fast.resolve('fast');
+      await pFast;
+      expect(r.value.input).toBe(2);
+
+      slow.resolve('slow'); // stale — must not clobber input back to 1
+      await pSlow;
+      expect(r.value.input).toBe(2);
+      expect(r.value.data).toBe('fast');
+    });
+
+    it('the no-input run(fetcher) form leaves input undefined, and clears a prior input', async () => {
+      const r = resource<number, string>();
+      await r.run('x', () => Promise.resolve(1));
+      expect(r.value.input).toBe('x');
+      await r.run(() => Promise.resolve(2)); // no-input form supersedes
+      expect(r.value.data).toBe(2);
+      expect(r.value.input).toBeUndefined();
+    });
+
+    it('run(undefined, fetcher) is still the two-arg form (input set to undefined explicitly)', async () => {
+      const r = resource<number, string | undefined>();
+      await r.run('prev', () => Promise.resolve(1));
+      await r.run(undefined, () => Promise.resolve(2));
+      expect(r.value.status).toBe('completed');
+      expect(r.value.data).toBe(2);
+      expect(r.value.input).toBeUndefined();
+    });
+
+    it('reset() clears input back to undefined', async () => {
+      const r = resource<number, string>();
+      await r.run('y', () => Promise.resolve(1));
+      expect(r.value.input).toBe('y');
+      r.reset();
+      expect(r.value.input).toBeUndefined();
+    });
   });
 });
