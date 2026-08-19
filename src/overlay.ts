@@ -539,8 +539,67 @@ export function form(
   );
 }
 
-/** Vertical placement of a {@link popover} relative to its anchor. */
+/** Vertical placement relative to an anchor (used by {@link popover}, {@link positionAnchored}, {@link tooltip}). */
 export type PopoverPlacement = 'bottom' | 'top';
+
+/** Placement options for {@link positionAnchored} / {@link autoReposition}. */
+export interface AnchorPositionOptions {
+  /** Preferred side of the anchor; flips to the other side if it would overflow the viewport. Default `'bottom'`. */
+  placement?: PopoverPlacement;
+  /** Horizontal edge to line up with the anchor: `'start'` (left edges) or `'end'` (right edges). Default `'start'`. */
+  align?: 'start' | 'end';
+  /** Gap in px between the anchor and the element. Default `4`. */
+  gap?: number;
+}
+
+/**
+ * One-shot: position `el` relative to `anchor` — below by default, flipping above
+ * if it would overflow the viewport, aligned to a horizontal edge and clamped into
+ * view. Sets `el.style` `position: fixed`, `margin: 0`, `left`, and `top` (fixed so
+ * `left`/`top` are viewport coordinates, matching `getBoundingClientRect`). This is
+ * `popover()`'s placement core, usable on any element (an inline hint, a tooltip) —
+ * no overlay lifecycle. Pair with {@link autoReposition} to keep it glued while open.
+ */
+export function positionAnchored(el: HTMLElement, anchor: Element, options: AnchorPositionOptions = {}): void {
+  const { placement = 'bottom', align = 'start', gap = 4 } = options;
+  const a = anchor.getBoundingClientRect();
+  const p = el.getBoundingClientRect();
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+
+  // Vertical: preferred side, flipped only if it overflows and the other side fits.
+  const belowTop = a.bottom + gap;
+  const aboveTop = a.top - gap - p.height;
+  let below = placement !== 'top';
+  if (below && belowTop + p.height > vh && aboveTop >= 0) below = false;
+  else if (!below && aboveTop < 0 && belowTop + p.height <= vh) below = true;
+
+  // Horizontal: align to an anchor edge, then clamp into the viewport.
+  let left = align === 'end' ? a.right - p.width : a.left;
+  left = Math.max(0, Math.min(left, vw - p.width));
+
+  el.style.position = 'fixed';
+  el.style.margin = '0';
+  el.style.left = `${left}px`;
+  el.style.top = `${below ? belowTop : aboveTop}px`;
+}
+
+/**
+ * Keep `el` positioned against `anchor` (via {@link positionAnchored}) as the page
+ * scrolls or resizes. Positions once immediately, then re-runs on `scroll`
+ * (capture phase — catches scrolls in any inner container, not just `window`) and
+ * `resize`. Returns a disposer that removes the listeners.
+ */
+export function autoReposition(el: HTMLElement, anchor: Element, options: AnchorPositionOptions = {}): () => void {
+  const reposition = (): void => positionAnchored(el, anchor, options);
+  reposition();
+  window.addEventListener('scroll', reposition, true);
+  window.addEventListener('resize', reposition);
+  return () => {
+    window.removeEventListener('scroll', reposition, true);
+    window.removeEventListener('resize', reposition);
+  };
+}
 
 /** Options for {@link popover}. */
 export interface PopoverOptions {
@@ -607,39 +666,99 @@ export function popover(
     outsideIgnore: [anchor, ...extraIgnore],
   });
 
-  handle.el.style.position = 'fixed';
-  handle.el.style.margin = '0';
-
-  const reposition = (): void => {
-    const a = anchor.getBoundingClientRect();
-    const p = handle.el.getBoundingClientRect();
-    const vw = window.innerWidth;
-    const vh = window.innerHeight;
-
-    // Vertical: preferred side, flipped only if it overflows and the other side fits.
-    const belowTop = a.bottom + gap;
-    const aboveTop = a.top - gap - p.height;
-    let below = placement !== 'top';
-    if (below && belowTop + p.height > vh && aboveTop >= 0) below = false;
-    else if (!below && aboveTop < 0 && belowTop + p.height <= vh) below = true;
-
-    // Horizontal: align to an anchor edge, then clamp into the viewport.
-    let left = align === 'end' ? a.right - p.width : a.left;
-    left = Math.max(0, Math.min(left, vw - p.width));
-
-    handle.el.style.left = `${left}px`;
-    handle.el.style.top = `${below ? belowTop : aboveTop}px`;
-  };
-
-  reposition();
-  window.addEventListener('scroll', reposition, true); // capture: catch scrolls in any container
-  window.addEventListener('resize', reposition);
-  void handle.result.then(() => {
-    window.removeEventListener('scroll', reposition, true);
-    window.removeEventListener('resize', reposition);
-  });
+  // Position + keep it glued while open; drop the listeners on close.
+  const stopReposition = autoReposition(handle.el, anchor, { placement, align, gap });
+  void handle.result.then(stopReposition);
 
   return handle;
+}
+
+/** Content for a {@link tooltip}: text (auto-escaped), `SafeHtml`, or a render function. */
+export type TooltipContent = string | SafeHtml | (() => MountResult);
+
+/** Options for {@link tooltip}. */
+export interface TooltipOptions extends AnchorPositionOptions {
+  /** Where to append the tooltip wrapper. Default `document.body`. */
+  container?: Element;
+  /** Class on the wrapper. Default `'kerf-tooltip'`. */
+  className?: string;
+  /** Delay in ms before showing after hover/focus enters. Default `400`. */
+  delay?: number;
+  /** Delay in ms before hiding after hover/focus leaves. Default `100`. */
+  hideDelay?: number;
+  /** ARIA role on the wrapper. Default `'tooltip'`. */
+  role?: string;
+}
+
+/**
+ * A hover/focus-triggered, non-modal, auto-hiding tooltip anchored to `anchor`.
+ * Shows after `delay` on `pointerenter`/`focus`, hides after `hideDelay` on
+ * `pointerleave`/`blur`, and positions itself with {@link autoReposition} (above
+ * the anchor by default). Unlike {@link popover} there is no click-dismiss model —
+ * it follows the pointer/focus. Returns a disposer that removes the anchor
+ * listeners and hides any shown tooltip. Structural only (kerf ships no CSS).
+ */
+export function tooltip(anchor: Element, content: TooltipContent, options: TooltipOptions = {}): () => void {
+  const {
+    container,
+    className = 'kerf-tooltip',
+    delay = 400,
+    hideDelay = 100,
+    role = 'tooltip',
+    placement = 'top',
+    align = 'start',
+    gap = 4,
+  } = options;
+
+  const body: OverlayContent = typeof content === 'function'
+    ? content
+    : typeof content === 'string'
+      ? jsx('span', { class: `${className}__text`, children: content })
+      : content;
+
+  const timers: { show?: ReturnType<typeof setTimeout>; hide?: ReturnType<typeof setTimeout> } = {};
+  let current: { handle: OverlayHandle; stop: () => void } | undefined;
+
+  function show(): void {
+    const handle = overlay(body, { container, className, dismiss: false, trap: false, initialFocus: false });
+    handle.el.setAttribute('role', role);
+    const stop = autoReposition(handle.el, anchor, { placement, align, gap });
+    current = { handle, stop };
+  }
+
+  function hide(): void {
+    if (current === undefined) return;
+    current.stop();
+    current.handle.close();
+    current = undefined;
+  }
+
+  const onEnter = (): void => {
+    if (timers.hide !== undefined) clearTimeout(timers.hide);
+    if (current !== undefined) return;
+    if (timers.show !== undefined) clearTimeout(timers.show); // debounce: one pending show at a time
+    timers.show = setTimeout(show, delay);
+  };
+  const onLeave = (): void => {
+    if (timers.show !== undefined) clearTimeout(timers.show);
+    if (current === undefined) return;
+    timers.hide = setTimeout(hide, hideDelay);
+  };
+
+  anchor.addEventListener('pointerenter', onEnter);
+  anchor.addEventListener('pointerleave', onLeave);
+  anchor.addEventListener('focus', onEnter);
+  anchor.addEventListener('blur', onLeave);
+
+  return () => {
+    anchor.removeEventListener('pointerenter', onEnter);
+    anchor.removeEventListener('pointerleave', onLeave);
+    anchor.removeEventListener('focus', onEnter);
+    anchor.removeEventListener('blur', onLeave);
+    if (timers.show !== undefined) clearTimeout(timers.show);
+    if (timers.hide !== undefined) clearTimeout(timers.hide);
+    hide();
+  };
 }
 
 /** Content for a {@link toast}: text, `SafeHtml`, or a render function. */

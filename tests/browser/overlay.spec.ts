@@ -88,6 +88,27 @@ test('popover(): positions below a real anchor, left-aligned (real layout)', asy
   expect(Math.abs(popBox.x - anchorBox.x)).toBeLessThan(2);
 });
 
+test('tooltip(): shows on real hover and hides on leave', async ({ page }) => {
+  await page.evaluate(() => {
+    const anchor = document.createElement('button');
+    anchor.id = 'tip-anchor';
+    anchor.textContent = 'hover me';
+    Object.assign(anchor.style, { position: 'absolute', left: '150px', top: '150px' });
+    document.body.appendChild(anchor);
+    const spacer = document.createElement('div');
+    spacer.id = 'away';
+    Object.assign(spacer.style, { position: 'absolute', left: '0', top: '400px', width: '40px', height: '40px' });
+    document.body.appendChild(spacer);
+    const { tooltip } = (window as any).kerfOverlay;
+    (window as any)._tipStop = tooltip(anchor, 'Hello', { delay: 0, hideDelay: 0 });
+  });
+
+  await page.locator('#tip-anchor').hover();
+  await expect(page.locator('.kerf-tooltip')).toHaveText('Hello');
+  await page.locator('#away').hover(); // move the pointer off the anchor
+  await expect(page.locator('.kerf-tooltip')).toHaveCount(0);
+});
+
 test('outside click dismisses a non-modal popover; content + an outsideIgnore trigger do not', async ({ page }) => {
   await page.evaluate(() => {
     const trigger = document.createElement('button');

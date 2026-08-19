@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { jsx, raw } from '../../src/jsx-runtime.js';
-import { confirm, form, overlay, popover, prompt, toast } from '../../src/overlay.js';
+import { autoReposition, confirm, form, overlay, popover, positionAnchored, prompt, toast, tooltip } from '../../src/overlay.js';
 import { signal } from '../../src/reactive.js';
 
 function key(target: EventTarget, k: string, init: KeyboardEventInit = {}): void {
@@ -578,5 +578,152 @@ describe('popover() — more placement coverage', () => {
     // aboveTop = 20-4-100 = -84 < 0, belowTop+height = 44+100 = 144 ≤ 800 → flip below
     expect(h.el.style.top).toBe('44px'); // anchor.bottom(40) + gap(4)
     h.close();
+  });
+});
+
+describe('positionAnchored() / autoReposition()', () => {
+  it('positionAnchored places an arbitrary element below the anchor (fixed)', () => {
+    setViewport(1000, 800);
+    const anchor = anchorAt({ left: 100, right: 150, top: 200, bottom: 220, width: 50, height: 20 });
+    const el = document.createElement('div');
+    document.body.appendChild(el);
+    el.getBoundingClientRect = rectFn({ width: 80, height: 40 });
+
+    positionAnchored(el, anchor, { gap: 4 });
+    expect(el.style.position).toBe('fixed');
+    expect(el.style.top).toBe('224px'); // anchor.bottom(220) + gap(4)
+    expect(el.style.left).toBe('100px');
+  });
+
+  it('autoReposition positions immediately, follows on scroll, and stops on dispose', () => {
+    setViewport(1000, 800);
+    const anchor = anchorAt({ left: 100, right: 150, top: 200, bottom: 220, width: 50, height: 20 });
+    const el = document.createElement('div');
+    document.body.appendChild(el);
+    el.getBoundingClientRect = rectFn({ width: 80, height: 40 });
+
+    const stop = autoReposition(el, anchor, { gap: 0 });
+    expect(el.style.top).toBe('220px'); // positioned immediately
+
+    anchor.getBoundingClientRect = rectFn({ left: 100, right: 150, top: 300, bottom: 320, width: 50, height: 20 });
+    window.dispatchEvent(new Event('scroll'));
+    expect(el.style.top).toBe('320px'); // followed the anchor
+
+    stop();
+    anchor.getBoundingClientRect = rectFn({ left: 100, right: 150, top: 400, bottom: 420, width: 50, height: 20 });
+    window.dispatchEvent(new Event('scroll'));
+    expect(el.style.top).toBe('320px'); // stopped following
+  });
+});
+
+describe('tooltip()', () => {
+  const tipAnchor = () => anchorAt({ left: 100, right: 150, top: 200, bottom: 220, width: 50, height: 20 });
+
+  it('shows after delay on pointerenter (role=tooltip), hides after hideDelay on pointerleave', () => {
+    vi.useFakeTimers();
+    const anchor = tipAnchor();
+    const stop = tooltip(anchor, 'hi', { delay: 400, hideDelay: 100 });
+
+    anchor.dispatchEvent(new Event('pointerenter'));
+    expect(document.querySelector('.kerf-tooltip')).toBeNull(); // waiting for delay
+    vi.advanceTimersByTime(400);
+    const tip = document.querySelector('.kerf-tooltip');
+    expect(tip).not.toBeNull();
+    expect(tip?.getAttribute('role')).toBe('tooltip');
+    expect(tip?.textContent).toBe('hi');
+
+    anchor.dispatchEvent(new Event('pointerleave'));
+    expect(document.querySelector('.kerf-tooltip')).not.toBeNull(); // still there during hideDelay
+    vi.advanceTimersByTime(100);
+    expect(document.querySelector('.kerf-tooltip')).toBeNull();
+    stop();
+  });
+
+  it('re-entering during the hide delay cancels the hide (and does not double-show)', () => {
+    vi.useFakeTimers();
+    const anchor = tipAnchor();
+    const stop = tooltip(anchor, 'x', { delay: 0, hideDelay: 100 });
+    anchor.dispatchEvent(new Event('pointerenter'));
+    vi.advanceTimersByTime(0);
+    anchor.dispatchEvent(new Event('pointerleave')); // start hide timer
+    anchor.dispatchEvent(new Event('pointerenter')); // cancels hide, current still set
+    vi.advanceTimersByTime(100);
+    expect(document.querySelectorAll('.kerf-tooltip').length).toBe(1); // still shown, only one
+    stop();
+  });
+
+  it('two pointerenters before the delay schedule only one tooltip (debounced show)', () => {
+    vi.useFakeTimers();
+    const anchor = tipAnchor();
+    const stop = tooltip(anchor, 'x', { delay: 400 });
+    anchor.dispatchEvent(new Event('pointerenter')); // schedule show #1
+    vi.advanceTimersByTime(200);
+    anchor.dispatchEvent(new Event('pointerenter')); // clears #1, schedules #2
+    vi.advanceTimersByTime(400);
+    expect(document.querySelectorAll('.kerf-tooltip').length).toBe(1);
+    stop();
+  });
+
+  it('leaving before the show delay cancels the show', () => {
+    vi.useFakeTimers();
+    const anchor = tipAnchor();
+    const stop = tooltip(anchor, 'x', { delay: 400 });
+    anchor.dispatchEvent(new Event('pointerenter'));
+    anchor.dispatchEvent(new Event('pointerleave')); // cancel the pending show
+    vi.advanceTimersByTime(400);
+    expect(document.querySelector('.kerf-tooltip')).toBeNull();
+    stop();
+  });
+
+  it('a pointerleave with nothing shown is a no-op', () => {
+    vi.useFakeTimers();
+    const anchor = tipAnchor();
+    const stop = tooltip(anchor, 'x');
+    expect(() => anchor.dispatchEvent(new Event('pointerleave'))).not.toThrow();
+    expect(document.querySelector('.kerf-tooltip')).toBeNull();
+    stop();
+  });
+
+  it('shows on focus; the disposer removes listeners, clears a pending show, and hides', () => {
+    vi.useFakeTimers();
+    const anchor = tipAnchor();
+    const stop = tooltip(anchor, 'x', { delay: 0, hideDelay: 0 });
+    anchor.dispatchEvent(new Event('focus'));
+    vi.advanceTimersByTime(0);
+    expect(document.querySelector('.kerf-tooltip')).not.toBeNull();
+
+    stop(); // removes listeners + hides
+    expect(document.querySelector('.kerf-tooltip')).toBeNull();
+    anchor.dispatchEvent(new Event('focus')); // listener gone → no show
+    vi.advanceTimersByTime(0);
+    expect(document.querySelector('.kerf-tooltip')).toBeNull();
+  });
+
+  it('the disposer clears a still-pending show timer', () => {
+    vi.useFakeTimers();
+    const anchor = tipAnchor();
+    const stop = tooltip(anchor, 'x', { delay: 400 });
+    anchor.dispatchEvent(new Event('pointerenter')); // show pending
+    stop(); // must clear the pending show timer
+    vi.advanceTimersByTime(400);
+    expect(document.querySelector('.kerf-tooltip')).toBeNull();
+  });
+
+  it('accepts SafeHtml and render-fn content', () => {
+    vi.useFakeTimers();
+    const a1 = tipAnchor();
+    const stop1 = tooltip(a1, raw('<em class="tip-em">e</em>'), { delay: 0 });
+    a1.dispatchEvent(new Event('pointerenter'));
+    vi.advanceTimersByTime(0);
+    expect(document.querySelector('.kerf-tooltip .tip-em')?.textContent).toBe('e');
+    stop1();
+
+    document.body.innerHTML = '';
+    const a2 = tipAnchor();
+    const stop2 = tooltip(a2, () => jsx('b', { class: 'tip-b', children: 'B' }), { delay: 0 });
+    a2.dispatchEvent(new Event('pointerenter'));
+    vi.advanceTimersByTime(0);
+    expect(document.querySelector('.kerf-tooltip .tip-b')?.textContent).toBe('B');
+    stop2();
   });
 });

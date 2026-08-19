@@ -576,6 +576,23 @@ const pop = popover(trigger, <Menu />); // opens below the button, dismisses on 
 
 An **anchored, non-modal** overlay: positions `content` relative to `anchor` (below by default, flipping above if it would overflow the viewport, and clamped horizontally) and repositions on scroll / resize while open. It's a thin wrapper over `overlay()` with non-modal defaults — `trap: false`, `dismiss: ['outside']`, and the anchor added to `outsideIgnore` so the click that opened it doesn't immediately close it. Returns the same [`OverlayHandle`](#overlay-types); `close()` also drops the reposition listeners. `position: fixed` is set inline (you style everything else — kerf ships no CSS). Options ([`PopoverOptions`](#overlay-types)): `placement` (`'bottom'` | `'top'`, default `'bottom'`, auto-flips), `align` (`'start'` | `'end'`, default `'start'`), `gap` (px, default `4`), `dismiss`, `initialFocus` (default `false`), `outsideIgnore` (merged with the anchor), `onDismiss`, `container` / `className`. The positioning is dependency-free (below/above + clamp); for complex cases (arrow, collision on both axes) drive `overlay()` yourself.
 
+### `positionAnchored(el, anchor, options?): void` / `autoReposition(el, anchor, options?): () => void`
+
+```ts
+positionAnchored(hintEl, badgeEl, { placement: 'top' });        // one-shot
+const stop = autoReposition(hintEl, badgeEl, { gap: 6 });       // stays glued; stop() to unbind
+```
+
+`popover()`'s placement core, exported for positioning your **own** element against an anchor with no overlay lifecycle (an inline hint, a floating label). `positionAnchored` sets `el.style` `position: fixed`, `margin: 0`, `left`, `top` — below the anchor by default, flipping above on overflow, aligned to a horizontal edge and clamped into view. `autoReposition` positions once, then re-runs on `scroll` (capture — catches inner scroll containers) and `resize`, returning a disposer that removes the listeners. Both take [`AnchorPositionOptions`](#overlay-types) (`placement`, `align`, `gap`).
+
+### `tooltip(anchor, content, options?): () => void`
+
+```ts
+const stop = tooltip(buttonEl, 'Delete this item'); // hover/focus tooltip, above by default
+```
+
+A hover/focus-triggered, non-modal, auto-hiding tooltip anchored to `anchor`. Shows after `delay` on `pointerenter`/`focus`, hides after `hideDelay` on `pointerleave`/`blur`, and keeps itself positioned with `autoReposition` (`placement` defaults to `'top'`). No click-dismiss model — it follows the pointer/focus. `content` is a [`TooltipContent`](#overlay-types) (a string is auto-escaped, or pass `SafeHtml` / a render fn). Returns a disposer that removes the anchor listeners and hides any shown tooltip. Options ([`TooltipOptions`](#overlay-types), extends `AnchorPositionOptions`): `delay` (default `400`), `hideDelay` (default `100`), `role` (default `'tooltip'`), `container` / `className` (default `'kerf-tooltip'`).
+
 ### `toast(content, options?): () => void`
 
 ```ts
@@ -587,7 +604,7 @@ Shows a non-modal, auto-dismissing notification, stacked in a shared body-level 
 
 ### Overlay types
 
-`OverlayHandle`, `OverlayContent`, `OverlayOptions`, `DismissTrigger`, `ConfirmOptions`, `PromptOptions`, `FormField`, `FormOptions`, `FieldValidator`, `PopoverOptions`, `PopoverPlacement`, `ToastContent`, and `ToastOptions` are all exported from `kerfjs/overlay` for annotating handles, content, and option bags.
+`OverlayHandle`, `OverlayContent`, `OverlayOptions`, `DismissTrigger`, `ConfirmOptions`, `PromptOptions`, `FormField`, `FormOptions`, `FieldValidator`, `PopoverOptions`, `PopoverPlacement`, `AnchorPositionOptions`, `TooltipContent`, `TooltipOptions`, `ToastContent`, and `ToastOptions` are all exported from `kerfjs/overlay` for annotating handles, content, and option bags.
 
 ## 8.9 Dispose scopes — `kerfjs/scope` subpath
 

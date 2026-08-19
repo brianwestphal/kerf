@@ -165,6 +165,69 @@
           "branch": "main"
         }
       ]
+    },
+    {
+      "tool": {
+        "driver": {
+          "name": "Hot Sheet",
+          "rules": [
+            {
+              "id": "review-note",
+              "name": "ReviewNote",
+              "shortDescription": {
+                "text": "AI-authored, line-anchored review note."
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "review-note",
+          "ruleIndex": 0,
+          "kind": "informational",
+          "level": "none",
+          "guid": "mszs55vr9hfb0hlg",
+          "message": {
+            "text": "positionAnchored is the single source of truth for anchored placement — popover, autoReposition, and tooltip all route through it, so there's no second copy of the flip/clamp math to drift.\n\nKF-491 asked to export popover's positioning \"guts, minus mount/dismiss.\" Rather than duplicate the below/flip-above/horizontal-clamp logic into a standalone util, the reconcile inverted the dependency: positionAnchored (one-shot) holds the math, autoReposition wraps it with the scroll(capture)/resize listeners + a disposer, and popover now just calls autoReposition instead of carrying its own inline reposition(). tooltip composes the same autoReposition over an overlay(dismiss:false). The pre-existing popover unit tests (flip-above, horizontal-clamp, align:end, reposition-on-scroll, listener-cleanup) passed unchanged through the refactor, which is the evidence the extraction is behavior-preserving — the placement contract is identical, just relocated.\n",
+            "markdown": "`positionAnchored` is the single source of truth for anchored placement — `popover`, `autoReposition`, and `tooltip` all route through it, so there's no second copy of the flip/clamp math to drift.\n\nKF-491 asked to export popover's positioning \"guts, minus mount/dismiss.\" Rather than duplicate the below/flip-above/horizontal-clamp logic into a standalone util, the reconcile inverted the dependency: `positionAnchored` (one-shot) holds the math, `autoReposition` wraps it with the scroll(capture)/resize listeners + a disposer, and `popover` now just calls `autoReposition` instead of carrying its own inline `reposition()`. `tooltip` composes the same `autoReposition` over an `overlay(dismiss:false)`. The pre-existing popover unit tests (flip-above, horizontal-clamp, align:end, reposition-on-scroll, listener-cleanup) passed unchanged through the refactor, which is the evidence the extraction is behavior-preserving — the placement contract is identical, just relocated.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/overlay.ts"
+                },
+                "region": {
+                  "startLine": 570,
+                  "endLine": 570,
+                  "snippet": {
+                    "text": "  // Vertical: preferred side, flipped only if it overflows and the other side fits."
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "tags": [
+              "rationale"
+            ]
+          },
+          "workItemUris": [
+            "KF-491"
+          ],
+          "partialFingerprints": {
+            "prNoteAnchor/v1": "1d30f2357e8734b72075d382f6bff6ea"
+          }
+        }
+      ],
+      "versionControlProvenance": [
+        {
+          "repositoryUri": "git@github.com:brianwestphal/kerf.git",
+          "revisionId": "01580499cc62f99d2f58a136c4198dc152fcf829",
+          "branch": "main"
+        }
+      ]
     }
   ]
 }
