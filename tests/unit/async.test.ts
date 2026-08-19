@@ -264,4 +264,58 @@ describe('resource()', () => {
       expect(r.value.data).toBe('A2');
     });
   });
+
+  describe('cache read surface (cached / cachedKeys / clearCache)', () => {
+    it('cached(key) and cachedKeys() expose the per-input cache without running it', async () => {
+      const r = resource<string, string>({ cacheKey: (id) => id });
+      expect(r.cached('a')).toBeUndefined();
+      expect(r.cachedKeys()).toEqual([]);
+
+      await r.run('a', () => Promise.resolve('A'));
+      await r.run('b', () => Promise.resolve('B'));
+
+      expect(r.cached('a')).toBe('A');
+      expect(r.cached('b')).toBe('B');
+      expect(r.cached('c')).toBeUndefined(); // never loaded
+      expect(new Set(r.cachedKeys())).toEqual(new Set(['a', 'b']));
+      expect(r.cachedKeys().length).toBe(2); // size
+    });
+
+    it('clearCache(key) evicts one key (value unchanged); clearCache() evicts all', async () => {
+      const r = resource<string, string>({ cacheKey: (id) => id });
+      await r.run('a', () => Promise.resolve('A'));
+      await r.run('b', () => Promise.resolve('B'));
+      expect(r.value.data).toBe('B'); // latest run
+
+      r.clearCache('a');
+      expect(r.cached('a')).toBeUndefined();
+      expect(r.cachedKeys()).toEqual(['b']);
+      expect(r.value.data).toBe('B'); // clearCache does NOT touch value
+
+      r.clearCache();
+      expect(r.cachedKeys()).toEqual([]);
+      expect(r.value.data).toBe('B'); // still unchanged
+    });
+
+    it('an evicted key no longer paints instantly on return', async () => {
+      const r = resource<string, string>({ cacheKey: (id) => id });
+      await r.run('a', () => Promise.resolve('A'));
+      r.clearCache('a');
+
+      const d = deferred<string>();
+      const p = r.run('a', () => d.promise);
+      expect(r.value.data).toBeUndefined(); // evicted → no cached slice to paint
+      d.resolve('A2');
+      await p;
+      expect(r.value.data).toBe('A2');
+    });
+
+    it('with no cacheKey the cache stays empty', async () => {
+      const r = resource<number>();
+      await r.run(() => Promise.resolve(1));
+      expect(r.cached('anything')).toBeUndefined();
+      expect(r.cachedKeys()).toEqual([]);
+      r.clearCache(); // no-op, does not throw
+    });
+  });
 });

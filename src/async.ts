@@ -121,6 +121,16 @@ export interface Resource<T, I = void> {
   run(input: I, fetcher: ResourceFetcher<T>): Promise<T | undefined>;
   /** Reset to `idle` (clearing data/error/progress/input, and the per-key cache) and invalidate any in-flight run. */
   reset(): void;
+  /**
+   * Read-only: the cached value for a `cacheKey` key, or `undefined` if that key
+   * isn't cached (or no `cacheKey` was given). Lets a consumer ask "is this slice
+   * cached?" without running it (which would mutate state).
+   */
+  cached(key: string): T | undefined;
+  /** Read-only: the keys currently in the per-input cache (`.length` is the cache size). */
+  cachedKeys(): string[];
+  /** Evict the per-input cache — one `key`, or the whole cache when called with no argument. Does NOT change `value`. */
+  clearCache(key?: string): void;
 }
 
 /** Create an async-state {@link Resource}. No per-instance framework state — it's a closure over a signal. */
@@ -231,5 +241,11 @@ export function resource<T, I = void>(options: ResourceOptions<T, I> = {}): Reso
     },
     run,
     reset,
+    cached: (k) => cache.get(k),
+    cachedKeys: () => Array.from(cache.keys()),
+    clearCache: (k) => {
+      if (k === undefined) cache.clear();
+      else cache.delete(k);
+    },
   };
 }

@@ -141,7 +141,7 @@ const BUDGETS = [
   },
   {
     name: 'async',
-    budgetKb: 2.0,
+    budgetKb: 2.3,
     description: 'the async-state subpath (resource) — signals only, no render core',
     entry: `
       import { resource } from '${DIST}/async.js';
