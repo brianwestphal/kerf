@@ -64,6 +64,69 @@
           "branch": "main"
         }
       ]
+    },
+    {
+      "tool": {
+        "driver": {
+          "name": "Hot Sheet",
+          "rules": [
+            {
+              "id": "review-note",
+              "name": "ReviewNote",
+              "shortDescription": {
+                "text": "AI-authored, line-anchored review note."
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "review-note",
+          "ruleIndex": 0,
+          "kind": "informational",
+          "level": "none",
+          "guid": "mszim2g7pwav41rw",
+          "message": {
+            "text": "The onMount cleanup runs FIRST in tearDown — before disposeMount() and replaceChildren() — so a widget can tear itself down while its node is still attached.\n\nThe whole point of onMount returning a disposer is synchronous, deterministic teardown: onMount typically returns imperative(node, setup)'s disposer, and running it before the DOM is cleared means the widget's teardown fires on a still-connected node, with no dependence on imperative's MutationObserver (which would fire a microtask later, after replaceChildren removed the node). The integration test \"onMount binds a widget with imperative() … synchronously, via the returned disposer\" pins the exact order — setup:a → teardown:a → setup:b → teardown:b, all synchronous. If the cleanup ran after replaceChildren, that teardown would still happen (via the observer) but a frame later and out of this deterministic order, and any teardown that reads the live DOM would find it already detached.\n",
+            "markdown": "The onMount cleanup runs FIRST in tearDown — before `disposeMount()` and `replaceChildren()` — so a widget can tear itself down while its node is still attached.\n\nThe whole point of `onMount` returning a disposer is synchronous, deterministic teardown: `onMount` typically returns `imperative(node, setup)`'s disposer, and running it before the DOM is cleared means the widget's teardown fires on a still-connected node, with no dependence on `imperative`'s `MutationObserver` (which would fire a microtask later, after `replaceChildren` removed the node). The integration test \"onMount binds a widget with imperative() … synchronously, via the returned disposer\" pins the exact order — `setup:a → teardown:a → setup:b → teardown:b`, all synchronous. If the cleanup ran after `replaceChildren`, that teardown would still happen (via the observer) but a frame later and out of this deterministic order, and any teardown that reads the live DOM would find it already detached.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/remount.ts"
+                },
+                "region": {
+                  "startLine": 64,
+                  "endLine": 77,
+                  "snippet": {
+                    "text": "  function tearDown(): void {\n    // Run the onMount cleanup BEFORE tearing down the DOM, so a synchronous\n    // teardown (e.g. an imperative() disposer returned from onMount) fires while\n    // its node is still attached.\n    if (onMountCleanup !== undefined) {\n      onMountCleanup();\n      onMountCleanup = undefined;\n    }\n    if (disposeMount !== undefined) {\n      disposeMount();\n      disposeMount = undefined;\n    }\n    // Owning parent's children: clear whatever the old mount left so widgets\n    // under it see a real removal (their MutationObserver teardown fires)."
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "tags": [
+              "rationale"
+            ]
+          },
+          "workItemUris": [
+            "KF-486"
+          ],
+          "partialFingerprints": {
+            "prNoteAnchor/v1": "b868dd8eea7836df2211500c5130c99c"
+          }
+        }
+      ],
+      "versionControlProvenance": [
+        {
+          "repositoryUri": "git@github.com:brianwestphal/kerf.git",
+          "revisionId": "0f0c93e2e7e5992e7c2951ad0f5e749811674f93",
+          "branch": "main"
+        }
+      ]
     }
   ]
 }

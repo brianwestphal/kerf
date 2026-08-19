@@ -122,4 +122,48 @@ describe('remountOn()', () => {
     expect(seen.length).toBe(buildsBeforeStop);
     expect(parent.querySelector('.d')).toBeNull();
   });
+
+  describe('onMount hook', () => {
+    it('runs after each (re)mount with the live, freshly-rendered subtree', () => {
+      const parent = host();
+      const key = signal('a');
+      const seen: (string | null)[] = [];
+      const stop = remountOn(parent, key, () => jsx('div', { class: 'x', children: key.value }), {
+        onMount: (root) => { seen.push(root.querySelector('.x')?.textContent ?? null); },
+      });
+
+      expect(seen).toEqual(['a']); // fired after the initial mount, node already live
+      key.value = 'b';
+      expect(seen).toEqual(['a', 'b']); // fired again after the remount, on the fresh node
+      stop();
+    });
+
+    it('runs the onMount cleanup before the next remount and on dispose', () => {
+      const parent = host();
+      const key = signal(1);
+      const log: string[] = [];
+      const stop = remountOn(parent, key, () => jsx('div', { class: 'x' }), {
+        onMount: () => {
+          const at = key.value;
+          log.push(`mount:${at}`);
+          return () => log.push(`cleanup:${at}`);
+        },
+      });
+
+      expect(log).toEqual(['mount:1']);
+      key.value = 2; // cleanup(1) fires BEFORE mount(2)
+      expect(log).toEqual(['mount:1', 'cleanup:1', 'mount:2']);
+      stop(); // final dispose runs the last cleanup
+      expect(log).toEqual(['mount:1', 'cleanup:1', 'mount:2', 'cleanup:2']);
+    });
+
+    it('an onMount that returns no cleanup is fine across remounts', () => {
+      const parent = host();
+      const key = signal(1);
+      const stop = remountOn(parent, key, () => jsx('div', { class: 'x' }), { onMount: () => { /* no cleanup */ } });
+      key.value = 2; // must not throw despite no cleanup returned
+      expect(parent.querySelector('.x')).not.toBeNull();
+      stop();
+    });
+  });
 });

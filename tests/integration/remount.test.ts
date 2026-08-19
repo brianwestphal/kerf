@@ -7,6 +7,7 @@
  */
 import { afterEach, describe, expect, it } from 'vitest';
 
+import { imperative } from '../../src/imperative.js';
 import { jsx } from '../../src/jsx-runtime.js';
 import { signal } from '../../src/reactive.js';
 import { remountOn } from '../../src/remount.js';
@@ -40,6 +41,42 @@ describe('remount — full pipeline', () => {
     expect(parent.querySelectorAll('.chart').length).toBe(0);
 
     stop();
+    expect(parent.querySelector('.pane')).toBeNull();
+  });
+
+  it('onMount binds a widget with imperative(); a key change tears the old one down and sets up the new (synchronously, via the returned disposer)', () => {
+    const parent = document.createElement('div');
+    document.body.appendChild(parent);
+    const fileId = signal('a');
+    const events: string[] = [];
+
+    const stop = remountOn(
+      parent,
+      fileId,
+      () => jsx('div', { class: 'pane', 'data-morph-skip': '', children: '' }),
+      {
+        onMount: (root) => {
+          const pane = root.querySelector('.pane') as HTMLElement;
+          const at = fileId.value; // capture identity at bind time
+          // Returning imperative()'s disposer makes teardown SYNCHRONOUS — remountOn
+          // runs it before clearing the DOM, no MutationObserver round trip needed.
+          return imperative(pane, (el) => {
+            events.push(`setup:${at}`);
+            el.innerHTML = '<canvas class="chart"></canvas>';
+            return () => events.push(`teardown:${at}`);
+          });
+        },
+      },
+    );
+
+    expect(events).toEqual(['setup:a']);
+
+    fileId.value = 'b'; // teardown:a (sync) → replace → setup:b
+    expect(events).toEqual(['setup:a', 'teardown:a', 'setup:b']);
+    expect(parent.querySelectorAll('.chart').length).toBe(1); // only the fresh widget's DOM
+
+    stop();
+    expect(events).toEqual(['setup:a', 'teardown:a', 'setup:b', 'teardown:b']);
     expect(parent.querySelector('.pane')).toBeNull();
   });
 });

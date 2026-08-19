@@ -26,21 +26,49 @@ import { effect, type ReadonlySignal } from './reactive.js';
 /** The key that drives a {@link remountOn}: a signal, or a thunk that reads signals. */
 export type RemountKey<K> = ReadonlySignal<K> | (() => K);
 
+/** Options for {@link remountOn}. */
+export interface RemountOptions {
+  /**
+   * Called after each (re)mount with `parent` — the live, freshly-rendered
+   * subtree. This is where you bind a widget to the new DOM (e.g.
+   * `imperative(parent.querySelector('.host'), setup)` from `kerfjs/imperative`),
+   * because `render` returns a string and has no live node yet. May return a
+   * cleanup `() => void` that runs before the NEXT remount and on dispose — return
+   * the disposer from `imperative()` here for synchronous teardown.
+   */
+  onMount?: (root: HTMLElement) => (() => void) | void;
+}
+
 /** Distinguishes "no key seen yet" from any real key (including `undefined`). */
 const UNSET = Symbol('kerf.remount.unset');
 
 /**
  * Watch `key` and, whenever it changes (by `Object.is`), dispose the current
  * subtree + its mounts and render a fresh one into `parent` via `mount(render)`.
- * An unchanged key leaves the subtree untouched. Returns a disposer that tears
- * down the current subtree and stops watching.
+ * An unchanged key leaves the subtree untouched. `options.onMount(parent)` runs
+ * after each (re)mount to bind widgets to the fresh DOM. Returns a disposer that
+ * tears down the current subtree and stops watching.
  */
-export function remountOn<K>(parent: HTMLElement, key: RemountKey<K>, render: () => MountResult): () => void {
+export function remountOn<K>(
+  parent: HTMLElement,
+  key: RemountKey<K>,
+  render: () => MountResult,
+  options: RemountOptions = {},
+): () => void {
+  const { onMount } = options;
   const readKey = typeof key === 'function' ? key : (): K => key.value;
   let currentKey: K | typeof UNSET = UNSET;
   let disposeMount: (() => void) | undefined;
+  let onMountCleanup: (() => void) | undefined;
 
   function tearDown(): void {
+    // Run the onMount cleanup BEFORE tearing down the DOM, so a synchronous
+    // teardown (e.g. an imperative() disposer returned from onMount) fires while
+    // its node is still attached.
+    if (onMountCleanup !== undefined) {
+      onMountCleanup();
+      onMountCleanup = undefined;
+    }
     if (disposeMount !== undefined) {
       disposeMount();
       disposeMount = undefined;
@@ -59,6 +87,7 @@ export function remountOn<K>(parent: HTMLElement, key: RemountKey<K>, render: ()
       currentKey = next;
       tearDown();
       disposeMount = mount(parent, render);
+      onMountCleanup = onMount?.(parent) ?? undefined;
     }
   });
 

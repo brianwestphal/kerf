@@ -727,7 +727,7 @@ A read-only signal that trails `source` by `ms` (trailing-edge): writes to `sour
 
 Optional subpath (`import { remountOn } from 'kerfjs/remount'`) for the opposite of kerf's morph-by-default: **replace** a subtree wholesale when a key changes instead of morphing it in place. The folk pattern is a monotonic counter spent as `data-key={`gen-${n}`}` on a `data-morph-skip` div; `remountOn` names it. Reach for it when a library-owned subtree (a highlighted diff, a chart, an editor) must be torn down and rebuilt on fresh DOM so the library re-initializes rather than the morph patching stale internals underneath it. See `docs/4-render.md` §4.3.
 
-### `remountOn<K>(parent, key, render): () => void`
+### `remountOn<K>(parent, key, render, options?): () => void`
 
 ```ts
 // Replace the diff pane whenever the file (or diff mode) changes:
@@ -736,11 +736,24 @@ const stop = remountOn(paneEl, () => fileId.value, () => <DiffView id={fileId.va
 // key change → the old subtree + its mounts are disposed, a fresh one is mounted
 ```
 
-`remountOn` **owns `parent`'s children** (like `mount()` / `bindList`). It watches `key` — a `ReadonlySignal<K>` **or** a thunk `() => K` that reads signals — and, whenever the key changes (by `Object.is`), disposes the current subtree (and its nested mounts) and renders a fresh one via `mount(parent, render)`. An unchanged key (including a thunk whose inputs moved but whose value stayed equal) leaves the subtree untouched, so per-row reactivity inside `render` still updates in place. Returns a disposer that tears down the current subtree and stops watching. Pairs with `imperative` (`kerfjs/imperative`, §8.14) — put the widget's setup/teardown on the fresh node, and `remountOn` drives its re-creation. Options type: [`RemountKey<K>`](#remount-types).
+`remountOn` **owns `parent`'s children** (like `mount()` / `bindList`). It watches `key` — a `ReadonlySignal<K>` **or** a thunk `() => K` that reads signals — and, whenever the key changes (by `Object.is`), disposes the current subtree (and its nested mounts) and renders a fresh one via `mount(parent, render)`. An unchanged key (including a thunk whose inputs moved but whose value stayed equal) leaves the subtree untouched, so per-row reactivity inside `render` still updates in place. Returns a disposer that tears down the current subtree and stops watching.
+
+Options ([`RemountOptions`](#remount-types)): **`onMount(root)`** runs after each (re)mount with the live subtree (`parent`) — the blessed place to bind an imperative widget, since `render` returns a string with no live node yet. It may return a cleanup that runs before the next remount and on dispose. Returning `imperative`'s disposer here makes teardown **synchronous** (before the DOM is cleared) rather than relying on its `MutationObserver`:
+
+```ts
+import { imperative } from 'kerfjs/imperative';
+
+remountOn(paneEl, () => fileId.value, () => <div class="pane" data-morph-skip />, {
+  onMount: (root) => imperative(root.querySelector('.pane')!, (el) => {
+    const chart = Chart.mount(el);
+    return () => chart.destroy(); // runs on the next key change and on dispose
+  }),
+});
+```
 
 ### Remount types
 
-`RemountKey<K>` (`ReadonlySignal<K> | (() => K)`) is exported from `kerfjs/remount`.
+`RemountKey<K>` (`ReadonlySignal<K> | (() => K)`) and `RemountOptions` (`{ onMount?: (root: HTMLElement) => (() => void) | void }`) are exported from `kerfjs/remount`.
 
 ## 8.14 Node-lifecycle adapter — `kerfjs/imperative` subpath
 
