@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "Hot Sheet",
+          "rules": [
+            {
+              "id": "review-note",
+              "name": "ReviewNote",
+              "shortDescription": {
+                "text": "AI-authored, line-anchored review note."
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "review-note",
+          "ruleIndex": 0,
+          "kind": "informational",
+          "level": "none",
+          "guid": "mt15g0190r53e8s3",
+          "message": {
+            "text": "Second and final extraction from overlay.ts — code moved verbatim, so toast behavior is provably unchanged.\n\nCompletes the KF-511 split: after positioning moved to overlay-position.ts, toast (+ its toastRegion/ToastCarrier/Dismisser helpers and ToastContent/ToastOptions/ToastVariant/ToastHandle types) was the remaining separable cluster. It depends only on mount + SafeHtml, nothing else from overlay.ts, so it moved cleanly. overlay.ts re-exports it, so the kerfjs/overlay public surface and the bundle are unchanged (overlay stayed 16.11 KB). overlay.ts is now 919 LOC — just the modal-dialog core (overlay/confirm/prompt/form/choice), one concern. Toast's own tests (tests/unit/overlay.test.ts) still pass unchanged.\n",
+            "markdown": "Second and final extraction from overlay.ts — code moved verbatim, so toast behavior is provably unchanged.\n\nCompletes the KF-511 split: after positioning moved to overlay-position.ts, `toast` (+ its `toastRegion`/`ToastCarrier`/`Dismisser` helpers and `ToastContent`/`ToastOptions`/`ToastVariant`/`ToastHandle` types) was the remaining separable cluster. It depends only on `mount` + `SafeHtml`, nothing else from overlay.ts, so it moved cleanly. overlay.ts re-exports it, so the `kerfjs/overlay` public surface and the bundle are unchanged (overlay stayed 16.11 KB). overlay.ts is now 919 LOC — just the modal-dialog core (overlay/confirm/prompt/form/choice), one concern. Toast's own tests (tests/unit/overlay.test.ts) still pass unchanged.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/overlay-toast.ts"
+                },
+                "region": {
+                  "startLine": 1,
+                  "endLine": 9,
+                  "snippet": {
+                    "text": "/**\n * `toast()` for `kerfjs/overlay` — a non-modal, auto-dismissing notification that\n * stacks in a shared body-level region. Split out of `overlay.ts` (KF-513) since\n * it's a distinct transient-UI concern from the modal dialogs; re-exported from\n * `overlay.ts` so the public `kerfjs/overlay` surface is unchanged. Structural\n * only — kerf ships no CSS; you style the region / toast / animations.\n */\nimport { type SafeHtml } from './jsx-runtime.js';\nimport { mount, type MountResult } from './mount.js';"
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "tags": [
+              "rationale"
+            ]
+          },
+          "workItemUris": [
+            "KF-513"
+          ],
+          "partialFingerprints": {
+            "prNoteAnchor/v1": "b5a2d4e9d19304f3172c7e9b74deccb8"
+          }
+        }
+      ],
+      "versionControlProvenance": [
+        {
+          "repositoryUri": "git@github.com:brianwestphal/kerf.git",
+          "revisionId": "4f1a1b1aaf8155c84d9a41da4b449c09f508b80e",
+          "branch": "main"
+        }
+      ]
+    }
+  ]
+}
