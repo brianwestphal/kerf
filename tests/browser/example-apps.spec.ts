@@ -485,6 +485,11 @@ test.describe('virtual-list', () => {
     // 10,000 items, but only a screenful (plus overscan) is ever in the DOM.
     await expect(page.locator('#count')).toContainText('10,000 of 10,000 rows');
     expect(await rows.count()).toBeLessThan(40);
+    // The live DOM-node counter proves it: far fewer than 10,000 elements.
+    await expect(page.locator('#dom')).toContainText('in the DOM');
+    const domN = Number(await page.locator('#dom b').innerText());
+    expect(domN).toBeGreaterThan(0);
+    expect(domN).toBeLessThan(40);
 
     // Debounced search: typing narrows the list only after it settles (200 ms).
     // "crimson-falcon-0" is a unique substring — exactly row id 0.

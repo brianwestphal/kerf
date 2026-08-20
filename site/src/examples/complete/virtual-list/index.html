@@ -9,13 +9,19 @@
       .vl-wrap { max-width: 640px; margin: 0 auto; }
       h1 { font-size: 1.3rem; margin: 0 0 0.25rem; }
       p.lede { color: #555; margin: 0 0 1rem; font-size: 0.9rem; }
-      .vl-bar { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.6rem; }
+      .vl-bar { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.35rem; }
+      .vl-subbar { margin-bottom: 0.6rem; }
       #search {
         flex: 1; padding: 0.45rem 0.7rem; border: 1px solid #cbd5e1;
         border-radius: 6px; font-size: 0.9rem;
       }
       #search:focus { outline: 2px solid #2563eb; outline-offset: -1px; border-color: #2563eb; }
       #count { font-size: 0.82rem; color: #64748b; font-variant-numeric: tabular-nums; }
+      .vl-dom {
+        font-size: 0.8rem; color: #475569; background: #eff6ff; border: 1px solid #bfdbfe;
+        border-radius: 999px; padding: 0.2rem 0.6rem; white-space: nowrap;
+      }
+      .vl-dom b { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; color: #2563eb; }
       /* The scroll container kerf virtualizes. A fixed height + overflow is required. */
       #list {
         height: 380px; overflow-y: auto; background: #fff;
@@ -64,14 +70,15 @@
     <div class="vl-wrap">
       <h1>Virtual list</h1>
       <p class="lede">
-        10,000 rows, but only a screenful is ever in the DOM. Built from three optional
-        companion subpaths — <code>kerfjs/list</code> (virtualization),
+        10,000 rows, but only a screenful is ever in the DOM — watch the count as you scroll.
+        Built from three optional companion subpaths — <code>kerfjs/list</code> (virtualization),
         <code>kerfjs/timing</code> (debounced search), <code>kerfjs/overlay</code> (confirm + toast).
       </p>
       <div class="vl-bar">
         <input id="search" type="text" placeholder="Filter by name…" autocomplete="off" />
-        <span id="count"></span>
+        <span id="dom" class="vl-dom"></span>
       </div>
+      <div class="vl-subbar"><span id="count"></span></div>
       <div id="list"></div>
     </div>
     <script type="module" src="./main.tsx"></script>

@@ -5,6 +5,8 @@ description: A 10,000-row virtualized list built from kerf's companion subpaths 
 
 **[▶ Run live](/kerf/run/virtual-list/)** · [View source on GitHub](https://github.com/brianwestphal/kerf/tree/main/site/src/examples/complete/virtual-list)
 
+[![Animated preview: scrolling a 10,000-row list while the "in the DOM" count stays flat, filtering by name down to one row, then deleting it through a confirm dialog and a toast](/kerf/demos/virtual-list.svg)](/kerf/run/virtual-list/)
+
 A list of **10,000 rows** where only a screenful is ever in the DOM. It's built entirely from kerf's optional, tree-shakeable **companion subpaths** — none of which touch the ~12 KB core until you import them:
 
 - **`kerfjs/list` — virtualization.** `bindList(scrollEl, source, { virtualize: { rowHeight } })` renders only the rows in the scroll window (plus a small `overscan`) into an inner sizer, with padding that keeps the scrollbar honest. Scroll through 10,000 items and the DOM never holds more than a screenful.

@@ -26,6 +26,7 @@ const COMPLETE_APPS = [
   'counter-store',
   'row-selector',
   'live-poll',
+  'virtual-list',
 ];
 
 const outRoot = process.argv[2] || '/tmp/claude/kerf-demos';

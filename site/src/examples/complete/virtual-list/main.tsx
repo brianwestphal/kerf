@@ -56,7 +56,7 @@ mount(document.getElementById('count')!, () => <span>{countText}</span>);
 // The virtualized list. Fixed 36 px rows → O(1) windowing; only the visible slice
 // (plus `overscan`) is rendered into an inner sizer kerf creates in `#list`.
 const listEl = document.getElementById('list')!;
-bindList(listEl, filtered, {
+const list = bindList(listEl, filtered, {
   key: (r) => r.id,
   render: (r) => (
     <div class="vl-row" style="height:36px">
@@ -67,6 +67,17 @@ bindList(listEl, filtered, {
   ),
   virtualize: { rowHeight: 36, overscan: 4 },
 });
+
+// The proof that this is virtualized: a live count of how many row elements are
+// actually in the DOM. `list.container` is the inner sizer kerf owns; a
+// MutationObserver on it recounts whenever the window shifts. Scroll through all
+// 10,000 rows and this number never climbs past a screenful.
+const domCount = signal(0);
+const sizer = list.container ?? listEl;
+const recount = (): void => { domCount.value = sizer.querySelectorAll('.vl-row').length; };
+new MutationObserver(recount).observe(sizer, { childList: true });
+recount();
+mount(document.getElementById('dom')!, () => <span><b>{domCount}</b> in the DOM</span>);
 
 // One delegated `input` listener drives the query signal; the debouncedSignal +
 // computed do the rest — the filter recomputes only after typing settles.

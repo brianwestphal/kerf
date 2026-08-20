@@ -1,0 +1,66 @@
+{
+  "width": 700,
+  "height": 560,
+  "output": "site/public/demos/virtual-list.svg",
+  "optimize": true,
+  "vars": {
+    "base": "http://localhost:4188",
+    "easeOut": "cubic-bezier(0.215,0.61,0.355,1)"
+  },
+  "cursor": "auto",
+  "frames": [
+    {
+      "transition": { "type": "cut", "duration": 0 },
+      "input": "${base}/virtual-list/",
+      "waitFor": "#list .vl-row",
+      "wait": 350,
+      "duration": 1100
+    },
+    {
+      "continue": true,
+      "transition": { "type": "cut", "duration": 0 },
+      "actions": [
+        { "type": "evaluate", "script": "document.getElementById('list').scrollTop = 3600" },
+        { "type": "wait", "ms": 220 }
+      ],
+      "animations": [
+        { "selector": "#dom", "property": "scale", "from": "1.3", "to": "1", "duration": 320, "easing": "${easeOut}", "transformOrigin": "center" }
+      ],
+      "duration": 1200
+    },
+    {
+      "continue": true,
+      "transition": { "type": "cut", "duration": 0 },
+      "actions": [
+        { "type": "evaluate", "script": "document.getElementById('list').scrollTop = 0" },
+        { "type": "fill", "selector": "#search", "value": "crimson-falcon-0" },
+        { "type": "wait", "ms": 400 }
+      ],
+      "duration": 1200
+    },
+    {
+      "continue": true,
+      "transition": { "type": "cut", "duration": 0 },
+      "actions": [
+        { "type": "click", "selector": ".vl-del" },
+        { "type": "wait", "ms": 220 }
+      ],
+      "animations": [
+        { "selector": ".kerf-confirm", "property": "translateY", "from": "10px", "to": "0px", "duration": 280, "easing": "${easeOut}" }
+      ],
+      "duration": 1200
+    },
+    {
+      "continue": true,
+      "transition": { "type": "cut", "duration": 0 },
+      "actions": [
+        { "type": "click", "selector": ".kerf-confirm__ok" },
+        { "type": "wait", "ms": 260 }
+      ],
+      "animations": [
+        { "selector": ".kerf-toast", "property": "translateX", "from": "24px", "to": "0px", "duration": 300, "easing": "${easeOut}" }
+      ],
+      "duration": 1400
+    }
+  ]
+}
