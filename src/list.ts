@@ -7,11 +7,12 @@
  *  1. **Per-row reactivity.** Every row is individually `mount()`ed, so a signal
  *     the row's `render` reads updates just that row (fine-grained binding or a
  *     one-row morph) without touching its siblings — no full-list pass.
- *  2. **Virtualization (fixed-height).** With `{ virtualize: { rowHeight } }`
- *     only the rows in the scroll viewport are rendered; padding on the scroll
- *     container keeps `scrollHeight` honest. `rowHeight` is a single fixed pixel
- *     height — variable / measured row heights are a design-only extension (see
- *     `docs/17-list-virtualization.md`), not yet implemented.
+ *  2. **Virtualization.** With `{ virtualize: { rowHeight } }` only the rows in
+ *     the scroll viewport are rendered; padding on the scroll container keeps
+ *     `scrollHeight` honest. `rowHeight` is either a fixed `number` (O(1)
+ *     windowing) or a `(item, index) => number` for **app-declared variable**
+ *     heights (a prefix sum + binary-search window). Measured/dynamic heights
+ *     are a further extension — see `docs/17-list-virtualization.md`.
  *
  * `each()` stays the choice for item-owned-state lists rendered to HTML strings;
  * reach for `bindList` when you need surgical per-row updates or windowing.
@@ -88,12 +89,23 @@ export interface BindListOptions<T> {
    */
   before?: Node | (() => Node | null);
   /**
-   * Turn on viewport virtualization. `rowHeight` is the fixed pixel height of
-   * every row; `overscan` (default 3) is how many extra rows to render above and
-   * below the viewport. `parent` must be a scroll container (your CSS: a fixed
-   * height + `overflow: auto`).
+   * Turn on viewport virtualization. `parent` must be a scroll container (your
+   * CSS: a fixed height + `overflow: auto`). `overscan` (default 3) is how many
+   * extra rows to render above and below the viewport.
+   *
+   * `rowHeight` is the height model:
+   *  - **`number`** — every row is this fixed pixel height. O(1) windowing, no
+   *    cumulative model built.
+   *  - **`(item, index) => number`** — app-declared **variable** heights, derived
+   *    purely from the item and its index. kerf builds a prefix sum of the
+   *    heights (rebuilt when the source array changes, not per scroll frame) and
+   *    binary-searches it to find the visible window. Return a non-negative
+   *    number of pixels.
+   *
+   * Measured / dynamic heights (rows whose height is only known after layout)
+   * are a further extension — see `docs/17-list-virtualization.md`.
    */
-  virtualize?: { rowHeight: number; overscan?: number };
+  virtualize?: { rowHeight: number | ((item: T, index: number) => number); overscan?: number };
 }
 
 interface Row<T> {
@@ -182,8 +194,9 @@ export function bindList<T>(
     const elementRow = asElementRow(render(item));
     if (elementRow !== null) {
       // Element mode: the returned element IS the row; the caller owns its
-      // content + cleanup. bindList still sizes it for the windowing math.
-      if (virtualize !== undefined) elementRow.el.style.height = `${virtualize.rowHeight}px`;
+      // content + cleanup. bindList sizes it for the windowing math per render
+      // (see `sizeVisibleRows`), not here, since a variable height depends on the
+      // row's current index in the full list.
       return { el: elementRow.el, item, dispose: elementRow.dispose, elementMode: true, update: elementRow.update };
     }
     // Content mode: kerf creates the row element and mounts `render` inside it,
@@ -191,7 +204,6 @@ export function bindList<T>(
     // more here for the mode probe than the mount itself needs — keep it a pure
     // projection, which bindList already requires.)
     const el = document.createElement(tag);
-    if (virtualize !== undefined) el.style.height = `${virtualize.rowHeight}px`;
     // Content mode: `render` returns a MountResult here (element results were
     // handled above), so narrowing it for `mount` is sound.
     const dispose = mount(el, () => render(item) as MountResult);
@@ -312,6 +324,62 @@ export function bindList<T>(
     }
   };
 
+  // Virtualization height model. A `number` rowHeight is the O(1) fixed fast path
+  // (no cumulative model). A `(item, index) => number` rowHeight is app-declared
+  // variable heights: `offsets[i]` is the total height of rows 0..i-1 (a prefix
+  // sum, length total+1), so `offsets[i+1] - offsets[i]` is row i's height and
+  // `offsets[total]` is the full scroll height. Rebuilt only when `items` changes
+  // (heightsDirty), never per scroll frame — a scroll reuses the prefix sum and
+  // pays only the O(log n) binary searches.
+  const rowHeight = virtualize?.rowHeight;
+  const fixedHeight = typeof rowHeight === 'number' ? rowHeight : null;
+  let offsets: number[] = [0];
+  let heightsDirty = true;
+
+  const rebuildOffsets = (): void => {
+    const fn = rowHeight as (item: T, index: number) => number;
+    const total = items.length;
+    offsets = new Array<number>(total + 1);
+    offsets[0] = 0;
+    for (let i = 0; i < total; i++) offsets[i + 1] = offsets[i] + fn(items[i], i);
+  };
+
+  // Greatest index i in [0, total] with `offsets[i] <= target` — the first row
+  // whose top is at or above `target` (the viewport top).
+  const findStart = (target: number, total: number): number => {
+    let lo = 0;
+    let hi = total;
+    while (lo < hi) {
+      const mid = (lo + hi + 1) >> 1;
+      if (offsets[mid] <= target) lo = mid;
+      else hi = mid - 1;
+    }
+    return lo;
+  };
+
+  // Smallest index i in [0, total] with `offsets[i] >= target` — one past the
+  // last row that starts before `target` (the viewport bottom). `total` if none.
+  const findEnd = (target: number, total: number): number => {
+    let lo = 0;
+    let hi = total;
+    while (lo < hi) {
+      const mid = (lo + hi) >> 1;
+      if (offsets[mid] >= target) hi = mid;
+      else lo = mid + 1;
+    }
+    return lo;
+  };
+
+  // Size each visible row for the windowing math. `order` holds the visible rows
+  // in order, so `order[j]` is the item at absolute index `start + j`.
+  const sizeVisibleRows = (start: number): void => {
+    for (let j = 0; j < order.length; j++) {
+      const abs = start + j;
+      const h = fixedHeight !== null ? fixedHeight : offsets[abs + 1] - offsets[abs];
+      order[j].el.style.height = `${h}px`;
+    }
+  };
+
   const renderWindow = (): void => {
     if (virtualize === undefined) {
       if (granularEligible) {
@@ -333,17 +401,37 @@ export function bindList<T>(
       firstRender = false;
       return;
     }
-    const { rowHeight } = virtualize;
     const total = items.length;
-    const start = Math.max(0, Math.floor(parent.scrollTop / rowHeight) - overscan);
-    const end = Math.min(total, Math.ceil((parent.scrollTop + parent.clientHeight) / rowHeight) + overscan);
+    const scrollTop = parent.scrollTop;
+    const viewportBottom = scrollTop + parent.clientHeight;
+    let start: number;
+    let end: number;
+    let padTop: number;
+    let padBottom: number;
+    if (fixedHeight !== null) {
+      start = Math.max(0, Math.floor(scrollTop / fixedHeight) - overscan);
+      end = Math.min(total, Math.ceil(viewportBottom / fixedHeight) + overscan);
+      padTop = start * fixedHeight;
+      padBottom = Math.max(0, total - end) * fixedHeight;
+    } else {
+      if (heightsDirty) {
+        rebuildOffsets();
+        heightsDirty = false;
+      }
+      start = Math.max(0, findStart(scrollTop, total) - overscan);
+      end = Math.min(total, findEnd(viewportBottom, total) + overscan);
+      padTop = offsets[start];
+      padBottom = offsets[total] - offsets[end];
+    }
     syncRows(items.slice(start, end));
-    container.style.paddingTop = `${start * rowHeight}px`;
-    container.style.paddingBottom = `${Math.max(0, total - end) * rowHeight}px`;
+    sizeVisibleRows(start);
+    container.style.paddingTop = `${padTop}px`;
+    container.style.paddingBottom = `${padBottom}px`;
   };
 
   const stopEffect = effect(() => {
     items = source.value; // tracking read — re-runs on any structural change
+    heightsDirty = true; // items changed → the prefix sum (if any) is stale
     renderWindow();
   });
 

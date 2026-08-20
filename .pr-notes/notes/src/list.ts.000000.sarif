@@ -190,6 +190,69 @@
           "branch": "main"
         }
       ]
+    },
+    {
+      "tool": {
+        "driver": {
+          "name": "Hot Sheet",
+          "rules": [
+            {
+              "id": "review-note",
+              "name": "ReviewNote",
+              "shortDescription": {
+                "text": "AI-authored, line-anchored review note."
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "review-note",
+          "ruleIndex": 0,
+          "kind": "informational",
+          "level": "none",
+          "guid": "mt0u9hmmhdcnehlx",
+          "message": {
+            "text": "The prefix sum is rebuilt only on source change, not per scroll frame — that's what keeps variable-height virtualization cheap.\n\nheightsDirty is set in the source effect (items changed) and cleared after rebuildOffsets(). A scroll calls renderWindow with heightsDirty still false, so it reuses the existing offsets[] and pays only the two O(log n) binary searches (findStart/findEnd) — a scroll never re-invokes the user's height function.\n\nnumber rowHeight stays a genuine O(1) fast path (fixedHeight !== null): no offsets[] is ever built, and the windowing formulas are the pre-existing fixed-height ones, so that path is byte-for-byte the prior behavior (verified: the 33 pre-existing virtualization tests pass unchanged).\n\nBinary-search contract: findStart returns the greatest index with offsets[i] <= scrollTop (first row at/above the viewport top); findEnd returns the smallest index with offsets[i] >= viewportBottom (one past the last row starting before the bottom), or total if none. Both search the inclusive index range [0, total], so an over-scroll past the end yields an empty window with all padding on top, and an empty list yields [0]-only offsets with zero padding — both covered by tests.\n",
+            "markdown": "The prefix sum is rebuilt only on source change, not per scroll frame — that's what keeps variable-height virtualization cheap.\n\n`heightsDirty` is set in the source effect (items changed) and cleared after `rebuildOffsets()`. A scroll calls `renderWindow` with `heightsDirty` still false, so it reuses the existing `offsets[]` and pays only the two O(log n) binary searches (`findStart`/`findEnd`) — a scroll never re-invokes the user's height function.\n\n`number` rowHeight stays a genuine O(1) fast path (`fixedHeight !== null`): no `offsets[]` is ever built, and the windowing formulas are the pre-existing fixed-height ones, so that path is byte-for-byte the prior behavior (verified: the 33 pre-existing virtualization tests pass unchanged).\n\nBinary-search contract: `findStart` returns the greatest index with `offsets[i] <= scrollTop` (first row at/above the viewport top); `findEnd` returns the smallest index with `offsets[i] >= viewportBottom` (one past the last row starting before the bottom), or `total` if none. Both search the inclusive index range `[0, total]`, so an over-scroll past the end yields an empty window with all padding on top, and an empty list yields `[0]`-only offsets with zero padding — both covered by tests.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/list.ts"
+                },
+                "region": {
+                  "startLine": 315,
+                  "endLine": 345,
+                  "snippet": {
+                    "text": "            rows.delete(key(current.item));\n            const row = makeRow(patch.item);\n            rows.set(key(patch.item), row);\n            order[patch.index] = row;\n            container.insertBefore(row.el, order[patch.index + 1]?.el ?? endAnchor());\n          }\n        }\n      }\n      // 'replace' never reaches here — the caller snapshots on it.\n    }\n  };\n\n  // Virtualization height model. A `number` rowHeight is the O(1) fixed fast path\n  // (no cumulative model). A `(item, index) => number` rowHeight is app-declared\n  // variable heights: `offsets[i]` is the total height of rows 0..i-1 (a prefix\n  // sum, length total+1), so `offsets[i+1] - offsets[i]` is row i's height and\n  // `offsets[total]` is the full scroll height. Rebuilt only when `items` changes\n  // (heightsDirty), never per scroll frame — a scroll reuses the prefix sum and\n  // pays only the O(log n) binary searches.\n  const rowHeight = virtualize?.rowHeight;\n  const fixedHeight = typeof rowHeight === 'number' ? rowHeight : null;\n  let offsets: number[] = [0];\n  let heightsDirty = true;\n\n  const rebuildOffsets = (): void => {\n    const fn = rowHeight as (item: T, index: number) => number;\n    const total = items.length;\n    offsets = new Array<number>(total + 1);\n    offsets[0] = 0;\n    for (let i = 0; i < total; i++) offsets[i + 1] = offsets[i] + fn(items[i], i);\n  };"
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "tags": [
+              "rationale"
+            ]
+          },
+          "workItemUris": [
+            "KF-501"
+          ],
+          "partialFingerprints": {
+            "prNoteAnchor/v1": "65a525c6fd11ebb0b00844932047269e"
+          }
+        }
+      ],
+      "versionControlProvenance": [
+        {
+          "repositoryUri": "git@github.com:brianwestphal/kerf.git",
+          "revisionId": "616473e3e28ed6a003593445f0422335f96286a6",
+          "branch": "main"
+        }
+      ]
     }
   ]
 }

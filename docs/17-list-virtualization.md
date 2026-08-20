@@ -1,10 +1,11 @@
 # 17. List virtualization — variable row heights
 
-> **Status: design only.** What ships today (in the 4.2 beta line) is
-> **fixed-height** virtualization: `bindList(parent, source, { virtualize: {
-> rowHeight: number } })`. This document specifies the extension to
-> **variable / dynamic** row heights. Nothing here is implemented yet; §17.7
-> lists the follow-up tickets that build it.
+> **Status: partial — tiers 1 and 2 shipped, tier 3 design only.** `bindList`
+> virtualization now accepts either a fixed `rowHeight: number` **or** an
+> app-declared `rowHeight: (item, index) => number` for variable heights (tiers 1
+> and 2, §17.2). The **measured** tier — `{ estimate }` + an imperative
+> `setHeight` channel + scroll anchoring — is still design only; §17.4–§17.6
+> specify it and §17.7 tracks the follow-up ticket.
 
 ## 17.1 The problem
 
@@ -45,11 +46,11 @@ the cumulative model isn't even needed.
 
 ### The three height sources
 
-| `rowHeight` | Height model | Who measures | Cost | Unit-testable in happy-dom |
+| `rowHeight` | Height model | Who measures | Cost | Status |
 | --- | --- | --- | --- | --- |
-| `number` *(shipped)* | fixed | nobody | O(1), no cumulative model | yes |
-| `(item, index) => number` | variable, **app-declared** | app (knows from data) | prefix sum + binary search, no reflow, no observers | **yes** |
-| `{ estimate: number \| ((item, index) => number) }` + imperative `setHeight` | variable, **app-measured** | **app** (its own read / observer) | + estimate fallback + anchor correction | no (needs real layout) |
+| `number` | fixed | nobody | O(1), no cumulative model | **shipped** |
+| `(item, index) => number` | variable, **app-declared** | app (knows from data) | prefix sum + binary search, no reflow, no observers (unit-testable) | **shipped** |
+| `{ estimate: number \| ((item, index) => number) }` + imperative `setHeight` | variable, **app-measured** | **app** (its own read / observer) | + estimate fallback + anchor correction (needs real layout) | design only |
 
 - **`number`** stays byte-for-byte the current behavior.
 - **`(item, index) => number`** is for heights the app can compute up front — a
@@ -147,21 +148,22 @@ Open API questions (to settle during implementation, §17.7):
 
 This is a design-then-build feature; it lands in two shippable increments.
 
-1. **Tiers 1 + 2, fully unit-testable.** Refactor the windowing to a
+1. **Tiers 1 + 2, fully unit-testable — shipped.** The windowing is a
    cumulative-offset (prefix-sum) model with a binary-search `scrollTop → start`
-   lookup and padding derived from the prefix sum; keep `number` as an O(1) fast
-   path; add `(item, index) => number` declared heights. No layout reads, no
-   observers — all of it tested in happy-dom.
-2. **Tier 3 + the optional helper, browser-tested.** Add `{ estimate }` with the
-   imperative `setHeight` channel and the scroll-anchor correction (unit-tested
-   with synthetic heights), then the separable `observeRowHeights` helper
-   (Playwright-tested for real layout).
+   lookup and padding derived from the prefix sum; `number` stays an O(1) fast
+   path; `(item, index) => number` declared heights build the prefix sum
+   (rebuilt only when the source changes, not per scroll frame). No layout reads,
+   no observers — all of it tested in happy-dom (`tests/unit/list.test.ts` ›
+   "variable-height virtualization").
+2. **Tier 3 + the optional helper, browser-tested — pending.** Add `{ estimate }`
+   with the imperative `setHeight` channel and the scroll-anchor correction
+   (unit-tested with synthetic heights), then the separable `observeRowHeights`
+   helper (Playwright-tested for real layout).
 
-Each increment gets its own Hot Sheet ticket filed off this document.
+## 17.8 The shipped prose must say what it does
 
-## 17.8 Interim: the shipped prose must say "fixed"
-
-Until the above lands, every place that advertises virtualization must state that
-it is **fixed-height**: the `src/list.ts` JSDoc, `docs/8-api-reference.md` §8.11,
-and the `CHANGELOG` entry. "Renders only visible rows" on its own reads as more
-general than the shipped behavior actually is.
+Virtualization prose must distinguish the height models: `number` is fixed
+height, `(item, index) => number` is app-declared variable height, and measured
+height (tier 3) is not yet implemented. The `src/list.ts` JSDoc,
+`docs/8-api-reference.md` §8.11, and the `CHANGELOG` entry all say this — "renders
+only visible rows" on its own reads as more general than what actually ships.

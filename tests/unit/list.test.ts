@@ -311,6 +311,165 @@ describe('bindList() — virtualization', () => {
   });
 });
 
+describe('bindList() — variable-height virtualization (declared heights, KF-501)', () => {
+  const withHeight = (el: HTMLElement, h: number) =>
+    Object.defineProperty(el, 'clientHeight', { configurable: true, value: h });
+
+  // Alternating 20 / 40 px rows → offsets [0,20,60,80,120,140,180,200,240,260,300].
+  const altHeight = (_: Item, i: number): number => (i % 2 === 0 ? 20 : 40);
+  const tenItems = (): Item[] => Array.from({ length: 10 }, (_, i) => ({ id: i, label: `r${i}` }));
+
+  it('windows via the prefix sum: correct visible slice, padding, and per-row heights', () => {
+    const parent = host();
+    withHeight(parent, 100);
+    parent.scrollTop = 0;
+    const items = signal<Item[]>(tenItems());
+    const dispose = bindList(parent, items, {
+      key: (i) => i.id,
+      render: (i) => i.label,
+      virtualize: { rowHeight: altHeight, overscan: 0 },
+    });
+
+    const sizer = parent.firstElementChild as HTMLElement;
+    // scrollTop 0, viewport 100 → start 0, end = first offset >= 100 = index 4.
+    expect(Array.from(sizer.children).map((c) => c.textContent)).toEqual(['r0', 'r1', 'r2', 'r3']);
+    expect(sizer.style.paddingTop).toBe('0px');
+    expect(sizer.style.paddingBottom).toBe('180px'); // 300 total − offsets[4]=120
+    // Each row is sized to its DECLARED height, not clamped to a constant.
+    const heights = Array.from(sizer.children).map((c) => (c as HTMLElement).style.height);
+    expect(heights).toEqual(['20px', '40px', '20px', '40px']);
+    dispose();
+  });
+
+  it('binary search lands on an exact row boundary (scrollTop === an offset)', async () => {
+    const parent = host();
+    withHeight(parent, 100);
+    parent.scrollTop = 0;
+    const items = signal<Item[]>(tenItems());
+    const dispose = bindList(parent, items, {
+      key: (i) => i.id,
+      render: (i) => i.label,
+      virtualize: { rowHeight: altHeight, overscan: 0 },
+    });
+
+    parent.scrollTop = 60; // exactly offsets[2]
+    parent.dispatchEvent(new Event('scroll'));
+    await new Promise((r) => setTimeout(r, 30));
+
+    const sizer = parent.firstElementChild as HTMLElement;
+    // start = greatest offset <= 60 = index 2; end = first offset >= 160 = index 6.
+    expect(Array.from(sizer.children).map((c) => c.textContent)).toEqual(['r2', 'r3', 'r4', 'r5']);
+    expect(sizer.style.paddingTop).toBe('60px'); // offsets[2]
+    expect(sizer.style.paddingBottom).toBe('120px'); // 300 − offsets[6]=180
+    dispose();
+  });
+
+  it('overscan widens the window symmetrically', () => {
+    const parent = host();
+    withHeight(parent, 100);
+    parent.scrollTop = 0;
+    const items = signal<Item[]>(tenItems());
+    const dispose = bindList(parent, items, {
+      key: (i) => i.id,
+      render: (i) => i.label,
+      virtualize: { rowHeight: altHeight, overscan: 1 },
+    });
+
+    const sizer = parent.firstElementChild as HTMLElement;
+    // base window [0,4) → with overscan 1: start max(0,0-1)=0, end min(10,4+1)=5.
+    expect(Array.from(sizer.children).map((c) => c.textContent)).toEqual(['r0', 'r1', 'r2', 'r3', 'r4']);
+    expect(sizer.style.paddingBottom).toBe('160px'); // 300 − offsets[5]=140
+    dispose();
+  });
+
+  it('rebuilds the prefix sum when the source array changes', () => {
+    const parent = host();
+    withHeight(parent, 100);
+    parent.scrollTop = 0;
+    const items = signal<Item[]>(tenItems());
+    const dispose = bindList(parent, items, {
+      key: (i) => i.id,
+      render: (i) => i.label,
+      virtualize: { rowHeight: altHeight, overscan: 0 },
+    });
+    const sizer = parent.firstElementChild as HTMLElement;
+    expect(sizer.style.paddingBottom).toBe('180px'); // 300 total − 120
+
+    // Drop the last four rows → 6 items, heights [20,40,20,40,20,40], total 180.
+    items.value = items.value.slice(0, 6);
+    // window [0,4) unchanged; padBottom = 180 − offsets[4](=120) = 60.
+    expect(sizer.style.paddingBottom).toBe('60px');
+    dispose();
+  });
+
+  it('receives (item, index) and prices each row from its own index', () => {
+    const parent = host();
+    withHeight(parent, 100);
+    parent.scrollTop = 0;
+    const seen: Array<[number, number]> = [];
+    const items = signal<Item[]>(tenItems());
+    const dispose = bindList(parent, items, {
+      key: (i) => i.id,
+      render: (i) => i.label,
+      virtualize: {
+        rowHeight: (item, index) => {
+          seen.push([item.id, index]);
+          return 20;
+        },
+        overscan: 0,
+      },
+    });
+    // Every id was measured at its own index.
+    expect(seen).toContainEqual([0, 0]);
+    expect(seen).toContainEqual([9, 9]);
+    expect(seen.every(([id, idx]) => id === idx)).toBe(true);
+    dispose();
+  });
+
+  it('handles an empty list and an over-scroll past the end without crashing', async () => {
+    const parent = host();
+    withHeight(parent, 100);
+    parent.scrollTop = 0;
+    const items = signal<Item[]>([]);
+    const dispose = bindList(parent, items, {
+      key: (i) => i.id,
+      render: (i) => i.label,
+      virtualize: { rowHeight: altHeight, overscan: 0 },
+    });
+    const sizer = parent.firstElementChild as HTMLElement;
+    expect(sizer.children.length).toBe(0);
+    expect(sizer.style.paddingTop).toBe('0px');
+    expect(sizer.style.paddingBottom).toBe('0px');
+
+    // Refill, then scroll far past the content height (browsers clamp, but be safe).
+    items.value = tenItems();
+    parent.scrollTop = 10_000;
+    parent.dispatchEvent(new Event('scroll'));
+    await new Promise((r) => setTimeout(r, 30));
+    expect(sizer.children.length).toBe(0); // window is empty past the end
+    expect(sizer.style.paddingTop).toBe('300px'); // all content is above
+    expect(sizer.style.paddingBottom).toBe('0px');
+    dispose();
+  });
+
+  it('the number fast path still works alongside the declared-height path (no offsets built)', () => {
+    const parent = host();
+    withHeight(parent, 100);
+    parent.scrollTop = 0;
+    const items = signal<Item[]>(Array.from({ length: 100 }, (_, i) => ({ id: i, label: `r${i}` })));
+    const dispose = bindList(parent, items, {
+      key: (i) => i.id,
+      render: (i) => i.label,
+      virtualize: { rowHeight: 20, overscan: 2 },
+    });
+    const sizer = parent.firstElementChild as HTMLElement;
+    expect(sizer.children.length).toBe(7); // ceil(100/20)+2
+    expect((sizer.firstElementChild as HTMLElement).style.height).toBe('20px');
+    expect(sizer.style.paddingBottom).toBe(`${(100 - 7) * 20}px`);
+    dispose();
+  });
+});
+
 describe('bindList() — element mode (render returns the row element)', () => {
   it('uses the returned HTMLElement as the row (app owns tag / class / data-attrs)', () => {
     const parent = host();
