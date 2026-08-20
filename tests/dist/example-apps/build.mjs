@@ -51,6 +51,7 @@ const COMPLETE_APPS = [
   'counter-store',
   'row-selector',
   'live-poll',
+  'virtual-list',
 ];
 
 async function buildOne(name) {

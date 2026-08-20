@@ -475,3 +475,33 @@ test.describe('live-poll', () => {
   });
 });
 
+
+test.describe('virtual-list', () => {
+  test('virtualizes 10k rows, debounced filter narrows, confirm-to-delete toasts', async ({ page }) => {
+    await page.goto(`${BASE}/virtual-list/`);
+
+    const rows = page.locator('#list .vl-row');
+    await expect(rows.first()).toBeVisible();
+    // 10,000 items, but only a screenful (plus overscan) is ever in the DOM.
+    await expect(page.locator('#count')).toContainText('10,000 of 10,000 rows');
+    expect(await rows.count()).toBeLessThan(40);
+
+    // Debounced search: typing narrows the list only after it settles (200 ms).
+    // "crimson-falcon-0" is a unique substring — exactly row id 0.
+    await page.locator('#search').fill('crimson-falcon-0');
+    await expect(page.locator('#count')).toContainText('1 of 10,000 rows');
+    await expect(rows).toHaveCount(1);
+    await expect(rows.first()).toContainText('crimson-falcon-0');
+
+    // Confirm-to-delete via kerfjs/overlay; a toast confirms it.
+    await rows.first().locator('.vl-del').click();
+    const dialog = page.locator('.kerf-confirm');
+    await expect(dialog).toBeVisible();
+    await expect(dialog).toContainText('Delete');
+    await dialog.locator('.kerf-confirm__ok').click();
+
+    await expect(page.locator('.kerf-toast')).toContainText('Deleted crimson-falcon-0');
+    // The row is gone from the source: 9,999 remain, and the filter now matches none.
+    await expect(page.locator('#count')).toContainText('0 of 9,999 rows');
+  });
+});

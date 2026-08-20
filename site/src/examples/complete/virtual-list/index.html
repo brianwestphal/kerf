@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>kerf · Virtual list (companion utilities)</title>
+    <style>
+      body { font-family: system-ui, sans-serif; background: #f5f5f5; margin: 0; padding: 1.5rem; color: #1f2937; }
+      .vl-wrap { max-width: 640px; margin: 0 auto; }
+      h1 { font-size: 1.3rem; margin: 0 0 0.25rem; }
+      p.lede { color: #555; margin: 0 0 1rem; font-size: 0.9rem; }
+      .vl-bar { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.6rem; }
+      #search {
+        flex: 1; padding: 0.45rem 0.7rem; border: 1px solid #cbd5e1;
+        border-radius: 6px; font-size: 0.9rem;
+      }
+      #search:focus { outline: 2px solid #2563eb; outline-offset: -1px; border-color: #2563eb; }
+      #count { font-size: 0.82rem; color: #64748b; font-variant-numeric: tabular-nums; }
+      /* The scroll container kerf virtualizes. A fixed height + overflow is required. */
+      #list {
+        height: 380px; overflow-y: auto; background: #fff;
+        border: 1px solid #e5e7eb; border-radius: 8px;
+      }
+      .vl-row {
+        display: flex; align-items: center; gap: 0.75rem; box-sizing: border-box;
+        padding: 0 0.9rem; border-bottom: 1px solid #f1f5f9; font-size: 0.85rem;
+      }
+      .vl-name { font-weight: 600; }
+      .vl-size { margin-left: auto; font-family: ui-monospace, monospace; color: #475569; }
+      .vl-del {
+        padding: 0.2rem 0.55rem; border: 1px solid #fecaca; background: #fff;
+        color: #dc2626; border-radius: 5px; cursor: pointer; font-size: 0.75rem;
+      }
+      .vl-del:hover { background: #fef2f2; border-color: #dc2626; }
+
+      /* kerf ships no CSS — style the overlay + toast yourself. */
+      .kerf-overlay {
+        position: fixed; inset: 0; display: flex; align-items: center; justify-content: center;
+        background: rgba(15, 23, 42, 0.45); z-index: 50;
+      }
+      .kerf-confirm {
+        background: #fff; border-radius: 10px; padding: 1.1rem 1.25rem; min-width: 280px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
+      }
+      .kerf-confirm__message { margin: 0 0 1rem; font-size: 0.95rem; }
+      .kerf-confirm__actions { display: flex; justify-content: flex-end; gap: 0.5rem; }
+      .kerf-confirm__actions button {
+        padding: 0.4rem 0.85rem; border: 1px solid #cbd5e1; background: #fff;
+        border-radius: 6px; cursor: pointer; font-size: 0.85rem;
+      }
+      .kerf-confirm__ok { border-color: #dc2626 !important; background: #dc2626 !important; color: #fff; }
+      .kerf-toasts {
+        position: fixed; bottom: 1rem; right: 1rem; display: flex;
+        flex-direction: column; gap: 0.5rem; z-index: 60;
+      }
+      .kerf-toast {
+        background: #1f2937; color: #fff; padding: 0.55rem 0.9rem; border-radius: 8px;
+        font-size: 0.85rem; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+      }
+      .kerf-toast--success { background: #16a34a; }
+    </style>
+  </head>
+  <body>
+    <div class="vl-wrap">
+      <h1>Virtual list</h1>
+      <p class="lede">
+        10,000 rows, but only a screenful is ever in the DOM. Built from three optional
+        companion subpaths — <code>kerfjs/list</code> (virtualization),
+        <code>kerfjs/timing</code> (debounced search), <code>kerfjs/overlay</code> (confirm + toast).
+      </p>
+      <div class="vl-bar">
+        <input id="search" type="text" placeholder="Filter by name…" autocomplete="off" />
+        <span id="count"></span>
+      </div>
+      <div id="list"></div>
+    </div>
+    <script type="module" src="./main.tsx"></script>
+  </body>
+</html>
