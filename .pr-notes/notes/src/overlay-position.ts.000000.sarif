@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "Hot Sheet",
+          "rules": [
+            {
+              "id": "review-note",
+              "name": "ReviewNote",
+              "shortDescription": {
+                "text": "AI-authored, line-anchored review note."
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "review-note",
+          "ruleIndex": 0,
+          "kind": "informational",
+          "level": "none",
+          "guid": "mt14ll36qz6euyv8",
+          "message": {
+            "text": "Extracted, not rewritten — the positioning primitives moved verbatim so behavior is provably unchanged.\n\noverlay.ts was 1143 LOC across three concern-clusters; positionAnchored/autoReposition are the cleanest to split because they're standalone public exports (any element, no overlay lifecycle). The code moved byte-for-byte (including the KF-507 \"fix position:fixed before measuring\" ordering); overlay.ts imports autoReposition for popover/tooltip and re-exports all four symbols, so the kerfjs/overlay public surface and the bundle are unchanged. Verified: overlay bundle stayed 16.11 KB, and the overlay browser spec (popover left-align + tooltip, which exercise this code) passes on chromium.\n",
+            "markdown": "Extracted, not rewritten — the positioning primitives moved verbatim so behavior is provably unchanged.\n\noverlay.ts was 1143 LOC across three concern-clusters; `positionAnchored`/`autoReposition` are the cleanest to split because they're standalone public exports (any element, no overlay lifecycle). The code moved byte-for-byte (including the KF-507 \"fix position:fixed before measuring\" ordering); overlay.ts imports `autoReposition` for popover/tooltip and re-exports all four symbols, so the `kerfjs/overlay` public surface and the bundle are unchanged. Verified: overlay bundle stayed 16.11 KB, and the overlay browser spec (popover left-align + tooltip, which exercise this code) passes on chromium.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/overlay-position.ts"
+                },
+                "region": {
+                  "startLine": 1,
+                  "endLine": 9,
+                  "snippet": {
+                    "text": "/**\n * Anchored positioning primitives for `kerfjs/overlay` — position an element\n * relative to an anchor, with viewport flip + clamp. These are standalone: they\n * take any element and have no overlay lifecycle, so `popover()` / `tooltip()`\n * build on them but you can also position your own element (an inline hint, a\n * custom menu). Re-exported from `src/overlay.ts` so the public `kerfjs/overlay`\n * surface is unchanged (KF-511 split out of overlay.ts's dialog + toast code).\n */\n"
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "tags": [
+              "rationale"
+            ]
+          },
+          "workItemUris": [
+            "KF-511"
+          ],
+          "partialFingerprints": {
+            "prNoteAnchor/v1": "dc32ce00ed0a19ec168de02361d71642"
+          }
+        }
+      ],
+      "versionControlProvenance": [
+        {
+          "repositoryUri": "git@github.com:brianwestphal/kerf.git",
+          "revisionId": "835286f7e1e82104f39d29ccd53df897a6824278",
+          "branch": "main"
+        }
+      ]
+    }
+  ]
+}
