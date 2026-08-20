@@ -14,19 +14,55 @@
       "input": "${base}/virtual-list/",
       "waitFor": "#list .vl-row",
       "wait": 350,
-      "duration": 1100
+      "duration": 1000
     },
     {
       "continue": true,
       "transition": { "type": "cut", "duration": 0 },
       "actions": [
-        { "type": "evaluate", "script": "document.getElementById('list').scrollTop = 3600" },
-        { "type": "wait", "ms": 220 }
+        { "type": "evaluate", "script": "document.getElementById('list').scrollTop = 220" },
+        { "type": "wait", "ms": 130 }
+      ],
+      "duration": 260
+    },
+    {
+      "continue": true,
+      "transition": { "type": "cut", "duration": 0 },
+      "actions": [
+        { "type": "evaluate", "script": "document.getElementById('list').scrollTop = 440" },
+        { "type": "wait", "ms": 130 }
+      ],
+      "duration": 260
+    },
+    {
+      "continue": true,
+      "transition": { "type": "cut", "duration": 0 },
+      "actions": [
+        { "type": "evaluate", "script": "document.getElementById('list').scrollTop = 680" },
+        { "type": "wait", "ms": 130 }
+      ],
+      "duration": 260
+    },
+    {
+      "continue": true,
+      "transition": { "type": "cut", "duration": 0 },
+      "actions": [
+        { "type": "evaluate", "script": "document.getElementById('list').scrollTop = 920" },
+        { "type": "wait", "ms": 130 }
+      ],
+      "duration": 260
+    },
+    {
+      "continue": true,
+      "transition": { "type": "cut", "duration": 0 },
+      "actions": [
+        { "type": "evaluate", "script": "document.getElementById('list').scrollTop = 1160" },
+        { "type": "wait", "ms": 150 }
       ],
       "animations": [
-        { "selector": "#dom", "property": "scale", "from": "1.3", "to": "1", "duration": 320, "easing": "${easeOut}", "transformOrigin": "center" }
+        { "selector": "#dom", "property": "scale", "from": "1.3", "to": "1", "duration": 360, "easing": "${easeOut}", "transformOrigin": "center" }
       ],
-      "duration": 1200
+      "duration": 1100
     },
     {
       "continue": true,
