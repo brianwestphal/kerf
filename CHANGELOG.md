@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [4.2.0] - 2026-08-20
+
+
+
+- Added a **Virtual list** example app — a 10,000-row virtualized list showcasing the companion subpaths together: `kerfjs/list` viewport virtualization (only a screenful in the DOM), `kerfjs/timing` debounced search, and `kerfjs/overlay` confirm-to-delete with a toast. Includes a live "in the DOM" counter that stays flat as you scroll all 10,000 rows.
+- Expanded the README with a companion-subpaths spotlight covering `list`, `overlay`, `async`, `scope`, `timing`, `remount`, `attach`, and `actions`, with `bindList` fixed and measured-height virtualization examples.
+- Corrected the complete-apps index to accurately describe the eight standalone showcase apps and note that the cart and counter-store apps live in the migration guides.
+
 - Fixed (beta): `bindList` measured-height virtualization (`virtualize: { rowHeight: { estimate } }`) never pruned reported heights, so a list with key churn (a feed prepending new ids over a long session) grew its internal height map without bound. Reported heights are now pruned to the live key set on each rebuild — no leak, and a key that leaves and later returns is re-measured (uses the estimate again) rather than reusing a stale height. A key that only scrolls out of the window keeps its measurement (it's still in the source).
 - Fixed (beta regression): `popover()` / `tooltip()` (and `positionAnchored` / `autoReposition`) mispositioned horizontally — the anchored element was measured while still `display:block`, so its width read as the full body-content width and the viewport clamp slid it to the body's left edge instead of aligning it to the anchor. `positionAnchored` now sets `position: fixed` before measuring, so it uses the element's real (shrink-to-fit) size.
 - **`renderDocument(node, options?)`** (main barrel) — a tiny SSR helper that prepends the doctype to a rendered document, so server routes stop reinventing `"<!DOCTYPE html>" + page.toString()`. Takes a `SafeHtml` or string; optional `{ doctype }` (default `'html'`). Pure string work, no DOM dependency.
