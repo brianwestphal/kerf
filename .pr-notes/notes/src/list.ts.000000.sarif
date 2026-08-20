@@ -379,6 +379,69 @@
           "branch": "main"
         }
       ]
+    },
+    {
+      "tool": {
+        "driver": {
+          "name": "Hot Sheet",
+          "rules": [
+            {
+              "id": "review-note",
+              "name": "ReviewNote",
+              "shortDescription": {
+                "text": "AI-authored, line-anchored review note."
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "review-note",
+          "ruleIndex": 0,
+          "kind": "informational",
+          "level": "none",
+          "guid": "mt14bbiygjw7a3uu",
+          "message": {
+            "text": "Prune against indexByKey (all source keys), not the window — a scrolled-out row must survive.\n\nmeasured was write-only, so a measured virtualized list with key churn grew it without bound. The prune runs inside rebuildOffsets, which already walks every source item to build indexByKey — so indexByKey holds every live key (windowed or not), and deleting measured keys absent from it drops exactly the rows gone from the source. A key that merely scrolled out of the visible window is still in indexByKey, so its measurement is kept (test: \"a key that only scrolls out of the WINDOW ... keeps its measurement\").\n\nObservability: measured is internal, so the tests assert the behavior the leak would corrupt — measure a key to a height that changes the window (120 > 100px viewport), remove it, bring a fresh same-id row back, and assert the window reverts to the estimate (2 rows, not the stale 1). A returned key re-measuring via the estimate is also the semantically correct outcome — a removed-then-returned row is new content.\n\nAn earlier draft guarded the loop with measured.size > indexByKey.size; removed because equal sizes can still hide a stale key (live {1,2,3} vs measured {1,2,4}). The prune is O(live keys) on a pass that's already O(n).\n",
+            "markdown": "Prune against `indexByKey` (all source keys), not the window — a scrolled-out row must survive.\n\n`measured` was write-only, so a measured virtualized list with key churn grew it without bound. The prune runs inside `rebuildOffsets`, which already walks every source item to build `indexByKey` — so `indexByKey` holds *every* live key (windowed or not), and deleting measured keys absent from it drops exactly the rows gone from the source. A key that merely scrolled out of the visible window is still in `indexByKey`, so its measurement is kept (test: \"a key that only scrolls out of the WINDOW ... keeps its measurement\").\n\nObservability: `measured` is internal, so the tests assert the *behavior* the leak would corrupt — measure a key to a height that changes the window (120 > 100px viewport), remove it, bring a fresh same-id row back, and assert the window reverts to the estimate (2 rows, not the stale 1). A returned key re-measuring via the estimate is also the semantically correct outcome — a removed-then-returned row is new content.\n\nAn earlier draft guarded the loop with `measured.size > indexByKey.size`; removed because equal sizes can still hide a stale key (live {1,2,3} vs measured {1,2,4}). The prune is O(live keys) on a pass that's already O(n).\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/list.ts"
+                },
+                "region": {
+                  "startLine": 443,
+                  "endLine": 451,
+                  "snippet": {
+                    "text": "    // with key churn (a feed prepending new ids over a long session) doesn't grow\n    // `measured` without bound. `indexByKey` now holds exactly the live keys (all\n    // of them, windowed or not, since we walked every item). A key that only\n    // scrolled out of the window stays — it's still in the source.\n    if (measuring) {\n      for (const k of measured.keys()) if (!indexByKey.has(k)) measured.delete(k);\n    }\n  };\n"
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "tags": [
+              "rationale"
+            ]
+          },
+          "workItemUris": [
+            "KF-512"
+          ],
+          "partialFingerprints": {
+            "prNoteAnchor/v1": "b54045651a54b664755489cc3ff017fa"
+          }
+        }
+      ],
+      "versionControlProvenance": [
+        {
+          "repositoryUri": "git@github.com:brianwestphal/kerf.git",
+          "revisionId": "3273b18802db16ab5a0dd0aefc4e66ab0ff5ec0f",
+          "branch": "main"
+        }
+      ]
     }
   ]
 }

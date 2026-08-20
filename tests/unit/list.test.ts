@@ -639,6 +639,102 @@ describe('bindList() — measured-height virtualization ({ estimate } + setHeigh
     expect(sizer.style.paddingBottom).toBe('4940px');
     list();
   });
+
+  it('prunes a reported height when its key leaves the source (no stale reuse on return) — KF-512', async () => {
+    const parent = host();
+    withHeight(parent, 100);
+    parent.scrollTop = 0;
+    const items = signal<Item[]>(Array.from({ length: 10 }, (_, i) => ({ id: i, label: `r${i}` })));
+    const list = bindList(parent, items, {
+      key: (i) => i.id,
+      render: (i) => i.label,
+      virtualize: { rowHeight: { estimate: 50 }, overscan: 0 },
+    });
+    const sizer = parent.firstElementChild as HTMLElement;
+    expect(sizer.children.length).toBe(2); // estimate 50, viewport 100 → 2 rows
+
+    // Measure id 0 taller than the viewport → only it fits (proves the report took).
+    list.setHeight(0, 120);
+    await raf();
+    expect(sizer.children.length).toBe(1);
+
+    // Remove id 0 from the source, then bring a FRESH id 0 back at the front.
+    items.value = items.value.filter((i) => i.id !== 0); // id 0 leaves → its height is pruned
+    items.value = [{ id: 0, label: 'r0' }, ...items.value];
+
+    // If the stale 120 had survived, id 0 would fill the viewport (1 row). Because
+    // it was pruned, id 0 is estimated at 50 again → the window is back to 2 rows.
+    expect(sizer.children.length).toBe(2);
+    list();
+  });
+
+  it('a key that only scrolls out of the WINDOW (still in the source) keeps its measurement — KF-512', async () => {
+    const parent = host();
+    withHeight(parent, 100);
+    const items = signal<Item[]>(Array.from({ length: 100 }, (_, i) => ({ id: i, label: `r${i}` })));
+    const list = bindList(parent, items, {
+      key: (i) => i.id,
+      render: (i) => i.label,
+      virtualize: { rowHeight: { estimate: 50 }, overscan: 0 },
+    });
+    // Measure id 0 at 120 (above the fold once we scroll), then scroll far past it.
+    list.setHeight(0, 120);
+    await raf();
+    parent.scrollTop = 2000;
+    parent.dispatchEvent(new Event('scroll'));
+    await raf();
+    // Scroll back to the top: id 0 is still in the source, so its 120 survived —
+    // only id 0 fills the 100px viewport (window of 1), not the estimate's 2.
+    parent.scrollTop = 0;
+    parent.dispatchEvent(new Event('scroll'));
+    await raf();
+    const sizer = parent.firstElementChild as HTMLElement;
+    expect(sizer.children.length).toBe(1);
+    list();
+  });
+
+  it('transition combination: measured mode + minRows (render-all below, window above)', async () => {
+    const parent = host();
+    withHeight(parent, 100);
+    parent.scrollTop = 0;
+    const items = signal<Item[]>(Array.from({ length: 4 }, (_, i) => ({ id: i, label: `r${i}` })));
+    const list = bindList(parent, items, {
+      key: (i) => i.id,
+      render: (i) => i.label,
+      virtualize: { rowHeight: { estimate: 50 }, overscan: 0, minRows: 10 },
+    });
+    const sizer = parent.firstElementChild as HTMLElement;
+    expect(sizer.children.length).toBe(4); // below minRows → render all
+    expect(sizer.style.paddingBottom).toBe('0px');
+    list.setHeight(0, 40); // reporting into a render-all measured list must not throw
+    await raf();
+    expect(sizer.children.length).toBe(4); // still all rendered
+
+    items.value = Array.from({ length: 25 }, (_, i) => ({ id: i, label: `r${i}` })); // cross threshold
+    // Now windowed. id 0's measured 40 carried across the render-all→window
+    // transition, so the viewport (100) spans 3 rows (40 + 50 + 50), not 2.
+    expect(sizer.children.length).toBe(3);
+    list();
+  });
+
+  it('transition combination: arraySignal source + virtualize (keyed diff per window)', () => {
+    const parent = host();
+    withHeight(parent, 100);
+    parent.scrollTop = 0;
+    const items = arraySignal<Item>(Array.from({ length: 50 }, (_, i) => ({ id: i, label: `r${i}` })));
+    const list = bindList(parent, items, {
+      key: (i) => i.id,
+      render: (i) => i.label,
+      virtualize: { rowHeight: 20, overscan: 0 },
+    });
+    const sizer = parent.firstElementChild as HTMLElement;
+    expect(sizer.children.length).toBe(5); // 100/20
+    items.insert(0, { id: 999, label: 'new' }); // arraySignal mutation under virtualization
+    expect(sizer.firstElementChild?.textContent).toBe('new');
+    items.remove(0);
+    expect(sizer.firstElementChild?.textContent).toBe('r0');
+    list();
+  });
 });
 
 describe('bindList() — observeRowHeights (ResizeObserver helper, KF-502)', () => {

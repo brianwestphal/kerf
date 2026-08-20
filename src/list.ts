@@ -439,6 +439,14 @@ export function bindList<T>(
       offsets[i + 1] = offsets[i] + fn(i);
       if (measuring) indexByKey.set(key(items[i]), i);
     }
+    // Prune reported heights for keys no longer in the source, so a measured list
+    // with key churn (a feed prepending new ids over a long session) doesn't grow
+    // `measured` without bound. `indexByKey` now holds exactly the live keys (all
+    // of them, windowed or not, since we walked every item). A key that only
+    // scrolled out of the window stays — it's still in the source.
+    if (measuring) {
+      for (const k of measured.keys()) if (!indexByKey.has(k)) measured.delete(k);
+    }
   };
 
   // Greatest index i in [0, total] with `offsets[i] <= target` — the first row
