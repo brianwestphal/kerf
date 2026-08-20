@@ -164,7 +164,7 @@
     "@typescript-eslint/eslint-plugin": "^8.65.0",
     "@typescript-eslint/parser": "^8.65.0",
     "@vitest/coverage-v8": "^4.1.10",
-    "domotion-svg": "^0.22.2",
+    "domotion-svg": "^0.24.0",
     "eslint": "^10.8.0",
     "eslint-plugin-simple-import-sort": "^12.1.1",
     "gitgist": "^1.1.0",

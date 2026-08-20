@@ -51,11 +51,13 @@ Here's the whole development loop — write a component, run the dev server, cli
 
 6. **JSX typed against HTML, not against React.** Tags and attributes are checked at compile time — `<diiv>` and `<input typo />` don't build. The attribute types are derived from the HTML standard rather than another framework's property table, and that distinction has teeth: `draggable` and `spellcheck` are *enumerated* attributes that take the strings `"true"` / `"false"`, so kerf rejects `draggable={true}` rather than quietly emitting markup that means the opposite. Custom elements and web components slot in with one declaration merge.
 
-7. **Small public API.** ~17 exports from the main barrel (plus `arraySignal` and the `html` tagged template on their own subpaths). No hooks, no lifecycle, no per-instance state. Components are plain functions that return JSX.
+7. **Small public API.** ~18 exports from the main barrel (plus `arraySignal`, the `html` tagged template, and the companion-utility subpaths below — each opt-in, none in the core). No hooks, no lifecycle, no per-instance state. Components are plain functions that return JSX.
 
-8. **Plain TS, plain JSX, plain ESM.** Drops into anything using esbuild / Vite / tsup. No plugin chain. And with the `html` tagged template (`import { html } from 'kerfjs/html'` — identical runtime semantics to JSX), a CDN / importmap project needs no build step at all.
+8. **Batteries on their own subpaths.** Nine optional, tree-shakeable subpaths cover the patterns every real app otherwise hand-rolls — **`kerfjs/list`** (a keyed list with per-row fine-grained mounts and fixed / app-declared / measured-height viewport **virtualization**), **`kerfjs/overlay`** (modals, `confirm` / `prompt` / `form` / `choice`, anchored popovers + tooltips, toasts), **`kerfjs/async`** (`resource` async-state with a built-in stale-response guard + SWR cache), **`kerfjs/scope`** (dispose-scopes that tie teardown to a DOM node's lifetime), plus `timing`, `remount`, `attach`, and `actions`. None of them grows the ~12 KB core until you import it.
 
-9. **Grown-up tooling around a tiny core.** An [ESLint plugin](https://brianwestphal.github.io/kerf/docs/eslint-plugin/) that enforces the hard rules at edit time, an opt-in family of `KERF_DEV_WARN_*` runtime warnings that catch the classic mistakes in development (with zero production cost), a `create-kerf-component` scaffold for publishable component packages, drop-in AI-assistant configs, and side-by-side migration guides for a dozen-plus frameworks — none of which grows the core runtime past ~12 KB.
+9. **Plain TS, plain JSX, plain ESM.** Drops into anything using esbuild / Vite / tsup. No plugin chain. And with the `html` tagged template (`import { html } from 'kerfjs/html'` — identical runtime semantics to JSX), a CDN / importmap project needs no build step at all.
+
+10. **Grown-up tooling around a tiny core.** An [ESLint plugin](https://brianwestphal.github.io/kerf/docs/eslint-plugin/) that enforces the hard rules at edit time, an opt-in family of `KERF_DEV_WARN_*` runtime warnings that catch the classic mistakes in development (with zero production cost), a `create-kerf-component` scaffold for publishable component packages, drop-in AI-assistant configs, and side-by-side migration guides for a dozen-plus frameworks — none of which grows the core runtime past ~12 KB.
 
 ## When to use Kerf
 
@@ -201,6 +203,31 @@ Same algorithm `mount()` uses internally — `data-morph-skip`, `data-morph-skip
 ```
 
 Nothing is self-hosted — `kerfjs` is on npm, so every ESM CDN (esm.sh, jsDelivr, unpkg) mirrors it automatically. esm.sh works with a direct import as shown; jsDelivr / unpkg want an importmap so the internal `@preact/signals-core` import resolves. Pin to a major (`@4`, as shown — the latest `4.x`) rather than floating on `latest`, or an exact version (`@4.1.0`) for full reproducibility. Attribute names are written verbatim (`class`, not `className`), and holes are only legal in text positions or as a complete attribute value — anything ambiguous throws with an actionable message. See [`docs/6-jsx-runtime.md`](./docs/6-jsx-runtime.md) §6.11 (§6.11.1 for the full CDN / importmap recipes) — or the [live-poll example](https://brianwestphal.github.io/kerf/examples/complete/live-poll/), a complete app served exactly as authored: no bundler ever touches it.
+
+### Batteries when you need them: the companion subpaths
+
+The core stays tiny because the patterns every real app rebuilds live in optional, tree-shakeable subpaths — a modal you'd otherwise hand-roll (`kerfjs/overlay`), an async-state container with the stale-response race already solved (`kerfjs/async`), a debounce that composes inside the reactive graph (`kerfjs/timing`), teardown tied to a DOM node's lifetime (`kerfjs/scope`). The largest is `kerfjs/list` — a keyed list that mounts each row individually (so a signal one row reads updates just that row) and virtualizes a long viewport, with fixed, app-declared, or measured row heights:
+
+```ts
+import { bindList, observeRowHeights } from 'kerfjs/list';
+
+// Fixed-height windowing: only the visible rows render.
+bindList(scrollEl, rows, {
+  key: (r) => r.id,
+  render: (r) => <div class="row">{r.label}</div>,
+  virtualize: { rowHeight: 32 },
+});
+
+// Measured heights (chat, feeds): kerf estimates, you report the real height.
+const list = bindList(scrollEl, messages, {
+  key: (m) => m.id,
+  render: (m) => <div class="msg">{m.text}</div>,
+  virtualize: { rowHeight: { estimate: 64 } },
+});
+observeRowHeights(list); // one ResizeObserver → kerf anchor-corrects scroll
+```
+
+Each subpath adds nothing to the main barrel until it's imported. See [`docs/8-api-reference.md`](./docs/8-api-reference.md) for the full list (`list`, `overlay`, `scope`, `async`, `timing`, `remount`, `attach`, `actions`).
 
 ## Install
 
