@@ -7,7 +7,7 @@
  */
 import { afterEach, describe, expect, it } from 'vitest';
 
-import { imperative } from '../../src/imperative.js';
+import { attach } from '../../src/attach.js';
 import { jsx } from '../../src/jsx-runtime.js';
 import { signal } from '../../src/reactive.js';
 import { remountOn } from '../../src/remount.js';
@@ -44,7 +44,7 @@ describe('remount — full pipeline', () => {
     expect(parent.querySelector('.pane')).toBeNull();
   });
 
-  it('onMount binds a widget with imperative(); a key change tears the old one down and sets up the new (synchronously, via the returned disposer)', () => {
+  it('onMount binds a widget with attach(); a key change tears the old one down and sets up the new (synchronously, via the returned disposer)', () => {
     const parent = document.createElement('div');
     document.body.appendChild(parent);
     const fileId = signal('a');
@@ -58,9 +58,9 @@ describe('remount — full pipeline', () => {
         onMount: (root) => {
           const pane = root.querySelector('.pane') as HTMLElement;
           const at = fileId.value; // capture identity at bind time
-          // Returning imperative()'s disposer makes teardown SYNCHRONOUS — remountOn
+          // Returning attach()'s disposer makes teardown SYNCHRONOUS — remountOn
           // runs it before clearing the DOM, no MutationObserver round trip needed.
-          return imperative(pane, (el) => {
+          return attach(pane, (el) => {
             events.push(`setup:${at}`);
             el.innerHTML = '<canvas class="chart"></canvas>';
             return () => events.push(`teardown:${at}`);

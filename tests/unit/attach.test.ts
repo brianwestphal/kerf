@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { imperative } from '../../src/imperative.js';
+import { attach } from '../../src/attach.js';
 
 const microtask = (): Promise<void> => new Promise((resolve) => setTimeout(resolve, 0));
 
@@ -17,12 +17,12 @@ function host(): HTMLElement {
   return parent;
 }
 
-describe('imperative()', () => {
+describe('attach()', () => {
   it('runs setup immediately with the node', () => {
     const parent = host();
     const node = parent.querySelector('.widget')!;
     const seen: Element[] = [];
-    const stop = imperative(node, (el) => { seen.push(el); });
+    const stop = attach(node, (el) => { seen.push(el); });
     expect(seen).toEqual([node]);
     stop();
   });
@@ -31,7 +31,7 @@ describe('imperative()', () => {
     const parent = host();
     const node = parent.querySelector('.widget')!;
     const torn: string[] = [];
-    imperative(node, () => () => torn.push('down'));
+    attach(node, () => () => torn.push('down'));
 
     expect(torn).toEqual([]);
     node.remove();
@@ -43,7 +43,7 @@ describe('imperative()', () => {
     const parent = host();
     const node = parent.querySelector('.widget')!;
     const torn: string[] = [];
-    imperative(node, () => () => torn.push('down'));
+    attach(node, () => () => torn.push('down'));
 
     parent.remove(); // node itself was never touched, but it's now disconnected
     await microtask();
@@ -54,7 +54,7 @@ describe('imperative()', () => {
     const parent = host();
     const node = parent.querySelector('.widget')!;
     let count = 0;
-    const stop = imperative(node, () => () => { count++; });
+    const stop = attach(node, () => () => { count++; });
 
     stop();
     expect(count).toBe(1);
@@ -66,7 +66,7 @@ describe('imperative()', () => {
     const parent = host();
     const node = parent.querySelector('.widget')!;
     let count = 0;
-    const stop = imperative(node, () => () => { count++; });
+    const stop = attach(node, () => () => { count++; });
 
     stop();
     node.remove();
@@ -78,7 +78,7 @@ describe('imperative()', () => {
     const parent = host();
     const node = parent.querySelector('.widget')!;
     const torn: string[] = [];
-    const stop = imperative(node, () => () => torn.push('down'));
+    const stop = attach(node, () => () => torn.push('down'));
 
     // Add an unrelated sibling — fires the observer, but node.isConnected stays true.
     parent.appendChild(document.createElement('span'));
@@ -92,7 +92,7 @@ describe('imperative()', () => {
     const node = parent.querySelector('.widget')!;
     const disconnect = vi.spyOn(MutationObserver.prototype, 'disconnect');
 
-    const stop = imperative(node, () => { /* no teardown */ });
+    const stop = attach(node, () => { /* no teardown */ });
     node.remove();
     await microtask();
     expect(disconnect).toHaveBeenCalled(); // no throw despite no teardown fn

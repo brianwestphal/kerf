@@ -1,5 +1,5 @@
 /**
- * Integration: `kerfjs/imperative` bound to a node inside a `mount()` region.
+ * Integration: `kerfjs/attach` bound to a node inside a `mount()` region.
  * When a reconcile removes the node from the DOM, the widget teardown fires via
  * the MutationObserver — the lifecycle guarantee `data-morph-skip` alone can't
  * give (it protects the subtree from morphing, but nothing tears the widget down
@@ -7,7 +7,7 @@
  */
 import { afterEach, describe, expect, it } from 'vitest';
 
-import { imperative } from '../../src/imperative.js';
+import { attach } from '../../src/attach.js';
 import { jsx } from '../../src/jsx-runtime.js';
 import { mount } from '../../src/mount.js';
 import { signal } from '../../src/reactive.js';
@@ -18,7 +18,7 @@ afterEach(() => {
   document.body.innerHTML = '';
 });
 
-describe('imperative — full pipeline', () => {
+describe('attach — full pipeline', () => {
   it('tears down a library-owned widget when a mount() reconcile removes its node', async () => {
     const app = document.createElement('div');
     document.body.appendChild(app);
@@ -34,7 +34,7 @@ describe('imperative — full pipeline', () => {
     );
 
     const hostNode = app.querySelector('.host') as HTMLElement;
-    imperative(hostNode, (el) => {
+    attach(hostNode, (el) => {
       events.push('setup');
       // A library imperatively takes over the skipped host.
       el.innerHTML = '<canvas class="chart"></canvas>';

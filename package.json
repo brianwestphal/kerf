@@ -92,9 +92,9 @@
       "types": "./dist/remount.d.ts",
       "import": "./dist/remount.js"
     },
-    "./imperative": {
-      "types": "./dist/imperative.d.ts",
-      "import": "./dist/imperative.js"
+    "./attach": {
+      "types": "./dist/attach.d.ts",
+      "import": "./dist/attach.js"
     },
     "./ai/*": "./ai/*"
   },

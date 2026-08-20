@@ -17,7 +17,7 @@
  *
  * `remountOn` owns `parent`'s children (like `mount()` / `bindList`). It returns
  * a disposer that tears down the current subtree and stops watching the key.
- * Pairs with `kerfjs/imperative`: put the widget's setup/teardown on the fresh
+ * Pairs with `kerfjs/attach`: put the widget's setup/teardown on the fresh
  * node, and `remountOn` drives its re-creation.
  */
 import { mount, type MountResult } from './mount.js';
@@ -31,10 +31,10 @@ export interface RemountOptions {
   /**
    * Called after each (re)mount with `parent` — the live, freshly-rendered
    * subtree. This is where you bind a widget to the new DOM (e.g.
-   * `imperative(parent.querySelector('.host'), setup)` from `kerfjs/imperative`),
+   * `attach(parent.querySelector('.host'), setup)` from `kerfjs/attach`),
    * because `render` returns a string and has no live node yet. May return a
    * cleanup `() => void` that runs before the NEXT remount and on dispose — return
-   * the disposer from `imperative()` here for synchronous teardown.
+   * the disposer from `attach()` here for synchronous teardown.
    */
   onMount?: (root: HTMLElement) => (() => void) | void;
 }
@@ -63,7 +63,7 @@ export function remountOn<K>(
 
   function tearDown(): void {
     // Run the onMount cleanup BEFORE tearing down the DOM, so a synchronous
-    // teardown (e.g. an imperative() disposer returned from onMount) fires while
+    // teardown (e.g. an attach() disposer returned from onMount) fires while
     // its node is still attached.
     if (onMountCleanup !== undefined) {
       onMountCleanup();

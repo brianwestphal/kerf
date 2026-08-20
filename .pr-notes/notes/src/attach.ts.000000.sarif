@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "Hot Sheet",
+          "rules": [
+            {
+              "id": "review-note",
+              "name": "ReviewNote",
+              "shortDescription": {
+                "text": "AI-authored, line-anchored review note."
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "review-note",
+          "ruleIndex": 0,
+          "kind": "informational",
+          "level": "none",
+          "guid": "mt0tfqkr47qxhhvc",
+          "message": {
+            "text": "Named attach (not imperative, not onMount) deliberately.\n\nimperative named a style, not a behavior. onMount was rejected for two reasons: (1) the node already exists when you call this — there is nothing to wait for, so \"mount\" misdescribes the timing; and (2) it would collide with remountOn's existing onMount(root) option in consumers' heads.\n\nThe distinguishing feature vs. a bare setup(node) call is the auto-teardown when the node leaves the document — so the name centers on the attach/detach lifecycle. Considered whileConnected (most literal) and bindNode/nodeScope (consistent with kerfjs/scope); attach won on call-site ergonomics and its match to connectedCallback/disconnectedCallback semantics.\n\nThe JSDoc also drops the prior \"useEffect-with-cleanup\" framing, which imported React associations that don't apply here (no dependency array, no re-run, no render-phase/hook-order scoping, no component-instance tie).\n",
+            "markdown": "Named `attach` (not `imperative`, not `onMount`) deliberately.\n\n`imperative` named a *style*, not a behavior. `onMount` was rejected for two reasons: (1) the node already exists when you call this — there is nothing to wait for, so \"mount\" misdescribes the timing; and (2) it would collide with `remountOn`'s existing `onMount(root)` option in consumers' heads.\n\nThe distinguishing feature vs. a bare `setup(node)` call is the **auto-teardown when the node leaves the document** — so the name centers on the attach/detach lifecycle. Considered `whileConnected` (most literal) and `bindNode`/`nodeScope` (consistent with `kerfjs/scope`); `attach` won on call-site ergonomics and its match to `connectedCallback`/`disconnectedCallback` semantics.\n\nThe JSDoc also drops the prior \"useEffect-with-cleanup\" framing, which imported React associations that don't apply here (no dependency array, no re-run, no render-phase/hook-order scoping, no component-instance tie).\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/attach.ts"
+                },
+                "region": {
+                  "startLine": 39,
+                  "endLine": 42,
+                  "snippet": {
+                    "text": "\n/**\n * Run `setup(node)` now, and its returned teardown once — when `node` leaves the\n * document, or when the returned disposer is called, whichever is first. Returns"
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "tags": [
+              "rationale"
+            ]
+          },
+          "workItemUris": [
+            "KF-499"
+          ],
+          "partialFingerprints": {
+            "prNoteAnchor/v1": "2fb642067450c0b04f1001d3d218bf24"
+          }
+        }
+      ],
+      "versionControlProvenance": [
+        {
+          "repositoryUri": "git@github.com:brianwestphal/kerf.git",
+          "revisionId": "b315f99ff85dc716eee7fe668a739f085f96e10e",
+          "branch": "main"
+        }
+      ]
+    }
+  ]
+}

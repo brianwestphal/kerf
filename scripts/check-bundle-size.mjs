@@ -182,14 +182,14 @@ const BUDGETS = [
     `,
   },
   {
-    // ISOLATED size — imperative() is pure DOM (a MutationObserver), no signals
+    // ISOLATED size — attach() is pure DOM (a MutationObserver), no signals
     // and no render core, so it's the smallest subpath.
-    name: 'imperative',
+    name: 'attach',
     budgetKb: 0.4,
-    description: 'the imperative subpath (imperative — node-lifecycle adapter) — DOM only, no core',
+    description: 'the attach subpath (attach — node-lifecycle adapter) — DOM only, no core',
     entry: `
-      import { imperative } from '${DIST}/imperative.js';
-      globalThis.__k = imperative;
+      import { attach } from '${DIST}/attach.js';
+      globalThis.__k = attach;
     `,
   },
   {
