@@ -3,7 +3,7 @@ title: Complete apps
 description: Seven small but real apps, each exercising the patterns kerf is built around.
 ---
 
-Seven complete apps. Each one lives under [`site/src/examples/complete/`](https://github.com/brianwestphal/kerf/tree/main/site/src/examples/complete) as a runnable project (drop into a fresh project with `kerfjs` installed and they run — six are Vite projects; the live poll is served as authored source with no build at all).
+Seven runnable showcase apps, each with its own page and animated preview below. They live under [`site/src/examples/complete/`](https://github.com/brianwestphal/kerf/tree/main/site/src/examples/complete) as real projects (drop into a fresh project with `kerfjs` installed and they run — six are Vite projects; the live poll is served as authored source with no build at all). Two more complete apps in that directory — an htmx-style cart island and a Redux-style counter store — are demonstrated inside the [htmx](/kerf/migrating/htmx/) and [Redux](/kerf/migrating/redux/) migration guides instead.
 
 | App | Demonstrates |
 | --- | --- |
