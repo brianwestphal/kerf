@@ -543,6 +543,69 @@
           "branch": "main"
         }
       ]
+    },
+    {
+      "tool": {
+        "driver": {
+          "name": "Hot Sheet",
+          "rules": [
+            {
+              "id": "review-note",
+              "name": "ReviewNote",
+              "shortDescription": {
+                "text": "AI-authored, line-anchored review note."
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "review-note",
+          "ruleIndex": 0,
+          "kind": "informational",
+          "level": "none",
+          "guid": "mt104qa1p7z5ppmx",
+          "message": {
+            "text": "Order matters: fix the element BEFORE measuring it, or the width is wrong.\n\nA display:block div in normal flow is as wide as its containing block — for a body-appended wrapper that's the full body content width (viewport − body margins). If getBoundingClientRect() runs then, p.width is that block width, and the horizontal clamp left = max(0, min(a.left, vw − p.width)) collapses to ≈16px (the body's left content edge), so the popover ignores the anchor's x. That's the exact 104px miss the real-browser test caught (120 − 16); happy-dom does no layout so unit tests never saw it.\n\nSetting position: fixed first makes the element shrink-to-fit, so p.width/p.height are its real size and both the align:'end' offset and the viewport clamp compute correctly. Verified in a real browser: tests/browser/overlay.spec.ts popover + tooltip specs pass on chromium with this change (they failed with a 104px x-offset before).\n",
+            "markdown": "Order matters: fix the element BEFORE measuring it, or the width is wrong.\n\nA `display:block` div in normal flow is as wide as its containing block — for a body-appended wrapper that's the full body content width (`viewport − body margins`). If `getBoundingClientRect()` runs then, `p.width` is that block width, and the horizontal clamp `left = max(0, min(a.left, vw − p.width))` collapses to ≈16px (the body's left content edge), so the popover ignores the anchor's x. That's the exact 104px miss the real-browser test caught (`120 − 16`); happy-dom does no layout so unit tests never saw it.\n\nSetting `position: fixed` first makes the element shrink-to-fit, so `p.width`/`p.height` are its real size and both the `align:'end'` offset and the viewport clamp compute correctly. Verified in a real browser: `tests/browser/overlay.spec.ts` popover + tooltip specs pass on chromium with this change (they failed with a 104px x-offset before).\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/overlay.ts"
+                },
+                "region": {
+                  "startLine": 768,
+                  "endLine": 777,
+                  "snippet": {
+                    "text": "export function positionAnchored(el: HTMLElement, anchor: Element, options: AnchorPositionOptions = {}): void {\n  const { placement = 'bottom', align = 'start', gap = 4 } = options;\n  // Fix `el` FIRST, then measure it. Measuring a still-`display:block` wrapper\n  // reports the full body-content width (≈ viewport minus body margins), which\n  // collapses the horizontal clamp below and lands the element at the body's left\n  // edge. As a fixed, shrink-to-fit box its `width`/`height` are its real size.\n  el.style.position = 'fixed';\n  el.style.margin = '0';\n  const a = anchor.getBoundingClientRect();\n  const p = el.getBoundingClientRect();"
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "tags": [
+              "rationale"
+            ]
+          },
+          "workItemUris": [
+            "KF-507"
+          ],
+          "partialFingerprints": {
+            "prNoteAnchor/v1": "932577b3b39454d67e92140f0fa72a2b"
+          }
+        }
+      ],
+      "versionControlProvenance": [
+        {
+          "repositoryUri": "git@github.com:brianwestphal/kerf.git",
+          "revisionId": "4158fa215da0ba0e052a3df9a4dfb2e150e40709",
+          "branch": "main"
+        }
+      ]
     }
   ]
 }

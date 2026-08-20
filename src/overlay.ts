@@ -767,6 +767,12 @@ export interface AnchorPositionOptions {
  */
 export function positionAnchored(el: HTMLElement, anchor: Element, options: AnchorPositionOptions = {}): void {
   const { placement = 'bottom', align = 'start', gap = 4 } = options;
+  // Fix `el` FIRST, then measure it. Measuring a still-`display:block` wrapper
+  // reports the full body-content width (≈ viewport minus body margins), which
+  // collapses the horizontal clamp below and lands the element at the body's left
+  // edge. As a fixed, shrink-to-fit box its `width`/`height` are its real size.
+  el.style.position = 'fixed';
+  el.style.margin = '0';
   const a = anchor.getBoundingClientRect();
   const p = el.getBoundingClientRect();
   const vw = window.innerWidth;
@@ -783,8 +789,6 @@ export function positionAnchored(el: HTMLElement, anchor: Element, options: Anch
   let left = align === 'end' ? a.right - p.width : a.left;
   left = Math.max(0, Math.min(left, vw - p.width));
 
-  el.style.position = 'fixed';
-  el.style.margin = '0';
   el.style.left = `${left}px`;
   el.style.top = `${below ? belowTop : aboveTop}px`;
 }
