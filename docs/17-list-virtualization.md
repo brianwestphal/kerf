@@ -1,11 +1,10 @@
 # 17. List virtualization — variable row heights
 
-> **Status: partial — tiers 1 and 2 shipped, tier 3 design only.** `bindList`
-> virtualization now accepts either a fixed `rowHeight: number` **or** an
-> app-declared `rowHeight: (item, index) => number` for variable heights (tiers 1
-> and 2, §17.2). The **measured** tier — `{ estimate }` + an imperative
-> `setHeight` channel + scroll anchoring — is still design only; §17.4–§17.6
-> specify it and §17.7 tracks the follow-up ticket.
+> **Status: shipped.** `bindList` virtualization accepts all three height
+> models — a fixed `rowHeight: number`, an app-declared `rowHeight: (item, index)
+> => number`, and a **measured** `rowHeight: { estimate }` where the app reports
+> real heights via the handle's `setHeight` (or the `observeRowHeights` helper)
+> and kerf anchor-corrects `scrollTop`. §17.6 records the API decisions.
 
 ## 17.1 The problem
 
@@ -50,7 +49,7 @@ the cumulative model isn't even needed.
 | --- | --- | --- | --- | --- |
 | `number` | fixed | nobody | O(1), no cumulative model | **shipped** |
 | `(item, index) => number` | variable, **app-declared** | app (knows from data) | prefix sum + binary search, no reflow, no observers (unit-testable) | **shipped** |
-| `{ estimate: number \| ((item, index) => number) }` + imperative `setHeight` | variable, **app-measured** | **app** (its own read / observer) | + estimate fallback + anchor correction (needs real layout) | design only |
+| `{ estimate: number \| ((item, index) => number) }` + imperative `setHeight` | variable, **app-measured** | **app** (its own read / observer) | + estimate fallback + anchor correction (needs real layout) | **shipped** |
 
 - **`number`** stays byte-for-byte the current behavior.
 - **`(item, index) => number`** is for heights the app can compute up front — a
@@ -131,18 +130,26 @@ list.setHeight(msg.id, el.offsetHeight);
 const stop = observeRowHeights(list); // returns a disposer
 ```
 
-Open API questions (to settle during implementation, §17.7):
+API decisions (settled at implementation):
 
-- **`setHeight` surface.** A method on the returned handle vs. a `measure`
-  callback passed into `render(item, { measure })`. The handle method keeps
-  `render` a pure projection (which `bindList` already requires); the callback
-  is closer to where the element is.
-- **Keying reported heights.** By the list `key` (survives reorders — preferred)
-  vs. by index (simpler, but wrong under reordering).
-- **Helper naming / packaging.** `observeRowHeights` and whether it lives in the
-  `kerfjs/list` subpath or its own, given the `ResizeObserver` dependency.
-- **`estimate` re-runs.** Whether `estimate` is read once per row or may be a
-  function re-evaluated as `source` changes.
+- **`setHeight` surface — a method on the handle.** `bindList` now returns a
+  `BindListHandle` = `(() => void) & { setHeight(key, px) }`: still the disposer
+  (so `const dispose = bindList(...); dispose()` is unchanged), plus `setHeight`.
+  Chosen over a `measure` callback into `render` so `render` stays a pure
+  projection (which `bindList` already requires).
+- **Keying reported heights — by the list `key`.** Reports are stored keyed by
+  `key`, so a height survives a reorder; `setHeight` locates the row's current
+  index through a `key → index` map rebuilt with the prefix sum.
+- **Helper packaging — in the `kerfjs/list` subpath.** `observeRowHeights` ships
+  from `kerfjs/list`, not a separate subpath: it's a few lines, tree-shakes away
+  when unused, and the `ResizeObserver` reference only lands in a bundle that
+  imports it. The core never references `ResizeObserver`. The handle↔helper
+  coordination lives in a module-level `WeakMap` (GC-tied) so the public handle
+  type stays `(() => void) & { setHeight }`.
+- **`estimate` re-runs.** `estimate` is evaluated per row each time the prefix sum
+  is (re)built — i.e. when the source changes or a height is reported — not
+  cached, so a function estimate that reads the item stays correct across
+  updates.
 
 ## 17.7 Sequencing and follow-up tickets
 
@@ -155,10 +162,12 @@ This is a design-then-build feature; it lands in two shippable increments.
    (rebuilt only when the source changes, not per scroll frame). No layout reads,
    no observers — all of it tested in happy-dom (`tests/unit/list.test.ts` ›
    "variable-height virtualization").
-2. **Tier 3 + the optional helper, browser-tested — pending.** Add `{ estimate }`
-   with the imperative `setHeight` channel and the scroll-anchor correction
-   (unit-tested with synthetic heights), then the separable `observeRowHeights`
-   helper (Playwright-tested for real layout).
+2. **Tier 3 + the optional helper — shipped.** `{ estimate }` with the imperative
+   `setHeight` channel and the scroll-anchor correction are unit-tested with
+   synthetic heights (`tests/unit/list.test.ts` › "measured-height virtualization"),
+   and the separable `observeRowHeights` helper's forwarding is unit-tested via a
+   stubbed `ResizeObserver` (its real-layout behavior belongs to the Playwright
+   suite).
 
 ## 17.8 The shipped prose must say what it does
 

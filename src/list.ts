@@ -9,10 +9,12 @@
  *     one-row morph) without touching its siblings — no full-list pass.
  *  2. **Virtualization.** With `{ virtualize: { rowHeight } }` only the rows in
  *     the scroll viewport are rendered; padding on the scroll container keeps
- *     `scrollHeight` honest. `rowHeight` is either a fixed `number` (O(1)
- *     windowing) or a `(item, index) => number` for **app-declared variable**
- *     heights (a prefix sum + binary-search window). Measured/dynamic heights
- *     are a further extension — see `docs/17-list-virtualization.md`.
+ *     `scrollHeight` honest. `rowHeight` is a fixed `number` (O(1) windowing), a
+ *     `(item, index) => number` for **app-declared variable** heights (a prefix
+ *     sum + binary-search window), or `{ estimate }` for **measured** heights —
+ *     the app reports real heights via the returned handle's `setHeight` (or the
+ *     `observeRowHeights` helper) and kerf anchor-corrects `scrollTop`. See
+ *     `docs/17-list-virtualization.md`.
  *
  * `each()` stays the choice for item-owned-state lists rendered to HTML strings;
  * reach for `bindList` when you need surgical per-row updates or windowing.
@@ -58,6 +60,35 @@ export type RowElement<T> =
   | HTMLElement
   | { el: HTMLElement; update?: (item: T) => void; dispose?: () => void };
 
+/**
+ * The virtualization height model:
+ *  - **`number`** — every row is this fixed pixel height (O(1) windowing).
+ *  - **`(item, index) => number`** — app-declared **variable** heights, derived
+ *    purely from the item and its index.
+ *  - **`{ estimate }`** — **measured** heights: kerf uses `estimate` for a row
+ *    until the app reports its real height through {@link BindListHandle.setHeight}
+ *    (or the `observeRowHeights` helper). See `docs/17-list-virtualization.md`.
+ */
+export type RowHeight<T> =
+  | number
+  | ((item: T, index: number) => number)
+  | { estimate: number | ((item: T, index: number) => number) };
+
+/**
+ * The value {@link bindList} returns: a disposer you call to tear the list down,
+ * augmented with `setHeight` for the **measured** virtualization mode.
+ */
+export type BindListHandle = (() => void) & {
+  /**
+   * Report a row's real pixel height (measured after layout) for
+   * `virtualize: { rowHeight: { estimate } }` lists. Keyed by the list `key`, so
+   * a report survives reorders. kerf recomputes the window and, if the row sits
+   * ABOVE the viewport, anchor-corrects `scrollTop` so content doesn't jump.
+   * A no-op for fixed / declared-height lists and for unknown keys.
+   */
+  setHeight: (key: ListKey, height: number) => void;
+};
+
 /** Options for {@link bindList}. */
 export interface BindListOptions<T> {
   /** Stable per-row key. Rows are matched, moved, and reused by this. */
@@ -93,7 +124,7 @@ export interface BindListOptions<T> {
    * CSS: a fixed height + `overflow: auto`). `overscan` (default 3) is how many
    * extra rows to render above and below the viewport.
    *
-   * `rowHeight` is the height model:
+   * `rowHeight` (a {@link RowHeight}) is the height model:
    *  - **`number`** — every row is this fixed pixel height. O(1) windowing, no
    *    cumulative model built.
    *  - **`(item, index) => number`** — app-declared **variable** heights, derived
@@ -101,11 +132,14 @@ export interface BindListOptions<T> {
    *    heights (rebuilt when the source array changes, not per scroll frame) and
    *    binary-searches it to find the visible window. Return a non-negative
    *    number of pixels.
-   *
-   * Measured / dynamic heights (rows whose height is only known after layout)
-   * are a further extension — see `docs/17-list-virtualization.md`.
+   *  - **`{ estimate }`** — **measured** heights for rows whose height is only
+   *    known after layout. kerf sizes an unmeasured row by `estimate` (a number
+   *    or an `(item, index) => number`), and the app reports each row's real
+   *    height via {@link BindListHandle.setHeight} (or the `observeRowHeights`
+   *    helper). kerf anchor-corrects `scrollTop` when an above-viewport row is
+   *    remeasured, so content doesn't jump.
    */
-  virtualize?: { rowHeight: number | ((item: T, index: number) => number); overscan?: number };
+  virtualize?: { rowHeight: RowHeight<T>; overscan?: number };
 }
 
 interface Row<T> {
@@ -128,7 +162,7 @@ export function bindList<T>(
   parent: HTMLElement,
   source: ListSource<T>,
   options: BindListOptions<T>,
-): () => void {
+): BindListHandle {
   const { key, render, tag = 'div', virtualize, before } = options;
   const overscan = virtualize?.overscan ?? 3;
 
@@ -324,24 +358,54 @@ export function bindList<T>(
     }
   };
 
-  // Virtualization height model. A `number` rowHeight is the O(1) fixed fast path
-  // (no cumulative model). A `(item, index) => number` rowHeight is app-declared
-  // variable heights: `offsets[i]` is the total height of rows 0..i-1 (a prefix
-  // sum, length total+1), so `offsets[i+1] - offsets[i]` is row i's height and
-  // `offsets[total]` is the full scroll height. Rebuilt only when `items` changes
-  // (heightsDirty), never per scroll frame — a scroll reuses the prefix sum and
-  // pays only the O(log n) binary searches.
+  // Virtualization height model, three modes:
+  //  - `fixedHeight` (a `number`): the O(1) fast path — no cumulative model.
+  //  - `variableHeightAt` (a function): app-declared per-row heights.
+  //  - measuring (`{ estimate }`): `variableHeightAt` returns the measured height
+  //    when the app has reported one (via `setHeight`), else the estimate.
+  // In the two variable cases, `offsets[i]` is the total height of rows 0..i-1
+  // (a prefix sum, length total+1), so `offsets[i+1] - offsets[i]` is row i's
+  // height and `offsets[total]` is the full scroll height. It is rebuilt only
+  // when `items` changes or a height is reported (heightsDirty), never per scroll
+  // frame — a scroll reuses the prefix sum and pays only the O(log n) searches.
   const rowHeight = virtualize?.rowHeight;
   const fixedHeight = typeof rowHeight === 'number' ? rowHeight : null;
+  const measuring = typeof rowHeight === 'object' && rowHeight !== null;
+  const measured = new Map<ListKey, number>(); // key → real reported height
+  const estimateAt = (index: number): number => {
+    const est = (rowHeight as { estimate: number | ((item: T, index: number) => number) }).estimate;
+    return typeof est === 'function' ? est(items[index], index) : est;
+  };
+  const variableHeightAt: ((index: number) => number) | null =
+    fixedHeight !== null
+      ? null
+      : measuring
+        ? (index): number => {
+          const k = key(items[index]);
+          return measured.has(k) ? (measured.get(k) as number) : estimateAt(index);
+        }
+        : (index): number => (rowHeight as (item: T, index: number) => number)(items[index], index);
+
   let offsets: number[] = [0];
   let heightsDirty = true;
+  // Measuring only: key → current absolute index, so `setHeight(key, …)` locates
+  // the row in O(1). Rebuilt with the prefix sum when `items` changes.
+  const indexByKey = new Map<ListKey, number>();
+  // Accumulated scroll-anchor correction: the summed height delta of remeasured
+  // rows that sit entirely ABOVE the viewport top, applied to `scrollTop` before
+  // the next window render so on-screen content does not jump.
+  let pendingAnchorDelta = 0;
 
   const rebuildOffsets = (): void => {
-    const fn = rowHeight as (item: T, index: number) => number;
+    const fn = variableHeightAt as (index: number) => number;
     const total = items.length;
     offsets = new Array<number>(total + 1);
     offsets[0] = 0;
-    for (let i = 0; i < total; i++) offsets[i + 1] = offsets[i] + fn(items[i], i);
+    if (measuring) indexByKey.clear();
+    for (let i = 0; i < total; i++) {
+      offsets[i + 1] = offsets[i] + fn(i);
+      if (measuring) indexByKey.set(key(items[i]), i);
+    }
   };
 
   // Greatest index i in [0, total] with `offsets[i] <= target` — the first row
@@ -372,13 +436,22 @@ export function bindList<T>(
 
   // Size each visible row for the windowing math. `order` holds the visible rows
   // in order, so `order[j]` is the item at absolute index `start + j`.
+  // MEASURED mode is the exception: the row must take its NATURAL height so the
+  // app (or `observeRowHeights`) can read the real `offsetHeight` — forcing a
+  // height here would make the measurement echo the estimate. Its offsets come
+  // from `setHeight` reports instead.
   const sizeVisibleRows = (start: number): void => {
+    if (measuring) return;
     for (let j = 0; j < order.length; j++) {
       const abs = start + j;
       const h = fixedHeight !== null ? fixedHeight : offsets[abs + 1] - offsets[abs];
       order[j].el.style.height = `${h}px`;
     }
   };
+
+  // Called after each virtualized window render (used by `observeRowHeights` to
+  // re-observe the current visible rows).
+  const renderSubscribers = new Set<() => void>();
 
   const renderWindow = (): void => {
     if (virtualize === undefined) {
@@ -427,6 +500,7 @@ export function bindList<T>(
     sizeVisibleRows(start);
     container.style.paddingTop = `${padTop}px`;
     container.style.paddingBottom = `${padBottom}px`;
+    for (const cb of renderSubscribers) cb();
   };
 
   const stopEffect = effect(() => {
@@ -435,17 +509,42 @@ export function bindList<T>(
     renderWindow();
   });
 
-  const onScroll = (): void => {
+  // One rAF-coalesced render, shared by scroll and by measurement reports. A
+  // pending anchor correction is applied to `scrollTop` first (which itself may
+  // fire a scroll, but with the delta already cleared the follow-up is a no-op).
+  const scheduleRender = (): void => {
     if (rafPending) return;
     rafPending = true;
     globalThis.requestAnimationFrame(() => {
       rafPending = false;
-      if (!disposed) renderWindow();
+      if (disposed) return;
+      if (pendingAnchorDelta !== 0) {
+        parent.scrollTop += pendingAnchorDelta;
+        pendingAnchorDelta = 0;
+      }
+      renderWindow();
     });
   };
-  if (virtualize !== undefined) parent.addEventListener('scroll', onScroll);
+  if (virtualize !== undefined) parent.addEventListener('scroll', scheduleRender);
 
-  return () => {
+  // Measured mode: report a row's real height. No-op for fixed / declared lists
+  // and for keys not currently in the list.
+  const setHeight = (k: ListKey, height: number): void => {
+    if (!measuring) return;
+    const idx = indexByKey.get(k);
+    if (idx === undefined) return;
+    const oldHeight = measured.has(k) ? (measured.get(k) as number) : estimateAt(idx);
+    if (height === oldHeight) return;
+    measured.set(k, height);
+    // A row whose bottom is at/above the viewport top shifts everything below it
+    // (the on-screen content) by the height delta — correct `scrollTop` to match.
+    // Uses the CURRENT (pre-rebuild) offsets, which reflect the on-screen layout.
+    if (offsets[idx + 1] <= parent.scrollTop) pendingAnchorDelta += height - oldHeight;
+    heightsDirty = true;
+    scheduleRender();
+  };
+
+  const dispose = ((): void => {
     disposed = true;
     stopEffect();
     for (const row of rows.values()) {
@@ -453,9 +552,84 @@ export function bindList<T>(
       if (virtualize === undefined) row.el.remove();
     }
     rows.clear();
+    renderSubscribers.clear();
     if (virtualize !== undefined) {
-      parent.removeEventListener('scroll', onScroll);
+      parent.removeEventListener('scroll', scheduleRender);
       container.remove(); // removes the inner sizer and its rows in one go
+      VIRTUAL_INTERNALS.delete(handle);
     }
+  }) as BindListHandle;
+  const handle = dispose;
+  handle.setHeight = setHeight;
+
+  // Register the coordination surface the `observeRowHeights` helper needs, kept
+  // off the public type (a GC-tied WeakMap, so it doesn't count against Design
+  // rule 5). Only virtualized lists have a window to observe.
+  if (virtualize !== undefined) {
+    VIRTUAL_INTERNALS.set(handle, {
+      visibleRows: () => order.map((row) => ({ key: key(row.item), el: row.el })),
+      onRender: (cb) => {
+        renderSubscribers.add(cb);
+        return () => renderSubscribers.delete(cb);
+      },
+    });
+  }
+
+  return handle;
+}
+
+/** Internal coordination surface between {@link bindList} and {@link observeRowHeights}. */
+interface VirtualInternals {
+  /** The current visible rows, in order, with their keys. */
+  visibleRows: () => Array<{ key: ListKey; el: HTMLElement }>;
+  /** Subscribe to each window render; returns an unsubscribe. */
+  onRender: (cb: () => void) => () => void;
+}
+
+// GC-tied (WeakMap) coordination store — a pure cache, not counted against
+// Design rule 5 (same class as `bindings.ts:insertedTextNodes`).
+const VIRTUAL_INTERNALS = new WeakMap<object, VirtualInternals>();
+
+/**
+ * Drive a **measured** virtualized `bindList` (`virtualize: { rowHeight: {
+ * estimate } }`) from real layout: install ONE `ResizeObserver` over the visible
+ * rows and forward each row's `offsetHeight` to `handle.setHeight`, re-observing
+ * as the window shifts. Returns a disposer.
+ *
+ * This is the batteries-included measurement path; it is deliberately separate
+ * from `bindList` (which never depends on `ResizeObserver`) — you can measure
+ * however you like and call `handle.setHeight` yourself instead. A no-op for a
+ * non-virtualized handle or where `ResizeObserver` is unavailable (SSR).
+ *
+ *   const list = bindList(scrollEl, source, { key, render, virtualize: { rowHeight: { estimate: 64 } } });
+ *   const stopMeasuring = observeRowHeights(list);
+ */
+export function observeRowHeights(handle: BindListHandle): () => void {
+  const internals = VIRTUAL_INTERNALS.get(handle);
+  const RO = globalThis.ResizeObserver;
+  if (internals === undefined || RO === undefined) return () => { /* nothing to observe */ };
+
+  const keyByEl = new WeakMap<Element, ListKey>();
+  const observer = new RO((entries) => {
+    for (const entry of entries) {
+      const k = keyByEl.get(entry.target);
+      if (k !== undefined) handle.setHeight(k, (entry.target as HTMLElement).offsetHeight);
+    }
+  });
+
+  const resync = (): void => {
+    observer.disconnect();
+    for (const { key: k, el } of internals.visibleRows()) {
+      keyByEl.set(el, k);
+      observer.observe(el);
+    }
+  };
+
+  const unsubscribe = internals.onRender(resync);
+  resync(); // observe the initial window
+
+  return () => {
+    observer.disconnect();
+    unsubscribe();
   };
 }

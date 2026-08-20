@@ -253,6 +253,69 @@
           "branch": "main"
         }
       ]
+    },
+    {
+      "tool": {
+        "driver": {
+          "name": "Hot Sheet",
+          "rules": [
+            {
+              "id": "review-note",
+              "name": "ReviewNote",
+              "shortDescription": {
+                "text": "AI-authored, line-anchored review note."
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "review-note",
+          "ruleIndex": 0,
+          "kind": "informational",
+          "level": "none",
+          "guid": "mt0uwokb7n8a0o8d",
+          "message": {
+            "text": "Measured rows must take their NATURAL height — forcing one would make measurement circular.\n\nsizeVisibleRows returns early when measuring. If bindList set style.height = estimate on a measured row (as it does for fixed/declared heights), the row's offsetHeight would just echo the estimate back, so observeRowHeights (or any app measurement) could never discover the row's real content height. Instead the measured row is left to size itself; its real height enters the model through setHeight, and the prefix sum drives the padding.\n\nThis is the crux of the measured tier and is covered both ways: the unit tests assert measured rows have no forced style.height ('') while the padding still reflects the model, and the browser spec (tests/browser/list.spec.ts › \"measured virtualization\") asserts a 40px content row reports 40 through a real ResizeObserver despite a 20px estimate.\n\nScroll anchoring lives in setHeight: a remeasured row whose bottom offset is at/above scrollTop shifts on-screen content, so its delta accumulates into pendingAnchorDelta and scheduleRender applies it to scrollTop before the next paint. It's computed from the pre-rebuild offsets (the on-screen layout) and unit-tested with synthetic heights — no real layout needed, which is the payoff of user-owned measurement.\n",
+            "markdown": "Measured rows must take their NATURAL height — forcing one would make measurement circular.\n\n`sizeVisibleRows` returns early when `measuring`. If bindList set `style.height = estimate` on a measured row (as it does for fixed/declared heights), the row's `offsetHeight` would just echo the estimate back, so `observeRowHeights` (or any app measurement) could never discover the row's real content height. Instead the measured row is left to size itself; its real height enters the model through `setHeight`, and the prefix sum drives the padding.\n\nThis is the crux of the measured tier and is covered both ways: the unit tests assert measured rows have no forced `style.height` (`''`) while the padding still reflects the model, and the browser spec (`tests/browser/list.spec.ts` › \"measured virtualization\") asserts a 40px content row reports 40 through a real ResizeObserver despite a 20px estimate.\n\nScroll anchoring lives in `setHeight`: a remeasured row whose bottom offset is at/above `scrollTop` shifts on-screen content, so its delta accumulates into `pendingAnchorDelta` and `scheduleRender` applies it to `scrollTop` before the next paint. It's computed from the pre-rebuild offsets (the on-screen layout) and unit-tested with synthetic heights — no real layout needed, which is the payoff of user-owned measurement.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/list.ts"
+                },
+                "region": {
+                  "startLine": 456,
+                  "endLine": 465,
+                  "snippet": {
+                    "text": "  const renderWindow = (): void => {\n    if (virtualize === undefined) {\n      if (granularEligible) {\n        // Always drain to keep the single patch queue clean (so patches never\n        // double-apply). Take the granular path past the first render, when\n        // there are patches, and none is a `replace` (which reshapes the whole\n        // array — snapshot instead). Otherwise fall through to a keyed diff.\n        const patches = patchSource._consumePatches!();\n        if (\n          !firstRender"
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "tags": [
+              "rationale"
+            ]
+          },
+          "workItemUris": [
+            "KF-502"
+          ],
+          "partialFingerprints": {
+            "prNoteAnchor/v1": "0e9c120a19037d294023b7e9ca067188"
+          }
+        }
+      ],
+      "versionControlProvenance": [
+        {
+          "repositoryUri": "git@github.com:brianwestphal/kerf.git",
+          "revisionId": "472bababd16ec8b5807599fc665e0f04309490ab",
+          "branch": "main"
+        }
+      ]
     }
   ]
 }

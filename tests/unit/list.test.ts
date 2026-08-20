@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it } from 'vitest';
 
 import { arraySignal } from '../../src/array-signal.js';
-import { bindList } from '../../src/list.js';
+import { bindList, observeRowHeights } from '../../src/list.js';
 import { batch, signal } from '../../src/reactive.js';
 
 interface Item { id: number; label: string }
@@ -467,6 +467,309 @@ describe('bindList() — variable-height virtualization (declared heights, KF-50
     expect((sizer.firstElementChild as HTMLElement).style.height).toBe('20px');
     expect(sizer.style.paddingBottom).toBe(`${(100 - 7) * 20}px`);
     dispose();
+  });
+});
+
+describe('bindList() — measured-height virtualization ({ estimate } + setHeight, KF-502)', () => {
+  const withHeight = (el: HTMLElement, h: number) =>
+    Object.defineProperty(el, 'clientHeight', { configurable: true, value: h });
+  const hundred = (): Item[] => Array.from({ length: 100 }, (_, i) => ({ id: i, label: `r${i}` }));
+  const raf = () => new Promise((r) => setTimeout(r, 30));
+
+  it('sizes rows by the estimate until a real height is reported', () => {
+    const parent = host();
+    withHeight(parent, 100);
+    parent.scrollTop = 0;
+    const items = signal<Item[]>(hundred());
+    const dispose = bindList(parent, items, {
+      key: (i) => i.id,
+      render: (i) => i.label,
+      virtualize: { rowHeight: { estimate: 50 }, overscan: 0 },
+    });
+    const sizer = parent.firstElementChild as HTMLElement;
+    // estimate 50, viewport 100 → 2 rows; total height 100*50 = 5000.
+    expect(Array.from(sizer.children).map((c) => c.textContent)).toEqual(['r0', 'r1']);
+    // Measured rows are NOT force-sized (they must take their natural height so
+    // the real offsetHeight can be read); the model drives the padding instead.
+    expect((sizer.firstElementChild as HTMLElement).style.height).toBe('');
+    expect(sizer.style.paddingBottom).toBe('4900px'); // 5000 − offsets[2]=100
+    dispose();
+  });
+
+  it('accepts a function estimate (item, index)', () => {
+    const parent = host();
+    withHeight(parent, 100);
+    parent.scrollTop = 0;
+    const items = signal<Item[]>(hundred());
+    const dispose = bindList(parent, items, {
+      key: (i) => i.id,
+      render: (i) => i.label,
+      virtualize: { rowHeight: { estimate: (_, i) => (i === 0 ? 30 : 50) }, overscan: 0 },
+    });
+    const sizer = parent.firstElementChild as HTMLElement;
+    // row0 estimated at 30 → offsets [0,30,80,130,…]; viewport 100 spans 3 rows
+    // (a flat estimate of 50 would show only 2), proving the function was used.
+    expect(Array.from(sizer.children).map((c) => c.textContent)).toEqual(['r0', 'r1', 'r2']);
+    expect(sizer.style.paddingBottom).toBe('4850px'); // total 30+99*50=4980 − offsets[3]=130
+    dispose();
+  });
+
+  it('setHeight updates the row and repaints the window/padding (rAF-batched)', async () => {
+    const parent = host();
+    withHeight(parent, 100);
+    parent.scrollTop = 0;
+    const items = signal<Item[]>(hundred());
+    const list = bindList(parent, items, {
+      key: (i) => i.id,
+      render: (i) => i.label,
+      virtualize: { rowHeight: { estimate: 50 }, overscan: 0 },
+    });
+    const sizer = parent.firstElementChild as HTMLElement;
+
+    list.setHeight(0, 90); // row 0 is on-screen; taller than the estimate
+    await raf();
+    // total height 5000 − 50 + 90 = 5040; window now [0, findEnd(100)] → offsets: [0,90,140,...].
+    // findEnd(100): first offset ≥ 100 = index 2 (offsets[2]=140). padBottom = 5040 − 140 = 4900.
+    expect(sizer.style.paddingBottom).toBe('4900px');
+
+    // Re-measure the SAME key (the delta is computed against the prior report, 90).
+    list.setHeight(0, 70);
+    await raf();
+    expect(sizer.style.paddingBottom).toBe('4900px'); // total 5020 − offsets[2]=120
+    list();
+  });
+
+  it('anchor-corrects scrollTop when a row ABOVE the viewport is remeasured', async () => {
+    const parent = host();
+    withHeight(parent, 100);
+    const items = signal<Item[]>(hundred());
+    const list = bindList(parent, items, {
+      key: (i) => i.id,
+      render: (i) => i.label,
+      virtualize: { rowHeight: { estimate: 50 }, overscan: 0 },
+    });
+    parent.scrollTop = 500; // rows 0..9 (offsets 0..500) are above the fold
+    parent.dispatchEvent(new Event('scroll'));
+    await raf();
+
+    // Remeasure row 2 (fully above: its bottom offset 150 ≤ 500) taller by 30.
+    list.setHeight(2, 80);
+    await raf();
+    expect(parent.scrollTop).toBe(530); // corrected by +30 so on-screen rows don't jump
+    list();
+  });
+
+  it('does NOT anchor-correct when the remeasured row is at/below the viewport top', async () => {
+    const parent = host();
+    withHeight(parent, 100);
+    const items = signal<Item[]>(hundred());
+    const list = bindList(parent, items, {
+      key: (i) => i.id,
+      render: (i) => i.label,
+      virtualize: { rowHeight: { estimate: 50 }, overscan: 0 },
+    });
+    parent.scrollTop = 500;
+    parent.dispatchEvent(new Event('scroll'));
+    await raf();
+
+    list.setHeight(12, 80); // offsets[13]=650 > 500 → not above the fold
+    await raf();
+    expect(parent.scrollTop).toBe(500); // unchanged
+    list();
+  });
+
+  it('setHeight is a no-op for the same height, an unknown key, and non-measuring modes', async () => {
+    const parent = host();
+    withHeight(parent, 100);
+    parent.scrollTop = 500;
+    const items = signal<Item[]>(hundred());
+    const list = bindList(parent, items, {
+      key: (i) => i.id,
+      render: (i) => i.label,
+      virtualize: { rowHeight: { estimate: 50 }, overscan: 0 },
+    });
+    parent.dispatchEvent(new Event('scroll'));
+    await raf();
+
+    list.setHeight(2, 50); // same as the estimate → no change, no anchor shift
+    list.setHeight(999, 80); // key not in the list → ignored
+    await raf();
+    expect(parent.scrollTop).toBe(500);
+    list();
+
+    // A fixed-height list: setHeight does nothing.
+    const parent2 = host();
+    withHeight(parent2, 100);
+    const items2 = signal<Item[]>(hundred());
+    const fixed = bindList(parent2, items2, {
+      key: (i) => i.id,
+      render: (i) => i.label,
+      virtualize: { rowHeight: 20 },
+    });
+    const before = (parent2.firstElementChild as HTMLElement).style.paddingBottom;
+    fixed.setHeight(0, 999);
+    await raf();
+    expect((parent2.firstElementChild as HTMLElement).style.paddingBottom).toBe(before);
+    fixed();
+  });
+
+  it('a reported height follows its KEY across a reorder', async () => {
+    const parent = host();
+    withHeight(parent, 100);
+    parent.scrollTop = 0;
+    const items = signal<Item[]>(hundred());
+    const list = bindList(parent, items, {
+      key: (i) => i.id,
+      render: (i) => i.label,
+      virtualize: { rowHeight: { estimate: 50 }, overscan: 0 },
+    });
+    list.setHeight(0, 90);
+    await raf();
+
+    // Move item id 0 to index 5; its measured 90 must travel with the key.
+    const next = items.value.slice();
+    const [moved] = next.splice(0, 1);
+    next.splice(5, 0, moved);
+    items.value = next;
+    // New order at the top is r1 (still estimate 50).
+    const sizer = parent.firstElementChild as HTMLElement;
+    expect(sizer.firstElementChild?.textContent).toBe('r1');
+    // Total height still reflects id 0 at 90 (one 90 + ninety-nine 50s = 5040).
+    // At scrollTop 0 the window is [0, findEnd(100)=2); padBottom = 5040 − offsets[2](=100) = 4940.
+    expect(sizer.style.paddingBottom).toBe('4940px');
+    list();
+  });
+});
+
+describe('bindList() — observeRowHeights (ResizeObserver helper, KF-502)', () => {
+  const withHeight = (el: HTMLElement, h: number) =>
+    Object.defineProperty(el, 'clientHeight', { configurable: true, value: h });
+  const hundred = (): Item[] => Array.from({ length: 100 }, (_, i) => ({ id: i, label: `r${i}` }));
+  const raf = () => new Promise((r) => setTimeout(r, 30));
+
+  class FakeRO {
+    static instances: FakeRO[] = [];
+    cb: (entries: Array<{ target: Element }>) => void;
+    observed = new Set<Element>();
+    constructor(cb: (entries: Array<{ target: Element }>) => void) {
+      this.cb = cb;
+      FakeRO.instances.push(this);
+    }
+    observe(el: Element): void { this.observed.add(el); }
+    unobserve(el: Element): void { this.observed.delete(el); }
+    disconnect(): void { this.observed.clear(); }
+    flush(): void { this.cb([...this.observed].map((target) => ({ target }))); }
+  }
+
+  let originalRO: typeof globalThis.ResizeObserver | undefined;
+  afterEach(() => {
+    FakeRO.instances.length = 0;
+    if (originalRO !== undefined) globalThis.ResizeObserver = originalRO;
+    originalRO = undefined;
+  });
+  const installFakeRO = () => {
+    originalRO = globalThis.ResizeObserver;
+    (globalThis as { ResizeObserver: unknown }).ResizeObserver = FakeRO;
+  };
+
+  it('observes the visible rows and forwards offsetHeight to setHeight', async () => {
+    installFakeRO();
+    const parent = host();
+    withHeight(parent, 100);
+    parent.scrollTop = 0;
+    const items = signal<Item[]>(hundred());
+    const list = bindList(parent, items, {
+      key: (i) => i.id,
+      render: (i) => i.label,
+      virtualize: { rowHeight: { estimate: 50 }, overscan: 0 },
+    });
+    const stop = observeRowHeights(list);
+
+    const sizer = parent.firstElementChild as HTMLElement;
+    // Give the two visible rows a real (measured) height.
+    for (const el of Array.from(sizer.children)) {
+      Object.defineProperty(el, 'offsetHeight', { configurable: true, value: 90 });
+    }
+    FakeRO.instances[0].flush(); // ResizeObserver fires → setHeight(key, 90) per row
+    await raf();
+
+    // Both visible rows reported 90 → model total 5080; window [0,2), padBottom
+    // = 5080 − offsets[2](=180) = 4900. (Measured rows keep their natural height.)
+    expect(sizer.style.paddingBottom).toBe('4900px');
+    stop();
+    list();
+  });
+
+  it('re-observes the new window after a scroll shift', async () => {
+    installFakeRO();
+    const parent = host();
+    withHeight(parent, 100);
+    parent.scrollTop = 0;
+    const items = signal<Item[]>(hundred());
+    const list = bindList(parent, items, {
+      key: (i) => i.id,
+      render: (i) => i.label,
+      virtualize: { rowHeight: { estimate: 50 }, overscan: 0 },
+    });
+    const stop = observeRowHeights(list);
+    const ro = FakeRO.instances[0];
+    const firstWindow = new Set(ro.observed);
+
+    parent.scrollTop = 1000; // shift the window
+    parent.dispatchEvent(new Event('scroll'));
+    await raf();
+
+    // After the render, the helper re-observed a different set of row elements.
+    expect(ro.observed.size).toBeGreaterThan(0);
+    const shifted = [...ro.observed].some((el) => !firstWindow.has(el));
+    expect(shifted).toBe(true);
+    stop();
+    list();
+  });
+
+  it('the disposer disconnects the observer', () => {
+    installFakeRO();
+    const parent = host();
+    withHeight(parent, 100);
+    const items = signal<Item[]>(hundred());
+    const list = bindList(parent, items, {
+      key: (i) => i.id,
+      render: (i) => i.label,
+      virtualize: { rowHeight: { estimate: 50 } },
+    });
+    const stop = observeRowHeights(list);
+    const ro = FakeRO.instances[0];
+    expect(ro.observed.size).toBeGreaterThan(0);
+    stop();
+    expect(ro.observed.size).toBe(0);
+    list();
+  });
+
+  it('is a no-op for a non-virtualized handle and when ResizeObserver is unavailable', () => {
+    // Non-virtualized handle → no internals registered.
+    const parent = host();
+    const items = signal<Item[]>(hundred());
+    const plain = bindList(parent, items, { key: (i) => i.id, render: (i) => i.label });
+    expect(() => observeRowHeights(plain)()).not.toThrow();
+    plain();
+
+    // Virtualized, but ResizeObserver unavailable.
+    const saved = globalThis.ResizeObserver;
+    (globalThis as { ResizeObserver?: unknown }).ResizeObserver = undefined;
+    try {
+      const parent2 = host();
+      withHeight(parent2, 100);
+      const items2 = signal<Item[]>(hundred());
+      const list = bindList(parent2, items2, {
+        key: (i) => i.id,
+        render: (i) => i.label,
+        virtualize: { rowHeight: { estimate: 50 } },
+      });
+      expect(() => observeRowHeights(list)()).not.toThrow();
+      list();
+    } finally {
+      globalThis.ResizeObserver = saved;
+    }
   });
 });
 

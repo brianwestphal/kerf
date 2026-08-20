@@ -742,7 +742,7 @@ diff.run({ fileId }, (report) => fetchDiff(fileId, report));
 
 Optional subpath (`import { bindList } from 'kerfjs/list'`) providing `bindList` — a keyed list with a **live per-row mount** and optional **viewport virtualization**. It is a deliberate second list API, distinct from [`each()`](#eacht-items-render-cachekey-safehtml): reach for it when you need surgical per-row updates or windowing; `each()` stays the default for item-owned-state lists rendered to HTML strings. See `docs/4-render.md` §4.2 for the tradeoff.
 
-### `bindList<T>(parent, source, options): () => void`
+### `bindList<T>(parent, source, options): BindListHandle`
 
 ```ts
 const dispose = bindList(listEl, itemsSignal, {
@@ -757,17 +757,29 @@ Binds a keyed list to `parent` (whose children `bindList` owns — by default it
 
 - **Per-row reactivity (content mode).** Return a `MountResult` (JSX / `SafeHtml`) and each row is individually `mount()`ed, so a signal the row's `render` reads updates just that row (a fine-grained binding or a one-row morph) — its siblings don't re-render. Read signals in `render` for reactivity (external state like a `selectedId`, or signals the item carries); keep item **objects** stable and drive structure (add/remove/move) through the source. A row whose item object identity changes is rebuilt (same rule as `each()`'s memo).
 - **Own the row element (element mode).** Return an `HTMLElement` (or `{ el, update?, dispose? }`) and that element **is** the row — so the app owns its tag, class, `data-*`, and listeners, exactly how apps already build keyed rows (`<div class="ticket-row" data-id=…>`, a `<tr>` in a `<tbody>`). kerf **keys / moves / reuses** it: the SAME element survives an append, a remove elsewhere, a reorder, **or a fresh item object at the same key** (so focus / scroll / selection / imperative listeners are preserved). Your `dispose` runs **only** when the row is genuinely removed (or the list disposes) — not for surviving rows. Refresh a reused element's content by reading signals inside it, or by returning an `update(item)` that kerf calls on the existing element whenever the item changes at that key. A list may mix the two modes per row. (Content-mode `render` runs once extra at row creation for the mode probe, so keep `render` a pure projection — which bindList already requires.)
-- **Virtualization.** With `virtualize: { rowHeight, overscan? }` only the rows in the scroll viewport are rendered. `rowHeight` is the height model:
+- **Virtualization.** With `virtualize: { rowHeight, overscan? }` only the rows in the scroll viewport are rendered. `rowHeight` (a [`RowHeight<T>`](#list-types)) is the height model:
   - **`number`** — a single fixed pixel height for every row; O(1) windowing.
   - **`(item, index) => number`** — **app-declared variable** heights, derived purely from the item and its index (a known line count, an image's intrinsic aspect ratio, a server-provided height). kerf builds a prefix sum of the heights — rebuilt when the source array changes, **not** per scroll frame — and binary-searches it for the visible window, so a scroll pays only O(log n). Return a non-negative number of pixels.
+  - **`{ estimate }`** — **measured** heights, for rows whose height is only known after layout. kerf sizes an unmeasured row by `estimate` (a `number` or an `(item, index) => number`); the app reports each row's real height with the handle's **`setHeight(key, px)`** (keyed by the list `key`, so a report survives reorders), or drives it automatically with [`observeRowHeights`](#observerowheightshandle---void). When a remeasured row sits **above** the viewport, kerf adjusts `scrollTop` by the height delta so on-screen content doesn't jump.
 
-  **Measured / dynamic** heights (rows whose height is only known after layout) are a further extension — see [`docs/17-list-virtualization.md`](17-list-virtualization.md). `bindList` renders the rows into an inner **sizer** element it creates inside `parent` and sets that sizer's `padding-top`/`padding-bottom` so `parent`'s `scrollHeight` stays honest — the padding lives on the sizer, not on `parent`, because padding counts toward `clientHeight` and would otherwise break the window math. It sizes each visible row to its `rowHeight` for you. `overscan` (default 3) renders extra rows above/below the viewport. Give `parent` a fixed height + `overflow: auto` in your CSS (the rows are `parent > sizer > row`).
+  `bindList` renders the rows into an inner **sizer** element it creates inside `parent` and sets that sizer's `padding-top`/`padding-bottom` so `parent`'s `scrollHeight` stays honest — the padding lives on the sizer, not on `parent`, because padding counts toward `clientHeight` and would otherwise break the window math. It sizes each visible row to its `rowHeight` for you. `overscan` (default 3) renders extra rows above/below the viewport. Give `parent` a fixed height + `overflow: auto` in your CSS (the rows are `parent > sizer > row`).
+
+`bindList` returns a [`BindListHandle`](#list-types) — the disposer you call to tear the list down, with a `setHeight(key, px)` method for the measured mode (a no-op otherwise).
 
 Options ([`BindListOptions<T>`](#list-types)): `key` (stable per-row key — a `ListKey`, i.e. `string | number`), `render` (returns the row — a `MountResult` for content mode, or a `RowElement<T>` (`HTMLElement` / `{ el, update?, dispose? }`) for element mode), `tag` (content mode only), `before` (a `Node` or `() => Node | null` — keep the rows as a contiguous block ending just before it, for a `parent` shared with trailing controls; the node must be a child of `parent`; ignored when virtualized), `virtualize`.
 
+### `observeRowHeights(handle): () => void`
+
+The batteries-included measurement path for a `{ estimate }` virtualized list: installs **one** `ResizeObserver` over the current visible rows and forwards each row's `offsetHeight` to `handle.setHeight`, re-observing as the window shifts. Returns a disposer. It is deliberately **separate** from `bindList` (which never depends on `ResizeObserver`) — measure however you like and call `handle.setHeight` yourself instead. A no-op for a non-virtualized handle or where `ResizeObserver` is unavailable (SSR).
+
+```ts
+const list = bindList(scrollEl, source, { key, render, virtualize: { rowHeight: { estimate: 64 } } });
+const stopMeasuring = observeRowHeights(list);
+```
+
 ### List types
 
-`ListKey`, `ListSource<T>`, `RowElement<T>`, and `BindListOptions<T>` are exported from `kerfjs/list`.
+`ListKey`, `ListSource<T>`, `RowElement<T>`, `RowHeight<T>`, `BindListHandle`, and `BindListOptions<T>` are exported from `kerfjs/list`. `RowHeight<T>` is `number | ((item, index) => number) | { estimate: number | ((item, index) => number) }`; `BindListHandle` is `(() => void) & { setHeight(key: ListKey, height: number): void }`.
 
 ## 8.12 Timing primitives — `kerfjs/timing` subpath
 
