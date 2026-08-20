@@ -281,6 +281,7 @@ Numbered docs in `docs/` cover the design. Reading order:
 14. `14-feature-coverage.md` — the feature/behavior coverage axis (orthogonal to line coverage): a per-behavior index mapping each behavior — especially reconciler *state transitions* — to the test that guards it, enforced by `scripts/check-feature-coverage.mjs` (`npm run check:features`).
 15. `15-no-build-example.md` — the no-build example app (`live-poll`): served-as-source (importmap + `html` tagged template, zero tooling), the vendor-copy contract shared by all three example build scripts (`site/scripts/lib/copy-no-build-app.mjs`), and its test/capture surfaces.
 16. `16-list-identity.md` — **shipped**: why an `each()` list's identity (its call-order index) is not stable, what the source guard already fixes vs. what it doesn't, the five verified constraints any scheme must survive, and the explicit-key + diagnostic recommendation.
+17. `17-list-virtualization.md` — **design only**: extending `bindList`'s fixed-height virtualization to variable/dynamic row heights via a pluggable height source (`number` | `(item,i)=>number` | `{ estimate }` + imperative `setHeight`), where kerf owns the cumulative-offset math + scroll anchoring and the app owns measurement, plus the optional `observeRowHeights` helper.
 
 **Keep every surface up to date — proactively, without being asked.** Any change to source, API, behavior, or examples must be reflected across all affected surfaces in the same diff. Do not wait for a follow-up prompt. The full checklist:
 

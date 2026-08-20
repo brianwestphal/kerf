@@ -7,9 +7,11 @@
  *  1. **Per-row reactivity.** Every row is individually `mount()`ed, so a signal
  *     the row's `render` reads updates just that row (fine-grained binding or a
  *     one-row morph) without touching its siblings — no full-list pass.
- *  2. **Virtualization.** With `{ virtualize: { rowHeight } }` only the rows in
- *     the scroll viewport are rendered; padding on the scroll container keeps
- *     `scrollHeight` honest.
+ *  2. **Virtualization (fixed-height).** With `{ virtualize: { rowHeight } }`
+ *     only the rows in the scroll viewport are rendered; padding on the scroll
+ *     container keeps `scrollHeight` honest. `rowHeight` is a single fixed pixel
+ *     height — variable / measured row heights are a design-only extension (see
+ *     `docs/17-list-virtualization.md`), not yet implemented.
  *
  * `each()` stays the choice for item-owned-state lists rendered to HTML strings;
  * reach for `bindList` when you need surgical per-row updates or windowing.

@@ -30,8 +30,9 @@ Status markers:
 | §14 | Feature coverage (per-behavior index + `check:features` gate) | Shipped |
 | §15 | No-build example app (`live-poll` — served-as-source, importmap + `html` tagged template) | Shipped |
 | §16 | List identity (`each({ key })` — stable list identity + always-on shift warning) | Shipped |
+| §17 | List virtualization — variable row heights (pluggable height source, kerf-owned offset math + anchoring, user-owned measurement, optional `observeRowHeights`) | Design only — fixed-height virtualization shipped; variable-height not yet implemented |
 
-Everything in the v0.1–v0.3 design is shipped (each / native diff / list reconciler / `isSafeHtml` / `Fragment` barrel re-export all landed in 0.2–0.3). No partial / design-only / deferred entries.
+Everything in the v0.1–v0.3 design is shipped (each / native diff / list reconciler / `isSafeHtml` / `Fragment` barrel re-export all landed in 0.2–0.3). The one **design-only** entry is §17 (variable-height virtualization) — fixed-height `bindList` virtualization ships today; the variable-height extension is specified but unimplemented.
 
 ## Per-doc summary
 
@@ -117,6 +118,10 @@ KF-254 investigation outcome: shipping reusable kerf components as npm packages 
 ### §16 List identity
 
 **Shipped.** Names the missing concept behind a family of reconciler bugs: an `each()` list's identity is the implicit "n-th `each()` call this render", and four persistent structures (`renderCtx.caches` / `bindingCounts` / `bindingSources`, `mount()`'s `bindings`) key on it while assuming it stable. Any render that changes how many `each()` calls precede a list reassigns its id. The **corruption** half is already fixed (the source guard in `each()` refuses a patch queue when an id changed hands); the **cost** half is open — the affected list rebuilds from scratch, losing row identity/focus/scroll/IME and going O(N), with no warning (`KERF_DEV_WARN_LIST_REBIND` is structurally blind to it since the rebuild routes through classify, not the self-heal). Documents five verified constraints — two `each()` calls may legitimately share one data source; derived plain arrays have no stable identity; render-fn identity was tried and reverted; marker ids are baked into HTML at call time; the id is needed early *because* of the granular fast path — which together rule out both "key on the data" and a structural path without a reconciler restructure. Shipped as an explicit optional key — `each(items, render, { cacheKey, key })`, with the bare `cacheKey` third argument still supported — plus an **always-on** (no env var, like the missing-row-key warning) dev warning that names `{ key }` as the fix on a detected shift. Two emergent properties: a keyed list does not consume a call-order slot, so keying the *conditional* list stabilizes its unkeyed siblings too; and the source guard stays a routing decision rather than becoming an assertion, because a keyed list may legitimately change source.
+
+### §17 List virtualization — variable row heights
+
+**Design only.** `bindList`'s shipped virtualization is fixed-height: `virtualize: { rowHeight: number }` renders only the viewport rows but hard-sets each row's height, so variable content (chat, feeds, wrapping text) is unsupported. The design makes the height *source* pluggable while kerf keeps the machinery: `number` (fixed fast path, unchanged), `(item, index) => number` (app-declared heights — prefix sum + binary search, no layout reads, unit-testable in happy-dom), and `{ estimate }` + an imperative `setHeight(key, px)` channel (app-measured — kerf estimates until told, then **anchor-corrects `scrollTop`** when an above-viewport row's real height differs). Measurement is **user-owned** rather than a kerf-owned `ResizeObserver`, chosen for testability (the whole windowing/anchoring algorithm becomes unit-testable with synthetic heights, shrinking the browser-only surface to a shim), on-brand core+convenience separation, and because the app often measures better. An optional separable `observeRowHeights(handle)` helper wires one `ResizeObserver → setHeight` for the batteries-included path. Sequenced in two shippable increments: tiers 1+2 (unit-testable) first, then tier 3 + the helper (browser-tested). See [`docs/17-list-virtualization.md`](../17-list-virtualization.md).
 
 ## Update triggers
 
