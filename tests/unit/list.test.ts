@@ -686,16 +686,19 @@ describe('bindList() — observeRowHeights (ResizeObserver helper, KF-502)', () 
     const stop = observeRowHeights(list);
 
     const sizer = parent.firstElementChild as HTMLElement;
-    // Give the two visible rows a real (measured) height.
+    expect(sizer.children.length).toBe(2); // estimate 50, viewport 100 → 2 rows
+    // Give the two visible rows a real (measured) height taller than the estimate.
     for (const el of Array.from(sizer.children)) {
-      Object.defineProperty(el, 'offsetHeight', { configurable: true, value: 90 });
+      Object.defineProperty(el, 'offsetHeight', { configurable: true, value: 120 });
     }
-    FakeRO.instances[0].flush(); // ResizeObserver fires → setHeight(key, 90) per row
+    // The helper's ResizeObserver is the LAST FakeRO created — bindList makes its
+    // own parent-resize observer first.
+    FakeRO.instances.at(-1)!.flush(); // fires → setHeight(key, 120) per row
     await raf();
 
-    // Both visible rows reported 90 → model total 5080; window [0,2), padBottom
-    // = 5080 − offsets[2](=180) = 4900. (Measured rows keep their natural height.)
-    expect(sizer.style.paddingBottom).toBe('4900px');
+    // Now each visible row is 120px, so only ONE fills the 100px viewport — the
+    // measurement re-windowed the list.
+    expect(sizer.children.length).toBe(1);
     stop();
     list();
   });
@@ -712,7 +715,7 @@ describe('bindList() — observeRowHeights (ResizeObserver helper, KF-502)', () 
       virtualize: { rowHeight: { estimate: 50 }, overscan: 0 },
     });
     const stop = observeRowHeights(list);
-    const ro = FakeRO.instances[0];
+    const ro = FakeRO.instances.at(-1)!; // helper observer (bindList makes the parent one first)
     const firstWindow = new Set(ro.observed);
 
     parent.scrollTop = 1000; // shift the window
@@ -738,7 +741,7 @@ describe('bindList() — observeRowHeights (ResizeObserver helper, KF-502)', () 
       virtualize: { rowHeight: { estimate: 50 } },
     });
     const stop = observeRowHeights(list);
-    const ro = FakeRO.instances[0];
+    const ro = FakeRO.instances.at(-1)!; // helper observer (bindList makes the parent one first)
     expect(ro.observed.size).toBeGreaterThan(0);
     stop();
     expect(ro.observed.size).toBe(0);
@@ -1123,5 +1126,155 @@ describe('bindList() — before (rows sharing a parent with trailing controls)',
     items.value = [{ id: 1 }, { id: 2 }];
     expect(idsOf(parent)).toEqual(['1', '2']);
     dispose();
+  });
+});
+
+describe('bindList() — virtualize minRows / container / resize (KF-503)', () => {
+  const withHeight = (el: HTMLElement, h: number) =>
+    Object.defineProperty(el, 'clientHeight', { configurable: true, value: h });
+  const n = (count: number): Item[] => Array.from({ length: count }, (_, i) => ({ id: i, label: `r${i}` }));
+
+  it('minRows: renders ALL rows (no windowing, zero padding) while below the threshold', () => {
+    const parent = host();
+    withHeight(parent, 100); // would show ~5 rows at 20px if it windowed
+    const items = signal<Item[]>(n(8));
+    const dispose = bindList(parent, items, {
+      key: (i) => i.id,
+      render: (i) => i.label,
+      virtualize: { rowHeight: 20, overscan: 0, minRows: 20 },
+    });
+    const sizer = parent.firstElementChild as HTMLElement;
+    expect(sizer.children.length).toBe(8); // ALL 8, not a 5-row window
+    expect(sizer.style.paddingTop).toBe('0px');
+    expect(sizer.style.paddingBottom).toBe('0px');
+    // Still one structure: the inner container exists just like the windowed path.
+    expect((sizer.firstElementChild as HTMLElement).style.height).toBe('20px');
+    dispose();
+  });
+
+  it('minRows: windows once the list reaches the threshold, and reverts below it', () => {
+    const parent = host();
+    withHeight(parent, 100);
+    parent.scrollTop = 0;
+    const items = signal<Item[]>(n(3));
+    const dispose = bindList(parent, items, {
+      key: (i) => i.id,
+      render: (i) => i.label,
+      virtualize: { rowHeight: 20, overscan: 0, minRows: 5 },
+    });
+    const sizer = parent.firstElementChild as HTMLElement;
+    expect(sizer.children.length).toBe(3); // below threshold → all
+
+    items.value = n(50); // cross the threshold → window
+    expect(sizer.children.length).toBe(5); // ceil(100/20)+0
+    expect(sizer.style.paddingBottom).toBe(`${(50 - 5) * 20}px`);
+
+    items.value = n(4); // back below → all again, zero padding
+    expect(sizer.children.length).toBe(4);
+    expect(sizer.style.paddingBottom).toBe('0px');
+    dispose();
+  });
+
+  it('minRows render-all also sizes declared variable-height rows', () => {
+    const parent = host();
+    withHeight(parent, 100);
+    const items = signal<Item[]>(n(4));
+    const dispose = bindList(parent, items, {
+      key: (i) => i.id,
+      render: (i) => i.label,
+      virtualize: { rowHeight: (_, i) => (i % 2 === 0 ? 20 : 40), overscan: 0, minRows: 10 },
+    });
+    const sizer = parent.firstElementChild as HTMLElement;
+    expect(sizer.children.length).toBe(4);
+    expect(Array.from(sizer.children).map((c) => (c as HTMLElement).style.height))
+      .toEqual(['20px', '40px', '20px', '40px']);
+    dispose();
+  });
+
+  it('containerClass / containerId are applied to the inner container, exposed as handle.container', () => {
+    const parent = host();
+    withHeight(parent, 100);
+    const items = signal<Item[]>(n(50));
+    const list = bindList(parent, items, {
+      key: (i) => i.id,
+      render: (i) => i.label,
+      virtualize: { rowHeight: 20, containerClass: 'rows', containerId: 'ticket-rows' },
+    });
+    const sizer = parent.firstElementChild as HTMLElement;
+    expect(sizer.className).toBe('rows');
+    expect(sizer.id).toBe('ticket-rows');
+    expect(list.container).toBe(sizer);
+    list();
+  });
+
+  it('handle.container is undefined for a non-virtualized list', () => {
+    const parent = host();
+    const items = signal<Item[]>(n(3));
+    const list = bindList(parent, items, { key: (i) => i.id, render: (i) => i.label });
+    expect(list.container).toBeUndefined();
+    list();
+  });
+
+  describe('parent ResizeObserver', () => {
+    class FakeRO {
+      static instances: FakeRO[] = [];
+      cb: () => void;
+      observed = new Set<Element>();
+      constructor(cb: () => void) { this.cb = cb; FakeRO.instances.push(this); }
+      observe(el: Element): void { this.observed.add(el); }
+      unobserve(el: Element): void { this.observed.delete(el); }
+      disconnect(): void { this.observed.clear(); }
+      flush(): void { this.cb(); }
+    }
+    let originalRO: typeof globalThis.ResizeObserver | undefined;
+    afterEach(() => {
+      FakeRO.instances.length = 0;
+      if (originalRO !== undefined) globalThis.ResizeObserver = originalRO;
+      originalRO = undefined;
+    });
+    const install = () => {
+      originalRO = globalThis.ResizeObserver;
+      (globalThis as { ResizeObserver: unknown }).ResizeObserver = FakeRO;
+    };
+    const raf = () => new Promise((r) => setTimeout(r, 30));
+
+    it('re-windows when the parent resizes — a 0-height-at-mount list fills in once laid out', async () => {
+      install();
+      const parent = host();
+      withHeight(parent, 0); // not laid out yet at mount
+      parent.scrollTop = 0;
+      const items = signal<Item[]>(n(100));
+      const dispose = bindList(parent, items, {
+        key: (i) => i.id,
+        render: (i) => i.label,
+        virtualize: { rowHeight: 20, overscan: 2 },
+      });
+      const sizer = parent.firstElementChild as HTMLElement;
+      // clientHeight 0 → only overscan rows render.
+      expect(sizer.children.length).toBe(2);
+
+      // Layout settles: the parent gains height and the ResizeObserver fires.
+      Object.defineProperty(parent, 'clientHeight', { configurable: true, value: 100 });
+      FakeRO.instances[0].flush(); // the parent-resize observer (bindList's only RO here)
+      await raf();
+      expect(sizer.children.length).toBe(7); // ceil(100/20)+2
+      dispose();
+    });
+
+    it('dispose disconnects the parent ResizeObserver', () => {
+      install();
+      const parent = host();
+      withHeight(parent, 100);
+      const items = signal<Item[]>(n(50));
+      const dispose = bindList(parent, items, {
+        key: (i) => i.id,
+        render: (i) => i.label,
+        virtualize: { rowHeight: 20 },
+      });
+      const ro = FakeRO.instances[0];
+      expect(ro.observed.has(parent)).toBe(true);
+      dispose();
+      expect(ro.observed.size).toBe(0);
+    });
   });
 });

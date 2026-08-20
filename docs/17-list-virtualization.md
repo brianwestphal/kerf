@@ -172,7 +172,52 @@ This is a design-then-build feature; it lands in two shippable increments.
 ## 17.8 The shipped prose must say what it does
 
 Virtualization prose must distinguish the height models: `number` is fixed
-height, `(item, index) => number` is app-declared variable height, and measured
-height (tier 3) is not yet implemented. The `src/list.ts` JSDoc,
-`docs/8-api-reference.md` §8.11, and the `CHANGELOG` entry all say this — "renders
-only visible rows" on its own reads as more general than what actually ships.
+height, `(item, index) => number` is app-declared variable height, and
+`{ estimate }` is measured height (app reports via `setHeight`). The
+`src/list.ts` JSDoc, `docs/8-api-reference.md` §8.11, and the `CHANGELOG` entry
+all say this — "renders only visible rows" on its own reads as more general than
+what actually ships.
+
+## 17.9 Adoption ergonomics — threshold, container handle, resize
+
+**Status: shipped.** Three refinements from adopting `bindList({ virtualize })`
+in a real app (Hot Sheet's ticket list), each removing a workaround the caller
+otherwise had to write.
+
+### `minRows` — render-all below a threshold
+
+A list often wants to render *everything* when it's short and virtualize only
+when it's long: a fully-rendered short list is visible to find-in-page (Cmd+F),
+to screen readers, and to DOM-count tests, all of which only see rows actually in
+the DOM. Without a built-in, the caller branches on length between a plain
+`bindList` (rows mount into *their* container) and a virtualized one (kerf creates
+and owns an *inner* container) — two different DOM shapes, so the branch leaks
+into the caller and both paths must converge on the same hooks by hand.
+
+`virtualize: { rowHeight, minRows }` handles it inside kerf: below `minRows` it
+renders **every** row with no windowing and zero padding; at or above it, it
+windows. **The DOM structure — the inner sizer — is identical either way**, so the
+call site is one call with one shape, and crossing the threshold in either
+direction switches automatically.
+
+### `containerClass` / `containerId` + `handle.container`
+
+The inner sizer kerf creates in virtualize mode was previously unclassed and
+unreachable, forcing callers to tag `parent.lastElementChild` (fragile: it
+assumes kerf's div is last and nothing else was appended). Now `containerClass` /
+`containerId` set it declaratively at creation, and the returned
+`BindListHandle` exposes it as `handle.container` (an `HTMLElement` for a
+virtualized list, `undefined` otherwise) for anything else — a detachment marker,
+an imperative reference, an e2e hook.
+
+### Resize handling
+
+kerf reads `parent.clientHeight` at mount and previously re-windowed only on
+`scroll`. A list mounted before layout (`clientHeight` 0 — a hidden tab, pre-first
+paint) rendered just `overscan` rows and never grew until the user scrolled; a
+container resized while open was missed entirely. kerf now also observes `parent`
+with a `ResizeObserver` (where available) and re-windows on resize. Because a
+`ResizeObserver` delivers an initial callback on observe, the 0-height case
+self-heals once layout settles — no synthetic scroll needed. Where
+`ResizeObserver` is absent (older runtimes / SSR), behavior is scroll-only as
+before, so a laid-out (non-zero-height) scroll parent at mount is required there.

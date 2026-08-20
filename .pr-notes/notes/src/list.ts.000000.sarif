@@ -316,6 +316,69 @@
           "branch": "main"
         }
       ]
+    },
+    {
+      "tool": {
+        "driver": {
+          "name": "Hot Sheet",
+          "rules": [
+            {
+              "id": "review-note",
+              "name": "ReviewNote",
+              "shortDescription": {
+                "text": "AI-authored, line-anchored review note."
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "review-note",
+          "ruleIndex": 0,
+          "kind": "informational",
+          "level": "none",
+          "guid": "mt0z8vj9pgo484tl",
+          "message": {
+            "text": "minRows renders-all through the SAME inner-container structure as the windowed path — that's the whole point.\n\nThe adoption pain (KF-503, split into KF-504/505/506) was that a caller wanting \"render all when short, virtualize when long\" had to branch between a plain bindList (rows mount into the caller's container) and a virtualized one (kerf creates + owns an inner sizer) — two different DOM shapes, so the branch leaked into the caller and both paths had to converge on the same hooks by hand.\n\nHere, below minRows the code still renders into the inner sizer (syncRows(items), padding 0), identical in shape to the windowed branch above it. So the DOM structure is invariant across the threshold, handle.container is stable, and the caller makes one call with one shape. Crossing the threshold in either direction just re-evaluates total < minRows on the next render (the effect re-runs on any source change), so it switches automatically.\n\nThe parent ResizeObserver (KF-506) composes with this: because a ResizeObserver delivers an initial callback on observe, a list mounted at clientHeight 0 (a hidden tab) self-heals once layout gives it a size — no synthetic scroll, no clientHeight || 600 floor. It's optional-chained so a runtime without ResizeObserver falls back to scroll-only.\n",
+            "markdown": "`minRows` renders-all through the SAME inner-container structure as the windowed path — that's the whole point.\n\nThe adoption pain (KF-503, split into KF-504/505/506) was that a caller wanting \"render all when short, virtualize when long\" had to branch between a plain `bindList` (rows mount into the caller's container) and a virtualized one (kerf creates + owns an inner sizer) — two different DOM shapes, so the branch leaked into the caller and both paths had to converge on the same hooks by hand.\n\nHere, below `minRows` the code still renders into the inner sizer (`syncRows(items)`, padding 0), identical in shape to the windowed branch above it. So the DOM structure is invariant across the threshold, `handle.container` is stable, and the caller makes one call with one shape. Crossing the threshold in either direction just re-evaluates `total < minRows` on the next render (the effect re-runs on any source change), so it switches automatically.\n\nThe parent `ResizeObserver` (KF-506) composes with this: because a ResizeObserver delivers an initial callback on `observe`, a list mounted at `clientHeight` 0 (a hidden tab) self-heals once layout gives it a size — no synthetic scroll, no `clientHeight || 600` floor. It's optional-chained so a runtime without ResizeObserver falls back to scroll-only.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/list.ts"
+                },
+                "region": {
+                  "startLine": 509,
+                  "endLine": 535,
+                  "snippet": {
+                    "text": "    }\n    const total = items.length;\n    let start: number;\n    let end: number;\n    let padTop: number;\n    let padBottom: number;\n    if (minRows !== undefined && total < minRows) {\n      // Below the threshold: render EVERY row, no windowing, zero padding — one\n      // DOM structure (the inner container) shared with the windowed path, so the\n      // caller never branches. Rows are still sized (declared/fixed) from the\n      // prefix sum, which we still build for the sizing pass.\n      if (fixedHeight === null && heightsDirty) {\n        rebuildOffsets();\n        heightsDirty = false;\n      }\n      start = 0;\n      end = total;\n      padTop = 0;\n      padBottom = 0;\n    } else {\n      const scrollTop = parent.scrollTop;\n      const viewportBottom = scrollTop + parent.clientHeight;\n      if (fixedHeight !== null) {\n        start = Math.max(0, Math.floor(scrollTop / fixedHeight) - overscan);\n        end = Math.min(total, Math.ceil(viewportBottom / fixedHeight) + overscan);\n        padTop = start * fixedHeight;\n        padBottom = Math.max(0, total - end) * fixedHeight;"
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "tags": [
+              "rationale"
+            ]
+          },
+          "workItemUris": [
+            "KF-504"
+          ],
+          "partialFingerprints": {
+            "prNoteAnchor/v1": "c68f897ac4e65de4d28fd740dab51851"
+          }
+        }
+      ],
+      "versionControlProvenance": [
+        {
+          "repositoryUri": "git@github.com:brianwestphal/kerf.git",
+          "revisionId": "6aef66a472cabbbb00a5f631ec36fefa2d43a3cc",
+          "branch": "main"
+        }
+      ]
     }
   ]
 }

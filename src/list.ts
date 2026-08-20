@@ -87,6 +87,14 @@ export type BindListHandle = (() => void) & {
    * A no-op for fixed / declared-height lists and for unknown keys.
    */
   setHeight: (key: ListKey, height: number) => void;
+  /**
+   * The inner container element kerf creates to hold the rows in a **virtualized**
+   * list (the "sizer"). `undefined` for a non-virtualized list (there the rows
+   * live directly in `parent`). Use it to style, id, or otherwise reach the row
+   * block without guessing at `parent.lastElementChild` — though `containerClass`
+   * / `containerId` on `virtualize` set those declaratively.
+   */
+  container?: HTMLElement;
 };
 
 /** Options for {@link bindList}. */
@@ -138,8 +146,28 @@ export interface BindListOptions<T> {
    *    height via {@link BindListHandle.setHeight} (or the `observeRowHeights`
    *    helper). kerf anchor-corrects `scrollTop` when an above-viewport row is
    *    remeasured, so content doesn't jump.
+   *
+   * `minRows` renders **every** row (no windowing, zero padding) while the list
+   * is shorter than it, and windows only at or above it — the DOM structure (the
+   * inner container) is the same either way, so the call site never branches. A
+   * fully-rendered short list is friendlier to find-in-page, screen readers, and
+   * DOM-count assertions, which only see rows actually in the DOM.
+   *
+   * `containerClass` / `containerId` are set on the inner container kerf creates
+   * to hold the rows, so it's reachable from CSS and tests without guessing at
+   * `parent.lastElementChild` (it's also on the handle as `handle.container`).
+   *
+   * kerf re-windows on `parent`'s `scroll` and, where `ResizeObserver` exists, on
+   * `parent` resizing — so a list that mounts before layout (a hidden tab,
+   * `clientHeight` 0) fills in once it's sized, and a resized container re-windows.
    */
-  virtualize?: { rowHeight: RowHeight<T>; overscan?: number };
+  virtualize?: {
+    rowHeight: RowHeight<T>;
+    overscan?: number;
+    minRows?: number;
+    containerClass?: string;
+    containerId?: string;
+  };
 }
 
 interface Row<T> {
@@ -165,6 +193,7 @@ export function bindList<T>(
 ): BindListHandle {
   const { key, render, tag = 'div', virtualize, before } = options;
   const overscan = virtualize?.overscan ?? 3;
+  const minRows = virtualize?.minRows;
 
   // The node the row block ends before — `before` (KF-496) when the list shares
   // `parent` with trailing siblings, else the end of the container. Never applies
@@ -200,7 +229,11 @@ export function bindList<T>(
   // toward clientHeight). `parent` stays the clean scroll viewport; `container`
   // holds the rows. Non-virtualized lists render straight into `parent`.
   const container: HTMLElement = virtualize === undefined ? parent : document.createElement('div');
-  if (virtualize !== undefined) parent.appendChild(container);
+  if (virtualize !== undefined) {
+    if (virtualize.containerClass !== undefined) container.className = virtualize.containerClass;
+    if (virtualize.containerId !== undefined) container.id = virtualize.containerId;
+    parent.appendChild(container);
+  }
 
   const NOOP = (): void => { /* element-mode rows with no caller teardown */ };
 
@@ -475,26 +508,41 @@ export function bindList<T>(
       return;
     }
     const total = items.length;
-    const scrollTop = parent.scrollTop;
-    const viewportBottom = scrollTop + parent.clientHeight;
     let start: number;
     let end: number;
     let padTop: number;
     let padBottom: number;
-    if (fixedHeight !== null) {
-      start = Math.max(0, Math.floor(scrollTop / fixedHeight) - overscan);
-      end = Math.min(total, Math.ceil(viewportBottom / fixedHeight) + overscan);
-      padTop = start * fixedHeight;
-      padBottom = Math.max(0, total - end) * fixedHeight;
-    } else {
-      if (heightsDirty) {
+    if (minRows !== undefined && total < minRows) {
+      // Below the threshold: render EVERY row, no windowing, zero padding — one
+      // DOM structure (the inner container) shared with the windowed path, so the
+      // caller never branches. Rows are still sized (declared/fixed) from the
+      // prefix sum, which we still build for the sizing pass.
+      if (fixedHeight === null && heightsDirty) {
         rebuildOffsets();
         heightsDirty = false;
       }
-      start = Math.max(0, findStart(scrollTop, total) - overscan);
-      end = Math.min(total, findEnd(viewportBottom, total) + overscan);
-      padTop = offsets[start];
-      padBottom = offsets[total] - offsets[end];
+      start = 0;
+      end = total;
+      padTop = 0;
+      padBottom = 0;
+    } else {
+      const scrollTop = parent.scrollTop;
+      const viewportBottom = scrollTop + parent.clientHeight;
+      if (fixedHeight !== null) {
+        start = Math.max(0, Math.floor(scrollTop / fixedHeight) - overscan);
+        end = Math.min(total, Math.ceil(viewportBottom / fixedHeight) + overscan);
+        padTop = start * fixedHeight;
+        padBottom = Math.max(0, total - end) * fixedHeight;
+      } else {
+        if (heightsDirty) {
+          rebuildOffsets();
+          heightsDirty = false;
+        }
+        start = Math.max(0, findStart(scrollTop, total) - overscan);
+        end = Math.min(total, findEnd(viewportBottom, total) + overscan);
+        padTop = offsets[start];
+        padBottom = offsets[total] - offsets[end];
+      }
     }
     syncRows(items.slice(start, end));
     sizeVisibleRows(start);
@@ -527,6 +575,16 @@ export function bindList<T>(
   };
   if (virtualize !== undefined) parent.addEventListener('scroll', scheduleRender);
 
+  // Re-window when `parent` RESIZES, not just on scroll. This makes two cases
+  // robust that the scroll-only model missed: a list mounted before layout
+  // (`clientHeight` 0 — a hidden tab, pre-first-paint) fills in once it's sized,
+  // and a container resized while open re-windows. ResizeObserver fires an
+  // initial callback on observe, so the 0-height case self-heals with no synthetic
+  // scroll. Absent (older SSR/runtime) → scroll-only, as before.
+  const RO = globalThis.ResizeObserver;
+  const parentResize = virtualize !== undefined && RO !== undefined ? new RO(scheduleRender) : undefined;
+  parentResize?.observe(parent);
+
   // Measured mode: report a row's real height. No-op for fixed / declared lists
   // and for keys not currently in the list.
   const setHeight = (k: ListKey, height: number): void => {
@@ -555,6 +613,7 @@ export function bindList<T>(
     renderSubscribers.clear();
     if (virtualize !== undefined) {
       parent.removeEventListener('scroll', scheduleRender);
+      parentResize?.disconnect();
       container.remove(); // removes the inner sizer and its rows in one go
       VIRTUAL_INTERNALS.delete(handle);
     }
@@ -566,6 +625,7 @@ export function bindList<T>(
   // off the public type (a GC-tied WeakMap, so it doesn't count against Design
   // rule 5). Only virtualized lists have a window to observe.
   if (virtualize !== undefined) {
+    handle.container = container;
     VIRTUAL_INTERNALS.set(handle, {
       visibleRows: () => order.map((row) => ({ key: key(row.item), el: row.el })),
       onRender: (cb) => {

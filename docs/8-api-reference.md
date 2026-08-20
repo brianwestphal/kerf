@@ -764,7 +764,12 @@ Binds a keyed list to `parent` (whose children `bindList` owns — by default it
 
   `bindList` renders the rows into an inner **sizer** element it creates inside `parent` and sets that sizer's `padding-top`/`padding-bottom` so `parent`'s `scrollHeight` stays honest — the padding lives on the sizer, not on `parent`, because padding counts toward `clientHeight` and would otherwise break the window math. It sizes each visible row to its `rowHeight` for you. `overscan` (default 3) renders extra rows above/below the viewport. Give `parent` a fixed height + `overflow: auto` in your CSS (the rows are `parent > sizer > row`).
 
-`bindList` returns a [`BindListHandle`](#list-types) — the disposer you call to tear the list down, with a `setHeight(key, px)` method for the measured mode (a no-op otherwise).
+  More `virtualize` options:
+  - **`minRows`** — render **every** row (no windowing, zero padding) while the list is shorter than `minRows`, and window only at or above it. The DOM structure (the inner sizer) is identical either way, so the **call site never branches** on list length. A fully-rendered short list is friendlier to find-in-page (Cmd+F), screen readers, and DOM-count assertions, which only see rows actually in the DOM. Crossing the threshold in either direction switches automatically.
+  - **`containerClass`** / **`containerId`** — set on the inner sizer kerf creates, so it's reachable from CSS and test selectors without guessing at `parent.lastElementChild`.
+  - **Resizing.** kerf re-windows on `parent`'s `scroll` **and**, where `ResizeObserver` exists, when `parent` itself resizes. So a list mounted before layout (a hidden tab, `clientHeight` 0) fills in once it's sized, and a container resized while open re-windows — neither needs a synthetic scroll. (Absent `ResizeObserver`, it's scroll-only, so ensure `parent` is laid out at mount.)
+
+`bindList` returns a [`BindListHandle`](#list-types) — the disposer you call to tear the list down, with a `setHeight(key, px)` method for the measured mode (a no-op otherwise) and a **`container`** property (the inner sizer for a virtualized list, `undefined` otherwise).
 
 Options ([`BindListOptions<T>`](#list-types)): `key` (stable per-row key — a `ListKey`, i.e. `string | number`), `render` (returns the row — a `MountResult` for content mode, or a `RowElement<T>` (`HTMLElement` / `{ el, update?, dispose? }`) for element mode), `tag` (content mode only), `before` (a `Node` or `() => Node | null` — keep the rows as a contiguous block ending just before it, for a `parent` shared with trailing controls; the node must be a child of `parent`; ignored when virtualized), `virtualize`.
 
@@ -779,7 +784,7 @@ const stopMeasuring = observeRowHeights(list);
 
 ### List types
 
-`ListKey`, `ListSource<T>`, `RowElement<T>`, `RowHeight<T>`, `BindListHandle`, and `BindListOptions<T>` are exported from `kerfjs/list`. `RowHeight<T>` is `number | ((item, index) => number) | { estimate: number | ((item, index) => number) }`; `BindListHandle` is `(() => void) & { setHeight(key: ListKey, height: number): void }`.
+`ListKey`, `ListSource<T>`, `RowElement<T>`, `RowHeight<T>`, `BindListHandle`, and `BindListOptions<T>` are exported from `kerfjs/list`. `RowHeight<T>` is `number | ((item, index) => number) | { estimate: number | ((item, index) => number) }`; `BindListHandle` is `(() => void) & { setHeight(key: ListKey, height: number): void; container?: HTMLElement }`.
 
 ## 8.12 Timing primitives — `kerfjs/timing` subpath
 
