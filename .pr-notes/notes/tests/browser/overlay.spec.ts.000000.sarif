@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "Hot Sheet",
+          "rules": [
+            {
+              "id": "review-note",
+              "name": "ReviewNote",
+              "shortDescription": {
+                "text": "AI-authored, line-anchored review note."
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "review-note",
+          "ruleIndex": 0,
+          "kind": "informational",
+          "level": "none",
+          "guid": "mt2fiy0u1vfj3bsj",
+          "message": {
+            "text": "Playwright's locator.boundingBox() returns { x, y, width, height } — there is no left/top. An earlier draft asserted box.left (always undefined), which failed even though the popover was positioned correctly. Confirmed by logging the box: {x:40,y:125,width:49.5,height:32}. All three native browser specs pass on Chromium, including a <dialog> that stays hit-testable above a z-index: 99999 fixed bar (only the top layer can) and a native popover reporting :popover-open.",
+            "markdown": "Playwright's `locator.boundingBox()` returns `{ x, y, width, height }` — there is no `left`/`top`. An earlier draft asserted `box.left` (always `undefined`), which failed even though the popover was positioned correctly. Confirmed by logging the box: `{x:40,y:125,width:49.5,height:32}`. All three native browser specs pass on Chromium, including a `<dialog>` that stays hit-testable above a `z-index: 99999` fixed bar (only the top layer can) and a native popover reporting `:popover-open`."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "tests/browser/overlay.spec.ts"
+                },
+                "region": {
+                  "startLine": 195,
+                  "endLine": 195,
+                  "snippet": {
+                    "text": "  expect(box!.x).toBeGreaterThan(30);"
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "tags": [
+              "test-evidence"
+            ]
+          },
+          "workItemUris": [
+            "KF-526"
+          ],
+          "partialFingerprints": {
+            "prNoteAnchor/v1": "9e383c72b875cf3a8db4250d3755705f"
+          }
+        }
+      ],
+      "versionControlProvenance": [
+        {
+          "repositoryUri": "git@github.com:brianwestphal/kerf.git",
+          "revisionId": "349120007b98f63587c7e063f93c04b9ce617823",
+          "branch": "main"
+        }
+      ]
+    }
+  ]
+}

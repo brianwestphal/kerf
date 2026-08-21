@@ -606,6 +606,107 @@
           "branch": "main"
         }
       ]
+    },
+    {
+      "tool": {
+        "driver": {
+          "name": "Hot Sheet",
+          "rules": [
+            {
+              "id": "review-note",
+              "name": "ReviewNote",
+              "shortDescription": {
+                "text": "AI-authored, line-anchored review note."
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "review-note",
+          "ruleIndex": 0,
+          "kind": "informational",
+          "level": "none",
+          "guid": "mt2fixpa9wd6nml1",
+          "message": {
+            "text": "In native modal mode kerf drops its own keyboard trap and routes Escape through the dialog's cancel event instead of a document keydown handler.\n\nA native <dialog>.showModal() already confines Tab focus (browser-owned) and inerts the rest of the document, so kerf's manual Tab trap would be redundant double-handling. Escape on a modal dialog is surfaced by the platform as a cancel event; kerf takes it over with preventDefault() (so kerf owns teardown and so Escape is swallowed when escape isn't a dismiss trigger, e.g. dismiss: ['backdrop']), then dismisses only when it is. Backdrop dismissal is unchanged — a click whose target is the dialog element (the ::backdrop) still dismisses, exactly as in the <div> path. This keeps native and fallback behavior identical from the caller's side while letting the platform own modality.",
+            "markdown": "In native modal mode kerf drops its own keyboard trap and routes Escape through the dialog's `cancel` event instead of a document keydown handler.\n\nA native `<dialog>.showModal()` already confines Tab focus (browser-owned) and inerts the rest of the document, so kerf's manual Tab trap would be redundant double-handling. Escape on a modal dialog is surfaced by the platform as a `cancel` event; kerf takes it over with `preventDefault()` (so kerf owns teardown and so Escape is *swallowed* when `escape` isn't a dismiss trigger, e.g. `dismiss: ['backdrop']`), then dismisses only when it is. Backdrop dismissal is unchanged — a click whose target is the dialog element (the `::backdrop`) still dismisses, exactly as in the `<div>` path. This keeps native and fallback behavior identical from the caller's side while letting the platform own modality."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/overlay.ts"
+                },
+                "region": {
+                  "startLine": 205,
+                  "endLine": 205,
+                  "snippet": {
+                    "text": "    // A native modal `<dialog>` confines Tab focus itself and surfaces Escape as"
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "tags": [
+              "rationale"
+            ]
+          },
+          "workItemUris": [
+            "KF-526"
+          ],
+          "partialFingerprints": {
+            "prNoteAnchor/v1": "61edd5bd45a945339b2659464aca350b"
+          }
+        },
+        {
+          "ruleId": "review-note",
+          "ruleIndex": 0,
+          "kind": "informational",
+          "level": "none",
+          "guid": "mt2fixv5bpfjdxva",
+          "message": {
+            "text": "style.inset = 'auto' neutralizes the UA [popover] { inset: 0; margin: auto } so positionAnchored controls placement.\n\nWithout it, the UA stylesheet leaves right: 0; bottom: 0 on the shown popover; with positionAnchored setting only left/top, a fixed element with both left and right specified and width: auto would stretch/center across the viewport instead of shrink-to-fit at the anchor. Setting inset: auto resets all four insets so the subsequent inline left/top win and width shrinks to content. This is a positioning necessity, not a visual reset — it does not touch the UA border/padding/backdrop, which the docs tell the app to style via className. Verified in Chromium (tests/browser/overlay.spec.ts): the native popover measures at the anchor (x≈40), not stretched.",
+            "markdown": "`style.inset = 'auto'` neutralizes the UA `[popover] { inset: 0; margin: auto }` so `positionAnchored` controls placement.\n\nWithout it, the UA stylesheet leaves `right: 0; bottom: 0` on the shown popover; with `positionAnchored` setting only `left`/`top`, a fixed element with both `left` and `right` specified and `width: auto` would stretch/center across the viewport instead of shrink-to-fit at the anchor. Setting `inset: auto` resets all four insets so the subsequent inline `left`/`top` win and width shrinks to content. This is a positioning necessity, not a visual reset — it does not touch the UA border/padding/backdrop, which the docs tell the app to style via `className`. Verified in Chromium (`tests/browser/overlay.spec.ts`): the native popover measures at the anchor (x≈40), not stretched."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/overlay.ts"
+                },
+                "region": {
+                  "startLine": 167,
+                  "endLine": 167,
+                  "snippet": {
+                    "text": "    // `positionAnchored` (which sets `top`/`left`) controls placement — otherwise"
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "tags": [
+              "rationale"
+            ]
+          },
+          "workItemUris": [
+            "KF-526"
+          ],
+          "partialFingerprints": {
+            "prNoteAnchor/v1": "1eede2c9beb6bc00fd6158b18b3b3f35"
+          }
+        }
+      ],
+      "versionControlProvenance": [
+        {
+          "repositoryUri": "git@github.com:brianwestphal/kerf.git",
+          "revisionId": "349120007b98f63587c7e063f93c04b9ce617823",
+          "branch": "main"
+        }
+      ]
     }
   ]
 }

@@ -60,6 +60,23 @@ export interface OverlayOptions {
   onDismiss?: () => void;
   /** For `'outside'` dismissal: clicks on these elements do NOT count as outside (e.g. the trigger button). */
   outsideIgnore?: Element | readonly Element[];
+  /**
+   * Opt into the browser **top layer** (`docs/19-native-overlay-backing.md`).
+   * When `true` and the engine supports it, a modal overlay (`trap: true`) is
+   * hosted in a `<dialog>` opened with `.showModal()` — real inerting of the rest
+   * of the document + guaranteed stacking above any `z-index` — and a non-modal
+   * one (`trap: false`) uses the Popover API (`[popover]` + `showPopover()`).
+   * Feature-detected; falls back to today's plain `<div>` where unsupported.
+   *
+   * The `render` slot + promise API are unchanged — kerf just hosts your markup
+   * in a `<dialog>` / `[popover]` instead of a `<div>`. Two caveats: native
+   * `<dialog>` / `[popover]` carry **UA default styles** (a `::backdrop`,
+   * centering, border, padding) that kerf does not reset — style the element (and
+   * its `::backdrop`) via `className`; and `container` is effectively a **no-op**
+   * for visual position, since the top layer ignores where the element lives in
+   * the DOM. Default `false`.
+   */
+  native?: boolean;
 }
 
 /** Handle returned by {@link overlay}. Holds no framework state — it's a closure. */
@@ -83,6 +100,18 @@ function focusable(root: Element): HTMLElement[] {
   );
 }
 
+// Native top-layer feature detection (KF-526). Modal → `<dialog>.showModal()`;
+// non-modal → the Popover API. Each is independent — an engine may ship one
+// without the other — and both fall back to the plain `<div>` where absent.
+function supportsDialog(): boolean {
+  return typeof HTMLDialogElement !== 'undefined'
+    && typeof HTMLDialogElement.prototype.showModal === 'function';
+}
+function supportsPopover(): boolean {
+  return typeof HTMLElement !== 'undefined'
+    && typeof HTMLElement.prototype.showPopover === 'function';
+}
+
 /**
  * Open an overlay: append a wrapper to `container`, `mount()` `content` inside
  * it, wire the requested dismissals + (optionally) a focus trap, and return a
@@ -98,21 +127,48 @@ export function overlay(content: OverlayContent, options: OverlayOptions = {}): 
     role = 'dialog',
     onDismiss,
     outsideIgnore,
+    native = false,
   } = options;
 
   const triggers: readonly DismissTrigger[] =
     dismiss === false ? [] : Array.isArray(dismiss) ? dismiss : [dismiss];
   const restoreTo = document.activeElement;
 
-  const wrapper = document.createElement('div');
+  // Native top-layer backing (KF-526), feature-detected: a modal overlay
+  // (`trap`) → `<dialog>.showModal()`; a non-modal one → `[popover]`. Each falls
+  // back to the plain `<div>` where the API is missing, so behavior is unchanged
+  // on unsupporting engines.
+  const useDialog = native && trap && supportsDialog();
+  const usePopover = native && !trap && supportsPopover();
+
+  const wrapper: HTMLElement = useDialog ? document.createElement('dialog') : document.createElement('div');
   wrapper.className = className;
-  if (trap) {
+  if (usePopover) wrapper.setAttribute('popover', 'manual');
+  // `<dialog>.showModal()` conveys modality natively (role + inert), so the ARIA
+  // attributes are only needed on the plain-`<div>` fallback.
+  if (trap && !useDialog) {
     wrapper.setAttribute('role', role);
     wrapper.setAttribute('aria-modal', 'true');
   }
   container.appendChild(wrapper);
 
   const disposeMount = mount(wrapper, typeof content === 'function' ? content : () => content);
+
+  // Enter the top layer after the content is mounted + connected. `showModal()`
+  // moves focus into the dialog by default; kerf's `initialFocus` pass below runs
+  // afterward and wins.
+  let nativeOpened = false;
+  if (useDialog) {
+    (wrapper as HTMLDialogElement).showModal();
+    nativeOpened = true;
+  } else if (usePopover) {
+    (wrapper as HTMLElement & { showPopover(): void }).showPopover();
+    // Neutralize the UA `[popover] { inset: 0; margin: auto }` anchoring so
+    // `positionAnchored` (which sets `top`/`left`) controls placement — otherwise
+    // the retained `right`/`bottom` insets would stretch/center the element.
+    wrapper.style.inset = 'auto';
+    nativeOpened = true;
+  }
 
   const removers: Array<() => void> = [];
   const resultBox: { resolve?: (value: unknown) => void } = {};
@@ -126,6 +182,14 @@ export function overlay(content: OverlayContent, options: OverlayOptions = {}): 
     state.closed = true;
     for (const remove of removers) remove();
     disposeMount();
+    // Exit the top layer before removing the node, so the native close steps run
+    // (restore inert, fire the dialog's `close`). `<dialog>` also restores focus
+    // itself; kerf's manual restore below stays as the fallback path's behavior.
+    if (nativeOpened) {
+      nativeOpened = false;
+      if (useDialog) (wrapper as HTMLDialogElement).close();
+      else (wrapper as HTMLElement & { hidePopover(): void }).hidePopover();
+    }
     wrapper.remove();
     if (restoreTo instanceof HTMLElement && restoreTo.isConnected) restoreTo.focus();
     resultBox.resolve?.(value);
@@ -137,7 +201,17 @@ export function overlay(content: OverlayContent, options: OverlayOptions = {}): 
   }
 
   const wantEscape = triggers.includes('escape');
-  if (wantEscape || trap) {
+  if (useDialog) {
+    // A native modal `<dialog>` confines Tab focus itself and surfaces Escape as
+    // a `cancel` event. Take that over: `preventDefault` so kerf owns teardown
+    // (and so Escape is swallowed when it isn't a dismiss trigger), then dismiss.
+    const onCancel = (event: Event): void => {
+      event.preventDefault();
+      if (wantEscape) userDismiss();
+    };
+    wrapper.addEventListener('cancel', onCancel);
+    removers.push(() => wrapper.removeEventListener('cancel', onCancel));
+  } else if (wantEscape || trap) {
     const onKeydown = (event: KeyboardEvent): void => {
       if (wantEscape && event.key === 'Escape') {
         event.stopPropagation();
@@ -237,6 +311,8 @@ export interface ConfirmOptions {
   cancelText?: string;
   /** Add a `kerf-confirm--danger` class to the wrapper for destructive actions. */
   danger?: boolean;
+  /** Host the dialog in the browser top layer (`<dialog>.showModal()`) where supported. See {@link OverlayOptions.native}. */
+  native?: boolean;
   /**
    * Bring your own markup (design-system dialogs): return the full dialog body,
    * spreading the provided `ok`/`cancel` wiring onto your buttons. Overrides the
@@ -260,6 +336,7 @@ export function confirm(message: string, options: ConfirmOptions = {}): Promise<
     okText = 'OK',
     cancelText = 'Cancel',
     danger = false,
+    native = false,
     render,
   } = options;
 
@@ -291,6 +368,7 @@ export function confirm(message: string, options: ConfirmOptions = {}): Promise<
     dismiss: ['escape', 'backdrop'],
     initialFocus: '[data-confirm="ok"]',
     trap: true,
+    native,
   });
 
   delegate(handle.el, 'click', '[data-confirm]', (_event, el) => {
@@ -327,6 +405,8 @@ export interface PromptOptions {
   cancelText?: string;
   /** Block OK while this returns an error string; the message shows inline. */
   validate?: FieldValidator;
+  /** Host the dialog in the browser top layer (`<dialog>.showModal()`) where supported. See {@link OverlayOptions.native}. */
+  native?: boolean;
   /**
    * Bring your own markup: return the full dialog body, spreading the provided
    * `input` (the text field), `ok`/`cancel` (buttons), and optional `error` (the
@@ -369,6 +449,7 @@ export function prompt(message: string, options: PromptOptions = {}): Promise<st
     okText = 'OK',
     cancelText = 'Cancel',
     validate,
+    native = false,
     render,
   } = options;
 
@@ -415,6 +496,7 @@ export function prompt(message: string, options: PromptOptions = {}): Promise<st
     dismiss: ['escape', 'backdrop'],
     initialFocus: '[data-prompt-input]',
     trap: true,
+    native,
   });
 
   // The input is required; the error slot is optional (BYO markup may omit it).
@@ -499,6 +581,8 @@ export interface FormOptions {
   okText?: string;
   /** Cancel button label. Default `'Cancel'`. */
   cancelText?: string;
+  /** Host the dialog in the browser top layer (`<dialog>.showModal()`) where supported. See {@link OverlayOptions.native}. */
+  native?: boolean;
   /**
    * Bring your own markup: return the full form body, laying out `slots.fields`
    * (each with `input`/`error` wiring to spread) and the `ok`/`cancel` buttons.
@@ -520,7 +604,9 @@ export function form(
   fields: readonly FormField[],
   options: FormOptions = {},
 ): Promise<Record<string, string> | null> {
-  const { container, className = 'kerf-overlay', title, okText = 'OK', cancelText = 'Cancel', render } = options;
+  const {
+    container, className = 'kerf-overlay', title, okText = 'OK', cancelText = 'Cancel', native = false, render,
+  } = options;
 
   const fieldAttrs = (field: FormField): Record<string, string> => ({
     'data-field': field.name,
@@ -576,6 +662,7 @@ export function form(
     dismiss: ['escape', 'backdrop'],
     initialFocus: '[data-field]',
     trap: true,
+    native,
   });
 
   // Inputs are required; error nodes are optional (BYO markup may omit them).
@@ -664,6 +751,8 @@ export interface ChoiceOptions<R> {
   title?: string;
   /** The value resolved when **Enter** is pressed anywhere in the dialog (the default action). */
   defaultValue?: R;
+  /** Host the dialog in the browser top layer (`<dialog>.showModal()`) where supported. See {@link OverlayOptions.native}. */
+  native?: boolean;
   /** Bring your own markup: return the full body, spreading each `slots.actions[i]` onto your buttons. */
   render?: (slots: ChoiceRenderSlots) => OverlayContent;
 }
@@ -682,7 +771,7 @@ export function choice<R>(
   actions: ReadonlyArray<ChoiceAction<R>>,
   options: ChoiceOptions<R> = {},
 ): Promise<R | null> {
-  const { container, className = 'kerf-overlay', title, defaultValue, render } = options;
+  const { container, className = 'kerf-overlay', title, defaultValue, native = false, render } = options;
   const hasDefault = 'defaultValue' in options;
 
   const actionAttrs = actions.map((_, i) => ({ 'data-choice': String(i) }));
@@ -721,6 +810,7 @@ export function choice<R>(
     dismiss: ['escape', 'backdrop'],
     initialFocus: '[data-choice]',
     trap: true,
+    native,
   });
 
   delegate(handle.el, 'click', '[data-choice]', (_event, el) => {
@@ -775,6 +865,14 @@ export interface PopoverOptions {
   outsideIgnore?: Element | readonly Element[];
   /** Called on any user-initiated dismissal. */
   onDismiss?: () => void;
+  /**
+   * Host the popover in the browser top layer (the Popover API — `[popover]` +
+   * `showPopover()`) where supported, so it stacks above any `z-index` without a
+   * z-index war. Falls back to today's plain `<div>` where unsupported. kerf keeps
+   * owning positioning + its own dismiss wiring; the popover is `popover="manual"`.
+   * See {@link OverlayOptions.native}. Default `false`.
+   */
+  native?: boolean;
 }
 
 /**
@@ -801,6 +899,7 @@ export function popover(
     initialFocus = false,
     outsideIgnore,
     onDismiss,
+    native = false,
   } = options;
 
   const extraIgnore = outsideIgnore === undefined
@@ -815,6 +914,7 @@ export function popover(
     initialFocus,
     onDismiss,
     outsideIgnore: [anchor, ...extraIgnore],
+    native,
   });
 
   // Position + keep it glued while open; drop the listeners on close.
@@ -839,6 +939,8 @@ export interface TooltipOptions extends AnchorPositionOptions {
   hideDelay?: number;
   /** ARIA role on the wrapper. Default `'tooltip'`. */
   role?: string;
+  /** Host the tooltip in the browser top layer (the Popover API) where supported. See {@link OverlayOptions.native}. Default `false`. */
+  native?: boolean;
 }
 
 /**
@@ -859,6 +961,7 @@ export function tooltip(anchor: Element, content: TooltipContent, options: Toolt
     placement = 'top',
     align = 'start',
     gap = 4,
+    native = false,
   } = options;
 
   const body: OverlayContent = typeof content === 'function'
@@ -871,7 +974,7 @@ export function tooltip(anchor: Element, content: TooltipContent, options: Toolt
   let current: { handle: OverlayHandle; stop: () => void } | undefined;
 
   function show(): void {
-    const handle = overlay(body, { container, className, dismiss: false, trap: false, initialFocus: false });
+    const handle = overlay(body, { container, className, dismiss: false, trap: false, initialFocus: false, native });
     handle.el.setAttribute('role', role);
     const stop = autoReposition(handle.el, anchor, { placement, align, gap });
     current = { handle, stop };

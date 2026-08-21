@@ -134,3 +134,66 @@ test('outside click dismisses a non-modal popover; content + an outsideIgnore tr
   await page.locator('#elsewhere').click(); // outside — dismiss
   await expect(page.locator('.pop')).toHaveCount(0);
 });
+
+test('native: modal confirm is a real <dialog> in the top layer, resolves on click', async ({ page }) => {
+  await page.evaluate(() => {
+    const { confirm } = (window as any).kerfOverlay;
+    (window as any)._result = confirm('Delete?', { native: true, className: 'nc' });
+  });
+
+  const dialog = page.locator('dialog.nc');
+  await expect(dialog).toHaveCount(1);
+  // Real modality: the <dialog> is open (top layer + ::backdrop + inert document).
+  expect(await page.evaluate(() => (document.querySelector('dialog.nc') as HTMLDialogElement).open)).toBe(true);
+
+  await dialog.locator('[data-confirm="ok"]').click();
+  expect(await page.evaluate(() => (window as any)._result)).toBe(true);
+  await expect(dialog).toHaveCount(0); // closed + removed
+});
+
+test('native: a modal <dialog> stacks above a high z-index element (top layer wins)', async ({ page }) => {
+  await page.evaluate(() => {
+    const bar = document.createElement('div');
+    bar.id = 'zbar';
+    bar.style.cssText = 'position:fixed;inset:0;z-index:99999;background:red';
+    document.body.appendChild(bar);
+    const { overlay } = (window as any).kerfOverlay;
+    const { raw } = (window as any).jsxRuntime;
+    (window as any)._ov = overlay(raw('<button id="in-dialog">hi</button>'), {
+      native: true, trap: true, className: 'zdlg',
+    });
+  });
+
+  // The dialog content is hit-testable despite the z-index:99999 bar — only the
+  // top layer can paint above it, which is exactly the stacking gap native fixes.
+  const btn = page.locator('#in-dialog');
+  await expect(btn).toBeVisible();
+  await btn.click(); // would be intercepted by #zbar if the overlay were a plain z-index-less div
+  await page.evaluate(() => (window as any)._ov.close());
+  await expect(page.locator('.zdlg')).toHaveCount(0);
+});
+
+test('native: popover is :popover-open in the top layer, positioned at the anchor', async ({ page }) => {
+  await page.evaluate(() => {
+    const anchor = document.createElement('button');
+    anchor.id = 'np-anchor';
+    anchor.textContent = 'open';
+    anchor.style.cssText = 'position:absolute;top:100px;left:40px';
+    document.body.appendChild(anchor);
+    const { popover } = (window as any).kerfOverlay;
+    const { raw } = (window as any).jsxRuntime;
+    (window as any)._pop = popover(anchor, raw('<div id="np-body">menu</div>'), {
+      native: true, className: 'np',
+    });
+  });
+
+  const pop = page.locator('.np');
+  await expect(pop).toHaveCount(1);
+  expect(await page.evaluate(() => (document.querySelector('.np') as HTMLElement).matches(':popover-open'))).toBe(true);
+  // positionAnchored controls placement despite the UA [popover] inset (neutralized to auto).
+  const box = await pop.boundingBox(); // { x, y, width, height }
+  expect(box!.x).toBeGreaterThan(30);
+  expect(box!.x).toBeLessThan(200); // near the anchor, not stretched full-width
+  await page.evaluate(() => (window as any)._pop.close());
+  await expect(pop).toHaveCount(0);
+});
