@@ -442,6 +442,69 @@
           "branch": "main"
         }
       ]
+    },
+    {
+      "tool": {
+        "driver": {
+          "name": "Hot Sheet",
+          "rules": [
+            {
+              "id": "review-note",
+              "name": "ReviewNote",
+              "shortDescription": {
+                "text": "AI-authored, line-anchored review note."
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "review-note",
+          "ruleIndex": 0,
+          "kind": "informational",
+          "level": "none",
+          "guid": "mt2ev8o75e4o8z64",
+          "message": {
+            "text": "Content-visibility mode installs NO feature detection on purpose — the CSS being inert on an unsupporting engine IS the graceful degrade.\n\nkerf always renders every row and always sets content-visibility: auto + contain-intrinsic-size. On a supporting engine (Chromium, Safari 18) the browser skips off-screen layout/paint; on one without it (early-2026 Firefox) the properties are simply ignored — all rows still render, still fully findable, only the skip optimization is absent.\n\nThis is deliberate: auto-selecting the STRATEGY by CSS.supports would make the findability guarantee (and the DOM row count) vary silently by browser, which is a worse failure than 'renders all rows everywhere.' The findability guarantee is constant across engines; only the speed is capability-gated. Maintainer-signed-off in KF-525.",
+            "markdown": "Content-visibility mode installs NO feature detection on purpose — the CSS being inert on an unsupporting engine IS the graceful degrade.\n\nkerf always renders every row and always sets `content-visibility: auto` + `contain-intrinsic-size`. On a supporting engine (Chromium, Safari 18) the browser skips off-screen layout/paint; on one without it (early-2026 Firefox) the properties are simply ignored — all rows still render, still fully findable, only the skip optimization is absent.\n\nThis is deliberate: auto-selecting the STRATEGY by `CSS.supports` would make the findability guarantee (and the DOM row count) vary silently by browser, which is a worse failure than 'renders all rows everywhere.' The findability guarantee is constant across engines; only the speed is capability-gated. Maintainer-signed-off in KF-525."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/list.ts"
+                },
+                "region": {
+                  "startLine": 208,
+                  "endLine": 208,
+                  "snippet": {
+                    "text": ""
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "tags": [
+              "rationale"
+            ]
+          },
+          "workItemUris": [
+            "KF-525"
+          ],
+          "partialFingerprints": {
+            "prNoteAnchor/v1": "e3b0c44298fc1c149afbf4c8996fb924"
+          }
+        }
+      ],
+      "versionControlProvenance": [
+        {
+          "repositoryUri": "git@github.com:brianwestphal/kerf.git",
+          "revisionId": "54541c71c3223205e381dc53d03eadbd3522b299",
+          "branch": "main"
+        }
+      ]
     }
   ]
 }

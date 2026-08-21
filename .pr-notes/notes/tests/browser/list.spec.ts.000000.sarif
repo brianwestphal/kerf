@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "Hot Sheet",
+          "rules": [
+            {
+              "id": "review-note",
+              "name": "ReviewNote",
+              "shortDescription": {
+                "text": "AI-authored, line-anchored review note."
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "review-note",
+          "ruleIndex": 0,
+          "kind": "informational",
+          "level": "none",
+          "guid": "mt2evdex3c33a2gw",
+          "message": {
+            "text": "Real Chromium normalizes the CSSOM value: contain-intrinsic-size: 0 20px reads back as 0px 20px, so the browser assertion matches /^0(px)? 20px$/ rather than an exact string (the happy-dom unit test keeps the un-normalized 0 20px kerf actually sets). Verified locally: all 3 list browser specs pass on chromium, including the off-screen-skip check via checkVisibility({ contentVisibilityAuto: true }) (visible row true, far off-screen row false) — the engine-specific optimization the unit tests structurally cannot observe.",
+            "markdown": "Real Chromium normalizes the CSSOM value: `contain-intrinsic-size: 0 20px` reads back as `0px 20px`, so the browser assertion matches `/^0(px)? 20px$/` rather than an exact string (the happy-dom unit test keeps the un-normalized `0 20px` kerf actually sets). Verified locally: all 3 list browser specs pass on chromium, including the off-screen-skip check via `checkVisibility({ contentVisibilityAuto: true })` (visible row true, far off-screen row false) — the engine-specific optimization the unit tests structurally cannot observe."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "tests/browser/list.spec.ts"
+                },
+                "region": {
+                  "startLine": 172,
+                  "endLine": 172,
+                  "snippet": {
+                    "text": "  });"
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "tags": [
+              "test-evidence"
+            ]
+          },
+          "workItemUris": [
+            "KF-525"
+          ],
+          "partialFingerprints": {
+            "prNoteAnchor/v1": "29576b54e255e3c948eea5b5904fa38b"
+          }
+        }
+      ],
+      "versionControlProvenance": [
+        {
+          "repositoryUri": "git@github.com:brianwestphal/kerf.git",
+          "revisionId": "54541c71c3223205e381dc53d03eadbd3522b299",
+          "branch": "main"
+        }
+      ]
+    }
+  ]
+}

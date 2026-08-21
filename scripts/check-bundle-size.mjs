@@ -154,7 +154,7 @@ const BUDGETS = [
     // Imports only bindList (not observeRowHeights), so the ResizeObserver helper
     // tree-shakes out — this measures the common case incl. the measured tier.
     name: 'list',
-    budgetKb: 12.3,
+    budgetKb: 12.5, // +0.2 for KF-525 content-visibility virtualization mode (mode branch + intrinsic-size CSS)
     description: 'the bindList subpath (keyed per-row mount + virtualization) — includes shared core',
     entry: `
       import { bindList } from '${DIST}/list.js';

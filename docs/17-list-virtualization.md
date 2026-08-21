@@ -4,7 +4,11 @@
 > models — a fixed `rowHeight: number`, an app-declared `rowHeight: (item, index)
 > => number`, and a **measured** `rowHeight: { estimate }` where the app reports
 > real heights via the handle's `setHeight` (or the `observeRowHeights` helper)
-> and kerf anchor-corrects `scrollTop`. §17.6 records the API decisions.
+> and kerf anchor-corrects `scrollTop`. §17.6 records the API decisions. A second
+> virtualization *strategy* — `mode: 'content-visibility'` (§17.11) — keeps every
+> row in the DOM (full find-in-page / a11y) and lets the browser skip off-screen
+> layout instead of kerf windowing rows out; `mode: 'window'` (the default) is the
+> behavior in §17.1–17.10.
 
 ## 17.1 The problem
 
@@ -259,9 +263,114 @@ user-visible consequences, none of which a virtualized list can paper over:
   findability tradeoff — conveying totals and enabling deep links through ARIA and
   app-driven scrolling as above.
 
-A future `content-visibility` virtualization mode (designed separately) keeps
-**all** rows in the DOM — the browser skips *rendering* off-screen rows rather
-than kerf *removing* them — so it preserves find-in-page, the a11y tree, and
-anchor links at the cost of an unbounded node count. It targets exactly the
-medium-list case where findability outweighs the node ceiling; the windowing
-described here stays the right choice for very large lists.
+The `content-visibility` virtualization mode (§17.11) keeps **all** rows in the
+DOM — the browser skips *rendering* off-screen rows rather than kerf *removing*
+them — so it preserves find-in-page, the a11y tree, and anchor links at the cost
+of an unbounded node count. It targets exactly the medium-list case where
+findability outweighs the node ceiling; the windowing described here stays the
+right choice for very large lists.
+
+## 17.11 The `content-visibility` mode — keep every row findable
+
+**Status: shipped.** `virtualize: { rowHeight, mode: 'content-visibility' }` is a
+second virtualization *strategy*, chosen against the default `mode: 'window'`
+(§17.1–17.9, today's JS windowing). It trades the node ceiling for full
+findability: **every** row stays in the DOM, and the browser — not kerf — skips
+the layout and paint of the off-screen ones via two CSS properties kerf sets on
+each row:
+
+```css
+content-visibility: auto;
+contain-intrinsic-size: 0 <rowHeight>px;
+```
+
+`content-visibility: auto` tells the engine it may skip rendering a row that is
+off-screen; `contain-intrinsic-size` gives it a placeholder height so the
+scrollbar stays accurate *before* a row has ever been rendered (the engine
+remembers the real size once it renders the row). Because the row is present the
+whole time, **find-in-page, the accessibility tree, and anchor links /
+`scrollIntoView` all work on any row** — the browser renders an off-screen row on
+demand the moment the user searches for it or a screen reader reaches it. That is
+the entire point of the mode, and it is exactly the guarantee `mode: 'window'`
+cannot give (§17.10).
+
+### 17.11.1 The `mode` choice is the app's, and it is about list size
+
+`mode` is an **explicit app decision**, never auto-selected by browser support.
+The two modes make opposite tradeoffs, and which one is right depends on the
+*list*, not the engine:
+
+<div class="kerf-compare">
+
+| | `mode: 'window'` (default) | `mode: 'content-visibility'` |
+| --- | --- | --- |
+| DOM nodes | **bounded** (visible window + overscan) | all N rows |
+| Find-in-page / a11y / anchor links | visible window only | **every row** |
+| Best for | very large lists (100k rows) | medium lists where findability wins |
+| Scroll handling | kerf windows on scroll/resize | browser skips off-screen layout |
+| Works on every engine | yes | yes (CSS inert where unsupported — see below) |
+
+</div>
+
+- **content-visibility** keeps all N nodes live — great for a 2,000-row list you
+  want fully searchable, wrong for a 100,000-row list (100k live nodes bloat the
+  DOM).
+- **window** keeps the node count bounded — the opposite tradeoff.
+
+Auto-picking the strategy by `CSS.supports` would be a trap: it would make the
+findability *guarantee* vary silently by browser (holds in Chrome, not in an
+engine without `content-visibility`), and make the DOM shape / row count differ
+per engine. So kerf never does that. **The app picks the guarantee; the mode is
+constant across every browser.**
+
+### 17.11.2 Feature-detection gates the speed, never the guarantee
+
+There is deliberately **no** feature detection inside the mode. `content-visibility:
+auto` is simply *inert* on an engine that doesn't support it (early-2026 Firefox,
+say): kerf still renders every row and still sets both CSS properties, the row is
+still fully findable, and the only thing missing is the off-screen-skip
+*optimization*. So:
+
+- **Supporting engines** (Chromium, Safari 18) skip off-screen layout/paint — the
+  performance win.
+- **Non-supporting engines** render everything — correct, fully findable, just
+  without the skip.
+
+The findability guarantee holds identically everywhere; only the speed is
+capability-gated, degrading gracefully to "renders all rows." That is fine for
+the mode's sweet spot (medium lists); a 100k-row app should be on `mode: 'window'`
+regardless of engine.
+
+### 17.11.3 How the mode interacts with the rest of the API
+
+- **`rowHeight` is the `contain-intrinsic-size` hint only.** There is no windowing
+  math in this mode, so all three height sources collapse to "what placeholder
+  size should the browser reserve for an unrendered row?": a fixed `number`
+  applies to every row; an `(item, index) => number` gives each row its own
+  intrinsic size; `{ estimate }` uses its estimate (number or function). The
+  browser measures the *real* height itself once a row renders.
+- **`setHeight` and `observeRowHeights` are no-ops.** The measured tier's imperative
+  channel exists to feed kerf's cumulative-offset model; there is no such model
+  here (no rows are removed, so there is nothing to anchor-correct), and the
+  browser owns real measurement. Calling `setHeight` does nothing;
+  `observeRowHeights` returns a disposer that observes nothing.
+- **`minRows` is ignored.** It exists to render every row below a threshold — which
+  this mode already does unconditionally.
+- **`handle.container` / `containerClass` / `containerId` still work.** kerf renders
+  the rows into the same inner container as `mode: 'window'` (so the DOM shape and
+  `handle.container` are consistent across modes), just with no padding — every row
+  is present, so there is nothing to pad.
+- **No scroll listener and no `ResizeObserver` are installed.** There is no window to
+  recompute; the browser handles off-screen skipping on its own.
+
+### 17.11.4 Testability
+
+happy-dom does not honor `content-visibility` (it does no layout), so unit tests
+(`tests/unit/list.test.ts` › "content-visibility virtualization mode") assert the
+**correctness** surface, which is engine-independent: every row is present in the
+DOM, `content-visibility: auto` and the right `contain-intrinsic-size` are set per
+row (fixed / declared / estimate), `setHeight` and `observeRowHeights` are inert,
+`minRows` is ignored, no scroll listener fires, and the default mode stays
+`'window'`. The actual off-screen skip is a rendering-engine behavior and belongs
+to the Playwright suite (Chromium / WebKit), which asserts the rows exist and stay
+findable while scrolled.

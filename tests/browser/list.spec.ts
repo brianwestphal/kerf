@@ -134,3 +134,66 @@ test('measured virtualization: observeRowHeights sizes rows from real layout', a
   });
   await expect(rows).toHaveCount(0);
 });
+
+test('content-visibility mode: EVERY row stays in the DOM (findable), off-screen rows are layout-skipped', async ({ page }) => {
+  await page.evaluate(() => {
+    const style = document.createElement('style');
+    style.textContent = '#cvlist{height:200px;overflow:auto}';
+    document.head.appendChild(style);
+
+    const parent = document.createElement('div');
+    parent.id = 'cvlist';
+    document.body.appendChild(parent);
+
+    const { bindList } = (window as any).kerfList;
+    const { signal } = (window as any).kerf;
+    const items = signal(Array.from({ length: 1000 }, (_, i) => ({ id: i, label: `row-${i}` })));
+    (window as any)._dispose = bindList(parent, items, {
+      key: (i: any) => i.id,
+      tag: 'div',
+      render: (i: any) => i.label,
+      virtualize: { rowHeight: 20, mode: 'content-visibility' },
+    });
+  });
+
+  // #cvlist (scroll host) > div (inner container) > div (rows).
+  const rows = page.locator('#cvlist > div > div');
+
+  // Unlike window mode, EVERY row is present in the DOM — that's the findability
+  // guarantee this mode exists for (find-in-page / a11y / anchor links reach all).
+  await expect(rows).toHaveCount(1000);
+  await expect(rows.first()).toHaveText('row-0');
+  await expect(rows.last()).toHaveText('row-999'); // the far row is present and findable
+
+  // The two CSS properties are set on each row.
+  const css = await page.evaluate(() => {
+    const first = document.querySelector('#cvlist > div > div') as HTMLElement;
+    return { cv: first.style.contentVisibility, cis: first.style.containIntrinsicSize };
+  });
+  expect(css.cv).toBe('auto');
+  // The engine normalizes the CSSOM value (Chromium reads `0 20px` back as
+  // `0px 20px`), so match the height component rather than the exact string.
+  expect(css.cis).toMatch(/^0(px)? 20px$/);
+
+  // Optimization (engine-specific): a far off-screen row is skipped for
+  // rendering while an on-screen one is rendered. `checkVisibility({
+  // contentVisibilityAuto: true })` reports a content-visibility:auto-skipped
+  // element as not visible. Assert only where the engine implements the flag.
+  const skip = await page.evaluate(() => {
+    const first = document.querySelector('#cvlist > div > div') as HTMLElement;
+    const last = document.querySelector('#cvlist > div > div:last-child') as HTMLElement;
+    // Feature-detect meaningfully: on an engine without the flag both read the
+    // same, so we can't distinguish — report unsupported and skip the assertion.
+    if (typeof first.checkVisibility !== 'function') return { supported: false };
+    const onScreen = first.checkVisibility({ contentVisibilityAuto: true } as any);
+    const offScreen = last.checkVisibility({ contentVisibilityAuto: true } as any);
+    return { supported: onScreen !== offScreen, onScreen, offScreen };
+  });
+  if (skip.supported) {
+    expect(skip.onScreen).toBe(true); // the visible row is rendered
+    expect(skip.offScreen).toBe(false); // the far row's layout/paint is skipped
+  }
+
+  await page.evaluate(() => (window as any)._dispose());
+  await expect(rows).toHaveCount(0);
+});

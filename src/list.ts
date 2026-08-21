@@ -162,15 +162,33 @@ export interface BindListOptions<T> {
    * `parent` resizing — so a list that mounts before layout (a hidden tab,
    * `clientHeight` 0) fills in once it's sized, and a resized container re-windows.
    *
-   * **Findability tradeoff.** Off-window rows are removed from the DOM (not
-   * merely hidden), so with `virtualize` set: **find-in-page (Cmd/Ctrl+F)**,
-   * **screen readers / the a11y tree**, and **anchor links / `scrollIntoView`**
-   * only reach the visible window — a match, an announced row, or a linked
-   * element that has been windowed out isn't in the DOM to find. Convey the true
-   * total via ARIA (`aria-rowcount` / `aria-setsize`) if it matters, and use a
-   * non-virtualized list — or `minRows` above the list length — when full
-   * findability matters more than the DOM node ceiling. See
-   * `docs/17-list-virtualization.md` §17.10.
+   * `mode` (default `'window'`) picks the virtualization STRATEGY:
+   *  - **`'window'`** — the JS windowing above: only the visible rows are in the
+   *    DOM, bounded node count, works on every engine. Off-window rows are removed
+   *    (see the findability tradeoff below).
+   *  - **`'content-visibility'`** — **every** row stays in the DOM and kerf sets
+   *    `content-visibility: auto` + `contain-intrinsic-size: 0 <rowHeight>px` on
+   *    each one, so a supporting engine (Chromium, Safari 18) skips the *layout /
+   *    paint* of off-screen rows while keeping them findable. `rowHeight` here is
+   *    used **only** as the `contain-intrinsic-size` placeholder (scrollbar
+   *    accuracy before a row is first rendered) — there is no windowing math, no
+   *    padding, no scroll listener, no anchor correction, and `setHeight` /
+   *    `observeRowHeights` are **no-ops** (the browser owns real measurement).
+   *    `minRows` is ignored (all rows already render). On an engine without
+   *    `content-visibility` the CSS is simply inert — all rows render, correct and
+   *    fully findable, only without the skip optimization. Choose this mode for
+   *    medium lists where find-in-page / a11y / anchor links matter more than the
+   *    node ceiling; keep `'window'` for very large (100k-row) lists.
+   *
+   * **Findability tradeoff (`'window'` mode).** Off-window rows are removed from
+   * the DOM (not merely hidden), so with `mode: 'window'`: **find-in-page
+   * (Cmd/Ctrl+F)**, **screen readers / the a11y tree**, and **anchor links /
+   * `scrollIntoView`** only reach the visible window — a match, an announced row,
+   * or a linked element that has been windowed out isn't in the DOM to find.
+   * Convey the true total via ARIA (`aria-rowcount` / `aria-setsize`) if it
+   * matters, and use a non-virtualized list — `minRows` above the list length, or
+   * `mode: 'content-visibility'` — when full findability matters more than the DOM
+   * node ceiling. See `docs/17-list-virtualization.md` §17.10 / §17.11.
    */
   virtualize?: {
     rowHeight: RowHeight<T>;
@@ -178,6 +196,13 @@ export interface BindListOptions<T> {
     minRows?: number;
     containerClass?: string;
     containerId?: string;
+    /**
+     * Virtualization strategy. `'window'` (default) removes off-window rows from
+     * the DOM; `'content-visibility'` keeps every row in the DOM and lets the
+     * browser skip off-screen layout/paint (full find-in-page / a11y, at the cost
+     * of an unbounded node count). See the option JSDoc above.
+     */
+    mode?: 'window' | 'content-visibility';
   };
 }
 
@@ -205,6 +230,11 @@ export function bindList<T>(
   const { key, render, tag = 'div', virtualize, before } = options;
   const overscan = virtualize?.overscan ?? 3;
   const minRows = virtualize?.minRows;
+  // Content-visibility mode (KF-525): keep every row in the DOM and let the
+  // browser skip off-screen layout/paint via CSS, instead of windowing rows out.
+  // Feature-detection is deliberately absent: the CSS is inert on an unsupporting
+  // engine (all rows still render, still findable) — that IS the graceful degrade.
+  const contentVisibility = virtualize?.mode === 'content-visibility';
 
   // The node the row block ends before — `before` (KF-496) when the list shares
   // `parent` with trailing siblings, else the end of the container. Never applies
@@ -434,6 +464,14 @@ export function bindList<T>(
         }
         : (index): number => (rowHeight as (item: T, index: number) => number)(items[index], index);
 
+  // Content-visibility mode only: the `contain-intrinsic-size` placeholder for
+  // row `index`, derived from the same `rowHeight` source — a fixed `number`, a
+  // declared `(item, index) => number`, or `{ estimate }` (its estimate; there is
+  // no measurement in this mode, so `variableHeightAt`'s measured-height branch
+  // never fires — `measured` stays empty).
+  const intrinsicSizeAt = (index: number): number =>
+    fixedHeight !== null ? fixedHeight : (variableHeightAt as (index: number) => number)(index);
+
   let offsets: number[] = [0];
   let heightsDirty = true;
   // Measuring only: key → current absolute index, so `setHeight(key, …)` locates
@@ -530,6 +568,19 @@ export function bindList<T>(
       firstRender = false;
       return;
     }
+    if (contentVisibility) {
+      // Every row stays in the DOM (full find-in-page / a11y); the browser skips
+      // off-screen layout/paint. No windowing, no padding, no scroll math — just
+      // reconcile all rows and set the two CSS props (`start` is 0, so `order[j]`
+      // is item j). On an unsupporting engine the CSS is inert but harmless.
+      syncRows(items);
+      for (let j = 0; j < order.length; j++) {
+        const el = order[j].el;
+        el.style.contentVisibility = 'auto';
+        el.style.containIntrinsicSize = `0 ${intrinsicSizeAt(j)}px`;
+      }
+      return;
+    }
     const total = items.length;
     let start: number;
     let end: number;
@@ -596,7 +647,9 @@ export function bindList<T>(
       renderWindow();
     });
   };
-  if (virtualize !== undefined) parent.addEventListener('scroll', scheduleRender);
+  // Content-visibility mode needs no scroll listener (there's no window to
+  // recompute — the browser handles off-screen skipping itself).
+  if (virtualize !== undefined && !contentVisibility) parent.addEventListener('scroll', scheduleRender);
 
   // Re-window when `parent` RESIZES, not just on scroll. This makes two cases
   // robust that the scroll-only model missed: a list mounted before layout
@@ -605,13 +658,16 @@ export function bindList<T>(
   // initial callback on observe, so the 0-height case self-heals with no synthetic
   // scroll. Absent (older SSR/runtime) → scroll-only, as before.
   const RO = globalThis.ResizeObserver;
-  const parentResize = virtualize !== undefined && RO !== undefined ? new RO(scheduleRender) : undefined;
+  const parentResize =
+    virtualize !== undefined && !contentVisibility && RO !== undefined ? new RO(scheduleRender) : undefined;
   parentResize?.observe(parent);
 
   // Measured mode: report a row's real height. No-op for fixed / declared lists
   // and for keys not currently in the list.
   const setHeight = (k: ListKey, height: number): void => {
-    if (!measuring) return;
+    // No-op for fixed / declared lists, unknown keys, and content-visibility mode
+    // (the browser owns measurement there — no windowing to correct).
+    if (!measuring || contentVisibility) return;
     const idx = indexByKey.get(k);
     if (idx === undefined) return;
     const oldHeight = measured.has(k) ? (measured.get(k) as number) : estimateAt(idx);
@@ -649,13 +705,17 @@ export function bindList<T>(
   // rule 5). Only virtualized lists have a window to observe.
   if (virtualize !== undefined) {
     handle.container = container;
-    VIRTUAL_INTERNALS.set(handle, {
-      visibleRows: () => order.map((row) => ({ key: key(row.item), el: row.el })),
-      onRender: (cb) => {
-        renderSubscribers.add(cb);
-        return () => renderSubscribers.delete(cb);
-      },
-    });
+    // Content-visibility mode registers no internals, so `observeRowHeights` is a
+    // clean no-op on it (there's nothing to measure — the browser owns layout).
+    if (!contentVisibility) {
+      VIRTUAL_INTERNALS.set(handle, {
+        visibleRows: () => order.map((row) => ({ key: key(row.item), el: row.el })),
+        onRender: (cb) => {
+          renderSubscribers.add(cb);
+          return () => renderSubscribers.delete(cb);
+        },
+      });
+    }
   }
 
   return handle;
