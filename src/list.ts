@@ -161,6 +161,16 @@ export interface BindListOptions<T> {
    * kerf re-windows on `parent`'s `scroll` and, where `ResizeObserver` exists, on
    * `parent` resizing — so a list that mounts before layout (a hidden tab,
    * `clientHeight` 0) fills in once it's sized, and a resized container re-windows.
+   *
+   * **Findability tradeoff.** Off-window rows are removed from the DOM (not
+   * merely hidden), so with `virtualize` set: **find-in-page (Cmd/Ctrl+F)**,
+   * **screen readers / the a11y tree**, and **anchor links / `scrollIntoView`**
+   * only reach the visible window — a match, an announced row, or a linked
+   * element that has been windowed out isn't in the DOM to find. Convey the true
+   * total via ARIA (`aria-rowcount` / `aria-setsize`) if it matters, and use a
+   * non-virtualized list — or `minRows` above the list length — when full
+   * findability matters more than the DOM node ceiling. See
+   * `docs/17-list-virtualization.md` §17.10.
    */
   virtualize?: {
     rowHeight: RowHeight<T>;

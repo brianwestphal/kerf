@@ -221,3 +221,47 @@ with a `ResizeObserver` (where available) and re-windows on resize. Because a
 self-heals once layout settles — no synthetic scroll needed. Where
 `ResizeObserver` is absent (older runtimes / SSR), behavior is scroll-only as
 before, so a laid-out (non-zero-height) scroll parent at mount is required there.
+
+## 17.10 Virtualization tradeoffs — findability & accessibility
+
+**Status: shipped.** Virtualization buys a bounded DOM node count by a real
+tradeoff the app must weigh: **off-window rows are not in the DOM at all.**
+`src/list.ts` removes them during its "remove rows that are gone from the window"
+pass and re-creates them only when the window scrolls over them, so at any moment
+only the visible window (plus `overscan`) exists as elements. That has three
+user-visible consequences, none of which a virtualized list can paper over:
+
+- **Find-in-page (Cmd/Ctrl+F) matches only the visible window.** The browser's
+  search walks the live DOM; a match in a row that has been windowed out simply
+  isn't there to find. A user searching a 10,000-row virtualized feed for text in
+  row 8,000 gets no hit until they've scrolled it into the window themselves.
+- **Screen readers and the accessibility tree see only the visible window.** The
+  a11y tree is built from live DOM, so assistive tech perceives a list of
+  `window + overscan` rows, not the true total. If the total count matters to the
+  experience, the **app** must convey it — e.g. `role="grid"` with
+  `aria-rowcount`, or `aria-setsize` / `aria-posinset` on the rows — because kerf
+  cannot infer it for you.
+- **In-page anchor links and `scrollIntoView` to an off-window row fail.**
+  `document.getElementById('row-8000')` (or an `#row-8000` fragment link, or
+  `el.scrollIntoView()`) returns nothing when that row is outside the window —
+  the element doesn't exist yet. Deep-linking to a specific row requires the app
+  to first scroll the window to that row's computed offset, then locate it.
+
+**Guidance — pick by what the list needs:**
+
+- When **full findability / a11y / anchor-linking matters more than the node
+  ceiling**, don't virtualize: render a plain (non-virtualized) `bindList`, or set
+  `minRows` above the list's length so kerf renders every row (§17.9 — same DOM
+  shape, no windowing). This keeps all rows live and findable at the cost of an
+  unbounded node count, which is fine for small-to-medium lists.
+- When the **node ceiling matters more** (tens of thousands of rows, where
+  keeping them all live would bloat the DOM and layout), virtualize and accept the
+  findability tradeoff — conveying totals and enabling deep links through ARIA and
+  app-driven scrolling as above.
+
+A future `content-visibility` virtualization mode (designed separately) keeps
+**all** rows in the DOM — the browser skips *rendering* off-screen rows rather
+than kerf *removing* them — so it preserves find-in-page, the a11y tree, and
+anchor links at the cost of an unbounded node count. It targets exactly the
+medium-list case where findability outweighs the node ceiling; the windowing
+described here stays the right choice for very large lists.
