@@ -40,6 +40,7 @@
 import { ARRAY_SIGNAL_BRAND, type ArrayPatch } from './array-signal.js';
 import { mount, type MountResult } from './mount.js';
 import { effect } from './reactive.js';
+import { moveNode } from './utils/moveNode.js';
 
 /** A row's stable key. */
 export type ListKey = string | number;
@@ -327,12 +328,15 @@ export function bindList<T>(
       order.push(row);
     }
 
-    // Reverse pass: move only rows that are out of position.
+    // Reverse pass: move only rows that are out of position. `moveNode` keeps a
+    // reordered (already-connected) row's live state via `moveBefore` where
+    // supported; a brand-new row (parentNode !== container, not yet connected)
+    // falls back to `insertBefore` via the guard.
     let ref: Node | null = endAnchor();
     for (let i = order.length - 1; i >= 0; i--) {
       const el = order[i].el;
       if (el.parentNode !== container || el.nextSibling !== ref) {
-        container.insertBefore(el, ref);
+        moveNode(container, el, ref);
       }
       ref = el;
     }
@@ -359,7 +363,8 @@ export function bindList<T>(
       } else if (patch.type === 'move') {
         const [row] = order.splice(patch.from, 1);
         order.splice(patch.to, 0, row);
-        container.insertBefore(row.el, order[patch.to + 1]?.el ?? endAnchor());
+        // Relocating an existing connected row → state-preserving move.
+        moveNode(container, row.el, order[patch.to + 1]?.el ?? endAnchor());
       } else if (patch.type === 'update') {
         // An item whose OBJECT identity changed: content rows rebuild (their mount
         // re-renders the fresh item); element rows are REUSED — keep the caller's

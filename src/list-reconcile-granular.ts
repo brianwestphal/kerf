@@ -28,6 +28,7 @@ import { tryAttributeOnlyFastPath, tryTextContentFastPath } from './list-reconci
 import { captureFocus, restoreFocus } from './list-reconcile-focus.js';
 import { _morphElement } from './morph.js';
 import type { InsertPatch, ListSegment, UpdatePatch } from './segment.js';
+import { moveNode } from './utils/moveNode.js';
 import {
   collectTemplateChildren,
   parseRowTemplate,
@@ -116,7 +117,9 @@ export function reconcileGranular(
       let anchorIdx = patch.to;
       if (patch.from < patch.to) anchorIdx += 1;  // account for upcoming splice removal
       const anchor = anchorIdx < items.length ? items[anchorIdx].node : endAnchor(binding);
-      liveParent.insertBefore(moved.node, anchor);
+      // A move patch relocates an existing (connected) row, so `moveNode` takes
+      // the state-preserving `moveBefore` path where supported.
+      moveNode(liveParent, moved.node, anchor);
       items.splice(patch.from, 1);
       items.splice(patch.to, 0, moved);
       i += 1;

@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **State-preserving row moves via `moveBefore()` (transparent optimization).** When a keyed list reorders — `each()` (snapshot and granular paths), `bindList`, and `morph()`'s keyed / positional / list-marker moves — kerf now relocates an already-connected row with `Node.prototype.moveBefore()` where the engine supports it (Chromium 133+, spreading to other engines), falling back to `insertBefore()` everywhere else. `moveBefore()` is an atomic move: the node is never disconnected, so a moved row keeps its focus, text selection, `<iframe>` document state, playing media, running CSS transitions/animations, and open `popover`/`dialog` state across the reorder — richer state than the existing focus snapshot in the reconciler could ever restore, and it needs no snapshot at all where it runs. No API change and no behavior change on engines without `moveBefore()`; the focus-preservation snapshot stays in place for them. Fresh (not-yet-connected) rows still use `insertBefore()` — only genuine moves of connected rows take the new path. See [`docs/18-state-preserving-moves.md`](docs/18-state-preserving-moves.md).
+
 ## [4.2.0] - 2026-08-20
 
 

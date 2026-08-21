@@ -52,6 +52,7 @@ import { boundTextNodeOf, ROW_TEXT_PREFIX, TEXT_MARKER_PREFIX } from './bindings
 import type { SafeHtml } from './jsx-runtime.js';
 import { captureFocus, restoreFocus } from './list-reconcile-focus.js';
 import { LIST_MARKER_PREFIX } from './segment.js';
+import { moveNode } from './utils/moveNode.js';
 import { syncFormProp } from './utils/syncFormProp.js';
 
 const ID_KEY_PREFIX = 'id:';
@@ -280,7 +281,10 @@ function morphChildren(
       matched = keyed.get(toKey) as Element;
       keyed.delete(toKey);
       if (matched !== fromChild) {
-        fromParent.insertBefore(matched, fromChild);
+        // A keyed match found elsewhere is a genuine move of a connected node —
+        // `moveNode` preserves its live state (focus / animation / iframe) via
+        // `moveBefore` where supported.
+        moveNode(fromParent, matched, fromChild);
       } else {
         fromChild = skipOwned(fromChild.nextSibling, ownedItems);
       }
@@ -363,7 +367,8 @@ function morphChildren(
         if (el.tagName !== toTag || getNodeKey(el) !== undefined) continue;
         if (protectionTag(el) !== protectionTag(toChild)) continue;
         matched = el;
-        fromParent.insertBefore(el, fromChild);
+        // Moving a connected same-tag element up to the cursor → state-preserving.
+        moveNode(fromParent, el, fromChild);
         break;
       }
     }
@@ -402,8 +407,12 @@ function morphChildren(
         // `insertBefore` even though the node survives the move connected —
         // the same quirk the list reconciler's move pass handles. Preserving
         // row identity is only half the promise; the caret has to survive too.
+        // The run nodes are all connected children of `fromParent`, so `moveNode`
+        // takes the atomic `moveBefore` path where supported (which preserves the
+        // caret natively, leaving the snapshot below a no-op); the snapshot still
+        // covers engines without `moveBefore`.
         const focusSnap = captureFocus(fromParent);
-        for (const node of run) fromParent.insertBefore(node, fromChild);
+        for (const node of run) moveNode(fromParent, node, fromChild);
         if (focusSnap !== null) restoreFocus(focusSnap);
         matched = scan;
         break;

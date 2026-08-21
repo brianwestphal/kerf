@@ -29,6 +29,7 @@ import { type BoundItem, endAnchor, type ListBinding } from './list-binding.js';
 import { captureFocus, restoreFocus } from './list-reconcile-focus.js';
 import { tryInPlaceContentUpdate } from './list-reconcile-inplace.js';
 import type { ListSegment } from './segment.js';
+import { moveNode } from './utils/moveNode.js';
 import { parseRowTemplate, rowContractError } from './utils/rowContract.js';
 
 interface Classification {
@@ -204,9 +205,16 @@ function removeOldNodes(liveParent: Element, removedItems: BoundItem[]): void {
 }
 
 /**
- * `insertBefore` everything that's not in the LIS. Walks the new record in
- * reverse so each move's anchor (`nextSibling`) is already in its final
- * position by the time we reach earlier items.
+ * Place everything that's not in the LIS. Walks the new record in reverse so
+ * each move's anchor (`nextSibling`) is already in its final position by the
+ * time we reach earlier items.
+ *
+ * Routed through `moveNode`: a surviving-but-reordered row is already connected,
+ * so it takes the state-preserving `moveBefore` path where the engine supports
+ * it (focus / selection / animation survive the reorder); a brand-new row
+ * (`prevIdx[i] === -1`) is still in the parse fragment (`isConnected === false`)
+ * and falls back to `insertBefore` — nothing to preserve. `moveNode`'s guard
+ * discriminates the two per node, so this one loop handles both.
  *
  * `tailAnchor` is the node that comes AFTER the list inside `liveParent` (or
  * `null` if the list is at the end). The reconciler computes it via
@@ -225,7 +233,7 @@ function applyMoves(
   for (let i = newRecord.length - 1; i >= 0; i--) {
     const node = newRecord[i].node;
     if (prevIdx[i] === -1 || !stable.has(i)) {
-      liveParent.insertBefore(node, nextSibling);
+      moveNode(liveParent, node, nextSibling);
     }
     nextSibling = node;
   }

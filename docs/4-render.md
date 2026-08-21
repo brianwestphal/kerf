@@ -297,6 +297,8 @@ For anything else with focus (a `<button>`, `<a>`, `<div tabindex>`), the diff p
 
 When the keyed list reconciler moves a row whose descendant is the focused element, the row's DOM node is reused — the focused element stays connected to the document. Some engines (older Safari, happy-dom) drop focus state on `insertBefore` even when the element survives, so the reconciler snapshots the active element + its selection range before the move pass and re-applies them afterwards. Engines that already preserve focus see a no-op; engines that don't get a transparent fix.
 
+Where the engine supports `Node.prototype.moveBefore()` (Chromium 133+, spreading), kerf goes one better: connected-row moves are performed with `moveBefore()`, an *atomic* move that never disconnects the node, so focus survives natively along with text selection, `<iframe>` state, playing media, and running CSS animations — none of which the focus snapshot could restore. The snapshot stays as the fallback for engines without `moveBefore()`. This is fully transparent; see [`docs/18-state-preserving-moves.md`](18-state-preserving-moves.md).
+
 Replaced rows (cache miss — the row's HTML changed) are a different story: the old node is removed before the new one is inserted, so focus that lived inside it is genuinely gone. That matches the behavior of any framework that re-renders a row.
 
 ### Choosing a form pattern
