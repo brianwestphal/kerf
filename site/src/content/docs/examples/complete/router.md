@@ -5,9 +5,9 @@ description: A whole client-side router in one createRouter — URL-driven pages
 
 **[▶ Run live](/kerf/run/router/)** · [View source on GitHub](https://github.com/brianwestphal/kerf/tree/main/site/src/examples/complete/router)
 
-[![Animated preview: navigating a small app — Home, a guides list, a guide detail via a :param route, then About — with the active nav tab following and the URL hash updating, no page reloads](/kerf/demos/router.svg)](/kerf/run/router/)
+[![Animated preview: a small app inside a fake browser window — navigating Home → a guides list → a guide detail via a :param route → then the browser Back button → About, with the address bar's URL updating on every step, the active nav tab following, and no page reloads](/kerf/demos/router.svg)](/kerf/run/router/)
 
-A small single-page app driven by [`kerfjs/router`](/kerf/docs/docs/20-router/) — the "postcard router". Navigate between Home, a guides list, an individual guide (a `/guides/:slug` param route), and About. The active nav tab follows the URL, the address updates, and **nothing ever reloads** — links are intercepted and the outlet swaps the page.
+A small single-page app driven by [`kerfjs/router`](/kerf/docs/docs/20-router/) — the "postcard router", shown inside a **fake browser window** so you can watch the address bar. Navigate between Home, a guides list, an individual guide (a `/guides/:slug` param route), and About; the window's Back button drives real history. The active nav tab follows the URL, the address bar updates on every step, and **nothing ever reloads** — links are intercepted and the outlet swaps the page.
 
 The kerf **core stays router-free**: `kerfjs/router` is an opt-in, tree-shakeable subpath, so an app that doesn't route ships the same ~12 KB core.
 
@@ -24,7 +24,7 @@ This example deliberately stays a "postcard router": no nested layouts, data loa
 
 ```tsx
 // site/src/examples/complete/router/main.tsx (excerpt — full source on GitHub)
-import { mount } from 'kerfjs';
+import { delegate, mount } from 'kerfjs';
 import { createRouter } from 'kerfjs/router';
 
 const router = createRouter({
@@ -38,13 +38,20 @@ const router = createRouter({
 });
 
 mount(app, () => (
-  <div>
+  <div class="rt-browser">
+    {/* The address bar is bound to the route — it updates live as you navigate. */}
+    <div class="rt-addr"><span class="host">kerf.app/</span><span class="path">#{router.route.value.path}</span></div>
     <nav class="rt-bar">
       <a href="#/" class={router.activeClass('/', 'active')}>Home</a>
       <a href="#/guides" class={router.activeClass('/guides', 'active')}>Guides</a>
-      <span class="rt-url">#{router.route.value.path}</span>
     </nav>
     {router.outlet()}
   </div>
 ));
+
+// The fake browser's Back / Forward buttons drive real history — one delegated listener.
+delegate(app, 'click', '[data-nav]', (_e, el) => {
+  if ((el as HTMLElement).dataset.nav === 'back') router.back();
+  else router.forward();
+});
 ```

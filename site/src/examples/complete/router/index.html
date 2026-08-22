@@ -6,25 +6,43 @@
     <title>kerf · Router (the postcard router)</title>
     <style>
       body { font-family: system-ui, sans-serif; background: #f5f5f5; margin: 0; padding: 1.5rem; color: #1f2937; }
-      .rt-wrap { max-width: 820px; margin: 0 auto; }
+      .rt-wrap { max-width: 780px; margin: 0 auto; }
       h1 { font-size: 1.3rem; margin: 0 0 0.25rem; }
       p.lede { color: #555; margin: 0 0 1rem; font-size: 0.9rem; }
+
+      /* Fake browser window */
+      .rt-browser { border: 1px solid #d1d5db; border-radius: 10px; overflow: hidden; box-shadow: 0 8px 24px rgba(0,0,0,0.08); background: #fff; }
+      .rt-chrome { display: flex; align-items: center; gap: 0.6rem; padding: 0.55rem 0.7rem; background: #e8eaed; border-bottom: 1px solid #d1d5db; }
+      .rt-dots { display: flex; gap: 0.4rem; flex: none; }
+      .rt-dots i { width: 11px; height: 11px; border-radius: 999px; display: block; }
+      .rt-dots .r { background: #ff5f57; } .rt-dots .y { background: #febc2e; } .rt-dots .g { background: #28c840; }
+      .rt-navbtns { display: flex; gap: 0.15rem; flex: none; }
+      .rt-navbtn {
+        width: 24px; height: 24px; border: none; background: transparent; color: #5f6368; border-radius: 6px;
+        font-size: 1.05rem; line-height: 1; cursor: pointer; display: grid; place-items: center;
+      }
+      .rt-navbtn:hover { background: #dadce0; color: #202124; }
+      .rt-addr {
+        flex: 1; display: flex; align-items: center; gap: 0.4rem; min-width: 0;
+        background: #fff; border: 1px solid #d1d5db; border-radius: 999px; padding: 0.28rem 0.75rem;
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.82rem; color: #202124;
+      }
+      .rt-addr .lock { color: #5f6368; font-size: 0.72rem; flex: none; }
+      .rt-addr .host { color: #5f6368; }
+      .rt-addr .path { color: #1a73e8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+      /* App viewport (inside the window) */
+      .rt-viewport { background: #fff; }
       .rt-bar {
-        display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 0.75rem;
-        background: #fff; border: 1px solid #e5e7eb; border-radius: 8px 8px 0 0; border-bottom: none;
-        font-size: 0.85rem;
+        display: flex; align-items: center; gap: 0.5rem; padding: 0.55rem 0.8rem;
+        border-bottom: 1px solid #eef2f7; font-size: 0.85rem; background: #fafbfc;
       }
       .rt-bar a {
-        text-decoration: none; color: #334155; padding: 0.35rem 0.7rem; border-radius: 6px;
-        border: 1px solid transparent;
+        text-decoration: none; color: #334155; padding: 0.35rem 0.7rem; border-radius: 6px; border: 1px solid transparent;
       }
       .rt-bar a:hover { background: #f1f5f9; }
       .rt-bar a.active { background: #dbeafe; color: #1d4ed8; border-color: #bfdbfe; font-weight: 600; }
-      .rt-url { margin-left: auto; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; color: #2563eb; font-size: 0.8rem; }
-      .rt-view {
-        background: #fff; border: 1px solid #e5e7eb; border-radius: 0 0 8px 8px;
-        padding: 1.1rem 1.2rem; min-height: 220px;
-      }
+      .rt-view { padding: 1.1rem 1.2rem; min-height: 210px; }
       .rt-view h2 { margin: 0 0 0.5rem; font-size: 1.1rem; }
       .rt-view p { margin: 0 0 0.75rem; color: #475569; font-size: 0.9rem; }
       .rt-guides { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.4rem; }
@@ -36,7 +54,7 @@
       .rt-back { display: inline-block; margin-top: 0.5rem; color: #2563eb; text-decoration: none; font-size: 0.85rem; }
       .rt-back:hover { text-decoration: underline; }
       .rt-nf { color: #b91c1c; }
-      .rt-note { margin-top: 0.9rem; font-size: 0.78rem; color: #94a3b8; }
+      .rt-note { margin: 0.9rem 0 0; font-size: 0.78rem; color: #94a3b8; text-align: center; }
       .rt-note b { font-family: ui-monospace, monospace; color: #64748b; }
     </style>
   </head>
@@ -44,9 +62,9 @@
     <div class="rt-wrap">
       <h1>Postcard router</h1>
       <p class="lede">
-        A whole client-side router in one <b style="font-family:ui-monospace,monospace">createRouter</b> — URL-driven
-        pages, <code>:param</code> routes, active-nav highlighting, real Back/Forward. No page reloads;
-        the outlet swaps the page, and links are intercepted automatically.
+        A whole client-side router in one <b style="font-family:ui-monospace,monospace">createRouter</b>. Watch the
+        <b style="font-family:ui-monospace,monospace">address bar</b> and the Back button: navigation is URL-driven and
+        the page never reloads — links are intercepted and the outlet swaps.
       </p>
       <div id="app"></div>
     </div>

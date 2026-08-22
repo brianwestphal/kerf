@@ -520,20 +520,25 @@ test.describe('router', () => {
     await expect(page.locator('.rt-view h2')).toHaveText('Home');
     await expect(page.locator('.rt-bar a', { hasText: 'Home' })).toHaveClass(/active/);
 
-    // Click Guides → the outlet swaps and the active tab moves.
+    // The fake browser's address bar is bound to the route.
+    await expect(page.locator('.rt-addr .path')).toHaveText('#/');
+
+    // Click Guides → the outlet swaps, the active tab moves, the address bar updates.
     await page.locator(".rt-bar a[href='#/guides']").click();
     await expect(page.locator('.rt-view h2')).toHaveText('Guides');
     await expect(page.locator('.rt-bar a', { hasText: 'Guides' })).toHaveClass(/active/);
+    await expect(page.locator('.rt-addr .path')).toHaveText('#/guides');
     expect(page.url()).toContain('#/guides');
 
     // A :param route renders the matched guide.
     await page.locator(".rt-guides a[href='#/guides/signals']").click();
     await expect(page.locator('.rt-view h2')).toHaveText('Signals & bindings');
-    expect(page.url()).toContain('#/guides/signals');
+    await expect(page.locator('.rt-addr .path')).toHaveText('#/guides/signals');
 
-    // Real Back returns to the Guides list — the outlet follows popstate, still no reload.
-    await page.goBack();
+    // The chrome's Back button drives real history — outlet + address bar follow, no reload.
+    await page.locator(".rt-navbtn[data-nav='back']").click();
     await expect(page.locator('.rt-view h2')).toHaveText('Guides');
+    await expect(page.locator('.rt-addr .path')).toHaveText('#/guides');
     expect(await page.evaluate(() => (window as any)._noReload)).toBe(true);
   });
 });

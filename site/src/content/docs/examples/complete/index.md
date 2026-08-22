@@ -55,4 +55,4 @@ Each thumbnail is an animated capture of the real app running — click through 
 
 #### [Router](/kerf/examples/complete/router/)
 
-[![Animated preview: navigating Home → Guides → a guide detail → About; the outlet swaps each page, the active nav tab follows, the URL hash updates, no reloads](/kerf/demos/router.svg)](/kerf/run/router/)
+[![Animated preview: a small app in a fake browser window — navigating Home → Guides → a guide detail → browser Back → About; the address bar updates each step, the outlet swaps each page, the active nav tab follows, no reloads](/kerf/demos/router.svg)](/kerf/run/router/)

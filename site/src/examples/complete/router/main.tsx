@@ -11,7 +11,7 @@
 // The kerf CORE stays router-free — `kerfjs/router` is an opt-in, tree-shakeable
 // subpath. See docs/20-router.md.
 
-import { mount } from 'kerfjs';
+import { delegate, mount } from 'kerfjs';
 import { createRouter } from 'kerfjs/router';
 
 // Dev diagnostics: kerf never infers dev mode, so the app installs them behind
@@ -113,15 +113,38 @@ const app = document.getElementById('app')!;
 
 mount(app, () => (
   <div>
-    <nav class="rt-bar">
-      <a href="#/" class={router.activeClass('/', 'active')}>Home</a>
-      <a href="#/guides" class={router.activeClass('/guides', 'active')}>Guides</a>
-      <a href="#/about" class={router.activeClass('/about', 'active')}>About</a>
-      <span class="rt-url">#{router.route.value.path}</span>
-    </nav>
-    {router.outlet()}
+    <div class="rt-browser">
+      {/* Fake browser chrome — the address bar is bound to the route, so it
+          updates live as you navigate, making the URL-driven story visible. */}
+      <div class="rt-chrome">
+        <div class="rt-dots"><i class="r"></i><i class="y"></i><i class="g"></i></div>
+        <div class="rt-navbtns">
+          <button class="rt-navbtn" data-nav="back" title="Back" aria-label="Back">‹</button>
+          <button class="rt-navbtn" data-nav="forward" title="Forward" aria-label="Forward">›</button>
+        </div>
+        <div class="rt-addr">
+          <span class="lock">🔒</span>
+          <span class="host">kerf.app/</span>
+          <span class="path">#{router.route.value.path}</span>
+        </div>
+      </div>
+      <div class="rt-viewport">
+        <nav class="rt-bar">
+          <a href="#/" class={router.activeClass('/', 'active')}>Home</a>
+          <a href="#/guides" class={router.activeClass('/guides', 'active')}>Guides</a>
+          <a href="#/about" class={router.activeClass('/about', 'active')}>About</a>
+        </nav>
+        {router.outlet()}
+      </div>
+    </div>
     <p class="rt-note">
       One <b>createRouter</b> · pattern matching · a keyed <b>outlet()</b> · auto <b>&lt;a&gt;</b> interception · real Back/Forward.
     </p>
   </div>
 ));
+
+// The chrome's Back/Forward buttons drive real history — one delegated listener.
+delegate(app, 'click', '[data-nav]', (_e, el) => {
+  if ((el as HTMLElement).dataset.nav === 'back') router.back();
+  else router.forward();
+});

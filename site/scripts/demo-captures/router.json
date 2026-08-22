@@ -1,6 +1,6 @@
 {
   "width": 880,
-  "height": 470,
+  "height": 510,
   "output": "site/public/demos/router.svg",
   "optimize": true,
   "vars": {
@@ -44,10 +44,10 @@
       "continue": true,
       "transition": { "type": "cut", "duration": 0 },
       "actions": [
-        { "type": "click", "selector": "a.rt-back" },
+        { "type": "click", "selector": ".rt-navbtn[data-nav='back']" },
         { "type": "wait", "ms": 160 }
       ],
-      "duration": 850
+      "duration": 900
     },
     {
       "continue": true,
