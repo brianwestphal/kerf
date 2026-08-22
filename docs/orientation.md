@@ -37,4 +37,4 @@ One coherent concern per file, one primary export per file, ESM-only, kebab-case
 
 ## Deeper reading
 
-`docs/1-overview.md` → `docs/17-list-virtualization.md` (design); `docs/ai/usage-guide.md` (AI-first reference); `CLAUDE.md` (canonical agent doc).
+`docs/1-overview.md` → `docs/20-router.md` (design); `docs/ai/usage-guide.md` (AI-first reference); `CLAUDE.md` (canonical agent doc).
