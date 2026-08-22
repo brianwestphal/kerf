@@ -41,6 +41,7 @@ const SUBPATH_ENTRIES: Record<string, string> = {
   scope: resolve(DIST, 'scope.js'),
   async: resolve(DIST, 'async.js'),
   list: resolve(DIST, 'list.js'),
+  router: resolve(DIST, 'router.js'),
   timing: resolve(DIST, 'timing.js'),
   remount: resolve(DIST, 'remount.js'),
   attach: resolve(DIST, 'attach.js'),

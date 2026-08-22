@@ -162,6 +162,18 @@ const BUDGETS = [
     `,
   },
   {
+    // ISOLATED size — the postcard router pulls in jsx (for the outlet), delegate
+    // (link interception), and signals; no mount (the app mounts). Shares those
+    // with the barrel via code-splitting, so the marginal cost is smaller.
+    name: 'router',
+    budgetKb: 6.7, // dominated by the shared jsx-runtime chunk (the outlet builds jsx) + signals; the router's own code is ~2.7 KB pre-gzip. Marginal cost for an app already using kerf is small.
+    description: 'the router subpath (createRouter — the postcard router) — signals + jsx + delegate, no mount',
+    entry: `
+      import { createRouter } from '${DIST}/router.js';
+      globalThis.__k = createRouter;
+    `,
+  },
+  {
     // ISOLATED size — debounce/throttle are dependency-free; debouncedSignal
     // pulls in signals only (no render core), so the whole subpath is tiny.
     name: 'timing',

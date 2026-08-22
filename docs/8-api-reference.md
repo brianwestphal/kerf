@@ -879,3 +879,47 @@ attach(canvasEl, (el) => {
 ### Attach types
 
 `AttachSetup` (`(node: Element) => (() => void) | void`) is exported from `kerfjs/attach`.
+
+## 8.15 Router — `kerfjs/router` subpath
+
+Optional subpath (`import { createRouter } from 'kerfjs/router'`) providing a **client-side router** — the "postcard router": route matching + `navigate` + `delegate()`-based link interception + a keyed outlet, and deliberately nothing more. The kerf **core** stays router-free (docs/1's "Not a router" is about the runtime); this adds nothing to the main barrel until imported, on the same footing as `kerfjs/list` / `kerfjs/overlay`. See [`docs/20-router.md`](20-router.md) for the full design and the scope boundary (no nested layouts / loaders / lazy routes / guards / SSR — compose those with kerf primitives).
+
+### `createRouter<>(options): RouterHandle`
+
+```ts
+const router = createRouter({
+  routes: [
+    { path: '/',          component: () => <Home /> },
+    { path: '/users/:id', component: ({ id }) => <User id={id} /> },
+    { path: '*',          component: () => <NotFound /> },   // catch-all — last
+  ],
+  mode: 'history',   // 'history' (default) | 'hash'
+  base: '/app',      // optional (history mode)
+  interceptLinks: true, // default; false disables the delegated <a> interceptor
+});
+
+mount(app, () => (
+  <div>
+    <nav><a href="/users/1" class={router.activeClass('/users', 'active')}>Users</a></nav>
+    {router.outlet()}
+  </div>
+));
+```
+
+Creates a router bound to the browser history (reads the current location immediately, installs a `popstate` listener — plus `hashchange` in hash mode — and, unless `interceptLinks: false`, one delegated link interceptor). Returns a [`RouterHandle`](#router-types) (a closure — no module-global state, like `defineStore`):
+
+- **`route`** — `ReadonlySignal<`[`RouteState`](#router-types)`>` = `{ path, params, query, hash }`. `params` is a `Record<string, string>` from the matched pattern (URL-decoded); `query` is a `URLSearchParams`. A tracked read.
+- **`navigate(path, { replace?, state? })`** — push (or replace) a history entry and update `route`; `path` may include `?query` / `#hash`.
+- **`back()` / `forward()`** — `history.back()` / `history.forward()`.
+- **`match(pattern)`** → `ReadonlySignal<boolean>` — reactive active-check: true when `route.path` equals `pattern` or is nested under it (`match('/users')` is true on `/users/7`); `match('/')` is **exact**.
+- **`activeClass(pattern, className)`** → `ReadonlySignal<string>` — `className` while `match(pattern)` is active, else `''`; spread into a `class` hole.
+- **`outlet()`** → the routed view — call it inside a `mount()` render. It renders the matched component in a **keyed wrapper** (`data-key` = the matched route's *pattern*), so kerf's keyed morph **replaces the page wholesale on a route change** (fresh DOM) and **reconciles in place on a same-route param change** (preserving scroll / focus). No new machinery.
+- **`dispose()`** — remove the popstate / link listeners (idempotent).
+
+**Route patterns** (tried in order, first match wins): static (`/about`), `:param` (`/users/:id` → `params.id`), a trailing `*rest` wildcard (`/files/*rest` → `params.rest`, the remaining segments joined by `/`; a bare `*` segment matches without capturing), and `*` as the catch-all fallback (list it last).
+
+**Link interception** intercepts only plain in-app navigations — left-click, no modifier keys, not already `defaultPrevented`, no `target`/`download`, not `rel="external"` / `data-router-ignore`, same-origin (under `base` in history mode; an in-app `#/…` link in hash mode). Everything else falls through to the browser.
+
+### Router types
+
+`RouteState`, `RouteComponent`, `RouteDef`, `NavigateOptions`, `RouterOptions`, and `RouterHandle` are exported from `kerfjs/router`. `RouteComponent` is `(params: Record<string, string>, route: RouteState) => MountResult`; a `RouteDef` is `{ path: string; component: RouteComponent }`.

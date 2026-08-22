@@ -84,6 +84,10 @@
       "types": "./dist/list.d.ts",
       "import": "./dist/list.js"
     },
+    "./router": {
+      "types": "./dist/router.d.ts",
+      "import": "./dist/router.js"
+    },
     "./timing": {
       "types": "./dist/timing.d.ts",
       "import": "./dist/timing.js"

@@ -23,8 +23,10 @@ export default [
         document: 'readonly',
         window: 'readonly',
         HTMLElement: 'readonly',
+        HTMLAnchorElement: 'readonly',
         Element: 'readonly',
         Event: 'readonly',
+        MouseEvent: 'readonly',
         DOMParser: 'readonly',
         console: 'readonly',
         setTimeout: 'readonly',
@@ -34,6 +36,11 @@ export default [
         Node: 'readonly',
         Text: 'readonly',
         SVGElement: 'readonly',
+        // Browser globals used by kerfjs/router (history/location navigation + URL parsing).
+        history: 'readonly',
+        location: 'readonly',
+        URL: 'readonly',
+        URLSearchParams: 'readonly',
       },
     },
     plugins: {

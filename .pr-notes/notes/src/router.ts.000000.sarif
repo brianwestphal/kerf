@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "Hot Sheet",
+          "rules": [
+            {
+              "id": "review-note",
+              "name": "ReviewNote",
+              "shortDescription": {
+                "text": "AI-authored, line-anchored review note."
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "review-note",
+          "ruleIndex": 0,
+          "kind": "informational",
+          "level": "none",
+          "guid": "mt3pknyymq131b0m",
+          "message": {
+            "text": "The outlet's remount-per-route + morph-within-route semantics fall out of kerf's KEYED MORPH for free — no remountOn, no new machinery.\n\noutlet() returns the matched component wrapped in <div data-router-outlet data-key=\"<the matched route's PATTERN>\">. The data-key is the route pattern (/users/:id), not the concrete path:\n- Cross-route navigation (/ → /users/1): the pattern differs → the key differs → kerf's keyed reconcile can't match old-to-new, so it REMOVES the old wrapper and INSERTS the new one = wholesale replacement = fresh DOM. Different pages are never morphed into each other.\n- Same-route param change (/users/1 → /users/2): the pattern is identical → same key → the morph reconciles the wrapper's children in place = the component re-renders with new params, only changed nodes update, scroll/focus preserved.\n\nvoid route.value at the top is the tracked read that subscribes the enclosing mount() to navigation (so the render re-runs); matched is kept in step with the signal in resolve() so the outlet doesn't have to re-match. Verified in tests/unit/router.test.ts › 'renders the matched component, swaps wholesale across routes, updates in place within a route' and the Playwright DOM-identity spec.",
+            "markdown": "The outlet's remount-per-route + morph-within-route semantics fall out of kerf's KEYED MORPH for free — no `remountOn`, no new machinery.\n\n`outlet()` returns the matched component wrapped in `<div data-router-outlet data-key=\"<the matched route's PATTERN>\">`. The `data-key` is the route pattern (`/users/:id`), not the concrete path:\n- **Cross-route** navigation (`/` → `/users/1`): the pattern differs → the key differs → kerf's keyed reconcile can't match old-to-new, so it REMOVES the old wrapper and INSERTS the new one = wholesale replacement = fresh DOM. Different pages are never morphed into each other.\n- **Same-route** param change (`/users/1` → `/users/2`): the pattern is identical → same key → the morph reconciles the wrapper's children in place = the component re-renders with new params, only changed nodes update, scroll/focus preserved.\n\n`void route.value` at the top is the tracked read that subscribes the enclosing `mount()` to navigation (so the render re-runs); `matched` is kept in step with the signal in `resolve()` so the outlet doesn't have to re-match. Verified in `tests/unit/router.test.ts` › 'renders the matched component, swaps wholesale across routes, updates in place within a route' and the Playwright DOM-identity spec."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/router.ts"
+                },
+                "region": {
+                  "startLine": 226,
+                  "endLine": 226,
+                  "snippet": {
+                    "text": "    return computed(() => (active.value ? className : ''));"
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "tags": [
+              "rationale"
+            ]
+          },
+          "workItemUris": [
+            "KF-532"
+          ],
+          "partialFingerprints": {
+            "prNoteAnchor/v1": "f4e1c640536816b2d772c6fe48a39c1b"
+          }
+        }
+      ],
+      "versionControlProvenance": [
+        {
+          "repositoryUri": "git@github.com:brianwestphal/kerf.git",
+          "revisionId": "453d040b176c10f569336f161187080e548e2356",
+          "branch": "main"
+        }
+      ]
+    }
+  ]
+}

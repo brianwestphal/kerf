@@ -14,7 +14,7 @@ Plus a JSX runtime (`kerfjs/jsx-runtime`), the `html` tagged template (`kerfjs/h
 ## 1.2 What kerf is NOT
 
 - Not a component framework. `<MyComponent props />` works as JSX sugar — the runtime calls `MyComponent(props)` and uses the returned JSX — but there's no per-instance state, no hooks, and no lifecycle. Components are plain functions; state lives in module-scope signals or stores.
-- Not a router. Not a build tool. Not an SSR framework (though `SafeHtml.toString()` works server-side if you want it).
+- Not a router — *the core* is not. An opt-in, tree-shakeable `kerfjs/router` subpath (the "postcard router": route matching + `navigate` + link interception + a keyed outlet, and deliberately nothing more) exists for apps that want one, and adds nothing to the main barrel until imported. Not a build tool. Not an SSR framework (though `SafeHtml.toString()` works server-side if you want it).
 - Not opinionated about styling. Bring your own CSS.
 - Not magical. There's no compiler, no virtual DOM, no scheduler, no concurrent rendering, no hooks model, no lifecycle. The "no compiler" rule is non-negotiable — kerf will not ship an opt-in codegen package either. If you want compile-time fine-grained reactivity, pick Solid; that's Solid's value proposition, and Solid does it better than a kerf-compiler ever could. Kerf's positioning is "the fastest framework that needs no build step beyond your existing one," which means accepting Solid's architectural-floor numbers on update-path benchmarks (~6ms select-row, ~20ms partial-update) as the ceiling. The goal is to close the runtime-vs-compiled gap on every benchmark kerf can close without a compiler — not to match Solid on the ones that require one.
 

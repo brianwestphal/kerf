@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "Hot Sheet",
+          "rules": [
+            {
+              "id": "review-note",
+              "name": "ReviewNote",
+              "shortDescription": {
+                "text": "AI-authored, line-anchored review note."
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "review-note",
+          "ruleIndex": 0,
+          "kind": "informational",
+          "level": "warning",
+          "guid": "mt3pko4t0pzucxkw",
+          "message": {
+            "text": "Every new SUBPATH entry must be registered here or the dist-full suite silently mis-resolves it to dist/index.js (the barrel), where the subpath's exports don't exist — surfacing as '<export> is not a function' only in the dist-full run, not npm test. Adding router was required for the router unit tests to pass under dist-full. When adding a future subpath, add its dist/<name>.js mapping here alongside the tsup entry + package.json export.",
+            "markdown": "Every new SUBPATH entry must be registered here or the dist-full suite silently mis-resolves it to `dist/index.js` (the barrel), where the subpath's exports don't exist — surfacing as '<export> is not a function' only in the dist-full run, not `npm test`. Adding `router` was required for the router unit tests to pass under dist-full. When adding a future subpath, add its `dist/<name>.js` mapping here alongside the tsup entry + package.json export."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "vitest.config.dist-full.ts"
+                },
+                "region": {
+                  "startLine": 44,
+                  "endLine": 44,
+                  "snippet": {
+                    "text": "  router: resolve(DIST, 'router.js'),"
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "tags": [
+              "risk"
+            ]
+          },
+          "workItemUris": [
+            "KF-532"
+          ],
+          "partialFingerprints": {
+            "prNoteAnchor/v1": "7860d9b4c56da4ce20fd33f1124f0fff"
+          }
+        }
+      ],
+      "versionControlProvenance": [
+        {
+          "repositoryUri": "git@github.com:brianwestphal/kerf.git",
+          "revisionId": "453d040b176c10f569336f161187080e548e2356",
+          "branch": "main"
+        }
+      ]
+    }
+  ]
+}
