@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>kerf · Router (the postcard router)</title>
+    <style>
+      body { font-family: system-ui, sans-serif; background: #f5f5f5; margin: 0; padding: 1.5rem; color: #1f2937; }
+      .rt-wrap { max-width: 820px; margin: 0 auto; }
+      h1 { font-size: 1.3rem; margin: 0 0 0.25rem; }
+      p.lede { color: #555; margin: 0 0 1rem; font-size: 0.9rem; }
+      .rt-bar {
+        display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 0.75rem;
+        background: #fff; border: 1px solid #e5e7eb; border-radius: 8px 8px 0 0; border-bottom: none;
+        font-size: 0.85rem;
+      }
+      .rt-bar a {
+        text-decoration: none; color: #334155; padding: 0.35rem 0.7rem; border-radius: 6px;
+        border: 1px solid transparent;
+      }
+      .rt-bar a:hover { background: #f1f5f9; }
+      .rt-bar a.active { background: #dbeafe; color: #1d4ed8; border-color: #bfdbfe; font-weight: 600; }
+      .rt-url { margin-left: auto; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; color: #2563eb; font-size: 0.8rem; }
+      .rt-view {
+        background: #fff; border: 1px solid #e5e7eb; border-radius: 0 0 8px 8px;
+        padding: 1.1rem 1.2rem; min-height: 220px;
+      }
+      .rt-view h2 { margin: 0 0 0.5rem; font-size: 1.1rem; }
+      .rt-view p { margin: 0 0 0.75rem; color: #475569; font-size: 0.9rem; }
+      .rt-guides { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.4rem; }
+      .rt-guides a {
+        display: block; text-decoration: none; color: #1e293b; padding: 0.5rem 0.7rem;
+        border: 1px solid #e5e7eb; border-radius: 6px; font-size: 0.88rem;
+      }
+      .rt-guides a:hover { border-color: #2563eb; background: #eff6ff; }
+      .rt-back { display: inline-block; margin-top: 0.5rem; color: #2563eb; text-decoration: none; font-size: 0.85rem; }
+      .rt-back:hover { text-decoration: underline; }
+      .rt-nf { color: #b91c1c; }
+      .rt-note { margin-top: 0.9rem; font-size: 0.78rem; color: #94a3b8; }
+      .rt-note b { font-family: ui-monospace, monospace; color: #64748b; }
+    </style>
+  </head>
+  <body>
+    <div class="rt-wrap">
+      <h1>Postcard router</h1>
+      <p class="lede">
+        A whole client-side router in one <b style="font-family:ui-monospace,monospace">createRouter</b> — URL-driven
+        pages, <code>:param</code> routes, active-nav highlighting, real Back/Forward. No page reloads;
+        the outlet swaps the page, and links are intercepted automatically.
+      </p>
+      <div id="app"></div>
+    </div>
+    <script type="module" src="./main.tsx"></script>
+  </body>
+</html>

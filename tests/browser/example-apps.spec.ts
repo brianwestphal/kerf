@@ -510,3 +510,30 @@ test.describe('virtual-list', () => {
     await expect(page.locator('#count')).toContainText('0 of 9,999 rows');
   });
 });
+
+test.describe('router', () => {
+  test('navigating routes the outlet + active nav without reloading', async ({ page }) => {
+    await page.goto(`${BASE}/router/`);
+    // Prove no full reload happens across navigation.
+    await page.evaluate(() => { (window as any)._noReload = true; });
+
+    await expect(page.locator('.rt-view h2')).toHaveText('Home');
+    await expect(page.locator('.rt-bar a', { hasText: 'Home' })).toHaveClass(/active/);
+
+    // Click Guides → the outlet swaps and the active tab moves.
+    await page.locator(".rt-bar a[href='#/guides']").click();
+    await expect(page.locator('.rt-view h2')).toHaveText('Guides');
+    await expect(page.locator('.rt-bar a', { hasText: 'Guides' })).toHaveClass(/active/);
+    expect(page.url()).toContain('#/guides');
+
+    // A :param route renders the matched guide.
+    await page.locator(".rt-guides a[href='#/guides/signals']").click();
+    await expect(page.locator('.rt-view h2')).toHaveText('Signals & bindings');
+    expect(page.url()).toContain('#/guides/signals');
+
+    // Real Back returns to the Guides list — the outlet follows popstate, still no reload.
+    await page.goBack();
+    await expect(page.locator('.rt-view h2')).toHaveText('Guides');
+    expect(await page.evaluate(() => (window as any)._noReload)).toBe(true);
+  });
+});

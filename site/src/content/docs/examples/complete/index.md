@@ -3,7 +3,7 @@ title: Complete apps
 description: Seven small but real apps, each exercising the patterns kerf is built around.
 ---
 
-Eight runnable showcase apps, each with its own page and animated preview below. They live under [`site/src/examples/complete/`](https://github.com/brianwestphal/kerf/tree/main/site/src/examples/complete) as real projects (drop into a fresh project with `kerfjs` installed and they run — seven are Vite projects; the live poll is served as authored source with no build at all). Two more complete apps in that directory — an htmx-style cart island and a Redux-style counter store — are demonstrated inside the [htmx](/kerf/migrating/htmx/) and [Redux](/kerf/migrating/redux/) migration guides instead.
+Nine runnable showcase apps, each with its own page and animated preview below. They live under [`site/src/examples/complete/`](https://github.com/brianwestphal/kerf/tree/main/site/src/examples/complete) as real projects (drop into a fresh project with `kerfjs` installed and they run — eight are Vite projects; the live poll is served as authored source with no build at all). Two more complete apps in that directory — an htmx-style cart island and a Redux-style counter store — are demonstrated inside the [htmx](/kerf/migrating/htmx/) and [Redux](/kerf/migrating/redux/) migration guides instead.
 
 | App | Demonstrates |
 | --- | --- |
@@ -15,6 +15,7 @@ Eight runnable showcase apps, each with its own page and animated preview below.
 | [Row selector](/kerf/examples/complete/row-selector/) | Fine-grained signal bindings — a bound `class` + bound detail pane update on select with no render re-run and no list reconcile |
 | [Live poll (no build step)](/kerf/examples/complete/live-poll/) | The `html` tagged template + an importmap — a complete app served as authored source; fully-bound mount (the render runs once, forever) |
 | [Virtual list](/kerf/examples/complete/virtual-list/) | The companion subpaths — `bindList` viewport virtualization (10,000 rows, ~a screenful in the DOM) · `debouncedSignal` search · `confirm()` + `toast()` |
+| [Router](/kerf/examples/complete/router/) | `kerfjs/router` — the "postcard router": `:param` routes, a keyed `outlet()`, auto `<a>` link interception, reactive active links, real Back/Forward |
 
 ## Previews
 
@@ -51,3 +52,7 @@ Each thumbnail is an animated capture of the real app running — click through 
 #### [Virtual list](/kerf/examples/complete/virtual-list/)
 
 [![Animated preview: scrolling a 10,000-row list while the "in the DOM" count stays flat, filtering by name down to one row, then deleting it through a confirm dialog and a toast](/kerf/demos/virtual-list.svg)](/kerf/run/virtual-list/)
+
+#### [Router](/kerf/examples/complete/router/)
+
+[![Animated preview: navigating Home → Guides → a guide detail → About; the outlet swaps each page, the active nav tab follows, the URL hash updates, no reloads](/kerf/demos/router.svg)](/kerf/run/router/)

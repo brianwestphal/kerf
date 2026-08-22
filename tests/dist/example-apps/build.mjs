@@ -52,6 +52,7 @@ const COMPLETE_APPS = [
   'row-selector',
   'live-poll',
   'virtual-list',
+  'router',
 ];
 
 async function buildOne(name) {

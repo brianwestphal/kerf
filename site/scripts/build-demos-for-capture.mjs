@@ -27,6 +27,7 @@ const COMPLETE_APPS = [
   'row-selector',
   'live-poll',
   'virtual-list',
+  'router',
 ];
 
 const outRoot = process.argv[2] || '/tmp/claude/kerf-demos';

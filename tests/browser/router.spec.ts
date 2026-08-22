@@ -74,22 +74,24 @@ test('browser Back / Forward drives popstate → the outlet follows', async ({ p
 test('outlet keeps DOM identity on a param change, replaces it across routes', async ({ page }) => {
   await setup(page);
   await page.locator('#u1').click();
-  // Tag the current outlet wrapper so we can tell whether it survives.
+  // Tag the current outlet wrapper with a NON-attribute JS property, so the
+  // morph's attribute reconciliation can't clear it — it survives iff the same
+  // element object survives.
   await page.evaluate(() => {
-    (document.querySelector('#outlet [data-router-outlet]') as HTMLElement).dataset.tag = 'first';
+    (document.querySelector('#outlet [data-router-outlet]') as any)._id = 'first';
   });
 
   // Same route, different param → SAME wrapper element (morph in place).
   await page.locator('#u2').click();
   await expect(page.locator('#outlet .user')).toHaveText('User 2');
   expect(await page.evaluate(
-    () => (document.querySelector('#outlet [data-router-outlet]') as HTMLElement).dataset.tag,
+    () => (document.querySelector('#outlet [data-router-outlet]') as any)._id,
   )).toBe('first'); // preserved
 
-  // Cross-route → the wrapper is replaced (the tag is gone).
+  // Cross-route → the wrapper is replaced (the property is gone with the element).
   await page.locator('#home').click();
   await expect(page.locator('#outlet .home')).toHaveText('Home');
   expect(await page.evaluate(
-    () => (document.querySelector('#outlet [data-router-outlet]') as HTMLElement | null)?.dataset.tag,
+    () => (document.querySelector('#outlet [data-router-outlet]') as any)?._id,
   )).toBeUndefined(); // fresh element
 });

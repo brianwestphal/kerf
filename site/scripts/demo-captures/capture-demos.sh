@@ -23,7 +23,7 @@ cd "$REPO_ROOT"
 SERVE_DIR="$(mktemp -d)"
 SERVE_PORT=4188
 CONFIG_DIR="site/scripts/demo-captures"
-APPS=(todomvc counter-store cart-htmx chat dashboard markdown-editor kanban row-selector live-poll virtual-list)
+APPS=(todomvc counter-store cart-htmx chat dashboard markdown-editor kanban row-selector live-poll virtual-list router)
 # Static capture pages under $CONFIG_DIR/pages/<name>/ — not example apps, just
 # hand-authored HTML captured as-is (the animated site diagrams etc.). Each has
 # a matching <name>.json config like the apps.
