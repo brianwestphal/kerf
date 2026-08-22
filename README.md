@@ -227,7 +227,25 @@ const list = bindList(scrollEl, messages, {
 observeRowHeights(list); // one ResizeObserver → kerf anchor-corrects scroll
 ```
 
-Each subpath adds nothing to the main barrel until it's imported. See [`docs/8-api-reference.md`](./docs/8-api-reference.md) for the full list (`list`, `overlay`, `scope`, `async`, `timing`, `remount`, `attach`, `actions`).
+And a whole client-side router in one call — `kerfjs/router`, the "postcard router." A route table, a keyed `outlet()`, and automatic `<a href>` interception; the *core* stays router-free (this is opt-in):
+
+```ts
+import { createRouter } from 'kerfjs/router';
+
+const router = createRouter({
+  routes: [
+    { path: '/',          component: () => <Home /> },
+    { path: '/users/:id', component: ({ id }) => <User id={id} /> },
+    { path: '*',          component: () => <NotFound /> },
+  ],
+});
+
+mount(app, () => <div><nav>{/* <a href> links, auto-intercepted */}</nav>{router.outlet()}</div>);
+```
+
+`router.route` is a signal; `router.outlet()` swaps the page wholesale across routes and morphs in place within one. Deliberately small — no nested layouts, loaders, or guards; compose those with the primitives above.
+
+Each subpath adds nothing to the main barrel until it's imported. See [`docs/8-api-reference.md`](./docs/8-api-reference.md) for the full list (`list`, `router`, `overlay`, `scope`, `async`, `timing`, `remount`, `attach`, `actions`).
 
 ## Install
 
