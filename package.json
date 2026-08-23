@@ -1,6 +1,6 @@
 {
   "name": "kerfjs",
-  "version": "4.3.0",
+  "version": "4.4.0",
   "description": "Tiny reactive UI framework — fine-grained signals + DOM morphing + JSX. Apply the smallest possible cut to update your DOM.",
   "type": "module",
   "sideEffects": [

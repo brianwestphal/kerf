@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [4.4.0] - 2026-08-23
+
+
+
+- Reworked the router example app to run inside a fake browser window — traffic-light chrome, working Back/Forward buttons wired to `router.back()`/`forward()` via one delegated listener, and a live address bar bound to `router.route` that updates as you navigate — making the URL-driven, no-reload story clearer.
+
 - **New `kerfjs/router` subpath — a client-side router (the "postcard router").** `createRouter({ routes, mode?, base?, interceptLinks? })` returns a handle over three things kerf already has: a reactive `route` signal (`{ path, params, query, hash }`), `delegate()`-based `<a href>` link interception, and a keyed **outlet** — `router.outlet()` renders the matched route in a `data-key`ed wrapper, so kerf's keyed morph **replaces the page wholesale on a route change** (fresh DOM) and **reconciles in place on a same-route param change** (preserving scroll / focus). Route patterns are static, `:param`, a trailing `*rest` wildcard, and `*` catch-all; the handle also gives `navigate(path, { replace?, state? })`, `back()`/`forward()`, `match(pattern)` / `activeClass(pattern, className)` reactive active-link helpers, hash **or** history mode, an optional base path, and `dispose()`. Link interception is automatic (same-origin, left-click, no modifier/`target`/`download`, opt out per-link with `data-router-ignore` / `rel="external"` or globally with `interceptLinks: false`). **Deliberately scoped** — no nested layouts, data loaders, lazy routes, guards, or SSR matching; compose those with kerf primitives (`resource` for loading, an `effect` on `route` for guards). The kerf **core stays router-free** — this is opt-in and tree-shakeable, adding nothing to the main barrel until imported, and docs/1's "Not a router" is about the runtime. See [`docs/20-router.md`](docs/20-router.md).
 
 ## [4.3.0] - 2026-08-22
