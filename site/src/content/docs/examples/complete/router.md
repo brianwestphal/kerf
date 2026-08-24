@@ -5,7 +5,7 @@ description: A whole client-side router in one createRouter — URL-driven pages
 
 **[▶ Run live](/kerf/run/router/)** · [View source on GitHub](https://github.com/brianwestphal/kerf/tree/main/site/src/examples/complete/router)
 
-[![Animated preview: a small app inside a fake browser window — navigating Home → a guides list → a guide detail via a :param route → then the browser Back button → About, with the address bar's URL updating on every step, the active nav tab following, and no page reloads](/kerf/demos/router.svg)](/kerf/run/router/)
+[![Animated preview: navigating a routed app inside a fake browser window; the address bar and Back button drive URL routing with no page reloads](/kerf/demos/router.svg)](/kerf/run/router/)
 
 A small single-page app driven by [`kerfjs/router`](/kerf/docs/docs/20-router/) — the "postcard router", shown inside a **fake browser window** so you can watch the address bar. Navigate between Home, a guides list, an individual guide (a `/guides/:slug` param route), and About; the window's Back button drives real history. The active nav tab follows the URL, the address bar updates on every step, and **nothing ever reloads** — links are intercepted and the outlet swaps the page.
 

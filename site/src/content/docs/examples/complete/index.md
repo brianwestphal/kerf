@@ -51,8 +51,8 @@ Each thumbnail is an animated capture of the real app running — click through 
 
 #### [Virtual list](/kerf/examples/complete/virtual-list/)
 
-[![Animated preview: scrolling a 10,000-row list while the "in the DOM" count stays flat, filtering by name down to one row, then deleting it through a confirm dialog and a toast](/kerf/demos/virtual-list.svg)](/kerf/run/virtual-list/)
+[![Animated preview: scrolling a 10,000-row virtualized list, filtering to one row, then deleting it via a confirm dialog and toast](/kerf/demos/virtual-list.svg)](/kerf/run/virtual-list/)
 
 #### [Router](/kerf/examples/complete/router/)
 
-[![Animated preview: a small app in a fake browser window — navigating Home → Guides → a guide detail → browser Back → About; the address bar updates each step, the outlet swaps each page, the active nav tab follows, no reloads](/kerf/demos/router.svg)](/kerf/run/router/)
+[![Animated preview: navigating a routed app in a fake browser window; the address bar updates and the outlet swaps with no reloads](/kerf/demos/router.svg)](/kerf/run/router/)
