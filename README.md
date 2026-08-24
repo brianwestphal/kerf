@@ -4,61 +4,72 @@
 
 <h1 align="center">Kerf</h1>
 
-<p align="center"><em>The smallest cut.</em></p>
+<p align="center"><em>A tiny reactive UI framework. The smallest cut.</em></p>
 
 <p align="center">
   <a href="https://brianwestphal.github.io/kerf/"><strong>brianwestphal.github.io/kerf</strong></a> — docs · examples · live demo
 </p>
 
+<p align="center">
+  <a href="https://www.npmjs.com/package/kerfjs"><img src="https://img.shields.io/npm/v/kerfjs.svg" alt="npm version" /></a>
+  <img src="https://img.shields.io/badge/min%2Bgzip-~12%20KB-brightgreen.svg" alt="~12 KB minified and gzipped" />
+  <img src="https://img.shields.io/npm/l/kerfjs.svg" alt="MIT license" />
+  <img src="https://img.shields.io/badge/types-included-3178c6.svg" alt="TypeScript types included" />
+</p>
+
 ---
 
-> Introducing Kerf.
-> The smallest cut.
->
 > ~12 KB. No virtual DOM. No compiler. No magic.
 > Reactive UI that touches only the bytes that changed.
 
 ```ts
-import { signal, mount } from 'kerfjs';
+import { signal, mount, delegate } from 'kerfjs';
 
 const count = signal(0);
+const app = document.getElementById('app')!;
 
-mount(document.getElementById('app')!, () => (
+mount(app, () => (
   <div>
     <button data-action="inc">+</button>
     <span>{count.value}</span>
   </div>
 ));
+
+delegate(app, 'click', '[data-action="inc"]', () => count.value++);
 ```
 
 That's it. Your JSX renders to HTML strings, kerf's native diff applies the minimum DOM mutations to make the live tree match, and signals re-run the render only when something they read actually changed.
 
 Here's the whole development loop — write a component, run the dev server, click around, edit, watch the browser pick it up:
 
-[![Animated coding session: a counter component is typed line by line into an editor, npm run dev starts in a terminal and the localhost link is clicked, the running app is clicked in a browser, then back in the editor a computed class is added — selecting "btn" and typing a bound {cls} hole — and the browser shows the button change color at the fifth click](https://brianwestphal.github.io/kerf/demos/getting-started.svg)](https://brianwestphal.github.io/kerf/getting-started/)
+[![Animated demo: coding a kerf counter in an editor, running the dev server, then hot-reloading a class change in the browser](https://brianwestphal.github.io/kerf/demos/getting-started.svg)](https://brianwestphal.github.io/kerf/getting-started/)
+**[Quick start](#quick-start) · [Why kerf](#why-kerf) · [Quick tour](#quick-tour) · [Docs & examples](https://brianwestphal.github.io/kerf/)**
 
+## Quick start
+
+```bash
+npm install kerfjs
+```
+
+```jsonc
+// tsconfig.json — point JSX at kerf
+{ "compilerOptions": { "jsx": "react-jsx", "jsxImportSource": "kerfjs" } }
+```
+
+Write plain `.tsx` and build with your existing esbuild / Vite / tsup — no extra plugin. New here? Read the [5-minute orientation](https://github.com/brianwestphal/kerf/blob/main/docs/orientation.md), or open a [complete example](https://brianwestphal.github.io/kerf/examples/complete/).
 ## Why Kerf
 
-1. **Small bundle.** ~12 KB minified + gzipped including `@preact/signals-core` (~13 KB with `arraySignal`). One runtime dependency. No virtual DOM, no scheduler, no concurrent-mode machinery. On the official [krausest js-framework-benchmark](https://krausest.github.io/js-framework-benchmark/current.html) — where kerf is a listed entry, measured on the same reference machine as every competitor ([local mirror](./bench/results.md)) — kerf is in the same cluster as Vue, vanjs, and Lit on most operations; Solid's compiler leads the update-path benchmarks (notably `partial update`), which kerf doesn't try to match by design — no compiler.
+1. **~12 KB, one dependency.** ~12 KB minified + gzipped including `@preact/signals-core` (~13 KB with `arraySignal`). No virtual DOM, no scheduler, no concurrent-mode machinery. On the official [krausest benchmark](https://krausest.github.io/js-framework-benchmark/current.html) kerf sits in the same cluster as Vue, Lit, and vanjs; Solid's compiler leads the update-path benchmarks, which kerf doesn't try to match by design — no compiler.
 
 2. **No virtual DOM, no compiler.** JSX → HTML strings → native diff. DevTools shows the real DOM because it *is* the DOM.
 
-3. **Values bind, structure re-renders.** Hand a signal *itself* into a JSX hole — `class={selectedId}` or `{status}` — and kerf binds that one node directly: when the signal changes, only that attribute or text node updates, with no render re-run and no list reconcile. A selection flip on a 10,000-row table touches exactly one class. Taken to its logical end: a mount whose render reads no `.value` at all runs **exactly once, forever** — every subsequent update flows through the per-hole bindings. Read `.value` in the render only when the *structure* depends on it (conditionals, list shape).
+3. **Values bind, structure re-renders.** Hand a signal *itself* into a JSX hole — `class={selectedId}` — and kerf binds that one node: on change, only that attribute updates, with no render re-run and no list reconcile. A selection flip on a 10,000-row table touches exactly one class. ([more →](#fine-grained-updates-bind-a-signal-into-a-hole))
 
-4. **Focus, selection, listeners survive re-renders — even mid-list.** The reconciler morphs instead of rebuilding, so caret position, selection range, IME composition, and delegated listeners survive every re-render. Keyed lists get the same treatment: same-identity rows are updated *in place* rather than recreated, so a row reorder or a single-cell edit no longer blows away focus, scroll, or an in-flight animation the way node replacement does.
+4. **Focus, selection, and listeners survive re-renders — even mid-list.** The reconciler morphs instead of rebuilding, so caret position, IME composition, scroll, and delegated listeners survive every update; keyed rows are patched in place rather than recreated.
 
-5. **Safe by default.** Text and attribute values are HTML-escaped automatically, URL attributes are scheme-screened (`javascript:` / script-carrying `data:` dropped), inline `on*` handlers are rejected outright, and the same screening covers the fine-grained bound path — so untrusted data stays inert even when kerf is dropped into someone else's page. The URL screen fails loudly at your desk (throws in development) and degrades safely in the field (warns and drops in production). `raw()` is the explicit, auditable opt-out.
+5. **Safe by default.** Text and attributes are HTML-escaped automatically, URL attributes are scheme-screened (`javascript:` dropped), and inline `on*` handlers are rejected outright — so untrusted data stays inert. `raw()` is the explicit, auditable opt-out.
 
-6. **JSX typed against HTML, not against React.** Tags and attributes are checked at compile time — `<diiv>` and `<input typo />` don't build. The attribute types are derived from the HTML standard rather than another framework's property table, and that distinction has teeth: `draggable` and `spellcheck` are *enumerated* attributes that take the strings `"true"` / `"false"`, so kerf rejects `draggable={true}` rather than quietly emitting markup that means the opposite. Custom elements and web components slot in with one declaration merge.
-
-7. **Small public API.** ~18 exports from the main barrel (plus `arraySignal`, the `html` tagged template, and the companion-utility subpaths below — each opt-in, none in the core). No hooks, no lifecycle, no per-instance state. Components are plain functions that return JSX.
-
-8. **Batteries on their own subpaths.** Nine optional, tree-shakeable subpaths cover the patterns every real app otherwise hand-rolls — **`kerfjs/list`** (a keyed list with per-row fine-grained mounts and fixed / app-declared / measured-height viewport **virtualization**, plus a `content-visibility` mode that keeps every row find-in-page-able), **`kerfjs/router`** (a "postcard **router**": route matching, `navigate`, auto `<a>` link interception, and a keyed outlet — the *core* stays router-free, this is opt-in), **`kerfjs/overlay`** (modals, `confirm` / `prompt` / `form` / `choice`, anchored popovers + tooltips, toasts — with opt-in native **top-layer** backing that stacks above any `z-index`), **`kerfjs/async`** (`resource` async-state with a built-in stale-response guard + SWR cache), **`kerfjs/scope`** (dispose-scopes that tie teardown to a DOM node's lifetime), plus `timing`, `remount`, `attach`, and `actions`. None of them grows the ~12 KB core until you import it.
-
-9. **Plain TS, plain JSX, plain ESM.** Drops into anything using esbuild / Vite / tsup. No plugin chain. And with the `html` tagged template (`import { html } from 'kerfjs/html'` — identical runtime semantics to JSX), a CDN / importmap project needs no build step at all.
-
-10. **Grown-up tooling around a tiny core.** An [ESLint plugin](https://brianwestphal.github.io/kerf/docs/eslint-plugin/) that enforces the hard rules at edit time, an opt-in family of `KERF_DEV_WARN_*` runtime warnings that catch the classic mistakes in development (with zero production cost), a `create-kerf-component` scaffold for publishable component packages, drop-in AI-assistant configs, and side-by-side migration guides for a dozen-plus frameworks — none of which grows the core runtime past ~12 KB.
-
+**Plus, nothing you don't ask for:** JSX typed against the HTML standard (not React's props) · a ~18-export API with no hooks, lifecycle, or per-instance state · **nine** tree-shakeable companion subpaths (`router`, `list`, `overlay`, `async`, …) that stay out of the core until imported · an [ESLint plugin](https://brianwestphal.github.io/kerf/docs/eslint-plugin/) + opt-in dev warnings + a `create-kerf-component` scaffold · plain TS/JSX/ESM that drops into esbuild / Vite / tsup — or **no** build at all via the `html` tagged template.
 ## When to use Kerf
 
 - **Hybrid desktop apps (Tauri / Electron)** — small bundle, predictable diff, debuggable runtime; ideal for the embedded webview.
@@ -247,21 +258,9 @@ mount(app, () => <div><nav>{/* <a href> links, auto-intercepted */}</nav>{router
 
 Each subpath adds nothing to the main barrel until it's imported. See [`docs/8-api-reference.md`](./docs/8-api-reference.md) for the full list (`list`, `router`, `overlay`, `scope`, `async`, `timing`, `remount`, `attach`, `actions`).
 
-## Install
+## Optional tooling
 
-```bash
-npm install kerfjs
-```
-
-```jsonc
-// tsconfig.json
-{
-  "compilerOptions": {
-    "jsx": "react-jsx",
-    "jsxImportSource": "kerfjs"
-  }
-}
-```
+Install and JSX setup are in [Quick start](#quick-start) above. These companion packages are opt-in.
 
 ### Optional: `eslint-plugin-kerfjs`
 

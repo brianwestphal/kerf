@@ -267,9 +267,9 @@ const MIGRATION_PAGES = ['vue', 'alpine', 'solid', 'preact', 'lit', 'react', 'jq
 
 const DOC_CLAIMS = [
   { file: 'README.md', pattern: /^> ~([\d.]+) KB\. No virtual DOM\./m, figure: 'main' },
-  { file: 'README.md', pattern: /\*\*Small bundle\.\*\* ~([\d.]+) KB minified \+ gzipped/, figure: 'main' },
+  { file: 'README.md', pattern: /\*\*~[\d.]+ KB, one dependency\.\*\* ~([\d.]+) KB minified \+ gzipped/, figure: 'main' },
   { file: 'README.md', pattern: /minified \+ gzipped including `@preact\/signals-core` \(~([\d.]+) KB with `arraySignal`\)/, figure: 'withArraySignal' },
-  { file: 'README.md', pattern: /grows the core runtime past ~([\d.]+) KB/, figure: 'main' },
+  { file: 'README.md', pattern: /min%2Bgzip-~([\d.]+)%20KB/, figure: 'main' },
   { file: 'CLAUDE.md', pattern: /roughly ([\d.]+) KB minified \+ gzipped without `arraySignal`/, figure: 'main' },
   { file: 'CLAUDE.md', pattern: /without `arraySignal`, ([\d.]+) KB with it/, figure: 'withArraySignal' },
   { file: 'llms.txt', pattern: /A tiny \(~([\d.]+) KB minified \+ gzipped/, figure: 'main' },
