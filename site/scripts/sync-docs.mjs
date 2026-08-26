@@ -1,7 +1,11 @@
 #!/usr/bin/env node
-// Sync ../docs/*.md into src/content/docs so Starlight renders them.
-// docs/*.md remains the source of truth; this script generates the Starlight
-// copies on every build (predev / prebuild). Generated files are gitignored.
+// Historically synced ../docs/*.md into src/content/docs so Starlight rendered
+// them verbatim. The site now presents its own consumer-authored pages instead
+// (the numbered docs/*.md stay the INTERNAL source of truth and are no longer
+// published verbatim), so every entry in MAP below has a `null` target and this
+// script writes nothing. It is retained because `scripts/check-doc-site-tickets.mjs`
+// imports MAP to know which docs/*.md are published (currently none). If a doc is
+// ever published verbatim again, give it a non-null target and re-run.
 
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
@@ -16,19 +20,25 @@ const outDir = resolve(__dirname, '../src/content/docs');
 // `null` target = skip (rendered elsewhere or replaced by a deploy redirect).
 // Exported so `scripts/check-doc-site-tickets.mjs` can derive "which docs/*.md
 // get published" from this single source of truth rather than a second list.
+// The numbered docs/*.md are the INTERNAL source of truth (design + reference)
+// and are no longer published to the site verbatim — the site presents its own
+// consumer-authored pages, which happen to live at the same slugs and are now
+// hand-owned under `src/content/docs/` (no longer overwritten by this sync).
+// See the corresponding `docs/*.md` for the authoritative internal reference.
+// `null` target = not synced.
 export const MAP = {
-  '1-overview.md': { target: 'docs/overview.md', description: 'What Kerf is, why it exists, when to use it.' },
-  '2-reactivity.md': { target: 'docs/reactivity.md', description: 'Signals, computeds, effects, batch.' },
-  '3-stores.md': { target: 'docs/stores.md', description: 'defineStore — composable, testable state.' },
-  '4-render.md': { target: 'docs/render.md', description: 'mount, segments, the native diff, the keyed list reconciler.' },
-  '5-event-delegation.md': { target: 'docs/events.md', description: 'Tier 1 / Tier 2 / Tier 3 listener model — delegate and delegateCapture.' },
-  '6-jsx-runtime.md': { target: 'docs/jsx.md', description: 'JSX → HTML strings, server use, SafeHtml.' },
-  '7-svg.md': { target: 'docs/svg.md', description: 'Namespace handling, toElement.' },
-  '8-api-reference.md': { target: 'api.md', description: 'Every export from kerfjs at a glance.' },
+  '1-overview.md': { target: null }, // consumer page hand-owned at docs/overview.md
+  '2-reactivity.md': { target: null }, // consumer page hand-owned at docs/reactivity.md
+  '3-stores.md': { target: null }, // consumer page hand-owned at docs/stores.md
+  '4-render.md': { target: null }, // consumer page hand-owned at docs/render.md
+  '5-event-delegation.md': { target: null }, // consumer page hand-owned at docs/events.md
+  '6-jsx-runtime.md': { target: null }, // consumer page hand-owned at docs/jsx.md
+  '7-svg.md': { target: null }, // consumer page hand-owned at docs/svg.md
+  '8-api-reference.md': { target: null }, // consumer page hand-owned at api.md
   '9-live-demo.md': { target: null }, // sidebar links straight to /kerf/demo/
   '10-migrating.md': { target: null }, // design doc — the rendered hub lives at site/src/content/docs/migrating/
-  '11-dev-warnings.md': { target: 'docs/dev-warnings.md', description: 'Opt-in dev-mode warnings — KERF_DEV_WARN_REBUILT_LISTENERS / KERF_DEV_WARN_UNTRACKED_SIGNALS / KERF_DEV_WARN_NARROW_SET.' },
-  '13-component-packages.md': { target: 'docs/component-packages.md', description: 'Building and publishing reusable kerf components as npm packages.' },
+  '11-dev-warnings.md': { target: null }, // consumer page hand-owned at docs/dev-warnings.md
+  '13-component-packages.md': { target: null }, // consumer page hand-owned at docs/component-packages.md
 };
 
 // Slug rewrites for inter-doc links: `(N-name.md)` and `(N-name.md#anchor)`

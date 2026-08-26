@@ -56,4 +56,4 @@ Three things to notice, because they're the whole mental model:
 - [Examples](/kerf/examples/complete/) — seven complete apps, from TodoMVC to a no-build poll served as raw source.
 - [Coming from another framework?](/kerf/migrating/) — side-by-side translations from React, Vue, Svelte, and more.
 
-Prefer no build step at all? The [`html` tagged template](/kerf/docs/jsx/#611-tagged-templates--kerfjshtml-no-build-step-at-all) gives you identical semantics from a plain `<script type="module">` — see the [live-poll example](/kerf/examples/complete/live-poll/), whose running source is exactly what its author wrote.
+Prefer no build step at all? The [`html` tagged template](/kerf/docs/jsx/#tagged-templates--kerfjshtml-no-build-step-at-all) gives you identical semantics from a plain `<script type="module">` — see the [live-poll example](/kerf/examples/complete/live-poll/), whose running source is exactly what its author wrote.

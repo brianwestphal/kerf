@@ -19,7 +19,7 @@ A list of **10,000 rows** where only a screenful is ever in the DOM. It's built 
 **What to look at:**
 
 - **The list source is a `computed()`.** `filtered` derives from the data signal + the debounced query. A filter or a delete just reassigns a signal; kerf re-windows the visible slice. No manual DOM bookkeeping.
-- **Fixed-height windowing is O(1).** With `rowHeight: 36` kerf maps `scrollTop` straight to the first visible index — no per-row measurement. (For content whose height is only known after layout, `bindList` also takes `rowHeight: { estimate }` + `observeRowHeights`; see the [API reference](/kerf/api/#811-keyed-reactive-list--kerfjslist-subpath).)
+- **Fixed-height windowing is O(1).** With `rowHeight: 36` kerf maps `scrollTop` straight to the first visible index — no per-row measurement. (For content whose height is only known after layout, `bindList` also takes `rowHeight: { estimate }` + `observeRowHeights`; see the [API reference](/kerf/api/#keyed-reactive-list--kerfjslist-subpath).)
 - **`delegate()` for both flows.** One delegated `input` listener updates the query signal; one delegated `click` listener matches every row's Delete button by walk-up `closest()` — so the handlers survive the rows scrolling in and out of the window.
 
 [View source on GitHub →](https://github.com/brianwestphal/kerf/tree/main/site/src/examples/complete/virtual-list)

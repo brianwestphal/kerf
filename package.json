@@ -184,8 +184,6 @@
   "gitgist": {
     "exclude": [
       "site/public/demos/*.svg",
-      "site/src/content/docs/docs/*",
-      "site/src/content/docs/api.md",
       "ai/*",
       "site/public/llms.txt",
       "bench/results.json",
