@@ -1,0 +1,129 @@
+/* Complete-apps showcase: CTA buttons + the index card grid.
+ *
+ * Used two places:
+ *   - each complete-app page renders a `.app-cta` button row below its H1
+ *     (raw HTML in the markdown), and
+ *   - the complete-apps index renders `.app-grid` of `.app-card`s, each with
+ *     its own `.app-cta` (the small variant).
+ *
+ * Colors reuse Starlight's own action-button variables so these buttons match
+ * the homepage hero's primary/secondary actions in both light and dark themes. */
+
+.app-cta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 1rem 0 1.5rem;
+}
+
+.app-cta a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  min-height: 2.75rem; /* >= 44px tap target */
+  padding: 0 1.15rem;
+  border: 1.5px solid transparent;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: var(--sl-text-base);
+  line-height: 1.1;
+  text-decoration: none;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+/* Primary — filled accent (mirrors Starlight's `.link-button.primary`, which
+ * uses black text for guaranteed contrast on the accent fill in both themes). */
+.app-cta__run {
+  color: var(--sl-color-black);
+  background: var(--sl-color-text-accent);
+  border-color: var(--sl-color-text-accent);
+}
+.app-cta__run:hover {
+  color: var(--sl-color-black);
+  background: var(--sl-color-accent-high);
+  border-color: var(--sl-color-accent-high);
+}
+
+/* Secondary — outline. The border is a fraction of the high-contrast text
+ * color, so it stays visible-but-subtle in both light and dark themes. */
+.app-cta__source {
+  color: var(--sl-color-white);
+  background: transparent;
+  border-color: color-mix(in srgb, var(--sl-color-white) 40%, transparent);
+}
+.app-cta__source:hover {
+  color: var(--sl-color-text-accent);
+  border-color: var(--sl-color-text-accent);
+}
+
+/* --- Index card grid ------------------------------------------------------ */
+
+.app-grid {
+  display: grid;
+  /* 15rem min keeps two columns inside Starlight's ~650px content column
+   * (between both sidebars) and collapses to one on mobile. */
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr));
+  gap: 1.25rem;
+  margin-top: 1.5rem;
+}
+
+.app-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0; /* let grid tracks size to the column, not the thumbnail's intrinsic width */
+  overflow: hidden;
+  border: 1px solid var(--sl-color-gray-5);
+  border-radius: 0.75rem;
+  background: var(--sl-color-bg);
+}
+
+.app-card__thumb {
+  display: block;
+  border-bottom: 1px solid var(--sl-color-gray-5);
+  background: var(--sl-color-gray-6);
+}
+.app-card__thumb img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.app-card__body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 0.9rem 1rem 1rem;
+}
+
+.app-card__title {
+  margin: 0;
+  font-size: var(--sl-text-h5);
+  line-height: 1.2;
+}
+.app-card__title a {
+  text-decoration: none;
+  color: var(--sl-color-white);
+}
+.app-card__title a:hover {
+  color: var(--sl-color-text-accent);
+}
+
+.app-card__blurb {
+  flex: 1;
+  margin: 0;
+  font-size: var(--sl-text-sm);
+  color: var(--sl-color-gray-2);
+}
+
+/* Compact CTA variant used inside a card. */
+.app-cta--sm {
+  margin: 0.35rem 0 0;
+  gap: 0.5rem;
+}
+.app-cta--sm a {
+  min-height: 2.25rem;
+  padding: 0 0.85rem;
+  font-size: var(--sl-text-sm);
+}

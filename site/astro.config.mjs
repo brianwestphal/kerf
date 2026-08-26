@@ -24,7 +24,12 @@ export default defineConfig({
       title: 'Kerf — the smallest cut',
       description:
         'Tiny reactive UI framework — fine-grained signals + DOM diff + JSX. ~11 KB, no virtual DOM, no compiler.',
-      customCss: ['./src/styles/live-example.css', './src/styles/kerf-compare.css'],
+      customCss: [
+        './src/styles/live-example.css',
+        './src/styles/kerf-compare.css',
+        './src/styles/app-showcase.css',
+        './src/styles/responsive-tables.css',
+      ],
       head: [
         {
           // KF-67: when the sidebar contains the current page deep enough that

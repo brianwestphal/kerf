@@ -3,7 +3,10 @@ title: Chat UI
 description: Streaming chat — token-by-token bot reply, delegation everywhere, composer caret never disturbed.
 ---
 
-**[▶ Run live](/kerf/run/chat/)** · [View source on GitHub](https://github.com/brianwestphal/kerf/tree/main/site/src/examples/complete/chat)
+<div class="app-cta">
+  <a class="app-cta__run" href="/kerf/run/chat/">▶ Run live</a>
+  <a class="app-cta__source" href="https://github.com/brianwestphal/kerf/tree/main/site/src/examples/complete/chat" target="_blank" rel="noopener">View source on GitHub</a>
+</div>
 
 [![Animated preview: sending a prompt and watching the bot reply stream in token-by-token](/kerf/demos/chat.svg)](/kerf/run/chat/)
 

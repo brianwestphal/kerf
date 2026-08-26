@@ -3,7 +3,10 @@ title: Row selector
 description: Master-detail select-row list. Fine-grained signal bindings — the selected row's class and the detail pane update without a render re-run or a list reconcile.
 ---
 
-**[▶ Run live](/kerf/run/row-selector/)** · [View source on GitHub](https://github.com/brianwestphal/kerf/tree/main/site/src/examples/complete/row-selector)
+<div class="app-cta">
+  <a class="app-cta__run" href="/kerf/run/row-selector/">▶ Run live</a>
+  <a class="app-cta__source" href="https://github.com/brianwestphal/kerf/tree/main/site/src/examples/complete/row-selector" target="_blank" rel="noopener">View source on GitHub</a>
+</div>
 
 [![Animated preview: clicking rows in a host list; the highlight and detail pane follow while the "list renders" counter stays at 1](/kerf/demos/row-selector.svg)](/kerf/run/row-selector/)
 

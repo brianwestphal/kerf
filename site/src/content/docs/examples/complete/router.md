@@ -3,7 +3,10 @@ title: Router
 description: A whole client-side router in one createRouter — URL-driven pages, :param routes, active-nav highlighting, and real Back/Forward, with no page reloads.
 ---
 
-**[▶ Run live](/kerf/run/router/)** · [View source on GitHub](https://github.com/brianwestphal/kerf/tree/main/site/src/examples/complete/router)
+<div class="app-cta">
+  <a class="app-cta__run" href="/kerf/run/router/">▶ Run live</a>
+  <a class="app-cta__source" href="https://github.com/brianwestphal/kerf/tree/main/site/src/examples/complete/router" target="_blank" rel="noopener">View source on GitHub</a>
+</div>
 
 [![Animated preview: navigating a routed app inside a fake browser window; the address bar and Back button drive URL routing with no page reloads](/kerf/demos/router.svg)](/kerf/run/router/)
 

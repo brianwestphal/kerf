@@ -3,7 +3,10 @@ title: Live poll (no build step)
 description: A complete kerf app with zero tooling — plain JavaScript, an importmap, and the html tagged template. View-source shows exactly what runs.
 ---
 
-**[▶ Run live](/kerf/run/live-poll/)** · [View source on GitHub](https://github.com/brianwestphal/kerf/tree/main/site/src/examples/complete/live-poll)
+<div class="app-cta">
+  <a class="app-cta__run" href="/kerf/run/live-poll/">▶ Run live</a>
+  <a class="app-cta__source" href="https://github.com/brianwestphal/kerf/tree/main/site/src/examples/complete/live-poll" target="_blank" rel="noopener">View source on GitHub</a>
+</div>
 
 [![Animated preview: voting in a poll; counts pop and bars slide while the "renders" counter stays at 1](/kerf/demos/live-poll.svg)](/kerf/run/live-poll/)
 

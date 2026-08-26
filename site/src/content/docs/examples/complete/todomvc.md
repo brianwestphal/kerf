@@ -3,7 +3,10 @@ title: TodoMVC
 description: The standard reference app, done well in kerf — store, keyed list, delegated events, localStorage.
 ---
 
-**[▶ Run live](/kerf/run/todomvc/)** · [View source on GitHub](https://github.com/brianwestphal/kerf/tree/main/site/src/examples/complete/todomvc)
+<div class="app-cta">
+  <a class="app-cta__run" href="/kerf/run/todomvc/">▶ Run live</a>
+  <a class="app-cta__source" href="https://github.com/brianwestphal/kerf/tree/main/site/src/examples/complete/todomvc" target="_blank" rel="noopener">View source on GitHub</a>
+</div>
 
 [![Animated preview: adding three todos and toggling one complete](/kerf/demos/todomvc.svg)](/kerf/run/todomvc/)
 

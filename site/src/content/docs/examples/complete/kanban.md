@@ -3,7 +3,10 @@ title: Mini Kanban
 description: Three columns, ten cards, drag-to-reorder across columns. Pointer events + delegate() + data-morph-skip on the dragging card.
 ---
 
-**[▶ Run live](/kerf/run/kanban/)** · [View source on GitHub](https://github.com/brianwestphal/kerf/tree/main/site/src/examples/complete/kanban)
+<div class="app-cta">
+  <a class="app-cta__run" href="/kerf/run/kanban/">▶ Run live</a>
+  <a class="app-cta__source" href="https://github.com/brianwestphal/kerf/tree/main/site/src/examples/complete/kanban" target="_blank" rel="noopener">View source on GitHub</a>
+</div>
 
 [![Animated preview: dragging cards across columns, with the per-column counts updating](/kerf/demos/kanban.svg)](/kerf/run/kanban/)
 

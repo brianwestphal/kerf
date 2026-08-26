@@ -3,7 +3,10 @@ title: Realtime dashboard
 description: 500 ticker rows updating at 30 Hz. each() perf at scale, batch() to coalesce, data-morph-skip for the chart canvas.
 ---
 
-**[▶ Run live](/kerf/run/dashboard/)** · [View source on GitHub](https://github.com/brianwestphal/kerf/tree/main/site/src/examples/complete/dashboard)
+<div class="app-cta">
+  <a class="app-cta__run" href="/kerf/run/dashboard/">▶ Run live</a>
+  <a class="app-cta__source" href="https://github.com/brianwestphal/kerf/tree/main/site/src/examples/complete/dashboard" target="_blank" rel="noopener">View source on GitHub</a>
+</div>
 
 [![Animated preview: the live ticker table updating at 30 Hz with a sparkline in the header](/kerf/demos/dashboard.svg)](/kerf/run/dashboard/)
 

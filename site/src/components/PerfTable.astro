@@ -71,6 +71,10 @@ const best = scenarios.map((_, col) => {
 });
 
 const captured = data.capturedAt !== null ? data.capturedAt.slice(0, 10) : 'unknown';
+
+// Versions live on the methodology line below the table rather than inline in
+// the framework column, so the column stays a clean tabular label (KF-550).
+const versions = rows.map((r) => `${r.framework} ${r.version}`).join(' · ');
 ---
 
 <figure class="perf-table" role="group" aria-labelledby="perf-table-caption">
@@ -90,7 +94,6 @@ const captured = data.capturedAt !== null ? data.capturedAt.slice(0, 10) : 'unkn
         <tr class:list={['perf-row', { highlight: row.highlight }]}>
           <th scope="row">
             <span class="perf-fw">{row.framework}</span>
-            <span class="perf-ver">{row.version}</span>
           </th>
           {row.values.map((v, col) => (
             <td class:list={{ 'is-best': v !== null && v === best[col] }}>
@@ -107,6 +110,7 @@ const captured = data.capturedAt !== null ? data.capturedAt.slice(0, 10) : 'unkn
     (kerf is a listed entry) — full table + every scenario in
     <a href="https://github.com/brianwestphal/kerf/blob/main/bench/results.md">bench/results.md</a>.
   </p>
+  <p class="perf-versions">Versions: {versions}</p>
 </figure>
 
 <style>
@@ -169,11 +173,11 @@ const captured = data.capturedAt !== null ? data.capturedAt.slice(0, 10) : 'unkn
     font-weight: 600;
   }
 
-  .perf-table .perf-ver {
-    margin-left: 0.4rem;
-    font-size: 0.85em;
+  .perf-table .perf-versions {
+    margin: 0.3rem 0 0;
+    font-size: 0.8rem;
     color: var(--sl-color-gray-3);
-    font-weight: 400;
+    font-variant-numeric: tabular-nums;
   }
 
   .perf-table tr.highlight th,

@@ -1,0 +1,35 @@
+/* Horizontal-scroll affordance for wide content tables.
+ *
+ * Starlight already makes markdown tables scroll (`display:block; overflow:auto`),
+ * but on narrow viewports a multi-column comparison matrix scrolls with no hint
+ * that more columns exist off-screen. This layers the classic pure-CSS
+ * "scrolling shadows" (Lea Verou): a right-edge shadow appears only while there
+ * is more table to the right, and a left-edge shadow once you've scrolled. When
+ * the table fits (typical desktop), no shadow shows — so this is invisible until
+ * it's needed, on both the migration comparison tables and any other wide table. */
+
+.sl-markdown-content table:not(:where(.not-content *)) {
+  /* Cover gradients (background color, attached to content) mask each shadow
+   * when that edge is at rest; shadow gradients (attached to the scroller) sit
+   * at the visible left/right edges. */
+  background:
+    linear-gradient(to right, var(--sl-color-bg) 30%, transparent) 0 0,
+    linear-gradient(to left, var(--sl-color-bg) 30%, transparent) 100% 0,
+    radial-gradient(farthest-side at 0 50%, rgba(0, 0, 0, 0.16), transparent) 0 0,
+    radial-gradient(farthest-side at 100% 50%, rgba(0, 0, 0, 0.16), transparent) 100% 0;
+  background-repeat: no-repeat;
+  background-size: 40px 100%, 40px 100%, 14px 100%, 14px 100%;
+  background-attachment: local, local, scroll, scroll;
+}
+
+/* The default shadow reads on light backgrounds; deepen it in dark mode. */
+:root[data-theme='dark'] .sl-markdown-content table:not(:where(.not-content *)) {
+  background:
+    linear-gradient(to right, var(--sl-color-bg) 30%, transparent) 0 0,
+    linear-gradient(to left, var(--sl-color-bg) 30%, transparent) 100% 0,
+    radial-gradient(farthest-side at 0 50%, rgba(0, 0, 0, 0.55), transparent) 0 0,
+    radial-gradient(farthest-side at 100% 50%, rgba(0, 0, 0, 0.55), transparent) 100% 0;
+  background-repeat: no-repeat;
+  background-size: 40px 100%, 40px 100%, 14px 100%, 14px 100%;
+  background-attachment: local, local, scroll, scroll;
+}

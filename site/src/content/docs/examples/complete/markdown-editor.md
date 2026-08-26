@@ -3,7 +3,10 @@ title: Live Markdown editor
 description: Split-pane editor — contenteditable on the left, sanitized HTML preview on the right.
 ---
 
-**[▶ Run live](/kerf/run/markdown-editor/)** · [View source on GitHub](https://github.com/brianwestphal/kerf/tree/main/site/src/examples/complete/markdown-editor)
+<div class="app-cta">
+  <a class="app-cta__run" href="/kerf/run/markdown-editor/">▶ Run live</a>
+  <a class="app-cta__source" href="https://github.com/brianwestphal/kerf/tree/main/site/src/examples/complete/markdown-editor" target="_blank" rel="noopener">View source on GitHub</a>
+</div>
 
 [![Animated preview: editing the Markdown source and the sanitized preview updating live](/kerf/demos/markdown-editor.svg)](/kerf/run/markdown-editor/)
 

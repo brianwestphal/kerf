@@ -3,7 +3,10 @@ title: Virtual list
 description: A 10,000-row virtualized list built from kerf's companion subpaths — bindList virtualization, a debounced search, and a confirm-to-delete dialog with a toast.
 ---
 
-**[▶ Run live](/kerf/run/virtual-list/)** · [View source on GitHub](https://github.com/brianwestphal/kerf/tree/main/site/src/examples/complete/virtual-list)
+<div class="app-cta">
+  <a class="app-cta__run" href="/kerf/run/virtual-list/">▶ Run live</a>
+  <a class="app-cta__source" href="https://github.com/brianwestphal/kerf/tree/main/site/src/examples/complete/virtual-list" target="_blank" rel="noopener">View source on GitHub</a>
+</div>
 
 [![Animated preview: scrolling a 10,000-row virtualized list, filtering to one row, then deleting it via a confirm dialog and toast](/kerf/demos/virtual-list.svg)](/kerf/run/virtual-list/)
 
