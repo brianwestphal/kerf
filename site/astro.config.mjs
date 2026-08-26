@@ -29,6 +29,7 @@ export default defineConfig({
         './src/styles/kerf-compare.css',
         './src/styles/app-showcase.css',
         './src/styles/responsive-tables.css',
+        './src/styles/home-hero.css',
       ],
       head: [
         {
