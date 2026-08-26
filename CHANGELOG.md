@@ -6,6 +6,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [4.4.1] - 2026-08-26
+
+
+
+- Overhauled the README landing page: new one-line tagline, npm/size/license/TypeScript-types badges, a hoisted "Quick start" (install + `tsconfig`) right under the hook, and a jump nav (Quick start · Why kerf · Quick tour · Docs). The counter example now shows `delegate()` wiring the click handler.
+- Reworked the homepage hero to lead with the value proposition ("Reactive UI that touches only the bytes that changed"), with "Introducing Kerf" demoted to an eyebrow, a right-sized logo, tighter vertical spacing, and "Get started" as the single filled primary action ("View examples" now a secondary/outline button).
+- Redesigned the complete-apps index as a card grid — each app appears once with an animated preview, a one-line summary, and "Run live" / "Source" buttons.
+- Every complete-app page now shows "Run live" and "View source" as buttons above the demo instead of small inline text links.
+- Rewrote the site's docs pages as hand-authored consumer content (cleaner headings, no internal section numbers) rather than verbatim copies of the internal design docs.
+- Renamed the migration guides' "Side-by-side code" heading to "Section by section" (the sections stack code blocks rather than showing true columns), across all framework pages.
+
+
+- The getting-started and Markdown-editor demo animations now open on a non-blank frame — real code and a rendered heading are visible immediately instead of an empty pane.
+- Added a horizontal-scroll shadow affordance to wide tables so off-screen columns are discoverable on narrow viewports.
+- Shortened the longest demo alt text on the router and virtual-list pages for more concise screen-reader output.
+- Moved framework version labels out of the performance table's framework column onto a methodology line below, keeping the column a clean label.
+
 ## [4.4.0] - 2026-08-23
 
 
