@@ -172,14 +172,18 @@ const pushFrame = (script, dur = 170) => ({
 const frames = [];
 
 // --- phase 1: type the v1 counter into the editor -------------------------
+// Open with the import line (row 1) already on screen — uncover its underlay
+// (#Cv1) rather than typing it — so the first/paused frame shows real code in
+// the editor instead of a blank pane (KF-547). #Lc1 is the real, opaque page
+// text at the correct baseline (the underlay contract), so revealing it is a
+// seamless static open; the component logic below still types in line by line.
 frames.push({
   transition: CUT,
   input: '${base}/getting-started/',
   waitFor: '#code',
   wait: 200,
-  overlays: [edType('Lc1', V1_LINES[0][1])],
-  animations: [reveal('#Cv1', ED_DELAY, V1_LINES[0][1].length, ED_SPEED)],
-  duration: typeMs(V1_LINES[0][1], 400),
+  actions: [{ type: 'evaluate', script: "document.getElementById('Cv1').style.opacity='0'" }],
+  duration: 900,
 });
 for (let i = 1; i < V1_LINES.length; i++) {
   const [row, text] = V1_LINES[i];

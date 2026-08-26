@@ -75,36 +75,13 @@
       "input": "${base}/getting-started/",
       "waitFor": "#code",
       "wait": 200,
-      "overlays": [
+      "actions": [
         {
-          "kind": "typing",
-          "text": "import { signal, mount, delegate } from 'kerfjs';",
-          "anchor": {
-            "selector": "#Lc1",
-            "at": "top-left",
-            "dx": 0,
-            "dy": 11.5
-          },
-          "fontSize": 12.5,
-          "fontFamily": "Menlo",
-          "color": "#e2e8f0",
-          "caret": true,
-          "speed": 24,
-          "jitter": 0.12,
-          "delay": 300
+          "type": "evaluate",
+          "script": "document.getElementById('Cv1').style.opacity='0'"
         }
       ],
-      "animations": [
-        {
-          "selector": "#Cv1",
-          "property": "opacity",
-          "from": "1",
-          "to": "0",
-          "duration": 40,
-          "delay": 1536
-        }
-      ],
-      "duration": 2126
+      "duration": 900
     },
     {
       "continue": true,

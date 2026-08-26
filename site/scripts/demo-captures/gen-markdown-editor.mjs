@@ -5,9 +5,15 @@ import { writeFileSync } from 'node:fs';
 const TEXT = '# Live\n\nMarkdown **renders** as you type.';
 const STEP = 2; // characters added per frame — fast, readable "typing" cadence
 
-// Build the cumulative text after each keystroke-group, ending exactly on TEXT.
+// The editor opens already showing the rendered H1 rather than a blank pane, so
+// the first/paused frame communicates "markdown in → rendered out" immediately
+// (KF-547). SEED is a prefix of TEXT, so the typing continues seamlessly from it.
+const SEED = '# Live';
+
+// Build the cumulative text after each keystroke-group, continuing from SEED and
+// ending exactly on TEXT.
 const stops = [];
-for (let k = STEP; k < TEXT.length; k += STEP) stops.push(TEXT.slice(0, k));
+for (let k = SEED.length + STEP; k < TEXT.length; k += STEP) stops.push(TEXT.slice(0, k));
 stops.push(TEXT); // ensure the final, complete doc is the last typed stop
 
 // An `evaluate` action that sets the editor's text to `s` and fires a real
@@ -20,14 +26,15 @@ const typeAction = (s) =>
 
 const frames = [];
 
-// Frame 0: clear the editor BEFORE the first capture, so the demo opens on a
-// clean empty editor (no mid-demo "scene change" — the clear is never seen).
+// Frame 0: seed the editor with the H1 BEFORE the first capture, so the demo
+// opens on a rendered heading (not a blank pane) with no mid-demo "scene change"
+// — the seed is never seen being set (KF-547).
 frames.push({
   transition: { type: 'cut', duration: 0 },
   input: '${base}/markdown-editor/',
   waitFor: '.editor-input',
   wait: 350,
-  actions: [{ type: 'evaluate', script: typeAction('') }, { type: 'wait', ms: 120 }],
+  actions: [{ type: 'evaluate', script: typeAction(SEED) }, { type: 'wait', ms: 120 }],
   duration: 650,
 });
 
@@ -60,4 +67,4 @@ writeFileSync(
   'site/scripts/demo-captures/markdown-editor.json',
   JSON.stringify(config, null, 2) + '\n',
 );
-console.log(`markdown-editor.json: ${frames.length} frames (1 empty + ${stops.length} typing)`);
+console.log(`markdown-editor.json: ${frames.length} frames (1 seeded + ${stops.length} typing)`);

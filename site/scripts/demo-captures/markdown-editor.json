@@ -19,7 +19,7 @@
       "actions": [
         {
           "type": "evaluate",
-          "script": "(()=>{const ed=document.querySelector('.editor-input');ed.focus();ed.innerText=\"\";ed.dispatchEvent(new InputEvent('input',{bubbles:true}));})()"
+          "script": "(()=>{const ed=document.querySelector('.editor-input');ed.focus();ed.innerText=\"# Live\";ed.dispatchEvent(new InputEvent('input',{bubbles:true}));})()"
         },
         {
           "type": "wait",
@@ -27,60 +27,6 @@
         }
       ],
       "duration": 650
-    },
-    {
-      "continue": true,
-      "transition": {
-        "type": "cut",
-        "duration": 0
-      },
-      "actions": [
-        {
-          "type": "evaluate",
-          "script": "(()=>{const ed=document.querySelector('.editor-input');ed.focus();ed.innerText=\"# \";ed.dispatchEvent(new InputEvent('input',{bubbles:true}));})()"
-        },
-        {
-          "type": "wait",
-          "ms": 45
-        }
-      ],
-      "duration": 110
-    },
-    {
-      "continue": true,
-      "transition": {
-        "type": "cut",
-        "duration": 0
-      },
-      "actions": [
-        {
-          "type": "evaluate",
-          "script": "(()=>{const ed=document.querySelector('.editor-input');ed.focus();ed.innerText=\"# Li\";ed.dispatchEvent(new InputEvent('input',{bubbles:true}));})()"
-        },
-        {
-          "type": "wait",
-          "ms": 45
-        }
-      ],
-      "duration": 110
-    },
-    {
-      "continue": true,
-      "transition": {
-        "type": "cut",
-        "duration": 0
-      },
-      "actions": [
-        {
-          "type": "evaluate",
-          "script": "(()=>{const ed=document.querySelector('.editor-input');ed.focus();ed.innerText=\"# Live\";ed.dispatchEvent(new InputEvent('input',{bubbles:true}));})()"
-        },
-        {
-          "type": "wait",
-          "ms": 45
-        }
-      ],
-      "duration": 110
     },
     {
       "continue": true,
