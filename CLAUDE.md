@@ -166,8 +166,8 @@ npm run check:docs:api-coverage  # KF-162: ensures docs/8-api-reference.md menti
 npm run check:docs:dev-warns  # KF-443: asserts `docs/11-dev-warnings.md` and `src/dev-warn-config.ts`'s `ENV_NAME` map name the same set of `KERF_DEV_WARN_*` diagnostics in both directions, and that the `11.2.N` section headings run 1..N in document order (other docs cross-reference them by number, so an appended-without-renumbering section sends readers to the wrong place)
 npm run check:design-rule-5  # KF-444: fails if a top-level `let` in `src/` is not accounted for by Design rule 5 — either named in the rule or living in a `dev-*` module (covered categorically). A hit is a finding even when the code is correct: the rule is only useful for judging a NEW mutable while its list is complete, and it had silently stopped being complete twice
 npm run check:skills      # KF-446: fails if a `.claude/skills/*/SKILL.md` restates a threshold or path that its real owner disagrees with — the file-length rule (CLAUDE.md), the coverage thresholds (`vitest.config.ts`), the dist entry list (`tsup.config.ts`), or a `src/…` path that no longer exists. Three skills had rotted this way at once; a stale skill fails silently, as an agent confidently reporting findings that aren't real
-npm run check:docs:site-tickets  # KF-433: fails if a `KF-NN` ticket marker appears in any site-published markdown — every source doc in sync-docs.mjs's MAP plus everything under site/src/content/docs/
-npm run check:cdn-versions  # KF-458: fails if a version-pinned CDN URL in README.md / docs/6-jsx-runtime.md / docs/ai/usage-guide.md drifts off the current major — every `kerfjs@N` must match package.json's major and every `@preact/signals-core@N` its dependency major. The no-build examples pin to a major (`kerfjs@4`), so this only fires at a major bump (or a hand-edit typo); fix the SOURCE doc and re-run sync-docs.mjs so the site copies follow
+npm run check:docs:site-tickets  # KF-433: fails if a `KF-NN` ticket marker appears in any site-published markdown — everything under site/src/content/docs/ (plus any docs/*.md still given a non-null target in sync-docs.mjs's MAP; currently none, since the numbered docs are no longer published verbatim)
+npm run check:cdn-versions  # KF-458: fails if a version-pinned CDN URL in README.md / docs/6-jsx-runtime.md / docs/ai/usage-guide.md drifts off the current major — every `kerfjs@N` must match package.json's major and every `@preact/signals-core@N` its dependency major. The no-build examples pin to a major (`kerfjs@4`), so this only fires at a major bump (or a hand-edit typo); fix each source it names. (The site's own hand-authored jsx page carries its own CDN pins now — it's no longer synced from docs/6 — so update it directly if it drifts.)
 npm run check:docs:api-signatures  # KF-343: builds, then verifies each public function export's signature in docs/8-api-reference.md matches the emitted dist/*.d.ts (param names + arity + return type per overload). In the check chain it runs right after the build step (no rebuild)
 npm run check:features    # KF-284/286/289: ensures every behavior in the docs/14-feature-coverage.md index maps to a live guarding test, AND every public value export is represented by an index row (a behavior/transition axis orthogonal to line coverage)
 npm run check:bundle-size # KF-428: builds, then bundles five representative consumer entries against dist/ (esbuild --bundle --minify + gzip, prod NODE_ENV define) and fails any over budget. It also gates the PROSE: every place the docs advertise a size (README, llms.txt, the AI summaries, the migration pages, …) is matched against the measured figure, and each migration page's Delta row must equal the gap between its own rows — a reworded claim that stops matching FAILS rather than silently going unchecked. Budgets RATCHET — an entry more than 0.35 KB under budget also fails, asking you to lower it so a win can't silently erode. The `main-no-dev-code` entry additionally greps the production bundle for dev-only markers, so any `dev-*` module reaching the main entry fails even if it were free. `--why <entry>` prints the per-module byte breakdown; `--report` prints sizes without failing
@@ -218,11 +218,11 @@ This project is managed via [Hot Sheet](https://github.com/brianwestphal/hotshee
 
 Hot Sheet is local-only, so a bare `KF-NN` reference can't be looked up by anyone but the maintainer. The rules differ by surface:
 
-**Never mention KF-NN anywhere on the published site.** That includes prose in `site/src/content/docs/**`, **every source doc listed in `site/scripts/sync-docs.mjs`'s `MAP` with a non-null target** (the set has grown past the original `1`–`8` range — `11-dev-warnings.md` and `13-component-packages.md` are published too), any HTML comment inside a published markdown file, and any code-block excerpt the site renders. Site readers don't have Hot Sheet, so the number is dead weight at best and noisy at worst. When you'd normally write `(KF-103)` for provenance, drop the marker and keep only the self-contained summary.
+**Never mention KF-NN anywhere on the published site.** The published site is the hand-authored content under `site/src/content/docs/**` — its prose, any HTML comment inside a published markdown file, and any code-block excerpt the site renders. (The numbered `docs/*.md` are the INTERNAL source of truth and are **no longer published to the site verbatim** — the site's doc pages are hand-authored consumer versions — so `docs/*.md` fall under the "everything else" rule below and may carry KF markers.) Site readers don't have Hot Sheet, so the number is dead weight at best and noisy at worst. When you'd normally write `(KF-103)` for provenance, drop the marker and keep only the self-contained summary.
 
-`npm run check` enforces this via `scripts/check-doc-site-tickets.mjs`, which imports that same `MAP` — so a doc added to the sync map is covered automatically, with no second list to keep in step.
+`npm run check` enforces this via `scripts/check-doc-site-tickets.mjs`, which scans every `.md`/`.mdx` under `site/src/content/docs/` (plus any `docs/*.md` still given a non-null target in `sync-docs.mjs`'s `MAP` — currently none, since the numbered docs are no longer published verbatim).
 
-**For everything else (code comments in `src/`, commit messages, source docs that are NOT site-synced):** when you mention a ticket number, **always include a short self-contained summary** in the same sentence or parenthetical so the reference stands alone without the reader resolving the ticket.
+**For everything else (code comments in `src/`, commit messages, and the internal `docs/*.md` source docs — which are not published to the site):** when you mention a ticket number, **always include a short self-contained summary** in the same sentence or parenthetical so the reference stands alone without the reader resolving the ticket.
 
 - ✅ `data-morph-skip-children (attrs on the host morph, subtree preserved)` — self-contained; no ticket number needed.
 - ✅ `// KF-103 row contract: exactly one top-level element per each() row` — code comment with self-contained summary; the number is provenance.
@@ -325,7 +325,7 @@ Numbered docs in `docs/` cover the design. Reading order:
 | `docs/ai/usage-guide.md` | Any API addition, signature change, or new pattern |
 | `kerf.cursorrules` + `kerf.claude-skill.md` | Any API addition, signature change, canonical pattern update, or new common-error row — then run `npm run ai-bundle:sync` and bump `kerf-skill-version` per the rubric in §12.3.2 |
 | `eslint-plugin/docs/rules/*.md` | Any change that affects what the lint rules flag or how users fix violations |
-| Run `node site/scripts/sync-docs.mjs` | After editing any `docs/*.md` that the site syncs |
+| `site/src/content/docs/docs/*.md` + `site/src/content/docs/api.md` (consumer doc pages) | Any API/behavior change. These are hand-authored consumer versions — no longer auto-synced from `docs/*.md` — so update them directly, alongside the internal `docs/*.md` source of truth |
 
 ### AI summaries (`docs/ai/`)
 
@@ -391,11 +391,10 @@ The `gitgist.exclude` list in `package.json` holds those back (they still show a
 | Excluded | Why |
 | --- | --- |
 | `site/public/demos/*.svg` | ~2.3 MB of generated animation data. One re-capture would consume the whole diff budget and crowd out every real source change. |
-| `site/src/content/docs/docs/*`, `site/src/content/docs/api.md` | Synced copies of `docs/*.md`. The source doc is in the same diff, so including both describes one change twice. |
 | `ai/*`, `site/public/llms.txt` | Generated mirrors of `kerf.claude-skill.md` / `kerf.cursorrules` / `llms.txt`. |
 | `bench/results.{json,md}` | Imported from the upstream krausest benchmark, not authored here. |
 
-One knowing tradeoff: the `site/src/content/docs/docs/*` glob also catches `eslint-plugin.md`, which is hand-authored rather than synced. A glob was chosen over listing the ten synced targets by name specifically because a hand-maintained duplicate of `sync-docs.mjs`'s `MAP` would go stale — and a doc change losing its *diff body* (the commit message still carries it) is the cheaper failure.
+The site's doc pages under `site/src/content/docs/` are hand-authored consumer content (no longer generated from `docs/*.md`), so they carry a normal diff body like any other source.
 
 <!-- hotsheet:begin section=ticket-driven-work v=1 -->
 ## Ticket-Driven Work
