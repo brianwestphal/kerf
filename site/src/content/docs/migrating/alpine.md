@@ -37,7 +37,7 @@ But the realistic trade is bigger than the runtime row suggests: Alpine wants no
 | `x-ref="input"` then `$refs.input` | `el` argument inside the `delegate` handler | You get the matched element; refs by name aren't a kerf concept. |
 | `$watch('items', fn)` | `effect(() => { fn(store.state.value.items); })` | Auto-tracked — read the signal inside the effect. |
 
-## 3. Side-by-side code
+## 3. Section by section
 
 The same TodoMVC, section by section. The Alpine side is a faithful HTML-first version; the kerf side matches `site/src/examples/complete/todomvc/main.tsx` line for line.
 

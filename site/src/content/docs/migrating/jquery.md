@@ -33,7 +33,7 @@ The big win is bundle, but the real story is what you're getting in exchange: a 
 | jQuery animations (`$(el).fadeIn()`) | CSS transitions + a class toggle | Animations live in CSS now; kerf doesn't bundle one. |
 | jQuery plugins (`$(el).datepicker()`) | wrap the library subtree in `data-morph-skip` so kerf leaves it alone | The morph won't touch attributes or children of a `data-morph-skip` element. |
 
-## 3. Side-by-side code
+## 3. Section by section
 
 The same TodoMVC, section by section.
 

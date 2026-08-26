@@ -35,7 +35,7 @@ This is the framework comparison where bundle is *not* the decider. Svelte 5's c
 | Slots (`<slot />`) | pass JSX as a function argument | No slot DSL; functions take JSX-valued props. |
 | `onMount` / `onDestroy` | top-level `effect()` for setup; returned disposer for teardown | No lifecycle hooks. Setup and teardown live in module scope. |
 
-## 3. Side-by-side code
+## 3. Section by section
 
 The same TodoMVC, section by section. Each kerf block matches `site/src/examples/complete/todomvc/main.tsx` line for line — click **Run live** above to see it running.
 

@@ -41,7 +41,7 @@ If the only thing you care about is bytes-per-feature, vanjs wins. If you care a
 | Manual focus restoration | nothing — kerf does it | Focus/caret/selection survive morph automatically. |
 | `van.hydrate(target, render)` | `mount(target, render)` | Same shape; kerf has no separate "hydrate" path. |
 
-## 3. Side-by-side code
+## 3. Section by section
 
 The same TodoMVC, section by section. The vanjs side uses `vanjs-core` 1.5 + `vanjs-ext` for the reactive array; the kerf side matches `site/src/examples/complete/todomvc/main.tsx` line for line.
 

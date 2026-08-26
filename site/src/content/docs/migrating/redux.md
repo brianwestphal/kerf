@@ -28,7 +28,7 @@ If you're using Redux with React: also read [Coming from React](/kerf/migrating/
 | **Immutable updates** (`{ ...state, foo: next }`) | same pattern with `set({ ...get(), foo: next })` | The discipline is the same; the API is more compact. |
 | **Redux DevTools** | wire your own via an `effect()` that posts state to the devtools extension | No first-party integration; ~20 lines if you want one. |
 
-## 2. Side-by-side translation
+## 2. Redux → kerf, translated
 
 A small counter slice in Redux Toolkit vs. kerf. The kerf side runs at [`site/src/examples/complete/counter-store/`](https://github.com/brianwestphal/kerf/tree/main/site/src/examples/complete/counter-store) — [**▶ Run live**](/kerf/run/counter-store/) — covering all three patterns (sync, async, persistence) in one runnable app.
 

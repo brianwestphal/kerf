@@ -34,7 +34,7 @@ Vue's runtime is one of the smaller "full framework" runtimes; the trade you're 
 | SFC `<style scoped>` | plain CSS file + class names | No scoped styles built in — bring your own (CSS modules, BEM, etc.). |
 | `defineComponent({ props, setup })` | plain function `(props) => SafeHtml` | No instance, no `setup()` lifecycle, no `props` declaration object. |
 
-## 3. Side-by-side code
+## 3. Section by section
 
 The same TodoMVC, section by section. Each kerf block matches `site/src/examples/complete/todomvc/main.tsx` line for line — click **Run live** above to see it running.
 

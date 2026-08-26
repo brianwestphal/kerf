@@ -36,7 +36,7 @@ The trade you're making: virtual DOM and the hooks scheduler go away. JSX still 
 | `useEffect(() => cleanup)` | `const stop = effect(fn); stop()` | The return value *is* the cleanup. |
 | `Strict Mode` double-invocation | n/a | `mount`'s render function runs once per change. |
 
-## 3. Side-by-side code
+## 3. Section by section
 
 The same TodoMVC, section by section. Each kerf block matches `site/src/examples/complete/todomvc/main.tsx` line for line — click **Run live** above to see it running.
 

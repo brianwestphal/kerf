@@ -34,7 +34,7 @@ Bundle is not the decider between Preact and kerf. The trade you're making is vi
 | `onClick={fn}` | `delegate(root, 'click', '[data-action="..."]', fn)` | One listener at the root, survives every re-render. |
 | `class={...}` (Preact accepts both `class` and `className`) | `class={...}` | Kerf also accepts both, but `class` is canonical. |
 
-## 3. Side-by-side code
+## 3. Section by section
 
 The Preact + signals shape is the most React-shaped variant; the translation is the simplest in this section. The major shifts are:
 

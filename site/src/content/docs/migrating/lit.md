@@ -40,7 +40,7 @@ You're not migrating for bytes. You're migrating because:
 | `customElements.define('x-app', App)` | `mount(document.getElementById('app'), () => ...)` | No registration, no element name. |
 | `updated(changedProperties)` | `effect(() => { read sig.value; do thing })` | Read the signals you care about inside an effect. |
 
-## 3. Side-by-side code
+## 3. Section by section
 
 The same TodoMVC, section by section. The Lit side uses `LitElement` + tagged-template `html\`...\``; the kerf side matches `site/src/examples/complete/todomvc/main.tsx` line for line.
 

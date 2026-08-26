@@ -35,7 +35,7 @@ Solid is smaller. The trade you're making in either direction isn't bundle — i
 | `createContext` / `useContext` | module-level signal or `defineStore` | No component tree to traverse. |
 | Compiler-driven `value={cond ? "a" : "b"}` updates a single attribute | runtime `morph()` walks the tree and patches the diff | Kerf does more work per render; Solid does almost none. |
 
-## 3. Side-by-side code
+## 3. Section by section
 
 The same TodoMVC, section by section. Each kerf block matches `site/src/examples/complete/todomvc/main.tsx` line for line — click **Run live** above to see it running.
 
