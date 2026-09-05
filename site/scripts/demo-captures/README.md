@@ -91,9 +91,11 @@ just use a short trailing `wait`; the dashboard trims to 10 rows via an injected
   workaround has been removed from `capture-demos.sh`. `tests/unit/demo-configs.test.ts`
   still guards the committed SVGs (every `fv-N` track must carry `step-end`) — a
   regression tripwire if a future domotion ever reintroduces the clobber.
-  Re-verified on domotion **0.24.0** (the pin as of the 4.2 release prep): a
+  Re-verified on domotion **0.27.1** (the current pin): a
   `cut` still emits `animation: fv-N <t>s step-end infinite`, so the tripwire
-  holds. One schema change since 0.22: `transition.duration` is now **required**
+  holds. (0.25–0.27 are additive rendering fixes — color/bitmap glyphs, gradient
+  geometry, cleaner loop close — with no config-schema or cut-timing changes.)
+  One schema change since 0.22: `transition.duration` is now **required**
   (a bare `{ "type": "cut" }` errors — use `"duration": 0` for a hard cut). Every
   committed config already specifies a `duration`, so this doesn't affect them.
 - **Show entry/motion, don't teleport.** Text-entry demos (todomvc, chat) use a
