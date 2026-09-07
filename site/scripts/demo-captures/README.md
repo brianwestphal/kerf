@@ -92,7 +92,7 @@ just use a short trailing `wait`; the dashboard trims to 10 rows via an injected
   workaround has been removed from `capture-demos.sh`. `tests/unit/demo-configs.test.ts`
   still guards the committed SVGs (every `fv-N` track must carry `step-end`) — a
   regression tripwire if a future domotion ever reintroduces the clobber.
-  Re-verified on domotion **0.28.0** (the current pin): a
+  Re-verified on domotion **0.28.1** (the current pin): a
   `cut` still emits `animation: fv-N <t>s step-end infinite`, so the tripwire
   holds. (0.25–0.27 are additive rendering fixes — color/bitmap glyphs, gradient
   geometry, cleaner loop close — with no config-schema or cut-timing changes.)
@@ -202,17 +202,13 @@ just use a short trailing `wait`; the dashboard trims to 10 rows via an injected
   and the composer keeps the surrounding page as a static underlay and moves
   only the scroller's contents inside its own box — no `clip`, no injected
   height, and the frame can sit anywhere in the sequence (it is re-anchored to
-  its own start on the master loop, and a `pause` is a real hold). The recipe
-  that remains:
-  - **Hand-split the glide into tokens no taller than the scroller's
-    `clientHeight`** (`virtual-list`: `#list` is 382 px tall, so
-    `360px/628ms` × 7 instead of one `2600px/4.4s`). The executor still
-    subdivides a long smooth scroll by the *frame* height (560 here), so each
-    anchor's capture is shorter than the stride and a blank band scrolls through
-    at every seam; one token per anchor tiles cleanly. Drop this once domotion
-    DM-2705 (stride = the owner's client size) ships.
-  - **`frame.duration` ≥ the pattern's play time** (`pause:1.1s` + 7 × 628 ms =
-    5.5 s → `duration: 5500`); the CLI logs a sizing note if it's shorter.
+  its own start on the master loop, a `pause` is a real hold, and a long
+  smooth scroll is chunked by the scroller's own client box). The recipe that
+  remains:
+  - **`frame.duration` ≥ the pattern's play time.** The executor rounds each
+    client-box-sized chunk's duration, so `pause:1.1s, 2600px/4.4s` plays for
+    5503 ms, not 5500; the CLI logs a sizing note naming the exact figure when
+    the frame is shorter (`virtual-list`: `duration: 5510`).
   - **`prescroll: false` on a virtualized list.** The default pre-scroll walks the
     whole scrollable height first — 360,000 px here — which is slow and pointless
     (kerf has no lazy media to wake); rows render on demand as the executor
@@ -222,5 +218,8 @@ just use a short trailing `wait`; the dashboard trims to 10 rows via an injected
     cropped with `clip` + an injected `#list` height, its loop ran on the
     document clock (so the pattern was front-loaded and the frame durations
     padded to phase-lock), and a `pause` over an unchanged DOM was tweened away
-    (so the hold was written as `0px/2.1s`). All four were domotion bugs
-    (DM-2681 / DM-2701 / DM-2702 / DM-2703), fixed in 0.27.2 + 0.28.0.
+    (so the hold was written as `0px/2.1s`); and under 0.28.0 the smooth scroll
+    was still chunked by the *frame* height rather than the scroller's client
+    box, leaving a blank band at every seam (so the glide was hand-split into
+    `360px` tokens). All five were domotion bugs (DM-2681 / DM-2701 / DM-2702 /
+    DM-2703 / DM-2705), fixed across 0.27.2, 0.28.0 and 0.28.1.

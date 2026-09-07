@@ -6,7 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
-- The virtual-list demo animation opens on the full app again (header, the "N in the DOM" badge, and the list) before the scroll; the list now scrolls inside its own box while the header stays put (previously the whole frame was a full-bleed list strip), holds at row 0 before gliding instead of starting a few rows down, and the loop stays in phase on every pass. Captured with domotion-svg 0.28.0.
+- The virtual-list demo animation opens on the full app again (header, the "N in the DOM" badge, and the list) before the scroll; the list now scrolls inside its own box while the header stays put (previously the whole frame was a full-bleed list strip), holds at row 0 before gliding instead of starting a few rows down, and the loop stays in phase on every pass. Captured with domotion-svg 0.28.1.
 
 ## [4.4.1] - 2026-08-26
 

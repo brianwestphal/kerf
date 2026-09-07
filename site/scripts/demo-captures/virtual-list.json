@@ -19,8 +19,8 @@
     {
       "continue": true,
       "transition": { "type": "cut", "duration": 0 },
-      "scroll": { "selector": "#list", "pattern": "pause:1.1s, 360px/628ms, 360px/628ms, 360px/628ms, 360px/628ms, 360px/628ms, 360px/628ms, 360px/628ms", "prescroll": false },
-      "duration": 5500
+      "scroll": { "selector": "#list", "pattern": "pause:1.1s, 2600px/4.4s [ease-in-out]", "prescroll": false },
+      "duration": 5510
     },
     {
       "continue": true,
