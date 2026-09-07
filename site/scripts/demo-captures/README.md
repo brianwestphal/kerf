@@ -92,7 +92,7 @@ just use a short trailing `wait`; the dashboard trims to 10 rows via an injected
   workaround has been removed from `capture-demos.sh`. `tests/unit/demo-configs.test.ts`
   still guards the committed SVGs (every `fv-N` track must carry `step-end`) — a
   regression tripwire if a future domotion ever reintroduces the clobber.
-  Re-verified on domotion **0.28.1** (the current pin): a
+  Re-verified on domotion **0.28.2** (the current pin): a
   `cut` still emits `animation: fv-N <t>s step-end infinite`, so the tripwire
   holds. (0.25–0.27 are additive rendering fixes — color/bitmap glyphs, gradient
   geometry, cleaner loop close — with no config-schema or cut-timing changes.)
