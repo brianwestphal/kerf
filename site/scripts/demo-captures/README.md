@@ -35,7 +35,7 @@ smoke spec exercises:
 | `counter-store` | increment ×3 (number pops each beat), decrement, async fetch resolves |
 | `cart-htmx` | swap in the cart island, remove an item |
 | `row-selector` | select three rows (highlight + detail follow, "list renders" stays at 1), then Regenerate ticks it |
-| `virtual-list` | opens on the full app (header + the "N in the DOM" badge + list), then a real *animated* scroll — the 10,000-row virtualized list holds at row 0 and glides smoothly through ~70 rows (a genuine `scroll` frame, not stepped `scrollTop` cuts) — then the full app returns for a debounced search, confirm-to-delete, and a toast. See the `scroll`-frame conventions below |
+| `virtual-list` | opens on the full app (header + the "N in the DOM" badge + list), then a real *animated* scroll — the 10,000-row virtualized list holds at row 0 and glides smoothly through ~78 rows **inside its own box while the header stays put** (a genuine element-owned `scroll` frame, not stepped `scrollTop` cuts) — then a debounced search, confirm-to-delete, and a toast. See the `scroll`-frame conventions below |
 | `live-poll` | the no-build app (importmap + `html` tagged template): five votes land (counts pop, bars slide, "renders" stays at 1), then Reset collapses the bars |
 | `router` | the postcard router, shown in a fake browser window: Home → Guides list → a `/guides/:slug` detail → the browser Back button → About; the address bar updates each step, the outlet swaps each page (slides up), the active nav tab follows, no reloads |
 | `architecture` | *(static page, not an app)* the docs' "architecture in one diagram": a `count.value += 1` write pulses down the bound-hole path (one node touched), then lights the structural pipeline stage by stage |
@@ -92,7 +92,7 @@ just use a short trailing `wait`; the dashboard trims to 10 rows via an injected
   workaround has been removed from `capture-demos.sh`. `tests/unit/demo-configs.test.ts`
   still guards the committed SVGs (every `fv-N` track must carry `step-end`) — a
   regression tripwire if a future domotion ever reintroduces the clobber.
-  Re-verified on domotion **0.27.2** (the current pin): a
+  Re-verified on domotion **0.28.0** (the current pin): a
   `cut` still emits `animation: fv-N <t>s step-end infinite`, so the tripwire
   holds. (0.25–0.27 are additive rendering fixes — color/bitmap glyphs, gradient
   geometry, cleaner loop close — with no config-schema or cut-timing changes.)
@@ -194,52 +194,33 @@ just use a short trailing `wait`; the dashboard trims to 10 rows via an injected
   move every frame). More frames = a bigger SVG, so trim what you can (the
   dashboard table is cut to 8 rows) and stop at "reads as live."
 - **A real animated scroll uses a `scroll` frame — `virtual-list` is the worked
-  example, and seven things are load-bearing (learned the hard way).** A `scroll`
-  frame runs domotion's scroll executor over the live page and composes one
-  self-contained scrolling sub-SVG, so the list *glides* instead of teleporting
-  between `scrollTop` cuts. For a nested inner scroller like the virtual list's
-  `#list`, the recipe is exact:
-  - **A `scroll` frame may follow ordinary capture frames (domotion ≥ 0.27.2).**
-    Under 0.27.1 the scroll composite and the capture frames shared one glyph
-    namespace and the *first* capture frame's text came out garbled, which forced
-    the scroll to be frame 0. 0.27.2 namespaces the composite as a whole, so
-    `virtual-list` now opens on a plain establishing frame (header + badge + list)
-    and `continue`s into the scroll frame like any other frame.
-  - **The composite runs on the DOCUMENT clock, not the frame's — lead the
-    pattern with a hold equal to the frame's start offset.** domotion re-anchors
-    embedded `cast` / `template` frames to their frame start, but not (yet) a
-    scroll composite: its `infinite` CSS animation starts at t=0 of the whole SVG,
-    so when the scroll frame is revealed at 1.0 s the composite is already 1.0 s
-    into its loop. Front-load the pattern with a hold of `frame start + the pause
-    you actually want to see` (`virtual-list`: 1.0 s establishing frame + 1.1 s
-    visible hold → a 2.1 s lead). (domotion DM-2701 tracks doing this upstream.)
-  - **A `pause` with no DOM change is NOT a hold — write the hold as a
-    zero-distance scroll (`0px/2.1s`).** The executor only captures at the end of
-    a `pause` if the tree changed (its lazy-load check); over a stable list it
-    captures nothing, so the composer has no keyframe stop there and tweens the
-    pause away into the first chunk — the list is already moving during the
-    "pause". That was why the demo used to open a few rows down. A `0px/<t>` scroll
-    op always captures a stop at the same offset, so it is a real hold. (DM-2702.)
-  - **Phase-lock the loop: the demo's total duration must be a whole multiple of
-    the composite period.** The composite loops on its own period (the pattern's
-    total, EXCLUDING a trailing `pause`), so on the second pass through the demo
-    its phase at reveal is `total mod period` — anything but 0 shows the list
-    mid-glide and then snapping to the top. `virtual-list`: period 6.5 s (2.1 s
-    hold + 4.4 s glide); frames 1.0 + 5.5 + 2.0 + 1.7 + 2.8 = 13.0 s = 2 periods.
-    The scroll frame's own `duration` is `period − lead` (5.5 s) so the composite
-    finishes exactly as the frame cuts away.
-  - **Let `captureSelector` default to `body`; do NOT set the frame's `selector`.**
-    Cropping to `#list` (the sizer subtree) captures kerf's full-height virtual
-    sizer and the composite can't tile it (gaps mid-scroll). Capturing `body` and
-    cropping with `clip` to the list's page rect tiles cleanly.
-  - **The `clip` height must equal the content height, or the composite gaps.**
-    The composer chunks by the clip height; if the visible rows are shorter than
-    the clip, you get a blank band at every chunk seam. Inject
-    `#list { height: <frame-height>px }` + a `resize` event in the frame's
-    `actions` (kerf re-windows on resize) so the rows fill the clip, then
-    `clip: [0, <listTopY>, width, height]`. Reset the height (`height=''` +
-    `resize`) in the next frame so the app looks normal for the interactions.
+  example.** A `scroll` frame runs domotion's scroll executor over the live page
+  and composes one self-contained scrolling sub-SVG, so the list *glides*
+  instead of teleporting between `scrollTop` cuts. Since domotion **0.28.0** an
+  element-owned scroll renders **in place**: keep the default `body` capture
+  (do NOT set the frame's `selector`), name the scroller in `scroll.selector`,
+  and the composer keeps the surrounding page as a static underlay and moves
+  only the scroller's contents inside its own box — no `clip`, no injected
+  height, and the frame can sit anywhere in the sequence (it is re-anchored to
+  its own start on the master loop, and a `pause` is a real hold). The recipe
+  that remains:
+  - **Hand-split the glide into tokens no taller than the scroller's
+    `clientHeight`** (`virtual-list`: `#list` is 382 px tall, so
+    `360px/628ms` × 7 instead of one `2600px/4.4s`). The executor still
+    subdivides a long smooth scroll by the *frame* height (560 here), so each
+    anchor's capture is shorter than the stride and a blank band scrolls through
+    at every seam; one token per anchor tiles cleanly. Drop this once domotion
+    DM-2705 (stride = the owner's client size) ships.
+  - **`frame.duration` ≥ the pattern's play time** (`pause:1.1s` + 7 × 628 ms =
+    5.5 s → `duration: 5500`); the CLI logs a sizing note if it's shorter.
   - **`prescroll: false` on a virtualized list.** The default pre-scroll walks the
     whole scrollable height first — 360,000 px here — which is slow and pointless
     (kerf has no lazy media to wake); rows render on demand as the executor
     scrolls, so turn it off.
+  - History, for anyone reading an older capture log: under 0.27.x the scroll
+    had to be frame 0 (glyph-id collision), the composite was a list-only strip
+    cropped with `clip` + an injected `#list` height, its loop ran on the
+    document clock (so the pattern was front-loaded and the frame durations
+    padded to phase-lock), and a `pause` over an unchanged DOM was tweened away
+    (so the hold was written as `0px/2.1s`). All four were domotion bugs
+    (DM-2681 / DM-2701 / DM-2702 / DM-2703), fixed in 0.27.2 + 0.28.0.
