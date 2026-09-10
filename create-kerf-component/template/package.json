@@ -25,10 +25,10 @@
     "prepublishOnly": "npm run build"
   },
   "peerDependencies": {
-    "kerfjs": ">=0.14.0"
+    "kerfjs": "^4.0.0"
   },
   "devDependencies": {
-    "kerfjs": "^0.15.0",
+    "kerfjs": "^4.4.1",
     "tsup": "^8",
     "typescript": "^5 || ^6"
   }

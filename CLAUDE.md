@@ -385,7 +385,7 @@ npm run release        # interactive: bumps version, updates changelog, tags v{v
 npm run release:beta   # tag-only: tags v{ver}-beta.{N}, publishes with --tag beta
 ```
 
-The release scripts mirror Hot Sheet's flow and keep all four packages (`kerfjs`, `eslint-plugin-kerfjs`, `create-kerf-component`, and `@kerfjs/ui`) on one version/tag. Beta releases skip the version-file bump and changelog write — CI bumps package versions ephemerally at publish time.
+The release scripts mirror Hot Sheet's flow and keep all four packages (`kerfjs`, `eslint-plugin-kerfjs`, `create-kerf-component`, and `@kerfjs/ui`) on one version/tag. `scripts/sync-lockstep-versions.mjs` also derives the plugin-reported version and component-scaffold/docs ranges; its `--check` mode runs in `npm run check`. Beta releases skip the version-file bump and changelog write — CI bumps package versions ephemerally at publish time.
 
 `scripts/release.sh` drafts the notes with [gitgist](https://github.com/brianwestphal/gitgist) (`gitgist <last-tag>..HEAD`), and `npm run commit:msg` uses it for commit messages. **Since 1.2.0 gitgist reads the range's actual code diff**, not just the commit log, which makes what it is *allowed* to read matter for this repo — a lot of what changes here is generated.
 

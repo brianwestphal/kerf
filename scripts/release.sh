@@ -372,11 +372,14 @@ step_update_version() {
   # @kerfjs/ui is the fourth lockstep package. Stable releases commit this
   # version; beta releases rewrite it ephemerally in the publish workflow.
   (cd ui && npm version "$version" --no-git-tag-version --allow-same-version)
+  # Derive the plugin-reported version and the component-scaffold/docs ranges
+  # from the new root version so these secondary surfaces cannot drift.
+  node scripts/sync-lockstep-versions.mjs --write
   # The bundled AI configs at `ai/manifest.json` embed `kerfjsVersion` — re-sync
   # so the in-sync gate (which the pre-commit hook runs) sees a current bundle
   # after the version bump. See docs/12-ai-assistant-configs.md §12.2.2.
   node scripts/sync-ai-bundle.mjs > /dev/null
-  success "package.json files updated (root + eslint-plugin + create-kerf-component + ui); ai/ bundle re-synced"
+  success "package versions and companion metadata updated; ai/ bundle re-synced"
 }
 
 step_git_commit() {
@@ -385,8 +388,12 @@ step_git_commit() {
   info "Creating git commit..."
   git add package.json package-lock.json CHANGELOG.md \
           eslint-plugin/package.json eslint-plugin/package-lock.json \
+          eslint-plugin/index.js \
           create-kerf-component/package.json create-kerf-component/package-lock.json \
+          create-kerf-component/template/package.json \
           ui/package.json ui/package-lock.json \
+          docs/13-component-packages.md site/src/content/docs/docs/component-packages.md \
+          examples/reactivity-demo/package-lock.json site/package-lock.json \
           ai/manifest.json
   # Idempotent: if a previous run already absorbed these files into a manual
   # commit (e.g. recovery after the pre-commit hook failed), there's nothing

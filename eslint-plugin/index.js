@@ -8,7 +8,7 @@ import requireDataKeyInEach from './lib/rules/require-data-key-in-each.js';
 import requireDelegateDisposer from './lib/rules/require-delegate-disposer.js';
 
 const plugin = {
-  meta: { name: 'eslint-plugin-kerfjs', version: '0.13.0' },
+  meta: { name: 'eslint-plugin-kerfjs', version: '4.4.1' },
   rules: {
     'no-inline-jsx-event-handlers': noInlineJsxEventHandlers,
     'no-raw-with-dynamic-arg': noRawWithDynamicArg,

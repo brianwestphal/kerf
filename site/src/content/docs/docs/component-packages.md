@@ -181,8 +181,8 @@ A minimal `package.json`:
   "version": "0.1.0",
   "type": "module",
   "license": "MIT",
-  "peerDependencies": { "kerfjs": ">=0.14.0" },
-  "devDependencies": { "kerfjs": "^0.14.0", "tsup": "^8", "typescript": "^5" },
+  "peerDependencies": { "kerfjs": "^4.0.0" },
+  "devDependencies": { "kerfjs": "^4.4.1", "tsup": "^8", "typescript": "^5" },
   "exports": { ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" } },
   "files": ["dist", "README.md", "LICENSE"],
   "scripts": { "build": "tsup src/index.ts --format esm --dts --external kerfjs" }
