@@ -462,3 +462,24 @@ Fully documented in the **Requirements Documentation** section above; in brief:
 Keep all three `docs/ai/` summaries in sync whenever source or design changes — see the surface checklist above.
 <!-- hotsheet:end specifics=requirements-documentation -->
 <!-- hotsheet:end section=requirements-documentation -->
+
+## Visual UI validation
+
+Every change that can affect rendered client visuals requires a deliberate visual QA
+pass in a real browser through Playwright before completion. Automated DOM,
+accessibility, computed-style, and geometry assertions remain necessary, but are not
+substitutes for looking at the rendered result. Exercise the affected demo states and
+transitions at representative wide and narrow viewport sizes; capture screenshots when
+they make comparison easier. An existing problem or design screenshot makes a
+corresponding after screenshot a required part of the visual QA pass, not merely an
+optional aid.
+
+Review critically for correctness, readability, usability, contextual aesthetic fit and
+flow/order, clipping or truncation, icon-label alignment, spacing, typography, contrast,
+icon rendering, responsive behavior, platform/design-system conformance, and consistency
+with adjacent components. Fix every defect found, rerun affected behavioral tests, and
+recapture. Record the visual states and viewports inspected on the ticket. If Playwright
+or a usable browser is unavailable after exhausting safe alternatives, do not claim
+visual validation or complete the visual ticket: record `FEEDBACK NEEDED` with the
+outstanding review and leave it open. Dependency presence alone is not visual
+validation.

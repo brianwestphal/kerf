@@ -1,8 +1,8 @@
 ---
 name: hotsheet
-description: Read the Hot Sheet worklist and work through the current priority items
+description: Plan and work through the complete Hot Sheet Up Next queue using priority, overlap, dependencies, and safe parallelism. Works headless, with or without a server.
 ---
-<!-- hotsheet-skill-version: 28 -->
+<!-- hotsheet-skill-version: 44 -->
 
 Read `../../../.claude/skills/hotsheet/SKILL.md` completely and follow its
 workflow. Treat Claude-specific tool names as capability labels and use the
