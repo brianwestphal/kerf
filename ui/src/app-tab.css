@@ -1,0 +1,12 @@
+.kui-app-tab { position: relative; display: flex; width: max-content; min-width: max-content; min-height: 2rem; border: 0; border-radius: var(--kui-radius-pill); color: var(--kui-color-text-quiet); background: transparent; align-items: center; }
+.kui-app-tab:hover { background: var(--kui-color-surface); }
+.kui-app-tab[data-selected="true"] { color: var(--kui-color-accent-text); background: var(--kui-color-surface-raised); box-shadow: var(--kui-shadow-s), inset 0 0 0 1px var(--kui-color-border); }
+.kui-app-tab__select { display: flex; min-width: 0; min-height: 2rem; padding: 0 var(--kui-space-s); border: 0; color: inherit; background: transparent; cursor: pointer; font: inherit; align-items: center; gap: var(--kui-space-xs); text-align: start; }
+.kui-app-tab:has(.kui-app-tab__close) .kui-app-tab__select { padding-inline-start: var(--kui-space-2xs); }
+.kui-app-tab:has(.kui-app-tab__select:focus-visible), .kui-app-tab__close:focus-visible { outline: var(--kui-focus-ring); outline-offset: -2px; }
+.kui-app-tab__select:focus-visible { outline: none; }
+.kui-app-tab__name { overflow: hidden; font-size: var(--kui-font-xs); font-weight: 650; text-overflow: ellipsis; white-space: nowrap; }
+.kui-app-tab__trailing { display: grid; min-width: 1.3rem; min-height: 1.3rem; place-items: center; }
+.kui-app-tab__close { display: grid; width: 1.3rem; height: 1.3rem; margin-inline-start: var(--kui-space-xs); padding: 0; border: 0; color: inherit; background: transparent; cursor: pointer; place-items: center; }
+.kui-app-tab__close svg { width: .7rem; height: .7rem; }
+@media (hover: hover) and (pointer: fine) { .kui-app-tab__close { opacity: 0; pointer-events: none; } .kui-app-tab:hover .kui-app-tab__close, .kui-app-tab:focus-within .kui-app-tab__close { opacity: 1; pointer-events: auto; } }

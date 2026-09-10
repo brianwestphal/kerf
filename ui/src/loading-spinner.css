@@ -1,0 +1,4 @@
+.kui-loading-spinner { display: block; width: 1em; height: 1em; overflow: visible; fill: currentColor; }
+.kui-loading-spinner path { transform-origin: 12px 12px; animation: kui-loading-spinner-rotate .85s linear infinite; }
+@keyframes kui-loading-spinner-rotate { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .kui-loading-spinner path { animation: none; } }

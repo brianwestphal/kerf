@@ -75,6 +75,7 @@ The framework is a small set of independent modules that compose. Each one earns
 - `src/utils/urlScreen.ts` — shared URL-attribute screening for `href`/`src`/`formaction`/etc.: drops `javascript:`/`vbscript:` + script-executing `data:` subtypes, normalizing control-char/whitespace scheme obfuscation first; `raw()` is the documented opt-out. Throws in dev, warns + drops in prod. Used by both the static attribute renderer and the live binding writer.
 - `src/utils/jsx-attr-aliases.ts` — `ATTR_ALIASES` table mapping camelCase JSX attributes to their HTML / SVG equivalents (extracted from `jsx-runtime.ts` so the alias data is a separable concern from the runtime logic).
 - `src/utils/rowContract.ts` — shared "exactly one top-level element per row" helpers (KF-103). `ROW_HTML_SNIPPET_MAX`, `truncateRowHtml`, `parseRowTemplate`, `rowContractError`. Used by both reconcile paths and by `mount.ts`'s first-render `validateInlinedRowMatch`.
+- `ui/` — the standalone `@kerfjs/ui` sibling package: SafeHtml component primitives, namespaced semantic CSS, explicit ESM/type/CSS subpaths, the `select/register` custom-element boundary, AI docs, and a production-backed UX catalog. It shares kerfjs versions/tags but has its own manifest, lockfile, tests, and release workflow. See `docs/21-ui-package.md`.
 - `bench/` — performance tooling for [`krausest/js-framework-benchmark`](https://github.com/krausest/js-framework-benchmark). `bench/kerfjs-impl/` is the kerf entry, **merged upstream** at `frameworks/keyed/kerfjs/` — keep it in sync and open a follow-up upstream PR to bump the pinned kerfjs version on release. `bench/import-krausest.mjs` imports the official upstream numbers into the published `bench/results.{json,md}` (the site's source of truth). `bench/setup.sh`, `run.sh`, `aggregate-results.mjs` are the LOCAL dev-only harness (profiling on your own machine; writes the gitignored `bench/results.local.*`). See "Performance comparison numbers" below.
 
 ### Public API surface
@@ -312,6 +313,7 @@ Numbered docs in `docs/` cover the design. Reading order:
 18. `18-state-preserving-moves.md` — **shipped**: connected-row reorders (every `each()` / `bindList` / `morph` move site) use `Node.prototype.moveBefore()` where the engine supports it — an atomic move that keeps focus, selection, `<iframe>`/media state, and running CSS animations across the reorder — with an `insertBefore()` fallback otherwise. Transparent internal `moveNode` helper (`src/utils/moveNode.ts`); no API change.
 19. `19-native-overlay-backing.md` — **shipped**: opt-in `native: true` on every `kerfjs/overlay` surface hosts the overlay in the browser top layer — a `<dialog>.showModal()` for modal surfaces, the Popover API for non-modal — feature-detected, falling back to today's plain `<div>` where unsupported. Fixes stacking (top layer beats any `z-index`), real inerting (`<dialog>` inerts the document), and native light-dismiss. Opt-in because the native elements carry UA default styles kerf's zero-CSS contract won't reset; `container` becomes a visual no-op. Promise API + `render` slots unchanged.
 20. `20-router.md` — **shipped**: the opt-in `kerfjs/router` subpath (the "postcard router"). `createRouter({ routes, mode?, base?, interceptLinks? })` → a handle with a reactive `route` signal, `navigate`/`back`/`forward`, `match`/`activeClass`, a keyed `outlet()`, and `dispose()`. Route matching (`:param` / `*rest` / `*`) + `delegate()` link interception + the keyed morph for the outlet (page swaps wholesale across routes, morphs in place within a route). Scope is deliberately the postcard — no nested layouts / loaders / lazy routes / guards / SSR. The core stays router-free (docs/1's "Not a router" is about the runtime); the subpath tree-shakes away unless imported.
+21. `21-ui-package.md` — **shipped**: the optional first-party `@kerfjs/ui` sibling package. Covers its HIG-informed design principles, component/API inventory, semantic CSS and side-effect boundaries, Web Awesome registration, accessibility/keyboard contracts, AI entry points, UX catalog, verification, and lockstep release model.
 
 **Keep every surface up to date — proactively, without being asked.** Any change to source, API, behavior, or examples must be reflected across all affected surfaces in the same diff. Do not wait for a follow-up prompt. The full checklist:
 
@@ -326,6 +328,7 @@ Numbered docs in `docs/` cover the design. Reading order:
 | `kerf.cursorrules` + `kerf.claude-skill.md` | Any API addition, signature change, canonical pattern update, or new common-error row — then run `npm run ai-bundle:sync` and bump `kerf-skill-version` per the rubric in §12.3.2 |
 | `eslint-plugin/docs/rules/*.md` | Any change that affects what the lint rules flag or how users fix violations |
 | `site/src/content/docs/docs/*.md` + `site/src/content/docs/api.md` (consumer doc pages) | Any API/behavior change. These are hand-authored consumer versions — no longer auto-synced from `docs/*.md` — so update them directly, alongside the internal `docs/*.md` source of truth |
+| `ui/docs/*`, `ui/ai/skill.md`, `ui/llms.txt`, `ui/ux-demo/*` | Any `@kerfjs/ui` component, styling, accessibility, or interaction-contract change |
 
 ### AI summaries (`docs/ai/`)
 
@@ -382,7 +385,7 @@ npm run release        # interactive: bumps version, updates changelog, tags v{v
 npm run release:beta   # tag-only: tags v{ver}-beta.{N}, publishes with --tag beta
 ```
 
-The release scripts mirror Hot Sheet's flow. Beta releases skip the version-file bump and changelog write — CI bumps the version ephemerally at publish time.
+The release scripts mirror Hot Sheet's flow and keep all four packages (`kerfjs`, `eslint-plugin-kerfjs`, `create-kerf-component`, and `@kerfjs/ui`) on one version/tag. Beta releases skip the version-file bump and changelog write — CI bumps package versions ephemerally at publish time.
 
 `scripts/release.sh` drafts the notes with [gitgist](https://github.com/brianwestphal/gitgist) (`gitgist <last-tag>..HEAD`), and `npm run commit:msg` uses it for commit messages. **Since 1.2.0 gitgist reads the range's actual code diff**, not just the commit log, which makes what it is *allowed* to read matter for this repo — a lot of what changes here is generated.
 

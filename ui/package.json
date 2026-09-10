@@ -1,0 +1,181 @@
+{
+  "name": "@kerfjs/ui",
+  "version": "4.4.1",
+  "description": "Accessible, composable UI primitives for kerf applications.",
+  "type": "module",
+  "license": "MIT",
+  "author": "Brian Westphal <brian.westphal@bleugris.com>",
+  "homepage": "https://brianwestphal.github.io/kerf/docs/ui-package/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/brianwestphal/kerf",
+    "directory": "ui"
+  },
+  "bugs": {
+    "url": "https://github.com/brianwestphal/kerf/issues"
+  },
+  "keywords": [
+    "kerf",
+    "kerfjs",
+    "components",
+    "design-system",
+    "accessibility"
+  ],
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "sideEffects": [
+    "**/*.css",
+    "./dist/select-register.js"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./lucide-icon": {
+      "types": "./dist/lucide-icon.d.ts",
+      "import": "./dist/lucide-icon.js"
+    },
+    "./toolbar": {
+      "types": "./dist/toolbar.d.ts",
+      "import": "./dist/toolbar.js"
+    },
+    "./toolbar-control-group": {
+      "types": "./dist/toolbar-control-group.d.ts",
+      "import": "./dist/toolbar-control-group.js"
+    },
+    "./toolbar-text": {
+      "types": "./dist/toolbar-text.d.ts",
+      "import": "./dist/toolbar-text.js"
+    },
+    "./menu-item": {
+      "types": "./dist/menu-item.d.ts",
+      "import": "./dist/menu-item.js"
+    },
+    "./menu-header": {
+      "types": "./dist/menu-header.d.ts",
+      "import": "./dist/menu-header.js"
+    },
+    "./resizable-region": {
+      "types": "./dist/resizable-region.d.ts",
+      "import": "./dist/resizable-region.js"
+    },
+    "./wire-resizable-regions": {
+      "types": "./dist/wire-resizable-regions.d.ts",
+      "import": "./dist/wire-resizable-regions.js"
+    },
+    "./app-tab": {
+      "types": "./dist/app-tab.d.ts",
+      "import": "./dist/app-tab.js"
+    },
+    "./page-header": {
+      "types": "./dist/page-header.d.ts",
+      "import": "./dist/page-header.js"
+    },
+    "./loading-spinner": {
+      "types": "./dist/loading-spinner.d.ts",
+      "import": "./dist/loading-spinner.js"
+    },
+    "./select": {
+      "types": "./dist/select.d.ts",
+      "import": "./dist/select.js"
+    },
+    "./select/register": {
+      "types": "./dist/select-register.d.ts",
+      "import": "./dist/select-register.js"
+    },
+    "./state-banner": {
+      "types": "./dist/state-banner.d.ts",
+      "import": "./dist/state-banner.js"
+    },
+    "./empty-state": {
+      "types": "./dist/empty-state.d.ts",
+      "import": "./dist/empty-state.js"
+    },
+    "./dialog-header": {
+      "types": "./dist/dialog-header.d.ts",
+      "import": "./dist/dialog-header.js"
+    },
+    "./value-table": {
+      "types": "./dist/value-table.d.ts",
+      "import": "./dist/value-table.js"
+    },
+    "./foundation.css": "./src/foundation.css",
+    "./styles.css": "./src/styles.css",
+    "./lucide-icon.css": "./src/lucide-icon.css",
+    "./toolbar.css": "./src/toolbar.css",
+    "./toolbar-control-group.css": "./src/toolbar-control-group.css",
+    "./toolbar-text.css": "./src/toolbar-text.css",
+    "./menu-item.css": "./src/menu-item.css",
+    "./menu-header.css": "./src/menu-header.css",
+    "./resizable-region.css": "./src/resizable-region.css",
+    "./app-tab.css": "./src/app-tab.css",
+    "./page-header.css": "./src/page-header.css",
+    "./loading-spinner.css": "./src/loading-spinner.css",
+    "./select.css": "./src/select.css",
+    "./state-banner.css": "./src/state-banner.css",
+    "./empty-state.css": "./src/empty-state.css",
+    "./dialog-header.css": "./src/dialog-header.css",
+    "./value-table.css": "./src/value-table.css",
+    "./ai/*": "./ai/*",
+    "./docs/*": "./docs/*"
+  },
+  "files": [
+    "dist",
+    "src/*.css",
+    "ai",
+    "docs",
+    "llms.txt",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "npm run build && vite --config ux-demo/vite.config.ts",
+    "demo:build": "npm run build && vite build --config ux-demo/vite.config.ts",
+    "demo:serve": "vite preview --config ux-demo/vite.config.ts",
+    "lint": "eslint src tests ux-demo --max-warnings 0",
+    "typecheck": "node node_modules/typescript7/bin/tsc --noEmit",
+    "test": "npm run test:unit && npm run test:bundle",
+    "test:unit": "vitest run tests/unit --coverage",
+    "test:bundle": "npm run build && vitest run tests/bundle",
+    "test:e2e": "npm run demo:build && playwright test",
+    "check": "npm run lint && npm run typecheck && npm test && npm run demo:build && npm pack --dry-run",
+    "prepublishOnly": "npm run check"
+  },
+  "peerDependencies": {
+    "@awesome.me/webawesome": "^3.11.0",
+    "kerfjs": "^4.0.0",
+    "lucide": "^1.34.0"
+  },
+  "peerDependenciesMeta": {
+    "@awesome.me/webawesome": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@awesome.me/webawesome": "3.11.0",
+    "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.59.1",
+    "@typescript-eslint/eslint-plugin": "^8.65.0",
+    "@typescript-eslint/parser": "^8.65.0",
+    "@vitest/coverage-v8": "4.1.10",
+    "@types/node": "^22.10.0",
+    "esbuild": "^0.25.0",
+    "eslint": "^10.8.0",
+    "eslint-plugin-simple-import-sort": "^12.1.1",
+    "happy-dom": "^20.9.0",
+    "lucide": "1.34.0",
+    "tsup": "^8.3.0",
+    "typescript": "^6.0.3",
+    "typescript7": "npm:typescript@^7.0.2",
+    "vite": "^7.1.0",
+    "vitest": "4.1.10"
+  }
+}

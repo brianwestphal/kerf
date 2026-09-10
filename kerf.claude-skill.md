@@ -1,7 +1,7 @@
 ---
 name: kerf-app
-description: Build UIs in the kerf reactive framework (https://github.com/brianwestphal/kerf). Use this skill whenever the user is writing or modifying code that imports `kerfjs`, asks to add a feature to a kerf app, or asks "how do I do X in kerf?". Use it proactively the moment you spot a kerf import in the file you're editing.
-kerf-skill-version: 1.14.2
+description: Build UIs in the kerf reactive framework and its @kerfjs/ui component package (https://github.com/brianwestphal/kerf). Use this skill whenever the user is writing or modifying code that imports `kerfjs` or `@kerfjs/ui`, asks to add a feature to a kerf app, or asks "how do I do X in kerf?". Use it proactively the moment you spot a kerf import in the file you're editing.
+kerf-skill-version: 1.15.0
 ---
 
 # Building apps with kerf
@@ -21,6 +21,28 @@ kerf is a ~12 KB reactive UI framework (~13 KB with `arraySignal`): signals + DO
   - **Switch individual warnings on with `enableWarnings()`**, which is the only switch that works in a browser (no `process` object there, and a bundler `define` cannot reach the read): `const dev = await import('kerfjs/dev'); dev.enableWarnings({ staleBinding: true, narrowSet: true, invariants: 'throw' });`. The `KERF_DEV_WARN_*` env vars do the same for Node/SSR/CI; an explicit call wins either way.
   - **A component package must NEVER import `kerfjs/dev`.** The hooks are process-global, so installing them is the consuming app's decision — a library that does it forces the diagnostics (and the chunk) on every consumer. Put the import in your demo page or test harness instead.
 - Recommended companion: `npm install --save-dev eslint-plugin-kerfjs` and add `kerfjs.configs.recommended` to the project's eslint config. Enforces five of the hard rules below (no inline JSX event handlers, require `data-key` in `each()`, capture `delegate()` disposers, no nested `mount()`, prefer module JSX augmentation) at edit time — useful as a self-correction signal when authoring kerf code.
+
+## Optional first-party UI
+
+Install `@kerfjs/ui` when the app needs shared toolbars, menu rows, tabs,
+headers/value tables, resizable regions, selects, banners, empty states, or
+loading indicators. Import `@kerfjs/ui/styles.css`, or combine
+`foundation.css` with per-component CSS subpaths. Prefer a component before
+inventing a parallel local primitive, but keep domain state, routing, commands,
+and tab/menu policy in the app.
+
+Components emit stable `data-action` hooks; wire them at the mount root and
+retain every disposer. `wireResizableRegions()` is the explicit behavioral
+helper and also returns a disposer. `AppTab` supplies semantic/roving-tabindex
+markup, while the host implements arrow/Home/End navigation and close policy.
+Icons and spinners are decorative unless labeled; use assertive banners only
+for urgent interruption.
+
+`Select` renders pure Web Awesome markup. Import
+`@kerfjs/ui/select/register` once in an application entry that uses it; never
+hide that registration inside another component. Web Awesome is an optional
+peer and must remain absent from bundles that do not use Select. The package's
+full AI contract is at `node_modules/@kerfjs/ui/ai/skill.md`.
 
 ## Public API — one import path
 

@@ -1,0 +1,34 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "isolatedModules": true,
+    "declaration": true,
+    "sourceMap": true,
+    "rootDir": "..",
+    "jsx": "react-jsx",
+    "jsxImportSource": "kerfjs",
+    "paths": {
+      "kerfjs": ["../src/index.ts"],
+      "kerfjs/actions": ["../src/actions.ts"],
+      "kerfjs/jsx-runtime": ["../src/jsx-runtime.ts"],
+      "@kerfjs/ui": ["./src/index.ts"],
+      "@kerfjs/ui/select/register": ["./src/select-register.ts"],
+      "@kerfjs/ui/*": ["./src/*"]
+    },
+    "types": ["node", "vitest/globals"],
+    "outDir": "./dist"
+  },
+  "include": ["src/**/*", "tests/**/*", "ux-demo/**/*"],
+  "exclude": ["dist", "dist-demo", "node_modules", "test-results"]
+}

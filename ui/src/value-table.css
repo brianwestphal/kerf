@@ -1,0 +1,5 @@
+.kui-value-table { display: grid; margin: 0; overflow: hidden; border-radius: var(--kui-radius-m); background: var(--kui-color-surface-lowered); }
+.kui-value-table > div { position: relative; display: grid; min-height: 2.55rem; padding: var(--kui-space-xs) var(--kui-space-m); box-sizing: border-box; grid-template-columns: minmax(6rem, auto) minmax(0, 1fr); align-items: center; gap: var(--kui-space-m); }
+.kui-value-table > div + div::before { position: absolute; top: 0; right: var(--kui-space-m); left: var(--kui-space-m); border-top: 1px solid var(--kui-color-border); content: ''; }
+.kui-value-table dt { color: var(--kui-color-text-quiet); }
+.kui-value-table dd { display: flex; min-width: 0; margin: 0; overflow-wrap: anywhere; color: var(--kui-color-text); align-items: center; justify-content: flex-end; gap: var(--kui-space-2xs); font-weight: 650; text-align: end; }

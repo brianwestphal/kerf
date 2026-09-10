@@ -1,0 +1,6 @@
+.kui-empty-state { display: grid; width: min(100%, 28rem); min-height: 12rem; margin: auto; padding: var(--kui-space-l); box-sizing: border-box; color: var(--kui-color-text-quiet); place-items: center; place-content: center; gap: var(--kui-space-xs); text-align: center; }
+.kui-empty-state__icon { display: grid; min-width: 2rem; min-height: 2rem; margin-block-end: var(--kui-space-xs); color: var(--kui-color-text-quiet); place-items: center; }
+.kui-empty-state__icon svg { width: 2rem; height: 2rem; stroke-width: 1.5; }
+.kui-empty-state strong { color: var(--kui-color-text); font-size: var(--kui-font-l); }
+.kui-empty-state > span { max-width: 24rem; font-size: var(--kui-font-s); line-height: 1.45; }
+.kui-empty-state__action { margin-block-start: var(--kui-space-xs); }

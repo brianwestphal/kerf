@@ -217,14 +217,16 @@ where you want the diagnostics while developing the package anyway.
 
 ## 13.5 Publishing
 
-The repo publishes `kerfjs`, `eslint-plugin-kerfjs`, and `create-kerf-component`
+The repo publishes `kerfjs`, `eslint-plugin-kerfjs`, `create-kerf-component`, and
+the first-party `@kerfjs/ui` component library
 from a single git tag in lockstep — not a workspace monorepo, just sibling
 directories each with their own `package.json`, `package-lock.json`, and a
 dedicated CI workflow (e.g. `.github/workflows/release-eslint-plugin.yml`,
-`release-create-kerf-component.yml`) gated on an npm Trusted-Publisher
+`release-create-kerf-component.yml`, `release-ui.yml`) gated on an npm Trusted-Publisher
 environment. A third-party component package follows the same shape: build with
 `tsup`, emit ESM + `.d.ts`, publish with npm provenance. There is no npm org/scope
-requirement — all three publish unscoped.
+requirement — `@kerfjs/ui` is scoped; the other three publish unscoped. See
+[`21-ui-package.md`](21-ui-package.md) for the first-party component contract.
 
 ## 13.6 Checklist
 

@@ -1,0 +1,9 @@
+.kui-toolbar { display: grid; width: 100%; min-height: 3.5rem; padding: .55rem 1rem; box-sizing: border-box; border-bottom: 1px solid var(--kui-color-border); background: var(--kui-color-surface); grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; font-family: var(--kui-font-sans); }
+.kui-toolbar[data-has-center="false"] { grid-template-columns: minmax(0, 1fr) auto; }
+.kui-toolbar[data-divider="false"] { border-bottom-color: transparent; }
+.kui-toolbar__leading, .kui-toolbar__trailing { display: flex; min-width: 0; align-items: center; gap: var(--kui-space-xs); }
+.kui-toolbar__leading { padding-inline-end: .75rem; overflow: hidden; }
+.kui-toolbar__trailing { justify-content: flex-end; }
+.kui-toolbar__center { min-width: 0; }
+.kui-toolbar[data-has-center="false"] .kui-toolbar__center, .kui-toolbar__leading:empty, .kui-toolbar__trailing:empty { display: none; }
+@media (max-width: 42rem) { .kui-toolbar { padding-inline: .7rem; } }

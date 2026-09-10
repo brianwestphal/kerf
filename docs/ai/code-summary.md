@@ -245,6 +245,7 @@ kerf/
 ├── .github/workflows/
 │   ├── ci.yml                    ← test + lint + typecheck on push/PR
 │   ├── pages.yml                 ← build + deploy reactivity-demo to GitHub Pages on push to main
+│   ├── release-ui.yml            ← validate/build @kerfjs/ui without OIDC, transfer dist/ artifact, publish from the token-only job
 │   └── release.yml               ← publish on v*.*.* (stable) and v*-beta.* (beta) — single workflow because npm allows only one trusted publisher per package
 ├── package.json
 ├── tsconfig.json
@@ -261,6 +262,7 @@ kerf/
 ├── kerf.claude-skill.md          ← KF-128 — drop-in Claude Code skill; copy into `~/.claude/skills/kerf-app/SKILL.md`
 ├── eslint-plugin/                ← KF-214 — `eslint-plugin-kerfjs` sub-package (own package.json + node_modules, published separately). Eight AST-only rules — `no-inline-jsx-event-handlers` / `require-data-key-in-each` / `no-nested-mount` / `prefer-module-jsx-augmentation` at error, plus `require-delegate-disposer` / `prefer-attr-selector` / `no-raw-with-dynamic-arg` / `ai-assistant-configs` at warn — paired with the dev-warn family in `src/dev-*.ts` to enforce the hard rules at edit time. Tests via `npm test` in that directory (`node --test` + ESLint `RuleTester` + `@typescript-eslint/parser`). Ignored by the root `eslint.config.js`.
 ├── create-kerf-component/        ← KF-255 — `create-kerf-component` initializer sub-package (own package.json + package-lock, published in lockstep with kerfjs). `index.js` is the zero-dependency CLI (`npm create kerf-component@latest <dir>`); `template/` is the scaffolded component package encoding the docs/13 hard rules (kerfjs peerDependency + tsup `external`, ESM + `.d.ts`, `jsxImportSource: "kerfjs"`, subpath exports, an example `Counter` with a factory + `wire(root)` disposer); `_gitignore` is renamed to `.gitignore` on scaffold. Tests via `npm test` (`node --test tests/scaffold.test.js`). The template's `src/` is typechecked against built `dist/` by `tests/dist/scaffold-typing/tsconfig.json` (the living-proof gate). CI job in `ci.yml`; release via `.github/workflows/release-create-kerf-component.yml`; version bumped in lockstep by `scripts/release.sh`.
+├── ui/                           ← `@kerfjs/ui`, the fourth lockstep sibling package. `src/` holds generic SafeHtml primitives + namespaced CSS; every JS/type/CSS path is explicitly exported; `select-register.ts` is the only custom-element registration boundary; `ux-demo/` is the production-backed catalog; `docs/`, `ai/skill.md`, and `llms.txt` expose design, accessibility, and AI contracts; unit + bundle + three-engine browser suites live under `tests/`.
 └── README.md
 ```
 
@@ -357,6 +359,12 @@ The five entries (`index`, `jsx-runtime`, `testing`, `array-signal`, `html`) eac
 
 Runtime dep (`@preact/signals-core`) is external — consumers' bundlers pick it up from their own `node_modules`.
 
+`ui/npm run build` independently emits the ESM/type entry shims for
+`@kerfjs/ui`. `kerfjs` and optional Web Awesome stay external; CSS ships as
+source subpaths. The package's bundle gate proves root-barrel tree-shaking and
+that `Select` stays registration-free until `@kerfjs/ui/select/register` is
+imported.
+
 ## Where to look for X
 
 | If you're touching... | look in |
@@ -375,6 +383,7 @@ Runtime dep (`@preact/signals-core`) is external — consumers' bundlers pick it
 | Benchmark harness / perf numbers | `bench/` (`bench/README.md` + `setup.sh` / `run.sh` / `results.sh` / `aggregate-results.mjs` are the LOCAL dev-only harness → gitignored `results.local.*`). PUBLISHED numbers come from `bench/import-krausest.mjs` (KF-291), which fetches the official upstream krausest results and writes the git-tracked `bench/results.json` + `results.md`; homepage's `site/src/components/PerfTable.astro` imports `bench/results.json` — refresh by re-running the importer and committing. |
 | Migrating hub (`/kerf/migrating/`) | `docs/10-migrating.md` (design doc) + `site/src/content/docs/migrating/{index.mdx,react.md,alpine.md,lit.md,vanjs.md}` (rendered pages) — KF-132 + KF-156/157/158/159 |
 | Drop-in AI-tool config | `kerf.cursorrules` + `kerf.claude-skill.md` at repo root (source of truth) — both are hand-maintained condensations of `docs/ai/usage-guide.md`. KF-215 ships generated mirrors inside the npm package at `ai/skill.md` / `ai/cursorrules` / `ai/manifest.json`; regenerate via `npm run ai-bundle:sync`; design + canonical-file contract in `docs/12-ai-assistant-configs.md` |
+| First-party components / styles | `ui/src/`, `ui/docs/component-contract.md`, `ui/docs/accessibility.md`, and `ui/ux-demo/`; package overview in `docs/21-ui-package.md` |
 
 ## Update triggers
 

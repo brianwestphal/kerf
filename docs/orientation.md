@@ -1,14 +1,14 @@
 # kerf — orientation for new developers
 
-> One-pager. **Hard cap: 500 words.** Assumes you've used a reactive UI library (React, Vue, Solid). The `check-requirements-against-code` skill keeps this in sync.
+> One-pager. **Hard cap: 500 words.** Assumes experience with a reactive UI library. The `check-requirements-against-code` skill keeps this synchronized.
 
 ## Mental model
 
-kerf is **signals + a DOM-string render + a morph diff**. There is no virtual DOM, no compiler, no fiber tree, no scheduler.
+kerf is **signals + DOM-string rendering + a morph diff**. There is no virtual DOM, compiler, fiber tree, or scheduler.
 
 `mount(rootEl, () => jsx)` runs your render function inside an `effect()` from `@preact/signals-core`. The render function returns a `SafeHtml` — an HTML string for static markup, plus structured "list" segments where `each()` was called. On a signal write, the effect re-fires; `morph()` reconciles the static parts against the live DOM in place; the keyed list reconciler patches each `each()` list against its live children in O(changes). Coming from React: there is no in-memory tree to diff — kerf re-reads the live DOM and writes only what changed.
 
-One tier below: a signal handed *itself* into a JSX hole (`class={sig}`) binds that node directly — later writes update it with no render re-run.
+A signal handed *itself* into a JSX hole (`class={sig}`) binds that node directly; later writes skip re-rendering.
 
 ![Render pipeline](./diagrams/render-pipeline.svg)
 
@@ -23,6 +23,7 @@ One tier below: a signal handed *itself* into a JSX hole (`class={sig}`) binds t
 - **Event handlers**: never inline `onClick={fn}` — the JSX runtime renders strings and throws. Use `delegate(rootEl, 'click', selector, handler)` (`src/delegate.ts`).
 - **Opting a subtree out of the diff**: `data-morph-skip` / `data-morph-skip-children` / `data-morph-preserve` on the host. See `docs/4-render.md` §4.3.
 - **No-build authoring**: the `html` tagged template (`kerfjs/html`, `src/html.ts`) — JSX-identical semantics, no transform.
+- **First-party components**: `ui/src/` + `docs/21-ui-package.md` — the optional `@kerfjs/ui` package and its UX catalog.
 
 ## What surprises React people
 
@@ -37,4 +38,4 @@ One coherent concern per file, one primary export per file, ESM-only, kebab-case
 
 ## Deeper reading
 
-`docs/1-overview.md` → `docs/20-router.md` (design); `docs/ai/usage-guide.md` (AI-first reference); `CLAUDE.md` (canonical agent doc).
+`docs/1-overview.md` → `docs/21-ui-package.md` (design); `docs/ai/usage-guide.md` (AI-first reference); `CLAUDE.md` (canonical agent doc).

@@ -1,0 +1,11 @@
+.kui-select::part(combobox) { min-height: 2.5rem; padding-inline: .55rem .45rem; }
+.kui-select::part(display-input) { min-width: 0; overflow: hidden; padding: 0; text-overflow: ellipsis; white-space: nowrap; }
+.kui-select::part(listbox) { width: max-content; min-width: 100%; max-width: min(20rem, calc(100vw - 1.25rem)); }
+.kui-select--fit-menu::part(listbox) { width: 100%; }
+.kui-select__icon { display: inline-flex; width: 1rem; height: 1rem; flex: none; }
+.kui-select__icon[slot="start"] { margin-inline-end: .5rem !important; }
+.kui-select__custom-selected { display: inline-flex; min-width: 0; align-items: center; }
+.kui-select--custom-selected::part(display-input) { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); }
+.kui-select__group { display: grid; padding: .25rem 0; }
+.kui-select__group--separated { margin-block-start: .25rem; padding-block-start: .5rem; border-block-start: 1px solid var(--kui-color-border-quiet); }
+.kui-select__group-title { padding: .2rem .75rem .3rem; color: var(--kui-color-text-quiet); font-size: var(--kui-font-xs); font-weight: 750; letter-spacing: .04em; text-transform: uppercase; }

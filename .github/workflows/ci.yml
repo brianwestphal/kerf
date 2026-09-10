@@ -89,6 +89,29 @@ jobs:
       - run: npm ci
       - run: npm test
 
+  ui:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ui
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: '${{ env.NODE_VERSION }}'
+          cache: npm
+          cache-dependency-path: ui/package-lock.json
+      - name: Install kerfjs build dependencies
+        working-directory: .
+        run: npm ci
+      - name: Build the local kerfjs peer
+        working-directory: .
+        run: npm run build
+      - run: npm ci
+      - run: npm run check
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:e2e -- --project=chromium
+
   # KF-118: browser tests run on every push/PR alongside the unit suites.
   # The happy-dom unit tests can't model SVG/MathML namespacing, IME
   # composition, or real mutation counts — Playwright covers those cases

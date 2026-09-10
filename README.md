@@ -69,7 +69,7 @@ Write plain `.tsx` and build with your existing esbuild / Vite / tsup — no ext
 
 5. **Safe by default.** Text and attributes are HTML-escaped automatically, URL attributes are scheme-screened (`javascript:` dropped), and inline `on*` handlers are rejected outright — so untrusted data stays inert. `raw()` is the explicit, auditable opt-out.
 
-**Plus, nothing you don't ask for:** JSX typed against the HTML standard (not React's props) · a ~18-export API with no hooks, lifecycle, or per-instance state · **nine** tree-shakeable companion subpaths (`router`, `list`, `overlay`, `async`, …) that stay out of the core until imported · an [ESLint plugin](https://brianwestphal.github.io/kerf/docs/eslint-plugin/) + opt-in dev warnings + a `create-kerf-component` scaffold · plain TS/JSX/ESM that drops into esbuild / Vite / tsup — or **no** build at all via the `html` tagged template.
+**Plus, nothing you don't ask for:** JSX typed against the HTML standard (not React's props) · a ~18-export API with no hooks, lifecycle, or per-instance state · **nine** tree-shakeable companion subpaths (`router`, `list`, `overlay`, `async`, …) that stay out of the core until imported · an [ESLint plugin](https://brianwestphal.github.io/kerf/docs/eslint-plugin/) + opt-in dev warnings + `create-kerf-component` scaffold + optional [`@kerfjs/ui`](https://brianwestphal.github.io/kerf/docs/ui-package/) component layer · plain TS/JSX/ESM that drops into esbuild / Vite / tsup — or **no** build at all via the `html` tagged template.
 ## When to use Kerf
 
 - **Hybrid desktop apps (Tauri / Electron)** — small bundle, predictable diff, debuggable runtime; ideal for the embedded webview.
@@ -288,6 +288,20 @@ npm create kerf-component@latest my-widgets
 
 See [`docs/13-component-packages.md`](./docs/13-component-packages.md) for the full authoring guide.
 
+### Optional: `@kerfjs/ui`
+
+Install the accessible first-party component layer when an app needs shared
+toolbars, menus, tabs, headers, resize handles, selects, or feedback states:
+
+```bash
+npm install @kerfjs/ui
+```
+
+Import the complete CSS layer with `@kerfjs/ui/styles.css`, or combine
+`foundation.css` with per-component CSS subpaths. Web Awesome registration is
+explicit at `@kerfjs/ui/select/register`, so it stays out of unrelated bundles.
+See [`docs/21-ui-package.md`](./docs/21-ui-package.md).
+
 ## Links
 
 - **Site:** [brianwestphal.github.io/kerf](https://brianwestphal.github.io/kerf/)
@@ -296,6 +310,7 @@ See [`docs/13-component-packages.md`](./docs/13-component-packages.md) for the f
 - **AI guide:** [`docs/ai/usage-guide.md`](./docs/ai/usage-guide.md) — reference for AI tools fetching kerf docs (linked from `llms.txt`)
 - **ESLint plugin:** [brianwestphal.github.io/kerf/docs/eslint-plugin/](https://brianwestphal.github.io/kerf/docs/eslint-plugin/) — `eslint-plugin-kerfjs`; eight rules (four hard-rule errors + four warns: `require-delegate-disposer`, `prefer-attr-selector`, `no-raw-with-dynamic-arg`, `ai-assistant-configs`) at edit time (source: [`eslint-plugin/`](./eslint-plugin/))
 - **Component scaffold:** `npm create kerf-component@latest <dir>` — `create-kerf-component`; generates a publishable component package with the hard packaging rules pre-wired (source: [`create-kerf-component/`](./create-kerf-component/))
+- **UI components:** [`@kerfjs/ui`](https://brianwestphal.github.io/kerf/docs/ui-package/) — accessible, composable first-party primitives (source: [`ui/`](./ui/))
 - **Demo:** [live demo](https://brianwestphal.github.io/kerf/demo/) — nine sections exercising every primitive (counter, store-backed cart, focus survival, keyed list, morph-skip, SVG render, Tier-2 capture, `arraySignal` patches, fine-grained signal bindings)
 - **Repo:** [github.com/brianwestphal/kerf](https://github.com/brianwestphal/kerf)
 

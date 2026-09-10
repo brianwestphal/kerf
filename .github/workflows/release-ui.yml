@@ -1,0 +1,90 @@
+name: Release @kerfjs/ui
+
+# @kerfjs/ui shares kerfjs's v* tags and version. Stable manifests are bumped
+# together by scripts/release.sh; beta versions are applied ephemerally below.
+permissions:
+  contents: read
+
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'
+      - 'v[0-9]+.[0-9]+.[0-9]+-beta.[0-9]+'
+
+concurrency:
+  group: release-ui-${{ github.ref_name }}
+  cancel-in-progress: false
+
+env:
+  NODE_VERSION: '22.21.0'
+
+jobs:
+  validate-and-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: '${{ env.NODE_VERSION }}'
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            ui/package-lock.json
+      - run: npm ci
+      - run: npm run build
+      - run: npm ci
+        working-directory: ui
+      - run: npm run check
+        working-directory: ui
+      - name: Upload built UI dist/
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: kerfjs-ui-dist
+          path: ui/dist/
+          retention-days: 1
+          if-no-files-found: error
+
+  detect:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.extract.outputs.version }}
+      is_beta: ${{ steps.extract.outputs.is_beta }}
+    steps:
+      - id: extract
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          if [[ "$VERSION" == *-beta.* ]]; then IS_BETA=true; else IS_BETA=false; fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "is_beta=$IS_BETA" >> "$GITHUB_OUTPUT"
+
+  npm-publish:
+    needs: [validate-and-build, detect]
+    runs-on: ubuntu-latest
+    environment: npm-publish-ui
+    permissions:
+      contents: read
+      id-token: write
+    defaults:
+      run:
+        working-directory: ui
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: '${{ env.NODE_VERSION }}'
+          registry-url: 'https://registry.npmjs.org/'
+      - run: npm install -g npm@11
+      - name: Download the token-less build artifact
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: kerfjs-ui-dist
+          path: ui/dist/
+      - name: Apply beta version (ephemeral)
+        if: needs.detect.outputs.is_beta == 'true'
+        run: npm version "${{ needs.detect.outputs.version }}" --no-git-tag-version --allow-same-version
+      - name: Publish stable
+        if: needs.detect.outputs.is_beta == 'false'
+        run: npm publish --ignore-scripts --provenance --access public
+      - name: Publish beta
+        if: needs.detect.outputs.is_beta == 'true'
+        run: npm publish --ignore-scripts --tag beta --provenance --access public

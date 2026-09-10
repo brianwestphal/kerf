@@ -1,4 +1,4 @@
-<!-- kerf-skill-version: 1.14.2 -->
+<!-- kerf-skill-version: 1.15.0 -->
 # kerf.cursorrules — rules for building apps with kerf
 #
 # Drop this file into your project as `.cursorrules` (Cursor will pick it
@@ -16,6 +16,26 @@ You are writing a UI in kerf — a ~12 KB reactive framework (~13 KB with `array
   - **Switch individual warnings on with `enableWarnings()`**, which is the only switch that works in a browser (no `process` object there, and a bundler `define` cannot reach the read): `const dev = await import('kerfjs/dev'); dev.enableWarnings({ staleBinding: true, narrowSet: true, invariants: 'throw' });`. The `KERF_DEV_WARN_*` env vars do the same for Node/SSR/CI; an explicit call wins either way.
   - **A component package must NEVER import `kerfjs/dev`.** The hooks are process-global, so installing them is the consuming app's decision — a library that does it forces the diagnostics (and the chunk) on every consumer. Put the import in your demo page or test harness instead.
 - Recommended: also install `eslint-plugin-kerfjs` (`npm install --save-dev eslint-plugin-kerfjs`) and add `kerfjs.configs.recommended` to the project's eslint config. It enforces five of the hard rules below (no inline JSX event handlers, require `data-key` in `each()`, capture `delegate()` disposers, no nested `mount()`, prefer module JSX augmentation) at edit time so violations surface as IDE squiggles before any code runs.
+
+## Optional first-party UI
+
+Install `@kerfjs/ui` for shared toolbars, menu rows, tabs, headers/value tables,
+resizable regions, selects, banners, empty states, and loading indicators.
+Import `@kerfjs/ui/styles.css`, or combine `foundation.css` with explicit
+per-component CSS. Reuse these primitives before creating parallel local ones;
+keep domain state, commands, routing, and tab/menu policy in the app.
+
+Wire emitted `data-action` hooks at the mount root and retain disposers.
+`wireResizableRegions()` is the eventful helper and returns a disposer.
+`AppTab` supplies semantic/roving-tabindex markup; its host supplies
+arrow/Home/End navigation and close policy. Icons/spinners are decorative unless
+labeled, and assertive banners are only for urgent interruption.
+
+`Select` is pure markup until the app explicitly imports
+`@kerfjs/ui/select/register`. Do that once in the application entry that uses
+Select; never hide registration inside a component. Web Awesome is an optional
+peer and stays out of non-Select bundles. More detail ships at
+`node_modules/@kerfjs/ui/ai/skill.md`.
 
 ## Public API — one import path
 

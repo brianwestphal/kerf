@@ -1,0 +1,42 @@
+:root {
+  color-scheme: light dark;
+  --kui-font-sans: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --kui-font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+  --kui-color-surface: var(--wa-color-surface-default, light-dark(#ffffff, #202124));
+  --kui-color-surface-raised: var(--wa-color-surface-raised, light-dark(#ffffff, #292a2d));
+  --kui-color-surface-lowered: var(--wa-color-surface-lowered, light-dark(#f3f4f6, #17181a));
+  --kui-color-border: var(--wa-color-surface-border, light-dark(#d9dce1, #46484d));
+  --kui-color-border-quiet: var(--wa-color-neutral-border-quiet, light-dark(#e7e9ed, #36383c));
+  --kui-color-text: var(--wa-color-text-normal, light-dark(#202124, #f2f3f5));
+  --kui-color-text-quiet: var(--wa-color-text-quiet, light-dark(#62666d, #b4b7bd));
+  --kui-color-accent: var(--wa-color-brand-fill-normal, light-dark(#e5e8ff, #353c74));
+  --kui-color-accent-text: var(--wa-color-brand-on-quiet, light-dark(#283b8f, #d9e0ff));
+  --kui-color-success: light-dark(#e2f5e9, #173d29);
+  --kui-color-success-text: light-dark(#176238, #a9e9c0);
+  --kui-color-warning: var(--wa-color-warning-fill-quiet, light-dark(#fff1ce, #4a3414));
+  --kui-color-warning-text: var(--wa-color-warning-on-quiet, light-dark(#744b00, #ffd78a));
+  --kui-color-danger: var(--wa-color-danger-fill-quiet, light-dark(#ffe6e5, #4a2221));
+  --kui-color-danger-text: var(--wa-color-danger-on-quiet, light-dark(#8c2522, #ffb7b3));
+  --kui-radius-s: .4rem;
+  --kui-radius-m: .7rem;
+  --kui-radius-pill: 999px;
+  --kui-space-2xs: .25rem;
+  --kui-space-xs: .45rem;
+  --kui-space-s: .65rem;
+  --kui-space-m: 1rem;
+  --kui-space-l: 1.5rem;
+  --kui-font-xs: .75rem;
+  --kui-font-s: .875rem;
+  --kui-font-m: 1rem;
+  --kui-font-l: 1.25rem;
+  --kui-focus-ring: 2px solid var(--kui-color-accent-text);
+  --kui-shadow-s: 0 1px 3px rgb(0 0 0 / .16);
+  --kui-shadow-l: 0 16px 44px rgb(0 0 0 / .22);
+}
+
+@media (prefers-contrast: more) {
+  :root {
+    --kui-color-border: currentColor;
+    --kui-focus-ring: 3px solid currentColor;
+  }
+}

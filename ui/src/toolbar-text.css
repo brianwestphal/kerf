@@ -1,0 +1,4 @@
+.kui-toolbar-text { display: inline-flex; min-width: 0; max-width: 100%; min-height: 2.5rem; overflow: hidden; color: var(--kui-color-text-quiet); font-weight: 650; line-height: 1; text-overflow: ellipsis; white-space: nowrap; align-items: center; }
+.kui-toolbar-text[data-size="large"] { font-size: var(--kui-font-m); letter-spacing: -.015em; }
+.kui-toolbar-text[data-size="default"] { font-size: var(--kui-font-s); }
+.kui-toolbar-text[data-size="small"] { font-family: var(--kui-font-mono); font-size: var(--kui-font-xs); }

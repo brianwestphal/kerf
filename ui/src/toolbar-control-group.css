@@ -1,0 +1,8 @@
+.kui-toolbar-control-group { --kui-toolbar-control-background: var(--kui-color-surface-lowered); --kui-toolbar-control-border: var(--kui-color-border); --kui-toolbar-control-hover: var(--kui-color-surface); display: inline-flex; min-height: 2.5rem; padding: .2rem; box-sizing: border-box; border: 1px solid var(--kui-toolbar-control-border); border-radius: var(--kui-radius-pill); color: var(--kui-color-text-quiet); background: var(--kui-toolbar-control-background); align-items: center; gap: .15rem; }
+.kui-toolbar-control-group[data-tone="dark"] { --kui-toolbar-control-background: rgb(0 0 0 / .42); --kui-toolbar-control-border: rgb(255 255 255 / .28); color: #fff; }
+.kui-toolbar-control-group[data-appearance="borderless"] { border-color: transparent; background: transparent; }
+.kui-toolbar-control-group > :is(button, wa-button) { min-width: 2rem; min-height: 2rem; border: 0; border-radius: var(--kui-radius-pill); color: inherit; background: transparent; }
+.kui-toolbar-control-group > button { display: grid; padding: 0; cursor: pointer; place-items: center; }
+.kui-toolbar-control-group > :is(button, wa-button):hover { background: var(--kui-toolbar-control-hover); }
+.kui-toolbar-control-group > :is(button, wa-button):focus-visible { outline: var(--kui-focus-ring); outline-offset: 1px; }
+.kui-toolbar-control-group[data-button-appearance="push"] > :is(button, wa-button)[aria-pressed="true"] { color: var(--kui-color-accent-text); background: var(--kui-color-accent); }

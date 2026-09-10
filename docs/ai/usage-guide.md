@@ -43,6 +43,38 @@ Vite / esbuild need no extra config. The `jsx-runtime` and `jsx-dev-runtime` sub
 
 **No build tool at all?** (CDN / importmap page, `<script type="module">` island): skip JSX and author with the `html` tagged template from `kerfjs/html` — same runtime semantics as JSX, no transform needed. See the `html` row below. To load kerf itself from a CDN, import a **version-pinned** `https://esm.sh/kerfjs@4` (esm.sh rewrites kerf's internal `@preact/signals-core` import for you), or use jsDelivr / unpkg behind an importmap that also maps `@preact/signals-core`. Don't link a raw `dist/*.js` path — the unrewritten bare import fails to load. Full recipes: `docs/6-jsx-runtime.md` §6.11.1.
 
+## First-party UI components
+
+For a kerf app that needs shared visual primitives, add the optional lockstep
+package and its semantic styles:
+
+```bash
+npm install @kerfjs/ui
+```
+
+```ts
+import { AppTab, StateBanner, Toolbar } from '@kerfjs/ui';
+import '@kerfjs/ui/styles.css';
+```
+
+The initial surface covers `LucideIcon`; toolbars; menu rows/headers; app tabs;
+page/dialog headers and value tables; resizable regions; a Web Awesome Select;
+and banner/empty/loading states. Use explicit subpaths when bundle ownership
+matters. `foundation.css` + per-component CSS is the smallest style route.
+
+The package keeps app policy outside components: wire emitted `data-action`
+hooks at the mount root, retain every disposer, and let the app own menu/tab
+order and routing. `wireResizableRegions(root, { onCommit })` is the behavioral
+exception and itself returns a disposer. Import
+`@kerfjs/ui/select/register` once only when using Select; that is the explicit
+custom-element side effect and Web Awesome is otherwise optional.
+
+Accessibility is contractual: keep supplied labels meaningful; decorative
+icons/spinners stay hidden from assistive technology; use banner `alert` only
+for urgent interruption; implement arrow/Home/End behavior on the tab list; and
+do not remove the provided focus, reduced-motion, or forced-color styles. See
+[`docs/21-ui-package.md`](../21-ui-package.md) and `ui/ai/skill.md`.
+
 ## Public API — everything is in one import
 
 ```ts

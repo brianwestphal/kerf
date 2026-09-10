@@ -1,0 +1,10 @@
+.kui-state-banner { display: grid; min-height: 2.75rem; padding: .5rem .75rem; border: 1px solid var(--kui-color-border); color: var(--kui-color-text); background: var(--kui-color-surface-lowered); grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: var(--kui-space-s); }
+.kui-state-banner[data-tone="info"] { border-color: var(--kui-color-accent-text); color: var(--kui-color-accent-text); background: var(--kui-color-accent); }
+.kui-state-banner[data-tone="success"] { color: var(--kui-color-success-text); background: var(--kui-color-success); }
+.kui-state-banner[data-tone="warning"] { color: var(--kui-color-warning-text); background: var(--kui-color-warning); }
+.kui-state-banner[data-tone="danger"] { color: var(--kui-color-danger-text); background: var(--kui-color-danger); }
+.kui-state-banner__icon { display: grid; place-items: center; }
+.kui-state-banner__copy { display: flex; min-width: 0; align-items: baseline; gap: var(--kui-space-xs); }
+.kui-state-banner__copy span { color: currentColor; font-size: var(--kui-font-xs); opacity: .82; }
+.kui-state-banner__action { justify-self: end; }
+@media (max-width: 36rem) { .kui-state-banner__copy { display: grid; gap: .05rem; } }
