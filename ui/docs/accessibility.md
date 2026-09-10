@@ -26,7 +26,16 @@ The application owns persistence and collapsed/expanded policy. Keep the last ex
 
 ## Tabs
 
-`AppTab` renders one tab, not the containing tab system. Put tabs in a `role="tablist"`, pair them with `tabpanel` elements, and keep exactly one tab at `tabindex="0"`. The package sets selected tabs to `0` and unselected tabs to `-1`; the application owns Left/Right, Home/End, activation policy, and Delete/Backspace handling. After removal, focus the nearest surviving tab.
+`AppTab` renders one controlled tab. `TabBar` supplies the containing tab list,
+fixed leading/trailing regions, and a horizontally scrollable strip.
+`wireTabBars()` adds Left/Right wrapping, Home/End, Delete/Backspace close
+activation, same-bar pointer reordering, `Alt+Shift+ArrowLeft/ArrowRight`
+reordering, focus restoration, and scroll-into-view. It returns a disposer.
+
+The application owns the ordered tab array, selection, panels, close policy,
+routing, and persistence. On `onReorder`, synchronously render the reported
+order so the helper can restore focus to the moved tab. Pair tabs with
+`tabpanel` elements and keep exactly one selected tab at `tabindex="0"`.
 
 ## Verification matrix
 

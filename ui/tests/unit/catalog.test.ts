@@ -33,6 +33,7 @@ describe('UX catalog metadata', () => {
       'MenuHeader',
       'MenuItem',
       'AppTab',
+      'TabBar',
       'ResizableRegion',
       'Select',
       'StateBanner',

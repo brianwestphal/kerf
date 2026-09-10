@@ -74,6 +74,14 @@
       "types": "./dist/app-tab.d.ts",
       "import": "./dist/app-tab.js"
     },
+    "./tab-bar": {
+      "types": "./dist/tab-bar.d.ts",
+      "import": "./dist/tab-bar.js"
+    },
+    "./wire-tab-bars": {
+      "types": "./dist/wire-tab-bars.d.ts",
+      "import": "./dist/wire-tab-bars.js"
+    },
     "./page-header": {
       "types": "./dist/page-header.d.ts",
       "import": "./dist/page-header.js"
@@ -116,6 +124,7 @@
     "./menu-header.css": "./src/menu-header.css",
     "./resizable-region.css": "./src/resizable-region.css",
     "./app-tab.css": "./src/app-tab.css",
+    "./tab-bar.css": "./src/tab-bar.css",
     "./page-header.css": "./src/page-header.css",
     "./loading-spinner.css": "./src/loading-spinner.css",
     "./select.css": "./src/select.css",

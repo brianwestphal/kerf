@@ -14,6 +14,14 @@ declare module 'kerfjs/jsx-runtime' {
       };
       'wa-option': KerfCustomElement & { value?: string };
       'wa-divider': KerfCustomElement;
+      'wa-button': KerfCustomElement & {
+        slot?: string;
+        appearance?: string;
+        'with-caret'?: boolean;
+        'aria-label'?: string;
+      };
+      'wa-dropdown': KerfCustomElement & { placement?: string };
+      'wa-dropdown-item': KerfCustomElement;
     }
   }
 }

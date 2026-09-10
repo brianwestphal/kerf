@@ -16,6 +16,7 @@ export {
 } from './resizable-region.js';
 export { Select, type SelectChoice, type SelectProps } from './select.js';
 export { StateBanner, type StateBannerProps, type StateBannerTone } from './state-banner.js';
+export { TabBar, type TabBarProps } from './tab-bar.js';
 export { Toolbar, type ToolbarProps } from './toolbar.js';
 export { ToolbarControlGroup, type ToolbarControlGroupProps } from './toolbar-control-group.js';
 export { ToolbarText, type ToolbarTextProps, type ToolbarTextSize } from './toolbar-text.js';
@@ -25,3 +26,11 @@ export {
   wireResizableRegions,
   type WireResizableRegionsOptions,
 } from './wire-resizable-regions.js';
+export {
+  reorderTabs,
+  type TabDropPosition,
+  type TabReorder,
+  type TabReorderSource,
+  wireTabBars,
+  type WireTabBarsOptions,
+} from './wire-tab-bars.js';

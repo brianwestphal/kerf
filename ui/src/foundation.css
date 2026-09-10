@@ -1,37 +1,100 @@
 :root {
   color-scheme: light dark;
-  --kui-font-sans: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --kui-font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
-  --kui-color-surface: var(--wa-color-surface-default, light-dark(#ffffff, #202124));
-  --kui-color-surface-raised: var(--wa-color-surface-raised, light-dark(#ffffff, #292a2d));
-  --kui-color-surface-lowered: var(--wa-color-surface-lowered, light-dark(#f3f4f6, #17181a));
-  --kui-color-border: var(--wa-color-surface-border, light-dark(#d9dce1, #46484d));
-  --kui-color-border-quiet: var(--wa-color-neutral-border-quiet, light-dark(#e7e9ed, #36383c));
-  --kui-color-text: var(--wa-color-text-normal, light-dark(#202124, #f2f3f5));
-  --kui-color-text-quiet: var(--wa-color-text-quiet, light-dark(#62666d, #b4b7bd));
-  --kui-color-accent: var(--wa-color-brand-fill-normal, light-dark(#e5e8ff, #353c74));
-  --kui-color-accent-text: var(--wa-color-brand-on-quiet, light-dark(#283b8f, #d9e0ff));
-  --kui-color-success: light-dark(#e2f5e9, #173d29);
-  --kui-color-success-text: light-dark(#176238, #a9e9c0);
-  --kui-color-warning: var(--wa-color-warning-fill-quiet, light-dark(#fff1ce, #4a3414));
-  --kui-color-warning-text: var(--wa-color-warning-on-quiet, light-dark(#744b00, #ffd78a));
-  --kui-color-danger: var(--wa-color-danger-fill-quiet, light-dark(#ffe6e5, #4a2221));
-  --kui-color-danger-text: var(--wa-color-danger-on-quiet, light-dark(#8c2522, #ffb7b3));
-  --kui-radius-s: .4rem;
-  --kui-radius-m: .7rem;
-  --kui-radius-pill: 999px;
-  --kui-space-2xs: .25rem;
-  --kui-space-xs: .45rem;
-  --kui-space-s: .65rem;
-  --kui-space-m: 1rem;
-  --kui-space-l: 1.5rem;
-  --kui-font-xs: .75rem;
-  --kui-font-s: .875rem;
-  --kui-font-m: 1rem;
-  --kui-font-l: 1.25rem;
-  --kui-focus-ring: 2px solid var(--kui-color-accent-text);
-  --kui-shadow-s: 0 1px 3px rgb(0 0 0 / .16);
-  --kui-shadow-l: 0 16px 44px rgb(0 0 0 / .22);
+
+  /* Web Awesome-compatible typography and geometry with stable standalone fallbacks. */
+  --kui-font-sans: var(--wa-font-family-body, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif);
+  --kui-font-mono: var(--wa-font-family-code, ui-monospace, SFMono-Regular, Menlo, monospace);
+  --kui-font-2xs: var(--wa-font-size-2xs, 11px);
+  --kui-font-xs: var(--wa-font-size-xs, 12px);
+  --kui-font-s: var(--wa-font-size-s, 14px);
+  --kui-font-m: var(--wa-font-size-m, 16px);
+  --kui-font-l: var(--wa-font-size-l, 20px);
+  --kui-font-2xl: var(--wa-font-size-2xl, 32px);
+  --kui-font-weight-semibold: var(--wa-font-weight-semibold, 650);
+  --kui-space-2xs: var(--wa-space-2xs, .25rem);
+  --kui-space-xs: var(--wa-space-xs, .5rem);
+  --kui-space-s: var(--wa-space-s, .75rem);
+  --kui-space-m: var(--wa-space-m, 1rem);
+  --kui-space-l: var(--wa-space-l, 1.5rem);
+  --kui-space-xl: var(--wa-space-xl, 2rem);
+  --kui-radius-s: var(--wa-border-radius-s, .1875rem);
+  --kui-radius-m: var(--wa-border-radius-m, .375rem);
+  --kui-radius-l: var(--wa-border-radius-l, .75rem);
+  --kui-radius-circle: var(--wa-border-radius-circle, 50%);
+  --kui-radius-pill: var(--wa-border-radius-pill, 999px);
+
+  /* macOS Tahoe light semantics used by Hot Sheet 2, with a compatible dark extension. */
+  --kui-color-surface: var(--wa-color-surface-default, light-dark(#fff, #1c1c1e));
+  --kui-color-surface-raised: var(--wa-color-surface-raised, var(--kui-color-surface));
+  --kui-color-surface-lowered: var(--wa-color-surface-lowered, light-dark(#f2f2f7, #111113));
+  --kui-color-text: var(--wa-color-text-normal, light-dark(#1d1d1f, #f5f5f7));
+  --kui-color-text-quiet: var(--wa-color-text-quiet, light-dark(#6e6e73, #aeaeb2));
+  --kui-color-text-link: var(--wa-color-text-link, var(--kui-color-brand-fill-loud));
+
+  --kui-color-neutral-fill-quiet: var(--wa-color-neutral-fill-quiet, var(--kui-color-surface-lowered));
+  --kui-color-neutral-fill-normal: var(--wa-color-neutral-fill-normal, light-dark(#e5e5ea, #3a3a3c));
+  --kui-color-neutral-fill-loud: var(--wa-color-neutral-fill-loud, light-dark(#48484a, #e5e5ea));
+  --kui-color-neutral-border-quiet: var(--wa-color-neutral-border-quiet, var(--kui-color-neutral-fill-normal));
+  --kui-color-neutral-border-normal: var(--wa-color-neutral-border-normal, light-dark(#d1d1d6, #48484a));
+  --kui-color-neutral-border-loud: var(--wa-color-neutral-border-loud, light-dark(#aeaeb2, #636366));
+  --kui-color-neutral-on-quiet: var(--wa-color-neutral-on-quiet, var(--kui-color-text-quiet));
+  --kui-color-neutral-on-normal: var(--wa-color-neutral-on-normal, var(--kui-color-text));
+  --kui-color-neutral-on-loud: var(--wa-color-neutral-on-loud, var(--kui-color-surface));
+
+  --kui-color-brand-fill-loud: var(--wa-color-brand-fill-loud, light-dark(#0088ff, #64d2ff));
+  --kui-color-brand-fill-quiet: var(--wa-color-brand-fill-quiet, color-mix(in srgb, var(--kui-color-brand-fill-loud) 8%, var(--kui-color-surface)));
+  --kui-color-brand-fill-normal: var(--wa-color-brand-fill-normal, color-mix(in srgb, var(--kui-color-brand-fill-loud) 16%, var(--kui-color-surface)));
+  --kui-color-brand-border-quiet: var(--wa-color-brand-border-quiet, color-mix(in srgb, var(--kui-color-brand-fill-loud) 35%, var(--kui-color-surface)));
+  --kui-color-brand-border-normal: var(--wa-color-brand-border-normal, color-mix(in srgb, var(--kui-color-brand-fill-loud) 58%, var(--kui-color-surface)));
+  --kui-color-brand-border-loud: var(--wa-color-brand-border-loud, var(--kui-color-brand-fill-loud));
+  --kui-color-brand-on-quiet: var(--wa-color-brand-on-quiet, light-dark(#1e6ef4, #8acbff));
+  --kui-color-brand-on-normal: var(--wa-color-brand-on-normal, var(--kui-color-brand-on-quiet));
+  --kui-color-brand-on-loud: var(--wa-color-brand-on-loud, #fff);
+
+  --kui-color-success-fill-loud: var(--wa-color-success-fill-loud, #34c759);
+  --kui-color-success-fill-quiet: var(--wa-color-success-fill-quiet, color-mix(in srgb, var(--kui-color-success-fill-loud) 14%, var(--kui-color-surface)));
+  --kui-color-success-fill-normal: var(--wa-color-success-fill-normal, color-mix(in srgb, var(--kui-color-success-fill-loud) 72%, var(--kui-color-surface)));
+  --kui-color-success-border-quiet: var(--wa-color-success-border-quiet, color-mix(in srgb, var(--kui-color-success-fill-loud) 32%, var(--kui-color-surface)));
+  --kui-color-success-border-normal: var(--wa-color-success-border-normal, color-mix(in srgb, var(--kui-color-success-fill-loud) 50%, var(--kui-color-surface)));
+  --kui-color-success-border-loud: var(--wa-color-success-border-loud, color-mix(in srgb, var(--kui-color-success-fill-loud) 78%, var(--kui-color-neutral-on-normal)));
+  --kui-color-success-on-quiet: var(--wa-color-success-on-quiet, #008932);
+  --kui-color-success-on-normal: var(--wa-color-success-on-normal, #006d28);
+  --kui-color-success-on-loud: var(--wa-color-success-on-loud, #fff);
+
+  --kui-color-warning-fill-loud: var(--wa-color-warning-fill-loud, #ffcc00);
+  --kui-color-warning-fill-quiet: var(--wa-color-warning-fill-quiet, color-mix(in srgb, var(--kui-color-warning-fill-loud) 9%, var(--kui-color-surface)));
+  --kui-color-warning-fill-normal: var(--wa-color-warning-fill-normal, color-mix(in srgb, var(--kui-color-warning-fill-loud) 22%, var(--kui-color-surface)));
+  --kui-color-warning-border-quiet: var(--wa-color-warning-border-quiet, color-mix(in srgb, var(--kui-color-warning-fill-loud) 35%, var(--kui-color-surface)));
+  --kui-color-warning-border-normal: var(--wa-color-warning-border-normal, color-mix(in srgb, var(--kui-color-warning-fill-loud) 58%, var(--kui-color-neutral-on-normal)));
+  --kui-color-warning-border-loud: var(--wa-color-warning-border-loud, color-mix(in srgb, var(--kui-color-warning-fill-loud) 78%, var(--kui-color-neutral-on-normal)));
+  --kui-color-warning-on-quiet: var(--wa-color-warning-on-quiet, #a16a00);
+  --kui-color-warning-on-normal: var(--wa-color-warning-on-normal, #5f3f00);
+  --kui-color-warning-on-loud: var(--wa-color-warning-on-loud, #1d1d1f);
+
+  --kui-color-danger-fill-loud: var(--wa-color-danger-fill-loud, #ff383c);
+  --kui-color-danger-fill-quiet: var(--wa-color-danger-fill-quiet, color-mix(in srgb, var(--kui-color-danger-fill-loud) 7%, var(--kui-color-surface)));
+  --kui-color-danger-fill-normal: var(--wa-color-danger-fill-normal, color-mix(in srgb, var(--kui-color-danger-fill-loud) 14%, var(--kui-color-surface)));
+  --kui-color-danger-border-quiet: var(--wa-color-danger-border-quiet, color-mix(in srgb, var(--kui-color-danger-fill-loud) 32%, var(--kui-color-surface)));
+  --kui-color-danger-border-normal: var(--wa-color-danger-border-normal, color-mix(in srgb, var(--kui-color-danger-fill-loud) 50%, var(--kui-color-surface)));
+  --kui-color-danger-border-loud: var(--wa-color-danger-border-loud, color-mix(in srgb, var(--kui-color-danger-fill-loud) 78%, var(--kui-color-neutral-on-normal)));
+  --kui-color-danger-on-quiet: var(--wa-color-danger-on-quiet, #c20b20);
+  --kui-color-danger-on-normal: var(--wa-color-danger-on-normal, #8e0717);
+  --kui-color-danger-on-loud: var(--wa-color-danger-on-loud, #fff);
+
+  /* Compatibility aliases retained for existing @kerfjs/ui consumers. */
+  --kui-color-border: var(--wa-color-surface-border, var(--kui-color-neutral-border-normal));
+  --kui-color-border-quiet: var(--kui-color-neutral-border-quiet);
+  --kui-color-accent: var(--kui-color-brand-fill-normal);
+  --kui-color-accent-text: var(--kui-color-brand-on-quiet);
+  --kui-color-success: var(--kui-color-success-fill-quiet);
+  --kui-color-success-text: var(--kui-color-success-on-quiet);
+  --kui-color-warning: var(--kui-color-warning-fill-quiet);
+  --kui-color-warning-text: var(--kui-color-warning-on-quiet);
+  --kui-color-danger: var(--kui-color-danger-fill-quiet);
+  --kui-color-danger-text: var(--kui-color-danger-on-quiet);
+  --kui-focus-ring: var(--wa-focus-ring, 3px solid var(--wa-color-focus, var(--kui-color-brand-fill-loud)));
+  --kui-shadow-s: var(--wa-shadow-s, 0 1px 3px rgb(0 0 0 / .14));
+  --kui-shadow-l: var(--wa-shadow-l, 0 .75rem 2rem rgb(0 0 0 / .09));
 }
 
 @media (prefers-contrast: more) {

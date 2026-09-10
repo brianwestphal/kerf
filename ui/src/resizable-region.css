@@ -1,15 +1,16 @@
 .kui-resizable-region { position: relative; display: flex; min-width: 0; min-height: 0; }
 .kui-resizable-region[data-axis="horizontal"] { width: var(--kui-resizable-region-size); height: 100%; flex: 0 0 var(--kui-resizable-region-size); }
 .kui-resizable-region[data-axis="vertical"] { width: 100%; height: var(--kui-resizable-region-size); flex: 0 0 var(--kui-resizable-region-size); flex-direction: column; }
+.kui-resizable-region[data-collapsed="true"] { overflow: visible; }
 .kui-resizable-region__content { width: 100%; min-width: 0; min-height: 0; overflow: hidden; }
-.kui-resizable-region__handle { position: absolute; z-index: 3; display: grid; min-width: 20px; min-height: 20px; color: var(--kui-color-text-quiet); place-items: center; touch-action: none; }
+.kui-resizable-region__handle { --kui-resizable-region-handle-color: var(--kui-color-neutral-on-quiet); --kui-resizable-region-handle-active-color: var(--kui-color-text-link); position: absolute; z-index: 3; display: grid; min-width: 20px; min-height: 20px; color: var(--kui-resizable-region-handle-color); place-items: center; touch-action: none; }
 .kui-resizable-region[data-axis="horizontal"] .kui-resizable-region__handle { top: 0; bottom: 0; width: 20px; cursor: col-resize; }
 .kui-resizable-region[data-axis="horizontal"][data-edge="end"] .kui-resizable-region__handle { right: -10px; }
 .kui-resizable-region[data-axis="horizontal"][data-edge="start"] .kui-resizable-region__handle { left: -10px; }
 .kui-resizable-region[data-axis="vertical"] .kui-resizable-region__handle { right: 0; left: 0; height: 20px; cursor: row-resize; }
 .kui-resizable-region[data-axis="vertical"][data-edge="end"] .kui-resizable-region__handle { bottom: -10px; }
 .kui-resizable-region[data-axis="vertical"][data-edge="start"] .kui-resizable-region__handle { top: -10px; }
-.kui-resizable-region__handle:hover, .kui-resizable-region__handle:focus-visible { color: var(--kui-color-accent-text); }
+.kui-resizable-region__handle:hover, .kui-resizable-region__handle:focus-visible { color: var(--kui-resizable-region-handle-active-color); }
 .kui-resizable-region__handle:focus-visible { border-radius: var(--kui-radius-s); outline: var(--kui-focus-ring); outline-offset: -2px; }
 .kui-resizable-region__handle svg { width: .9rem; height: .9rem; opacity: 0; }
 .kui-resizable-region__handle:hover svg, .kui-resizable-region__handle:focus-visible svg { opacity: 1; }

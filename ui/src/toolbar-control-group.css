@@ -1,8 +1,25 @@
-.kui-toolbar-control-group { --kui-toolbar-control-background: var(--kui-color-surface-lowered); --kui-toolbar-control-border: var(--kui-color-border); --kui-toolbar-control-hover: var(--kui-color-surface); display: inline-flex; min-height: 2.5rem; padding: .2rem; box-sizing: border-box; border: 1px solid var(--kui-toolbar-control-border); border-radius: var(--kui-radius-pill); color: var(--kui-color-text-quiet); background: var(--kui-toolbar-control-background); align-items: center; gap: .15rem; }
-.kui-toolbar-control-group[data-tone="dark"] { --kui-toolbar-control-background: rgb(0 0 0 / .42); --kui-toolbar-control-border: rgb(255 255 255 / .28); color: #fff; }
+.kui-toolbar-control-group { --kui-toolbar-control-background: var(--kui-color-neutral-fill-normal); --kui-toolbar-control-border: var(--kui-color-neutral-border-normal); --kui-toolbar-control-color: var(--kui-color-neutral-on-quiet); --kui-toolbar-control-hover-background: var(--kui-color-surface); --kui-toolbar-control-selected-background: var(--kui-color-surface); --kui-toolbar-control-selected-color: var(--kui-color-brand-on-quiet); --kui-toolbar-control-selected-shadow: var(--kui-shadow-s); --kui-toolbar-control-pressed-background: var(--kui-color-neutral-fill-loud); --kui-toolbar-control-pressed-border: var(--kui-color-neutral-border-loud); --kui-toolbar-control-pressed-color: var(--kui-color-neutral-on-loud); display: inline-flex; height: 2.525rem; padding: .2rem; box-sizing: border-box; border: 1px solid var(--kui-toolbar-control-border); border-radius: var(--kui-radius-pill); color: var(--kui-toolbar-control-color); background: var(--kui-toolbar-control-background); align-items: center; flex: 0 0 auto; gap: .15rem; }
+.kui-toolbar-control-group[data-tone="dark"] { --kui-toolbar-control-background: color-mix(in srgb, var(--kui-color-neutral-fill-loud) 72%, transparent); --kui-toolbar-control-border: var(--kui-toolbar-control-dark-border, #353536); --kui-toolbar-control-color: var(--kui-color-neutral-on-loud); --kui-toolbar-control-hover-background: color-mix(in srgb, var(--kui-color-surface) 28%, transparent); }
 .kui-toolbar-control-group[data-appearance="borderless"] { border-color: transparent; background: transparent; }
-.kui-toolbar-control-group > :is(button, wa-button) { min-width: 2rem; min-height: 2rem; border: 0; border-radius: var(--kui-radius-pill); color: inherit; background: transparent; }
-.kui-toolbar-control-group > button { display: grid; padding: 0; cursor: pointer; place-items: center; }
-.kui-toolbar-control-group > :is(button, wa-button):hover { background: var(--kui-toolbar-control-hover); }
+.kui-toolbar-control-group > button { border: 0; }
+.kui-toolbar-control-group > wa-button { min-width: 2rem; height: 2rem; }
+.kui-toolbar-control-group wa-button { display: inline-flex; line-height: 0; align-items: center; justify-content: center; }
+.kui-toolbar-control-group wa-button > svg { display: block; width: 1rem; height: 1rem; }
+.kui-toolbar-control-group[data-single="true"] > wa-dropdown { width: 3rem; min-width: 3rem; height: 2rem; }
+.kui-toolbar-control-group[data-single="true"] > wa-dropdown > wa-button { width: 3rem; height: 2rem; }
+.kui-toolbar-control-group[data-single="true"] > wa-dropdown > wa-button::part(base) { width: 3rem; height: 2rem; }
+.kui-toolbar-control-group wa-button::part(base) { border: 0; }
+.kui-toolbar-control-group[data-single="true"]:has(> :is(button, wa-button, wa-dropdown)):hover { background: var(--kui-toolbar-control-hover-background); }
+.kui-toolbar-control-group[data-single="true"] wa-button { --wa-color-fill-quiet: transparent; }
+.kui-toolbar-control-group[data-single="false"] wa-button { width: 2rem; height: 2rem; border-radius: var(--kui-radius-pill); --wa-color-fill-quiet: transparent; }
+.kui-toolbar-control-group[data-single="false"] wa-button:hover { background: var(--kui-toolbar-control-hover-background); }
+.kui-toolbar-control-group[data-single="true"] wa-button:hover::part(base), .kui-toolbar-control-group[data-single="false"] wa-button:hover::part(base) { background: transparent; }
+.kui-toolbar-control-group > button { display: grid; min-width: 2rem; height: 2rem; padding: 0; border-radius: var(--kui-radius-pill); color: var(--kui-toolbar-control-color); background: transparent; cursor: pointer; place-items: center; }
+.kui-toolbar-control-group > button:hover { background: var(--kui-toolbar-control-hover-background); }
+.kui-toolbar-control-group[data-single="false"] > :is(button, wa-button)[aria-pressed="true"] { color: var(--kui-toolbar-control-selected-color); background: var(--kui-toolbar-control-selected-background); box-shadow: var(--kui-toolbar-control-selected-shadow); }
 .kui-toolbar-control-group > :is(button, wa-button):focus-visible { outline: var(--kui-focus-ring); outline-offset: 1px; }
-.kui-toolbar-control-group[data-button-appearance="push"] > :is(button, wa-button)[aria-pressed="true"] { color: var(--kui-color-accent-text); background: var(--kui-color-accent); }
+.kui-toolbar-control-group > button svg { width: 1rem; height: 1rem; }
+.kui-toolbar-control-group[data-button-appearance="push"][data-single="true"]:has(> :is(button, wa-button)[aria-pressed="true"]) { --kui-toolbar-control-color: var(--kui-toolbar-control-pressed-color); border-color: var(--kui-toolbar-control-pressed-border); color: var(--kui-toolbar-control-pressed-color); background: var(--kui-toolbar-control-pressed-background); }
+.kui-toolbar-control-group[data-button-appearance="push"][data-single="true"] > :is(button, wa-button)[aria-pressed="true"] { color: var(--kui-toolbar-control-pressed-color); }
+.kui-toolbar-control-group[data-button-appearance="push"][data-single="true"]:has(> :is(button, wa-button)[aria-pressed="true"]):hover { background: var(--kui-toolbar-control-pressed-background); }
+.kui-toolbar-control-group[data-button-appearance="push"][data-single="true"] > :is(button, wa-button)[aria-pressed="true"]:hover { background: transparent; }

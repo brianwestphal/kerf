@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Aligned `@kerfjs/ui` defaults with Hot Sheet 2, added overridable semantic state palettes, completed ToolbarControlGroup and StateBanner catalog variants, simplified related-component navigation, corrected MenuHeader action alignment, and added a controlled horizontally scrolling TabBar with pointer and keyboard reordering.
 - Fixed trapped overlays losing sequential focus in WebKit after the second control. Implicitly focusable descendants now receive `tabindex="0"` inside the trap, while authored tabindex values (including `-1`) remain intact.
 - Fixed Firefox contenteditable carets jumping to the list container during keyed `moveBefore()` reorders. `each()` and `bindList` now restore exact contenteditable Selection boundary nodes and offsets after every move pass, even when the browser keeps `activeElement` unchanged.
 - Repaired lockstep version metadata for the ESLint plugin and component scaffold, and added a release-time sync plus repository gate so package manifests, locks, plugin metadata, and published examples cannot drift again.

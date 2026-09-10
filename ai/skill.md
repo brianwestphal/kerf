@@ -1,7 +1,7 @@
 ---
 name: kerf-app
 description: Build UIs in the kerf reactive framework and its @kerfjs/ui component package (https://github.com/brianwestphal/kerf). Use this skill whenever the user is writing or modifying code that imports `kerfjs` or `@kerfjs/ui`, asks to add a feature to a kerf app, or asks "how do I do X in kerf?". Use it proactively the moment you spot a kerf import in the file you're editing.
-kerf-skill-version: 1.15.0
+kerf-skill-version: 1.16.0
 ---
 
 # Building apps with kerf
@@ -24,7 +24,7 @@ kerf is a ~12 KB reactive UI framework (~13 KB with `arraySignal`): signals + DO
 
 ## Optional first-party UI
 
-Install `@kerfjs/ui` when the app needs shared toolbars, menu rows, tabs,
+Install `@kerfjs/ui` when the app needs shared toolbars, menu rows, controlled tab bars,
 headers/value tables, resizable regions, selects, banners, empty states, or
 loading indicators. Import `@kerfjs/ui/styles.css`, or combine
 `foundation.css` with per-component CSS subpaths. Prefer a component before
@@ -32,11 +32,17 @@ inventing a parallel local primitive, but keep domain state, routing, commands,
 and tab/menu policy in the app.
 
 Components emit stable `data-action` hooks; wire them at the mount root and
-retain every disposer. `wireResizableRegions()` is the explicit behavioral
-helper and also returns a disposer. `AppTab` supplies semantic/roving-tabindex
-markup, while the host implements arrow/Home/End navigation and close policy.
+retain every disposer. `wireResizableRegions()` and `wireTabBars()` are the
+explicit behavioral helpers and return disposers. Compose `AppTab` inside a
+controlled `TabBar`, apply reorder reports with `reorderTabs()`, and keep order,
+selection, close policy, routing, panels, and persistence in the host.
 Icons and spinners are decorative unless labeled; use assertive banners only
 for urgent interruption.
+
+The opinionated semantic ramps match Hot Sheet 2 and Web Awesome. Override
+`--kui-color-*` globally or component properties such as
+`--kui-state-banner-background` at a tone or instance boundary; do not replace
+private descendant selectors.
 
 `Select` renders pure Web Awesome markup. Import
 `@kerfjs/ui/select/register` once in an application entry that uses it; never

@@ -1,3 +1,3 @@
-.kui-page-header { display: flex; min-height: 4.15rem; padding: .75rem 1rem; border-bottom: 1px solid var(--kui-color-border); background: var(--kui-color-surface); align-items: center; justify-content: space-between; gap: var(--kui-space-m); }
-.kui-page-header h1 { margin: 0; color: var(--kui-color-text); font-size: clamp(var(--kui-font-l), 2.3vw, 1.75rem); letter-spacing: -.025em; }
+.kui-page-header { --kui-page-header-background: var(--kui-color-surface); --kui-page-header-border: var(--kui-color-border); --kui-page-header-foreground: var(--kui-color-text); display: flex; min-height: 4.15rem; padding: .75rem 1rem; border-bottom: 1px solid var(--kui-page-header-border); color: var(--kui-page-header-foreground); background: var(--kui-page-header-background); align-items: center; justify-content: space-between; gap: var(--kui-space-m); }
+.kui-page-header h1 { margin: 0; color: inherit; font-size: clamp(var(--kui-font-l), 2.3vw, var(--kui-font-2xl)); letter-spacing: -.025em; }
 .kui-page-header__action { flex: none; }

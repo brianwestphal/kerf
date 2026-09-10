@@ -36,6 +36,12 @@ Reuse a component when surfaces share its purpose, anatomy, state model, and int
 
 Color, type, spacing, radius, elevation, and motion express semantic roles. Prefer package tokens over raw values in consuming code. State is never communicated by color alone.
 
+The default vocabulary is opinionated rather than empty: neutral, brand/info,
+success, warning, and danger provide quiet/normal/loud fills, borders, and
+foregrounds compatible with Hot Sheet 2 and Web Awesome. Consumers may replace
+the global palette, one semantic role, or one component instance through
+documented custom properties without rewriting component CSS.
+
 ### Responsive design reprioritizes
 
 Protect primary content, readable type, recognizable icons, and usable targets. Relocate secondary information before compressing it below a usable scale. Keep one clear scroll owner per region and test narrow, wide, zoomed, and intermediate layouts.

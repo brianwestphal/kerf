@@ -11,6 +11,8 @@ const entries = [
   'resizable-region',
   'wire-resizable-regions',
   'app-tab',
+  'tab-bar',
+  'wire-tab-bars',
   'page-header',
   'loading-spinner',
   'select',
@@ -22,7 +24,7 @@ const entries = [
 ];
 
 export default defineConfig({
-  entry: entries.map((entry) => `src/${entry}.${entry === 'index' || entry === 'select-register' || entry === 'wire-resizable-regions' ? 'ts' : 'tsx'}`),
+  entry: entries.map((entry) => `src/${entry}.${entry === 'index' || entry === 'select-register' || entry.startsWith('wire-') ? 'ts' : 'tsx'}`),
   format: ['esm'],
   outDir: 'dist',
   target: 'es2022',

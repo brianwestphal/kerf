@@ -53,33 +53,39 @@ npm install @kerfjs/ui
 ```
 
 ```ts
-import { AppTab, StateBanner, Toolbar } from '@kerfjs/ui';
+import { AppTab, StateBanner, TabBar, Toolbar, wireTabBars } from '@kerfjs/ui';
 import '@kerfjs/ui/styles.css';
 ```
 
-The initial surface covers `LucideIcon`; toolbars; menu rows/headers; app tabs;
+The surface covers `LucideIcon`; toolbars; menu rows/headers; controlled,
+reorderable, horizontally scrolling app tab bars;
 page/dialog headers and value tables; resizable regions; a Web Awesome Select;
 and banner/empty/loading states. Use explicit subpaths when bundle ownership
 matters. `foundation.css` + per-component CSS is the smallest style route.
 
 The package keeps app policy outside components: wire emitted `data-action`
 hooks at the mount root, retain every disposer, and let the app own menu/tab
-order and routing. `wireResizableRegions(root, { onCommit })` is the behavioral
-exception and itself returns a disposer. Import
+state, routing, and persistence. `wireResizableRegions(root, { onCommit })` and
+`wireTabBars(root, { onReorder })` add the reusable interaction behavior and
+return disposers. Apply tab reorder reports with `reorderTabs()`. Import
 `@kerfjs/ui/select/register` once only when using Select; that is the explicit
 custom-element side effect and Web Awesome is otherwise optional.
 
+The default semantic ramps deliberately match Hot Sheet 2 and Web Awesome.
+Override `--kui-color-*` globally or component properties such as
+`--kui-state-banner-background` at a tone/instance boundary.
+
 Accessibility is contractual: keep supplied labels meaningful; decorative
 icons/spinners stay hidden from assistive technology; use banner `alert` only
-for urgent interruption; implement arrow/Home/End behavior on the tab list; and
+for urgent interruption; preserve TabBar's keyboard behavior; and
 do not remove the provided focus, reduced-motion, or forced-color styles. See
 [`docs/21-ui-package.md`](../21-ui-package.md) and `ui/ai/skill.md`.
 
 For visual review, `ui/ux-demo/` groups every public visual component by category
 in a master/detail catalog. Each `?component=<id>` route renders one focused
 production demo inside chrome that consumes the same semantic light/dark tokens;
-the detail view derives `Uses` and `Used by` navigation from declared component
-dependencies.
+the detail view derives one grouped `Uses` / `Used by` selector from declared
+component dependencies and hides it for unrelated components.
 
 ## Public API — everything is in one import
 

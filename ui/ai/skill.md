@@ -14,11 +14,11 @@ Hard rules:
 2. Components return Kerf `SafeHtml`. Never pass DOM nodes as children or use inline JSX event handlers.
 3. Keep state, product copy, persistence, and domain mappings in the application. Do not add product-specific actions or fields to a generic component.
 4. Wire `data-action` hooks from one stable root with `delegate()` or `delegateActions()` and retain disposers.
-5. Use `--kui-*` semantic tokens. Do not hard-code appearance-specific colors in consuming components.
+5. Use the opinionated `--kui-color-*` semantic ramps and component-level override properties. Override tokens at the narrowest useful scope; do not hard-code appearance-specific colors or replace private descendant rules.
 6. `Select` is pure until the app explicitly imports `@kerfjs/ui/select/register`; do not import Web Awesome's full registration bundle.
 7. Decorative icons are hidden; controls are named; focus is visible; state never relies on color alone; reduced motion and increased contrast remain usable.
 8. `ResizableRegion` uses `wireResizableRegions()` for Arrow, Shift+Arrow, Home/End, and pointer behavior. The app owns size persistence.
-9. `AppTab` is one tab. The app owns the `tablist`, panels, arrow/Home/End navigation, Delete/Backspace, and post-close focus.
+9. Compose `AppTab` inside controlled `TabBar`; call `wireTabBars()` once and retain its disposer. The app applies `onReorder`, and owns order, selection, panels, close policy, routing, and persistence.
 10. Demo work uses the public production component and CSS. Give every public visual component its own category-grouped catalog route, declare direct `uses` relationships so `Used by` stays derivable, and theme shell chrome through the same semantic tokens as the stage instead of drawing a substitute.
 
 Common mistakes:

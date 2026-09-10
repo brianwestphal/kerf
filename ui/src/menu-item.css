@@ -1,10 +1,12 @@
-.kui-menu-item { display: grid; width: 100%; min-height: 2.25rem; padding: .4rem .55rem; border: 0; border-radius: var(--kui-radius-s); color: var(--kui-color-text); background: transparent; cursor: pointer; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; column-gap: var(--kui-space-xs); font: inherit; text-align: start; }
-.kui-menu-item:hover { background: var(--kui-color-surface-lowered); }
-.kui-menu-item:disabled { color: var(--kui-color-text-quiet); cursor: not-allowed; opacity: .58; }
-.kui-menu-item[aria-current="page"], .kui-menu-item[aria-pressed="true"] { color: var(--kui-color-accent-text); background: var(--kui-color-accent); font-weight: 650; }
+.kui-menu-item { --kui-menu-item-color: var(--kui-color-neutral-on-normal); --kui-menu-item-hover-background: var(--kui-color-neutral-fill-quiet); --kui-menu-item-selected-color: var(--kui-color-brand-on-quiet); --kui-menu-item-selected-background: var(--kui-color-brand-fill-normal); display: grid; width: 100%; min-height: 2.1rem; padding: .35rem .55rem; border: 0; border-radius: .5rem; color: var(--kui-menu-item-color); background: transparent; cursor: pointer; grid-template-columns: 1.125rem minmax(0, 1fr) auto; align-items: center; column-gap: var(--kui-space-xs); font: inherit; text-align: start; }
+.kui-menu-item:hover { background: var(--kui-menu-item-hover-background); }
+.kui-menu-item:disabled { color: var(--kui-color-neutral-on-quiet); cursor: not-allowed; opacity: .58; }
+.kui-menu-item[aria-current="page"], .kui-menu-item[aria-pressed="true"] { color: var(--kui-menu-item-selected-color); background: var(--kui-menu-item-selected-background); font-weight: 650; }
 .kui-menu-item:focus-visible { outline: var(--kui-focus-ring); outline-offset: 1px; }
 .kui-menu-item__icon { display: grid; width: 1.125rem; height: 1.125rem; color: currentColor; place-items: center; }
+.kui-menu-item__icon svg { display: block; width: 1rem; height: 1rem; }
 .kui-menu-item__label { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .kui-menu-item[data-multiline="true"] { height: fit-content; white-space: normal; }
 .kui-menu-item[data-multiline="true"] .kui-menu-item__label { overflow: visible; white-space: normal; }
 .kui-menu-item__trailing { display: inline-flex; min-width: 0; align-items: center; justify-content: flex-end; gap: var(--kui-space-xs); }
+.kui-menu-item__trailing > svg { width: .85rem; height: .85rem; }

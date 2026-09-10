@@ -23,6 +23,7 @@ export const catalog = [
   { id: 'menu-header', name: 'MenuHeader', category: 'Navigation', kind: 'component', description: 'Section headings with optional action and disclosure states.', uses: ['lucide-icon'] },
   { id: 'menu-item', name: 'MenuItem', category: 'Navigation', kind: 'component', description: 'Selectable, disabled, trailing, and multiline navigation rows.', uses: ['lucide-icon'] },
   { id: 'tabs', name: 'AppTab', category: 'Navigation', kind: 'component', description: 'Roving-tabindex-ready tabs with optional close affordances.', uses: ['lucide-icon'] },
+  { id: 'tab-bar', name: 'TabBar', category: 'Navigation', kind: 'component', description: 'Controlled, reorderable tab strips with horizontal overflow.', uses: ['tabs', 'toolbar-control-group'] },
   { id: 'resize', name: 'ResizableRegion', category: 'Controls', kind: 'component', description: 'Pointer and keyboard-operable split region.', uses: [] },
   { id: 'select', name: 'Select', category: 'Controls', kind: 'component', description: 'Web Awesome select adapter with grouped choices.', uses: ['lucide-icon'] },
   { id: 'feedback', name: 'Feedback composition', category: 'Feedback', kind: 'composition', description: 'Banners, empty states, and labeled progress.', uses: ['state-banner', 'empty-state', 'loading-spinner'] },

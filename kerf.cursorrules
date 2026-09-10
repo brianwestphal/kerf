@@ -1,4 +1,4 @@
-<!-- kerf-skill-version: 1.15.0 -->
+<!-- kerf-skill-version: 1.16.0 -->
 # kerf.cursorrules — rules for building apps with kerf
 #
 # Drop this file into your project as `.cursorrules` (Cursor will pick it
@@ -19,17 +19,23 @@ You are writing a UI in kerf — a ~12 KB reactive framework (~13 KB with `array
 
 ## Optional first-party UI
 
-Install `@kerfjs/ui` for shared toolbars, menu rows, tabs, headers/value tables,
+Install `@kerfjs/ui` for shared toolbars, menu rows, controlled tab bars, headers/value tables,
 resizable regions, selects, banners, empty states, and loading indicators.
 Import `@kerfjs/ui/styles.css`, or combine `foundation.css` with explicit
 per-component CSS. Reuse these primitives before creating parallel local ones;
 keep domain state, commands, routing, and tab/menu policy in the app.
 
 Wire emitted `data-action` hooks at the mount root and retain disposers.
-`wireResizableRegions()` is the eventful helper and returns a disposer.
-`AppTab` supplies semantic/roving-tabindex markup; its host supplies
-arrow/Home/End navigation and close policy. Icons/spinners are decorative unless
+`wireResizableRegions()` and `wireTabBars()` are eventful helpers and return
+disposers. Compose `AppTab` inside controlled `TabBar`, apply reorder reports
+with `reorderTabs()`, and keep order, selection, close policy, routing, panels,
+and persistence in the host. Icons/spinners are decorative unless
 labeled, and assertive banners are only for urgent interruption.
+
+The opinionated semantic ramps match Hot Sheet 2 and Web Awesome. Override
+`--kui-color-*` globally or component properties such as
+`--kui-state-banner-background` at a tone or instance boundary; do not replace
+private descendant selectors.
 
 `Select` is pure markup until the app explicitly imports
 `@kerfjs/ui/select/register`. Do that once in the application entry that uses

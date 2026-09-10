@@ -30,6 +30,17 @@ describe('consumer bundle boundaries', () => {
     expect(inputs).not.toContain('ux-demo');
   });
 
+  it('keeps the TabBar component and opt-in wiring free of Web Awesome registration', async () => {
+    const result = await bundle("import { TabBar, reorderTabs, wireTabBars } from '@kerfjs/ui'; console.log(TabBar, reorderTabs, wireTabBars); ");
+    const inputs = Object.keys(result.metafile!.inputs).join('\n');
+    const output = result.outputFiles[0]!.text;
+    expect(inputs).toContain('dist/index.js');
+    expect(output).toContain('kui-tab-bar');
+    expect(output).toContain('application/x-kerf-tab');
+    expect(inputs).not.toContain('select-register');
+    expect(inputs).not.toContain('@awesome.me/webawesome');
+  });
+
   it('keeps Select pure until its explicit registration subpath is imported', async () => {
     const pure = await bundle("import { Select } from '@kerfjs/ui/select'; console.log(String(Select({ name: 'x', value: 'a', choices: [{ value: 'a', label: 'A' }] }))); ");
     expect(Object.keys(pure.metafile!.inputs).join('\n')).not.toContain('@awesome.me/webawesome');
@@ -41,6 +52,9 @@ describe('consumer bundle boundaries', () => {
     const pkg = JSON.parse(await readFile(new URL('../../package.json', import.meta.url), 'utf8')) as { sideEffects: string[]; exports: Record<string, unknown> };
     expect(pkg.sideEffects).toEqual(['**/*.css', './dist/select-register.js']);
     expect(pkg.exports['./select/register']).toBeDefined();
+    expect(pkg.exports['./tab-bar']).toBeDefined();
+    expect(pkg.exports['./wire-tab-bars']).toBeDefined();
     expect(pkg.exports['./toolbar.css']).toBe('./src/toolbar.css');
+    expect(pkg.exports['./tab-bar.css']).toBe('./src/tab-bar.css');
   });
 });

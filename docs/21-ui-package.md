@@ -13,7 +13,10 @@ The package follows Apple Human Interface Guidelines as principles, not as a
 skin: clear hierarchy, legible controls, restrained decoration, direct
 manipulation, visible state, and forgiving target sizes. It does not imitate
 private Apple assets or hard-code a platform chrome. Semantic `--kui-*` tokens
-make the same components adaptable to another product language.
+make the same components adaptable to another product language. Their defaults
+deliberately match Hot Sheet 2's Web Awesome-based typography, geometry, and
+system palette so Hot Sheet can later consume the package without a visual
+rewrite.
 
 Components stay deliberately small. They return `SafeHtml`, expose stable
 classes and `data-*` hooks, accept content slots, and leave application state
@@ -32,8 +35,12 @@ import '@kerfjs/ui/styles.css';
 ```
 
 Every component has an ESM/type subpath and every stylesheet has an explicit
-CSS subpath. `foundation.css` defines semantic defaults; `styles.css` aggregates
-the complete component layer. CSS is the only broad side effect.
+CSS subpath. `foundation.css` defines Web Awesome-compatible semantic defaults
+for neutral, brand/info, success, warning, and danger fill/border/foreground
+ramps; `styles.css` aggregates the complete component layer. Stateful components
+also expose scoped custom properties, so an application may override the
+complete theme, one semantic tone, or one instance. CSS is the only broad side
+effect.
 
 `Select` is a Web Awesome adapter. Rendering it is pure; custom-element
 registration happens only after `import '@kerfjs/ui/select/register'`. Web
@@ -47,7 +54,7 @@ bundle it.
 | Icons | `LucideIcon` | Render Lucide icon-node data; decorative by default, labeled on request |
 | Toolbars | `Toolbar`, `ToolbarControlGroup`, `ToolbarText` | Leading/center/trailing structure and grouped controls |
 | Menus | `MenuItem`, `MenuHeader` | Navigation/action rows and section headings; no domain commands |
-| Tabs | `AppTab` | Tab/close markup with roving-tabindex-ready state; the app owns the tab list |
+| Tabs | `AppTab`, `TabBar`, `wireTabBars`, `reorderTabs` | Controlled tab/close markup, fixed rails, horizontal overflow, pointer/keyboard reorder, and focus restoration; the app owns state and persistence |
 | Layout | `PageHeader`, `DialogHeader`, `ValueTable` | Page/dialog hierarchy and semantic definition lists |
 | Resize | `ResizableRegion`, `wireResizableRegions` | Pointer-captured resize plus arrows, Shift acceleration, Home, and End |
 | Forms | `Select` | Grouped Web Awesome choices with optional Lucide icons |
@@ -62,8 +69,10 @@ bundle it.
 - `ResizableRegion` renders a focusable ARIA separator with orientation and live
   min/max/current values. Its wiring returns a disposer.
 - `AppTab` renders `role="tab"`, `aria-selected`, roving `tabindex`, and keyboard
-  shortcut metadata. The containing app owns arrow/Home/End movement and close
-  policy because it owns tab order and routing.
+  shortcut metadata. `TabBar` provides the containing list and scroll owner;
+  `wireTabBars` provides arrows/Home/End, close activation, pointer reorder,
+  `Alt+Shift+Arrow` reorder, focus restoration, and a disposer. The app applies
+  changes and owns order, selection, panels, routing, close policy, and persistence.
 - A `MenuItem` is a native button, not an isolated `role="menuitem"`; callers
   should add a full menu widget only when they also implement its complete
   keyboard model.
@@ -76,10 +85,13 @@ package paths, groups routes by category in a master/detail shell, exposes each
 public visual component through an addressable `?component=` route, retains
 focused composition scenarios, and gives the selected entry one centered
 inspection stage. Catalog metadata declares direct component dependencies; the
-detail view derives both `Uses` and `Used by` navigation from that graph.
+detail view derives one grouped `Uses` / `Used by` selector from that graph and
+omits the relationship footer when neither group exists.
 Decorative chrome, Web Awesome controls, and production components share
-semantic theme tokens. The catalog includes light and dark themes, contrast,
-motion, selection, resize, and feedback states.
+semantic theme tokens. The catalog includes every ToolbarControlGroup variant,
+all StateBanner tones plus a scoped palette override, reorderable overflowing
+tabs, light and dark themes, contrast, motion, selection, resize, and feedback
+states.
 Unit coverage uses the root repository thresholds. Bundle tests prove subpath
 exports, tree-shaking, peer externalization, and opt-in custom-element
 registration. Playwright runs the catalog in Chromium, Firefox, and WebKit and

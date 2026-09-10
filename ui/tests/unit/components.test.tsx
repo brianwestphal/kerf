@@ -12,6 +12,7 @@ import { PageHeader } from '../../src/page-header.js';
 import { clampRegionSize, ResizableRegion, resizeRegionFromPointer } from '../../src/resizable-region.js';
 import { Select } from '../../src/select.js';
 import { StateBanner } from '../../src/state-banner.js';
+import { TabBar } from '../../src/tab-bar.js';
 import { Toolbar } from '../../src/toolbar.js';
 import { ToolbarControlGroup } from '../../src/toolbar-control-group.js';
 import { ToolbarText } from '../../src/toolbar-text.js';
@@ -53,14 +54,20 @@ describe('production UI primitives', () => {
   });
 
   it('renders generalized tabs with roving tabindex and optional close affordances', () => {
-    const selected = asHtml(AppTab({ id: 'first', name: 'First', selected: true, leading: icon, trailing: icon, draggable: true, selectAction: 'pick', closeAction: 'dismiss', className: 'document' }));
-    expect(selected).toContain('data-tab-id="first" data-selected="true" draggable="true"');
+    const selected = asHtml(AppTab({ id: 'first', name: 'First', selected: true, leading: icon, trailing: icon, draggable: true, selectAction: 'pick', closeAction: 'dismiss', className: 'document', rootAttributes: { 'data-project-id': 'project-one', 'data-tab-id': 'ignored' } }));
+    expect(selected).toContain('data-selected="true" draggable="true"');
+    expect(selected).toContain('data-project-id="project-one"');
+    expect(selected).toContain('data-tab-id="first"');
+    expect(selected).not.toContain('data-tab-id="ignored"');
     expect(selected).toContain('data-action="dismiss"');
-    expect(selected).toContain('role="tab" aria-selected="true" aria-keyshortcuts="Delete Backspace" data-action="pick"');
+    expect(selected).toContain('role="tab" aria-selected="true" aria-keyshortcuts="Delete Backspace Alt+Shift+ArrowLeft Alt+Shift+ArrowRight" data-action="pick"');
     expect(selected).toContain('tabindex="0"');
     const fixed = asHtml(AppTab({ id: 'fixed', name: 'Fixed', closable: false }));
     expect(fixed).toContain('tabindex="-1"');
     expect(fixed).not.toContain('Close Fixed');
+    const bar = asHtml(TabBar({ id: 'work', label: 'Open work', leading: icon, trailing: icon, children: [AppTab({ id: 'first', name: 'First', selected: true })] }));
+    expect(bar).toContain('data-component="tab-bar" data-tab-bar-id="work" aria-label="Open work"');
+    expect(bar).toContain('class="kui-tab-bar__tabs" role="tablist" aria-label="Open work" data-kui-tab-list');
   });
 
   it('renders page and dialog hierarchy plus a semantic value table', () => {
@@ -81,6 +88,9 @@ describe('production UI primitives', () => {
     const banner = asHtml(StateBanner({ title: 'Offline', detail: 'Reconnect', icon, action: icon, tone: 'danger', urgency: 'alert', className: 'network' }));
     expect(banner).toContain('data-tone="danger" role="alert" aria-live="assertive"');
     expect(asHtml(StateBanner({ title: 'Ready' }))).toContain('data-tone="info" role="status" aria-live="polite"');
+    for (const tone of ['neutral', 'info', 'success', 'warning', 'danger'] as const) {
+      expect(asHtml(StateBanner({ title: tone, tone }))).toContain(`data-tone="${tone}"`);
+    }
     const empty = asHtml(EmptyState({ title: 'No results', detail: 'Try again', icon, action: icon }));
     expect(empty).toContain('data-busy="false" role="status" aria-busy="false"');
     expect(asHtml(EmptyState({ title: 'Loading', busy: true }))).toContain('kui-loading-spinner');

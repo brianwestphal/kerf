@@ -1,10 +1,31 @@
-.kui-state-banner { display: grid; min-height: 2.75rem; padding: .5rem .75rem; border: 1px solid var(--kui-color-border); color: var(--kui-color-text); background: var(--kui-color-surface-lowered); grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: var(--kui-space-s); }
-.kui-state-banner[data-tone="info"] { border-color: var(--kui-color-accent-text); color: var(--kui-color-accent-text); background: var(--kui-color-accent); }
-.kui-state-banner[data-tone="success"] { color: var(--kui-color-success-text); background: var(--kui-color-success); }
-.kui-state-banner[data-tone="warning"] { color: var(--kui-color-warning-text); background: var(--kui-color-warning); }
-.kui-state-banner[data-tone="danger"] { color: var(--kui-color-danger-text); background: var(--kui-color-danger); }
+.kui-state-banner {
+  --_kui-state-banner-background: var(--kui-state-banner-background, var(--kui-state-banner-neutral-background, var(--kui-color-neutral-fill-quiet)));
+  --_kui-state-banner-border: var(--kui-state-banner-border, var(--kui-state-banner-neutral-border, var(--kui-color-neutral-border-normal)));
+  --_kui-state-banner-foreground: var(--kui-state-banner-foreground, var(--kui-state-banner-neutral-foreground, var(--kui-color-neutral-on-normal)));
+  --_kui-state-banner-detail: var(--kui-state-banner-detail, currentColor);
+  --_kui-state-banner-action-background: var(--kui-state-banner-action-background, color-mix(in srgb, var(--kui-color-surface) 52%, transparent));
+  --_kui-state-banner-action-hover-background: var(--kui-state-banner-action-hover-background, var(--kui-color-surface));
+  display: grid;
+  min-height: 2.6rem;
+  padding: .45rem .75rem;
+  border: 1px solid var(--_kui-state-banner-border);
+  color: var(--_kui-state-banner-foreground);
+  background: var(--_kui-state-banner-background);
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: .6rem;
+}
+.kui-state-banner[data-tone="info"] { --_kui-state-banner-background: var(--kui-state-banner-background, var(--kui-state-banner-info-background, var(--kui-color-brand-fill-quiet))); --_kui-state-banner-border: var(--kui-state-banner-border, var(--kui-state-banner-info-border, var(--kui-color-brand-border-quiet))); --_kui-state-banner-foreground: var(--kui-state-banner-foreground, var(--kui-state-banner-info-foreground, var(--kui-color-brand-on-quiet))); }
+.kui-state-banner[data-tone="success"] { --_kui-state-banner-background: var(--kui-state-banner-background, var(--kui-state-banner-success-background, var(--kui-color-success-fill-quiet))); --_kui-state-banner-border: var(--kui-state-banner-border, var(--kui-state-banner-success-border, var(--kui-color-success-border-normal))); --_kui-state-banner-foreground: var(--kui-state-banner-foreground, var(--kui-state-banner-success-foreground, var(--kui-color-success-on-quiet))); }
+.kui-state-banner[data-tone="warning"] { --_kui-state-banner-background: var(--kui-state-banner-background, var(--kui-state-banner-warning-background, var(--kui-color-warning-fill-quiet))); --_kui-state-banner-border: var(--kui-state-banner-border, var(--kui-state-banner-warning-border, var(--kui-color-warning-border-normal))); --_kui-state-banner-foreground: var(--kui-state-banner-foreground, var(--kui-state-banner-warning-foreground, var(--kui-color-warning-on-quiet))); }
+.kui-state-banner[data-tone="danger"] { --_kui-state-banner-background: var(--kui-state-banner-background, var(--kui-state-banner-danger-background, var(--kui-color-danger-fill-quiet))); --_kui-state-banner-border: var(--kui-state-banner-border, var(--kui-state-banner-danger-border, var(--kui-color-danger-border-quiet))); --_kui-state-banner-foreground: var(--kui-state-banner-foreground, var(--kui-state-banner-danger-foreground, var(--kui-color-danger-on-quiet))); }
 .kui-state-banner__icon { display: grid; place-items: center; }
+.kui-state-banner__icon svg { width: 1rem; height: 1rem; }
 .kui-state-banner__copy { display: flex; min-width: 0; align-items: baseline; gap: var(--kui-space-xs); }
-.kui-state-banner__copy span { color: currentColor; font-size: var(--kui-font-xs); opacity: .82; }
+.kui-state-banner__copy strong { font-size: var(--kui-font-xs); }
+.kui-state-banner__copy span { overflow: hidden; color: var(--_kui-state-banner-detail); font-size: var(--kui-font-2xs); opacity: .78; text-overflow: ellipsis; white-space: nowrap; }
 .kui-state-banner__action { justify-self: end; }
+.kui-state-banner__action button { min-height: 1.8rem; padding: 0 .7rem; border: 1px solid currentColor; border-radius: var(--kui-radius-pill); color: inherit; background: var(--_kui-state-banner-action-background); cursor: pointer; font: inherit; font-size: var(--kui-font-2xs); font-weight: 650; }
+.kui-state-banner__action button:hover { background: var(--_kui-state-banner-action-hover-background); }
+.kui-state-banner__action button:focus-visible { outline: 2px solid var(--kui-color-text-link); outline-offset: 2px; }
 @media (max-width: 36rem) { .kui-state-banner__copy { display: grid; gap: .05rem; } }

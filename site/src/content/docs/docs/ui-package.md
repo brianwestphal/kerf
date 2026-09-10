@@ -27,13 +27,18 @@ complete layer.
 ## Included primitives
 
 - `LucideIcon`; `Toolbar`, `ToolbarControlGroup`, `ToolbarText`
-- `MenuItem`, `MenuHeader`; `AppTab`
+- `MenuItem`, `MenuHeader`; `AppTab`, controlled `TabBar`, `wireTabBars`, `reorderTabs`
 - `PageHeader`, `DialogHeader`, `ValueTable`
 - `ResizableRegion` with `wireResizableRegions`
 - `Select`; `StateBanner`, `EmptyState`, `LoadingSpinner`
 
 The components expose slots and stable `kui-` classes rather than domain data or
 commands. Applications retain state, routing, menu policy, and tab-list policy.
+
+The default `--kui-color-*` ramps match Hot Sheet 2's Web Awesome-compatible
+neutral, brand/info, success, warning, and danger palette. Override the global
+semantic tokens, a tone variable, or a component property such as
+`--kui-state-banner-background` without replacing component selectors.
 
 ## Web Awesome Select
 
@@ -52,9 +57,10 @@ that do not select that integration.
 The styles preserve visible focus, forced colors, reduced motion, and practical
 target sizes. Icons are decorative unless labeled. Banners distinguish polite
 status from assertive alerts. The resizable separator supports pointer input,
-arrow keys, Shift acceleration, Home, and End. `AppTab` supplies tab semantics
-and roving-tabindex-ready markup; the containing app owns the full tab-list
-keyboard and close behavior.
+arrow keys, Shift acceleration, Home, and End. `AppTab` supplies tab semantics;
+`TabBar` plus `wireTabBars` add horizontal overflow, navigation, closing,
+pointer/keyboard reorder, and focus restoration while the application owns and
+persists the controlled state.
 
 The package's design philosophy, component contract, accessibility checklist,
 Apple HIG interpretation, and runnable UX catalog live under [`ui/docs/`](https://github.com/brianwestphal/kerf/tree/main/ui/docs).
