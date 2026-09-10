@@ -27,7 +27,8 @@ keep domain state, commands, routing, and tab/menu policy in the app.
 
 Wire emitted `data-action` hooks at the mount root and retain disposers.
 `wireResizableRegions()` and `wireTabBars()` are eventful helpers and return
-disposers. Compose `AppTab` inside controlled `TabBar`, apply reorder reports
+disposers. Compose `AppTab` inside controlled `TabBar`; `wireTabBars()` supplies
+horizontal edge autoscroll while dragging. Apply reorder reports
 with `reorderTabs()`, and keep order, selection, close policy, routing, panels,
 and persistence in the host. Icons/spinners are decorative unless
 labeled, and assertive banners are only for urgent interruption.

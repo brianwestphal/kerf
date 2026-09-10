@@ -189,3 +189,31 @@ test('reorders and horizontally scrolls controlled TabBars', async ({ page, brow
   expect(await strip.evaluate((node) => node.scrollWidth > node.clientWidth)).toBe(true);
   if (browserName === 'chromium') await page.screenshot({ path: 'test-results/tab-bar-overflow-narrow.png', fullPage: true });
 });
+
+test('autoscrolls the TabBar while a dragged tab rests near either scroll edge', async ({ page, browserName }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/?component=tab-bar');
+  const frame = page.locator('.demo-tab-bar-frame');
+  const bar = frame.locator('[data-component="tab-bar"]');
+  const strip = bar.locator('[data-kui-tab-list]');
+  const source = bar.locator('.kui-app-tab').first();
+  const stripBounds = await strip.boundingBox();
+  expect(stripBounds).not.toBeNull();
+  await source.dispatchEvent('dragstart');
+  await strip.dispatchEvent('dragover', { clientX: stripBounds!.x + stripBounds!.width - 3, clientY: stripBounds!.y + stripBounds!.height / 2 });
+  await expect.poll(() => strip.evaluate((node) => node.scrollLeft)).toBeGreaterThan(24);
+  if (browserName === 'chromium') await frame.screenshot({ path: 'test-results/tab-bar-edge-autoscroll-end.png' });
+  await source.dispatchEvent('dragend');
+  await expect(bar.locator('[data-tab-autoscroll]')).toHaveCount(0);
+
+  const startScroll = await strip.evaluate((node) => {
+    node.scrollLeft = node.scrollWidth - node.clientWidth;
+    return node.scrollLeft;
+  });
+  await source.dispatchEvent('dragstart');
+  await strip.dispatchEvent('dragover', { clientX: stripBounds!.x + 3, clientY: stripBounds!.y + stripBounds!.height / 2 });
+  await expect.poll(() => strip.evaluate((node) => node.scrollLeft)).toBeLessThan(startScroll - 24);
+  if (browserName === 'chromium') await frame.screenshot({ path: 'test-results/tab-bar-edge-autoscroll-start.png' });
+  await source.dispatchEvent('dragend');
+  await expect(bar.locator('[data-tab-autoscroll]')).toHaveCount(0);
+});

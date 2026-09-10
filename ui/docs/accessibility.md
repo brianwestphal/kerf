@@ -30,7 +30,10 @@ The application owns persistence and collapsed/expanded policy. Keep the last ex
 fixed leading/trailing regions, and a horizontally scrollable strip.
 `wireTabBars()` adds Left/Right wrapping, Home/End, Delete/Backspace close
 activation, same-bar pointer reordering, `Alt+Shift+ArrowLeft/ArrowRight`
-reordering, focus restoration, and scroll-into-view. It returns a disposer.
+reordering, focus restoration, scroll-into-view, and pointer-proximity
+autoscroll at either horizontal edge. Edge autoscroll is direct manipulation,
+stops on drop/drag end/disposal, and does not change keyboard behavior. It
+returns a disposer.
 
 The application owns the ordered tab array, selection, panels, close policy,
 routing, and persistence. On `onReorder`, synchronously render the reported

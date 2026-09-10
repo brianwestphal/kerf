@@ -61,13 +61,20 @@ The surface covers `LucideIcon`; toolbars; menu rows/headers; controlled,
 reorderable, horizontally scrolling app tab bars;
 page/dialog headers and value tables; resizable regions; a Web Awesome Select;
 and banner/empty/loading states. Use explicit subpaths when bundle ownership
-matters. `foundation.css` + per-component CSS is the smallest style route.
+matters. Component JavaScript does not inject styles: `styles.css` is the
+recommended single, stable side-effect import, while `foundation.css` plus
+leaf-local per-component CSS is an advanced measured optimization. Do not make
+the app shell maintain a transitive style list. A CSS-aware bundler collects
+those imports; app overrides belong later in the cascade or on a scoped
+`--kui-*` owner.
 
 The package keeps app policy outside components: wire emitted `data-action`
 hooks at the mount root, retain every disposer, and let the app own menu/tab
 state, routing, and persistence. `wireResizableRegions(root, { onCommit })` and
 `wireTabBars(root, { onReorder })` add the reusable interaction behavior and
-return disposers. Apply tab reorder reports with `reorderTabs()`. Import
+return disposers. Tab dragging automatically scrolls toward a nearby horizontal
+edge to expose earlier or later drop targets. Apply tab reorder reports with
+`reorderTabs()`. Import
 `@kerfjs/ui/select/register` once only when using Select; that is the explicit
 custom-element side effect and Web Awesome is otherwise optional.
 

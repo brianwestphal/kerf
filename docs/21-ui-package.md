@@ -40,7 +40,10 @@ for neutral, brand/info, success, warning, and danger fill/border/foreground
 ramps; `styles.css` aggregates the complete component layer. Stateful components
 also expose scoped custom properties, so an application may override the
 complete theme, one semantic tone, or one instance. CSS is the only broad side
-effect.
+effect. Prefer one stable `styles.css` entry-point import so application roots do
+not track transitive component styles. The explicit component CSS subpaths are a
+leaf-local optimization for applications that have measured a worthwhile size
+benefit, not the default integration path.
 
 `Select` is a Web Awesome adapter. Rendering it is pure; custom-element
 registration happens only after `import '@kerfjs/ui/select/register'`. Web
@@ -54,7 +57,7 @@ bundle it.
 | Icons | `LucideIcon` | Render Lucide icon-node data; decorative by default, labeled on request |
 | Toolbars | `Toolbar`, `ToolbarControlGroup`, `ToolbarText` | Leading/center/trailing structure and grouped controls |
 | Menus | `MenuItem`, `MenuHeader` | Navigation/action rows and section headings; no domain commands |
-| Tabs | `AppTab`, `TabBar`, `wireTabBars`, `reorderTabs` | Controlled tab/close markup, fixed rails, horizontal overflow, pointer/keyboard reorder, and focus restoration; the app owns state and persistence |
+| Tabs | `AppTab`, `TabBar`, `wireTabBars`, `reorderTabs` | Controlled tab/close markup, fixed rails, horizontal overflow, edge autoscroll, pointer/keyboard reorder, and focus restoration; the app owns state and persistence |
 | Layout | `PageHeader`, `DialogHeader`, `ValueTable` | Page/dialog hierarchy and semantic definition lists |
 | Resize | `ResizableRegion`, `wireResizableRegions` | Pointer-captured resize plus arrows, Shift acceleration, Home, and End |
 | Forms | `Select` | Grouped Web Awesome choices with optional Lucide icons |
@@ -71,8 +74,9 @@ bundle it.
 - `AppTab` renders `role="tab"`, `aria-selected`, roving `tabindex`, and keyboard
   shortcut metadata. `TabBar` provides the containing list and scroll owner;
   `wireTabBars` provides arrows/Home/End, close activation, pointer reorder,
-  `Alt+Shift+Arrow` reorder, focus restoration, and a disposer. The app applies
-  changes and owns order, selection, panels, routing, close policy, and persistence.
+  proximity-based horizontal edge autoscroll, `Alt+Shift+Arrow` reorder, focus
+  restoration, and a disposer. The app applies changes and owns order,
+  selection, panels, routing, close policy, and persistence.
 - A `MenuItem` is a native button, not an isolated `role="menuitem"`; callers
   should add a full menu widget only when they also implement its complete
   keyboard model.

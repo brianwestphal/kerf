@@ -14,4 +14,4 @@ The UX catalog is a category-grouped master/detail review surface with a focused
 
 Public components: `LucideIcon`, `Toolbar`, `ToolbarControlGroup`, `ToolbarText`, `MenuItem`, `MenuHeader`, `ResizableRegion`, `wireResizableRegions`, `AppTab`, `TabBar`, `wireTabBars`, `reorderTabs`, `PageHeader`, `LoadingSpinner`, `Select`, `StateBanner`, `EmptyState`, `DialogHeader`, and `ValueTable`. Semantic state palettes are opinionated, Web Awesome-compatible, and overridable globally, by tone, or per instance.
 
-Only CSS and `@kerfjs/ui/select/register` have side effects. `kerfjs` is an external peer. The Web Awesome peer is optional and needed only for `Select` registration.
+Component JavaScript never injects styles. Import `styles.css`, or `foundation.css` plus explicit component CSS; a CSS-aware bundler owns delivery and application overrides follow in the cascade. Only CSS and `@kerfjs/ui/select/register` have side effects. `kerfjs` is an external peer. The Web Awesome peer is optional and needed only for `Select` registration. `wireTabBars` includes proximity-based horizontal edge autoscroll during same-bar drag reordering.

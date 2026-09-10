@@ -10,7 +10,7 @@ Read `../README.md`, `../docs/component-contract.md`, and `../docs/accessibility
 
 Hard rules:
 
-1. Import production components from their explicit subpaths when bundle isolation matters; import only their CSS plus `foundation.css`.
+1. Import `@kerfjs/ui/styles.css` once by default so the app root never tracks transitive component styles. Use explicit JavaScript subpaths for bundle isolation; use `foundation.css` plus leaf-local component CSS only after measuring a worthwhile CSS-size benefit.
 2. Components return Kerf `SafeHtml`. Never pass DOM nodes as children or use inline JSX event handlers.
 3. Keep state, product copy, persistence, and domain mappings in the application. Do not add product-specific actions or fields to a generic component.
 4. Wire `data-action` hooks from one stable root with `delegate()` or `delegateActions()` and retain disposers.
@@ -18,7 +18,7 @@ Hard rules:
 6. `Select` is pure until the app explicitly imports `@kerfjs/ui/select/register`; do not import Web Awesome's full registration bundle.
 7. Decorative icons are hidden; controls are named; focus is visible; state never relies on color alone; reduced motion and increased contrast remain usable.
 8. `ResizableRegion` uses `wireResizableRegions()` for Arrow, Shift+Arrow, Home/End, and pointer behavior. The app owns size persistence.
-9. Compose `AppTab` inside controlled `TabBar`; call `wireTabBars()` once and retain its disposer. The app applies `onReorder`, and owns order, selection, panels, close policy, routing, and persistence.
+9. Compose `AppTab` inside controlled `TabBar`; call `wireTabBars()` once and retain its disposer. It owns same-bar drag mechanics, including proximity-based horizontal edge autoscroll, while the app applies `onReorder` and owns order, selection, panels, close policy, routing, and persistence.
 10. Demo work uses the public production component and CSS. Give every public visual component its own category-grouped catalog route, declare direct `uses` relationships so `Used by` stays derivable, and theme shell chrome through the same semantic tokens as the stage instead of drawing a substitute.
 
 Common mistakes:

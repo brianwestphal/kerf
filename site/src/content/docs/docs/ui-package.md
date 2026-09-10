@@ -22,7 +22,12 @@ const header = <Toolbar leading={<ToolbarText text="Library" />} />;
 Use the root barrel for convenience or explicit subpaths such as
 `@kerfjs/ui/toolbar`. Import `@kerfjs/ui/foundation.css` for semantic token
 defaults plus only the component CSS you use, or `@kerfjs/ui/styles.css` for the
-complete layer.
+complete layer. Component JavaScript does not inject styles; the application
+bundler collects these explicit CSS imports. Prefer the single `styles.css`
+entry so the app shell never maintains a transitive component-style list; use
+selective imports beside leaf features only after measuring a meaningful size
+benefit. Load app overrides afterward or scope `--kui-*` properties on a
+component instance.
 
 ## Included primitives
 
@@ -59,8 +64,8 @@ target sizes. Icons are decorative unless labeled. Banners distinguish polite
 status from assertive alerts. The resizable separator supports pointer input,
 arrow keys, Shift acceleration, Home, and End. `AppTab` supplies tab semantics;
 `TabBar` plus `wireTabBars` add horizontal overflow, navigation, closing,
-pointer/keyboard reorder, and focus restoration while the application owns and
-persists the controlled state.
+pointer/keyboard reorder, proximity-based horizontal edge autoscroll, and focus
+restoration while the application owns and persists the controlled state.
 
 The package's design philosophy, component contract, accessibility checklist,
 Apple HIG interpretation, and runnable UX catalog live under [`ui/docs/`](https://github.com/brianwestphal/kerf/tree/main/ui/docs).

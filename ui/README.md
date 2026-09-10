@@ -8,10 +8,7 @@ npm install kerfjs @kerfjs/ui
 
 ```tsx
 import { MenuItem, Toolbar, ToolbarText } from '@kerfjs/ui';
-import '@kerfjs/ui/foundation.css';
-import '@kerfjs/ui/toolbar.css';
-import '@kerfjs/ui/toolbar-text.css';
-import '@kerfjs/ui/menu-item.css';
+import '@kerfjs/ui/styles.css';
 
 mount(root, () => <>
   <Toolbar label="Document" leading={<ToolbarText text="Notes" />} />
@@ -44,7 +41,18 @@ Components return Kerf `SafeHtml`. They do not own application state or attach t
 | `DialogHeader` | `@kerfjs/ui/dialog-header` | `@kerfjs/ui/dialog-header.css` |
 | `ValueTable` | `@kerfjs/ui/value-table` | `@kerfjs/ui/value-table.css` |
 
-Import `@kerfjs/ui/styles.css` for the complete stylesheet or combine `foundation.css` with only the component CSS you use.
+CSS is delivered as explicit package exports; component JavaScript never injects
+or implicitly imports it. The recommended application setup is one permanent
+`@kerfjs/ui/styles.css` import at the entry point. It includes the foundation and
+every component stylesheet, so the app shell does not need to know the transitive
+component graph and cannot accumulate stale per-component imports.
+
+The `foundation.css` plus individual component CSS path is an advanced
+size-optimization option. If measurement justifies it, keep those imports beside
+the leaf feature or application component that uses them rather than maintaining
+a root-level list. Vite and other CSS-aware bundlers collect either form as
+ordinary CSS side effects. Load application overrides after the package CSS, or
+scope `--kui-*` variables directly on a component instance.
 
 `foundation.css` follows Hot Sheet 2's Web Awesome-compatible semantic palette.
 Brand, neutral, success, warning, and danger each expose fill, border, and
@@ -64,9 +72,11 @@ stateful components follow the same public-variable pattern, including
 `--kui-toolbar-control-*`, `--kui-app-tab-*`, and `--kui-tab-bar-*`.
 
 `TabBar` is controlled: pass ordered `AppTab` children, then wire its keyboard
-and same-bar drag behavior with `wireTabBars(root, { onReorder })`. Apply the
-reported change with `reorderTabs()` or application-specific state logic. The
-application still owns selection, closing, routing, and persistence.
+and same-bar drag behavior with `wireTabBars(root, { onReorder })`. During a
+drag, the scroll strip automatically moves toward either edge with speed based
+on pointer proximity, exposing earlier or later drop targets. Apply the reported
+change with `reorderTabs()` or application-specific state logic. The application
+still owns selection, closing, routing, and persistence.
 
 `Select` uses Web Awesome but does not register anything by itself. Install the optional peer and explicitly import the registration entry in the application:
 

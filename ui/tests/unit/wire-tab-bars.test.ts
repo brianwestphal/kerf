@@ -25,6 +25,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  vi.restoreAllMocks();
   Element.prototype.scrollIntoView = originalScrollIntoView;
   for (const root of roots.splice(0)) root.remove();
 });
@@ -112,6 +113,72 @@ describe('TabBar wiring', () => {
     source.dispatchEvent(new Event('dragstart', { bubbles: true }));
     crossBar.dispatchEvent(new Event('drop', { bubbles: true, cancelable: true }));
     expect(root.querySelector('[data-tab-dragging], [data-tab-drop-position]')).toBeNull();
+    stop();
+  });
+
+  it('continuously scrolls a dragged tab toward either visible strip edge', () => {
+    const root = bar();
+    const strip = root.querySelector<HTMLElement>('[data-kui-tab-list]')!;
+    const source = root.querySelector<HTMLElement>('.kui-app-tab[data-tab-id="one"]')!;
+    Object.defineProperties(strip, {
+      clientWidth: { configurable: true, value: 200 },
+      scrollWidth: { configurable: true, value: 600 },
+    });
+    Object.defineProperty(strip, 'getBoundingClientRect', { value: () => ({ left: 0, width: 200, right: 200, top: 0, bottom: 40, height: 40, x: 0, y: 0, toJSON: () => ({}) }) });
+    strip.scrollLeft = 100;
+    let frame: FrameRequestCallback | undefined;
+    let frameId = 0;
+    const request = vi.spyOn(window, 'requestAnimationFrame').mockImplementation((callback) => {
+      frame = callback;
+      return ++frameId;
+    });
+    const cancel = vi.spyOn(window, 'cancelAnimationFrame').mockImplementation(() => undefined);
+    const stop = wireTabBars(root, { onReorder: vi.fn() });
+    source.dispatchEvent(new Event('dragstart', { bubbles: true }));
+
+    const towardEnd = new Event('dragover', { bubbles: true, cancelable: true });
+    Object.defineProperty(towardEnd, 'clientX', { value: 198 });
+    strip.dispatchEvent(towardEnd);
+    expect(towardEnd.defaultPrevented).toBe(true);
+    expect(strip.dataset.tabAutoscroll).toBe('end');
+    expect(request).toHaveBeenCalledOnce();
+    const endFrame = frame!;
+    endFrame(16);
+    expect(strip.scrollLeft).toBeGreaterThan(100);
+    expect(request).toHaveBeenCalledTimes(2);
+
+    const boundaryFrame = frame!;
+    strip.scrollLeft = 400;
+    boundaryFrame(32);
+    expect(strip.hasAttribute('data-tab-autoscroll')).toBe(false);
+
+    strip.scrollLeft = 100;
+    strip.dispatchEvent(towardEnd);
+    strip.dispatchEvent(towardEnd);
+
+    const centered = new Event('dragover', { bubbles: true, cancelable: true });
+    Object.defineProperty(centered, 'clientX', { value: 100 });
+    strip.dispatchEvent(centered);
+    expect(strip.hasAttribute('data-tab-autoscroll')).toBe(false);
+    expect(cancel).toHaveBeenCalledOnce();
+
+    const towardStart = new Event('dragover', { bubbles: true, cancelable: true });
+    Object.defineProperty(towardStart, 'clientX', { value: 2 });
+    strip.scrollLeft = 0;
+    strip.dispatchEvent(towardStart);
+    expect(strip.hasAttribute('data-tab-autoscroll')).toBe(false);
+    strip.scrollLeft = 100;
+    strip.dispatchEvent(towardStart);
+    expect(strip.dataset.tabAutoscroll).toBe('start');
+    const startFrame = frame!;
+    startFrame(32);
+    expect(strip.scrollLeft).toBeLessThan(100);
+    strip.remove();
+    const missingStrip = new Event('dragover', { bubbles: true, cancelable: true });
+    Object.defineProperty(missingStrip, 'clientX', { value: 100 });
+    root.querySelector('[data-component="tab-bar"]')!.dispatchEvent(missingStrip);
+    root.dispatchEvent(new Event('dragend', { bubbles: true }));
+    expect(strip.hasAttribute('data-tab-autoscroll')).toBe(false);
     stop();
   });
 
