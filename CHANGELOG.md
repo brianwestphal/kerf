@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Fixed trapped overlays losing sequential focus in WebKit after the second control. Implicitly focusable descendants now receive `tabindex="0"` inside the trap, while authored tabindex values (including `-1`) remain intact.
 - Fixed Firefox contenteditable carets jumping to the list container during keyed `moveBefore()` reorders. `each()` and `bindList` now restore exact contenteditable Selection boundary nodes and offsets after every move pass, even when the browser keeps `activeElement` unchanged.
 - Repaired lockstep version metadata for the ESLint plugin and component scaffold, and added a release-time sync plus repository gate so package manifests, locks, plugin metadata, and published examples cannot drift again.
 - Added the lockstep `@kerfjs/ui` package: accessible toolbar, menu, tab, header, resize, select, and feedback primitives; semantic CSS tokens and explicit per-component styles; opt-in Web Awesome registration; AI-oriented docs; a production-backed UX catalog; bundle/unit/three-engine browser gates; and a least-privilege release workflow.

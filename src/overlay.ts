@@ -94,9 +94,15 @@ const FOCUSABLE =
   + '[tabindex]:not([tabindex="-1"]),[contenteditable="true"]';
 
 function focusable(root: Element): HTMLElement[] {
-  return Array.from(root.querySelectorAll<HTMLElement>(FOCUSABLE)).filter(
-    (el) => !el.hasAttribute('hidden'),
+  const items = Array.from(root.querySelectorAll<HTMLElement>(FOCUSABLE)).filter(
+    (el) => !el.hasAttribute('hidden') && el.tabIndex >= 0,
   );
+  // WebKit on macOS follows the system's keyboard-navigation preference and
+  // may omit implicitly tabbable controls from sequential focus navigation.
+  // A focus trap promises stable traversal through every eligible control, so
+  // make those implicit stops explicit while preserving authored tabindexes.
+  for (const el of items) if (!el.hasAttribute('tabindex')) el.tabIndex = 0;
+  return items;
 }
 
 // Native top-layer feature detection (KF-526). Modal → `<dialog>.showModal()`;

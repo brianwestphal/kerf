@@ -170,6 +170,26 @@ describe('overlay()', () => {
       expect(document.activeElement).toBe(get('b')); // handler didn't move it
     });
 
+    it('normalizes implicit tab stops while preserving authored tabindex values', () => {
+      const h = overlay(raw(
+        '<button id="implicit">a</button><button id="priority" tabindex="2">priority</button>'
+        + '<input id="field" /><button id="last">last</button>'
+        + '<button id="skip" tabindex="-1">skip</button>',
+      ), { trap: true, initialFocus: '#implicit' });
+      const get = (id: string) => h.el.querySelector<HTMLElement>('#' + id)!;
+
+      tab();
+
+      expect(get('implicit').getAttribute('tabindex')).toBe('0');
+      expect(get('field').getAttribute('tabindex')).toBe('0');
+      expect(get('last').getAttribute('tabindex')).toBe('0');
+      expect(get('skip').getAttribute('tabindex')).toBe('-1');
+      expect(get('priority').getAttribute('tabindex')).toBe('2');
+      get('implicit').focus();
+      tab(true);
+      expect(document.activeElement).toBe(get('last')); // trailing -1 was excluded
+    });
+
     it('Tab with no focusable content is a no-op (no throw)', () => {
       overlay(raw('<p>nothing</p>'), { trap: true, initialFocus: false });
       expect(() => tab()).not.toThrow();
