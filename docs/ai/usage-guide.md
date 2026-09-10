@@ -75,9 +75,11 @@ for urgent interruption; implement arrow/Home/End behavior on the tab list; and
 do not remove the provided focus, reduced-motion, or forced-color styles. See
 [`docs/21-ui-package.md`](../21-ui-package.md) and `ui/ai/skill.md`.
 
-For visual review, `ui/ux-demo/` groups every public family by category in a
-master/detail catalog. Each `?component=<id>` route renders one production
-component inside chrome that consumes the same semantic light/dark tokens.
+For visual review, `ui/ux-demo/` groups every public visual component by category
+in a master/detail catalog. Each `?component=<id>` route renders one focused
+production demo inside chrome that consumes the same semantic light/dark tokens;
+the detail view derives `Uses` and `Used by` navigation from declared component
+dependencies.
 
 ## Public API — everything is in one import
 

@@ -65,6 +65,11 @@ button { font: inherit; }
 .catalog-canvas { display: grid; width: 100%; min-width: 0; min-height: 18rem; padding: clamp(1rem, 3vw, 2rem); border: 1px solid var(--kui-color-border-quiet); border-radius: var(--kui-radius-m); background-color: var(--kui-color-surface-lowered); background-image: linear-gradient(45deg, color-mix(in srgb, var(--kui-color-border-quiet) 42%, transparent) 25%, transparent 25%), linear-gradient(-45deg, color-mix(in srgb, var(--kui-color-border-quiet) 42%, transparent) 25%, transparent 25%), linear-gradient(45deg, transparent 75%, color-mix(in srgb, var(--kui-color-border-quiet) 42%, transparent) 75%), linear-gradient(-45deg, transparent 75%, color-mix(in srgb, var(--kui-color-border-quiet) 42%, transparent) 75%); background-position: 0 0, 0 .75rem, .75rem -.75rem, -.75rem 0; background-size: 1.5rem 1.5rem; place-items: center; }
 .catalog-stage__footer { display: flex; min-height: 1.75rem; color: var(--kui-color-text-quiet); align-items: center; justify-content: space-between; gap: 1rem; font-size: var(--kui-font-xs); }
 .catalog-log { color: var(--kui-color-accent-text); font-weight: 650; }
+.catalog-relationships { display: flex; width: 100%; max-width: 70rem; margin: 1.5rem auto 0; align-items: end; justify-content: space-between; gap: 2rem; }
+.catalog-relationships h3, .catalog-relationships p { margin: 0; }
+.catalog-relationships h3 { margin-block: .15rem; font-size: var(--kui-font-l); }
+.catalog-relationships > div > p:last-child, .catalog-relationships__empty { color: var(--kui-color-text-quiet); font-size: var(--kui-font-s); }
+.catalog-relationships__select { width: min(23rem, 100%); }
 
 .demo-frame, .demo-feedback, .demo-control-stack { display: grid; width: 100%; max-width: 54rem; overflow: hidden; border: 1px solid var(--kui-color-border); border-radius: var(--kui-radius-m); background: var(--kui-color-surface); box-shadow: var(--kui-shadow-s); gap: 1rem; }
 .demo-frame { gap: 0; }
@@ -84,6 +89,20 @@ button { font: inherit; }
 .demo-control-stack { width: min(30rem, 100%); align-content: start; }
 .demo-control-stack > label { font-weight: 700; }
 .demo-spinner-row { display: flex; min-height: 3rem; padding: .75rem; border: 1px solid var(--kui-color-border); border-radius: var(--kui-radius-m); align-items: center; gap: .5rem; }
+.demo-icon-grid, .demo-spinner-grid, .demo-empty-grid { display: grid; width: min(46rem, 100%); grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+.demo-icon-grid article, .demo-spinner-grid article, .demo-empty-grid article { display: grid; min-width: 0; padding: 1.25rem; border: 1px solid var(--kui-color-border); border-radius: var(--kui-radius-m); background: var(--kui-color-surface); box-shadow: var(--kui-shadow-s); align-content: center; justify-items: center; gap: .45rem; text-align: center; }
+.demo-icon-grid article > span:last-child, .demo-spinner-grid article > span:last-child, .demo-empty-grid article > span:first-child { color: var(--kui-color-text-quiet); font-size: var(--kui-font-xs); }
+.demo-icon-grid__sample { display: grid; width: 3.25rem; height: 3.25rem; border-radius: var(--kui-radius-pill); color: var(--kui-color-accent-text); background: var(--kui-color-accent); place-items: center; }
+.demo-icon-grid__sample svg { width: 1.5rem; height: 1.5rem; }
+.demo-spinner-grid article { min-height: 10rem; }
+.demo-empty-grid article { padding: .75rem; align-content: start; }
+.demo-empty-grid .kui-empty-state { min-height: 15rem; }
+.demo-variant-stack, .demo-text-variants { display: grid; width: min(38rem, 100%); padding: 1rem; border: 1px solid var(--kui-color-border); border-radius: var(--kui-radius-m); background: var(--kui-color-surface); box-shadow: var(--kui-shadow-s); gap: 1rem; }
+.demo-variant-stack > div, .demo-text-variants > div { display: flex; min-width: 0; min-height: 3.5rem; padding: .75rem; border: 1px solid var(--kui-color-border-quiet); border-radius: var(--kui-radius-s); align-items: center; justify-content: space-between; gap: 1rem; }
+.demo-variant-stack > div > span, .demo-text-variants > div > span:first-child { color: var(--kui-color-text-quiet); font-size: var(--kui-font-xs); font-weight: 650; }
+.demo-dark-swatch { color: #fff; background: #252527; }
+.demo-dialog--standalone { width: min(38rem, 100%); margin: 0; }
+.demo-value-table { width: min(34rem, 100%); padding: 1rem; border: 1px solid var(--kui-color-border); border-radius: var(--kui-radius-m); background: var(--kui-color-surface); box-shadow: var(--kui-shadow-s); }
 
 @media (max-width: 64rem) {
   .catalog-settings button span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
@@ -95,12 +114,15 @@ button { font: inherit; }
   .catalog-brand { padding: 0 0 1rem; }
   .catalog-sidebar nav { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; gap: .5rem 1rem; }
   .catalog-group, .catalog-group:first-child { min-width: 0; margin: 0; }
+  .catalog-group__items .kui-menu-item { height: auto; }
+  .catalog-group__items .kui-menu-item__label { overflow: visible; white-space: normal; }
   .catalog-detail { min-height: auto; padding: 1.25rem; }
   .catalog-header { display: grid; margin-bottom: 1.25rem; gap: 1rem; }
   .catalog-settings button span { position: static; width: auto; height: auto; overflow: visible; clip-path: none; white-space: normal; }
   .catalog-stage { min-height: 24rem; padding: 1rem; }
   .catalog-canvas { min-height: 16rem; padding: .75rem; }
   .catalog-stage__footer { align-items: flex-start; flex-direction: column; gap: .25rem; }
+  .catalog-relationships { align-items: stretch; flex-direction: column; gap: .75rem; }
   .demo-resize-shell { overflow-x: auto; }
 }
 
@@ -109,6 +131,8 @@ button { font: inherit; }
   .catalog-settings button { min-width: 0; padding-inline: .55rem; flex: 1; justify-content: center; }
   .catalog-settings button span { font-size: .72rem; }
   .demo-spinner-row { flex-wrap: wrap; }
+  .demo-icon-grid, .demo-spinner-grid, .demo-empty-grid { grid-template-columns: 1fr; }
+  .demo-variant-stack > div, .demo-text-variants > div { align-items: flex-start; flex-direction: column; }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -1,14 +1,30 @@
 import { expect, test } from '@playwright/test';
 
+import { catalog } from '../../ux-demo/catalog.js';
+
 test('catalog routes every production component family and supports its stateful controls', async ({ page, browserName }) => {
   await page.goto('/');
-  await expect(page.locator('.catalog-sidebar [data-component="menu-header"]')).toHaveCount(4);
-  await expect(page.locator('.catalog-sidebar [data-component="menu-item"]')).toHaveCount(7);
-  await expect(page.locator('[data-demo="toolbar"]')).toBeVisible();
+  await expect(page.locator('.catalog-sidebar [data-component="menu-header"]')).toHaveCount(5);
+  await expect(page.locator('.catalog-sidebar [data-component="menu-item"]')).toHaveCount(catalog.length);
+  await expect(page.locator('[data-demo="lucide-icon"]')).toBeVisible();
+  for (const entry of catalog) {
+    await page.goto(`/?component=${entry.id}`);
+    await expect(page.locator(`[data-demo="${entry.id}"]`)).toBeVisible();
+  }
+
   await page.locator('.catalog-sidebar [data-item-id="menu"]').click();
   await expect(page).toHaveURL(/component=menu/);
   await expect(page.locator('[data-demo="menu"]')).toBeVisible();
   await expect(page.locator('.catalog-sidebar [data-item-id="menu"]')).toHaveAttribute('aria-current', 'page');
+  await expect(page.locator('[data-relationships-for="menu"]')).toContainText('2 uses');
+  await page.locator('[name="related-component"]').evaluate((element) => {
+    const select = element as HTMLElement & { value: string };
+    select.value = 'menu-item';
+    select.dispatchEvent(new Event('change', { bubbles: true }));
+  });
+  await expect(page).toHaveURL(/component=menu-item/);
+  await expect(page.locator('[data-demo="menu-item"]')).toBeVisible();
+  await expect(page.locator('[data-relationships-for="menu-item"]')).toContainText('1 used by');
 
   const themeButton = page.locator('[data-action="toggle-theme"]');
   await themeButton.click();
@@ -45,7 +61,7 @@ test('catalog routes every production component family and supports its stateful
   await expect(page.locator('[data-region-size]')).toHaveText('420px');
 
   await page.goto('/?component=select');
-  await page.locator('wa-select').evaluate((element) => {
+  await page.locator('[name="rendering-balance"]').evaluate((element) => {
     const select = element as HTMLElement & { value: string };
     select.value = 'explicit';
     select.dispatchEvent(new Event('change', { bubbles: true }));
@@ -53,12 +69,12 @@ test('catalog routes every production component family and supports its stateful
   await expect(page.locator('[data-select-value]')).toHaveText('explicit');
 
   if (browserName === 'chromium') {
-    await page.goto('/');
+    await page.goto('/?component=toolbar');
     await page.setViewportSize({ width: 1440, height: 1100 });
     await page.screenshot({ path: 'test-results/ux-demo-wide.png', fullPage: true });
     await page.locator('[data-action="toggle-theme"]').click();
     await page.screenshot({ path: 'test-results/ux-demo-dark.png', fullPage: true });
-    await page.goto('/');
+    await page.goto('/?component=toolbar');
     await page.setViewportSize({ width: 390, height: 844 });
     await page.screenshot({ path: 'test-results/ux-demo-narrow.png', fullPage: true });
   }

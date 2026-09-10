@@ -10,7 +10,7 @@ Accessible, production-backed UI primitives for kerf applications.
 - [Apple HIG translation](./docs/apple-hig.md)
 - [UX catalog](./docs/ux-demo.md)
 
-The UX catalog is a category-grouped master/detail review surface. Its shell, display preferences, and selected production component share one semantic theme.
+The UX catalog is a category-grouped master/detail review surface with a focused route for every public visual component plus composition demos. Each detail exposes derived `Uses` and `Used by` navigation; its shell, display preferences, and selected production component share one semantic theme.
 
 Public components: `LucideIcon`, `Toolbar`, `ToolbarControlGroup`, `ToolbarText`, `MenuItem`, `MenuHeader`, `ResizableRegion`, `wireResizableRegions`, `AppTab`, `PageHeader`, `LoadingSpinner`, `Select`, `StateBanner`, `EmptyState`, `DialogHeader`, and `ValueTable`.
 

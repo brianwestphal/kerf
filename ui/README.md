@@ -61,4 +61,4 @@ That boundary keeps Web Awesome and its custom-element side effects out of bundl
 - [UX catalog contract](./docs/ux-demo.md)
 - [AI guide](./ai/skill.md)
 
-Run `npm run dev` from this directory for the category-grouped master/detail catalog, `npm run check` for static/unit/bundle gates, and `npm run test:e2e` for the real-browser suite.
+Run `npm run dev` from this directory for the category-grouped master/detail catalog. Every public visual component has a focused route and derived `Uses` / `Used by` navigation. Run `npm run check` for static/unit/bundle gates and `npm run test:e2e` for the real-browser suite.
