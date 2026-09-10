@@ -38,6 +38,7 @@
  * so a plain `signal<T[]>` or an `arraySignal<T>` both work.
  */
 import { ARRAY_SIGNAL_BRAND, type ArrayPatch } from './array-signal.js';
+import { captureFocus, restoreFocus } from './list-reconcile-focus.js';
 import { mount, type MountResult } from './mount.js';
 import { effect } from './reactive.js';
 import { moveNode } from './utils/moveNode.js';
@@ -338,48 +339,59 @@ export function bindList<T>(
     return fresh;
   };
 
+  const preserveFocus = (operation: () => void): void => {
+    const focus = captureFocus(container);
+    try {
+      operation();
+    } finally {
+      if (focus !== null) restoreFocus(focus);
+    }
+  };
+
   // Reconcile the live rows to exactly `visible`, in order, keyed.
   const syncRows = (visible: readonly T[]): void => {
-    const wanted = new Set<ListKey>();
-    for (const item of visible) wanted.add(key(item));
+    preserveFocus(() => {
+      const wanted = new Set<ListKey>();
+      for (const item of visible) wanted.add(key(item));
 
-    // Remove rows that are gone from the window.
-    for (const [k, row] of rows) {
-      if (!wanted.has(k)) {
-        row.dispose();
-        row.el.remove();
-        rows.delete(k);
+      // Remove rows that are gone from the window.
+      for (const [k, row] of rows) {
+        if (!wanted.has(k)) {
+          row.dispose();
+          row.el.remove();
+          rows.delete(k);
+        }
       }
-    }
 
-    // Create missing rows; reuse existing ones by key (element rows keep their
-    // element across item changes; content rows rebuild on identity change).
-    order.length = 0;
-    for (const item of visible) {
-      const k = key(item);
-      const existing = rows.get(k);
-      let row: Row<T>;
-      if (existing !== undefined) {
-        row = reconcileItem(existing, k, item);
-      } else {
-        row = makeRow(item);
-        rows.set(k, row);
+      // Create missing rows; reuse existing ones by key (element rows keep their
+      // element across item changes; content rows rebuild on identity change).
+      order.length = 0;
+      for (const item of visible) {
+        const k = key(item);
+        const existing = rows.get(k);
+        let row: Row<T>;
+        if (existing !== undefined) {
+          row = reconcileItem(existing, k, item);
+        } else {
+          row = makeRow(item);
+          rows.set(k, row);
+        }
+        order.push(row);
       }
-      order.push(row);
-    }
 
-    // Reverse pass: move only rows that are out of position. `moveNode` keeps a
-    // reordered (already-connected) row's live state via `moveBefore` where
-    // supported; a brand-new row (parentNode !== container, not yet connected)
-    // falls back to `insertBefore` via the guard.
-    let ref: Node | null = endAnchor();
-    for (let i = order.length - 1; i >= 0; i--) {
-      const el = order[i].el;
-      if (el.parentNode !== container || el.nextSibling !== ref) {
-        moveNode(container, el, ref);
+      // Reverse pass: move only rows that are out of position. `moveNode` keeps a
+      // reordered (already-connected) row's live state via `moveBefore` where
+      // supported; a brand-new row (parentNode !== container, not yet connected)
+      // falls back to `insertBefore` via the guard.
+      let ref: Node | null = endAnchor();
+      for (let i = order.length - 1; i >= 0; i--) {
+        const el = order[i].el;
+        if (el.parentNode !== container || el.nextSibling !== ref) {
+          moveNode(container, el, ref);
+        }
+        ref = el;
       }
-      ref = el;
-    }
+    });
   };
 
   // Apply arraySignal structural patches directly to `order` + the DOM, in
@@ -389,51 +401,53 @@ export function bindList<T>(
   // which snapshots instead). The `splice()`s mirror `arraySignal`'s own
   // `_items` mutations exactly.
   const applyPatches = (patches: readonly ArrayPatch<T>[]): void => {
-    for (const patch of patches) {
-      if (patch.type === 'insert') {
-        const row = makeRow(patch.item);
-        rows.set(key(patch.item), row);
-        order.splice(patch.index, 0, row);
-        container.insertBefore(row.el, order[patch.index + 1]?.el ?? endAnchor());
-      } else if (patch.type === 'remove') {
-        const [row] = order.splice(patch.index, 1);
-        row.dispose();
-        row.el.remove();
-        rows.delete(key(row.item));
-      } else if (patch.type === 'move') {
-        const [row] = order.splice(patch.from, 1);
-        order.splice(patch.to, 0, row);
-        // Relocating an existing connected row → state-preserving move.
-        moveNode(container, row.el, order[patch.to + 1]?.el ?? endAnchor());
-      } else if (patch.type === 'update') {
-        // An item whose OBJECT identity changed: content rows rebuild (their mount
-        // re-renders the fresh item); element rows are REUSED — keep the caller's
-        // element and refresh via update(), re-keying if the key changed. A
-        // same-ref update needs nothing (the row's mount reacts to its signals).
-        const current = order[patch.index];
-        if (current.item !== patch.item) {
-          if (current.elementMode) {
-            const oldKey = key(current.item);
-            const newKey = key(patch.item);
-            current.item = patch.item;
-            if (newKey !== oldKey) {
-              rows.delete(oldKey);
-              rows.set(newKey, current);
+    preserveFocus(() => {
+      for (const patch of patches) {
+        if (patch.type === 'insert') {
+          const row = makeRow(patch.item);
+          rows.set(key(patch.item), row);
+          order.splice(patch.index, 0, row);
+          container.insertBefore(row.el, order[patch.index + 1]?.el ?? endAnchor());
+        } else if (patch.type === 'remove') {
+          const [row] = order.splice(patch.index, 1);
+          row.dispose();
+          row.el.remove();
+          rows.delete(key(row.item));
+        } else if (patch.type === 'move') {
+          const [row] = order.splice(patch.from, 1);
+          order.splice(patch.to, 0, row);
+          // Relocating an existing connected row → state-preserving move.
+          moveNode(container, row.el, order[patch.to + 1]?.el ?? endAnchor());
+        } else if (patch.type === 'update') {
+          // An item whose OBJECT identity changed: content rows rebuild (their mount
+          // re-renders the fresh item); element rows are REUSED — keep the caller's
+          // element and refresh via update(), re-keying if the key changed. A
+          // same-ref update needs nothing (the row's mount reacts to its signals).
+          const current = order[patch.index];
+          if (current.item !== patch.item) {
+            if (current.elementMode) {
+              const oldKey = key(current.item);
+              const newKey = key(patch.item);
+              current.item = patch.item;
+              if (newKey !== oldKey) {
+                rows.delete(oldKey);
+                rows.set(newKey, current);
+              }
+              current.update?.(patch.item);
+            } else {
+              current.dispose();
+              current.el.remove();
+              rows.delete(key(current.item));
+              const row = makeRow(patch.item);
+              rows.set(key(patch.item), row);
+              order[patch.index] = row;
+              container.insertBefore(row.el, order[patch.index + 1]?.el ?? endAnchor());
             }
-            current.update?.(patch.item);
-          } else {
-            current.dispose();
-            current.el.remove();
-            rows.delete(key(current.item));
-            const row = makeRow(patch.item);
-            rows.set(key(patch.item), row);
-            order[patch.index] = row;
-            container.insertBefore(row.el, order[patch.index + 1]?.el ?? endAnchor());
           }
         }
+        // 'replace' never reaches here — the caller snapshots on it.
       }
-      // 'replace' never reaches here — the caller snapshots on it.
-    }
+    });
   };
 
   // Virtualization height model, three modes:

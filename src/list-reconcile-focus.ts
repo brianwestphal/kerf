@@ -1,23 +1,22 @@
 /**
  * Focus snapshot/restore for the keyed list reconciler.
  *
- * Some engines (older Safari, happy-dom) drop focus state on `insertBefore`
- * even when the focused element survives the move connected to the document.
- * The reconciler snapshots the active element + selection range before its
- * move pass, then re-applies them afterwards. Engines that already preserve
- * focus across DOM moves see a no-op; engines that don't get a transparent
- * fix.
+ * Some engines drop focus state on `insertBefore`; Firefox's `moveBefore()`
+ * keeps focus but can retarget a contenteditable Selection to the list parent.
+ * The reconciler snapshots the active element + exact selection before its
+ * move pass, then re-applies them afterwards.
  *
  * Lives in its own file (rather than inside `list-reconcile.ts`) to isolate
  * the engine-quirk handling — a concern separable from the reconcile
  * algorithm — described in `docs/4-render.md` §4.4.
  */
 
-export interface FocusSnapshot {
-  el: HTMLElement;
-  selStart: number | null;
-  selEnd: number | null;
-}
+export type FocusSnapshot = [
+  el: HTMLElement,
+  selStart: number | null,
+  selEnd: number | null,
+  domSelection: [anchorNode: Node, anchorOffset: number, focusNode: Node, focusOffset: number] | null,
+];
 
 /**
  * Capture focus + selection on a focused descendant of `liveParent`.
@@ -32,6 +31,7 @@ export function captureFocus(liveParent: Element): FocusSnapshot | null {
   const el = active as HTMLElement;
   let selStart: number | null = null;
   let selEnd: number | null = null;
+  let domSelection: FocusSnapshot[3] = null;
   if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
     try {
       selStart = (el as HTMLInputElement).selectionStart;
@@ -40,18 +40,46 @@ export function captureFocus(liveParent: Element): FocusSnapshot | null {
       // Some input types (number, range, color, …) reject selection APIs.
     }
   }
-  return { el, selStart, selEnd };
+  if (el.isContentEditable) {
+    const selection = document.getSelection();
+    if (selection !== null && selection.anchorNode !== null && selection.focusNode !== null) {
+      // Keep the live boundary-node references and numeric offsets. Firefox's
+      // moveBefore() can retarget both Selection and cloned Range boundaries
+      // to the row's parent during a keyed move, so neither object is a safe
+      // snapshot on that engine.
+      domSelection = [
+        selection.anchorNode,
+        selection.anchorOffset,
+        selection.focusNode,
+        selection.focusOffset,
+      ];
+    }
+  }
+  return [el, selStart, selEnd, domSelection];
 }
 
 export function restoreFocus(snap: FocusSnapshot): void {
-  if (document.activeElement === snap.el) return;
-  if (!snap.el.isConnected) return;
-  snap.el.focus();
-  if (snap.selStart !== null && snap.selEnd !== null) {
+  const [el, selStart, selEnd, domSelection] = snap;
+  if (!el.isConnected) return;
+  if (document.activeElement !== el) el.focus();
+  if (selStart !== null && selEnd !== null) {
     try {
-      (snap.el as HTMLInputElement).setSelectionRange(snap.selStart, snap.selEnd);
+      (el as HTMLInputElement).setSelectionRange(selStart, selEnd);
     } catch {
       // Selection may have been clobbered by .focus(); not fatal.
     }
+  }
+  if (domSelection === null) return;
+  const [anchorNode, anchorOffset, focusNode, focusOffset] = domSelection;
+  try {
+    // Preserve selection direction where the engine supports the direct API.
+    document.getSelection()?.setBaseAndExtent(
+      anchorNode,
+      anchorOffset,
+      focusNode,
+      focusOffset,
+    );
+  } catch {
+    // A caller may have mutated the editable subtree during reconciliation.
   }
 }

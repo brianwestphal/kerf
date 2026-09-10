@@ -34,13 +34,13 @@ running animation, a media position, or an `<iframe>`'s scroll and form state.
 
 `Node.prototype.moveBefore(node, ref)` (shipped in Chromium 133+, spreading to
 other engines) performs the move **atomically**: the node is never disconnected
-from the document, so none of the state above is torn down. It is the platform
-finally offering the operation kerf always wanted — "put this live node over
-there, unchanged."
+from the document. It is the platform finally offering the operation kerf
+always wanted — "put this live node over there, unchanged."
 
 Where it runs, `moveBefore()` preserves *more* than the focus snapshot ever
-could, and needs no snapshot at all: focus never left, so there is nothing to
-restore.
+could. The snapshot remains necessary for interoperable text selection,
+however: Firefox can keep a contenteditable focused while retargeting its live
+Selection (and a cloned Range) to the list parent during the move.
 
 ## 18.3 What kerf does
 
@@ -99,17 +99,20 @@ template node.
 
 ## 18.4 Relationship to the focus snapshot
 
-`list-reconcile-focus.ts` stays exactly as it was. The two mechanisms compose:
+`list-reconcile-focus.ts` runs around both `each()` and `bindList` move passes.
+The two mechanisms compose:
 
-- **Engine with `moveBefore()`**: the move preserves focus (and everything else)
-  natively, so `restoreFocus`'s `document.activeElement === snap.el` guard
-  returns immediately — the snapshot is a cheap no-op.
+- **Engine with `moveBefore()`**: the atomic move preserves connected-node state.
+  Kerf still restores text-entry selection afterwards because an engine may
+  keep `document.activeElement` while retargeting a contenteditable Selection.
 - **Engine without `moveBefore()`** (older Safari, happy-dom): `insertBefore()`
   runs, the focus snapshot does its job as before.
 
-The snapshot is therefore the fallback for the one kind of state it can
-restore (focus + text selection); `moveBefore()` is the strictly-better path for
-every kind, where available.
+For inputs and textareas the snapshot stores numeric selection offsets. For a
+contenteditable it stores the raw anchor/focus node references plus their
+offsets, then reconstructs the Selection after the move. Raw references are
+intentional: Firefox retargets both the live Selection and a cloned Range, but
+the original text nodes remain connected inside the moved row.
 
 ## 18.5 Testing
 
@@ -117,10 +120,15 @@ every kind, where available.
   `insertBefore` fallback (happy-dom has no `moveBefore`), the `moveBefore` path
   via a spec-faithful stub, and the detached-node guard keeping fresh inserts on
   `insertBefore` even when `moveBefore` exists.
+- **Focus unit** (`tests/unit/list-reconcile-focus.internal.test.ts`): restores
+  a clobbered input range even when focus did not change, restores exact
+  contenteditable anchor/focus nodes and offsets, and ignores a removed focused
+  node.
 - **Reconciler suites**: every existing `each()` / `bindList` / `morph` reorder
   test runs the `insertBefore` fallback under happy-dom, so correctness of the
   reorder result is unchanged and fully covered there.
-- **Browser** (Chromium): the real `moveBefore()` path — a focused input's caret
-  and a running CSS animation surviving a row reorder — belongs to the Playwright
-  suite (`npm run test:browser`), since happy-dom models neither `moveBefore()`
-  nor animations.
+- **Browser** (Chromium / Firefox / WebKit): exact input, textarea, and
+  contenteditable caret preservation through `each()` moves, plus an exact
+  contenteditable caret through a `bindList` move, live in
+  `tests/browser/input-preservation.spec.ts`. Chromium also proves a running CSS
+  animation survives the real `moveBefore()` path in `move-before.spec.ts`.

@@ -298,9 +298,9 @@ For anything else with focus (a `<button>`, `<a>`, `<div tabindex>`), the diff p
 
 ### Across `each()` reorders
 
-When the keyed list reconciler moves a row whose descendant is the focused element, the row's DOM node is reused — the focused element stays connected to the document. Some engines (older Safari, happy-dom) drop focus state on `insertBefore` even when the element survives, so the reconciler snapshots the active element + its selection range before the move pass and re-applies them afterwards. Engines that already preserve focus see a no-op; engines that don't get a transparent fix.
+When the keyed list reconciler moves a row whose descendant is the focused element, the row's DOM node is reused. Before every `each()` or `bindList` move pass, kerf snapshots the active element plus an input/textarea range or the exact contenteditable Selection boundary nodes and offsets, then re-applies that state afterwards. This covers engines that blur on `insertBefore` and engines whose native move keeps focus but retargets a contenteditable caret.
 
-Where the engine supports `Node.prototype.moveBefore()` (Chromium 133+, spreading), kerf goes one better: connected-row moves are performed with `moveBefore()`, an *atomic* move that never disconnects the node, so focus survives natively along with text selection, `<iframe>` state, playing media, and running CSS animations — none of which the focus snapshot could restore. The snapshot stays as the fallback for engines without `moveBefore()`. This is fully transparent.
+Where the engine supports `Node.prototype.moveBefore()` (Chromium 133+, spreading), connected-row moves are performed atomically without disconnecting the node, preserving richer state such as `<iframe>` documents, playing media, and running CSS animations. The focus snapshot still runs: Firefox can keep the contenteditable focused while retargeting its live Selection to the list parent during `moveBefore()`, so kerf reconstructs the exact caret afterwards. This is fully transparent.
 
 Replaced rows (cache miss — the row's HTML changed) are a different story: the old node is removed before the new one is inserted, so focus that lived inside it is genuinely gone. That matches the behavior of any framework that re-renders a row.
 
