@@ -72,8 +72,11 @@ bundle it.
 ## 21.5 Catalog and verification
 
 `ui/ux-demo/` is a production-backed component catalog: it imports public
-package paths, exposes each family through an addressable `?component=` route,
-and includes theme, contrast, motion, selection, resize, and feedback states.
+package paths, groups routes by category in a master/detail shell, exposes each
+family through an addressable `?component=` route, and gives the selected family
+one centered inspection stage. Decorative chrome, Web Awesome controls, and
+production components share semantic theme tokens. The catalog includes light
+and dark themes, contrast, motion, selection, resize, and feedback states.
 Unit coverage uses the root repository thresholds. Bundle tests prove subpath
 exports, tree-shaking, peer externalization, and opt-in custom-element
 registration. Playwright runs the catalog in Chromium, Firefox, and WebKit and

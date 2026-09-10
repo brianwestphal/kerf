@@ -1,7 +1,10 @@
+export const catalogCategories = ['Structure', 'Navigation', 'Controls', 'Feedback'] as const;
+export type CatalogCategory = typeof catalogCategories[number];
+
 export interface CatalogEntry {
   id: string;
   name: string;
-  category: 'Navigation' | 'Structure' | 'Feedback' | 'Controls';
+  category: CatalogCategory;
   description: string;
   uses?: readonly string[];
 }
@@ -17,6 +20,11 @@ export const catalog = [
 ] as const satisfies readonly CatalogEntry[];
 
 export type CatalogId = typeof catalog[number]['id'];
+
+export const catalogSections = catalogCategories.map((category) => ({
+  category,
+  entries: catalog.filter((entry) => entry.category === category),
+}));
 
 export function isCatalogId(value: string | null): value is CatalogId {
   return catalog.some((entry) => entry.id === value);

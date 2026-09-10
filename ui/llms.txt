@@ -10,6 +10,8 @@ Accessible, production-backed UI primitives for kerf applications.
 - [Apple HIG translation](./docs/apple-hig.md)
 - [UX catalog](./docs/ux-demo.md)
 
+The UX catalog is a category-grouped master/detail review surface. Its shell, display preferences, and selected production component share one semantic theme.
+
 Public components: `LucideIcon`, `Toolbar`, `ToolbarControlGroup`, `ToolbarText`, `MenuItem`, `MenuHeader`, `ResizableRegion`, `wireResizableRegions`, `AppTab`, `PageHeader`, `LoadingSpinner`, `Select`, `StateBanner`, `EmptyState`, `DialogHeader`, and `ValueTable`.
 
 Only CSS and `@kerfjs/ui/select/register` have side effects. `kerfjs` is an external peer. The Web Awesome peer is optional and needed only for `Select` registration.

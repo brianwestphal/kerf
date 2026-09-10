@@ -22,20 +22,23 @@ import {
 } from '@kerfjs/ui';
 import { delegate, mount, signal } from 'kerfjs';
 import { delegateActions } from 'kerfjs/actions';
-import { Bell, Check, ChevronDown, CircleHelp, Folder, Inbox, PanelLeft, Plus, Search, Settings, SlidersHorizontal, Wrench } from 'lucide';
+import { Bell, Check, ChevronDown, CircleHelp, Contrast, Folder, Inbox, Moon, PanelLeft, Plus, Search, Settings, SlidersHorizontal, Wrench, ZapOff } from 'lucide';
 
-import { catalog, type CatalogId,isCatalogId } from './catalog.js';
+import { catalog, type CatalogId, catalogSections, isCatalogId } from './catalog.js';
 
 const app = document.querySelector<HTMLElement>('#app');
 if (!app) throw new Error('Missing #app');
 
 const requested = new URLSearchParams(location.search).get('component');
-const selectedDemo = signal<CatalogId | 'overview'>(isCatalogId(requested) ? requested : 'overview');
+const selectedDemo = signal<CatalogId>(isCatalogId(requested) ? requested : catalog[0].id);
 const regionSize = signal(276);
 const activeTab = signal('library');
 const selectedChoice = signal('balanced');
 const bannerTone = signal<'info' | 'success' | 'warning' | 'danger'>('info');
 const actionLog = signal('Catalog ready');
+const darkTheme = signal(false);
+const increasedContrast = signal(false);
+const reducedMotion = signal(false);
 
 const icon = (node: Parameters<typeof LucideIcon>[0]['icon'], name: string) => <LucideIcon icon={node} name={name} />;
 const button = (label: string, action: string) => <button type="button" class="demo-button" data-action={action}>{label}</button>;
@@ -118,41 +121,59 @@ const demos: Record<CatalogId, () => ReturnType<typeof ToolbarDemo>> = {
 };
 
 function Stage() {
-  if (selectedDemo.value !== 'overview') return demos[selectedDemo.value]();
-  return <div class="demo-overview">{catalog.map((entry) => <article class="demo-card" data-catalog-card={entry.id}><header><span>{entry.category}</span><h2>{entry.name}</h2><p>{entry.description}</p></header>{demos[entry.id]()}</article>)}</div>;
+  return demos[selectedDemo.value]();
 }
 
-mount(app, () => <div class="catalog-shell">
-  <aside class="catalog-sidebar">
-    <div class="catalog-brand"><span class="catalog-mark">K</span><div><strong>Kerf UI</strong><span>Production catalog</span></div></div>
-    <nav aria-label="Component catalog">
-      <button type="button" data-action="select-demo" data-demo-id="overview" aria-current={selectedDemo.value === 'overview' ? 'page' : undefined}>Overview</button>
-      {catalog.map((entry) => <button type="button" data-action="select-demo" data-demo-id={entry.id} aria-current={selectedDemo.value === entry.id ? 'page' : undefined}><span>{entry.name}</span><small>{entry.category}</small></button>)}
-    </nav>
-  </aside>
-  <main class="catalog-main">
-    <header class="catalog-header"><div><span class="catalog-eyebrow">@kerfjs/ui</span><h1>{selectedDemo.value === 'overview' ? 'Component overview' : catalog.find((entry) => entry.id === selectedDemo.value)?.name}</h1><p>Real package components, real package CSS, deterministic states.</p></div><div class="catalog-settings"><button type="button" data-action="toggle-theme">Theme</button><button type="button" data-action="toggle-contrast">Contrast</button><button type="button" data-action="toggle-motion">Motion</button></div></header>
-    <section class="catalog-stage" aria-label="Component preview"><Stage /></section>
-    <output class="catalog-log" aria-live="polite">{actionLog.value}</output>
-  </main>
-</div>);
+mount(app, () => {
+  const selected = catalog.find((entry) => entry.id === selectedDemo.value)!;
+  return <main class="catalog-shell">
+    <aside class="catalog-sidebar" aria-label="Component catalog">
+      <header class="catalog-brand">
+        <span class="catalog-mark" aria-hidden="true">K</span>
+        <div><p class="catalog-eyebrow">Kerf</p><h1>UI components</h1><p>Production catalog</p></div>
+      </header>
+      <nav>
+        {catalogSections.map((section) => <section class="catalog-group">
+          <MenuHeader label={section.category} />
+          <div class="catalog-group__items">
+            {section.entries.map((entry) => <MenuItem action="select-demo" itemId={entry.id} label={entry.name} selected={selectedDemo.value === entry.id} title={entry.description} />)}
+          </div>
+        </section>)}
+      </nav>
+    </aside>
+    <article class="catalog-detail">
+      <header class="catalog-header">
+        <div><p class="catalog-eyebrow">{selected.category}</p><h2>{selected.name}</h2><p>{selected.description}</p></div>
+        <div class="catalog-settings" role="group" aria-label="Catalog display settings">
+          <button type="button" data-action="toggle-theme" aria-pressed={String(darkTheme.value)}>{icon(Moon, 'moon')}<span>Dark</span></button>
+          <button type="button" data-action="toggle-contrast" aria-pressed={String(increasedContrast.value)}>{icon(Contrast, 'contrast')}<span>Contrast</span></button>
+          <button type="button" data-action="toggle-motion" aria-pressed={String(reducedMotion.value)}>{icon(ZapOff, 'zap-off')}<span>Reduce motion</span></button>
+        </div>
+      </header>
+      <section class="catalog-stage" aria-label={`${selected.name} preview`}>
+        <div class="catalog-canvas"><Stage /></div>
+        <footer class="catalog-stage__footer"><output class="catalog-log" aria-live="polite">{actionLog.value}</output><span>Public component · production CSS</span></footer>
+      </section>
+    </article>
+  </main>;
+});
 
 const stopActions = delegateActions(app, 'click', {
   'select-demo': (_event, element) => {
-    const id = element.getAttribute('data-demo-id');
-    selectedDemo.value = isCatalogId(id) ? id : 'overview';
+    const id = element.getAttribute('data-item-id');
+    if (!isCatalogId(id)) return;
+    selectedDemo.value = id;
     const url = new URL(location.href);
-    if (selectedDemo.value === 'overview') url.searchParams.delete('component');
-    else url.searchParams.set('component', selectedDemo.value);
+    url.searchParams.set('component', selectedDemo.value);
     history.replaceState(null, '', url);
     actionLog.value = `Showing ${selectedDemo.value}`;
   },
   'select-tab': (_event, element) => { activeTab.value = element.getAttribute('data-tab-id') ?? 'library'; actionLog.value = `Selected ${activeTab.value}`; },
   'close-tab': (_event, element) => { actionLog.value = `Close requested for ${element.getAttribute('data-tab-id')}`; },
   'cycle-tone': () => { const tones = ['info', 'success', 'warning', 'danger'] as const; bannerTone.value = tones[(tones.indexOf(bannerTone.value) + 1) % tones.length]!; actionLog.value = `Banner tone: ${bannerTone.value}`; },
-  'toggle-theme': () => { document.documentElement.classList.toggle('demo-dark'); actionLog.value = 'Theme changed'; },
-  'toggle-contrast': () => { document.documentElement.classList.toggle('demo-contrast'); actionLog.value = 'Contrast changed'; },
-  'toggle-motion': () => { document.documentElement.classList.toggle('demo-reduced-motion'); actionLog.value = 'Motion preference changed'; },
+  'toggle-theme': () => { darkTheme.value = !darkTheme.value; document.documentElement.classList.toggle('demo-dark', darkTheme.value); actionLog.value = darkTheme.value ? 'Dark theme on' : 'Dark theme off'; },
+  'toggle-contrast': () => { increasedContrast.value = !increasedContrast.value; document.documentElement.classList.toggle('demo-contrast', increasedContrast.value); actionLog.value = increasedContrast.value ? 'Increased contrast on' : 'Increased contrast off'; },
+  'toggle-motion': () => { reducedMotion.value = !reducedMotion.value; document.documentElement.classList.toggle('demo-reduced-motion', reducedMotion.value); actionLog.value = reducedMotion.value ? 'Reduced motion on' : 'Reduced motion off'; },
   'log-add': () => { actionLog.value = 'Add action requested'; },
   'log-inbox': () => { actionLog.value = 'Inbox selected'; },
   'log-projects': () => { actionLog.value = 'Projects selected'; },

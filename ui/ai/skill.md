@@ -19,7 +19,7 @@ Hard rules:
 7. Decorative icons are hidden; controls are named; focus is visible; state never relies on color alone; reduced motion and increased contrast remain usable.
 8. `ResizableRegion` uses `wireResizableRegions()` for Arrow, Shift+Arrow, Home/End, and pointer behavior. The app owns size persistence.
 9. `AppTab` is one tab. The app owns the `tablist`, panels, arrow/Home/End navigation, Delete/Backspace, and post-close focus.
-10. Demo work uses the public production component and CSS. Add the required catalog route/state instead of drawing a substitute.
+10. Demo work uses the public production component and CSS. Add the required category-grouped catalog route/state instead of drawing a substitute, and theme shell chrome through the same semantic tokens as the stage.
 
 Common mistakes:
 

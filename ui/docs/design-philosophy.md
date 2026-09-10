@@ -42,7 +42,7 @@ Protect primary content, readable type, recognizable icons, and usable targets. 
 
 ### Production behavior is proof
 
-The catalog uses the same exports and CSS consumers receive. Every enabled control works. Demonstrations cover meaningful variants and adverse states with realistic enough content to expose wrapping, clipping, density, and state-transition defects.
+The catalog uses the same exports and CSS consumers receive. Its category-grouped master/detail layout keeps one component under review at a time, and its decorative shell consumes the same semantic palette as the component stage. Every enabled control works. Demonstrations cover meaningful variants and adverse states with realistic enough content to expose wrapping, clipping, density, and state-transition defects.
 
 ### Be platform-fluent, not platform-costumed
 
