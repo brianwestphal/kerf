@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Added explicit Web Awesome component-selection guidance and aligned UX descriptions: prefer Kerf Select, SegmentedControl, TabBar, LucideIcon, and ResizableRegion for common app patterns; consider Popup for custom anchoring; reserve specialized ecosystem alternatives for concrete requirements. ResizableRegion now includes Hot Sheet 2's overridable 1px separator plus hover/focus grip.
 - Made Web Awesome Tooltip and Popover arrowless by default in the optional Kerf theme, with public per-theme, scoped, and per-instance overrides plus focused UX and browser coverage.
 - Documented Web Awesome Markdown's trusted-input-only security boundary, client-only rendering, and shared mutable Marked configuration, with an explicitly labeled UX specimen and a regression assertion for the warning.
 - Clarified that Web Awesome Badge and Tag are the tree-shakeable generic primitives: status badges use the pill treatment, tags remain rounded rectangles, and domain adapters stay application-owned when they add mappings or mutation behavior.

@@ -510,6 +510,53 @@ test('matches Hot Sheet menu and toolbar control geometry', async ({ page, brows
   if (browserName === 'chromium') await page.screenshot({ path: 'test-results/toolbar-control-groups-narrow.png', fullPage: true });
 });
 
+test('renders the Hot Sheet split treatment on ResizableRegion', async ({ page, browserName }) => {
+  await page.setViewportSize({ width: 1100, height: 760 });
+  await page.goto('/?component=resize');
+  const region = page.locator('[data-component="resizable-region"]');
+  const handle = region.locator('[data-kui-resize-handle]');
+  const grip = handle.locator('svg');
+  const separator = await handle.evaluate((element) => {
+    const style = window.getComputedStyle(element, '::before');
+    return { width: style.width, background: style.backgroundColor };
+  });
+  expect(separator).toEqual({ width: '1px', background: 'rgb(209, 209, 214)' });
+  await expect(grip).toHaveCSS('opacity', '0');
+  await handle.hover();
+  await expect(grip).toHaveCSS('opacity', '1');
+
+  await region.evaluate((element) => element.style.setProperty('--kui-resizable-region-separator-color', '#7540a8'));
+  await expect.poll(() => handle.evaluate((element) => window.getComputedStyle(element, '::before').backgroundColor)).toBe('rgb(117, 64, 168)');
+  await region.evaluate((element) => element.style.removeProperty('--kui-resizable-region-separator-color'));
+  if (browserName === 'chromium') {
+    await handle.hover();
+    await page.screenshot({ path: 'test-results/resizable-region-separator-light-wide.png', fullPage: true });
+    await page.locator('[data-action="toggle-theme"]').click();
+    await handle.hover();
+    await page.screenshot({ path: 'test-results/resizable-region-separator-dark-wide.png', fullPage: true });
+    await page.setViewportSize({ width: 390, height: 844 });
+    await handle.hover();
+    await page.screenshot({ path: 'test-results/resizable-region-separator-dark-narrow.png', fullPage: true });
+  }
+});
+
+test('communicates preferred Kerf patterns on ecosystem alternatives', async ({ page, browserName }) => {
+  for (const [route, description] of [
+    ['wa-popup', 'Preferred low-level anchored positioning when Tooltip or Popover do not fit.'],
+    ['wa-split-panel', 'Alternative split API; prefer Kerf ResizableRegion for application panes.'],
+    ['wa-icon', 'Ecosystem icon renderer; use Kerf LucideIcon in application UI.'],
+    ['wa-zoomable-frame', 'Avoid for application UI; keep embedded-media behavior application-owned.'],
+  ] as const) {
+    await page.goto(`/?component=${route}`);
+    await expect(page.locator('.catalog-header').getByText(description, { exact: true })).toBeVisible();
+  }
+
+  if (browserName === 'chromium') {
+    await page.goto('/?component=wa-split-panel');
+    await page.screenshot({ path: 'test-results/webawesome-selection-guidance-wide.png', fullPage: true });
+  }
+});
+
 test('renders controlled toolbar, rounded, and pill SegmentedControl variants', async ({ page, browserName }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/?component=segmented-control');

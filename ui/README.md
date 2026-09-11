@@ -153,6 +153,16 @@ import '@kerfjs/ui/select/register';
 
 That boundary keeps Web Awesome and its custom-element side effects out of bundles that use unrelated components. Automated consumer-bundle tests enforce it.
 
+For application choices and panes, prefer Kerf's purpose-built primitives:
+`Select` over direct Web Awesome selection/dropdown composition,
+`SegmentedControl` over Button Group, `TabBar` or `SegmentedControl` over Web
+Awesome Tabs, `LucideIcon` over Web Awesome Icon, and `ResizableRegion` over
+Split Panel. `ResizableRegion` includes Hot Sheet 2's 1px separator and
+hover/focus grip. Consider Web Awesome Popup when its anchored-positioning
+engine removes custom placement code; treat Tree, Animated Image, Comparison,
+Zoomable Frame, and the displaced alternatives above as exceptional rather
+than default patterns. The detailed rationale lives in the theme contract.
+
 ## Design and tool guidance
 
 - [Design philosophy](./docs/design-philosophy.md)

@@ -63,4 +63,12 @@ describe('UX catalog metadata', () => {
     expect(catalogEntriesUsing('wa-carousel-item').map((entry) => entry.id)).toEqual(['webawesome-theme', 'wa-carousel']);
     expect(catalogEntriesUsing('segmented-control').map((entry) => entry.id)).toEqual(['toolbar-control-group']);
   });
+
+  it('marks supported ecosystem alternatives without presenting them as defaults', () => {
+    expect(findCatalogEntry('wa-popup')?.description).toContain('Preferred low-level anchored positioning');
+    expect(findCatalogEntry('wa-split-panel')?.description).toContain('prefer Kerf ResizableRegion');
+    expect(findCatalogEntry('wa-button-group')?.description).toContain('prefer Kerf SegmentedControl');
+    expect(findCatalogEntry('wa-icon')?.description).toContain('use Kerf LucideIcon');
+    expect(findCatalogEntry('wa-zoomable-frame')?.description).toContain('Avoid for application UI');
+  });
 });

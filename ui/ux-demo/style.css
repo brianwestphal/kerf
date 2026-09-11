@@ -61,7 +61,7 @@ button { font: inherit; }
 .demo-dialog { margin: 1rem; overflow: hidden; border: 1px solid var(--kui-color-border); border-radius: var(--kui-radius-m); background: var(--kui-color-surface); box-shadow: var(--kui-shadow-l); }
 .demo-dialog__body { padding: 1rem; }
 .demo-resize-shell { display: flex; width: 100%; max-width: 54rem; min-height: 15rem; overflow: hidden; border: 1px solid var(--kui-color-border); border-radius: var(--kui-radius-m); background: var(--kui-color-surface-lowered); box-shadow: var(--kui-shadow-s); }
-.demo-resize-panel { display: grid; height: 100%; padding: 1rem; border-inline-end: 1px solid var(--kui-color-border); background: var(--kui-color-surface); align-content: start; gap: .4rem; }
+.demo-resize-panel { display: grid; height: 100%; padding: 1rem; background: var(--kui-color-surface); align-content: start; gap: .4rem; }
 .demo-resize-panel span, .demo-control-stack p { color: var(--kui-color-text-quiet); font-size: var(--kui-font-s); }
 .demo-resize-content { display: grid; min-width: 10rem; padding: 1.5rem; place-content: center; text-align: center; }
 .demo-resize-content strong { font-size: 1.8rem; }

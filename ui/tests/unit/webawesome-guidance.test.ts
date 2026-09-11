@@ -21,4 +21,15 @@ describe('Web Awesome consumer guidance', () => {
     expect(guidance).toContain('--kui-wa-popover-arrow-size');
     expect(guidance).toContain('--arrow-size');
   });
+
+  it('distinguishes supported ecosystem components from preferred Kerf patterns', () => {
+    const guidance = readFileSync(resolve(import.meta.dirname, '../../docs/webawesome-theme.md'), 'utf8');
+
+    expect(guidance).toContain('listing does not make each component the preferred Kerf application pattern');
+    expect(guidance).toContain('Consider `wa-popup`');
+    expect(guidance).toContain('use Kerf `Select`');
+    expect(guidance).toContain('`SegmentedControl` for a small exclusive choice set');
+    expect(guidance).toContain('Prefer Kerf `ResizableRegion` over Web Awesome Split Panel');
+    expect(guidance).toContain('Avoid Web Awesome Zoomable Frame and Icon');
+  });
 });

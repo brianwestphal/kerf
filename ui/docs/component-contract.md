@@ -20,6 +20,13 @@ segmented-control, app-tab, and tab-bar colors likewise use their public
 hover, and selected-state variables, so rounded, pill, and toolbar presentations
 remain opinionated but locally overridable.
 
+`ResizableRegion` owns the Hot Sheet 2 split treatment: a persistent 1px
+separator with a compact grip that appears on hover or keyboard focus. Override
+`--kui-resizable-region-separator-color`,
+`--kui-resizable-region-handle-color`, or
+`--kui-resizable-region-handle-active-color` on a region when its containing
+surface needs a different contrast level.
+
 ## Imports and side effects
 
 Every component has an explicit JS and CSS subpath. In CSS-aware browser builds,
