@@ -11,7 +11,6 @@ export default defineConfig({
   // to the old URL. Remove once external traffic to the old slug stops.
   redirects: {
     '/examples/basics/09-raw-sanitise': '/kerf/examples/basics/09-raw-sanitize/',
-    '/examples/basics/09-raw-sanitise/': '/kerf/examples/basics/09-raw-sanitize/',
   },
   vite: {
     esbuild: {
