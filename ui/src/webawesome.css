@@ -99,6 +99,7 @@
     --kui-wa-carousel-dot-hit-size: 20px;
     --kui-wa-carousel-control-size: 28px;
     --kui-wa-carousel-icon-size: 16px;
+    --kui-disclosure-icon-scale: .5;
     --wa-shadow-s: 0 1px 3px rgb(0 0 0 / .14);
     --wa-shadow-m: 0 .35rem 1rem rgb(0 0 0 / .11);
     --wa-shadow-l: 0 .75rem 2rem rgb(0 0 0 / .09);
@@ -147,6 +148,12 @@
     color: var(--wa-form-control-activated-color);
     background-color: transparent;
     transform: none;
+  }
+
+  wa-accordion-item::part(icon),
+  wa-details::part(icon),
+  wa-breadcrumb-item::part(separator) {
+    transform: scale(var(--kui-disclosure-icon-scale));
   }
 }
 

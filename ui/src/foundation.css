@@ -22,6 +22,7 @@
   --kui-radius-l: var(--wa-border-radius-l, .75rem);
   --kui-radius-circle: var(--wa-border-radius-circle, 50%);
   --kui-radius-pill: var(--wa-border-radius-pill, 999px);
+  --kui-disclosure-icon-scale: .5;
 
   /* macOS Tahoe light semantics used by Hot Sheet 2, with a compatible dark extension. */
   --kui-color-surface: var(--wa-color-surface-default, light-dark(#fff, #1c1c1e));

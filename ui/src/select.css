@@ -1,7 +1,7 @@
 .kui-select::part(combobox) { min-height: 2.5rem; padding-inline: .55rem .45rem; gap: 0; }
 .kui-select::part(display-input) { min-width: 0; overflow: hidden; padding: 0; text-overflow: ellipsis; white-space: nowrap; }
 .kui-select::part(start), .kui-select::part(end), .kui-select::part(expand-icon) { margin: 0; }
-.kui-select::part(expand-icon) { transform: scale(.5); }
+.kui-select::part(expand-icon) { transform: scale(var(--kui-disclosure-icon-scale, .5)); }
 .kui-select::part(listbox) { width: max-content; min-width: 100%; max-width: min(20rem, calc(100vw - 1.25rem)); }
 .kui-select--fit-menu::part(listbox) { width: 100%; }
 .kui-select wa-option::part(base) { align-items: center; }

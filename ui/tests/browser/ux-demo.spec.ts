@@ -150,6 +150,33 @@ test('carousel theme uses compact arrows and seven-pixel visible page dots', asy
   }
 });
 
+test('disclosure and breadcrumb chevrons match the Kerf Select scale', async ({ page, browserName }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  const specimens = [
+    { route: 'wa-accordion', selector: 'wa-accordion-item', part: '[part~="icon"]', filename: 'webawesome-accordion-chevron-wide.png' },
+    { route: 'wa-details', selector: 'wa-details', part: '[part~="icon"]', filename: 'webawesome-details-chevron-wide.png' },
+    { route: 'wa-breadcrumb', selector: 'wa-breadcrumb-item', part: '[part~="separator"]', filename: 'webawesome-breadcrumb-chevron-wide.png' },
+  ] as const;
+
+  for (const specimen of specimens) {
+    await page.goto(`/?component=${specimen.route}`);
+    const geometry = await page.locator(`[data-demo="${specimen.route}"] ${specimen.selector}`).first().evaluate((element, part) => {
+      const icon = element.shadowRoot?.querySelector<HTMLElement>(part);
+      return icon ? { transform: window.getComputedStyle(icon).transform, token: window.getComputedStyle(element).getPropertyValue('--kui-disclosure-icon-scale').trim() } : null;
+    }, specimen.part);
+    expect(geometry?.token).toBe('.5');
+    expect(geometry?.transform).toMatch(/^matrix\(0\.5, 0, 0, 0\.5,/);
+    if (browserName === 'chromium') await page.screenshot({ path: `test-results/${specimen.filename}`, fullPage: true });
+  }
+
+  await page.goto('/?component=select');
+  const selectTransform = await page.locator('[data-demo="select"] wa-select').evaluate((element) => {
+    const icon = element.shadowRoot?.querySelector<HTMLElement>('[part~="expand-icon"]');
+    return icon ? window.getComputedStyle(icon).transform : '';
+  });
+  expect(selectTransform).toMatch(/^matrix\(0\.5, 0, 0, 0\.5,/);
+});
+
 test('animation specimen exposes settings, transport, lifecycle, and reduced-motion behavior', async ({ page, browserName }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/?component=wa-animation');

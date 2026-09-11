@@ -47,6 +47,12 @@ pointer targets. Override `--kui-wa-carousel-icon-size`,
 `--kui-wa-carousel-dot-hit-size` on a carousel or containing scope when a
 product needs different geometry.
 
+Accordion, Details, Breadcrumb, and Kerf Select share
+`--kui-disclosure-icon-scale` (default `.5`) so disclosure and traversal
+chevrons keep the same visual weight. The Accordion and Details components
+retain their own rotation behavior because scaling uses `transform` while
+their open state uses the independent `rotate` property.
+
 The UX catalog includes a focused, addressable specimen for every component in
 this list. Because these are themed ecosystem components rather than
 first-class `@kerfjs/ui` exports, the sidebar keeps them under a collapsible
