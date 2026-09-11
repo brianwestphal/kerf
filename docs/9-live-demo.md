@@ -49,6 +49,24 @@ The basic single-concept examples (9 of them) are **not** built by this pipeline
 
 The workflow uses least-privilege permissions — top-level `contents: read`, with `pages: write` / `id-token: write` granted only to the deploy job — and a single `pages` concurrency group with `cancel-in-progress: true`, so an overlapping push cancels the older in-flight run rather than queueing behind it.
 
+### 9.3.1 Install-script policy
+
+The site has a narrow npm install-script policy in `site/package.json`. It
+allows the locked `esbuild` and `sharp` installers that provide required
+platform binaries, and explicitly denies the local `kerfjs: file:..`
+dependency's `prepare` script because Husky setup is a repository concern, not
+a site dependency build step. `site/.npmrc` enables npm's
+`strict-allow-scripts` mode, so npm 11.19.1 and newer fail on any unreviewed
+installer instead of merely warning; older npm releases ignore that setting.
+
+`site/scripts/check-install-script-policy.mjs` runs as `preinstall` on every
+supported install. It pins the reviewed package/version set from
+`site/package-lock.json` (`esbuild@0.27.7`, `sharp@0.33.5`, and
+`sharp@0.34.5`) and fails when dependency churn introduces or upgrades an
+install script. Review the package and its lifecycle command before updating
+both the lockfile expectation and `allowScripts`; do not use npm's
+`dangerously-allow-all-scripts` escape hatch.
+
 ## 9.4 One-time repo setup
 
 GitHub Pages source must be set to **GitHub Actions** in repo settings (`Settings → Pages → Source: GitHub Actions`). The workflow cannot enable Pages itself — that toggle is configured manually once.

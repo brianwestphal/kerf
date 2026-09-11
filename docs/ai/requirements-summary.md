@@ -93,7 +93,7 @@ Every export, every option, every conventional attribute. Comprehensive — use 
 
 ### §9 Live demo
 
-A single GitHub Pages artifact bundles two independent builds: the Astro + Starlight marketing/docs site at `brianwestphal.github.io/kerf/` (built from `site/`) and the nine-section reactivity demo at `brianwestphal.github.io/kerf/demo/` (built from `examples/reactivity-demo/` with `base: '/kerf/demo/'`). Deploy is `.github/workflows/pages.yml` on push-to-main: `npm ci` → `npm run build` (kerf package) → `npm run site:build` (the `prebuild` chains `sync-docs` + `build-examples` + `build-icons` + `gen-llms-txt`, then `astro build`), upload `site/dist/`, deploy via `actions/deploy-pages@v4`. Pages source must be set to "GitHub Actions" in repo settings once.
+A single GitHub Pages artifact bundles two independent builds: the Astro + Starlight marketing/docs site at `brianwestphal.github.io/kerf/` (built from `site/`) and the nine-section reactivity demo at `brianwestphal.github.io/kerf/demo/` (built from `examples/reactivity-demo/` with `base: '/kerf/demo/'`). Deploy is `.github/workflows/pages.yml` on push-to-main: `npm ci` → `npm run build` (kerf package) → `npm run site:build` (the `prebuild` chains `sync-docs` + `build-examples` + `build-icons` + `gen-llms-txt`, then `astro build`), upload `site/dist/`, deploy via `actions/deploy-pages@v4`. Pages source must be set to "GitHub Actions" in repo settings once. The site package uses npm's strict `allowScripts` policy: only the reviewed `esbuild`/`sharp` binary installers run, the linked Kerf package's repository-only Husky `prepare` step is denied, and a preinstall checker pins the approved package/version set from the lockfile.
 
 ### §10 Migrating hub
 
