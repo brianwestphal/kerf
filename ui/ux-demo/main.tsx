@@ -21,7 +21,7 @@ import { ToolbarText } from '@kerfjs/ui/toolbar-text';
 import { ValueTable } from '@kerfjs/ui/value-table';
 import { wireResizableRegions } from '@kerfjs/ui/wire-resizable-regions';
 import { reorderTabs, wireTabBars } from '@kerfjs/ui/wire-tab-bars';
-import { delegate, mount, signal } from 'kerfjs';
+import { delegate, delegateCapture, mount, signal } from 'kerfjs';
 import { delegateActions } from 'kerfjs/actions';
 import { ArrowDownAZ, Bell, Check, ChevronDown, ChevronLeft, ChevronRight, CircleHelp, Columns3, Contrast, Folder, GitCompare, Inbox, List, Moon, MoreHorizontal, PanelLeft, PanelLeftOpen, Pin, Plus, Search, Settings, SlidersHorizontal, Star, Wrench, ZapOff } from 'lucide';
 
@@ -442,6 +442,32 @@ const stopActions = delegateActions(app, 'click', {
     toast.prepend(item);
   },
   'randomize-wa-content': () => { actionLog.value = 'Random content changed'; document.querySelector<HTMLElement & { randomize(): Element[] }>('wa-random-content')?.randomize(); },
+  'toggle-wa-intersection': (_event, element) => {
+    const demo = element.closest<HTMLElement>('[data-observer-demo="intersection"]');
+    const viewport = demo?.querySelector<HTMLElement>('.wa-demo-observer__viewport');
+    const target = demo?.querySelector<HTMLElement>('[data-observer-target]');
+    if (!demo || !viewport || !target) return;
+    const revealed = demo.dataset.revealed === 'true';
+    demo.dataset.revealed = String(!revealed);
+    viewport.scrollTop = revealed ? 0 : target.offsetTop - viewport.offsetTop - 16;
+    element.textContent = revealed ? 'Reveal target' : 'Hide target';
+  },
+  'mutate-wa-target': (_event, element) => {
+    const target = element.closest('[data-observer-demo="mutation"]')?.querySelector<HTMLElement>('[data-observer-target]');
+    if (!target) return;
+    const revision = Number(target.dataset.revision ?? 0) + 1;
+    target.dataset.revision = String(revision);
+    target.querySelector('[data-observer-copy]')?.replaceChildren(`Mutation ${revision}: attribute and child content changed.`);
+  },
+  'resize-wa-target': (_event, element) => {
+    const demo = element.closest<HTMLElement>('[data-observer-demo="resize"]');
+    const target = demo?.querySelector<HTMLElement>('[data-observer-target]');
+    if (!demo || !target) return;
+    const expanded = demo.dataset.expanded === 'true';
+    demo.dataset.expanded = String(!expanded);
+    target.style.width = expanded ? '16rem' : '24rem';
+    element.textContent = expanded ? 'Resize target' : 'Restore size';
+  },
   'select-tab': (_event, element) => { activeTab.value = element.getAttribute('data-tab-id') ?? 'library'; actionLog.value = `Selected ${activeTab.value}`; },
   'select-reorder-tab': (_event, element) => { tabBarActive.value = element.getAttribute('data-tab-id') ?? 'components'; actionLog.value = `Selected ${tabBarActive.value}`; },
   'close-tab': (_event, element) => { actionLog.value = `Close requested for ${element.getAttribute('data-tab-id')}`; },
@@ -491,6 +517,24 @@ const stopRelationships = delegate(app, 'change', '[name="related-component"]', 
   const value = (element as HTMLElement & { value?: string }).value;
   if (value) selectDemo(value);
 });
+const stopIntersectionObserver = delegateCapture(app, 'wa-intersect', 'wa-intersection-observer', (event, element) => {
+  const entry = (event as CustomEvent<{ entry?: IntersectionObserverEntry }>).detail?.entry;
+  const output = element.closest('[data-observer-demo]')?.querySelector<HTMLOutputElement>('[data-observer-output]');
+  if (!entry || !output) return;
+  output.textContent = entry.isIntersecting ? `Target visible · ${Math.round(entry.intersectionRatio * 100)}%` : 'Target outside the observer root';
+});
+const stopMutationObserver = delegate(app, 'wa-mutation', 'wa-mutation-observer', (event, element) => {
+  const mutations = (event as CustomEvent<{ mutationList?: MutationRecord[] }>).detail?.mutationList ?? [];
+  const output = element.closest('[data-observer-demo]')?.querySelector<HTMLOutputElement>('[data-observer-output]');
+  if (!output) return;
+  output.textContent = `Observed ${mutations.length} mutation${mutations.length === 1 ? '' : 's'}`;
+});
+const stopResizeObserver = delegate(app, 'wa-resize', 'wa-resize-observer', (event, element) => {
+  const entry = (event as CustomEvent<{ entries?: ResizeObserverEntry[] }>).detail?.entries?.[0];
+  const output = element.closest('[data-observer-demo]')?.querySelector<HTMLOutputElement>('[data-observer-output]');
+  if (!entry || !output) return;
+  output.textContent = `Observed width · ${Math.round(entry.contentRect.width)}px`;
+});
 const stopTabs = delegate<HTMLButtonElement>(app, 'keydown', '[data-demo="tabs"] [role="tab"]', (event, element) => {
   const keyboardEvent = event as KeyboardEvent;
   if (keyboardEvent.key === 'Delete' || keyboardEvent.key === 'Backspace') {
@@ -513,4 +557,4 @@ const stopTabs = delegate<HTMLButtonElement>(app, 'keydown', '[data-demo="tabs"]
 });
 const stopTabBars = wireTabBars(app, { onReorder: ({ barId, sourceId, targetId, position, source }) => { tabBarTabs.value = reorderTabs(tabBarTabs.value, (tab) => tab.id, sourceId, targetId, position); actionLog.value = `${source === 'pointer' ? 'Dragged' : 'Moved'} ${sourceId} ${position} ${targetId} in ${barId}`; } });
 
-window.addEventListener('pagehide', () => { stopActions(); stopResize(); stopSelect(); stopRelationships(); stopTabs(); stopTabBars(); }, { once: true });
+window.addEventListener('pagehide', () => { stopActions(); stopResize(); stopSelect(); stopRelationships(); stopIntersectionObserver(); stopMutationObserver(); stopResizeObserver(); stopTabs(); stopTabBars(); }, { once: true });

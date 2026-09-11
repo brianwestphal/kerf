@@ -152,13 +152,26 @@ Semantic tokens keep **Kerf UI** and Web Awesome visually coherent.
   'wa-format-date': () => <dl class="wa-demo-values"><div><dt>Date</dt><dd><wa-format-date date="2026-09-11T12:00:00Z" month="long" day="numeric" year="numeric" time-zone="UTC"></wa-format-date></dd></div><div><dt>Time</dt><dd><wa-format-date date="2026-09-11T12:00:00Z" hour="numeric" minute="2-digit" time-zone="UTC"></wa-format-date></dd></div></dl>,
   'wa-format-number': () => <dl class="wa-demo-values"><div><dt>Number</dt><dd><wa-format-number value="1284"></wa-format-number></dd></div><div><dt>Percent</dt><dd><wa-format-number value="0.72" type="percent"></wa-format-number></dd></div><div><dt>Currency</dt><dd><wa-format-number value="49" type="currency" currency="USD"></wa-format-number></dd></div></dl>,
   'wa-include': () => <div class="wa-demo-include"><template id="catalog-include-source"><wa-callout variant="brand">Included from a local template fragment.</wa-callout></template><wa-include src="#catalog-include-source"></wa-include></div>,
-  'wa-intersection-observer': () => <wa-intersection-observer><div class="wa-demo-observed"><strong>Observed intersection target</strong><span>The helper emits when this surface enters or leaves its root.</span></div></wa-intersection-observer>,
-  'wa-mutation-observer': () => <wa-mutation-observer attr child-list><div class="wa-demo-observed"><strong>Observed mutation target</strong><span>The helper reports attribute and child-list changes.</span></div></wa-mutation-observer>,
+  'wa-intersection-observer': () => <div class="wa-demo-observer" data-observer-demo="intersection">
+    <div id="catalog-intersection-root" class="wa-demo-observer__viewport">
+      <div class="wa-demo-observer__spacer">Target is below</div>
+      <wa-intersection-observer root="catalog-intersection-root" threshold="0.6" intersect-class="is-intersecting"><div class="wa-demo-observed" data-observer-target><strong>Observed intersection target</strong><span>The helper emits when this surface enters or leaves its root.</span></div></wa-intersection-observer>
+      <div class="wa-demo-observer__spacer">Target is above</div>
+    </div>
+    <div class="wa-demo-observer__controls"><button type="button" class="demo-button" data-action="toggle-wa-intersection">Reveal target</button><output data-observer-output aria-live="polite">Waiting for an intersection change</output></div>
+  </div>,
+  'wa-mutation-observer': () => <div class="wa-demo-observer" data-observer-demo="mutation">
+    <wa-mutation-observer attr="data-revision" child-list><div class="wa-demo-observed" data-observer-target data-revision="0"><strong>Observed mutation target</strong><span data-observer-copy>The helper reports attribute and child-list changes.</span></div></wa-mutation-observer>
+    <div class="wa-demo-observer__controls"><button type="button" class="demo-button" data-action="mutate-wa-target">Mutate target</button><output data-observer-output aria-live="polite">No mutations observed yet</output></div>
+  </div>,
   'wa-popover': () => <div class="wa-demo-anchor"><wa-button id="catalog-popover-target" appearance="outlined">Toggle popover</wa-button><wa-popover for="catalog-popover-target" placement="bottom"><strong>Popover content</strong><p>Interactive content stays anchored to its trigger.</p><wa-button size="small">Action</wa-button></wa-popover></div>,
   'wa-popup': () => <wa-popup class="wa-demo-popup" active placement="bottom" distance="10" arrow><wa-button slot="anchor" appearance="outlined">Anchor</wa-button><div class="wa-demo-popup__panel">Low-level positioned content</div></wa-popup>,
   'wa-random-content': () => <div class="wa-demo-random"><wa-random-content mode="sequence" items="1" animation="fade"><article>Foundation tokens</article><article>Component primitives</article><article>Composition patterns</article></wa-random-content><wa-button appearance="outlined" data-action="randomize-wa-content">Show another</wa-button></div>,
   'wa-relative-time': () => <div class="wa-demo-inline-field"><span>Last updated</span><strong><wa-relative-time date="2026-09-10T12:00:00Z" format="long"></wa-relative-time></strong></div>,
-  'wa-resize-observer': () => <wa-resize-observer><div class="wa-demo-observed"><strong>Observed resize target</strong><span>The helper emits when this preview changes dimensions.</span></div></wa-resize-observer>,
+  'wa-resize-observer': () => <div class="wa-demo-observer" data-observer-demo="resize">
+    <wa-resize-observer><div class="wa-demo-observed wa-demo-observed--resizable" data-observer-target><strong>Observed resize target</strong><span>The helper emits when this preview changes dimensions.</span></div></wa-resize-observer>
+    <div class="wa-demo-observer__controls"><button type="button" class="demo-button" data-action="resize-wa-target">Resize target</button><output data-observer-output aria-live="polite">Waiting for a resize</output></div>
+  </div>,
 };
 
 export const webAwesomeComponentDemos: Record<WebAwesomeCatalogId, DemoRenderer> = Object.fromEntries(

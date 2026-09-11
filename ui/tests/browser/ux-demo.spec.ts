@@ -112,6 +112,37 @@ test('renders and operates representative focused Web Awesome specimens', async 
   await page.screenshot({ path: 'test-results/webawesome-form-narrow.png', fullPage: true });
 });
 
+test('observer specimens expose visible, user-driven events', async ({ page, browserName }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/?component=wa-intersection-observer');
+  const intersection = page.locator('[data-observer-demo="intersection"]');
+  await intersection.getByRole('button', { name: 'Reveal target' }).click();
+  await expect(intersection.locator('[data-observer-output]')).toContainText('Target visible');
+  await expect(intersection.locator('[data-observer-target]')).toHaveClass(/is-intersecting/);
+  if (browserName === 'chromium') await page.screenshot({ path: 'test-results/webawesome-intersection-observer-wide.png', fullPage: true });
+
+  await page.goto('/?component=wa-mutation-observer');
+  const mutation = page.locator('[data-observer-demo="mutation"]');
+  await mutation.getByRole('button', { name: 'Mutate target' }).click();
+  await expect(mutation.locator('[data-observer-target]')).toHaveAttribute('data-revision', '1');
+  await expect(mutation.locator('[data-observer-output]')).toContainText(/Observed [1-9]\d* mutation/);
+  if (browserName === 'chromium') await page.screenshot({ path: 'test-results/webawesome-mutation-observer-wide.png', fullPage: true });
+
+  await page.goto('/?component=wa-resize-observer');
+  const resize = page.locator('[data-observer-demo="resize"]');
+  const target = resize.locator('[data-observer-target]');
+  const before = (await target.boundingBox())?.width ?? 0;
+  await resize.getByRole('button', { name: 'Resize target' }).click();
+  await expect.poll(async () => (await target.boundingBox())?.width ?? 0).toBeGreaterThan(before);
+  await expect(resize.locator('[data-observer-output]')).toContainText('Observed width');
+  if (browserName === 'chromium') {
+    await page.screenshot({ path: 'test-results/webawesome-resize-observer-wide.png', fullPage: true });
+    await page.setViewportSize({ width: 390, height: 844 });
+    await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+    await page.screenshot({ path: 'test-results/webawesome-resize-observer-narrow.png', fullPage: true });
+  }
+});
+
 test('catalog routes every production component family and supports its stateful controls', async ({ page, browserName }) => {
   test.setTimeout(90_000);
   await page.goto('/');

@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Made the Web Awesome intersection, mutation, and resize observer UX specimens interactive, with deliberate triggers, visible live-event results, and browser coverage.
 - Updated the UI package's Vitest toolchain to 4.1.11 and resolved the remaining development-only npm audit advisories without changing its runtime dependency surface.
 - Added a first-class controlled `SegmentedControl` to `@kerfjs/ui`, with Hot Sheet 2-aligned toolbar, rounded-rectangle, pill, equal-width, small, and disabled presentations; native pressed-button semantics; scoped palette overrides; tree-shakeable component CSS; and a complete UX-catalog route.
 - Aligned `@kerfjs/ui` defaults with Hot Sheet 2, added overridable semantic state palettes, completed ToolbarControlGroup and StateBanner catalog variants, simplified related-component navigation, corrected MenuHeader action alignment, and added a controlled horizontally scrolling TabBar with pointer and keyboard reordering plus proximity-based edge autoscroll.
