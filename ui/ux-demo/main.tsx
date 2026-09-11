@@ -59,6 +59,14 @@ const reducedMotion = signal(false);
 
 const icon = (node: Parameters<typeof LucideIcon>[0]['icon'], name: string) => <LucideIcon icon={node} name={name} />;
 const button = (label: string, action: string) => <button type="button" class="demo-button" data-action={action}>{label}</button>;
+type AnimationElement = HTMLElement & { cancel(): void; finish(): void; duration: number; easing: string; name: string; play: boolean; playbackRate: number };
+
+function animationDemoFrom(element: Element): { animation: AnimationElement; output: HTMLOutputElement } | undefined {
+  const demo = element.closest('[data-animation-demo]');
+  const animation = demo?.querySelector<AnimationElement>('wa-animation');
+  const output = demo?.querySelector<HTMLOutputElement>('[data-animation-output]');
+  return animation && output ? { animation, output } : undefined;
+}
 
 function LucideIconDemo() {
   return <div class="demo-icon-grid" data-demo="lucide-icon">
@@ -437,6 +445,19 @@ const stopActions = delegateActions(app, 'click', {
     await toast.create('The component catalog is ready.', { duration: 4000, icon: 'circle-check', variant: 'success' });
   },
   'randomize-wa-content': () => { actionLog.value = 'Random content changed'; document.querySelector<HTMLElement & { randomize(): Element[] }>('wa-random-content')?.randomize(); },
+  'play-wa-animation': (_event, element) => {
+    const demo = animationDemoFrom(element);
+    if (!demo) return;
+    if (document.documentElement.classList.contains('demo-reduced-motion') || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      demo.output.textContent = 'Playback suppressed by reduced-motion preference';
+      return;
+    }
+    demo.animation.cancel();
+    window.requestAnimationFrame(() => { demo.animation.play = true; });
+  },
+  'pause-wa-animation': (_event, element) => { const demo = animationDemoFrom(element); if (demo) { demo.animation.play = false; demo.output.textContent = 'Paused'; } },
+  'finish-wa-animation': (_event, element) => { animationDemoFrom(element)?.animation.finish(); },
+  'cancel-wa-animation': (_event, element) => { animationDemoFrom(element)?.animation.cancel(); },
   'toggle-wa-intersection': (_event, element) => {
     const demo = element.closest<HTMLElement>('[data-observer-demo="intersection"]');
     const viewport = demo?.querySelector<HTMLElement>('.wa-demo-observer__viewport');
@@ -512,6 +533,30 @@ const stopRelationships = delegate(app, 'change', '[name="related-component"]', 
   const value = (element as HTMLElement & { value?: string }).value;
   if (value) selectDemo(value);
 });
+const updateAnimationSetting = (element: Element): void => {
+  const demo = animationDemoFrom(element);
+  if (!demo) return;
+  const control = element as HTMLElement & { value?: string };
+  const value = control.value ?? '';
+  if (control.getAttribute('name') === 'animation-preset') demo.animation.name = value;
+  if (control.getAttribute('name') === 'animation-easing') demo.animation.easing = value;
+  if (control.getAttribute('name') === 'animation-duration') {
+    demo.animation.duration = Number(value);
+    element.closest('[data-animation-demo]')?.querySelector<HTMLOutputElement>('[data-animation-duration]')?.replaceChildren(`${value} ms`);
+  }
+  if (control.getAttribute('name') === 'animation-rate') {
+    demo.animation.playbackRate = Number(value);
+    element.closest('[data-animation-demo]')?.querySelector<HTMLOutputElement>('[data-animation-rate]')?.replaceChildren(`${value}×`);
+  }
+  demo.output.textContent = 'Settings updated';
+};
+const stopAnimationSelects = delegate(app, 'change', 'wa-select[name^="animation-"]', (_event, element) => { updateAnimationSetting(element); });
+const stopAnimationRanges = delegate(app, 'input', 'input[name^="animation-"]', (_event, element) => { updateAnimationSetting(element); });
+const stopAnimationEvents = [
+  delegate(app, 'wa-start', 'wa-animation', (_event, element) => { const demo = animationDemoFrom(element); if (demo) demo.output.textContent = `Playing ${demo.animation.name}`; }),
+  delegate(app, 'wa-finish', 'wa-animation', (_event, element) => { const demo = animationDemoFrom(element); if (demo) demo.output.textContent = 'Finished'; }),
+  delegate(app, 'wa-cancel', 'wa-animation', (_event, element) => { const demo = animationDemoFrom(element); if (demo) demo.output.textContent = 'Canceled'; }),
+];
 const stopIntersectionObserver = delegateCapture(app, 'wa-intersect', 'wa-intersection-observer', (event, element) => {
   const entry = (event as CustomEvent<{ entry?: IntersectionObserverEntry }>).detail?.entry;
   const output = element.closest('[data-observer-demo]')?.querySelector<HTMLOutputElement>('[data-observer-output]');
@@ -552,4 +597,4 @@ const stopTabs = delegate<HTMLButtonElement>(app, 'keydown', '[data-demo="tabs"]
 });
 const stopTabBars = wireTabBars(app, { onReorder: ({ barId, sourceId, targetId, position, source }) => { tabBarTabs.value = reorderTabs(tabBarTabs.value, (tab) => tab.id, sourceId, targetId, position); actionLog.value = `${source === 'pointer' ? 'Dragged' : 'Moved'} ${sourceId} ${position} ${targetId} in ${barId}`; } });
 
-window.addEventListener('pagehide', () => { stopActions(); stopResize(); stopSelect(); stopRelationships(); stopIntersectionObserver(); stopMutationObserver(); stopResizeObserver(); stopTabs(); stopTabBars(); }, { once: true });
+window.addEventListener('pagehide', () => { stopActions(); stopResize(); stopSelect(); stopRelationships(); stopAnimationSelects(); stopAnimationRanges(); stopAnimationEvents.forEach((dispose) => dispose()); stopIntersectionObserver(); stopMutationObserver(); stopResizeObserver(); stopTabs(); stopTabBars(); }, { once: true });

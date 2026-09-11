@@ -118,6 +118,47 @@ test('toast specimen creates a visible transient notification', async ({ page, b
   if (browserName === 'chromium') await page.screenshot({ path: 'test-results/webawesome-toast-open-wide.png', fullPage: true });
 });
 
+test('animation specimen exposes settings, transport, lifecycle, and reduced-motion behavior', async ({ page, browserName }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/?component=wa-animation');
+  const demo = page.locator('[data-animation-demo]');
+  const animation = demo.locator('wa-animation');
+  const output = demo.locator('[data-animation-output]');
+
+  await demo.locator('[name="animation-preset"]').evaluate((element) => {
+    (element as HTMLElement & { value: string }).value = 'shakeX';
+    element.dispatchEvent(new Event('change', { bubbles: true, composed: true }));
+  });
+  await demo.locator('[name="animation-duration"]').fill('1000');
+  await demo.locator('[name="animation-rate"]').fill('1.5');
+  await expect(animation).toHaveJSProperty('name', 'shakeX');
+  await expect(animation).toHaveJSProperty('duration', 1000);
+  await expect(animation).toHaveJSProperty('playbackRate', 1.5);
+
+  await demo.getByRole('button', { name: 'Play' }).click();
+  await expect(output).toContainText('Playing shakeX');
+  await demo.getByRole('button', { name: 'Pause' }).click();
+  await expect(output).toHaveText('Paused');
+  await demo.getByRole('button', { name: 'Play' }).click();
+  await demo.getByRole('button', { name: 'Finish' }).click();
+  await expect(output).toHaveText('Finished');
+  await demo.getByRole('button', { name: 'Play' }).click();
+  await demo.getByRole('button', { name: 'Cancel' }).click();
+  await expect(output).toHaveText('Canceled');
+
+  if (browserName === 'chromium') await page.screenshot({ path: 'test-results/webawesome-animation-settings-wide.png', fullPage: true });
+
+  await page.getByRole('button', { name: 'Reduce motion' }).click();
+  await page.locator('[data-animation-demo]').getByRole('button', { name: 'Play' }).click();
+  await expect(page.locator('[data-animation-output]')).toHaveText('Playback suppressed by reduced-motion preference');
+
+  if (browserName === 'chromium') {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+    await page.screenshot({ path: 'test-results/webawesome-animation-settings-narrow.png', fullPage: true });
+  }
+});
+
 test('observer specimens expose visible, user-driven events', async ({ page, browserName }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/?component=wa-intersection-observer');

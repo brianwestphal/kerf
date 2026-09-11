@@ -80,7 +80,7 @@ export const webAwesomeCatalog = [
   { id: 'wa-qr-code', name: 'QR Code', category: 'Media', kind: 'component', source: 'webawesome', description: 'Scannable QR representation of a supplied value.', uses: [] },
   { id: 'wa-zoomable-frame', name: 'Zoomable Frame', category: 'Media', kind: 'component', source: 'webawesome', description: 'Iframe with zoom, pan, and interaction controls.', uses: ['wa-icon'] },
 
-  { id: 'wa-animation', name: 'Animation', category: 'Helpers', kind: 'component', source: 'webawesome', description: 'Declarative Web Animations API wrapper with preset effects.', uses: [] },
+  { id: 'wa-animation', name: 'Animation', category: 'Helpers', kind: 'component', source: 'webawesome', description: 'Declarative Web Animations API wrapper with preset effects.', uses: ['select'] },
   { id: 'wa-format-bytes', name: 'Format Bytes', category: 'Helpers', kind: 'component', source: 'webawesome', description: 'Locale-aware byte and bit value formatter.', uses: [] },
   { id: 'wa-format-date', name: 'Format Date', category: 'Helpers', kind: 'component', source: 'webawesome', description: 'Locale-aware date and time formatter.', uses: [] },
   { id: 'wa-format-number', name: 'Format Number', category: 'Helpers', kind: 'component', source: 'webawesome', description: 'Locale-aware number, currency, unit, and percentage formatter.', uses: [] },

@@ -68,6 +68,7 @@ import '@awesome.me/webawesome/dist/components/tree-item/tree-item.js';
 import '@awesome.me/webawesome/dist/components/tree/tree.js';
 import '@awesome.me/webawesome/dist/components/zoomable-frame/zoomable-frame.js';
 
+import { Select } from '@kerfjs/ui/select';
 import type { SafeHtml } from 'kerfjs';
 
 import { webAwesomeCatalog,type WebAwesomeCatalogId } from './catalog.js';
@@ -147,7 +148,19 @@ Semantic tokens keep **Kerf UI** and Web Awesome visually coherent.
   'wa-qr-code': () => <wa-qr-code value="https://kerfjs.dev" label="Kerf website" size="160"></wa-qr-code>,
   'wa-zoomable-frame': () => <wa-zoomable-frame class="wa-demo-zoomable-frame" srcdoc={demoFrame} zoom="1" loading="eager"></wa-zoomable-frame>,
 
-  'wa-animation': () => <wa-animation name="pulse"><div class="wa-demo-observed"><strong>Animation target</strong><span>Use the component API to play a preset or custom keyframes.</span></div></wa-animation>,
+  'wa-animation': () => <div class="wa-demo-animation" data-animation-demo>
+    <section class="wa-demo-animation__preview" aria-label="Animation preview">
+      <wa-animation name="bounce" duration="900" easing="ease-in-out" iterations="1"><div class="wa-demo-animation__target"><strong>Kerf</strong><span>Animation target</span></div></wa-animation>
+      <output data-animation-output aria-live="polite">Ready to play</output>
+    </section>
+    <section class="wa-demo-animation__settings" aria-label="Animation settings">
+      <Select name="animation-preset" value="bounce" label="Preset" choices={[{ value: 'bounce', label: 'Bounce' }, { value: 'fadeIn', label: 'Fade in' }, { value: 'jello', label: 'Jello' }, { value: 'shakeX', label: 'Shake horizontally' }]} />
+      <Select name="animation-easing" value="ease-in-out" label="Easing" choices={[{ value: 'linear', label: 'Linear' }, { value: 'ease', label: 'Ease' }, { value: 'ease-in', label: 'Ease in' }, { value: 'ease-out', label: 'Ease out' }, { value: 'ease-in-out', label: 'Ease in and out' }]} />
+      <label class="wa-demo-animation__range"><span>Duration <output data-animation-duration>900 ms</output></span><input type="range" name="animation-duration" min="250" max="2000" step="50" value="900" /></label>
+      <label class="wa-demo-animation__range"><span>Playback rate <output data-animation-rate>1×</output></span><input type="range" name="animation-rate" min="0.5" max="2" step="0.25" value="1" /></label>
+      <div class="wa-demo-animation__actions"><button type="button" class="demo-button demo-button--primary" data-action="play-wa-animation">Play</button><button type="button" class="demo-button" data-action="pause-wa-animation">Pause</button><button type="button" class="demo-button" data-action="finish-wa-animation">Finish</button><button type="button" class="demo-button" data-action="cancel-wa-animation">Cancel</button></div>
+    </section>
+  </div>,
   'wa-format-bytes': () => <dl class="wa-demo-values"><div><dt>Binary</dt><dd><wa-format-bytes value="10485760"></wa-format-bytes></dd></div><div><dt>Decimal</dt><dd><wa-format-bytes value="10485760" unit="bit" display="long"></wa-format-bytes></dd></div></dl>,
   'wa-format-date': () => <dl class="wa-demo-values"><div><dt>Date</dt><dd><wa-format-date date="2026-09-11T12:00:00Z" month="long" day="numeric" year="numeric" time-zone="UTC"></wa-format-date></dd></div><div><dt>Time</dt><dd><wa-format-date date="2026-09-11T12:00:00Z" hour="numeric" minute="2-digit" time-zone="UTC"></wa-format-date></dd></div></dl>,
   'wa-format-number': () => <dl class="wa-demo-values"><div><dt>Number</dt><dd><wa-format-number value="1284"></wa-format-number></dd></div><div><dt>Percent</dt><dd><wa-format-number value="0.72" type="percent"></wa-format-number></dd></div><div><dt>Currency</dt><dd><wa-format-number value="49" type="currency" currency="USD"></wa-format-number></dd></div></dl>,
