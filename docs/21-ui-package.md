@@ -52,10 +52,25 @@ defaults for neutral, brand/info, success, warning, and danger roles. Stateful
 components expose scoped custom properties, so an application may override the
 complete theme, one semantic tone, or one instance.
 
+For an app that also uses Web Awesome's free component set, one optional import
+provides Web Awesome's base stylesheet plus Kerf's Hot Sheet 2-aligned theme:
+
+```ts
+import '@kerfjs/ui/webawesome.css';
+import '@awesome.me/webawesome/dist/components/button/button.js';
+```
+
+The theme uses Web Awesome's public semantic variables for surfaces, text,
+brand and status ramps, focus, form geometry, panels, tooltips, radii, and
+shadows. It styles every free component that consumes those contracts while
+remaining overridable through later or scoped `--wa-*` declarations. The CSS
+entry registers no custom elements; importing individual Web Awesome component
+modules keeps their JavaScript tree-shakeable.
+
 `Select` is a Web Awesome adapter. Rendering it is pure; custom-element
 registration happens only after `import '@kerfjs/ui/select/register'`. Web
-Awesome is an optional peer so apps that never import Select do not install or
-bundle it.
+Awesome is an optional peer so apps that use neither that registration entry
+nor `webawesome.css` do not install or bundle it.
 
 ## 21.3 Initial component set
 
@@ -99,7 +114,8 @@ inspection stage. Catalog metadata declares direct component dependencies; the
 detail view derives one grouped `Uses` / `Used by` selector from that graph and
 omits the relationship footer when neither group exists.
 Decorative chrome, Web Awesome controls, and production components share
-semantic theme tokens. The catalog includes every ToolbarControlGroup variant,
+semantic theme tokens. A dedicated gallery spans Web Awesome actions, forms,
+structure/navigation, feedback, media, and formatting. The catalog includes every ToolbarControlGroup variant,
 all StateBanner tones plus a scoped palette override, reorderable overflowing
 tabs, light and dark themes, contrast, motion, selection, resize, and feedback
 states.

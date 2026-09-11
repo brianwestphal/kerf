@@ -107,12 +107,32 @@ describe('consumer bundle boundaries', () => {
     expect(Object.keys(registered.metafile!.inputs).join('\n')).toContain('@awesome.me/webawesome');
   });
 
+  it('ships the Web Awesome theme as one opt-in CSS-only boundary', async () => {
+    const themed = await bundle("import '@kerfjs/ui/webawesome.css';");
+    const inputs = Object.keys(themed.metafile!.inputs).join('\n');
+    const css = output(themed, '.css');
+    expect(inputs).toContain('src/webawesome.css');
+    expect(inputs).toContain('@awesome.me/webawesome/dist/styles/themes/default.css');
+    expect(css).toContain('@layer wa-theme-overrides');
+    expect(css).toContain('--wa-color-brand-fill-loud: light-dark(#0088ff, #64d2ff)');
+    expect(css).toContain('--wa-form-control-border-color: var(--wa-color-neutral-border-normal)');
+    expect(inputs).not.toContain('@awesome.me/webawesome/dist/components');
+    expect(output(themed, '.js')).not.toContain('customElements.define');
+
+    const withButton = await bundle("import '@kerfjs/ui/webawesome.css'; import '@awesome.me/webawesome/dist/components/button/button.js';");
+    const buttonInputs = Object.keys(withButton.metafile!.inputs).join('\n');
+    expect(buttonInputs).toContain('@awesome.me/webawesome/dist/components/button/button.js');
+    expect(buttonInputs).not.toContain('@awesome.me/webawesome/dist/components/input/input.js');
+    expect(buttonInputs).not.toContain('@awesome.me/webawesome/dist/components/checkbox/checkbox.js');
+  });
+
   it('declares only style delivery and custom-element registration as side effects', async () => {
     const pkg = JSON.parse(await readFile(new URL('../../package.json', import.meta.url), 'utf8')) as { sideEffects: string[]; exports: Record<string, unknown> };
     expect(pkg.sideEffects).toEqual(['**/*.css', './dist/browser/*.js', './dist/select-register.js']);
     expect(pkg.exports['.']).toMatchObject({ import: './dist/index.js' });
     expect(pkg.exports['./toolbar']).toMatchObject({ browser: './dist/browser/toolbar.js', import: './dist/toolbar.js' });
     expect(pkg.exports['./unstyled']).toBeDefined();
+    expect(pkg.exports['./webawesome.css']).toBe('./src/webawesome.css');
     expect(pkg.exports['./select/register']).toBeDefined();
     expect(pkg.exports['./tab-bar']).toBeDefined();
     expect(pkg.exports['./wire-tab-bars']).toBeDefined();

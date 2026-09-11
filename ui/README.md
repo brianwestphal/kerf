@@ -60,6 +60,35 @@ entry for a browser build with a custom styling pipeline. The exported
 delivery. Load application overrides after package styles, or scope `--kui-*`
 variables directly on a component instance.
 
+## Web Awesome theme
+
+Apps using Web Awesome's free components can opt into the same visual universe
+with one CSS import:
+
+```ts
+import '@kerfjs/ui/webawesome.css';
+import '@awesome.me/webawesome/dist/components/button/button.js';
+import '@awesome.me/webawesome/dist/components/input/input.js';
+```
+
+`webawesome.css` includes Web Awesome's native/base theme and then applies the
+Hot Sheet 2 palette, surfaces, status colors, focus treatment, form geometry,
+radii, tooltips, and shadows through Web Awesome's public `--wa-*` contract.
+Those tokens flow into all free component families, including components not
+shown in the catalog. It does not import or register any component JavaScript,
+so each Web Awesome component module remains independently tree-shakeable.
+
+Load application CSS afterward to override semantic values globally, or scope
+them to a subtree. Use Web Awesome's `.wa-light`, `.wa-dark`, and `.wa-invert`
+classes for explicit appearance boundaries:
+
+```css
+:root {
+  --wa-color-brand-fill-loud: #7540a8;
+  --wa-form-control-border-radius: .5rem;
+}
+```
+
 `foundation.css` follows Hot Sheet 2's Web Awesome-compatible semantic palette.
 Brand, neutral, success, warning, and danger each expose fill, border, and
 foreground roles through `--kui-color-*`; stateful components also expose
@@ -84,9 +113,10 @@ on pointer proximity, exposing earlier or later drop targets. Apply the reported
 change with `reorderTabs()` or application-specific state logic. The application
 still owns selection, closing, routing, and persistence.
 
-`Select` uses Web Awesome but does not register anything by itself. Install the optional peer and explicitly import the registration entry in the application:
+`Select` uses Web Awesome but does not register anything by itself. Install the optional peer, import the shared theme if desired, and explicitly import the registration entry in the application:
 
 ```ts
+import '@kerfjs/ui/webawesome.css';
 import '@kerfjs/ui/select/register';
 ```
 
@@ -98,6 +128,7 @@ That boundary keeps Web Awesome and its custom-element side effects out of bundl
 - [Apple HIG translation](./docs/apple-hig.md)
 - [Accessibility and keyboard contracts](./docs/accessibility.md)
 - [Component and integration contract](./docs/component-contract.md)
+- [Web Awesome theme contract](./docs/webawesome-theme.md)
 - [UX catalog contract](./docs/ux-demo.md)
 - [AI guide](./ai/skill.md)
 

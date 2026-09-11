@@ -82,6 +82,12 @@ edge to expose earlier or later drop targets. Apply tab reorder reports with
 `@kerfjs/ui/select/register` once only when using Select; that is the explicit
 custom-element side effect and Web Awesome is otherwise optional.
 
+When the app uses Web Awesome's broader free component set, import
+`@kerfjs/ui/webawesome.css` once. That CSS-only entry includes Web Awesome's
+base stylesheet and the Hot Sheet 2-aligned Kerf theme but registers no custom
+elements. Continue importing only the individual Web Awesome component modules
+the app renders, and override public `--wa-*` values afterward when needed.
+
 The default semantic ramps deliberately match Hot Sheet 2 and Web Awesome.
 Override `--kui-color-*` globally or component properties such as
 `--kui-state-banner-background` at a tone/instance boundary.

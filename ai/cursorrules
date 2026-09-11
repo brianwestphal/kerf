@@ -1,4 +1,4 @@
-<!-- kerf-skill-version: 1.17.0 -->
+<!-- kerf-skill-version: 1.18.0 -->
 # kerf.cursorrules — rules for building apps with kerf
 #
 # Drop this file into your project as `.cursorrules` (Cursor will pick it
@@ -41,10 +41,15 @@ The opinionated semantic ramps match Hot Sheet 2 and Web Awesome. Override
 `--kui-state-banner-background` at a tone or instance boundary; do not replace
 private descendant selectors.
 
+For Web Awesome's broader free component set, import the CSS-only
+`@kerfjs/ui/webawesome.css` theme once, then import only each Web Awesome
+component module the app renders. The theme registers no component JavaScript
+and remains overridable through later or scoped `--wa-*` values.
+
 `Select` is pure markup until the app explicitly imports
 `@kerfjs/ui/select/register`. Do that once in the application entry that uses
 Select; never hide registration inside a component. Web Awesome is an optional
-peer and stays out of non-Select bundles. More detail ships at
+peer and stays out of bundles that use neither Select nor the Web Awesome theme. More detail ships at
 `node_modules/@kerfjs/ui/ai/skill.md`.
 
 ## Public API — one import path

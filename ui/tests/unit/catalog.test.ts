@@ -40,7 +40,7 @@ describe('UX catalog metadata', () => {
       'EmptyState',
       'LoadingSpinner',
     ]);
-    expect(catalog.filter((entry) => entry.kind === 'composition').map((entry) => entry.id)).toEqual(['headers', 'menu', 'feedback']);
+    expect(catalog.filter((entry) => entry.kind === 'composition').map((entry) => entry.id)).toEqual(['webawesome-theme', 'headers', 'menu', 'feedback']);
   });
 
   it('resolves both sides of component relationships', () => {

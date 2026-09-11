@@ -32,6 +32,24 @@ intentional. Node/SSR uses pure modules automatically, and
 pipelines. All CSS paths remain public for manual delivery. Load app overrides
 afterward or scope `--kui-*` properties on a component instance.
 
+## Web Awesome theme
+
+Use the package's optional theme entry when the app renders free Web Awesome
+components alongside Kerf primitives:
+
+```ts
+import '@kerfjs/ui/webawesome.css';
+import '@awesome.me/webawesome/dist/components/button/button.js';
+```
+
+The one CSS import includes Web Awesome's base styles and applies the same
+Hot Sheet 2-aligned semantic palette, focus treatment, form geometry, panels,
+tooltips, radii, and shadows used by the Kerf layer. It registers no components;
+continue importing only the individual Web Awesome component modules the app
+uses. Override public `--wa-*` values after the theme import, globally or on a
+subtree, and use `.wa-light`, `.wa-dark`, or `.wa-invert` for explicit
+appearance boundaries.
+
 ## Included primitives
 
 - `LucideIcon`; `Toolbar`, `ToolbarControlGroup`, `ToolbarText`
@@ -54,11 +72,12 @@ semantic tokens, a tone variable, or a component property such as
 once in an application entry that uses it:
 
 ```ts
+import '@kerfjs/ui/webawesome.css';
 import '@kerfjs/ui/select/register';
 ```
 
 Web Awesome is an optional peer, so it stays out of applications and bundles
-that do not select that integration.
+that use neither the Select registration entry nor the shared theme.
 
 ## Accessibility
 

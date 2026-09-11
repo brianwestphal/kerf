@@ -12,6 +12,7 @@ export interface CatalogEntry {
 
 export const catalog = [
   { id: 'lucide-icon', name: 'LucideIcon', category: 'Foundation', kind: 'component', description: 'Decorative and meaningfully labeled Lucide-compatible icons.', uses: [] },
+  { id: 'webawesome-theme', name: 'Web Awesome theme', category: 'Foundation', kind: 'composition', description: 'Kerf palettes, typography, geometry, and focus styling across free Web Awesome component families.', uses: [] },
   { id: 'toolbar', name: 'Toolbar', category: 'Structure', kind: 'component', description: 'Leading, centered, and trailing toolbar composition.', uses: ['toolbar-text', 'toolbar-control-group'] },
   { id: 'toolbar-control-group', name: 'ToolbarControlGroup', category: 'Structure', kind: 'component', description: 'Contained, borderless, pressed, and single-control toolbar groups.', uses: ['lucide-icon'] },
   { id: 'toolbar-text', name: 'ToolbarText', category: 'Structure', kind: 'component', description: 'Large, default, and compact toolbar identity text.', uses: [] },

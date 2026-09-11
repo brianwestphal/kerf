@@ -302,7 +302,9 @@ Import a component from its explicit subpath (for example
 component styles. The root barrel is CSS-free; pair it with
 `@kerfjs/ui/styles.css` only when the complete layer is wanted. Web Awesome
 registration is explicit at `@kerfjs/ui/select/register`, so it stays out of
-unrelated bundles.
+unrelated bundles. Apps using more of Web Awesome's free component set can add
+the CSS-only `@kerfjs/ui/webawesome.css` theme, then continue importing each Web
+Awesome component module individually so component JavaScript stays tree-shakeable.
 See [`docs/21-ui-package.md`](./docs/21-ui-package.md).
 
 ## Links

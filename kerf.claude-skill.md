@@ -1,7 +1,7 @@
 ---
 name: kerf-app
 description: Build UIs in the kerf reactive framework and its @kerfjs/ui component package (https://github.com/brianwestphal/kerf). Use this skill whenever the user is writing or modifying code that imports `kerfjs` or `@kerfjs/ui`, asks to add a feature to a kerf app, or asks "how do I do X in kerf?". Use it proactively the moment you spot a kerf import in the file you're editing.
-kerf-skill-version: 1.17.0
+kerf-skill-version: 1.18.0
 ---
 
 # Building apps with kerf
@@ -47,10 +47,16 @@ The opinionated semantic ramps match Hot Sheet 2 and Web Awesome. Override
 `--kui-state-banner-background` at a tone or instance boundary; do not replace
 private descendant selectors.
 
+For Web Awesome's broader free component set, import the CSS-only
+`@kerfjs/ui/webawesome.css` theme once, then import only each Web Awesome
+component module the app renders. The theme registers no component JavaScript
+and remains overridable through later or scoped `--wa-*` values.
+
 `Select` renders pure Web Awesome markup. Import
 `@kerfjs/ui/select/register` once in an application entry that uses it; never
 hide that registration inside another component. Web Awesome is an optional
-peer and must remain absent from bundles that do not use Select. The package's
+peer and must remain absent from bundles that use neither Select nor the Web
+Awesome theme. The package's
 full AI contract is at `node_modules/@kerfjs/ui/ai/skill.md`.
 
 ## Public API — one import path

@@ -12,6 +12,52 @@ test('loads component-reachable package CSS through browser subpaths', async ({ 
   await expect(page.locator('[data-component="empty-state"] .kui-loading-spinner')).toHaveCSS('display', 'block');
 });
 
+test('themes representative free Web Awesome families with overridable semantic tokens', async ({ page, browserName }) => {
+  await page.setViewportSize({ width: 1440, height: 1100 });
+  await page.goto('/?component=webawesome-theme');
+  const demo = page.locator('[data-demo="webawesome-theme"]');
+  await expect(demo).toBeVisible();
+  await expect(demo.locator(':scope > section')).toHaveCount(5);
+
+  const registered = await page.evaluate(() => [
+    'wa-button', 'wa-input', 'wa-checkbox', 'wa-card', 'wa-accordion', 'wa-tab-group',
+    'wa-tree', 'wa-callout', 'wa-progress-bar', 'wa-tag', 'wa-avatar', 'wa-qr-code',
+  ].every((tag) => Boolean(customElements.get(tag))));
+  expect(registered).toBe(true);
+
+  const theme = await demo.evaluate((element) => {
+    const style = window.getComputedStyle(element);
+    return {
+      family: style.getPropertyValue('--wa-font-family-body').trim(),
+      brand: style.getPropertyValue('--wa-color-brand-fill-loud').trim(),
+      border: style.getPropertyValue('--wa-form-control-border-color').trim(),
+    };
+  });
+  expect(theme.family).toContain('ui-sans-serif');
+  expect(theme.brand).toBe('light-dark(#0088ff, #64d2ff)');
+  expect(theme.border).toBe('light-dark(#d1d1d6, #48484a)');
+
+  const primary = demo.locator('wa-button[variant="brand"]').first().locator('[part~="button"]');
+  await expect(primary).toHaveCSS('background-color', 'rgb(0, 136, 255)');
+  await page.locator('[data-action="toggle-theme"]').click();
+  await expect(primary).toHaveCSS('background-color', 'rgb(100, 210, 255)');
+  await expect(page.locator('body')).toHaveCSS('background-color', 'rgb(17, 17, 19)');
+
+  if (browserName === 'chromium') await page.screenshot({ path: 'test-results/webawesome-theme-dark-wide.png', fullPage: true });
+
+  await demo.evaluate((element) => element.style.setProperty('--wa-color-brand-fill-loud', '#7540a8'));
+  await expect(primary).toHaveCSS('background-color', 'rgb(117, 64, 168)');
+  await demo.evaluate((element) => element.style.removeProperty('--wa-color-brand-fill-loud'));
+
+  if (browserName === 'chromium') {
+    await page.locator('[data-action="toggle-theme"]').click();
+    await page.screenshot({ path: 'test-results/webawesome-theme-light-wide.png', fullPage: true });
+    await page.setViewportSize({ width: 390, height: 844 });
+    await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+    await page.screenshot({ path: 'test-results/webawesome-theme-light-narrow.png', fullPage: true });
+  }
+});
+
 test('catalog routes every production component family and supports its stateful controls', async ({ page, browserName }) => {
   await page.goto('/');
   await expect(page.locator('.catalog-sidebar [data-component="menu-header"]')).toHaveCount(5);

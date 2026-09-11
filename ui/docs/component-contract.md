@@ -35,6 +35,14 @@ when called and return disposers. CSS, the generated wrappers that make it
 reachable, and the registration module are the package's only declared side
 effects.
 
+`@kerfjs/ui/webawesome.css` is a separate, optional CSS boundary. It imports
+Web Awesome's public base stylesheet and overrides its semantic theme layer to
+match the Kerf/Hot Sheet 2 system. It never imports component JavaScript.
+Consumers register only the individual Web Awesome modules they render and can
+override `--wa-*` values after the theme import. The shared `--wa-*` values feed
+both Web Awesome controls and Kerf's `--kui-*` foundation aliases, preventing a
+second application palette.
+
 `kerfjs` is a peer dependency and remains external in every build. Importing a toolbar must not bundle a second Kerf runtime, another UI component, Web Awesome registration, the UX catalog, or development tooling.
 
 ## Extracted versus application-specific
@@ -45,4 +53,4 @@ Keep product adapters outside the package: connection-state maps, ticket empty-s
 
 ## Testing contract
 
-Each behavior has focused unit coverage and a real-browser flow through the production-backed catalog. Consumer bundle tests enforce subpath CSS reachability, transitive component styles, root/SSR isolation, and optional registration boundaries. Visual evidence supplements—never replaces—keyboard, focus, state, and event assertions.
+Each behavior has focused unit coverage and a real-browser flow through the production-backed catalog. Consumer bundle tests enforce subpath CSS reachability, transitive component styles, root/SSR isolation, optional registration boundaries, and the CSS-only Web Awesome theme boundary. Visual evidence supplements—never replaces—keyboard, focus, state, and event assertions.

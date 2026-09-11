@@ -1,0 +1,134 @@
+/*
+ * Kerf's optional Web Awesome theme.
+ *
+ * Import this one entry before rendering Web Awesome components. It includes
+ * Web Awesome's native/base theme and then applies the same semantic palette
+ * used by Hot Sheet 2. Component JavaScript remains independently importable
+ * and tree-shakeable.
+ */
+@import '@awesome.me/webawesome/dist/styles/webawesome.css';
+
+@layer wa-theme-overrides {
+  :where(:root),
+  .wa-theme-default,
+  .wa-light,
+  .wa-dark .wa-invert,
+  .wa-light .wa-theme-default,
+  .wa-dark .wa-theme-default.wa-invert,
+  .wa-dark .wa-theme-default .wa-invert,
+  .wa-dark,
+  .wa-invert,
+  .wa-dark .wa-theme-default,
+  .wa-light .wa-theme-default.wa-invert,
+  .wa-light .wa-theme-default .wa-invert {
+    color: var(--wa-color-text-normal);
+
+    /* Hot Sheet 2's macOS system palette, with a compatible dark appearance. */
+    --wa-color-surface-raised: light-dark(#fff, #2c2c2e);
+    --wa-color-surface-default: light-dark(#fff, #1c1c1e);
+    --wa-color-surface-lowered: light-dark(#f2f2f7, #111113);
+    --wa-color-surface-border: light-dark(#d1d1d6, #48484a);
+
+    --wa-color-text-normal: light-dark(#1d1d1f, #f5f5f7);
+    --wa-color-text-quiet: light-dark(#6e6e73, #aeaeb2);
+    --wa-color-text-link: var(--wa-color-brand-on-quiet);
+
+    --wa-color-overlay-modal: light-dark(rgb(29 29 31 / .34), rgb(0 0 0 / .6));
+    --wa-color-overlay-inline: color-mix(in srgb, var(--wa-color-neutral-fill-normal) 25%, transparent);
+    --wa-color-shadow: light-dark(rgb(0 0 0 / .14), rgb(0 0 0 / .5));
+    --wa-color-focus: light-dark(#007aff, #64d2ff);
+    --wa-color-brand-fill-loud: light-dark(#0088ff, #64d2ff);
+    --wa-color-brand-fill-quiet: color-mix(in srgb, var(--wa-color-brand-fill-loud) 8%, var(--wa-color-surface-default));
+    --wa-color-brand-fill-normal: color-mix(in srgb, var(--wa-color-brand-fill-loud) 16%, var(--wa-color-surface-default));
+    --wa-color-brand-border-quiet: color-mix(in srgb, var(--wa-color-brand-fill-loud) 35%, var(--wa-color-surface-default));
+    --wa-color-brand-border-normal: color-mix(in srgb, var(--wa-color-brand-fill-loud) 58%, var(--wa-color-surface-default));
+    --wa-color-brand-border-loud: var(--wa-color-brand-fill-loud);
+    --wa-color-brand-on-quiet: light-dark(#1e6ef4, #8acbff);
+    --wa-color-brand-on-normal: var(--wa-color-brand-on-quiet);
+    --wa-color-brand-on-loud: light-dark(#fff, #111113);
+
+    --wa-color-neutral-fill-quiet: var(--wa-color-surface-lowered);
+    --wa-color-neutral-fill-normal: light-dark(#e5e5ea, #3a3a3c);
+    --wa-color-neutral-fill-loud: light-dark(#48484a, #e5e5ea);
+    --wa-color-neutral-border-quiet: light-dark(#e5e5ea, #38383a);
+    --wa-color-neutral-border-normal: var(--wa-color-surface-border);
+    --wa-color-neutral-border-loud: light-dark(#aeaeb2, #636366);
+    --wa-color-neutral-on-quiet: var(--wa-color-text-quiet);
+    --wa-color-neutral-on-normal: var(--wa-color-text-normal);
+    --wa-color-neutral-on-loud: var(--wa-color-surface-default);
+
+    --wa-color-success-fill-loud: #34c759;
+    --wa-color-success-fill-quiet: color-mix(in srgb, var(--wa-color-success-fill-loud) 14%, var(--wa-color-surface-default));
+    --wa-color-success-fill-normal: color-mix(in srgb, var(--wa-color-success-fill-loud) 72%, var(--wa-color-surface-default));
+    --wa-color-success-border-quiet: color-mix(in srgb, var(--wa-color-success-fill-loud) 32%, var(--wa-color-surface-default));
+    --wa-color-success-border-normal: color-mix(in srgb, var(--wa-color-success-fill-loud) 50%, var(--wa-color-surface-default));
+    --wa-color-success-border-loud: color-mix(in srgb, var(--wa-color-success-fill-loud) 78%, var(--wa-color-neutral-on-normal));
+    --wa-color-success-on-quiet: light-dark(#008932, #63e685);
+    --wa-color-success-on-normal: light-dark(#006d28, #8cea9f);
+    --wa-color-success-on-loud: #fff;
+
+    --wa-color-warning-fill-loud: #ffcc00;
+    --wa-color-warning-fill-quiet: color-mix(in srgb, var(--wa-color-warning-fill-loud) 9%, var(--wa-color-surface-default));
+    --wa-color-warning-fill-normal: color-mix(in srgb, var(--wa-color-warning-fill-loud) 22%, var(--wa-color-surface-default));
+    --wa-color-warning-border-quiet: color-mix(in srgb, var(--wa-color-warning-fill-loud) 35%, var(--wa-color-surface-default));
+    --wa-color-warning-border-normal: color-mix(in srgb, var(--wa-color-warning-fill-loud) 58%, var(--wa-color-neutral-on-normal));
+    --wa-color-warning-border-loud: color-mix(in srgb, var(--wa-color-warning-fill-loud) 78%, var(--wa-color-neutral-on-normal));
+    --wa-color-warning-on-quiet: light-dark(#a16a00, #ffd84a);
+    --wa-color-warning-on-normal: light-dark(#5f3f00, #ffe27a);
+    --wa-color-warning-on-loud: #1d1d1f;
+
+    --wa-color-danger-fill-loud: #ff383c;
+    --wa-color-danger-fill-quiet: color-mix(in srgb, var(--wa-color-danger-fill-loud) 7%, var(--wa-color-surface-default));
+    --wa-color-danger-fill-normal: color-mix(in srgb, var(--wa-color-danger-fill-loud) 14%, var(--wa-color-surface-default));
+    --wa-color-danger-border-quiet: color-mix(in srgb, var(--wa-color-danger-fill-loud) 32%, var(--wa-color-surface-default));
+    --wa-color-danger-border-normal: color-mix(in srgb, var(--wa-color-danger-fill-loud) 50%, var(--wa-color-surface-default));
+    --wa-color-danger-border-loud: color-mix(in srgb, var(--wa-color-danger-fill-loud) 78%, var(--wa-color-neutral-on-normal));
+    --wa-color-danger-on-quiet: light-dark(#c20b20, #ff696c);
+    --wa-color-danger-on-normal: light-dark(#8e0717, #ff8a8c);
+    --wa-color-danger-on-loud: #fff;
+
+    /* Geometry stays aligned with the compact Kerf primitives. */
+    --wa-border-radius-pill: 999px;
+    --wa-form-control-border-color: var(--wa-color-neutral-border-normal);
+    --wa-form-control-border-radius: var(--wa-border-radius-m);
+    --wa-form-control-activated-color: var(--wa-color-brand-fill-loud);
+    --wa-panel-border-radius: var(--wa-border-radius-l);
+    --wa-tooltip-background-color: var(--wa-color-neutral-fill-loud);
+    --wa-tooltip-content-color: var(--wa-color-neutral-on-loud);
+    --wa-shadow-s: 0 1px 3px rgb(0 0 0 / .14);
+    --wa-shadow-m: 0 .35rem 1rem rgb(0 0 0 / .11);
+    --wa-shadow-l: 0 .75rem 2rem rgb(0 0 0 / .09);
+  }
+
+  :where(:root),
+  .wa-theme-default,
+  .wa-light,
+  .wa-dark .wa-invert,
+  .wa-light .wa-theme-default,
+  .wa-dark .wa-theme-default.wa-invert,
+  .wa-dark .wa-theme-default .wa-invert {
+    color-scheme: light;
+  }
+
+  .wa-dark,
+  .wa-invert,
+  .wa-dark .wa-theme-default,
+  .wa-light .wa-theme-default.wa-invert,
+  .wa-light .wa-theme-default .wa-invert {
+    color-scheme: dark;
+  }
+}
+
+@media (prefers-contrast: more) {
+  @layer wa-theme-overrides {
+    :where(:root),
+    .wa-theme-default,
+    .wa-light,
+    .wa-dark,
+    .wa-invert {
+      --wa-color-surface-border: currentColor;
+      --wa-color-neutral-border-normal: currentColor;
+      --wa-focus-ring: 3px solid currentColor;
+    }
+  }
+}
