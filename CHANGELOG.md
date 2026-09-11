@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Expanded the `@kerfjs/ui` pull-request browser gate from Chromium-only coverage to the full Chromium, Firefox, and WebKit suite, with Playwright binary caching keyed to the UI lockfile.
 - Added a strict npm install-script policy for the site: only the reviewed `esbuild` and `sharp` binary installers run, the linked root package's Husky-only `prepare` is denied, and a preinstall checker detects lockfile installer drift.
 - Updated the root and UI browser-test harnesses for Node 26: Playwright 1.63 removes the deprecated ESM loader registration, and normalized color variables keep web-server and worker output free of `NO_COLOR`/`FORCE_COLOR` conflict warnings.
 - Cleaned generated root and `@kerfjs/ui` ESM shims so downstream bundlers no longer report ignored bare chunk imports, and deduplicated source-map directives without weakening package tree shaking.

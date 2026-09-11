@@ -109,8 +109,15 @@ jobs:
         run: npm run build
       - run: npm ci
       - run: npm run check
-      - run: npx playwright install --with-deps chromium
-      - run: npm run test:e2e -- --project=chromium
+      - name: Cache UI Playwright browsers
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-ui-${{ runner.os }}-${{ hashFiles('ui/package-lock.json') }}
+          restore-keys: |
+            playwright-ui-${{ runner.os }}-
+      - run: npx playwright install --with-deps chromium firefox webkit
+      - run: npm run test:e2e
 
   # KF-118: browser tests run on every push/PR alongside the unit suites.
   # The happy-dom unit tests can't model SVG/MathML namespacing, IME

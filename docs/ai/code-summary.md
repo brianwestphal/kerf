@@ -248,7 +248,7 @@ kerf/
 │   ├── sync-lockstep-versions.mjs ← derives/checks the four lockstep package versions, ESLint-plugin runtime metadata + lock peer, and component-scaffold/docs kerfjs ranges; `--write` runs during stable releases and `--check` is part of `npm run check`
 │   └── release.sh                ← interactive release flow w/ --beta support; drafts release notes via gitgist (`gitgist <last-tag>..HEAD`; gitgist is a devDependency)
 ├── .github/workflows/
-│   ├── ci.yml                    ← test + lint + typecheck on push/PR
+│   ├── ci.yml                    ← test + lint + typecheck on push/PR; root and `@kerfjs/ui` browser jobs cache Playwright binaries and run Chromium, Firefox, and WebKit coverage
 │   ├── pages.yml                 ← build + deploy reactivity-demo to GitHub Pages on push to main
 │   ├── release-ui.yml            ← validate/build @kerfjs/ui without OIDC, transfer dist/ artifact, publish from the token-only job
 │   └── release.yml               ← publish on v*.*.* (stable) and v*-beta.* (beta) — single workflow because npm allows only one trusted publisher per package
