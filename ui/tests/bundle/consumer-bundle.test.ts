@@ -1,5 +1,5 @@
 // @vitest-environment node
-import { readFile } from 'node:fs/promises';
+import { readdir, readFile } from 'node:fs/promises';
 
 import { build } from 'esbuild';
 import { describe, expect, it } from 'vitest';
@@ -36,6 +36,17 @@ function output(result: Awaited<ReturnType<typeof build>>, extension: string): s
 }
 
 describe('consumer bundle boundaries', () => {
+  it('ships clean generated JavaScript shims', async () => {
+    const dist = new URL('../../dist/', import.meta.url);
+    const files = (await readdir(dist)).filter((file) => file.endsWith('.js'));
+
+    for (const file of files) {
+      const source = await readFile(new URL(file, dist), 'utf8');
+      expect(source.match(/^import\s+['"]\.\/chunk-.*\.js['"];?$/gm), file).toBeNull();
+      expect(source.match(/^\/\/# sourceMappingURL=.*$/gm), file).toHaveLength(1);
+    }
+  });
+
   it('keeps the root barrel JavaScript-only and tree-shakes unrelated components', async () => {
     const result = await bundle("import { Toolbar } from '@kerfjs/ui'; console.log(String(Toolbar({}))); ");
     const inputs = Object.keys(result.metafile!.inputs).join('\n');

@@ -111,7 +111,7 @@
     "LICENSE"
   ],
   "scripts": {
-    "build": "tsup",
+    "build": "tsup && node scripts/clean-dist-output.mjs dist",
     "dev": "tsup --watch",
     "test": "vitest run --coverage",
     "test:watch": "vitest",

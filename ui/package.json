@@ -173,7 +173,7 @@
     "LICENSE"
   ],
   "scripts": {
-    "build": "tsup && node scripts/build-browser-entries.mjs",
+    "build": "tsup && node ../scripts/clean-dist-output.mjs dist && node scripts/build-browser-entries.mjs",
     "dev": "npm run build && vite --config ux-demo/vite.config.ts",
     "demo:build": "npm run build && vite build --config ux-demo/vite.config.ts",
     "demo:serve": "vite preview --config ux-demo/vite.config.ts",
