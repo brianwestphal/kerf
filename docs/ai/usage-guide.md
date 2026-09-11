@@ -120,7 +120,8 @@ with an addressable themed specimen and cross-system relationships for each.
 import {
   signal, computed, effect, batch,    // reactivity
   defineStore, resetAllStores,        // stores
-  mount, morph, each,                 // render (reactive + one-shot) + keyed list memoization
+  mount, morph, each, renderDocument, // DOM/document render + keyed list memoization
+  attr,                               // escaped attribute selector/spec helper
   delegate, delegateCapture,          // events
   toElement,                          // direct JSX → DOM Element (or DocumentFragment for multi-root inputs)
   SafeHtml, isSafeHtml, raw, Fragment, // JSX value type + cross-bundle guard + escape hatch + JSX <>...</> tag

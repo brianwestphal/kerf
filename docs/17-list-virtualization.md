@@ -111,7 +111,7 @@ batteries-included path, it is the **only** piece that needs the Playwright
 suite, and the core does not depend on it. The docs then show all three
 patterns: *declare* heights, *measure with the helper*, or *measure yourself*.
 
-## 17.6 API shape (proposed)
+## 17.6 Shipped API shape
 
 ```ts
 // Tier 2 — app-declared heights

@@ -23,7 +23,8 @@ A signal handed *itself* into a JSX hole (`class={sig}`) binds that node directl
 - **Event handlers**: never inline `onClick={fn}` — the JSX runtime renders strings and throws. Use `delegate(rootEl, 'click', selector, handler)` (`src/delegate.ts`).
 - **Opting a subtree out of the diff**: `data-morph-skip` / `data-morph-skip-children` / `data-morph-preserve` on the host. See `docs/4-render.md` §4.3.
 - **No-build authoring**: the `html` tagged template (`kerfjs/html`, `src/html.ts`) — JSX-identical semantics, no transform.
-- **First-party components**: `ui/src/` + `docs/21-ui-package.md` — the optional `@kerfjs/ui` package and its UX catalog.
+- **Companion utilities**: `kerfjs/{actions,async,attach,list,overlay,remount,router,scope,timing}` map to the same-named `src/*.ts` files.
+- **UI components**: `ui/src/` + `docs/21-ui-package.md` — `@kerfjs/ui` and its UX catalog.
 
 ## What surprises React people
 
@@ -38,4 +39,4 @@ One coherent concern per file, one primary export per file, ESM-only, kebab-case
 
 ## Deeper reading
 
-`docs/1-overview.md` → `docs/21-ui-package.md` (design); `docs/ai/usage-guide.md` (AI-first reference); `CLAUDE.md` (canonical agent doc).
+`docs/1-overview.md` → `docs/21-ui-package.md`; `docs/ai/usage-guide.md`; `CLAUDE.md`.

@@ -205,7 +205,7 @@ kerf/
 │   ├── results.json              ← KF-138 / KF-291 — in-repo snapshot tracked in git (from import-krausest.mjs); the Pages build has no network so this IS the source of truth at site-build time
 │   ├── results.md                ← markdown tables (from import-krausest.mjs) consumed by docs
 │   └── results-table.mjs         ← helper for the perf-comparison renderer
-├── site/                         ← Astro + Starlight marketing/docs site, deployed to /kerf/ on GitHub Pages. `site/src/examples/complete/<name>/` holds the nine complete example apps — eight Vite-built .tsx apps plus the no-build `live-poll` (plain main.js + importmap, copied verbatim with a vendored dist by `site/scripts/lib/copy-no-build-app.mjs`; design in docs/15). `site/scripts/demo-captures/pages/<name>/` holds STATIC capture pages (not apps) rendered to animated SVGs by the same domotion machinery — `architecture` (the docs' architecture diagram, embedded in docs/1 §1.5) and `getting-started` (the end-to-end editor→terminal→browser coding session on /kerf/getting-started/ + the README); listed in capture-demos.sh PAGES. `site/src/content/docs/getting-started.md` is the Start-here landing page (hero "Get started" points at it). Each of the eight bundled apps opens with `if (import.meta.env.DEV) await import('kerfjs/dev')` under its imports (KF-432 — the examples are how the install idiom is discoverable); `site/src/examples/complete/env.d.ts` declares the one `ImportMetaEnv` member that needs, because the examples' tsconfig sets `"types": []` and the typecheck gate runs without `site/node_modules`. `live-poll` is the deliberate counter-example — it maps `kerfjs/dev` in its importmap but never imports it, because the served page is the production one
+├── site/                         ← Astro + Starlight marketing/docs site, deployed to /kerf/ on GitHub Pages. `site/src/examples/complete/<name>/` holds eleven complete example apps — ten Vite-built .tsx apps plus the no-build `live-poll` (plain main.js + importmap, copied verbatim with a vendored dist by `site/scripts/lib/copy-no-build-app.mjs`; design in docs/15). `site/scripts/demo-captures/pages/<name>/` holds STATIC capture pages (not apps) rendered to animated SVGs by the same domotion machinery — `architecture` (the docs' architecture diagram, embedded in docs/1 §1.5) and `getting-started` (the end-to-end editor→terminal→browser coding session on /kerf/getting-started/ + the README); listed in capture-demos.sh PAGES. `site/src/content/docs/getting-started.md` is the Start-here landing page (hero "Get started" points at it). Each bundled app opens with `if (import.meta.env.DEV) await import('kerfjs/dev')` under its imports (KF-432 — the examples are how the install idiom is discoverable); `site/src/examples/complete/env.d.ts` declares the one `ImportMetaEnv` member that needs, because the examples' tsconfig sets `"types": []` and the typecheck gate runs without `site/node_modules`. `live-poll` is the deliberate counter-example — it maps `kerfjs/dev` in its importmap but never imports it, because the served page is the production one
 ├── docs/
 │   ├── orientation.md            ← KF-179 — hard-capped 500-word one-pager for humans new to the codebase. Maintained by the `/check-requirements-against-code` skill.
 │   ├── diagrams/
@@ -304,7 +304,6 @@ Every export reachable via `import { ... } from 'kerfjs'`:
 | `SafeHtml` | `jsx-runtime.ts` | The JSX result type |
 | `isSafeHtml` | `jsx-runtime.ts` | Cross-bundle type guard for `SafeHtml` (preferred over `instanceof`) |
 | `raw` | `jsx-runtime.ts` | Inject a pre-escaped HTML string, bypassing auto-escaping. Reach for it rarely — prefer escaping JSX / `html` / building `SafeHtml`. A dynamic arg is flagged by `no-raw-with-dynamic-arg`; acknowledge a genuinely-trusted one with an explicit `eslint-disable`. Not a sanitizer |
-| `raw` | `jsx-runtime.ts` | Wrap a pre-escaped HTML string |
 | `Fragment` | `jsx-runtime.ts` | JSX `<>...</>` tag; also re-exported from the barrel for manual composition |
 
 Plus, on the `kerfjs/html` subpath: `html` (tagged template — same runtime semantics as JSX, no build step; `HtmlValue` hole type; `_parseCount()` test hook), see `html.ts` above.
@@ -342,22 +341,13 @@ The JSX runtime is a separate subpath export at `kerfjs/jsx-runtime`. It's refer
 
 Outputs:
 
-- `dist/index.js` (ESM bundle, ~12 KB min+gz including `@preact/signals-core`; ~13 KB if a consumer also imports `arraySignal` from `kerfjs/array-signal`. See `bench/results.md` for the per-shape numbers.)
-- `dist/index.d.ts` (types)
-- `dist/jsx-runtime.js`
-- `dist/jsx-runtime.d.ts`
-- `dist/array-signal.js` (`kerfjs/array-signal` subpath, KF-95)
-- `dist/array-signal.d.ts`
-- `dist/html.js` (`kerfjs/html` subpath, KF-333 — the `html` tagged template)
-- `dist/html.d.ts`
-- `dist/testing.js` (`kerfjs/testing` subpath)
-- `dist/testing.d.ts`
-- `dist/chunk-*.js` — shared chunks emitted by tsup's code splitting. Both entries import their shared modules (`SafeHtml`, the store registry, etc.) from these chunks so each module-level value exists exactly once at runtime. Do not import directly; consumers always go through the named entry points.
-- Source maps for everything
+- Fifteen ESM entry shims with declarations and source maps: `index`, `jsx-runtime`, `testing`, `array-signal`, `html`, `actions`, `overlay`, `scope`, `async`, `list`, `router`, `timing`, `remount`, `attach`, and `dev`.
+- `dist/index.js` is ~12 KB min+gz including `@preact/signals-core`; see `bench/results.md` for measured consumer shapes.
+- `dist/chunk-*.js` — shared chunks emitted by tsup's code splitting. Entries import shared modules (`SafeHtml`, the store registry, etc.) from these chunks so each module-level value exists exactly once at runtime. Do not import chunks directly; consumers always use named entry points.
 
 `tsup.config.ts` runs with `splitting: true` (KF-14 / KF-15) — without it, esbuild bundles each entry independently, which both duplicates shared classes (breaking `instanceof` checks across entries) and tree-shakes shared module-level state into broken stubs.
 
-The five entries (`index`, `jsx-runtime`, `testing`, `array-signal`, `html`) each emit a tiny shim that re-exports from one of the shared chunks; the bulk of the runtime lives in those chunks. That keeps the cross-bundle brand symbols (`Symbol.for('kerfjs.SafeHtml')`, `Symbol.for('kerfjs.ArraySignal')`) addressing exactly one class identity per kerf copy.
+Each entry emits a small shim that re-exports from shared chunks; the bulk of the runtime lives in those chunks. That keeps the cross-bundle brand symbols (`Symbol.for('kerfjs.SafeHtml')`, `Symbol.for('kerfjs.ArraySignal')`) addressing exactly one class identity per kerf copy.
 
 Runtime dep (`@preact/signals-core`) is external — consumers' bundlers pick it up from their own `node_modules`.
 
