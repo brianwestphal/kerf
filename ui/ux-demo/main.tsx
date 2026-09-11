@@ -25,8 +25,7 @@ import { delegate, delegateCapture, mount, signal } from 'kerfjs';
 import { delegateActions } from 'kerfjs/actions';
 import { ArrowDownAZ, Bell, Check, ChevronDown, ChevronLeft, ChevronRight, CircleHelp, Columns3, Contrast, Folder, GitCompare, Inbox, List, Moon, MoreHorizontal, PanelLeft, PanelLeftOpen, Pin, Plus, Search, Settings, SlidersHorizontal, Star, Wrench, ZapOff } from 'lucide';
 
-import { catalog, catalogEntriesUsing, type CatalogEntry, type CatalogId, catalogSections, findCatalogEntry, isCatalogId, webAwesomeCatalog, webAwesomeCatalogSections } from './catalog.js';
-import { webAwesomeComponentDemos } from './webawesome-demos.js';
+import { catalog, catalogEntriesUsing, type CatalogEntry, type CatalogId, catalogSections, findCatalogEntry, isCatalogId, webAwesomeCatalog, type WebAwesomeCatalogId, webAwesomeCatalogSections } from './catalog.js';
 
 const app = document.querySelector<HTMLElement>('#app');
 if (!app) throw new Error('Missing #app');
@@ -56,6 +55,9 @@ const actionLog = signal('Catalog ready');
 const darkTheme = signal(false);
 const increasedContrast = signal(false);
 const reducedMotion = signal(false);
+const webAwesomeReady = signal(false);
+let webAwesomeDemos: Record<WebAwesomeCatalogId, () => ReturnType<typeof ToolbarDemo>> | undefined;
+let webAwesomeLoad: Promise<void> | undefined;
 
 const icon = (node: Parameters<typeof LucideIcon>[0]['icon'], name: string) => <LucideIcon icon={node} name={name} />;
 const button = (label: string, action: string) => <button type="button" class="demo-button" data-action={action}>{label}</button>;
@@ -323,8 +325,7 @@ function LoadingSpinnerDemo() {
   return <div class="demo-spinner-grid" data-demo="loading-spinner"><article><LoadingSpinner label="Loading preview" /><strong>Meaningful</strong><span>Exposes its supplied label</span></article><article><LoadingSpinner /><strong>Decorative</strong><span>Hidden from assistive technology</span></article></div>;
 }
 
-const demos: Record<CatalogId, () => ReturnType<typeof ToolbarDemo>> = {
-  ...webAwesomeComponentDemos,
+const demos: Partial<Record<CatalogId, () => ReturnType<typeof ToolbarDemo>>> = {
   'lucide-icon': LucideIconDemo,
   'webawesome-theme': WebAwesomeThemeDemo,
   toolbar: ToolbarDemo,
@@ -348,8 +349,23 @@ const demos: Record<CatalogId, () => ReturnType<typeof ToolbarDemo>> = {
   'loading-spinner': LoadingSpinnerDemo,
 };
 
+function ensureWebAwesomeDemos(): Promise<void> {
+  webAwesomeLoad ??= import('./webawesome-demos.js').then(({ webAwesomeComponentDemos }) => {
+    webAwesomeDemos = webAwesomeComponentDemos;
+    webAwesomeReady.value = true;
+  });
+  return webAwesomeLoad;
+}
+
 function Stage() {
-  return demos[selectedDemo.value]();
+  const selected = findCatalogEntry(selectedDemo.value)!;
+  const needsWebAwesome = selected.source === 'webawesome' || selected.id === 'webawesome-theme';
+  if (needsWebAwesome && !webAwesomeReady.value) {
+    void ensureWebAwesomeDemos();
+    return <LoadingSpinner label={`Loading ${selected.name} preview`} />;
+  }
+  if (selected.source === 'webawesome') return webAwesomeDemos![selected.id as WebAwesomeCatalogId]();
+  return demos[selectedDemo.value]!();
 }
 
 function DemoRelationships({ entry }: { entry: CatalogEntry }) {
@@ -367,8 +383,10 @@ function DemoRelationships({ entry }: { entry: CatalogEntry }) {
 
 function selectDemo(id: string): void {
   if (!isCatalogId(id)) return;
+  const selected = findCatalogEntry(id)!;
+  if (selected.source === 'webawesome' || selected.id === 'webawesome-theme') void ensureWebAwesomeDemos();
   selectedDemo.value = id;
-  if (findCatalogEntry(id)?.source === 'webawesome') webAwesomeExpanded.value = true;
+  if (selected.source === 'webawesome') webAwesomeExpanded.value = true;
   const url = new URL(location.href);
   url.searchParams.set('component', id);
   history.replaceState(null, '', url);

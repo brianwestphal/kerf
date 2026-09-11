@@ -2,6 +2,21 @@ import { expect, test } from '@playwright/test';
 
 import { catalog, kerfCatalog, webAwesomeCatalog } from '../../ux-demo/catalog.js';
 
+test('loads the Web Awesome specimen bundle only when a matching route needs it', async ({ page }) => {
+  await page.goto('/?component=lucide-icon');
+  await expect(page.locator('[data-demo="lucide-icon"]')).toBeVisible();
+  expect(await page.evaluate(() => performance.getEntriesByType('resource').some((entry) => entry.name.includes('webawesome-demos-')))).toBe(false);
+
+  await page.locator('[data-action="toggle-webawesome-catalog"]').click();
+  await page.locator('[data-item-id="wa-button"]').click();
+  await expect(page.locator('[data-demo="wa-button"]')).toBeVisible();
+  expect(await page.evaluate(() => performance.getEntriesByType('resource').some((entry) => entry.name.includes('webawesome-demos-')))).toBe(true);
+
+  await page.goto('/?component=wa-input');
+  await expect(page.locator('[data-demo="wa-input"]')).toBeVisible();
+  await expect(page.locator('[data-item-id="wa-input"]')).toHaveAttribute('aria-current', 'page');
+});
+
 test('loads component-reachable package CSS through browser subpaths', async ({ page }) => {
   await page.goto('/?component=toolbar');
   await expect(page.locator('[data-component="toolbar"]').first()).toHaveCSS('display', 'grid');

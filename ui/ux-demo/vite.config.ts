@@ -13,5 +13,9 @@ export default defineConfig({
   },
   server: { host: '127.0.0.1', port: 42817, strictPort: true },
   preview: { host: '127.0.0.1', port: 42817, strictPort: true },
-  build: { outDir: '../dist-demo', emptyOutDir: true },
+  build: {
+    outDir: '../dist-demo',
+    emptyOutDir: true,
+    chunkSizeWarningLimit: 800,
+  },
 });

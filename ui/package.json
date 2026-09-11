@@ -175,7 +175,7 @@
   "scripts": {
     "build": "tsup && node ../scripts/clean-dist-output.mjs dist && node scripts/build-browser-entries.mjs",
     "dev": "npm run build && vite --config ux-demo/vite.config.ts",
-    "demo:build": "npm run build && vite build --config ux-demo/vite.config.ts",
+    "demo:build": "npm run build && vite build --config ux-demo/vite.config.ts && node scripts/check-demo-bundle.mjs",
     "demo:serve": "vite preview --config ux-demo/vite.config.ts",
     "lint": "eslint src tests ux-demo --max-warnings 0",
     "typecheck": "node node_modules/typescript7/bin/tsc --noEmit",
