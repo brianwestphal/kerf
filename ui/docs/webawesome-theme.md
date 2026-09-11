@@ -84,6 +84,27 @@ The `pill`, `variant`, `appearance`, and size APIs remain available per
 instance, and applications can override the same `--wa-*` semantic tokens when
 their domain needs a different palette.
 
+## Markdown trust boundary
+
+> **Security:** `wa-markdown` is only appropriate for trusted static Markdown.
+> Do not pass unsanitized user input or any other untrusted Markdown to it.
+
+Web Awesome sends Marked's HTML output directly into the component's light DOM
+without sanitization. Untrusted content can therefore create cross-site
+scripting vulnerabilities. Sanitize content with an appropriate, separately
+maintained HTML sanitization pipeline before it reaches the component, or use a
+renderer whose trust boundary fits the application.
+
+`wa-markdown` is also client-only: it requires the DOM at runtime, cannot render
+during SSR, and should not carry SEO-critical content. All connected instances
+share one mutable Marked instance. Calling `marked.use()` through any instance
+changes shared parser configuration; use `WaMarkdown.updateAll()` deliberately
+when every connected instance should be rerendered. Do not treat per-instance
+configuration as isolated.
+
+The UX catalog specimen intentionally contains only trusted, source-controlled
+static content and labels that constraint next to the rendered output.
+
 ## Customization
 
 Load application overrides after the package theme, or scope them to the

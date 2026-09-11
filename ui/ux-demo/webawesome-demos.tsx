@@ -75,6 +75,12 @@ import { webAwesomeCatalog,type WebAwesomeCatalogId } from './catalog.js';
 
 const demoImage = new URL('./animated-image-demo.gif?no-inline', import.meta.url).href;
 const demoFrame = '<!doctype html><style>body{margin:0;display:grid;min-height:100vh;place-items:center;font:16px system-ui;color:#1d1d1f;background:#f5f5f7}strong{color:#006edc}</style><strong>Zoomable Kerf content</strong>';
+const trustedMarkdownDemo = `## Release ready
+
+Semantic tokens keep **Kerf UI** and Web Awesome visually coherent.
+
+- Independently importable
+- Fully themed`;
 
 type DemoRenderer = () => SafeHtml;
 
@@ -139,12 +145,7 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
   'wa-carousel-item': () => <wa-carousel class="wa-demo-carousel" navigation><wa-carousel-item><div>Focused carousel item</div></wa-carousel-item><wa-carousel-item><div>Neighboring item</div></wa-carousel-item></wa-carousel>,
   'wa-comparison': () => <wa-comparison class="wa-demo-comparison" position="55"><div slot="before">Before</div><div slot="after">After</div></wa-comparison>,
   'wa-icon': () => <div class="wa-demo-row wa-demo-icons"><wa-icon name="circle-question" library="system" label="Help"></wa-icon><wa-icon name="chevron-right" library="system" label="Next"></wa-icon><wa-icon name="play-circle" library="system" label="Play"></wa-icon></div>,
-  'wa-markdown': () => <wa-markdown><script type="text/markdown">## Release ready
-
-Semantic tokens keep **Kerf UI** and Web Awesome visually coherent.
-
-- Independently importable
-- Fully themed</script></wa-markdown>,
+  'wa-markdown': () => <div class="wa-demo-labeled-stack"><span>Trusted static Markdown · client-rendered</span><wa-markdown><script type="text/markdown">{trustedMarkdownDemo}</script></wa-markdown><small>Do not pass unsanitized or untrusted Markdown to this component.</small></div>,
   'wa-qr-code': () => <wa-qr-code value="https://kerfjs.dev" label="Kerf website" size="160"></wa-qr-code>,
   'wa-zoomable-frame': () => <wa-zoomable-frame class="wa-demo-zoomable-frame" srcdoc={demoFrame} zoom="1" loading="eager"></wa-zoomable-frame>,
 

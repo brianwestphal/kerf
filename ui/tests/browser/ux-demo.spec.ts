@@ -128,6 +128,17 @@ test('distinguishes pill status badges from rounded-rectangle tags', async ({ pa
   if (browserName === 'chromium') await page.screenshot({ path: 'test-results/webawesome-tag-wide.png', fullPage: true });
 });
 
+test('labels the Markdown specimen as trusted static client content', async ({ page, browserName }) => {
+  await page.setViewportSize({ width: 1100, height: 760 });
+  await page.goto('/?component=wa-markdown');
+  const demo = page.locator('[data-demo="wa-markdown"]');
+  await expect(demo.getByText('Trusted static Markdown · client-rendered')).toBeVisible();
+  await expect(demo.getByText('Do not pass unsanitized or untrusted Markdown')).toBeVisible();
+  await expect(demo.locator('wa-markdown h2')).toHaveText('Release ready');
+
+  if (browserName === 'chromium') await page.screenshot({ path: 'test-results/webawesome-markdown-trusted-wide.png', fullPage: true });
+});
+
 test('toast specimen creates a visible transient notification', async ({ page, browserName }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/?component=wa-toast');
