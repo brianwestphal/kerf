@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Matched Web Awesome Carousel navigation to Kerf's compact disclosure geometry, using overridable 16px arrows and 7px visible page dots with accessible macOS-sized hit targets.
 - Expanded the Web Awesome Animation UX specimen into an interactive settings panel with preset, easing, timing, playback, transport, lifecycle, and reduced-motion behavior.
 - Fixed the Web Awesome Toast UX specimen to use the component's programmatic stack API, with visible browser coverage and an explicit note about Hot Sheet 2's current custom toast implementation.
 - Made the Web Awesome intersection, mutation, and resize observer UX specimens interactive, with deliberate triggers, visible live-event results, and browser coverage.

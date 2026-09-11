@@ -95,6 +95,10 @@
     --wa-panel-border-radius: var(--wa-border-radius-l);
     --wa-tooltip-background-color: var(--wa-color-neutral-fill-loud);
     --wa-tooltip-content-color: var(--wa-color-neutral-on-loud);
+    --kui-wa-carousel-dot-size: 7px;
+    --kui-wa-carousel-dot-hit-size: 20px;
+    --kui-wa-carousel-control-size: 28px;
+    --kui-wa-carousel-icon-size: 16px;
     --wa-shadow-s: 0 1px 3px rgb(0 0 0 / .14);
     --wa-shadow-m: 0 .35rem 1rem rgb(0 0 0 / .11);
     --wa-shadow-l: 0 .75rem 2rem rgb(0 0 0 / .09);
@@ -116,6 +120,33 @@
   .wa-light .wa-theme-default.wa-invert,
   .wa-light .wa-theme-default .wa-invert {
     color-scheme: dark;
+  }
+
+  wa-carousel::part(navigation-button) {
+    box-sizing: border-box;
+    width: var(--kui-wa-carousel-control-size);
+    height: var(--kui-wa-carousel-control-size);
+    padding: calc((var(--kui-wa-carousel-control-size) - var(--kui-wa-carousel-icon-size)) / 2);
+    font-size: var(--kui-wa-carousel-icon-size);
+  }
+
+  wa-carousel::part(pagination) {
+    gap: 0;
+  }
+
+  wa-carousel::part(pagination-item) {
+    width: var(--kui-wa-carousel-dot-hit-size);
+    height: var(--kui-wa-carousel-dot-hit-size);
+    color: var(--wa-color-neutral-fill-normal);
+    background-color: transparent;
+    background-image: radial-gradient(circle, currentcolor 0 calc(var(--kui-wa-carousel-dot-size) / 2), transparent calc(var(--kui-wa-carousel-dot-size) / 2 + .5px));
+    transform: none;
+  }
+
+  wa-carousel::part(pagination-item-active) {
+    color: var(--wa-form-control-activated-color);
+    background-color: transparent;
+    transform: none;
   }
 }
 

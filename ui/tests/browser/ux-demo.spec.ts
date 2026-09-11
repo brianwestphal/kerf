@@ -118,6 +118,38 @@ test('toast specimen creates a visible transient notification', async ({ page, b
   if (browserName === 'chromium') await page.screenshot({ path: 'test-results/webawesome-toast-open-wide.png', fullPage: true });
 });
 
+test('carousel theme uses compact arrows and seven-pixel visible page dots', async ({ page, browserName }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/?component=wa-carousel');
+  const geometry = await page.locator('[data-demo="wa-carousel"] wa-carousel').evaluate((element) => {
+    const navigation = element.shadowRoot?.querySelector<HTMLElement>('[part~="navigation-button"]');
+    const dot = element.shadowRoot?.querySelector<HTMLElement>('[part~="pagination-item"]');
+    const activeDot = element.shadowRoot?.querySelector<HTMLElement>('[part~="pagination-item-active"]');
+    if (!navigation || !dot || !activeDot) return null;
+    const navigationStyle = window.getComputedStyle(navigation);
+    const dotStyle = window.getComputedStyle(dot);
+    const activeDotStyle = window.getComputedStyle(activeDot);
+    return {
+      navigationWidth: navigationStyle.width,
+      navigationHeight: navigationStyle.height,
+      navigationFontSize: navigationStyle.fontSize,
+      dotWidth: dotStyle.width,
+      dotHeight: dotStyle.height,
+      dotImage: dotStyle.backgroundImage,
+      activeTransform: activeDotStyle.transform,
+      token: window.getComputedStyle(element).getPropertyValue('--kui-wa-carousel-dot-size').trim(),
+    };
+  });
+  expect(geometry).toMatchObject({ navigationWidth: '28px', navigationHeight: '28px', navigationFontSize: '16px', dotWidth: '20px', dotHeight: '20px', activeTransform: 'none', token: '7px' });
+  expect(geometry?.dotImage).toContain('radial-gradient');
+  if (browserName === 'chromium') {
+    await page.screenshot({ path: 'test-results/webawesome-carousel-compact-wide.png', fullPage: true });
+    await page.setViewportSize({ width: 390, height: 844 });
+    await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+    await page.screenshot({ path: 'test-results/webawesome-carousel-compact-narrow.png', fullPage: true });
+  }
+});
+
 test('animation specimen exposes settings, transport, lifecycle, and reduced-motion behavior', async ({ page, browserName }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/?component=wa-animation');

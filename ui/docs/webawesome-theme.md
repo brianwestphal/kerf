@@ -40,6 +40,13 @@ free visual component families through Web Awesome's own styles:
   Observer. Helpers without their own visual chrome naturally inherit only the
   applicable typography and color values.
 
+Carousel navigation follows the same compact geometry as Kerf disclosure
+controls: 16px arrows in 28px controls and 7px visible page dots in 20px
+pointer targets. Override `--kui-wa-carousel-icon-size`,
+`--kui-wa-carousel-control-size`, `--kui-wa-carousel-dot-size`, or
+`--kui-wa-carousel-dot-hit-size` on a carousel or containing scope when a
+product needs different geometry.
+
 The UX catalog includes a focused, addressable specimen for every component in
 this list. Because these are themed ecosystem components rather than
 first-class `@kerfjs/ui` exports, the sidebar keeps them under a collapsible
