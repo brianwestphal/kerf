@@ -88,6 +88,10 @@ test('catalog routes every production component family and supports its stateful
   await expect(page.locator('[data-select-value]')).toHaveText('explicit');
 
   if (browserName === 'chromium') {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.locator('[data-demo="select"]').screenshot({ path: 'test-results/web-awesome-select-wide.png' });
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.screenshot({ path: 'test-results/web-awesome-select-narrow.png', fullPage: true });
     await page.goto('/?component=toolbar');
     await page.setViewportSize({ width: 1440, height: 1100 });
     await page.screenshot({ path: 'test-results/ux-demo-wide.png', fullPage: true });

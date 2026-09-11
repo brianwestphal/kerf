@@ -180,9 +180,9 @@
     "prepublishOnly": "npm run check"
   },
   "peerDependencies": {
-    "@awesome.me/webawesome": "^3.11.0",
+    "@awesome.me/webawesome": "^3.12.0",
     "kerfjs": "^4.0.0",
-    "lucide": "^1.34.0"
+    "lucide": "^1.43.0"
   },
   "peerDependenciesMeta": {
     "@awesome.me/webawesome": {
@@ -190,18 +190,18 @@
     }
   },
   "devDependencies": {
-    "@awesome.me/webawesome": "3.11.0",
+    "@awesome.me/webawesome": "3.12.0",
     "@eslint/js": "^10.0.1",
     "@playwright/test": "^1.59.1",
+    "@types/node": "^22.10.0",
     "@typescript-eslint/eslint-plugin": "^8.65.0",
     "@typescript-eslint/parser": "^8.65.0",
     "@vitest/coverage-v8": "4.1.10",
-    "@types/node": "^22.10.0",
     "esbuild": "^0.25.0",
     "eslint": "^10.8.0",
     "eslint-plugin-simple-import-sort": "^12.1.1",
     "happy-dom": "^20.9.0",
-    "lucide": "1.34.0",
+    "lucide": "1.43.0",
     "tsup": "^8.3.0",
     "typescript": "^6.0.3",
     "typescript7": "npm:typescript@^7.0.2",
