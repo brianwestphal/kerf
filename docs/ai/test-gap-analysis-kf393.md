@@ -64,7 +64,7 @@ finding while in there: the one-shot dedup set is module-level but ids are
 per-mount, so mount #2's *genuine* shift on an id mount #1 already warned for
 was silent forever. KF-394 split the warning predicate from routing and moved
 dedup into the per-mount context; the regression cases remain in
-`kf393-new-code-audit.test.tsx`.
+`list-identity-warning.test.tsx`.
 
 The existing `dev-list-key-warn.internal.test.tsx` asserts "a KEYED list never
 triggers it" — with a keyed list whose source is *stable*. The
@@ -199,10 +199,12 @@ All probed edges are **correct**; pinned asserting:
 
 ## Outcome at the time, with current disposition
 
-- 31 new tests, all asserting (never `.skip`), in
-  `tests/unit/kf393-new-code-audit.test.tsx`: the original defect pins across
-  KF-394/395/396/397 plus the KF-398 diagnostics pin now assert their shipped
-  fixes.
+- 31 new tests, all asserting (never `.skip`), now grouped across
+  `each-options-adversarial.test.tsx`, `list-identity-warning.test.tsx`,
+  `list-row-namespace-contract.test.tsx`, `list-row-region-boundaries.test.tsx`,
+  `list-textarea-sync.test.tsx`, and `morph-focus-edges.test.tsx`: the original
+  defect pins across KF-394/395/396/397 plus the KF-398 diagnostics pin now
+  assert their shipped fixes.
 - Index rows FC-T22…FC-T25, FC-RN13e, FC-SV7 added and FC-DW11 amended in
   `docs/14-feature-coverage.md` (166 rows, gate green).
 - Tickets filed: KF-394 (high), KF-395 (high), KF-396 (high), KF-397,

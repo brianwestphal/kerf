@@ -1,18 +1,18 @@
 /**
  * Unit tests for the structured `Segment` representation that backs
  * `SafeHtml`. These exercise the helpers in isolation; their integration
- * with `mount()` is covered by `mount.test.ts`.
+ * with `mount()` is covered by `mount-rendering.test.ts`.
  */
 
-import { describe, expect, it } from 'vitest';
+import { describe,expect,it } from 'vitest';
 
 import {
-  collectLists,
-  flatten,
-  flattenWithoutListItems,
-  mergeChildSegments,
-  type Segment,
-  wrapWithTags,
+collectLists,
+flatten,
+flattenWithoutListItems,
+mergeChildSegments,
+type Segment,
+wrapWithTags,
 } from '../../src/segment.js';
 
 describe('flatten()', () => {

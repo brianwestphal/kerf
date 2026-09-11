@@ -146,7 +146,7 @@ happy-dom implements `<dialog>` (`showModal` / `close` / `.open` / the `cancel`
 event) but **not** the Popover API, and neither engine models the real top layer /
 `inert` / `::backdrop`. So:
 
-- **Unit tests** (`tests/unit/overlay.test.ts` › "native top-layer backing") assert
+- **Unit tests** (`tests/unit/overlay-native.test.ts` › "native top-layer backing") assert
   the **wiring**, which is engine-independent: the element type (`<dialog>` vs a
   `[popover]` `<div>`), that it opens (`.open` / `showPopover` called), promise
   resolution through the native element, the `cancel`-event Escape path (dismiss

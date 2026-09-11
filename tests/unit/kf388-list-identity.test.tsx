@@ -22,12 +22,12 @@
  * NOT fixed here, deliberately (tracked separately): the id shift still costs
  * the sibling list its row DOM identity, because the rebuild is a genuine
  * rebuild. Those cases are correct-but-lossy and pinned in
- * `kf387-seam-sweep.test.tsx`.
+ * `list-identity-shift.test.tsx`.
  */
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach,beforeEach,describe,expect,it } from 'vitest';
 
 import { arraySignal } from '../../src/array-signal.js';
-import { batch, each, mount, signal } from '../../src/index.js';
+import { batch,each,mount,signal } from '../../src/index.js';
 
 let root: HTMLElement;
 

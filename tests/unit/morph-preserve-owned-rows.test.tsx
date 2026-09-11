@@ -23,9 +23,9 @@
  * KF-385 is fixed, while KF-386 is pinned as an intentional boundary. The
  * tests below assert both current outcomes explicitly.
  */
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach,beforeEach,describe,expect,it } from 'vitest';
 
-import { each, mount, signal } from '../../src/index.js';
+import { each,mount,signal } from '../../src/index.js';
 
 let root: HTMLElement;
 
@@ -160,7 +160,7 @@ describe('KF-384: data-morph-preserve nodes interleaved with owned each() rows',
 
   it('KF-385: a node between marker and rows does not let a trailing sibling wedge in', () => {
     // The interrupted-run counterpart of
-    // `tests/unit/kf380-interaction-matrix.test.tsx` › "KF-382: a trailing
+    // `tests/unit/morph-owned-row-interactions.test.tsx` › "KF-382: a trailing
     // template sibling cannot wedge between the marker and its rows" — that
     // test only ever exercised an uninterrupted run, which is why it passed
     // straight through this bug. Interposing ANY non-owned node used to

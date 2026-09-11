@@ -11,7 +11,7 @@
  *  - Collects every `*.test.ts`, `*.test.tsx`, `*.spec.ts`, `*.spec.tsx`.
  *  - Skips files starting with `_` (local probes / scratchpads).
  *  - Reads `docs/ai/code-summary.md` and looks for each test's BASENAME
- *    (e.g. `array-signal.test.ts`) anywhere in the file. We don't enforce
+ *    (e.g. `array-signal-api.test.ts`) anywhere in the file. We don't enforce
  *    a specific section — the entry just has to be mentioned.
  *  - On mismatch: prints the missing files and exits with status 1.
  *

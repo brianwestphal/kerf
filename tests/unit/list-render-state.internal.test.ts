@@ -5,12 +5,12 @@
  * inside `each.ts` (unreachable through `mount()` by construction; reachable
  * — and now pinned — as a pure function). The side-effectful reasons
  * (cachekey-drift, render-threw) stay covered by the transition-matrix suite
- * in `tests/unit/array-signal.test.ts`.
+ * in `tests/unit/array-signal-transition-matrix.test.ts`.
  */
 
-import { describe, expect, it } from 'vitest';
+import { describe,expect,it } from 'vitest';
 
-import { decideListPath, deriveListRenderState } from '../../src/list-render-state.js';
+import { decideListPath,deriveListRenderState } from '../../src/list-render-state.js';
 
 describe('deriveListRenderState', () => {
   it('maps the tracked binding count onto the three dispatch states', () => {

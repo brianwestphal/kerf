@@ -1,7 +1,7 @@
 /**
  * Direct unit coverage for `carryOrRewireRowBindings` (KF-347) — the
  * carry-vs-rewire decision the in-place row-update paths delegate to. The
- * end-to-end behavior is pinned in `bindings.test.ts` ("in-place updates
+ * end-to-end behavior is pinned in `bindings-mixed-content-and-rewire.test.ts` ("in-place updates
  * re-wire changed binding instances"); this file covers the argument shapes
  * the live call sites can't produce — both sides undefined, and the
  * defensive `undefined` arms of the length normalization (BoundItem.bindings
@@ -9,9 +9,9 @@
  * import → `.internal.test.ts` so the dist-full suite excludes it.
  */
 
-import { describe, expect, it } from 'vitest';
+import { describe,expect,it } from 'vitest';
 
-import { type Binding, carryOrRewireRowBindings } from '../../src/bindings.js';
+import { type Binding,carryOrRewireRowBindings } from '../../src/bindings.js';
 import { signal } from '../../src/reactive.js';
 
 describe('carryOrRewireRowBindings — argument-shape matrix', () => {

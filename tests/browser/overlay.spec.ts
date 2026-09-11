@@ -3,7 +3,7 @@
  * model truthfully: the focus TRAP (native Tab / Shift+Tab order + wrap-around),
  * focus restoration on close, and real outside-click dismissal — across
  * Chromium / Firefox / WebKit. The DOM-lifecycle + dismiss-trigger logic is
- * unit-tested in `tests/unit/overlay.test.ts`.
+ * unit-tested in the behavior-focused `tests/unit/overlay-*.test.ts` suites.
  */
 import { expect, type Page,test } from '@playwright/test';
 

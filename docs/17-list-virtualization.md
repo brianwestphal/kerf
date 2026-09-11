@@ -164,11 +164,11 @@ This is a design-then-build feature; it lands in two shippable increments.
    lookup and padding derived from the prefix sum; `number` stays an O(1) fast
    path; `(item, index) => number` declared heights build the prefix sum
    (rebuilt only when the source changes, not per scroll frame). No layout reads,
-   no observers — all of it tested in happy-dom (`tests/unit/list.test.ts` ›
+   no observers — all of it tested in happy-dom (`tests/unit/list-virtualization.test.ts` ›
    "variable-height virtualization").
 2. **Tier 3 + the optional helper — shipped.** `{ estimate }` with the imperative
    `setHeight` channel and the scroll-anchor correction are unit-tested with
-   synthetic heights (`tests/unit/list.test.ts` › "measured-height virtualization"),
+   synthetic heights (`tests/unit/list-measured-virtualization.test.ts` › "measured-height virtualization"),
    and the separable `observeRowHeights` helper's forwarding is unit-tested via a
    stubbed `ResizeObserver` (its real-layout behavior belongs to the Playwright
    suite).
@@ -366,7 +366,7 @@ regardless of engine.
 ### 17.11.4 Testability
 
 happy-dom does not honor `content-visibility` (it does no layout), so unit tests
-(`tests/unit/list.test.ts` › "content-visibility virtualization mode") assert the
+(`tests/unit/list-virtualization-options.test.ts` › "content-visibility virtualization mode") assert the
 **correctness** surface, which is engine-independent: every row is present in the
 DOM, `content-visibility: auto` and the right `contain-intrinsic-size` are set per
 row (fixed / declared / estimate), `setHeight` and `observeRowHeights` are inert,

@@ -63,7 +63,7 @@ test had ever crossed) each yielded a defect immediately.
   rebuild the sibling list in both directions (content correct, identity/focus
   lost, `KERF_DEV_WARN_LIST_REBIND` blind to it — it routes through classify,
   not self-heal); nested `each()` drifts the counter via cache hits. Pinned in
-  `kf387-seam-sweep.test.tsx` › "each() list identity across a varying call
+  `list-identity-shift.test.tsx` › "each() list identity across a varying call
   count".
 - **KF-389 (high)** — `each()` rows inside `<svg>` lose the SVG namespace on
   every post-first-render parse (granular insert, snapshot append, structural
@@ -147,9 +147,12 @@ Read every `KERF_DEV_WARN_*` message against its current trigger:
 
 - 22 new tests: 8 in `tests/unit/kf387-html-seam.test.tsx` (all asserting;
   load-bearing verified — 5/8 fail on pre-KF-377 morph/mount, the unit-move
-  test fails on pre-KF-382 morph), 14 in `tests/unit/kf387-seam-sweep.test.tsx`
-  (7 initially-correct claims plus 7 regressions across KF-388/389/390/391;
-  all now assert the shipped fixes or documented residual boundary).
+  test fails on pre-KF-382 morph), plus 14 behavior-focused tests across
+  `delegate-morph-interaction.test.tsx`, `binding-morph-skip-interaction.test.tsx`,
+  `list-form-state-interaction.test.tsx`, `list-svg-interaction.test.tsx`,
+  `list-identity-shift.test.tsx`, and `list-table-parsing.test.tsx` (7
+  initially-correct claims plus 7 regressions across KF-388/389/390/391; all
+  now assert the shipped fixes or documented residual boundary).
 - Index rows FC-T20, FC-T21, FC-RN13d, FC-B24, FC-EV8, FC-H10, FC-SV6 in
   `docs/14-feature-coverage.md` (157 rows, gate green).
 - Tickets filed: KF-388 (high), KF-389 (high), KF-390, KF-391.

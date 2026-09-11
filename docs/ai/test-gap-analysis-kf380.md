@@ -6,8 +6,10 @@
 > probe: KF-388/KF-389/KF-390/KF-391) and adds the seam inventory + ranking.
 
 Why KF-374 and KF-377 shipped under the 100%-line / 99%-branch coverage gate,
-which interaction axes were untested, and what the KF-380 interaction-matrix
-suite (`tests/unit/kf380-interaction-matrix.test.tsx`) now covers. AI-facing;
+which interaction axes were untested, and what the KF-380 interaction matrix,
+now grouped into `morph-binding-interactions.test.tsx`,
+`row-binding-surrounds.test.tsx`, `morph-owned-row-interactions.test.tsx`, and
+`render-transition-matrix.test.tsx`, covers. AI-facing;
 written 2026-07-24 under KF-380 (test-and-analysis only — runtime frozen).
 
 ## Why the suite missed both bugs
@@ -64,23 +66,23 @@ asserted, neighbors open; "Gap" = no asserting test.
 
 | # | Interaction / transition | Pre-380 | Now | Where |
 | --- | --- | --- | --- | --- |
-| 1 | Conditional element sibling before the **list marker inside the same parent** (comment shift — elements-only lookahead can't protect it) | Gap | **Bug found and fixed — KF-381 shape 1**, asserting regression test | `kf380-interaction-matrix` |
-| 2 | **Same-tag** conditional sibling before the list container (positional hijack strands owned rows) | Gap | **Bug found and fixed — KF-381 shape 2**, asserting regression test | `kf380-interaction-matrix` |
-| 3 | Conditional sibling removed before a **bound-hole element** (KF-374 × KF-377 cross: identity + statics + live binding across cycles) | Gap | Covered | `kf380-interaction-matrix` |
-| 4 | Conditional element sharing a parent with a **global text-hole marker + static tail** (marker rebuilt, re-wire with current value) | Gap | Covered | `kf380-interaction-matrix` |
-| 5 | arraySignal **granular patches after a self-heal rebuild** (bound → rebuilt → granular again) | Gap (self-heal tested with plain array only) | Covered | `kf380-interaction-matrix` |
-| 6 | **Empty-binding list shifted by the lookahead, then refilled** (empty ↔ morph-move ↔ refill) | Gap | Covered | `kf380-interaction-matrix` |
-| 7 | Row-scoped mixed-content holes + external row signal across surrounds toggles + granular re-wire | Partial (each axis alone) | Covered | `kf380-interaction-matrix` |
-| 8 | Row select-binding across morph toggle + granular remove (render count pinned) | Partial | Covered | `kf380-interaction-matrix` |
-| 9 | **Multiple** leading conditionals removed in one render (multi-slot lookahead scan) | Gap | Covered | `kf380-interaction-matrix` |
-| 10 | Conditional **between two lists** (second list's container shift with two live bindings) | Gap | Covered | `kf380-interaction-matrix` |
-| 11 | **Container tag swap** with the list present on both sides (ul ↔ ol on the container itself, not an ancestor) | Gap | Covered | `kf380-interaction-matrix` |
-| 12 | Long adversarial walk: surrounds morph × granular ops × cacheKey selection × empty/refill in one sequence | Gap | Covered | `kf380-interaction-matrix` |
-| 13 | Kitchen-sink tree (leading + trailing conditionals, hole element, list) with full-state assertions per step | Gap | Covered | `kf380-interaction-matrix` |
-| 14 | Bound attr + text holes on the same shifted element (bound-attr strip + re-wire after a lookahead move) | Partial (re-wire tested without a shift) | Covered | `kf380-interaction-matrix` |
-| 15 | Mixed content orderings under repeated morphs (lead/trail/both/separator) | Covered (KF-374 fix) | Covered | `bindings.test.ts` "mixed content" |
+| 1 | Conditional element sibling before the **list marker inside the same parent** (comment shift — elements-only lookahead can't protect it) | Gap | **Bug found and fixed — KF-381 shape 1**, asserting regression test | `morph-owned-row-interactions.test.tsx` |
+| 2 | **Same-tag** conditional sibling before the list container (positional hijack strands owned rows) | Gap | **Bug found and fixed — KF-381 shape 2**, asserting regression test | `morph-owned-row-interactions.test.tsx` |
+| 3 | Conditional sibling removed before a **bound-hole element** (KF-374 × KF-377 cross: identity + statics + live binding across cycles) | Gap | Covered | `morph-binding-interactions.test.tsx` |
+| 4 | Conditional element sharing a parent with a **global text-hole marker + static tail** (marker rebuilt, re-wire with current value) | Gap | Covered | `morph-binding-interactions.test.tsx` |
+| 5 | arraySignal **granular patches after a self-heal rebuild** (bound → rebuilt → granular again) | Gap (self-heal tested with plain array only) | Covered | `morph-owned-row-interactions.test.tsx` |
+| 6 | **Empty-binding list shifted by the lookahead, then refilled** (empty ↔ morph-move ↔ refill) | Gap | Covered | `morph-owned-row-interactions.test.tsx` |
+| 7 | Row-scoped mixed-content holes + external row signal across surrounds toggles + granular re-wire | Partial (each axis alone) | Covered | `row-binding-surrounds.test.tsx` |
+| 8 | Row select-binding across morph toggle + granular remove (render count pinned) | Partial | Covered | `row-binding-surrounds.test.tsx` |
+| 9 | **Multiple** leading conditionals removed in one render (multi-slot lookahead scan) | Gap | Covered | `morph-owned-row-interactions.test.tsx` |
+| 10 | Conditional **between two lists** (second list's container shift with two live bindings) | Gap | Covered | `morph-owned-row-interactions.test.tsx` |
+| 11 | **Container tag swap** with the list present on both sides (ul ↔ ol on the container itself, not an ancestor) | Gap | Covered | `morph-owned-row-interactions.test.tsx` |
+| 12 | Long adversarial walk: surrounds morph × granular ops × cacheKey selection × empty/refill in one sequence | Gap | Covered | `render-transition-matrix.test.tsx` |
+| 13 | Kitchen-sink tree (leading + trailing conditionals, hole element, list) with full-state assertions per step | Gap | Covered | `render-transition-matrix.test.tsx` |
+| 14 | Bound attr + text holes on the same shifted element (bound-attr strip + re-wire after a lookahead move) | Partial (re-wire tested without a shift) | Covered | `morph-binding-interactions.test.tsx` |
+| 15 | Mixed content orderings under repeated morphs (lead/trail/both/separator) | Covered (KF-374 fix) | Covered | `bindings-mixed-content-and-rewire.test.ts` "mixed content" |
 | 16 | Direct sibling / nested / trailing conditionals around a list; `''` + `null` branches; ancestor-tag-swap self-heal | Covered (KF-377 fix) | Covered | `kf377-conditional-sibling-before-each` |
-| 17 | Reconciler state matrix without surrounds changes (granular ↔ snapshot ↔ empty ↔ drift) | Covered | Covered | `array-signal.test.ts` adversarial suite |
+| 17 | Reconciler state matrix without surrounds changes (granular ↔ snapshot ↔ empty ↔ drift) | Covered | Covered | `array-signal-transition-matrix.test.ts` adversarial suite |
 
 Remaining open (candidates for a follow-up after KF-381): a conditional
 *text* node (not element) before a marker; nested `each()` inside a shifted
@@ -98,7 +100,7 @@ rides the older element lookahead and passes on both. The one still open is
 `data-morph-preserve`d siblings interleaved with owned rows during a shift.
 
 **Update (KF-384) — all four now closed.** The `data-morph-preserve` × owned-row
-sweep landed in `tests/unit/kf384-morph-preserve-interaction.test.tsx`
+sweep landed in `tests/unit/morph-preserve-owned-rows.test.tsx`
 (FC-T18), and it was the highest-yield of the four: two of its five shapes were
 **broken, not merely untested**, which is the outcome this whole analysis
 predicted for cross-subsystem seams.
@@ -127,8 +129,11 @@ container-key workaround also protects against the list flavor.
 
 ## Outcome
 
-- 14 new tests, all now asserting the shipped behavior, in
-  `tests/unit/kf380-interaction-matrix.test.tsx`; index rows FC-T9…FC-T12 and
+- 14 new tests, all now asserting the shipped behavior, grouped across
+  `tests/unit/morph-binding-interactions.test.tsx`,
+  `tests/unit/row-binding-surrounds.test.tsx`,
+  `tests/unit/morph-owned-row-interactions.test.tsx`, and
+  `tests/unit/render-transition-matrix.test.tsx`; index rows FC-T9…FC-T12 and
   FC-B22/FC-B23 in `docs/14-feature-coverage.md`.
 - **KF-381 filed**: stranded `each()` rows duplicate when a conditional
   sibling shares (shape 1) or shadows (shape 2) the list container. Both are

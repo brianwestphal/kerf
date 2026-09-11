@@ -1,7 +1,7 @@
 /**
  * Real-browser spec for `kerfjs/list` virtualization — real layout (clientHeight
  * / scrollTop) and real scroll events, which happy-dom can't model. The keyed
- * reconcile + per-row reactivity are unit-tested in `tests/unit/list.test.ts`.
+ * reconcile + per-row reactivity are unit-tested in `tests/unit/list-core.test.ts`.
  */
 import { expect, test } from '@playwright/test';
 
