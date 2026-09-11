@@ -8,17 +8,14 @@
  *
  *  - options-API adversarial probes (empty options, colliding keys, mutation,
  *    SSR, `html` templates, multi-mount, later-render duplicates);
- *  - the identity-shift warning's false positives — pinned as KNOWN BUG KF-394;
- *  - the marker-comment key injection — pinned as KNOWN BUG KF-395;
- *  - the row-structure tag check × SVG cross — pinned as KNOWN BUG KF-396;
- *  - the textarea text-content fast path's missing form-state sync — pinned as
- *    KNOWN BUG KF-397;
+ *  - the identity-shift warning's false positives — fixed by KF-394;
+ *  - the marker-comment key injection — rejected by KF-395 validation;
+ *  - the row-structure tag check × SVG cross — fixed by KF-396;
+ *  - the textarea text-content fast path's form-state sync — fixed by KF-397;
  *  - whole-morph focus capture/restore edges and row-region bounds — all
  *    correct, pinned asserting.
  *
- * Every KNOWN BUG test ASSERTS current behavior (never `.skip`), so it fails
- * loudly in either direction of change and flips to the correct assertion when
- * its ticket lands.
+ * Every regression test asserts the shipped behavior (never `.skip`).
  */
 import { afterEach, beforeEach, describe, expect, it, type MockInstance, vi } from 'vitest';
 
@@ -232,7 +229,7 @@ describe('KF-393: each() options API adversarial probes', () => {
   });
 });
 
-describe('KF-393: list-key marker injection (KNOWN BUG KF-395)', () => {
+describe('KF-393: list-key marker injection is rejected (KF-395)', () => {
   it('a key containing --> is rejected before anything reaches the DOM (KF-395)', () => {
     // The key lands verbatim inside <!--kf-list:{id}-->, so a comment
     // terminator used to end the marker early: the rest of the key became LIVE
@@ -345,7 +342,7 @@ describe('KF-393: identity-shift warning fires only on a real shift (KF-394)', (
   });
 });
 
-describe('KF-393: row-structure tag check × SVG rows (KNOWN BUG KF-396)', () => {
+describe('KF-393: row-structure tag check × SVG rows (KF-396)', () => {
   it('an SVG row with an apostrophe in an attribute mounts and reconciles (KF-396)', () => {
     // The serialization mismatch is what reaches the fallback re-parse at all:
     // kerf emits `&#39;`, serializers emit a raw apostrophe. That re-parse now
@@ -407,9 +404,8 @@ describe('KF-393: textarea text fast path form-state sync (KF-397)', () => {
     // its child text, so patching that text must carry the property — the morph
     // route already did, which made behavior depend on the internal route.
     // A textarea's value lives in that text, and once the control is dirty the
-    // property is detached — so the visible value stays the user's old text
-    // while the DOM text (and the app's model) say otherwise. Flip the value
-    // assertion to 'two' when KF-397 lands.
+    // property is detached. The fast path now carries the property so visible
+    // state follows the DOM text and the app's model.
     const rows = arraySignal([{ id: 'a', v: 'one' }]);
     const dispose = mount(root, () => (
       <div>{each(rows, (r) => <textarea data-key={r.id}>{r.v}</textarea>)}</div>

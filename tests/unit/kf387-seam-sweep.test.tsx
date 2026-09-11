@@ -4,19 +4,15 @@
  *
  * Each describe below is one seam from the KF-387 seam inventory
  * (docs/ai/test-gap-analysis-kf387.md), probed through the public API only.
- * Four seams turned out to be broken, not merely untested; their current
- * behavior is pinned ASSERTING (never `.skip`) with a `KNOWN BUG KF-NNN`
- * comment, so the assertions flip loudly when the fix lands:
+ * Four seams turned out to be broken, not merely untested. Their fixes have
+ * shipped, and the tests below now assert the corrected behavior:
  *
- *   - KF-388 — each() list identity is its call-order index: a conditional
- *     each() shifts sibling list ids (silent rebuild; a batched granular
- *     patch renders the WRONG list's rows).
- *   - KF-389 — each() rows inside <svg> lose the SVG namespace on every
- *     post-first-render parse.
- *   - KF-390 — the attribute-only row fast path skips form-state property
- *     sync (dirty checkbox/input rows go visibly stale).
- *   - KF-391 — each() of <tr> directly under <table> silently misbinds
- *     (parser-inserted tbody), duplicating rows.
+ *   - KF-388 — wrong-list patch routing is fixed; an unkeyed call-order shift
+ *     still has the documented cost of rebuilding row identity.
+ *   - KF-389 — each() rows inside <svg> keep their namespace on every parse.
+ *   - KF-390 — the attribute-only row fast path synchronizes form properties.
+ *   - KF-391 — each() of <tr> directly under <table> fails actionably when the
+ *     parser inserts a tbody, rather than silently misbinding and duplicating.
  *
  * The rest pin documented claims verified true by execution (the KF-383
  * lesson: run the claim, don't read the code).
@@ -318,13 +314,11 @@ describe('KF-387 seam: each() list identity across a varying call count', () => 
     dispose();
   });
 
-  it('an unbatched conditional each() toggle keeps content correct but silently rebuilds the sibling list', () => {
-    // KNOWN BUG KF-388 shape B: content survives (the id-shifted list looks
-    // like 100% item turnover to the snapshot classify), but row identity is
-    // lost in BOTH toggle directions and no dev warning fires — even
-    // KERF_DEV_WARN_LIST_REBIND is blind, because the rebuild routes through
-    // the ordinary classify pass, not the self-heal. When KF-388 lands the
-    // identity assertions should flip to `toBe(...)`.
+  it('an unkeyed identity shift keeps content correct but rebuilds the sibling list', () => {
+    // The wrong-list routing defect is fixed: content always comes from B.
+    // This unkeyed call-order identity shift still deliberately costs a
+    // snapshot rebuild in BOTH toggle directions. Key the list when preserving
+    // row identity (and therefore focus/scroll/IME state) matters.
     const cond = signal(true);
     const a = A_ROWS();
     const b = B_ROWS();
@@ -337,7 +331,8 @@ describe('KF-387 seam: each() list identity across a varying call count', () => 
     const b1 = root.querySelector('ul.b li[data-key="b1"]');
     cond.value = false;
     expect(bLabels()).toEqual(['B1', 'B2']); // content correct
-    // KNOWN BUG KF-388: rebuilt from scratch — focus/scroll/IME on B's rows are lost.
+    // Documented unkeyed-list boundary: rebuilt from scratch, so row-local
+    // focus/scroll/IME state is lost even though routing and content are right.
     expect(root.querySelector('ul.b li[data-key="b1"]')).not.toBe(b1);
     const b1After = root.querySelector('ul.b li[data-key="b1"]');
     cond.value = true; // return direction shifts the id back — rebuilt AGAIN

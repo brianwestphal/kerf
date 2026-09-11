@@ -20,9 +20,10 @@
  * granular ↔ snapshot ↔ self-heal reconciler transitions interleaved with
  * surrounds morphs.
  *
- * Two tests are `.skip`ped: they pin real bugs found by this matrix (KF-381 —
- * stranded owned rows duplicate when a conditional sibling shares or shadows
- * the list container). Un-skip them when KF-381 lands.
+ * Two tests originally pinned real bugs found by this matrix (KF-381 —
+ * stranded owned rows duplicated when a conditional sibling shared or
+ * shadowed the list container). Both fixes have shipped; every test in this
+ * matrix now runs and asserts the corrected behavior.
  */
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 

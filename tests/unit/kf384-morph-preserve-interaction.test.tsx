@@ -10,20 +10,18 @@
  * (2.6), and `mount()`'s stale-binding self-heal, which removes still-live
  * rows. Nothing previously tested them together.
  *
- * The sweep found two real defects, filed rather than fixed (this is a
- * test-and-analysis ticket; runtime is frozen):
+ * The sweep found two important boundary cases:
  *
  *   - **KF-385** — a non-owned node between the marker and its rows truncates
  *     the 2.6 run collector, so the marker moves alone and a trailing template
  *     sibling wedges in ahead of the rows. This is precisely the failure the
  *     unit-move exists to prevent.
- *   - **KF-386** — a preserved node inside a container that gets rebuilt is
- *     destroyed with the container. It is consumer-owned, so nothing
- *     re-creates it: silent, permanent loss.
+ *   - **KF-386** — a preserved node inside a container that gets rebuilt goes
+ *     with the container. This was resolved as the documented same-level
+ *     boundary of `data-morph-preserve`, not as a list-specific defect.
  *
- * Both are pinned below asserting CURRENT behavior with `KNOWN BUG` comments.
- * When either is fixed, its assertion flips and the test must be updated —
- * that is the intent.
+ * KF-385 is fixed, while KF-386 is pinned as an intentional boundary. The
+ * tests below assert both current outcomes explicitly.
  */
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
@@ -153,7 +151,8 @@ describe('KF-384: data-morph-preserve nodes interleaved with owned each() rows',
     // Rows recover…
     expect(Array.from(root.querySelectorAll('li[data-key]')).map((l) => l.textContent))
       .toEqual(['A', 'B']);
-    // …the preserved node does not. KNOWN BUG (KF-386) — flip when fixed.
+    // …the preserved node does not: this is the documented same-level
+    // boundary of data-morph-preserve, not an outstanding bug.
     expect(root.contains(preserved)).toBe(false);
     expect(root.querySelectorAll('.pres').length).toBe(0);
     dispose();

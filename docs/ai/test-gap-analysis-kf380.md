@@ -64,8 +64,8 @@ asserted, neighbors open; "Gap" = no asserting test.
 
 | # | Interaction / transition | Pre-380 | Now | Where |
 | --- | --- | --- | --- | --- |
-| 1 | Conditional element sibling before the **list marker inside the same parent** (comment shift — elements-only lookahead can't protect it) | Gap | **Bug found — KF-381 shape 1**, pinned `.skip` | `kf380-interaction-matrix` |
-| 2 | **Same-tag** conditional sibling before the list container (positional hijack strands owned rows) | Gap | **Bug found — KF-381 shape 2**, pinned `.skip` | `kf380-interaction-matrix` |
+| 1 | Conditional element sibling before the **list marker inside the same parent** (comment shift — elements-only lookahead can't protect it) | Gap | **Bug found and fixed — KF-381 shape 1**, asserting regression test | `kf380-interaction-matrix` |
+| 2 | **Same-tag** conditional sibling before the list container (positional hijack strands owned rows) | Gap | **Bug found and fixed — KF-381 shape 2**, asserting regression test | `kf380-interaction-matrix` |
 | 3 | Conditional sibling removed before a **bound-hole element** (KF-374 × KF-377 cross: identity + statics + live binding across cycles) | Gap | Covered | `kf380-interaction-matrix` |
 | 4 | Conditional element sharing a parent with a **global text-hole marker + static tail** (marker rebuilt, re-wire with current value) | Gap | Covered | `kf380-interaction-matrix` |
 | 5 | arraySignal **granular patches after a self-heal rebuild** (bound → rebuilt → granular again) | Gap (self-heal tested with plain array only) | Covered | `kf380-interaction-matrix` |
@@ -127,7 +127,7 @@ container-key workaround also protects against the list flavor.
 
 ## Outcome
 
-- 14 new tests (12 asserting, 2 `.skip` known-bug pins) in
+- 14 new tests, all now asserting the shipped behavior, in
   `tests/unit/kf380-interaction-matrix.test.tsx`; index rows FC-T9…FC-T12 and
   FC-B22/FC-B23 in `docs/14-feature-coverage.md`.
 - **KF-381 filed**: stranded `each()` rows duplicate when a conditional

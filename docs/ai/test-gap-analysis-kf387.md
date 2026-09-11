@@ -12,7 +12,7 @@ next question: **is that seam uniquely fragile, or just the only one anyone
 swept?** AI-facing; written 2026-07-24 under KF-387 (test-and-analysis only —
 runtime frozen; every defect filed as its own ticket).
 
-## The answer: it was just the only one swept
+## The answer at audit time: it was just the only one swept
 
 Four previously-unswept seams were probed; **four new defects** came out of
 three of them on the first pass (KF-388, KF-389, KF-390, KF-391) — including
@@ -23,6 +23,15 @@ exactly: defects live wherever one subsystem's **template/live asymmetry**
 (live-only nodes, template-only markers, parse-context differences, implicit
 identity) is walked over by another subsystem that doesn't know about it.
 
+**Current status:** all four defects found by this sweep have shipped fixes.
+KF-388 prevents a patch queue from routing into another list's binding; an
+unkeyed list whose call-order identity changes may still rebuild, by design,
+so callers that need row identity across the shift must provide `{ key }`.
+KF-389 preserves foreign-content namespaces, KF-390 synchronizes form
+properties on the attribute fast path, and KF-391 rejects parser-restructured
+table rows with an actionable error. The table and defect descriptions below
+preserve what the sweep found; they do not describe outstanding bugs.
+
 ## Seam inventory + ranking
 
 Ranked by how much template/live asymmetry crosses the seam. "Swept" = has an
@@ -31,9 +40,9 @@ adversarial multi-step suite after this ticket.
 | # | Seam | Asymmetry crossing it | Verdict |
 | --- | --- | --- | --- |
 | 1 | morph × mount × list-reconcile × bindings | live-only rows + inserted text nodes vs. marker-only templates | Swept (KF-380/KF-384); all known defects fixed |
-| 2 | **`each()` identity × varying call count** (conditional `each()`, nested `each()` in rows) | a list's identity is the IMPLICIT call-order index; caches / bindingCounts / bindings all assume it stable | **BROKEN — KF-388** (wrong-list granular patches; silent sibling rebuild; nested-each counter drift). The "unnamed implicit concept" pattern again: KF-385 named a list's *extent* (`afterListRegion()`); nothing names a list's *identity* |
-| 3 | **row re-parse × parse context** (SVG namespace, table foster-parenting) | first-render rows parse inside the real container's context; every later parse happens in a detached HTML `<template>` with no context | **BROKEN twice — KF-389** (SVG rows come back HTML-namespaced) and **KF-391** (`<tr>` under `<table>` foster-parents a tbody, misbinding silently past the KF-103 guard) |
-| 4 | **form-state sync × list fast paths** | the property/attribute detachment (dirty controls) is compensated by `syncFormProp` in exactly two writers; the KF-198 fast path is a third writer | **BROKEN — KF-390** (attr-only fast path mutates raw; dirty rows go visibly stale; morph route behaves) |
+| 2 | **`each()` identity × varying call count** (conditional `each()`, nested `each()` in rows) | a list's identity is the IMPLICIT call-order index; caches / bindingCounts / bindings all assume it stable | **Found broken; routing fixed by KF-388.** Wrong-list granular patches are prevented. An unkeyed identity shift still deliberately rebuilds; `{ key }` preserves identity |
+| 3 | **row re-parse × parse context** (SVG namespace, table foster-parenting) | first-render rows parse inside the real container's context; every later parse happens in a detached HTML `<template>` with no context | **Found broken twice; fixed by KF-389/KF-391.** SVG rows parse in namespace context, and unsupported implicit-`tbody` restructuring throws actionably |
+| 4 | **form-state sync × list fast paths** | the property/attribute detachment (dirty controls) is compensated by `syncFormProp` in exactly two writers; the KF-198 fast path is a third writer | **Found broken; fixed by KF-390.** The attribute-only fast path now carries form properties just like the morph route |
 | 5 | `html` tagged template × everything | same machinery as JSX, but its own chunk/marker-injection front-end; had never seen a single structural-shift shape | Swept — **no defects found**; 8 round-trip tests pin the shared-machinery claim (`kf387-html-seam.test.tsx`) |
 | 6 | bindings × `data-morph-skip` | markers inside a subtree the morph never visits, re-wired by a pass that visits everything | Swept — correct; pinned |
 | 7 | delegate × morph node replacement/moves | listeners on the stable root vs. rebuilt/moved descendants | Swept — correct; pinned (rebuild + lookahead-move + both directions) |
@@ -44,7 +53,7 @@ The severity gradient tracks the asymmetry gradient almost perfectly. Seams 8–
 (no live-only state crossing) yielded nothing; seams 2–4 (asymmetry that no
 test had ever crossed) each yielded a defect immediately.
 
-## Defects found (all filed, all pinned asserting)
+## Defects found (historical; all fixed and pinned asserting)
 
 - **KF-388 (high)** — `each()` list identity is its call-order index. A
   conditional `each()` (or a nested one whose call count varies with cache
@@ -74,17 +83,17 @@ test had ever crossed) each yielded a defect immediately.
   missing-row-key warning fires **falsely** (it inspects the tbody). Should be
   a loud KF-103-style contract error.
 
-## Documented-claim audit (checked by execution, not by reading)
+## Documented-claim audit (historical observations and current disposition)
 
 | Claim | Where | Verdict |
 | --- | --- | --- |
-| "**mount() is enough** when your SVG has an `<svg>` root tag" | `docs/7-svg.md` | **Half-true.** True for the static-surrounds morph (verified + pinned). False for `each()` rows after first render — KF-389. Doc caveat/fix rides that ticket |
-| "whenever the diff … actually mutates a `checked`/`value`/`selected` attribute, the matching property is synced too" | `docs/4-render.md` § Form-state properties | **Half-true.** True for the morph route and bindings; false for the attribute-only row fast path — KF-390. Doc stays as-is only if the fix lands (it states the intended invariant) |
+| "**mount() is enough** when your SVG has an `<svg>` root tag" | `docs/7-svg.md` | **True now.** The audit found it false for post-first-render `each()` rows; KF-389 made row parsing namespace-aware and the regression is pinned |
+| "whenever the diff … actually mutates a `checked`/`value`/`selected` attribute, the matching property is synced too" | `docs/4-render.md` § Form-state properties | **True now.** The audit found the attribute-only row fast path missing; KF-390 brought that writer under the same invariant |
 | Stale-binding hazard is confined to the byte-equal fast path; a surrounds-changed render re-wires cleanly | `docs/2-reactivity.md` §2.9 / `mount.ts` KF-299 note | **True, was untested in the re-wire direction.** Now pinned (new instance live, old instance detached — no ghost writes) |
 | `html` is "a thin front-end over the exact JSX machinery — the runtime paths are IDENTICAL" | `src/html.ts` header, `docs/6-jsx-runtime.md` §6.11 | **True for every swept shape, previously never asserted structurally.** 8 round-trip tests now pin it (FC-H10) |
 | Delegated listeners survive re-renders because they live on the stable root | `docs/5-event-delegation.md` | **True**, now pinned across a replaceChild rebuild AND a lookahead move, both directions (FC-EV8) |
 | Keying the LIST container fixes the same-tag-hijack shape in both directions | `docs/4-render.md` §4.2 (the KF-383 correction) | **True through `html` templates too** — the corrected guidance holds on the second front-end (pinned) |
-| `KERF_DEV_WARN_LIST_REBIND` fires when a list's container is rebuilt | `docs/11-dev-warnings.md` §11.2.9 | **Accurate as scoped** (self-heal branch only — the doc says so explicitly), but note the blind spot: the KF-388 id-shift rebuild never reaches the self-heal, so THAT rebuild class is invisible to the whole warning family. Recorded on KF-388 |
+| `KERF_DEV_WARN_LIST_REBIND` fires when a list's container is rebuilt | `docs/11-dev-warnings.md` §11.2.9 | **Accurate as scoped** (self-heal branch only). The shipped identity-shift warning separately covers genuine unkeyed call-order adoption; the residual rebuild is documented rather than silently misrouted |
 | `each()` rows in `<tbody>` reconcile cleanly (the krausest shape) | implied everywhere tables appear | **True**, now pinned as the KF-391 counterpart |
 
 Claims NOT audited this round (deliberately): the eslint-plugin rule docs
@@ -109,9 +118,9 @@ Read every `KERF_DEV_WARN_*` message against its current trigger:
   (`utils/rowContract.ts`) fires claiming rows lack `id`/`data-key` when the
   real problem is the KF-391 tbody misbind — it inspects the mis-bound tbody.
   An actively misleading diagnostic; folded into KF-391.
-- Dedup-scope footnote: `LIST_REBIND`/`EACH_IN_MORPH_SKIP` dedup "per list id"
-  — under KF-388 id shifts, ids are not stable per callsite, so "one warning
-  per callsite" is best-effort until KF-388 lands. Recorded on KF-388.
+- Dedup-scope footnote from the audit: ids were not stable per callsite under
+  KF-388 shifts. The dedicated identity-shift diagnostic now deduplicates in
+  each mount's render context, so one mount cannot silence another.
 
 ## What this round adds to the method
 
@@ -139,8 +148,8 @@ Read every `KERF_DEV_WARN_*` message against its current trigger:
 - 22 new tests: 8 in `tests/unit/kf387-html-seam.test.tsx` (all asserting;
   load-bearing verified — 5/8 fail on pre-KF-377 morph/mount, the unit-move
   test fails on pre-KF-382 morph), 14 in `tests/unit/kf387-seam-sweep.test.tsx`
-  (7 asserting true claims, 7 KNOWN BUG pins across KF-388/389/390/391 that
-  fail loudly in either direction of change).
+  (7 initially-correct claims plus 7 regressions across KF-388/389/390/391;
+  all now assert the shipped fixes or documented residual boundary).
 - Index rows FC-T20, FC-T21, FC-RN13d, FC-B24, FC-EV8, FC-H10, FC-SV6 in
   `docs/14-feature-coverage.md` (157 rows, gate green).
 - Tickets filed: KF-388 (high), KF-389 (high), KF-390, KF-391.

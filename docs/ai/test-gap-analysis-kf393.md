@@ -11,32 +11,41 @@ surface, never adversarially probed. AI-facing; written 2026-07-24 under
 KF-393 (test-and-analysis only — runtime frozen; every defect filed as its own
 ticket).
 
-## The headline: four defects, and three of the four live in the NEWEST code
+## The headline at audit time: four defects, three in the newest code
 
 The prediction held again, with a twist. The prior sweeps found defects in
 old seams nobody had crossed; this sweep found them **inside the fixes
 themselves and in their crossings**:
 
-- **KF-394 (high)** — the KF-392 always-on identity-shift warning
-  false-positives on correct code, in two flavors.
-- **KF-395 (high)** — the KF-392 `each({ key })` string flows unvalidated into
+- **KF-394 (high, fixed)** — the KF-392 always-on identity-shift warning
+  produced false positives on correct code, in two flavors.
+- **KF-395 (high, fixed)** — the KF-392 `each({ key })` string flowed unvalidated into
   an HTML comment; `-->` in a key injects live markup and crashes with an
   internal TypeError.
-- **KF-396 (high)** — the KF-391 tag check × the KF-389 SVG territory: two
+- **KF-396 (high, fixed)** — the KF-391 tag check × the KF-389 SVG territory: two
   fixes that each work alone **regress a previously-working shape when
   crossed** (verified against pre-KF-391 `mount.ts`).
-- **KF-397** — the KF-390 rule ("every form-state writer syncs") has a FOURTH
+- **KF-397 (fixed)** — the KF-390 rule ("every form-state writer syncs") had a FOURTH
   writer nobody audited: the text-content fast path vs `<textarea>` child text.
 
-Plus one diagnostics issue: **KF-398** — a keyed `each()` nested in a row
-render throws the misleading "duplicate list key" error instead of naming the
+Plus one diagnostics issue: **KF-398 (fixed)** — a keyed `each()` nested in a row
+render threw the misleading "duplicate list key" error instead of naming the
 real boundary (nested lists degrade to static HTML).
+
+**Current status:** KF-394 through KF-398 have all shipped. The warning now
+distinguishes a real unkeyed identity shift from a legitimate source swap and
+deduplicates per mount; list keys are validated before marker emission; SVG
+row checks parse in the live namespace; the textarea text fast path carries
+`.value`; and nested `each()` calls fail with an error that names the actual
+boundary. The findings below retain the original evidence in past-tense
+context rather than representing current defects.
 
 ## Area-by-area findings
 
 ### Area 2 (verified FIRST, per the ticket) — the suspected warning false positive
 
-**Verdict: CONFIRMED, and broader than suspected.** Ran, not read:
+**Historical verdict: CONFIRMED, and broader than suspected.** The table is
+the pre-KF-394 observation, captured by execution rather than code reading:
 
 | Shape | Id | Warning fires? | Verdict |
 | --- | --- | --- | --- |
@@ -45,14 +54,16 @@ real boundary (nested lists degrade to static HTML).
 | `cond ? each(a, rA, {key:'x'}) : each(b, rB, {key:'x'})` — branch swap, one identity | `k:x`, stable | **YES** | False positive (same trigger) |
 | Genuine id shift (conditional list ahead of an unkeyed one) | shifted | YES | Correct |
 
-Root cause: the trigger `bindingSources.has(id) && previousSource !== sig`
-detects "this id's source changed," which conflates two different events —
+Root cause at the time: the trigger
+`bindingSources.has(id) && previousSource !== sig` detected "this id's source
+changed," conflating two different events —
 "the id was adopted by a different list" (warn) and "the same list swapped its
 data source" (never warn; the snapshot rebuild is correct and unavoidable).
 The ROUTING is right in every case; only the diagnostic is wrong. Bonus
 finding while in there: the one-shot dedup set is module-level but ids are
 per-mount, so mount #2's *genuine* shift on an id mount #1 already warned for
-is silent forever. All filed as KF-394; pinned asserting in
+was silent forever. KF-394 split the warning predicate from routing and moved
+dedup into the per-mount context; the regression cases remain in
 `kf393-new-code-audit.test.tsx`.
 
 The existing `dev-list-key-warn.internal.test.tsx` asserts "a KEYED list never
@@ -62,15 +73,17 @@ neighboring shape would this test NOT catch?") answered itself.
 
 ### Area 1 — the `each()` options API, probed as an adversary
 
-- `{}`, `{ key: '' }`, author key `'0'` vs call-order id `0`, `'k:0'` — all
-  correct; the `k:` prefix is injective, so author keys cannot collide with
-  call-order ids or each other. Pinned.
-- **`{ key: 'x--><b>pwn</b>' }` — broken (KF-395).** `claimKey` validates
+- `{}` and author key `'0'` vs call-order id `0` were correct; the `k:` prefix
+  is injective, so author keys cannot collide with call-order ids or each
+  other. Empty keys were accepted during the audit but are now rejected by
+  the validation shipped for KF-395.
+- **`{ key: 'x--><b>pwn</b>' }` — broken when audited, fixed by KF-395.** `claimKey` validated
   nothing; the id lands verbatim in `<!--kf-list:{id}-->`. Measured: the
   `<b>` is a LIVE element in the mount root, then `bindListsFromMarkers`
   crashes on the truncated id with `TypeError: Cannot read properties of
   undefined (reading 'items')` (the `lists.get(id) as ListSegment` cast).
-  A key containing `<!--` works by accident (longer comment). Pinned.
+  A key containing `<!--` worked by accident (longer comment). Both are now
+  rejected before marker emission; the tests assert that no markup is injected.
 - Non-string keys from JS: `{ key: 42 }` → key `'42'`, `{ key: null }` → key
   `'null'` (only `!== undefined` is checked). Noted on KF-395 (types prevent
   it from TS; runtime validation should decide deliberately).
@@ -89,7 +102,7 @@ neighboring shape would this test NOT catch?") answered itself.
 - Keyed conditional list hidden → mutated (batched AND unbatched) → re-shown:
   renders its own current rows (`cleanupOrphanBindings` deletes counts/
   sources/caches, so reappearance is a clean first render). Pinned.
-- **Nested keyed `each()` in a row render — misleading throw (KF-398).**
+- **Nested keyed `each()` in a row render — misleading throw, fixed by KF-398.**
   Every row's render claims the same key → "duplicate list key" at 2+ rows.
   Following the error's advice (per-row keys) silences the throw and lands in
   the silent nested-list degradation. Pinned.
@@ -117,7 +130,7 @@ All probed edges are **correct**; pinned asserting:
 ### Area 4 — the six fixes crossed with each other
 
 - **Namespaced parsing (KF-389) × the row-structure tag check (KF-391) —
-  BROKEN (KF-396).** The ticket's own suggested cross ("does an SVG row hit
+  broken when audited, fixed by KF-396.** The ticket's own suggested cross ("does an SVG row hit
   the new tag comparison?") — yes, and it throws falsely. Trigger: any SVG
   row whose emitted HTML differs from serialized `outerHTML` (an apostrophe in
   any attribute is the everyday case: `&#39;` emitted, `'` serialized). The
@@ -128,8 +141,8 @@ All probed edges are **correct**; pinned asserting:
   `mount.ts` mounts the same tree fine (`git checkout ab76f9a~1 -- src/mount.ts`).
   HTML rows with the same apostrophe pass (tags match in any casing) —
   which is why KF-391's own void-element normalization control missed it.
-- **`syncFormProp` (KF-390) × the fast-path ladder — the FOURTH writer is
-  BROKEN (KF-397).** KF-390 fixed the attribute writer; the sibling
+- **`syncFormProp` (KF-390) × the fast-path ladder — the fourth writer was
+  broken when audited, fixed by KF-397.** KF-390 fixed the attribute writer; the sibling
   `tryTextContentFastPath` patches a `<textarea>` row's child text raw, so a
   dirty unfocused textarea goes visibly stale on a granular text-only update.
   The identical update forced through the morph route syncs
@@ -184,11 +197,12 @@ All probed edges are **correct**; pinned asserting:
    OTHER form-state channel (textarea child text). When a rule is "every X
    does Y," the test is the enumeration of X, not the Y at one site.
 
-## Outcome
+## Outcome at the time, with current disposition
 
 - 31 new tests, all asserting (never `.skip`), in
-  `tests/unit/kf393-new-code-audit.test.tsx`: 22 pin correct behavior, 9 are
-  KNOWN BUG pins across KF-394/395/396/397 (+ the KF-398 diagnostics pin).
+  `tests/unit/kf393-new-code-audit.test.tsx`: the original defect pins across
+  KF-394/395/396/397 plus the KF-398 diagnostics pin now assert their shipped
+  fixes.
 - Index rows FC-T22…FC-T25, FC-RN13e, FC-SV7 added and FC-DW11 amended in
   `docs/14-feature-coverage.md` (166 rows, gate green).
 - Tickets filed: KF-394 (high), KF-395 (high), KF-396 (high), KF-397,
