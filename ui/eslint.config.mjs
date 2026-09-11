@@ -13,7 +13,7 @@ export default [
       globals: {
         document: 'readonly', window: 'readonly', customElements: 'readonly', HTMLElement: 'readonly', Element: 'readonly',
         Event: 'readonly', KeyboardEvent: 'readonly', PointerEvent: 'readonly', CSSStyleDeclaration: 'readonly', console: 'readonly',
-        URL: 'readonly', URLSearchParams: 'readonly', location: 'readonly', history: 'readonly',
+        URL: 'readonly', URLSearchParams: 'readonly', location: 'readonly', history: 'readonly', performance: 'readonly',
       },
     },
     plugins: { '@typescript-eslint': tsPlugin, 'simple-import-sort': simpleImportSort },
