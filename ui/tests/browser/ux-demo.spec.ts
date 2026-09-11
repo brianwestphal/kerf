@@ -139,6 +139,77 @@ test('labels the Markdown specimen as trusted static client content', async ({ p
   if (browserName === 'chromium') await page.screenshot({ path: 'test-results/webawesome-markdown-trusted-wide.png', fullPage: true });
 });
 
+test('themes Tooltip and Popover as arrowless surfaces with public overrides', async ({ page, browserName }) => {
+  await page.setViewportSize({ width: 1100, height: 760 });
+  await page.goto('/?component=wa-tooltip');
+  const tooltip = page.locator('[data-demo="wa-tooltip"] wa-tooltip');
+  const tooltipTarget = page.locator('#catalog-tooltip-target');
+  await Promise.all([
+    tooltip.evaluate((element) => new Promise<void>((resolve) => element.addEventListener('wa-after-show', () => resolve(), { once: true }))),
+    tooltipTarget.hover(),
+  ]);
+  await expect(tooltip).toHaveAttribute('open', '');
+  const tooltipArrow = await tooltip.evaluate((element) => {
+    const popup = element.shadowRoot?.querySelector('wa-popup');
+    const arrow = popup?.shadowRoot?.querySelector<HTMLElement>('[part~="arrow"]');
+    const rect = arrow?.getBoundingClientRect();
+    return {
+      token: window.getComputedStyle(element).getPropertyValue('--wa-tooltip-arrow-size').trim(),
+      width: rect?.width ?? -1,
+      height: rect?.height ?? -1,
+    };
+  });
+  expect(tooltipArrow.token).toBe('0px');
+  expect(tooltipArrow.width).toBeLessThanOrEqual(2.1);
+  expect(tooltipArrow.height).toBeLessThanOrEqual(2.1);
+  if (browserName === 'chromium') {
+    await page.screenshot({ path: 'test-results/webawesome-tooltip-no-arrow-light-wide.png', fullPage: true });
+    await page.locator('[data-action="toggle-theme"]').click();
+    await Promise.all([
+      tooltip.evaluate((element) => new Promise<void>((resolve) => element.addEventListener('wa-after-show', () => resolve(), { once: true }))),
+      tooltipTarget.hover(),
+    ]);
+    await page.screenshot({ path: 'test-results/webawesome-tooltip-no-arrow-dark-wide.png', fullPage: true });
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.locator('#catalog-tooltip-target').hover();
+    await page.screenshot({ path: 'test-results/webawesome-tooltip-no-arrow-dark-narrow.png', fullPage: true });
+  }
+
+  await page.setViewportSize({ width: 1100, height: 760 });
+  await page.goto('/?component=wa-popover');
+  const popover = page.locator('[data-demo="wa-popover"] wa-popover');
+  const popoverTarget = page.locator('#catalog-popover-target');
+  await Promise.all([
+    popover.evaluate((element) => new Promise<void>((resolve) => element.addEventListener('wa-after-show', () => resolve(), { once: true }))),
+    popoverTarget.click(),
+  ]);
+  await expect(popover).toHaveAttribute('open', '');
+  const popoverArrow = await popover.evaluate((element) => {
+    const popup = element.shadowRoot?.querySelector('wa-popup');
+    const arrow = popup?.shadowRoot?.querySelector<HTMLElement>('[part~="arrow"]');
+    const rect = arrow?.getBoundingClientRect();
+    return {
+      token: window.getComputedStyle(element).getPropertyValue('--arrow-size').trim(),
+      width: rect?.width ?? -1,
+      height: rect?.height ?? -1,
+    };
+  });
+  expect(popoverArrow.token).toBe('0px');
+  expect(popoverArrow.width).toBeLessThanOrEqual(2.1);
+  expect(popoverArrow.height).toBeLessThanOrEqual(2.1);
+  if (browserName === 'chromium') {
+    await page.screenshot({ path: 'test-results/webawesome-popover-no-arrow-light-wide.png', fullPage: true });
+    await page.locator('[data-action="toggle-theme"]').click();
+    await Promise.all([
+      popover.evaluate((element) => new Promise<void>((resolve) => element.addEventListener('wa-after-show', () => resolve(), { once: true }))),
+      popoverTarget.click(),
+    ]);
+    await page.screenshot({ path: 'test-results/webawesome-popover-no-arrow-dark-wide.png', fullPage: true });
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.screenshot({ path: 'test-results/webawesome-popover-no-arrow-dark-narrow.png', fullPage: true });
+  }
+});
+
 test('toast specimen creates a visible transient notification', async ({ page, browserName }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/?component=wa-toast');

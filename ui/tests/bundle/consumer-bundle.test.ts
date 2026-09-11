@@ -129,6 +129,8 @@ describe('consumer bundle boundaries', () => {
     expect(css).toContain('@layer wa-theme-overrides');
     expect(css).toContain('--wa-color-brand-fill-loud: light-dark(#0088ff, #64d2ff)');
     expect(css).toContain('--wa-form-control-border-color: var(--wa-color-neutral-border-normal)');
+    expect(css).toContain('--wa-tooltip-arrow-size: 0px');
+    expect(css).toContain('--arrow-size: var(--kui-wa-popover-arrow-size)');
     expect(inputs).not.toContain('@awesome.me/webawesome/dist/components');
     expect(output(themed, '.js')).not.toContain('customElements.define');
 

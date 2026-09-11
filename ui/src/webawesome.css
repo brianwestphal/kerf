@@ -95,6 +95,8 @@
     --wa-panel-border-radius: var(--wa-border-radius-l);
     --wa-tooltip-background-color: var(--wa-color-neutral-fill-loud);
     --wa-tooltip-content-color: var(--wa-color-neutral-on-loud);
+    --wa-tooltip-arrow-size: 0px;
+    --kui-wa-popover-arrow-size: 0px;
     --kui-wa-carousel-dot-size: 7px;
     --kui-wa-carousel-dot-hit-size: 20px;
     --kui-wa-carousel-control-size: 28px;
@@ -154,6 +156,10 @@
   wa-details::part(icon),
   wa-breadcrumb-item::part(separator) {
     transform: scale(var(--kui-disclosure-icon-scale));
+  }
+
+  wa-popover {
+    --arrow-size: var(--kui-wa-popover-arrow-size);
   }
 }
 

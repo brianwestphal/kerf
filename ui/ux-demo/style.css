@@ -190,6 +190,8 @@ button { font: inherit; }
 .wa-demo-observer__controls output { min-width: 0; color: var(--wa-color-text-quiet); font-size: var(--wa-font-size-s); text-align: end; }
 .wa-demo-observed--resizable { width: 16rem; max-width: 100%; transition: width var(--wa-transition-normal) var(--wa-transition-easing); }
 .wa-demo-anchor { display: grid; justify-items: center; gap: var(--wa-space-s); }
+.wa-demo-anchor > span { color: var(--wa-color-text-normal); font-size: var(--wa-font-size-s); font-weight: var(--wa-font-weight-semibold); }
+.wa-demo-anchor > small { max-width: 30rem; color: var(--wa-color-text-quiet); font-size: var(--wa-font-size-xs); line-height: var(--wa-line-height-normal); text-align: center; }
 .wa-demo-anchor wa-popover p { margin-block: var(--wa-space-xs); }
 .wa-demo-popup { min-height: 10rem; }
 .wa-demo-popup::part(popup) { padding: var(--wa-space-s); border: 1px solid var(--wa-color-neutral-border-normal); border-radius: var(--wa-border-radius-m); background: var(--wa-color-surface-raised); box-shadow: var(--wa-shadow-m); }

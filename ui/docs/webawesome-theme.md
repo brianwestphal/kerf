@@ -53,6 +53,26 @@ chevrons keep the same visual weight. The Accordion and Details components
 retain their own rotation behavior because scaling uses `transform` while
 their open state uses the independent `rotate` property.
 
+Tooltip and Popover use arrowless floating surfaces by default, matching Hot
+Sheet 2. The theme sets Web Awesome's public `--wa-tooltip-arrow-size` token to
+`0px` and maps each popover's public `--arrow-size` property from
+`--kui-wa-popover-arrow-size` (also `0px`). Restore arrows globally, for a
+subtree, or for one instance after the theme import:
+
+```css
+:root {
+  --wa-tooltip-arrow-size: .375rem;
+  --kui-wa-popover-arrow-size: .375rem;
+}
+
+.pointed-popover {
+  --arrow-size: .5rem;
+}
+```
+
+The native `without-arrow` attribute remains useful when an individual
+component should declare the no-arrow choice independent of theme context.
+
 The UX catalog includes a focused, addressable specimen for every component in
 this list. Because these are themed ecosystem components rather than
 first-class `@kerfjs/ui` exports, the sidebar keeps them under a collapsible

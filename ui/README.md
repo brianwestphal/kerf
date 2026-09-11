@@ -79,6 +79,9 @@ Those tokens flow into all free component families. Every free Web Awesome 3.12
 component has an individual UX-catalog route under the collapsible ecosystem
 section, but the theme entry does not import or register component JavaScript,
 so each component module remains independently tree-shakeable in consuming apps.
+Tooltip and Popover surfaces omit pointer arrows by default. Override
+`--wa-tooltip-arrow-size` and `--kui-wa-popover-arrow-size`, or a single
+popover's public `--arrow-size`, when an arrow communicates useful context.
 
 Load application CSS afterward to override semantic values globally, or scope
 them to a subtree. Use Web Awesome's `.wa-light`, `.wa-dark`, and `.wa-invert`

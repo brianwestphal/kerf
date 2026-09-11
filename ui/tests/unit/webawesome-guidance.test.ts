@@ -12,4 +12,13 @@ describe('Web Awesome consumer guidance', () => {
     expect(guidance).toContain('client-only');
     expect(guidance).toContain('share one mutable Marked instance');
   });
+
+  it('documents the overridable no-arrow floating-surface default', () => {
+    const guidance = readFileSync(resolve(import.meta.dirname, '../../docs/webawesome-theme.md'), 'utf8');
+
+    expect(guidance).toContain('Tooltip and Popover use arrowless floating surfaces by default');
+    expect(guidance).toContain('--wa-tooltip-arrow-size');
+    expect(guidance).toContain('--kui-wa-popover-arrow-size');
+    expect(guidance).toContain('--arrow-size');
+  });
 });

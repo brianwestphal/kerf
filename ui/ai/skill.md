@@ -1,7 +1,7 @@
 ---
 name: kerf-ui
 description: Build interfaces with kerfjs and the @kerfjs/ui production component package. Use whenever code imports @kerfjs/ui or a task asks for Kerf UI components.
-kerf-ui-skill-version: 1.4.0
+kerf-ui-skill-version: 1.4.1
 ---
 
 # Building with @kerfjs/ui
@@ -21,6 +21,7 @@ Hard rules:
 9. Use controlled `SegmentedControl` for a small exclusive choice set. Select `appearance="toolbar"` when nesting it inside `ToolbarControlGroup`; use rounded or pill shapes for standalone contexts. Handle its action, update `value`, keep meaningful choice labels, and preserve every enabled native button in sequential Tab order.
 10. Compose `AppTab` inside controlled `TabBar`; call `wireTabBars()` once and retain its disposer. It owns same-bar drag mechanics, including proximity-based horizontal edge autoscroll, while the app applies `onReorder` and owns order, selection, panels, close policy, routing, and persistence.
 11. Demo work uses public production component subpaths and their browser-selected CSS. Give every public visual component its own category-grouped catalog route; list themed third-party components under a clearly labeled collapsible ecosystem section, with a focused route for each. Declare direct `uses` relationships so `Used by` stays derivable, and theme shell chrome through the same semantic tokens as the stage instead of drawing a substitute.
+12. The Web Awesome theme makes Tooltip and Popover arrowless by default. Keep that default unless a pointer materially clarifies the anchor; opt back in with `--wa-tooltip-arrow-size`, `--kui-wa-popover-arrow-size`, or a popover's public `--arrow-size`, and use `without-arrow` when local no-arrow intent should survive theme changes.
 
 Common mistakes:
 
