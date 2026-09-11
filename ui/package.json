@@ -31,6 +31,7 @@
   "types": "./dist/index.d.ts",
   "sideEffects": [
     "**/*.css",
+    "./dist/browser/*.js",
     "./dist/select-register.js"
   ],
   "exports": {
@@ -40,30 +41,37 @@
     },
     "./lucide-icon": {
       "types": "./dist/lucide-icon.d.ts",
+      "browser": "./dist/browser/lucide-icon.js",
       "import": "./dist/lucide-icon.js"
     },
     "./toolbar": {
       "types": "./dist/toolbar.d.ts",
+      "browser": "./dist/browser/toolbar.js",
       "import": "./dist/toolbar.js"
     },
     "./toolbar-control-group": {
       "types": "./dist/toolbar-control-group.d.ts",
+      "browser": "./dist/browser/toolbar-control-group.js",
       "import": "./dist/toolbar-control-group.js"
     },
     "./toolbar-text": {
       "types": "./dist/toolbar-text.d.ts",
+      "browser": "./dist/browser/toolbar-text.js",
       "import": "./dist/toolbar-text.js"
     },
     "./menu-item": {
       "types": "./dist/menu-item.d.ts",
+      "browser": "./dist/browser/menu-item.js",
       "import": "./dist/menu-item.js"
     },
     "./menu-header": {
       "types": "./dist/menu-header.d.ts",
+      "browser": "./dist/browser/menu-header.js",
       "import": "./dist/menu-header.js"
     },
     "./resizable-region": {
       "types": "./dist/resizable-region.d.ts",
+      "browser": "./dist/browser/resizable-region.js",
       "import": "./dist/resizable-region.js"
     },
     "./wire-resizable-regions": {
@@ -72,10 +80,12 @@
     },
     "./app-tab": {
       "types": "./dist/app-tab.d.ts",
+      "browser": "./dist/browser/app-tab.js",
       "import": "./dist/app-tab.js"
     },
     "./tab-bar": {
       "types": "./dist/tab-bar.d.ts",
+      "browser": "./dist/browser/tab-bar.js",
       "import": "./dist/tab-bar.js"
     },
     "./wire-tab-bars": {
@@ -84,14 +94,17 @@
     },
     "./page-header": {
       "types": "./dist/page-header.d.ts",
+      "browser": "./dist/browser/page-header.js",
       "import": "./dist/page-header.js"
     },
     "./loading-spinner": {
       "types": "./dist/loading-spinner.d.ts",
+      "browser": "./dist/browser/loading-spinner.js",
       "import": "./dist/loading-spinner.js"
     },
     "./select": {
       "types": "./dist/select.d.ts",
+      "browser": "./dist/browser/select.js",
       "import": "./dist/select.js"
     },
     "./select/register": {
@@ -100,19 +113,27 @@
     },
     "./state-banner": {
       "types": "./dist/state-banner.d.ts",
+      "browser": "./dist/browser/state-banner.js",
       "import": "./dist/state-banner.js"
     },
     "./empty-state": {
       "types": "./dist/empty-state.d.ts",
+      "browser": "./dist/browser/empty-state.js",
       "import": "./dist/empty-state.js"
     },
     "./dialog-header": {
       "types": "./dist/dialog-header.d.ts",
+      "browser": "./dist/browser/dialog-header.js",
       "import": "./dist/dialog-header.js"
     },
     "./value-table": {
       "types": "./dist/value-table.d.ts",
+      "browser": "./dist/browser/value-table.js",
       "import": "./dist/value-table.js"
+    },
+    "./unstyled": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
     },
     "./foundation.css": "./src/foundation.css",
     "./styles.css": "./src/styles.css",
@@ -145,7 +166,7 @@
     "LICENSE"
   ],
   "scripts": {
-    "build": "tsup",
+    "build": "tsup && node scripts/build-browser-entries.mjs",
     "dev": "npm run build && vite --config ux-demo/vite.config.ts",
     "demo:build": "npm run build && vite build --config ux-demo/vite.config.ts",
     "demo:serve": "vite preview --config ux-demo/vite.config.ts",

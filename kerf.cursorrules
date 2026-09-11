@@ -1,4 +1,4 @@
-<!-- kerf-skill-version: 1.16.0 -->
+<!-- kerf-skill-version: 1.17.0 -->
 # kerf.cursorrules — rules for building apps with kerf
 #
 # Drop this file into your project as `.cursorrules` (Cursor will pick it
@@ -21,9 +21,12 @@ You are writing a UI in kerf — a ~12 KB reactive framework (~13 KB with `array
 
 Install `@kerfjs/ui` for shared toolbars, menu rows, controlled tab bars, headers/value tables,
 resizable regions, selects, banners, empty states, and loading indicators.
-Import `@kerfjs/ui/styles.css`, or combine `foundation.css` with explicit
-per-component CSS. Reuse these primitives before creating parallel local ones;
-keep domain state, commands, routing, and tab/menu policy in the app.
+Import visual components from explicit subpaths so a CSS-aware browser bundler
+includes only their reachable styles. The root barrel and
+`@kerfjs/ui/unstyled` are CSS-free; pair the barrel with `styles.css` only when
+the complete layer is intentional. Reuse these primitives before creating
+parallel local ones; keep domain state, commands, routing, and tab/menu policy
+in the app.
 
 Wire emitted `data-action` hooks at the mount root and retain disposers.
 `wireResizableRegions()` and `wireTabBars()` are eventful helpers and return

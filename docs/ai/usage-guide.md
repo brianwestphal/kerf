@@ -53,19 +53,23 @@ npm install @kerfjs/ui
 ```
 
 ```ts
-import { AppTab, StateBanner, TabBar, Toolbar, wireTabBars } from '@kerfjs/ui';
-import '@kerfjs/ui/styles.css';
+import { AppTab } from '@kerfjs/ui/app-tab';
+import { StateBanner } from '@kerfjs/ui/state-banner';
+import { TabBar } from '@kerfjs/ui/tab-bar';
+import { Toolbar } from '@kerfjs/ui/toolbar';
+import { wireTabBars } from '@kerfjs/ui/wire-tab-bars';
 ```
 
 The surface covers `LucideIcon`; toolbars; menu rows/headers; controlled,
 reorderable, horizontally scrolling app tab bars;
 page/dialog headers and value tables; resizable regions; a Web Awesome Select;
-and banner/empty/loading states. Use explicit subpaths when bundle ownership
-matters. Component JavaScript does not inject styles: `styles.css` is the
-recommended single, stable side-effect import, while `foundation.css` plus
-leaf-local per-component CSS is an advanced measured optimization. Do not make
-the app shell maintain a transitive style list. A CSS-aware bundler collects
-those imports; app overrides belong later in the cascade or on a scoped
+and banner/empty/loading states. Prefer explicit visual-component subpaths: a
+CSS-aware browser bundler selects their generated styled wrappers, including
+the foundation and CSS for reachable UI subcomponents while excluding unrelated
+styles. The app shell does not maintain a transitive style list. The root barrel
+and `@kerfjs/ui/unstyled` are CSS-free; pair the root with `styles.css` only when
+the complete layer is intentional. Manual CSS subpaths remain available for
+custom pipelines. App overrides belong later in the cascade or on a scoped
 `--kui-*` owner.
 
 The package keeps app policy outside components: wire emitted `data-action`

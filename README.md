@@ -297,9 +297,12 @@ toolbars, menus, tabs, headers, resize handles, selects, or feedback states:
 npm install @kerfjs/ui
 ```
 
-Import the complete CSS layer with `@kerfjs/ui/styles.css`, or combine
-`foundation.css` with per-component CSS subpaths. Web Awesome registration is
-explicit at `@kerfjs/ui/select/register`, so it stays out of unrelated bundles.
+Import a component from its explicit subpath (for example
+`@kerfjs/ui/toolbar`) and a CSS-aware browser bundler includes only its reachable
+component styles. The root barrel is CSS-free; pair it with
+`@kerfjs/ui/styles.css` only when the complete layer is wanted. Web Awesome
+registration is explicit at `@kerfjs/ui/select/register`, so it stays out of
+unrelated bundles.
 See [`docs/21-ui-package.md`](./docs/21-ui-package.md).
 
 ## Links

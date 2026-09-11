@@ -30,20 +30,27 @@ npm install kerfjs @kerfjs/ui
 ```
 
 ```ts
-import { AppTab, Toolbar } from '@kerfjs/ui';
-import '@kerfjs/ui/styles.css';
+import { AppTab } from '@kerfjs/ui/app-tab';
+import { Toolbar } from '@kerfjs/ui/toolbar';
 ```
 
-Every component has an ESM/type subpath and every stylesheet has an explicit
-CSS subpath. `foundation.css` defines Web Awesome-compatible semantic defaults
-for neutral, brand/info, success, warning, and danger fill/border/foreground
-ramps; `styles.css` aggregates the complete component layer. Stateful components
-also expose scoped custom properties, so an application may override the
-complete theme, one semantic tone, or one instance. CSS is the only broad side
-effect. Prefer one stable `styles.css` entry-point import so application roots do
-not track transitive component styles. The explicit component CSS subpaths are a
-leaf-local optimization for applications that have measured a worthwhile size
-benefit, not the default integration path.
+Every component has an ESM/type subpath and every stylesheet has an explicit CSS
+subpath. A CSS-aware browser bundler resolves the component subpath's `browser`
+condition to a generated wrapper that imports the foundation, that component's
+CSS, and CSS for the UI subcomponents reachable from its source imports. The
+package derives this graph during its build, so application roots neither list
+transitive styles nor retain stale ones. Unused component CSS stays out of the
+bundle.
+
+The root barrel stays JavaScript-only so its re-exports remain tree-shakable
+without making every stylesheet a side effect. Pair it with `styles.css` only
+when the complete component layer is wanted. Node and SSR use the pure `import`
+condition; `@kerfjs/ui/unstyled` is an explicit CSS-free root for custom browser
+pipelines. `foundation.css` and every component stylesheet remain exported for
+manual delivery. `foundation.css` defines Web Awesome-compatible semantic
+defaults for neutral, brand/info, success, warning, and danger roles. Stateful
+components expose scoped custom properties, so an application may override the
+complete theme, one semantic tone, or one instance.
 
 `Select` is a Web Awesome adapter. Rendering it is pure; custom-element
 registration happens only after `import '@kerfjs/ui/select/register'`. Web
@@ -96,10 +103,11 @@ semantic theme tokens. The catalog includes every ToolbarControlGroup variant,
 all StateBanner tones plus a scoped palette override, reorderable overflowing
 tabs, light and dark themes, contrast, motion, selection, resize, and feedback
 states.
-Unit coverage uses the root repository thresholds. Bundle tests prove subpath
-exports, tree-shaking, peer externalization, and opt-in custom-element
-registration. Playwright runs the catalog in Chromium, Firefox, and WebKit and
-captures wide and narrow review images.
+Unit coverage uses the root repository thresholds. Consumer bundles prove
+component-reachable and transitive CSS, root/SSR isolation, JavaScript
+tree-shaking, peer externalization, and opt-in custom-element registration.
+Playwright runs the catalog in Chromium, Firefox, and WebKit and captures wide
+and narrow review images.
 
 AI-oriented entry points ship with the package at `ui/ai/skill.md` and
 `ui/llms.txt`. They route tools to the component contract, accessibility rules,

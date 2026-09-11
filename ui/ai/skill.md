@@ -1,7 +1,7 @@
 ---
 name: kerf-ui
 description: Build interfaces with kerfjs and the @kerfjs/ui production component package. Use whenever code imports @kerfjs/ui or a task asks for Kerf UI components.
-kerf-ui-skill-version: 1.0.0
+kerf-ui-skill-version: 1.1.0
 ---
 
 # Building with @kerfjs/ui
@@ -10,7 +10,7 @@ Read `../README.md`, `../docs/component-contract.md`, and `../docs/accessibility
 
 Hard rules:
 
-1. Import `@kerfjs/ui/styles.css` once by default so the app root never tracks transitive component styles. Use explicit JavaScript subpaths for bundle isolation; use `foundation.css` plus leaf-local component CSS only after measuring a worthwhile CSS-size benefit.
+1. Import visual components from explicit JavaScript subpaths. In CSS-aware browser builds each subpath brings in its own reachable CSS, including UI subcomponents, while unrelated CSS remains out. The root barrel and `@kerfjs/ui/unstyled` are CSS-free; pair the root barrel with `styles.css` only when the complete layer is intentional. Manual CSS subpaths remain available for custom pipelines.
 2. Components return Kerf `SafeHtml`. Never pass DOM nodes as children or use inline JSX event handlers.
 3. Keep state, product copy, persistence, and domain mappings in the application. Do not add product-specific actions or fields to a generic component.
 4. Wire `data-action` hooks from one stable root with `delegate()` or `delegateActions()` and retain disposers.
@@ -19,7 +19,7 @@ Hard rules:
 7. Decorative icons are hidden; controls are named; focus is visible; state never relies on color alone; reduced motion and increased contrast remain usable.
 8. `ResizableRegion` uses `wireResizableRegions()` for Arrow, Shift+Arrow, Home/End, and pointer behavior. The app owns size persistence.
 9. Compose `AppTab` inside controlled `TabBar`; call `wireTabBars()` once and retain its disposer. It owns same-bar drag mechanics, including proximity-based horizontal edge autoscroll, while the app applies `onReorder` and owns order, selection, panels, close policy, routing, and persistence.
-10. Demo work uses the public production component and CSS. Give every public visual component its own category-grouped catalog route, declare direct `uses` relationships so `Used by` stays derivable, and theme shell chrome through the same semantic tokens as the stage instead of drawing a substitute.
+10. Demo work uses public production component subpaths and their browser-selected CSS. Give every public visual component its own category-grouped catalog route, declare direct `uses` relationships so `Used by` stays derivable, and theme shell chrome through the same semantic tokens as the stage instead of drawing a substitute.
 
 Common mistakes:
 
@@ -30,4 +30,5 @@ Common mistakes:
 | `role="menuitem"` on one button | Use the native button, or implement the complete ARIA menu widget |
 | Test only a custom-element attribute | Assert live property, emitted event, focus, and rendered output |
 | Import all Web Awesome components | Import only `@kerfjs/ui/select/register` when `Select` is used |
+| Maintain a root list of component styles | Import each visual component from its JS subpath; its reachable CSS follows automatically |
 | Add demo-only markup for a production state | Add the state to the production component, then render that export in the catalog |

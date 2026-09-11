@@ -1,7 +1,7 @@
 ---
 name: kerf-app
 description: Build UIs in the kerf reactive framework and its @kerfjs/ui component package (https://github.com/brianwestphal/kerf). Use this skill whenever the user is writing or modifying code that imports `kerfjs` or `@kerfjs/ui`, asks to add a feature to a kerf app, or asks "how do I do X in kerf?". Use it proactively the moment you spot a kerf import in the file you're editing.
-kerf-skill-version: 1.16.0
+kerf-skill-version: 1.17.0
 ---
 
 # Building apps with kerf
@@ -26,10 +26,12 @@ kerf is a ~12 KB reactive UI framework (~13 KB with `arraySignal`): signals + DO
 
 Install `@kerfjs/ui` when the app needs shared toolbars, menu rows, controlled tab bars,
 headers/value tables, resizable regions, selects, banners, empty states, or
-loading indicators. Import `@kerfjs/ui/styles.css`, or combine
-`foundation.css` with per-component CSS subpaths. Prefer a component before
-inventing a parallel local primitive, but keep domain state, routing, commands,
-and tab/menu policy in the app.
+loading indicators. Import visual components from explicit subpaths so a
+CSS-aware browser bundler includes only their reachable styles. The root barrel
+and `@kerfjs/ui/unstyled` are CSS-free; pair the barrel with `styles.css` only
+when the complete layer is intentional. Prefer a component before inventing a
+parallel local primitive, but keep domain state, routing, commands, and tab/menu
+policy in the app.
 
 Components emit stable `data-action` hooks; wire them at the mount root and
 retain every disposer. `wireResizableRegions()` and `wireTabBars()` are the

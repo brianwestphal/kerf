@@ -1,14 +1,15 @@
 # @kerfjs/ui
 
-Accessible, composable UI primitives for [kerf](https://github.com/brianwestphal/kerf). The package ships production components, explicit CSS entry points, accessibility and keyboard contracts, an AI-readable guide, and a production-backed UX catalog.
+Accessible, composable UI primitives for [kerf](https://github.com/brianwestphal/kerf). The package ships production components, component-reachable CSS, accessibility and keyboard contracts, an AI-readable guide, and a production-backed UX catalog.
 
 ```bash
 npm install kerfjs @kerfjs/ui
 ```
 
 ```tsx
-import { MenuItem, Toolbar, ToolbarText } from '@kerfjs/ui';
-import '@kerfjs/ui/styles.css';
+import { MenuItem } from '@kerfjs/ui/menu-item';
+import { Toolbar } from '@kerfjs/ui/toolbar';
+import { ToolbarText } from '@kerfjs/ui/toolbar-text';
 
 mount(root, () => <>
   <Toolbar label="Document" leading={<ToolbarText text="Notes" />} />
@@ -20,7 +21,7 @@ Components return Kerf `SafeHtml`. They do not own application state or attach t
 
 ## Component subpaths
 
-| Component | JS import | CSS import |
+| Component | Browser import (includes reachable CSS) | Manual CSS export |
 | --- | --- | --- |
 | `LucideIcon` | `@kerfjs/ui/lucide-icon` | `@kerfjs/ui/lucide-icon.css` |
 | `Toolbar` | `@kerfjs/ui/toolbar` | `@kerfjs/ui/toolbar.css` |
@@ -41,18 +42,23 @@ Components return Kerf `SafeHtml`. They do not own application state or attach t
 | `DialogHeader` | `@kerfjs/ui/dialog-header` | `@kerfjs/ui/dialog-header.css` |
 | `ValueTable` | `@kerfjs/ui/value-table` | `@kerfjs/ui/value-table.css` |
 
-CSS is delivered as explicit package exports; component JavaScript never injects
-or implicitly imports it. The recommended application setup is one permanent
-`@kerfjs/ui/styles.css` import at the entry point. It includes the foundation and
-every component stylesheet, so the app shell does not need to know the transitive
-component graph and cannot accumulate stale per-component imports.
+Import components from their explicit JavaScript subpaths. CSS-aware browser
+bundlers such as Vite, webpack, and esbuild follow each subpath's `browser`
+condition, collect its foundation and component CSS, and retain styles for any
+UI subcomponents it uses. Unrelated component CSS is never reached. Application
+roots therefore do not need a transitive stylesheet list, and removing the last
+component import also removes its reachable CSS. This is component-level CSS
+tree shaking; variants within an imported component remain together.
 
-The `foundation.css` plus individual component CSS path is an advanced
-size-optimization option. If measurement justifies it, keep those imports beside
-the leaf feature or application component that uses them rather than maintaining
-a root-level list. Vite and other CSS-aware bundlers collect either form as
-ordinary CSS side effects. Load application overrides after the package CSS, or
-scope `--kui-*` variables directly on a component instance.
+The root `@kerfjs/ui` barrel stays JavaScript-only because making a side-effectful
+CSS barrel tree-shakable is not portable across bundlers. If an application uses
+that convenience import, also import `@kerfjs/ui/styles.css`, which deliberately
+contains the complete layer. Non-browser/SSR tools resolve the pure `import`
+condition automatically; `@kerfjs/ui/unstyled` is the explicit CSS-free root
+entry for a browser build with a custom styling pipeline. The exported
+`foundation.css` and component CSS paths remain available for fully manual
+delivery. Load application overrides after package styles, or scope `--kui-*`
+variables directly on a component instance.
 
 `foundation.css` follows Hot Sheet 2's Web Awesome-compatible semantic palette.
 Brand, neutral, success, warning, and danger each expose fill, border, and

@@ -2,30 +2,26 @@ import '@awesome.me/webawesome/dist/components/button/button.js';
 import '@awesome.me/webawesome/dist/components/dropdown/dropdown.js';
 import '@awesome.me/webawesome/dist/components/dropdown-item/dropdown-item.js';
 import '@kerfjs/ui/select/register';
-import '@kerfjs/ui/styles.css';
 import './style.css';
 
-import {
-  AppTab,
-  DialogHeader,
-  EmptyState,
-  LoadingSpinner,
-  LucideIcon,
-  MenuHeader,
-  MenuItem,
-  PageHeader,
-  reorderTabs,
-  ResizableRegion,
-  Select,
-  StateBanner,
-  TabBar,
-  Toolbar,
-  ToolbarControlGroup,
-  ToolbarText,
-  ValueTable,
-  wireResizableRegions,
-  wireTabBars,
-} from '@kerfjs/ui';
+import { AppTab } from '@kerfjs/ui/app-tab';
+import { DialogHeader } from '@kerfjs/ui/dialog-header';
+import { EmptyState } from '@kerfjs/ui/empty-state';
+import { LoadingSpinner } from '@kerfjs/ui/loading-spinner';
+import { LucideIcon } from '@kerfjs/ui/lucide-icon';
+import { MenuHeader } from '@kerfjs/ui/menu-header';
+import { MenuItem } from '@kerfjs/ui/menu-item';
+import { PageHeader } from '@kerfjs/ui/page-header';
+import { ResizableRegion } from '@kerfjs/ui/resizable-region';
+import { Select } from '@kerfjs/ui/select';
+import { StateBanner } from '@kerfjs/ui/state-banner';
+import { TabBar } from '@kerfjs/ui/tab-bar';
+import { Toolbar } from '@kerfjs/ui/toolbar';
+import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
+import { ToolbarText } from '@kerfjs/ui/toolbar-text';
+import { ValueTable } from '@kerfjs/ui/value-table';
+import { wireResizableRegions } from '@kerfjs/ui/wire-resizable-regions';
+import { reorderTabs, wireTabBars } from '@kerfjs/ui/wire-tab-bars';
 import { delegate, mount, signal } from 'kerfjs';
 import { delegateActions } from 'kerfjs/actions';
 import { ArrowDownAZ, Bell, Check, ChevronDown, ChevronLeft, ChevronRight, CircleHelp, Columns3, Contrast, Folder, GitCompare, Inbox, List, Moon, MoreHorizontal, PanelLeft, PanelLeftOpen, Pin, Plus, Search, Settings, SlidersHorizontal, Star, Wrench, ZapOff } from 'lucide';

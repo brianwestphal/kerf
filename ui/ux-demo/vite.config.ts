@@ -6,9 +6,6 @@ export default defineConfig({
   root: fileURLToPath(new URL('.', import.meta.url)),
   resolve: {
     alias: [
-      { find: /^@kerfjs\/ui\/select\/register$/, replacement: fileURLToPath(new URL('../src/select-register.ts', import.meta.url)) },
-      { find: /^@kerfjs\/ui\/styles\.css$/, replacement: fileURLToPath(new URL('../src/styles.css', import.meta.url)) },
-      { find: /^@kerfjs\/ui$/, replacement: fileURLToPath(new URL('../src/index.ts', import.meta.url)) },
       { find: /^kerfjs\/actions$/, replacement: fileURLToPath(new URL('../../src/actions.ts', import.meta.url)) },
       { find: /^kerfjs\/jsx-runtime$/, replacement: fileURLToPath(new URL('../../src/jsx-runtime.ts', import.meta.url)) },
       { find: /^kerfjs$/, replacement: fileURLToPath(new URL('../../src/index.ts', import.meta.url)) },

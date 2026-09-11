@@ -2,6 +2,16 @@ import { expect, test } from '@playwright/test';
 
 import { catalog } from '../../ux-demo/catalog.js';
 
+test('loads component-reachable package CSS through browser subpaths', async ({ page }) => {
+  await page.goto('/?component=toolbar');
+  await expect(page.locator('[data-component="toolbar"]').first()).toHaveCSS('display', 'grid');
+  expect(await page.locator(':root').evaluate((root) => window.getComputedStyle(root).getPropertyValue('--kui-color-text').trim())).not.toBe('');
+
+  await page.goto('/?component=empty-state');
+  await expect(page.locator('[data-component="empty-state"]').first()).toHaveCSS('display', 'grid');
+  await expect(page.locator('[data-component="empty-state"] .kui-loading-spinner')).toHaveCSS('display', 'block');
+});
+
 test('catalog routes every production component family and supports its stateful controls', async ({ page, browserName }) => {
   await page.goto('/');
   await expect(page.locator('.catalog-sidebar [data-component="menu-header"]')).toHaveCount(5);

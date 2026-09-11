@@ -13,21 +13,24 @@ npm install kerfjs @kerfjs/ui
 ```
 
 ```tsx
-import { Toolbar, ToolbarText } from '@kerfjs/ui';
-import '@kerfjs/ui/styles.css';
+import { Toolbar } from '@kerfjs/ui/toolbar';
+import { ToolbarText } from '@kerfjs/ui/toolbar-text';
 
 const header = <Toolbar leading={<ToolbarText text="Library" />} />;
 ```
 
-Use the root barrel for convenience or explicit subpaths such as
-`@kerfjs/ui/toolbar`. Import `@kerfjs/ui/foundation.css` for semantic token
-defaults plus only the component CSS you use, or `@kerfjs/ui/styles.css` for the
-complete layer. Component JavaScript does not inject styles; the application
-bundler collects these explicit CSS imports. Prefer the single `styles.css`
-entry so the app shell never maintains a transitive component-style list; use
-selective imports beside leaf features only after measuring a meaningful size
-benefit. Load app overrides afterward or scope `--kui-*` properties on a
-component instance.
+Prefer explicit component subpaths such as `@kerfjs/ui/toolbar`. CSS-aware
+browser bundlers resolve those imports to styled wrappers and collect only the
+foundation, component CSS, and styles of UI subcomponents reachable from the
+component. The package derives that graph, so the app shell maintains no
+stylesheet list and unused component CSS stays out of the bundle.
+
+The root barrel remains CSS-free for portable JavaScript tree shaking. Pair a
+root-barrel import with `@kerfjs/ui/styles.css` when the complete layer is
+intentional. Node/SSR uses pure modules automatically, and
+`@kerfjs/ui/unstyled` offers an explicit CSS-free root for custom browser
+pipelines. All CSS paths remain public for manual delivery. Load app overrides
+afterward or scope `--kui-*` properties on a component instance.
 
 ## Included primitives
 

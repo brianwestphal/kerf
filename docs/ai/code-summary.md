@@ -264,7 +264,7 @@ kerf/
 ├── kerf.claude-skill.md          ← KF-128 — drop-in Claude Code skill; copy into `~/.claude/skills/kerf-app/SKILL.md`
 ├── eslint-plugin/                ← KF-214 — `eslint-plugin-kerfjs` sub-package (own package.json + node_modules, published separately). Eight AST-only rules — `no-inline-jsx-event-handlers` / `require-data-key-in-each` / `no-nested-mount` / `prefer-module-jsx-augmentation` at error, plus `require-delegate-disposer` / `prefer-attr-selector` / `no-raw-with-dynamic-arg` / `ai-assistant-configs` at warn — paired with the dev-warn family in `src/dev-*.ts` to enforce the hard rules at edit time. Tests via `npm test` in that directory (`node --test` + ESLint `RuleTester` + `@typescript-eslint/parser`). Ignored by the root `eslint.config.js`.
 ├── create-kerf-component/        ← KF-255 — `create-kerf-component` initializer sub-package (own package.json + package-lock, published in lockstep with kerfjs). `index.js` is the zero-dependency CLI (`npm create kerf-component@latest <dir>`); `template/` is the scaffolded component package encoding the docs/13 hard rules (kerfjs peerDependency + tsup `external`, ESM + `.d.ts`, `jsxImportSource: "kerfjs"`, subpath exports, an example `Counter` with a factory + `wire(root)` disposer); `_gitignore` is renamed to `.gitignore` on scaffold. Tests via `npm test` (`node --test tests/scaffold.test.js`). The template's `src/` is typechecked against built `dist/` by `tests/dist/scaffold-typing/tsconfig.json` (the living-proof gate). CI job in `ci.yml`; release via `.github/workflows/release-create-kerf-component.yml`; version bumped in lockstep by `scripts/release.sh`.
-├── ui/                           ← `@kerfjs/ui`, the fourth lockstep sibling package. `src/` holds generic SafeHtml primitives, a controlled reorderable/overflowing TabBar + wiring, and Hot Sheet 2-compatible overridable semantic CSS; every JS/type/CSS path is explicitly exported; `select-register.ts` is the only custom-element registration boundary; `ux-demo/` is the production-backed, category-grouped master/detail catalog with one route per visual component, complete variant demos, composition demos, one grouped Uses/Used-by selector, and shared semantic shell/component theming; `docs/`, `ai/skill.md`, and `llms.txt` expose design, accessibility, and AI contracts; unit + bundle + three-engine browser suites live under `tests/`.
+├── ui/                           ← `@kerfjs/ui`, the fourth lockstep sibling package. `src/` holds generic SafeHtml primitives, a controlled reorderable/overflowing TabBar + wiring, and Hot Sheet 2-compatible overridable semantic CSS; every JS/type/CSS path is explicitly exported; `scripts/build-browser-entries.mjs` derives each component's reachable CSS from source imports and emits conditional `dist/browser/` wrappers, while the root/unstyled/Node entries stay CSS-free; `select-register.ts` is the custom-element registration boundary; `ux-demo/` is the production-backed, category-grouped master/detail catalog with one route per visual component, complete variant demos, composition demos, one grouped Uses/Used-by selector, and shared semantic shell/component theming; `docs/`, `ai/skill.md`, and `llms.txt` expose design, accessibility, and AI contracts; unit + bundle + three-engine browser suites live under `tests/`.
 └── README.md
 ```
 
@@ -362,10 +362,15 @@ The five entries (`index`, `jsx-runtime`, `testing`, `array-signal`, `html`) eac
 Runtime dep (`@preact/signals-core`) is external — consumers' bundlers pick it up from their own `node_modules`.
 
 `ui/npm run build` independently emits the ESM/type entry shims for
-`@kerfjs/ui`. `kerfjs` and optional Web Awesome stay external; CSS ships as
-source subpaths. The package's bundle gate proves root-barrel tree-shaking and
-that `Select` stays registration-free until `@kerfjs/ui/select/register` is
-imported.
+`@kerfjs/ui`, then derives component-to-component reachability from source
+imports and generates `dist/browser/*.js` wrappers. A browser component subpath
+imports the foundation, its own CSS, and reachable subcomponent CSS; unrelated
+styles remain unreachable. The root barrel, `@kerfjs/ui/unstyled`, and Node/SSR
+resolution remain CSS-free. `kerfjs` and optional Web Awesome stay external;
+manual CSS source subpaths and the deliberate full `styles.css` layer remain
+exported. The package's consumer-bundle gate proves those CSS boundaries,
+root-barrel JavaScript tree-shaking, and that `Select` stays registration-free
+until `@kerfjs/ui/select/register` is imported.
 
 ## Where to look for X
 

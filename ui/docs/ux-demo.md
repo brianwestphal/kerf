@@ -2,7 +2,7 @@
 
 Run `npm run dev` from `ui/`. The catalog is a development and review surface, not a second implementation.
 
-- It imports public `@kerfjs/ui` exports and public CSS paths.
+- It imports public component subpaths, exercising their browser-selected reachable CSS rather than a catalog-only style path.
 - Every public visual component has its own stable `?component=<id>` URL and focused demo. Composite header, menu, and feedback scenarios remain addressable alongside their subcomponents; the root opens the first component.
 - Catalog metadata has a unique id, category, kind (`component` or `composition`), name, description, and direct `uses` dependencies.
 - The master/detail shell groups routes by category with production `MenuHeader` and `MenuItem` components, then gives the selected family one centered inspection stage.
