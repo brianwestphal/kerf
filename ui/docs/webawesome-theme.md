@@ -40,10 +40,13 @@ free visual component families through Web Awesome's own styles:
   Observer. Helpers without their own visual chrome naturally inherit only the
   applicable typography and color values.
 
-The UX catalog deliberately samples representative visible families rather
-than opening every modal, drawer, toast, or data-driven media surface at once.
-The shared-token contract is the coverage mechanism; the gallery is a visual
-regression surface.
+The UX catalog includes a focused, addressable specimen for every component in
+this list. Because these are themed ecosystem components rather than
+first-class `@kerfjs/ui` exports, the sidebar keeps them under a collapsible
+`Web Awesome` heading with category subgroups. The aggregate theme route
+remains a broad visual-regression surface, while modal, drawer, toast, media,
+and helper routes make their own behavior inspectable without opening every
+state at once.
 
 ## Customization
 

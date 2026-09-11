@@ -102,7 +102,9 @@ For visual review, `ui/ux-demo/` groups every public visual component by categor
 in a master/detail catalog. Each `?component=<id>` route renders one focused
 production demo inside chrome that consumes the same semantic light/dark tokens;
 the detail view derives one grouped `Uses` / `Used by` selector from declared
-component dependencies and hides it for unrelated components.
+component dependencies and hides it for unrelated components. The catalog also
+lists all 70 free Web Awesome 3.12 components in a collapsible ecosystem section,
+with an addressable themed specimen and cross-system relationships for each.
 
 ## Public API — everything is in one import
 

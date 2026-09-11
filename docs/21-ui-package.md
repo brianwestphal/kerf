@@ -114,8 +114,10 @@ inspection stage. Catalog metadata declares direct component dependencies; the
 detail view derives one grouped `Uses` / `Used by` selector from that graph and
 omits the relationship footer when neither group exists.
 Decorative chrome, Web Awesome controls, and production components share
-semantic theme tokens. A dedicated gallery spans Web Awesome actions, forms,
-structure/navigation, feedback, media, and formatting. The catalog includes every ToolbarControlGroup variant,
+semantic theme tokens. All 70 free Web Awesome 3.12 modules have focused routes
+under a distinct collapsible ecosystem section with category subgroups, while a
+dedicated gallery spans Web Awesome actions, forms, structure/navigation,
+feedback, media, and formatting. The catalog includes every ToolbarControlGroup variant,
 all StateBanner tones plus a scoped palette override, reorderable overflowing
 tabs, light and dark themes, contrast, motion, selection, resize, and feedback
 states.

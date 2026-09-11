@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-import { catalog } from '../../ux-demo/catalog.js';
+import { catalog, kerfCatalog, webAwesomeCatalog } from '../../ux-demo/catalog.js';
 
 test('loads component-reachable package CSS through browser subpaths', async ({ page }) => {
   await page.goto('/?component=toolbar');
@@ -58,14 +58,81 @@ test('themes representative free Web Awesome families with overridable semantic 
   }
 });
 
+test('renders and operates representative focused Web Awesome specimens', async ({ page, browserName }) => {
+  test.skip(browserName !== 'chromium', 'Screenshot review is captured once in Chromium.');
+  await page.setViewportSize({ width: 1440, height: 900 });
+  for (const [route, filename] of [
+    ['wa-known-date', 'webawesome-form-wide.png'],
+    ['wa-page', 'webawesome-layout-wide.png'],
+    ['wa-carousel', 'webawesome-media-wide.png'],
+    ['wa-popup', 'webawesome-helper-wide.png'],
+  ] as const) {
+    await page.goto(`/?component=${route}`);
+    await expect(page.locator(`[data-demo="${route}"]`)).toBeVisible();
+    await expect.poll(() => page.locator(`[data-item-id="${route}"]`).evaluate((element) => {
+      const rect = element.getBoundingClientRect();
+      return rect.top >= -1 && rect.bottom <= window.innerHeight + 1;
+    })).toBe(true);
+    await page.screenshot({ path: `test-results/${filename}`, fullPage: true });
+  }
+
+  await page.goto('/?component=wa-dialog');
+  await page.getByRole('button', { name: 'Open dialog' }).click();
+  await expect(page.locator('#catalog-wa-dialog')).toHaveAttribute('open', '');
+  await page.screenshot({ path: 'test-results/webawesome-dialog-open-wide.png', fullPage: true });
+  await page.getByRole('button', { name: 'Cancel' }).click();
+  await expect(page.locator('#catalog-wa-dialog')).not.toHaveAttribute('open', '');
+
+  await page.goto('/?component=wa-toast');
+  await page.getByRole('button', { name: 'Show toast' }).click();
+  await expect(page.locator('#catalog-wa-toast wa-toast-item')).toContainText('The component catalog is ready.');
+
+  await page.goto('/?component=wa-toast-item');
+  const toastItem = page.locator('[data-demo="wa-toast-item"] wa-toast-item');
+  await expect(toastItem).toBeVisible();
+  expect((await toastItem.boundingBox())?.height).toBeGreaterThan(40);
+
+  await page.goto('/?component=wa-animated-image');
+  const animatedImage = page.locator('[data-demo="wa-animated-image"] wa-animated-image');
+  await expect(animatedImage).toHaveAttribute('src', /\/assets\/animated-image-demo-[^/]+\.gif$/);
+  await expect.poll(() => animatedImage.evaluate((element) => (
+    element.shadowRoot?.querySelector<HTMLImageElement>('img.frozen')?.naturalWidth ?? 0
+  ))).toBeGreaterThan(0);
+  expect((await animatedImage.boundingBox())?.height).toBeGreaterThan(200);
+
+  await page.goto('/?component=wa-comparison');
+  const comparisonHeights = await page.locator('[data-demo="wa-comparison"] wa-comparison > [slot]').evaluateAll(
+    (elements) => elements.map((element) => element.getBoundingClientRect().height),
+  );
+  expect(comparisonHeights).toEqual([240, 240]);
+
+  await page.goto('/?component=wa-known-date');
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  await page.screenshot({ path: 'test-results/webawesome-form-narrow.png', fullPage: true });
+});
+
 test('catalog routes every production component family and supports its stateful controls', async ({ page, browserName }) => {
+  test.setTimeout(90_000);
   await page.goto('/');
-  await expect(page.locator('.catalog-sidebar [data-component="menu-header"]')).toHaveCount(5);
+  await expect(page.locator('.catalog-sidebar [data-component="menu-header"]')).toHaveCount(6);
+  await expect(page.locator('.catalog-sidebar [data-component="menu-item"]')).toHaveCount(kerfCatalog.length);
+  const ecosystemToggle = page.getByRole('button', { name: `Web Awesome (${webAwesomeCatalog.length})` });
+  await expect(ecosystemToggle).toHaveAttribute('aria-expanded', 'false');
+  await ecosystemToggle.click();
+  await expect(ecosystemToggle).toHaveAttribute('aria-expanded', 'true');
   await expect(page.locator('.catalog-sidebar [data-component="menu-item"]')).toHaveCount(catalog.length);
+  await expect(page.locator('[data-webawesome-catalog] h3')).toHaveText(['Actions', 'Forms', 'Layout', 'Navigation', 'Feedback', 'Media', 'Helpers']);
+  await ecosystemToggle.click();
+  await expect(page.locator('[data-webawesome-catalog]')).toHaveCount(0);
   await expect(page.locator('[data-demo="lucide-icon"]')).toBeVisible();
   for (const entry of catalog) {
     await page.goto(`/?component=${entry.id}`);
     await expect(page.locator(`[data-demo="${entry.id}"]`)).toBeVisible();
+    if (entry.source === 'webawesome') {
+      await expect(page.locator(entry.id).first()).toBeAttached();
+      await expect(page.locator('[data-webawesome-catalog]')).toBeVisible();
+    }
   }
 
   await page.locator('.catalog-sidebar [data-item-id="menu"]').click();
@@ -134,6 +201,12 @@ test('catalog routes every production component family and supports its stateful
   await expect(page.locator('[data-select-value]')).toHaveText('explicit');
 
   if (browserName === 'chromium') {
+    await page.goto('/?component=wa-button');
+    await page.setViewportSize({ width: 1440, height: 1000 });
+    await page.screenshot({ path: 'test-results/webawesome-catalog-wide.png', fullPage: true });
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.screenshot({ path: 'test-results/webawesome-catalog-narrow.png', fullPage: true });
+    await page.goto('/?component=select');
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.locator('[data-demo="select"]').screenshot({ path: 'test-results/web-awesome-select-wide.png' });
     await page.setViewportSize({ width: 390, height: 844 });

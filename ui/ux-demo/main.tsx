@@ -1,46 +1,3 @@
-import '@awesome.me/webawesome/dist/components/accordion-item/accordion-item.js';
-import '@awesome.me/webawesome/dist/components/accordion/accordion.js';
-import '@awesome.me/webawesome/dist/components/avatar/avatar.js';
-import '@awesome.me/webawesome/dist/components/badge/badge.js';
-import '@awesome.me/webawesome/dist/components/breadcrumb-item/breadcrumb-item.js';
-import '@awesome.me/webawesome/dist/components/breadcrumb/breadcrumb.js';
-import '@awesome.me/webawesome/dist/components/button-group/button-group.js';
-import '@awesome.me/webawesome/dist/components/button/button.js';
-import '@awesome.me/webawesome/dist/components/callout/callout.js';
-import '@awesome.me/webawesome/dist/components/card/card.js';
-import '@awesome.me/webawesome/dist/components/checkbox-group/checkbox-group.js';
-import '@awesome.me/webawesome/dist/components/checkbox/checkbox.js';
-import '@awesome.me/webawesome/dist/components/color-picker/color-picker.js';
-import '@awesome.me/webawesome/dist/components/copy-button/copy-button.js';
-import '@awesome.me/webawesome/dist/components/details/details.js';
-import '@awesome.me/webawesome/dist/components/divider/divider.js';
-import '@awesome.me/webawesome/dist/components/dropdown/dropdown.js';
-import '@awesome.me/webawesome/dist/components/dropdown-item/dropdown-item.js';
-import '@awesome.me/webawesome/dist/components/format-bytes/format-bytes.js';
-import '@awesome.me/webawesome/dist/components/format-date/format-date.js';
-import '@awesome.me/webawesome/dist/components/format-number/format-number.js';
-import '@awesome.me/webawesome/dist/components/input/input.js';
-import '@awesome.me/webawesome/dist/components/number-input/number-input.js';
-import '@awesome.me/webawesome/dist/components/progress-bar/progress-bar.js';
-import '@awesome.me/webawesome/dist/components/progress-ring/progress-ring.js';
-import '@awesome.me/webawesome/dist/components/qr-code/qr-code.js';
-import '@awesome.me/webawesome/dist/components/radio-group/radio-group.js';
-import '@awesome.me/webawesome/dist/components/radio/radio.js';
-import '@awesome.me/webawesome/dist/components/rating/rating.js';
-import '@awesome.me/webawesome/dist/components/relative-time/relative-time.js';
-import '@awesome.me/webawesome/dist/components/scroller/scroller.js';
-import '@awesome.me/webawesome/dist/components/skeleton/skeleton.js';
-import '@awesome.me/webawesome/dist/components/slider/slider.js';
-import '@awesome.me/webawesome/dist/components/spinner/spinner.js';
-import '@awesome.me/webawesome/dist/components/switch/switch.js';
-import '@awesome.me/webawesome/dist/components/tab-group/tab-group.js';
-import '@awesome.me/webawesome/dist/components/tab-panel/tab-panel.js';
-import '@awesome.me/webawesome/dist/components/tab/tab.js';
-import '@awesome.me/webawesome/dist/components/tag/tag.js';
-import '@awesome.me/webawesome/dist/components/textarea/textarea.js';
-import '@awesome.me/webawesome/dist/components/tooltip/tooltip.js';
-import '@awesome.me/webawesome/dist/components/tree-item/tree-item.js';
-import '@awesome.me/webawesome/dist/components/tree/tree.js';
 import '@kerfjs/ui/select/register';
 import '@kerfjs/ui/webawesome.css';
 import './style.css';
@@ -67,13 +24,16 @@ import { delegate, mount, signal } from 'kerfjs';
 import { delegateActions } from 'kerfjs/actions';
 import { ArrowDownAZ, Bell, Check, ChevronDown, ChevronLeft, ChevronRight, CircleHelp, Columns3, Contrast, Folder, GitCompare, Inbox, List, Moon, MoreHorizontal, PanelLeft, PanelLeftOpen, Pin, Plus, Search, Settings, SlidersHorizontal, Star, Wrench, ZapOff } from 'lucide';
 
-import { catalog, catalogEntriesUsing, type CatalogEntry, type CatalogId, catalogSections, findCatalogEntry, isCatalogId } from './catalog.js';
+import { catalog, catalogEntriesUsing, type CatalogEntry, type CatalogId, catalogSections, findCatalogEntry, isCatalogId, webAwesomeCatalog, webAwesomeCatalogSections } from './catalog.js';
+import { webAwesomeComponentDemos } from './webawesome-demos.js';
 
 const app = document.querySelector<HTMLElement>('#app');
 if (!app) throw new Error('Missing #app');
 
 const requested = new URLSearchParams(location.search).get('component');
-const selectedDemo = signal<CatalogId>(isCatalogId(requested) ? requested : catalog[0].id);
+const initialDemo = isCatalogId(requested) ? requested : catalog[0].id;
+const selectedDemo = signal<CatalogId>(initialDemo);
+const webAwesomeExpanded = signal(findCatalogEntry(initialDemo)?.source === 'webawesome');
 const regionSize = signal(276);
 const activeTab = signal('library');
 const tabBarActive = signal('components');
@@ -324,6 +284,7 @@ function LoadingSpinnerDemo() {
 }
 
 const demos: Record<CatalogId, () => ReturnType<typeof ToolbarDemo>> = {
+  ...webAwesomeComponentDemos,
   'lucide-icon': LucideIconDemo,
   'webawesome-theme': WebAwesomeThemeDemo,
   toolbar: ToolbarDemo,
@@ -366,10 +327,17 @@ function DemoRelationships({ entry }: { entry: CatalogEntry }) {
 function selectDemo(id: string): void {
   if (!isCatalogId(id)) return;
   selectedDemo.value = id;
+  if (findCatalogEntry(id)?.source === 'webawesome') webAwesomeExpanded.value = true;
   const url = new URL(location.href);
   url.searchParams.set('component', id);
   history.replaceState(null, '', url);
   actionLog.value = `Showing ${id}`;
+  revealSelectedSidebarItem(id);
+}
+
+function revealSelectedSidebarItem(id: CatalogId, block: ScrollLogicalPosition = 'nearest'): void {
+  if (!window.matchMedia('(min-width: 52.01rem)').matches) return;
+  window.requestAnimationFrame(() => document.querySelector(`[data-item-id="${CSS.escape(id)}"]`)?.scrollIntoView({ block }));
 }
 
 mount(app, () => {
@@ -387,11 +355,22 @@ mount(app, () => {
             {section.entries.map((entry) => <MenuItem action="select-demo" itemId={entry.id} label={entry.name} selected={selectedDemo.value === entry.id} title={entry.description} />)}
           </div>
         </section>)}
+        <section class="catalog-group catalog-group--ecosystem">
+          <MenuHeader label={`Web Awesome (${webAwesomeCatalog.length})`} toggle action="toggle-webawesome-catalog" expanded={webAwesomeExpanded.value} actionIcon={icon(ChevronDown, 'chevron-down')} />
+          {webAwesomeExpanded.value && <div class="catalog-ecosystem" data-webawesome-catalog>
+            {webAwesomeCatalogSections.map((section) => <section class="catalog-ecosystem__group">
+              <h3>{section.category}</h3>
+              <div class="catalog-group__items">
+                {section.entries.map((entry) => <MenuItem action="select-demo" itemId={entry.id} label={entry.name} selected={selectedDemo.value === entry.id} title={entry.description} />)}
+              </div>
+            </section>)}
+          </div>}
+        </section>
       </nav>
     </aside>
     <article class="catalog-detail">
       <header class="catalog-header">
-        <div><p class="catalog-eyebrow">{selected.category}</p><h2>{selected.name}</h2><p>{selected.description}</p></div>
+        <div><p class="catalog-eyebrow">{selected.source === 'webawesome' ? `Web Awesome · ${selected.category}` : selected.category}</p><h2>{selected.name}</h2><p>{selected.description}</p></div>
         <div class="catalog-settings" role="group" aria-label="Catalog display settings">
           <button type="button" data-action="toggle-theme" aria-pressed={String(darkTheme.value)}>{icon(Moon, 'moon')}<span>Dark</span></button>
           <button type="button" data-action="toggle-contrast" aria-pressed={String(increasedContrast.value)}>{icon(Contrast, 'contrast')}<span>Contrast</span></button>
@@ -400,18 +379,36 @@ mount(app, () => {
       </header>
       <section class="catalog-stage" aria-label={`${selected.name} preview`}>
         <div class="catalog-canvas"><Stage /></div>
-        <footer class="catalog-stage__footer"><output class="catalog-log" aria-live="polite">{actionLog.value}</output><span>Public component · production CSS</span></footer>
+        <footer class="catalog-stage__footer"><output class="catalog-log" aria-live="polite">{actionLog.value}</output><span>{selected.source === 'webawesome' ? 'Web Awesome component · Kerf theme' : selected.kind === 'component' ? 'Kerf first-class component · production CSS' : 'Kerf composition · production CSS'}</span></footer>
       </section>
       <DemoRelationships entry={selected} />
     </article>
   </main>;
 });
 
+if (findCatalogEntry(initialDemo)?.source === 'webawesome') revealSelectedSidebarItem(initialDemo, 'center');
+
 const stopActions = delegateActions(app, 'click', {
   'select-demo': (_event, element) => {
     const id = element.getAttribute('data-item-id');
     if (id) selectDemo(id);
   },
+  'toggle-webawesome-catalog': () => { webAwesomeExpanded.value = !webAwesomeExpanded.value; actionLog.value = webAwesomeExpanded.value ? 'Web Awesome catalog expanded' : 'Web Awesome catalog collapsed'; },
+  'show-wa-dialog': () => { actionLog.value = 'Dialog opened'; const dialog = document.querySelector<HTMLElement & { open: boolean }>('#catalog-wa-dialog'); if (dialog) dialog.open = true; },
+  'hide-wa-dialog': () => { actionLog.value = 'Dialog closed'; const dialog = document.querySelector<HTMLElement & { open: boolean }>('#catalog-wa-dialog'); if (dialog) dialog.open = false; },
+  'show-wa-drawer': () => { actionLog.value = 'Drawer opened'; const drawer = document.querySelector<HTMLElement & { open: boolean }>('#catalog-wa-drawer'); if (drawer) drawer.open = true; },
+  'hide-wa-drawer': () => { actionLog.value = 'Drawer closed'; const drawer = document.querySelector<HTMLElement & { open: boolean }>('#catalog-wa-drawer'); if (drawer) drawer.open = false; },
+  'show-wa-toast': () => {
+    actionLog.value = 'Toast shown';
+    const toast = document.querySelector('#catalog-wa-toast');
+    if (!toast) return;
+    const item = document.createElement('wa-toast-item');
+    item.setAttribute('variant', 'success');
+    item.setAttribute('duration', '4000');
+    item.textContent = 'The component catalog is ready.';
+    toast.prepend(item);
+  },
+  'randomize-wa-content': () => { actionLog.value = 'Random content changed'; document.querySelector<HTMLElement & { randomize(): Element[] }>('wa-random-content')?.randomize(); },
   'select-tab': (_event, element) => { activeTab.value = element.getAttribute('data-tab-id') ?? 'library'; actionLog.value = `Selected ${activeTab.value}`; },
   'select-reorder-tab': (_event, element) => { tabBarActive.value = element.getAttribute('data-tab-id') ?? 'components'; actionLog.value = `Selected ${tabBarActive.value}`; },
   'close-tab': (_event, element) => { actionLog.value = `Close requested for ${element.getAttribute('data-tab-id')}`; },

@@ -74,9 +74,10 @@ import '@awesome.me/webawesome/dist/components/input/input.js';
 `webawesome.css` includes Web Awesome's native/base theme and then applies the
 Hot Sheet 2 palette, surfaces, status colors, focus treatment, form geometry,
 radii, tooltips, and shadows through Web Awesome's public `--wa-*` contract.
-Those tokens flow into all free component families, including components not
-shown in the catalog. It does not import or register any component JavaScript,
-so each Web Awesome component module remains independently tree-shakeable.
+Those tokens flow into all free component families. Every free Web Awesome 3.12
+component has an individual UX-catalog route under the collapsible ecosystem
+section, but the theme entry does not import or register component JavaScript,
+so each component module remains independently tree-shakeable in consuming apps.
 
 Load application CSS afterward to override semantic values globally, or scope
 them to a subtree. Use Web Awesome's `.wa-light`, `.wa-dark`, and `.wa-invert`
@@ -132,4 +133,4 @@ That boundary keeps Web Awesome and its custom-element side effects out of bundl
 - [UX catalog contract](./docs/ux-demo.md)
 - [AI guide](./ai/skill.md)
 
-Run `npm run dev` from this directory for the category-grouped master/detail catalog. Every public visual component has a focused route and one grouped `Related components` selector containing its derived `Uses` / `Used by` navigation. Run `npm run check` for static/unit/bundle gates and `npm run test:e2e` for the real-browser suite.
+Run `npm run dev` from this directory for the category-grouped master/detail catalog. Every public visual component has a focused route; all 70 free Web Awesome 3.12 components have focused routes under the collapsible ecosystem section. One grouped `Related components` selector contains derived `Uses` / `Used by` navigation across both sets. Run `npm run check` for static/unit/bundle gates and `npm run test:e2e` for the real-browser suite.

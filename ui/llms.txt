@@ -11,7 +11,7 @@ Accessible, production-backed UI primitives for kerf applications.
 - [Apple HIG translation](./docs/apple-hig.md)
 - [UX catalog](./docs/ux-demo.md)
 
-The UX catalog is a category-grouped master/detail review surface with a focused route for every public visual component plus composition demos. Related entries use one grouped `Uses` / `Used by` selector; its shell, display preferences, and selected production component share one semantic theme. The Web Awesome theme composition reviews representative action, form, structure/navigation, feedback, media, and formatting families.
+The UX catalog is a category-grouped master/detail review surface with a focused route for every public visual component plus composition demos. Its collapsible ecosystem section also lists all 70 free Web Awesome 3.12 components, each with a focused themed route. Related entries use one grouped `Uses` / `Used by` selector across both sets; the shell, display preferences, and selected component share one semantic theme.
 
 Public components: `LucideIcon`, `Toolbar`, `ToolbarControlGroup`, `ToolbarText`, `MenuItem`, `MenuHeader`, `ResizableRegion`, `wireResizableRegions`, `AppTab`, `TabBar`, `wireTabBars`, `reorderTabs`, `PageHeader`, `LoadingSpinner`, `Select`, `StateBanner`, `EmptyState`, `DialogHeader`, and `ValueTable`. Semantic state palettes are opinionated, Web Awesome-compatible, and overridable globally, by tone, or per instance.
 
