@@ -42,3 +42,4 @@ bench/.bench-cache/
 # krausest by bench/import-krausest.mjs).
 bench/results.local.json
 bench/results.local.md
+.hotsheet/settings.local.json

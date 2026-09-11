@@ -1,128 +1,37 @@
 {
-  "appName": "Kerf",
-  "ticketPrefix": "KF",
+  "$hotsheetSchema": 1,
   "aiReviewNotes": true,
   "auto_context": [
     {
-      "type": "category",
       "key": "feature",
-      "text": "Read docs/ai/code-summary.md and docs/ai/requirements-summary.md if you haven't yet or if you feel you might be out-of-date.\n\nAdd a new requirements document.\n\nAsk clarifying questions as needed.\n\nBe sure to create follow up tickets as needed as well."
+      "text": "Read docs/ai/code-summary.md and docs/ai/requirements-summary.md if you haven't yet or if you feel you might be out-of-date.\n\nAdd a new requirements document.\n\nAsk clarifying questions as needed.\n\nBe sure to create follow up tickets as needed as well.",
+      "type": "category"
     },
     {
-      "type": "category",
       "key": "requirement_change",
-      "text": "Read docs/ai/code-summary.md and docs/ai/requirements-summary.md if you haven't yet or if you feel you might be out-of-date.\n\nUpdate requirements documents as appropriate.\n\nAsk clarifying questions as needed.\n"
+      "text": "Read docs/ai/code-summary.md and docs/ai/requirements-summary.md if you haven't yet or if you feel you might be out-of-date.\n\nUpdate requirements documents as appropriate.\n\nAsk clarifying questions as needed.\n",
+      "type": "category"
     },
     {
-      "type": "category",
       "key": "bug",
-      "text": "Read docs/ai/code-summary.md and docs/ai/requirements-summary.md if you haven't yet or if you feel you might be out-of-date.\n\nEvaluate current tests and add unit tests or test automation to protected against this kind of bug going forward, if applicable.\n"
+      "text": "Read docs/ai/code-summary.md and docs/ai/requirements-summary.md if you haven't yet or if you feel you might be out-of-date.\n\nEvaluate current tests and add unit tests or test automation to protected against this kind of bug going forward, if applicable.\n",
+      "type": "category"
     },
     {
-      "type": "tag",
       "key": "fable",
-      "text": "Use a subagent running the Fable model for this ticket."
-    }
-  ],
-  "custom_commands": [
-    {
-      "name": "Commit Changes",
-      "prompt": "make a commit message for the recently completed tickets, without wrapping long lines.  Don't include any co-authored by Anthropic type lines in the commit message.  add all unstaged changes to the git commit.  git commit with the message you generated but don't push",
-      "icon": "send",
-      "color": "#3b82f6",
-      "id": "728f3493-5dc6-41a7-bda9-face5a5f9833"
-    },
-    {
-      "name": "Update Requirements",
-      "prompt": "Update the requirements docs as appropriate",
-      "icon": "file-text",
-      "color": "#6b7280",
-      "id": "f448949f-4e66-4c22-b2d4-3b5f92b862bb"
-    },
-    {
-      "type": "group",
-      "name": "Quality",
-      "children": [
-        {
-          "name": "Reqs ↔︎ Code",
-          "prompt": "/check-requirements-against-code",
-          "icon": "arrow-left-right",
-          "color": "#ec4899",
-          "id": "cd54e8d0-a41a-48e2-a3e2-c17832ef583b"
-        },
-        {
-          "name": "Check Code Hygene",
-          "prompt": "/check-code-hygiene",
-          "icon": "soap-dispenser-droplet",
-          "color": "#f97316",
-          "id": "d812747a-3ce4-47de-b428-4fc81fa889fe"
-        },
-        {
-          "name": "Analyze Code Quality",
-          "prompt": "/analyze-code-quality",
-          "icon": "circle-check-big",
-          "color": "#8b5cf6",
-          "id": "11ac1a1a-24de-4fa2-8607-9759a9e69fca"
-        },
-        {
-          "name": "Everything",
-          "prompt": "do these sequentially, creating follow up tickets for all concerns encountered:\n/check-requirements-against-code\n/check-code-hygiene\n/analyze-code-quality\n",
-          "icon": "balloon",
-          "color": "#e5e7eb",
-          "id": "7579e9a4-3b5e-4329-b8b8-4bf5496caad3"
-        }
-      ],
-      "id": "62e382f4-6d18-4333-ac4a-5b8f3f47cd66"
-    },
-    {
-      "type": "group",
-      "name": "GIT",
-      "children": [
-        {
-          "name": "git status",
-          "prompt": "git status",
-          "icon": "git-compare",
-          "color": "#e5e7eb",
-          "target": "shell",
-          "autoShowLog": true,
-          "id": "79089112-d822-4575-abbc-5ff9c0fbd4be"
-        },
-        {
-          "name": "git push",
-          "prompt": "git push",
-          "icon": "git-compare-arrows",
-          "target": "shell",
-          "id": "425f3cc3-1034-4e56-8edd-3396e905a87f"
-        }
-      ],
-      "id": "4a2acb90-e9e1-4d3b-8e50-7f367af4d6e0"
-    },
-    {
-      "name": "Prep Major Release",
-      "prompt": "/prep-major-release",
-      "icon": "wand",
-      "color": "#14b8a6",
-      "id": "230dbc94-a233-4e93-a399-1dec45bc3ac8"
-    },
-    {
-      "name": "Site",
-      "prompt": "npm run site:dev",
-      "target": "shell",
-      "icon": "globe",
-      "launchInNewTerminal": true,
-      "color": "#3b82f6",
-      "id": "a132768f-70c6-495a-b202-4c3e1a53e7ec"
+      "text": "Use a subagent running the Fable model for this ticket.",
+      "type": "tag"
     }
   ],
   "terminals": [
     {
-      "id": "default",
       "command": "{{claudeCommand}}",
-      "name": "Claude",
-      "lazy": false,
-      "theme": "github-dark",
       "fontFamily": "system",
-      "fontSize": 17
+      "fontSize": 17,
+      "id": "default",
+      "lazy": false,
+      "name": "Claude",
+      "theme": "github-dark"
     }
   ]
 }

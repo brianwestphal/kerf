@@ -1,0 +1,6 @@
+[mcp_servers.hotsheet]
+args = [
+    "--path",
+    "/Users/westphal/Documents/kerf.hs2",
+]
+command = "/Users/westphal/Documents/hotsheet2/target/debug/hotsheet-mcp"

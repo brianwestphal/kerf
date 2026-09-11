@@ -1,0 +1,13 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "hotsheet": {
+      "command": [
+        "/Users/westphal/Documents/hotsheet2/target/debug/hotsheet-mcp",
+        "--path",
+        "/Users/westphal/Documents/kerf.hs2"
+      ],
+      "type": "local"
+    }
+  }
+}
