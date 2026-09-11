@@ -431,15 +431,10 @@ const stopActions = delegateActions(app, 'click', {
   'hide-wa-dialog': () => { actionLog.value = 'Dialog closed'; const dialog = document.querySelector<HTMLElement & { open: boolean }>('#catalog-wa-dialog'); if (dialog) dialog.open = false; },
   'show-wa-drawer': () => { actionLog.value = 'Drawer opened'; const drawer = document.querySelector<HTMLElement & { open: boolean }>('#catalog-wa-drawer'); if (drawer) drawer.open = true; },
   'hide-wa-drawer': () => { actionLog.value = 'Drawer closed'; const drawer = document.querySelector<HTMLElement & { open: boolean }>('#catalog-wa-drawer'); if (drawer) drawer.open = false; },
-  'show-wa-toast': () => {
-    actionLog.value = 'Toast shown';
-    const toast = document.querySelector('#catalog-wa-toast');
+  'show-wa-toast': async () => {
+    const toast = document.querySelector<HTMLElement & { create(message: string, options?: { duration?: number; icon?: string; variant?: string }): Promise<HTMLElement> }>('#catalog-wa-toast');
     if (!toast) return;
-    const item = document.createElement('wa-toast-item');
-    item.setAttribute('variant', 'success');
-    item.setAttribute('duration', '4000');
-    item.textContent = 'The component catalog is ready.';
-    toast.prepend(item);
+    await toast.create('The component catalog is ready.', { duration: 4000, icon: 'circle-check', variant: 'success' });
   },
   'randomize-wa-content': () => { actionLog.value = 'Random content changed'; document.querySelector<HTMLElement & { randomize(): Element[] }>('wa-random-content')?.randomize(); },
   'toggle-wa-intersection': (_event, element) => {

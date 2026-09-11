@@ -83,10 +83,6 @@ test('renders and operates representative focused Web Awesome specimens', async 
   await page.getByRole('button', { name: 'Cancel' }).click();
   await expect(page.locator('#catalog-wa-dialog')).not.toHaveAttribute('open', '');
 
-  await page.goto('/?component=wa-toast');
-  await page.getByRole('button', { name: 'Show toast' }).click();
-  await expect(page.locator('#catalog-wa-toast wa-toast-item')).toContainText('The component catalog is ready.');
-
   await page.goto('/?component=wa-toast-item');
   const toastItem = page.locator('[data-demo="wa-toast-item"] wa-toast-item');
   await expect(toastItem).toBeVisible();
@@ -110,6 +106,16 @@ test('renders and operates representative focused Web Awesome specimens', async 
   await page.setViewportSize({ width: 390, height: 844 });
   await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   await page.screenshot({ path: 'test-results/webawesome-form-narrow.png', fullPage: true });
+});
+
+test('toast specimen creates a visible transient notification', async ({ page, browserName }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/?component=wa-toast');
+  await page.getByRole('button', { name: 'Show toast' }).click();
+  const createdToast = page.locator('#catalog-wa-toast wa-toast-item');
+  await expect(createdToast).toContainText('The component catalog is ready.');
+  await expect(createdToast).toBeVisible();
+  if (browserName === 'chromium') await page.screenshot({ path: 'test-results/webawesome-toast-open-wide.png', fullPage: true });
 });
 
 test('observer specimens expose visible, user-driven events', async ({ page, browserName }) => {

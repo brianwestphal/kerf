@@ -128,7 +128,7 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
   'wa-skeleton': () => <div class="wa-demo-skeleton"><wa-skeleton effect="sheen"></wa-skeleton><wa-skeleton effect="sheen"></wa-skeleton><wa-skeleton effect="sheen"></wa-skeleton></div>,
   'wa-spinner': () => <div class="wa-demo-row wa-demo-spinners"><wa-spinner aria-label="Loading small"></wa-spinner><wa-spinner aria-label="Loading medium"></wa-spinner><wa-spinner aria-label="Loading large"></wa-spinner></div>,
   'wa-tag': () => <div class="wa-demo-row"><wa-tag variant="brand" pill>Design system</wa-tag><wa-tag variant="success">Stable</wa-tag><wa-tag variant="warning" removable>Needs review</wa-tag></div>,
-  'wa-toast': () => <div class="wa-demo-launcher"><wa-button variant="brand" data-action="show-wa-toast">Show toast</wa-button><span>The notification appears in the configured toast stack.</span><wa-toast id="catalog-wa-toast" placement="top-end"></wa-toast></div>,
+  'wa-toast': () => <div class="wa-demo-launcher"><wa-button variant="brand" data-action="show-wa-toast">Show toast</wa-button><span>The notification uses Web Awesome's programmatic stack API. Hot Sheet 2 currently renders its own app-level toast.</span><wa-toast id="catalog-wa-toast" placement="top-end"></wa-toast></div>,
   'wa-toast-item': () => <wa-toast-item class="wa-demo-toast-item" variant="success" duration="0">The component catalog is ready.</wa-toast-item>,
   'wa-tooltip': () => <div class="wa-demo-row"><wa-button id="catalog-tooltip-target" appearance="outlined">Hover or focus</wa-button><wa-tooltip for="catalog-tooltip-target">Uses the shared tooltip palette</wa-tooltip></div>,
 
