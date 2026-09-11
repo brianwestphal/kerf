@@ -61,6 +61,29 @@ remains a broad visual-regression surface, while modal, drawer, toast, media,
 and helper routes make their own behavior inspectable without opening every
 state at once.
 
+## Badge and tag guidance
+
+Use Web Awesome's stable `wa-badge` and `wa-tag` directly instead of adding
+generic Kerf wrappers around them. Their variants and appearances already read
+the semantic palette above, and importing their component modules remains
+independent and tree-shakeable.
+
+- Use `wa-badge pill` for compact status, count, or activity labels. Hot Sheet
+  2's pill-shaped ticket status treatment is the reference shape.
+- Use the default, non-pill `wa-tag` for categories, filters, and removable
+  selections. Its medium-radius rounded rectangle keeps tags distinct from
+  status badges. Handle the bubbling `wa-remove` event in the feature that owns
+  the underlying selection.
+- Keep domain components when they add domain behavior. Hot Sheet 2's
+  `StatusBadge` owns the ticket-status-to-label/icon mapping, while its
+  `TagChip` is already a small domain adapter around `wa-tag`. Those are useful
+  application components, not missing general-purpose primitives in
+  `@kerfjs/ui`.
+
+The `pill`, `variant`, `appearance`, and size APIs remain available per
+instance, and applications can override the same `--wa-*` semantic tokens when
+their domain needs a different palette.
+
 ## Customization
 
 Load application overrides after the package theme, or scope them to the

@@ -134,6 +134,9 @@ button { font: inherit; }
 .wa-component-demo__specimen { display: grid; min-width: 0; min-height: 14rem; padding: clamp(1rem, 4vw, 2rem); align-content: center; justify-items: center; gap: var(--wa-space-m); }
 .wa-component-demo__specimen > :where(wa-accordion, wa-card, wa-checkbox-group, wa-color-picker, wa-input, wa-known-date, wa-number-input, wa-otp-input, wa-pagination, wa-radio-group, wa-select, wa-slider, wa-tab-group, wa-textarea, wa-time-input, wa-tree) { width: min(32rem, 100%); }
 .wa-demo-row { display: flex; min-width: 0; flex-wrap: wrap; align-items: center; justify-content: center; gap: var(--wa-space-s); }
+.wa-demo-labeled-stack { display: grid; width: min(38rem, 100%); justify-items: center; gap: var(--wa-space-s); text-align: center; }
+.wa-demo-labeled-stack > span { color: var(--wa-color-text-normal); font-size: var(--wa-font-size-s); font-weight: var(--wa-font-weight-semibold); }
+.wa-demo-labeled-stack > small { max-width: 32rem; color: var(--wa-color-text-quiet); font-size: var(--wa-font-size-xs); line-height: var(--wa-line-height-normal); }
 .wa-demo-stack, .wa-demo-form-stack, .wa-demo-callouts { display: grid; width: min(32rem, 100%); gap: var(--wa-space-s); }
 .wa-demo-inline-field { display: flex; min-width: min(24rem, 100%); padding: var(--wa-space-xs) var(--wa-space-s); border: 1px solid var(--wa-color-neutral-border-normal); border-radius: var(--wa-form-control-border-radius); background: var(--wa-color-surface-raised); align-items: center; justify-content: space-between; gap: var(--wa-space-s); }
 .wa-demo-inline-field code { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

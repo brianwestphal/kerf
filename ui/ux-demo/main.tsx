@@ -123,10 +123,10 @@ function WebAwesomeThemeDemo() {
     <section>
       <header><p>Feedback and data</p><span>Brand and status variants stay meaningful in both appearances</span></header>
       <div class="webawesome-theme-demo__stack">
-        <div class="webawesome-theme-demo__row"><wa-badge variant="neutral">Draft</wa-badge><wa-badge variant="brand">In review</wa-badge><wa-badge variant="success">Ready</wa-badge><wa-badge variant="warning">Needs attention</wa-badge><wa-badge variant="danger">Blocked</wa-badge></div>
+        <div class="webawesome-theme-demo__row"><wa-badge variant="neutral" pill="pill">Draft</wa-badge><wa-badge variant="brand" pill="pill">In review</wa-badge><wa-badge variant="success" pill="pill">Ready</wa-badge><wa-badge variant="warning" pill="pill">Needs attention</wa-badge><wa-badge variant="danger" pill="pill">Blocked</wa-badge></div>
         <div class="webawesome-theme-demo__callouts"><wa-callout variant="brand">Changes are ready for review.</wa-callout><wa-callout variant="success">All checks passed.</wa-callout><wa-callout variant="warning">One dependency is behind.</wa-callout><wa-callout variant="danger">Publishing is blocked.</wa-callout></div>
         <div class="webawesome-theme-demo__progress"><wa-progress-bar value="72" label="Build progress"></wa-progress-bar><wa-progress-ring value="72" label="Build progress">72%</wa-progress-ring><wa-spinner aria-label="Loading"></wa-spinner><wa-skeleton effect="sheen"></wa-skeleton></div>
-        <div class="webawesome-theme-demo__row"><wa-tag variant="brand" pill>Design system</wa-tag><wa-tag variant="success">Stable</wa-tag><wa-button id="theme-tooltip-target" appearance="plain">Hover for details</wa-button><wa-tooltip for="theme-tooltip-target">Uses the shared tooltip palette</wa-tooltip></div>
+        <div class="webawesome-theme-demo__row"><wa-tag variant="brand">design-system</wa-tag><wa-tag variant="success">stable</wa-tag><wa-button id="theme-tooltip-target" appearance="plain">Hover for details</wa-button><wa-tooltip for="theme-tooltip-target">Uses the shared tooltip palette</wa-tooltip></div>
       </div>
     </section>
 

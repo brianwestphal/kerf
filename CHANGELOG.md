@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Clarified that Web Awesome Badge and Tag are the tree-shakeable generic primitives: status badges use the pill treatment, tags remain rounded rectangles, and domain adapters stay application-owned when they add mappings or mutation behavior.
 - Unified Accordion, Details, Breadcrumb, and Kerf Select chevron scale through an overridable shared disclosure-icon token.
 - Matched Web Awesome Carousel navigation to Kerf's compact disclosure geometry, using overridable 16px arrows and 7px visible page dots with accessible macOS-sized hit targets.
 - Expanded the Web Awesome Animation UX specimen into an interactive settings panel with preset, easing, timing, playback, transport, lifecycle, and reduced-motion behavior.

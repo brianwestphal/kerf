@@ -108,6 +108,26 @@ test('renders and operates representative focused Web Awesome specimens', async 
   await page.screenshot({ path: 'test-results/webawesome-form-narrow.png', fullPage: true });
 });
 
+test('distinguishes pill status badges from rounded-rectangle tags', async ({ page, browserName }) => {
+  await page.setViewportSize({ width: 1100, height: 760 });
+  await page.goto('/?component=wa-badge');
+  const badges = page.locator('[data-demo="wa-badge"] wa-badge');
+  await expect(badges).toHaveCount(5);
+  await expect(badges.first()).toHaveAttribute('pill', '');
+  const badgeRadius = await badges.first().evaluate((element) => window.getComputedStyle(element).borderRadius);
+  if (browserName === 'chromium') await page.screenshot({ path: 'test-results/webawesome-badge-wide.png', fullPage: true });
+
+  await page.goto('/?component=wa-tag');
+  const tags = page.locator('[data-demo="wa-tag"] wa-tag');
+  await expect(tags).toHaveCount(4);
+  await expect(tags.first()).not.toHaveAttribute('pill');
+  expect(await tags.last().evaluate((element) => element.hasAttribute('with-remove'))).toBe(true);
+  const tagRadius = await tags.first().evaluate((element) => window.getComputedStyle(element).borderRadius);
+  expect(parseFloat(badgeRadius)).toBeGreaterThan(parseFloat(tagRadius));
+
+  if (browserName === 'chromium') await page.screenshot({ path: 'test-results/webawesome-tag-wide.png', fullPage: true });
+});
+
 test('toast specimen creates a visible transient notification', async ({ page, browserName }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/?component=wa-toast');
