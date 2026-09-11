@@ -11,6 +11,7 @@
 @import './page-header.css';
 @import './loading-spinner.css';
 @import './select.css';
+@import './segmented-control.css';
 @import './state-banner.css';
 @import './empty-state.css';
 @import './dialog-header.css';

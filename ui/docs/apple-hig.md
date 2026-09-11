@@ -21,6 +21,7 @@ Native Apple applications should use native platform controls and follow the Hum
 - Use `role="status"` for passive updates. Reserve `role="alert"` for failures requiring attention.
 - Do not timer-dismiss essential feedback. A transient notice that disappears must not be the only record of an important outcome.
 - Place controls near the content they affect. Avoid modal presentation when an inline or popover interaction preserves context safely.
+- Use segmented controls for a small set of mutually exclusive modes. Keep every choice named and keyboard reachable, make the selected mode visible without relying on color alone, and choose rounded or pill geometry to fit the surrounding toolbar or content surface.
 
 ## Layout and appearance
 

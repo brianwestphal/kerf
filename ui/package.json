@@ -107,6 +107,11 @@
       "browser": "./dist/browser/select.js",
       "import": "./dist/select.js"
     },
+    "./segmented-control": {
+      "types": "./dist/segmented-control.d.ts",
+      "browser": "./dist/browser/segmented-control.js",
+      "import": "./dist/segmented-control.js"
+    },
     "./select/register": {
       "types": "./dist/select-register.d.ts",
       "import": "./dist/select-register.js"
@@ -150,6 +155,7 @@
     "./page-header.css": "./src/page-header.css",
     "./loading-spinner.css": "./src/loading-spinner.css",
     "./select.css": "./src/select.css",
+    "./segmented-control.css": "./src/segmented-control.css",
     "./state-banner.css": "./src/state-banner.css",
     "./empty-state.css": "./src/empty-state.css",
     "./dialog-header.css": "./src/dialog-header.css",

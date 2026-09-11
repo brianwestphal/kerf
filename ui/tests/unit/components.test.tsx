@@ -10,6 +10,7 @@ import { MenuHeader } from '../../src/menu-header.js';
 import { MenuItem } from '../../src/menu-item.js';
 import { PageHeader } from '../../src/page-header.js';
 import { clampRegionSize, ResizableRegion, resizeRegionFromPointer } from '../../src/resizable-region.js';
+import { SegmentedControl } from '../../src/segmented-control.js';
 import { Select } from '../../src/select.js';
 import { StateBanner } from '../../src/state-banner.js';
 import { TabBar } from '../../src/tab-bar.js';
@@ -112,6 +113,35 @@ describe('production UI primitives', () => {
     expect(asHtml(Select({ name: 'none', value: 'missing', choices: [{ value: 'one', label: 'One' }] }))).not.toContain('slot="start"');
     const onlyGrouped = asHtml(Select({ name: 'grouped', value: 'plain', choices: [{ value: 'plain', label: 'Plain', group: 'Only' }] }));
     expect(onlyGrouped).toContain('class="kui-select__group" role="group"');
+  });
+
+  it('renders controlled segmented choices with stable action and presentation hooks', () => {
+    const control = asHtml(SegmentedControl({
+      id: 'inspector-section',
+      label: 'Inspector section',
+      value: 'activity',
+      action: 'choose-section',
+      appearance: 'outlined',
+      shape: 'pill',
+      size: 'small',
+      layout: 'equal',
+      className: 'scoped-palette',
+      choices: [
+        { value: 'summary', label: 'Summary' },
+        { value: 'activity', label: 'Activity', content: <strong>Recent activity</strong>, title: 'Show recent activity' },
+        { value: 'files', label: 'Files', disabled: true },
+      ],
+    }));
+    expect(control).toContain('class="kui-segmented-control scoped-palette"');
+    expect(control).toContain('data-segmented-control-id="inspector-section" data-value="activity" data-appearance="outlined" data-shape="pill" data-size="small" data-layout="equal" role="group" aria-label="Inspector section"');
+    expect(control).toContain('data-action="choose-section" data-segment-value="summary" data-selected="false" aria-label="Summary" aria-pressed="false"');
+    expect(control).toContain('data-segment-value="activity" data-selected="true" aria-label="Activity" aria-pressed="true" title="Show recent activity"');
+    expect(control).toContain('<strong>Recent activity</strong>');
+    expect(control).toContain('data-segment-value="files" data-selected="false" aria-label="Files" aria-pressed="false" disabled tabindex="0"');
+    const defaults = asHtml(SegmentedControl({ id: 'mode', label: 'Mode', value: 'one', choices: [{ value: 'one', label: 'One' }] }));
+    expect(defaults).toContain('data-action="select-segment"');
+    expect(defaults).toContain('data-appearance="filled" data-shape="rounded" data-size="default" data-layout="content"');
+    expect(defaults).toContain('<span>One</span>');
   });
 
   it('clamps and describes horizontal, vertical, and collapsed resizable regions', () => {

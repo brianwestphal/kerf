@@ -86,6 +86,15 @@ button { font: inherit; }
 .toolbar-control-group-demo wa-button::part(base) { width: 2rem; height: 2rem; min-height: 2rem; padding: 0; border-radius: var(--kui-radius-pill); }
 .toolbar-control-group-demo wa-button::part(button) { gap: 2px; }
 .toolbar-control-group-demo wa-button::part(caret) { margin-inline-start: 2px; }
+.segmented-control-demo { display: grid; width: min(48rem, 100%); gap: 1rem; }
+.segmented-control-demo article { display: grid; min-width: 0; padding: 1rem; border: 1px solid var(--kui-color-border); border-radius: var(--kui-radius-l); background: var(--kui-color-surface); box-shadow: var(--kui-shadow-s); align-items: center; grid-template-columns: minmax(10rem, .75fr) minmax(0, 1.25fr); gap: 1.25rem; }
+.segmented-control-demo article > header { display: grid; gap: .2rem; }
+.segmented-control-demo h3, .segmented-control-demo p { margin: 0; }
+.segmented-control-demo h3 { font-size: var(--kui-font-s); }
+.segmented-control-demo p { color: var(--kui-color-text-quiet); font-size: var(--kui-font-xs); line-height: 1.4; }
+.segmented-control-demo .kui-segmented-control { justify-self: end; }
+.segmented-control-demo article > .kui-toolbar-control-group { justify-self: end; }
+.segmented-control-demo [data-layout="equal"] { min-width: min(24rem, 100%); }
 .demo-state-banner-grid { display: grid; width: min(54rem, 100%); gap: .75rem; }
 .demo-state-banner-grid article { display: grid; gap: .3rem; }
 .demo-state-banner--override { --kui-state-banner-background: light-dark(#f6efff, #2e203d); --kui-state-banner-border: light-dark(#b69ad9, #765a98); --kui-state-banner-foreground: light-dark(#6d3f9c, #e3c7ff); }
@@ -212,6 +221,10 @@ button { font: inherit; }
   .demo-variant-stack > div, .demo-text-variants > div { align-items: flex-start; flex-direction: column; }
   .toolbar-control-group-demo { grid-template-columns: 1fr; }
   .toolbar-control-group-demo > div { min-height: 4.5rem; }
+  .segmented-control-demo article { align-items: start; grid-template-columns: 1fr; }
+  .segmented-control-demo .kui-segmented-control { max-width: 100%; justify-self: stretch; }
+  .segmented-control-demo article > .kui-toolbar-control-group { justify-self: start; }
+  .segmented-control-demo [data-segmented-control-id="standalone-toolbar-view"] { justify-self: start; }
   .webawesome-theme-demo__callouts { grid-template-columns: 1fr; }
   .webawesome-theme-demo__progress { grid-template-columns: minmax(0, 1fr) auto auto; }
   .webawesome-theme-demo__progress wa-skeleton { grid-column: 1 / -1; }

@@ -40,6 +40,17 @@ routing, and persistence. On `onReorder`, synchronously render the reported
 order so the helper can restore focus to the moved tab. Pair tabs with
 `tabpanel` elements and keep exactly one selected tab at `tabindex="0"`.
 
+## SegmentedControl
+
+`SegmentedControl` labels its native-button group and projects the controlled
+selection through both `aria-pressed` and `data-selected`. Every enabled choice
+stays in sequential Tab order, matching Hot Sheet 2's compact view and inspector
+controls; Enter and Space use native button activation. The application handles
+the supplied `data-action`, reads `data-segment-value`, updates `value`, and
+re-renders. Keep labels unique and meaningful even when `content` shows only an
+icon. Use tabs—not a segmented control—when choices switch page regions that
+need `tab`/`tabpanel` semantics.
+
 ## Verification matrix
 
 For each changed component, inspect default, hover, focus, disabled, selected/pressed, busy/error, long-content, wide, narrow, light, dark, increased-contrast, reduced-motion, keyboard-only, and 200%-zoom states where applicable. DOM order must match reading and focus order, with no clipping or unreachable action.

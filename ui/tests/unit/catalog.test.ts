@@ -38,6 +38,7 @@ describe('UX catalog metadata', () => {
       'MenuItem',
       'AppTab',
       'TabBar',
+      'SegmentedControl',
       'ResizableRegion',
       'Select',
       'StateBanner',
@@ -53,11 +54,13 @@ describe('UX catalog metadata', () => {
 
   it('resolves both sides of component relationships', () => {
     expect(findCatalogEntry('empty-state')?.uses).toEqual(['lucide-icon', 'loading-spinner']);
+    expect(findCatalogEntry('toolbar-control-group')?.uses).toEqual(['lucide-icon', 'segmented-control']);
     expect(findCatalogEntry('missing')).toBeUndefined();
     expect(catalogEntriesUsing('loading-spinner').map((entry) => entry.id)).toEqual(['feedback', 'empty-state']);
     expect(catalogEntriesUsing('resize')).toEqual([]);
     expect(findCatalogEntry('wa-select')?.uses).toEqual(['wa-icon', 'wa-popup', 'wa-tag', 'wa-option']);
     expect(catalogEntriesUsing('wa-select').map((entry) => entry.id)).toEqual(['webawesome-theme', 'select']);
     expect(catalogEntriesUsing('wa-carousel-item').map((entry) => entry.id)).toEqual(['webawesome-theme', 'wa-carousel']);
+    expect(catalogEntriesUsing('segmented-control').map((entry) => entry.id)).toEqual(['toolbar-control-group']);
   });
 });

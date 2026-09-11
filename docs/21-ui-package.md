@@ -82,7 +82,7 @@ nor `webawesome.css` do not install or bundle it.
 | Tabs | `AppTab`, `TabBar`, `wireTabBars`, `reorderTabs` | Controlled tab/close markup, fixed rails, horizontal overflow, edge autoscroll, pointer/keyboard reorder, and focus restoration; the app owns state and persistence |
 | Layout | `PageHeader`, `DialogHeader`, `ValueTable` | Page/dialog hierarchy and semantic definition lists |
 | Resize | `ResizableRegion`, `wireResizableRegions` | Pointer-captured resize plus arrows, Shift acceleration, Home, and End |
-| Forms | `Select` | Grouped Web Awesome choices with optional Lucide icons |
+| Choice controls | `SegmentedControl`, `Select` | Controlled exclusive buttons with toolbar/rounded/pill presentation; grouped Web Awesome popup choices with optional Lucide icons |
 | Feedback | `StateBanner`, `EmptyState`, `LoadingSpinner` | Status/alert, empty/busy, and meaningful/decorative progress states |
 
 ## 21.4 Accessibility contract
@@ -93,6 +93,9 @@ nor `webawesome.css` do not install or bundle it.
   only for immediate action.
 - `ResizableRegion` renders a focusable ARIA separator with orientation and live
   min/max/current values. Its wiring returns a disposer.
+- `SegmentedControl` labels a group of native pressed buttons. Every enabled
+  choice stays in sequential Tab order; the app handles its action and owns the
+  selected value.
 - `AppTab` renders `role="tab"`, `aria-selected`, roving `tabindex`, and keyboard
   shortcut metadata. `TabBar` provides the containing list and scroll owner;
   `wireTabBars` provides arrows/Home/End, close activation, pointer reorder,
@@ -117,10 +120,10 @@ Decorative chrome, Web Awesome controls, and production components share
 semantic theme tokens. All 70 free Web Awesome 3.12 modules have focused routes
 under a distinct collapsible ecosystem section with category subgroups, while a
 dedicated gallery spans Web Awesome actions, forms, structure/navigation,
-feedback, media, and formatting. The catalog includes every ToolbarControlGroup variant,
-all StateBanner tones plus a scoped palette override, reorderable overflowing
-tabs, light and dark themes, contrast, motion, selection, resize, and feedback
-states.
+feedback, media, and formatting. The catalog includes every ToolbarControlGroup
+variant, toolbar/rounded/pill SegmentedControl variants, all StateBanner tones
+plus a scoped palette override, reorderable overflowing tabs, light and dark
+themes, contrast, motion, selection, resize, and feedback states.
 Unit coverage uses the root repository thresholds. Consumer bundles prove
 component-reachable and transitive CSS, root/SSR isolation, JavaScript
 tree-shaking, peer externalization, and opt-in custom-element registration.

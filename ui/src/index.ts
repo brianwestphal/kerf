@@ -14,6 +14,15 @@ export {
   type ResizableRegionProps,
   resizeRegionFromPointer,
 } from './resizable-region.js';
+export {
+  SegmentedControl,
+  type SegmentedControlAppearance,
+  type SegmentedControlChoice,
+  type SegmentedControlLayout,
+  type SegmentedControlProps,
+  type SegmentedControlShape,
+  type SegmentedControlSize,
+} from './segmented-control.js';
 export { Select, type SelectChoice, type SelectProps } from './select.js';
 export { StateBanner, type StateBannerProps, type StateBannerTone } from './state-banner.js';
 export { TabBar, type TabBarProps } from './tab-bar.js';

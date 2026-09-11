@@ -16,6 +16,7 @@ const entries = [
   'page-header',
   'loading-spinner',
   'select',
+  'segmented-control',
   'select-register',
   'state-banner',
   'empty-state',

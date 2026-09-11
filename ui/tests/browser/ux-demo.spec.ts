@@ -271,6 +271,67 @@ test('matches Hot Sheet menu and toolbar control geometry', async ({ page, brows
   if (browserName === 'chromium') await page.screenshot({ path: 'test-results/toolbar-control-groups-narrow.png', fullPage: true });
 });
 
+test('renders controlled toolbar, rounded, and pill SegmentedControl variants', async ({ page, browserName }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/?component=segmented-control');
+  const demo = page.getByRole('region', { name: 'SegmentedControl variants' });
+  const controls = demo.locator('[data-component="segmented-control"]');
+  await expect(controls).toHaveCount(3);
+  await expect(demo.getByRole('heading', { level: 3 })).toHaveText(['Toolbar', 'Rounded rectangle', 'Pill']);
+
+  const toolbar = demo.locator('[data-segmented-control-id="standalone-toolbar-view"]');
+  const rounded = demo.locator('[data-segmented-control-id="inspector-section"]');
+  const pill = demo.locator('[data-segmented-control-id="display-density"]');
+  await expect(toolbar).toHaveAttribute('data-appearance', 'toolbar');
+  await expect(toolbar).toHaveAttribute('data-shape', 'pill');
+  await expect(rounded).toHaveAttribute('data-layout', 'equal');
+  await expect(pill).toHaveAttribute('data-appearance', 'outlined');
+  await expect(pill).toHaveAttribute('data-shape', 'pill');
+  await expect(demo.getByRole('button', { name: 'Roomy' })).toBeDisabled();
+
+  const radii = await Promise.all([rounded, pill].map((control) => control.evaluate((node) => parseFloat(window.getComputedStyle(node).borderRadius))));
+  expect(radii[0]).toBeLessThan(20);
+  expect(radii[1]).toBeGreaterThan(100);
+  const widths = await rounded.getByRole('button').evaluateAll((buttons) => buttons.map((button) => button.getBoundingClientRect().width));
+  expect(Math.max(...widths) - Math.min(...widths)).toBeLessThanOrEqual(1);
+
+  const summary = rounded.getByRole('button', { name: 'Summary' });
+  const activity = rounded.getByRole('button', { name: 'Activity' });
+  await rounded.evaluate((node) => {
+    node.style.setProperty('--kui-segmented-selected-background', '#7540a8');
+    node.style.setProperty('--kui-segmented-selected-foreground', '#ffffff');
+  });
+  await expect(summary).toHaveCSS('background-color', 'rgb(117, 64, 168)');
+  await expect(summary).toHaveCSS('color', 'rgb(255, 255, 255)');
+  await rounded.evaluate((node) => {
+    node.style.removeProperty('--kui-segmented-selected-background');
+    node.style.removeProperty('--kui-segmented-selected-foreground');
+  });
+
+  await activity.click();
+  await expect(activity).toHaveAttribute('aria-pressed', 'true');
+  await expect(summary).toHaveAttribute('aria-pressed', 'false');
+  await expect(rounded).toHaveAttribute('data-value', 'activity');
+  await expect(page.locator('.catalog-log')).toHaveText('Selected activity');
+  await summary.focus();
+  await page.keyboard.press('Tab');
+  await expect(activity).toBeFocused();
+  await summary.focus();
+  await page.keyboard.press('Space');
+  await expect(summary).toHaveAttribute('aria-pressed', 'true');
+  if (browserName === 'chromium') await page.screenshot({ path: 'test-results/segmented-control-wide.png', fullPage: true });
+
+  await page.locator('[data-action="toggle-theme"]').click();
+  await expect(summary).toHaveCSS('background-color', 'rgb(28, 28, 30)');
+  if (browserName === 'chromium') await page.screenshot({ path: 'test-results/segmented-control-dark-wide.png', fullPage: true });
+  await page.locator('[data-action="toggle-theme"]').click();
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  await expect(controls.last()).toBeVisible();
+  if (browserName === 'chromium') await page.screenshot({ path: 'test-results/segmented-control-narrow.png', fullPage: true });
+});
+
 test('ships semantic banner palettes with scoped overrides', async ({ page, browserName }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/?component=state-banner');

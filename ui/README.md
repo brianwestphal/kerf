@@ -37,6 +37,7 @@ Components return Kerf `SafeHtml`. They do not own application state or attach t
 | `PageHeader` | `@kerfjs/ui/page-header` | `@kerfjs/ui/page-header.css` |
 | `LoadingSpinner` | `@kerfjs/ui/loading-spinner` | `@kerfjs/ui/loading-spinner.css` |
 | `Select` | `@kerfjs/ui/select` | `@kerfjs/ui/select.css` |
+| `SegmentedControl` | `@kerfjs/ui/segmented-control` | `@kerfjs/ui/segmented-control.css` |
 | `StateBanner` | `@kerfjs/ui/state-banner` | `@kerfjs/ui/state-banner.css` |
 | `EmptyState` | `@kerfjs/ui/empty-state` | `@kerfjs/ui/empty-state.css` |
 | `DialogHeader` | `@kerfjs/ui/dialog-header` | `@kerfjs/ui/dialog-header.css` |
@@ -105,7 +106,33 @@ a component variable on one instance without replacing component selectors.
 `--kui-state-banner-action-hover-background`. To retheme one tone everywhere,
 override `--kui-state-banner-{tone}-{background|border|foreground}`. Other
 stateful components follow the same public-variable pattern, including
-`--kui-toolbar-control-*`, `--kui-app-tab-*`, and `--kui-tab-bar-*`.
+`--kui-toolbar-control-*`, `--kui-segmented-*`, `--kui-app-tab-*`, and
+`--kui-tab-bar-*`.
+
+`SegmentedControl` is a controlled exclusive-choice component. Use
+`appearance="toolbar"` when it sits inside a `ToolbarControlGroup`, or choose a
+standalone `filled`/`outlined` appearance with `shape="rounded"` or
+`shape="pill"`. The app owns `value` and handles the supplied action:
+
+```tsx
+<SegmentedControl
+  id="view-mode"
+  label="View mode"
+  value={viewMode.value}
+  action="select-view-mode"
+  appearance="toolbar"
+  shape="pill"
+  choices={[
+    { value: 'list', label: 'List' },
+    { value: 'columns', label: 'Columns' },
+  ]}
+/>
+```
+
+Each choice remains a native button in sequential Tab order and exposes its
+value through `data-segment-value`. Override an instance through
+`--kui-segmented-{background|border|foreground|hover-background}` and
+`--kui-segmented-selected-{background|foreground|border|shadow}`.
 
 `TabBar` is controlled: pass ordered `AppTab` children, then wire its keyboard
 and same-bar drag behavior with `wireTabBars(root, { onReorder })`. During a

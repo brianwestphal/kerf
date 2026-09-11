@@ -56,10 +56,14 @@ appearance boundaries.
 - `MenuItem`, `MenuHeader`; `AppTab`, controlled `TabBar`, `wireTabBars`, `reorderTabs`
 - `PageHeader`, `DialogHeader`, `ValueTable`
 - `ResizableRegion` with `wireResizableRegions`
-- `Select`; `StateBanner`, `EmptyState`, `LoadingSpinner`
+- `SegmentedControl`, `Select`; `StateBanner`, `EmptyState`, `LoadingSpinner`
 
 The components expose slots and stable `kui-` classes rather than domain data or
 commands. Applications retain state, routing, menu policy, and tab-list policy.
+
+`SegmentedControl` provides controlled exclusive choices in a toolbar, rounded
+rectangle, or pill. It renders native pressed buttons, keeps every enabled
+choice in sequential Tab order, and leaves value updates to the application.
 
 The default `--kui-color-*` ramps match Hot Sheet 2's Web Awesome-compatible
 neutral, brand/info, success, warning, and danger palette. Override the global
@@ -88,6 +92,8 @@ arrow keys, Shift acceleration, Home, and End. `AppTab` supplies tab semantics;
 `TabBar` plus `wireTabBars` add horizontal overflow, navigation, closing,
 pointer/keyboard reorder, proximity-based horizontal edge autoscroll, and focus
 restoration while the application owns and persists the controlled state.
+Segmented controls expose a labeled group, native button activation, explicit
+pressed state, and semantic `--kui-segmented-*` palette overrides.
 
 The package's design philosophy, component contract, accessibility checklist,
 Apple HIG interpretation, and runnable UX catalog live under [`ui/docs/`](https://github.com/brianwestphal/kerf/tree/main/ui/docs).

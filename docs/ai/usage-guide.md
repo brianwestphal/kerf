@@ -54,14 +54,15 @@ npm install @kerfjs/ui
 
 ```ts
 import { AppTab } from '@kerfjs/ui/app-tab';
+import { SegmentedControl } from '@kerfjs/ui/segmented-control';
 import { StateBanner } from '@kerfjs/ui/state-banner';
 import { TabBar } from '@kerfjs/ui/tab-bar';
 import { Toolbar } from '@kerfjs/ui/toolbar';
 import { wireTabBars } from '@kerfjs/ui/wire-tab-bars';
 ```
 
-The surface covers `LucideIcon`; toolbars; menu rows/headers; controlled,
-reorderable, horizontally scrolling app tab bars;
+The surface covers `LucideIcon`; toolbars and controlled segmented choices;
+menu rows/headers; controlled, reorderable, horizontally scrolling app tab bars;
 page/dialog headers and value tables; resizable regions; a Web Awesome Select;
 and banner/empty/loading states. Prefer explicit visual-component subpaths: a
 CSS-aware browser bundler selects their generated styled wrappers, including
@@ -82,6 +83,12 @@ edge to expose earlier or later drop targets. Apply tab reorder reports with
 `@kerfjs/ui/select/register` once only when using Select; that is the explicit
 custom-element side effect and Web Awesome is otherwise optional.
 
+Use `SegmentedControl` for a small exclusive choice set. Pick
+`appearance="toolbar"` when nesting it in `ToolbarControlGroup`; standalone
+controls support filled or outlined surfaces and rounded or pill shapes. Handle
+its action at the root, read `data-segment-value`, update the controlled value,
+and keep all choices in normal Tab order.
+
 When the app uses Web Awesome's broader free component set, import
 `@kerfjs/ui/webawesome.css` once. That CSS-only entry includes Web Awesome's
 base stylesheet and the Hot Sheet 2-aligned Kerf theme but registers no custom
@@ -94,8 +101,9 @@ Override `--kui-color-*` globally or component properties such as
 
 Accessibility is contractual: keep supplied labels meaningful; decorative
 icons/spinners stay hidden from assistive technology; use banner `alert` only
-for urgent interruption; preserve TabBar's keyboard behavior; and
-do not remove the provided focus, reduced-motion, or forced-color styles. See
+for urgent interruption; preserve TabBar's keyboard behavior and
+SegmentedControl's native-button names and pressed state; do not remove the
+provided focus, reduced-motion, or forced-color styles. See
 [`docs/21-ui-package.md`](../21-ui-package.md) and `ui/ai/skill.md`.
 
 For visual review, `ui/ux-demo/` groups every public visual component by category

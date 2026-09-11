@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Added a first-class controlled `SegmentedControl` to `@kerfjs/ui`, with Hot Sheet 2-aligned toolbar, rounded-rectangle, pill, equal-width, small, and disabled presentations; native pressed-button semantics; scoped palette overrides; tree-shakeable component CSS; and a complete UX-catalog route.
 - Aligned `@kerfjs/ui` defaults with Hot Sheet 2, added overridable semantic state palettes, completed ToolbarControlGroup and StateBanner catalog variants, simplified related-component navigation, corrected MenuHeader action alignment, and added a controlled horizontally scrolling TabBar with pointer and keyboard reordering plus proximity-based edge autoscroll.
 - Updated `@kerfjs/ui` to develop and test against Lucide 1.43.0 and Web Awesome 3.12.0, with matching peer baselines.
 - Added an opt-in `@kerfjs/ui/webawesome.css` theme for Web Awesome's free components. It carries the Hot Sheet 2-aligned semantic palette, form and panel geometry, focus, tooltip, radius, and shadow choices without registering component JavaScript; the UX catalog now lists all 70 free Web Awesome 3.12 components under a collapsible ecosystem section, gives each a focused themed route and dependency links, and retains the aggregate light, dark, narrow, and scoped-override gallery.

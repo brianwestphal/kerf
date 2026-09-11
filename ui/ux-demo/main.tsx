@@ -11,6 +11,7 @@ import { MenuHeader } from '@kerfjs/ui/menu-header';
 import { MenuItem } from '@kerfjs/ui/menu-item';
 import { PageHeader } from '@kerfjs/ui/page-header';
 import { ResizableRegion } from '@kerfjs/ui/resizable-region';
+import { SegmentedControl } from '@kerfjs/ui/segmented-control';
 import { Select } from '@kerfjs/ui/select';
 import { StateBanner } from '@kerfjs/ui/state-banner';
 import { TabBar } from '@kerfjs/ui/tab-bar';
@@ -49,6 +50,8 @@ const tabBarTabs = signal([
 const selectedChoice = signal('balanced');
 const bannerTone = signal<'neutral' | 'info' | 'success' | 'warning' | 'danger'>('info');
 const toolbarChoice = signal<'list' | 'columns' | 'settings'>('list');
+const inspectorSection = signal<'summary' | 'activity' | 'files'>('summary');
+const displayDensity = signal<'compact' | 'comfortable' | 'roomy'>('comfortable');
 const actionLog = signal('Catalog ready');
 const darkTheme = signal(false);
 const increasedContrast = signal(false);
@@ -140,11 +143,11 @@ function ToolbarDemo() {
 
 function ToolbarControlGroupDemo() {
   return <section class="toolbar-control-group-demo" data-demo="toolbar-control-group" aria-label="ToolbarControlGroup demo">
-    <div><h3>Segmented choices</h3><ToolbarControlGroup label="View mode">
-      <button type="button" data-action="select-toolbar-choice" data-choice="list" aria-label="List view" aria-pressed={String(toolbarChoice.value === 'list')}>{icon(List, 'list')}</button>
-      <button type="button" data-action="select-toolbar-choice" data-choice="columns" aria-label="Columns view" aria-pressed={String(toolbarChoice.value === 'columns')}>{icon(Columns3, 'columns-3')}</button>
-      <button type="button" data-action="select-toolbar-choice" data-choice="settings" aria-label="Settings view" aria-pressed={String(toolbarChoice.value === 'settings')}>{icon(Settings, 'settings')}</button>
-    </ToolbarControlGroup></div>
+    <div><h3>Segmented choices</h3><ToolbarControlGroup><SegmentedControl id="toolbar-view" label="View mode" value={toolbarChoice.value} action="select-segment-demo" appearance="toolbar" shape="pill" size="small" choices={[
+      { value: 'list', label: 'List view', content: icon(List, 'list') },
+      { value: 'columns', label: 'Columns view', content: icon(Columns3, 'columns-3') },
+      { value: 'settings', label: 'Settings view', content: icon(Settings, 'settings') },
+    ]} /></ToolbarControlGroup></div>
     <div><h3>Popup menu</h3><ToolbarControlGroup single>
       <wa-dropdown placement="bottom-start"><wa-button slot="trigger" appearance="plain" with-caret aria-label="Sort tickets">{icon(ArrowDownAZ, 'arrow-down-a-z')}</wa-button><wa-dropdown-item data-action="sort-recent">Recently updated</wa-dropdown-item><wa-dropdown-item data-action="sort-priority">Priority</wa-dropdown-item></wa-dropdown>
     </ToolbarControlGroup></div>
@@ -157,6 +160,35 @@ function ToolbarControlGroupDemo() {
     <div><h3>Push button, resting</h3><ToolbarControlGroup buttonAppearance="push" single><button type="button" aria-label="Resting comparison" aria-pressed="false" data-action="log-resting">{icon(GitCompare, 'git-compare')}</button></ToolbarControlGroup></div>
     <div><h3>Push button, pressed</h3><ToolbarControlGroup buttonAppearance="push" single><button type="button" aria-label="Pressed comparison" aria-pressed="true" data-action="log-pressed">{icon(GitCompare, 'git-compare')}</button></ToolbarControlGroup></div>
     <div class="demo-dark-swatch"><h3>Dark group</h3><ToolbarControlGroup label="Dark navigation" tone="dark"><button type="button" aria-label="Previous" data-action="log-previous">{icon(ChevronLeft, 'chevron-left')}</button><button type="button" aria-label="Next" data-action="log-next">{icon(ChevronRight, 'chevron-right')}</button></ToolbarControlGroup></div>
+  </section>;
+}
+
+function SegmentedControlDemo() {
+  return <section class="segmented-control-demo" data-demo="segmented-control" aria-label="SegmentedControl variants">
+    <article>
+      <header><h3>Toolbar</h3><p>Pill controls share a toolbar group’s chrome.</p></header>
+      <ToolbarControlGroup><SegmentedControl id="standalone-toolbar-view" label="Toolbar view mode" value={toolbarChoice.value} action="select-segment-demo" appearance="toolbar" shape="pill" size="small" choices={[
+        { value: 'list', label: 'List view', content: icon(List, 'list') },
+        { value: 'columns', label: 'Columns view', content: icon(Columns3, 'columns-3') },
+        { value: 'settings', label: 'Settings view', content: icon(Settings, 'settings') },
+      ]} /></ToolbarControlGroup>
+    </article>
+    <article>
+      <header><h3>Rounded rectangle</h3><p>An equal-width inspector switcher with labels.</p></header>
+      <SegmentedControl id="inspector-section" label="Inspector section" value={inspectorSection.value} action="select-segment-demo" shape="rounded" layout="equal" choices={[
+        { value: 'summary', label: 'Summary', content: <>{icon(List, 'list')}<span>Summary</span></> },
+        { value: 'activity', label: 'Activity', content: <>{icon(Bell, 'bell')}<span>Activity</span></> },
+        { value: 'files', label: 'Files', content: <>{icon(Folder, 'folder')}<span>Files</span></> },
+      ]} />
+    </article>
+    <article>
+      <header><h3>Pill</h3><p>A compact standalone choice with a disabled option.</p></header>
+      <SegmentedControl id="display-density" label="Display density" value={displayDensity.value} action="select-segment-demo" appearance="outlined" shape="pill" size="small" choices={[
+        { value: 'compact', label: 'Compact' },
+        { value: 'comfortable', label: 'Comfortable' },
+        { value: 'roomy', label: 'Roomy', disabled: true, title: 'Roomy density is unavailable' },
+      ]} />
+    </article>
   </section>;
 }
 
@@ -289,6 +321,7 @@ const demos: Record<CatalogId, () => ReturnType<typeof ToolbarDemo>> = {
   'webawesome-theme': WebAwesomeThemeDemo,
   toolbar: ToolbarDemo,
   'toolbar-control-group': ToolbarControlGroupDemo,
+  'segmented-control': SegmentedControlDemo,
   'toolbar-text': ToolbarTextDemo,
   menu: MenuDemo,
   'menu-header': MenuHeaderDemo,
@@ -414,7 +447,14 @@ const stopActions = delegateActions(app, 'click', {
   'close-tab': (_event, element) => { actionLog.value = `Close requested for ${element.getAttribute('data-tab-id')}`; },
   'close-reorder-tab': (_event, element) => { const id = element.getAttribute('data-tab-id'); if (!id) return; const index = tabBarTabs.value.findIndex((tab) => tab.id === id); tabBarTabs.value = tabBarTabs.value.filter((tab) => tab.id !== id); if (tabBarActive.value === id) tabBarActive.value = tabBarTabs.value[Math.min(index, tabBarTabs.value.length - 1)]?.id ?? ''; actionLog.value = `Closed ${id}`; },
   'add-demo-tab': () => { const id = `new-${tabBarTabs.value.length + 1}`; tabBarTabs.value = [...tabBarTabs.value, { id, name: `New tab ${tabBarTabs.value.length + 1}` }]; tabBarActive.value = id; actionLog.value = `Added ${id}`; },
-  'select-toolbar-choice': (_event, element) => { const value = element.getAttribute('data-choice'); if (value === 'list' || value === 'columns' || value === 'settings') toolbarChoice.value = value; actionLog.value = `View mode: ${toolbarChoice.value}`; },
+  'select-segment-demo': (_event, element) => {
+    const value = element.getAttribute('data-segment-value');
+    const id = element.closest('[data-segmented-control-id]')?.getAttribute('data-segmented-control-id');
+    if ((id === 'toolbar-view' || id === 'standalone-toolbar-view') && (value === 'list' || value === 'columns' || value === 'settings')) toolbarChoice.value = value;
+    if (id === 'inspector-section' && (value === 'summary' || value === 'activity' || value === 'files')) inspectorSection.value = value;
+    if (id === 'display-density' && (value === 'compact' || value === 'comfortable' || value === 'roomy')) displayDensity.value = value;
+    if (value) actionLog.value = `Selected ${value}`;
+  },
   'cycle-tone': () => { const tones = ['neutral', 'info', 'success', 'warning', 'danger'] as const; bannerTone.value = tones[(tones.indexOf(bannerTone.value) + 1) % tones.length]!; actionLog.value = `Banner tone: ${bannerTone.value}`; },
   'toggle-theme': () => { darkTheme.value = !darkTheme.value; document.documentElement.classList.toggle('demo-dark', darkTheme.value); actionLog.value = darkTheme.value ? 'Dark theme on' : 'Dark theme off'; },
   'toggle-contrast': () => { increasedContrast.value = !increasedContrast.value; document.documentElement.classList.toggle('demo-contrast', increasedContrast.value); actionLog.value = increasedContrast.value ? 'Increased contrast on' : 'Increased contrast off'; },

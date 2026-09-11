@@ -1,0 +1,138 @@
+.kui-segmented-control {
+  --kui-segmented-background: var(--kui-color-neutral-fill-normal);
+  --kui-segmented-border: var(--kui-color-neutral-border-normal);
+  --kui-segmented-foreground: var(--kui-color-neutral-on-quiet);
+  --kui-segmented-hover-background: var(--kui-color-surface);
+  --kui-segmented-selected-background: var(--kui-color-surface);
+  --kui-segmented-selected-foreground: var(--kui-color-brand-on-quiet);
+  --kui-segmented-selected-border: transparent;
+  --kui-segmented-selected-shadow: var(--kui-shadow-s);
+  --kui-segmented-radius: .55rem;
+  --kui-segmented-item-radius: .4rem;
+
+  display: inline-flex;
+  max-width: 100%;
+  padding: .2rem;
+  overflow-x: auto;
+  box-sizing: border-box;
+  border: 1px solid transparent;
+  border-radius: var(--kui-segmented-radius);
+  color: var(--kui-segmented-foreground);
+  background: var(--kui-segmented-background);
+  align-items: stretch;
+  gap: 0;
+  scrollbar-width: none;
+}
+
+.kui-segmented-control::-webkit-scrollbar {
+  display: none;
+}
+
+.kui-segmented-control[data-appearance="outlined"] {
+  --kui-segmented-background: var(--kui-color-surface);
+  border-color: var(--kui-segmented-border);
+}
+
+.kui-segmented-control[data-appearance="toolbar"] {
+  --kui-segmented-background: transparent;
+  --kui-segmented-foreground: var(--kui-toolbar-control-color, var(--kui-color-neutral-on-quiet));
+  --kui-segmented-hover-background: var(--kui-toolbar-control-hover-background, var(--kui-color-surface));
+  --kui-segmented-selected-background: var(--kui-toolbar-control-selected-background, var(--kui-color-surface));
+  --kui-segmented-selected-foreground: var(--kui-toolbar-control-selected-color, var(--kui-color-brand-on-quiet));
+  --kui-segmented-selected-shadow: var(--kui-toolbar-control-selected-shadow, var(--kui-shadow-s));
+  padding: 0;
+  overflow: visible;
+  gap: .15rem;
+}
+
+.kui-segmented-control[data-shape="pill"] {
+  --kui-segmented-radius: var(--kui-radius-pill);
+  --kui-segmented-item-radius: var(--kui-radius-pill);
+}
+
+.kui-segmented-control[data-layout="equal"] {
+  display: grid;
+  width: 100%;
+  grid-auto-columns: minmax(0, 1fr);
+  grid-auto-flow: column;
+}
+
+.kui-segmented-control__item {
+  -webkit-appearance: none;
+  appearance: none;
+  display: inline-flex;
+  min-width: 2.25rem;
+  min-height: 2.25rem;
+  padding: .45rem .7rem;
+  box-sizing: border-box;
+  border: 1px solid transparent;
+  border-radius: var(--kui-segmented-item-radius);
+  color: inherit;
+  background: transparent;
+  align-items: center;
+  justify-content: center;
+  gap: .35rem;
+  font: inherit;
+  font-size: var(--kui-font-xs);
+  font-weight: var(--kui-font-weight-semibold);
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.kui-segmented-control[data-size="small"] .kui-segmented-control__item {
+  min-width: 2rem;
+  min-height: 2rem;
+  padding: .35rem;
+  font-size: var(--kui-font-2xs);
+}
+
+.kui-segmented-control[data-layout="equal"] .kui-segmented-control__item {
+  width: 100%;
+  min-width: 0;
+}
+
+.kui-segmented-control__item:hover:not(:disabled) {
+  background: var(--kui-segmented-hover-background);
+}
+
+.kui-segmented-control__item[data-selected="true"],
+.kui-segmented-control__item[data-selected="true"]:hover:not(:disabled) {
+  border-color: var(--kui-segmented-selected-border);
+  color: var(--kui-segmented-selected-foreground);
+  background: var(--kui-segmented-selected-background);
+  box-shadow: var(--kui-segmented-selected-shadow);
+}
+
+.kui-segmented-control__item:focus-visible {
+  outline: var(--kui-focus-ring);
+  outline-offset: 1px;
+}
+
+.kui-segmented-control__item:disabled {
+  opacity: .45;
+  cursor: not-allowed;
+}
+
+.kui-segmented-control__item svg {
+  width: .9rem;
+  height: .9rem;
+  flex: 0 0 auto;
+}
+
+.kui-segmented-control[data-size="small"] .kui-segmented-control__item svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+@media (forced-colors: active) {
+  .kui-segmented-control {
+    border-color: ButtonBorder;
+  }
+
+  .kui-segmented-control__item[data-selected="true"] {
+    border-color: Highlight;
+    color: HighlightText;
+    background: Highlight;
+  }
+}
