@@ -1,5 +1,14 @@
 import { defineConfig } from '@playwright/test';
 
+// Playwright forces color in its web-server and worker children. Translate
+// NO_COLOR before those processes are spawned so Node does not warn about the
+// conflicting variables; an explicit FORCE_COLOR still wins.
+if (process.env.NO_COLOR !== undefined) {
+  const forceColor = process.env.FORCE_COLOR;
+  delete process.env.NO_COLOR;
+  process.env.FORCE_COLOR = forceColor ?? '0';
+}
+
 export default defineConfig({
   testDir: './tests/browser',
   fullyParallel: false,

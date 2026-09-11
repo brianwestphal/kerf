@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Updated the root and UI browser-test harnesses for Node 26: Playwright 1.63 removes the deprecated ESM loader registration, and normalized color variables keep web-server and worker output free of `NO_COLOR`/`FORCE_COLOR` conflict warnings.
 - Cleaned generated root and `@kerfjs/ui` ESM shims so downstream bundlers no longer report ignored bare chunk imports, and deduplicated source-map directives without weakening package tree shaking.
 - Added explicit Web Awesome component-selection guidance and aligned UX descriptions: prefer Kerf Select, SegmentedControl, TabBar, LucideIcon, and ResizableRegion for common app patterns; consider Popup for custom anchoring; reserve specialized ecosystem alternatives for concrete requirements. ResizableRegion now includes Hot Sheet 2's overridable 1px separator plus hover/focus grip.
 - Made Web Awesome Tooltip and Popover arrowless by default in the optional Kerf theme, with public per-theme, scoped, and per-instance overrides plus focused UX and browser coverage.
