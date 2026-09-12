@@ -19,6 +19,10 @@ analysis so copied class names cannot impersonate component reuse;
 
 ## Directory tree
 
+The [September 2026 UI consumer audit](./ui-consumer-audit-2026-09-13.md)
+inventories site, catalog, Hot Sheet 2 and teaching-consumer boundaries, with
+evidence paths and implementation dispositions.
+
 ```
 kerf/
 ├── src/
