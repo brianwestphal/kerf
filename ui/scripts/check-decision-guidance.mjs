@@ -6,6 +6,7 @@ import ts from 'typescript';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 const selectionPath = resolve(root, 'docs/component-selection.md');
+const missingConceptPath = resolve(root, 'docs/examples/command-palette-adapter.tsx');
 const requiredDocs = [
   selectionPath,
   resolve(root, 'ai/skill.md'),
@@ -23,8 +24,9 @@ const overlaps = [
   'wa-comparison', 'wa-zoomable-frame',
 ];
 
-const [selection, indexSource, componentCatalogSource, packageSource] = await Promise.all([
+const [selection, missingConcept, indexSource, componentCatalogSource, packageSource] = await Promise.all([
   readFile(selectionPath, 'utf8'),
+  readFile(missingConceptPath, 'utf8'),
   readFile(resolve(root, 'src/index.ts'), 'utf8'),
   readFile(resolve(root, 'ai/component-catalog.json'), 'utf8'),
   readFile(resolve(root, 'package.json'), 'utf8'),
@@ -62,10 +64,29 @@ const requiredPhrases = [
   'Use custom markup only',
   'Problem-to-component matrix',
   'Correct composition and duplicated-markup trap',
+  'Missing recurring concepts',
+  'does not currently export a command-palette',
 ];
 for (const phrase of requiredPhrases) {
   if (!selection.includes(phrase)) fail(`component-selection.md is missing required decision guidance: ${phrase}`);
 }
+
+const missingConceptSource = ts.createSourceFile('command-palette-adapter.tsx', missingConcept, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
+if (missingConceptSource.parseDiagnostics.length) fail('command-palette adapter example must parse as TSX');
+for (const required of [
+  "import '@kerfjs/ui/layout.css'",
+  'class="app-command-palette kui-layout kui-surface-body kui-section-stack"',
+  'class="kui-control-cluster"',
+  'delegateActions(',
+  'mount(',
+  'not an @kerfjs/ui export',
+  'ranking, history, shortcuts, focus policy, command availability, and copy',
+]) {
+  if (!missingConcept.includes(required)) fail(`command-palette adapter example is missing ${required}`);
+}
+const insetOwners = missingConcept.match(/\bkui-(?:page-gutter|pane-body|surface-body|dialog-body)\b/g) ?? [];
+if (insetOwners.length !== 1) fail('command-palette adapter example must use exactly one semantic inset owner');
+if (/from ['"]@kerfjs\/ui\/command-palette/.test(missingConcept)) fail('command-palette adapter must not invent a package export');
 
 const importPattern = /`(@kerfjs\/ui(?:\/[a-z0-9./*-]+)?)`/g;
 function packageExports(subpath) {

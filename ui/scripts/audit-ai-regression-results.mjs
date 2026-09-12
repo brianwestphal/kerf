@@ -13,6 +13,7 @@ const modelVersions = new Set();
 for (const runPath of runPaths) {
   const recorded = JSON.parse(await readFile(runPath, 'utf8'));
   const rebuilt = await buildAiRegressionRun(root, {
+    suiteVersion: recorded.schemaVersion,
     runId: recorded.runId, responsesDir: relative(root, dirname(runPath)), executedAt: recorded.executedAt,
     settings: recorded.executor.settings, provider: recorded.executor.provider, model: recorded.executor.model,
     modelVersion: recorded.executor.modelVersion, conditionSessions: recorded.executor.conditionSessions,

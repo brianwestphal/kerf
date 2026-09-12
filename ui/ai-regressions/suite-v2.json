@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 2,
+  "id": "kerf-ui-authoring-v2",
+  "corpus": "ai-regressions/corpus.json",
+  "conditions": "ai-regressions/conditions-v2.json",
+  "conditionsSchema": "ai-regressions/conditions-v2.schema.json",
+  "revisedContextSnapshot": "ai-regressions/contexts/revised-recipes-catalog-v2.snapshot.json",
+  "catalog": "ai/component-catalog.json",
+  "publicApiSignatures": "ai/public-api-signatures-v1.md",
+  "scorer": "scripts/lib/ai-regression-score-v2.mjs",
+  "baseScorer": "scripts/lib/ai-regression-score.mjs",
+  "overrides": "ai-regressions/corpus-v2-overrides.json",
+  "responseSchema": "ai-regressions/response.schema.json",
+  "runSchema": "ai-regressions/run-v2.schema.json"
+}

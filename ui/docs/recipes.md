@@ -6,6 +6,26 @@ CSS. The examples import public package subpaths, use semantic layout owners,
 and keep state in a per-instance application adapter. They are not new
 monolithic components.
 
+Copy the recipe source together with the catalog-independent
+[`mount-recipe.ts`](../ux-demo/recipes/mount-recipe.ts) adapter. It mounts the
+controller at one stable application root, uses `delegateActions()` for recipe
+commands, forwards form and dialog lifecycle events, wires resize commits with
+the public `onCommit` callback, retains every disposer, and returns one
+idempotent disposer:
+
+```ts
+import { createRecipe } from './navigation-sidebar.js';
+import { mountRecipe } from './mount-recipe.js';
+
+const root = document.querySelector<HTMLElement>('#navigation')!;
+const stopRecipe = mountRecipe(root, createRecipe(announce));
+window.addEventListener('pagehide', stopRecipe, { once: true });
+```
+
+The adapter is delivered as reference source, not a new package runtime export.
+`delegate()` remains a valid alternative when an application needs selector-
+specific dispatch; either way, wire once at a stable root and retain disposal.
+
 ## Desktop application shell
 
 [Open the recipe](../ux-demo/?component=recipe-app-shell) · [TSX source](../ux-demo/recipes/app-shell.tsx) · [shared CSS](../ux-demo/recipes/recipes.css)
@@ -75,4 +95,5 @@ and responsive priority.
   `@kerfjs/ui/webawesome.css`.
 - Customize public variables/classes at the composition boundary. Do not copy
   included component markup or style private descendants.
-- Wire stable `data-action` hooks once and retain every disposer.
+- Start from the copyable mount adapter, or reproduce its complete boundary:
+  wire stable `data-action` hooks once and retain every disposer.

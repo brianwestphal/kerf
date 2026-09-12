@@ -33,6 +33,18 @@ application boundary:
 Recipes use public production exports and show ownership boundaries; they are
 copyable reference compositions, not new monolithic components.
 
+## Missing recurring concepts
+
+Kerf UI does not currently export a command-palette component or recipe. Keep
+that semantic contract application-local; do not invent a package
+command-palette import or present custom markup as package-owned.
+The typed [application adapter example](./examples/command-palette-adapter.tsx)
+imports `@kerfjs/ui/layout.css`, assigns one `.kui-layout` root and one surface
+inset, and groups its related footer commands with `.kui-control-cluster` while
+the application owns ranking, history, shortcuts, focus policy, availability,
+actions, and copy. If the concept recurs across products, open an upstream
+component or recipe request.
+
 ## Problem-to-component matrix
 
 | Interface need | Use when | Do not use when; nearest alternative | Required wiring | Application owns | Import | Recipe |

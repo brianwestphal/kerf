@@ -6,6 +6,10 @@ list-state lifecycle, and compact toolbar). They are lazy catalog compositions,
 not public monolithic components, with responsive, keyboard, state,
 theme/contrast/motion, zoom, drift, and ownership coverage. Source of truth:
 `docs/21-ui-package.md` and `ui/docs/recipes.md`.
+Their shipped reference adapter makes stable-root delegated actions, form and
+dialog forwarding, resize commits, and retained idempotent disposal copyable
+outside the catalog. A typed application-local command-palette example retains
+custom semantics while reusing the canonical layout and control-cluster roles.
 
 The UI package also has an internal deterministic AI-regression foundation,
 including frozen versioned contexts, generated public declaration signatures,

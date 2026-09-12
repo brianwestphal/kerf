@@ -197,6 +197,15 @@ links. Browser coverage exercises keyboard flows, deterministic transitions,
 light/dark/contrast/reduced-motion, wide/intermediate/narrow layout, and 200%
 zoom.
 
+The shipped reference source includes a catalog-independent mount adapter that
+connects a recipe controller to one stable root with `delegateActions`, form
+and dialog delegates, `wireResizableRegions({ onCommit })`, and one idempotent
+aggregate disposer. A separate typed application-local command-palette example
+shows the missing-concept boundary: it reuses `layout.css`, one inset owner, and
+a related-control cluster without claiming a nonexistent UI export, while the
+application retains ranking, history, shortcuts, focus policy, actions, and
+copy and proposes recurring semantics upstream.
+
 ## 21.7 Local AI regression foundation
 
 `ui/ai-regressions/` is an internal authoring harness, not a shipped component
@@ -217,6 +226,12 @@ emitted declarations; it never treats a structural score as a successful
 compile. Live or paid runs, browser probes, and bounded visual review remain
 explicit opt-in evidence; canned fixtures are inference and cannot be reported
 as measured improvement.
+
+The provider-neutral prepare, score, record, and audit commands select suite v2
+explicitly with `--suite 2`; v1 remains the default for backward-compatible
+replay. V2 manifests hash their suite descriptor, frozen guidance condition,
+public signature context, overrides, and scorer independently; recorded v2
+contexts resolve through their own checked-in snapshot.
 
 ## 21.8 Versioning and releases
 

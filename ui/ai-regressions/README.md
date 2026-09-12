@@ -61,6 +61,23 @@ subpath or the UI root, and either `delegateActions` from `kerfjs/actions` or
 `delegate` from `kerfjs`. The v2 overrides and fixtures are checked separately
 from all v1 run manifests.
 
+The default prepare, score, and record commands remain suite v1 so historical
+automation cannot silently change. Pass `--suite 2` to opt into the descriptor
+in `suite-v2.json`, the exact frozen `conditions-v2.json` guidance context, the v2
+equivalent-import scorer, and `run-v2.schema.json`:
+
+```bash
+npm run --silent ai:regressions:prepare -- \
+  --suite 2 --case navigation-sections --condition revised-recipes-catalog
+npm run ai:regressions:score -- \
+  --suite 2 --case navigation-sections --response path/to/response.json
+```
+
+Suite-v2 run manifests additionally hash the suite descriptor, overrides, and
+public signature context. Audit selects the matching immutable context snapshot
+and oracle from each manifest's schema version, so later guidance and measured
+evidence cannot rewrite old raw responses or conclusions.
+
 To add static TypeScript evidence for a saved response without executing any
 generated source:
 

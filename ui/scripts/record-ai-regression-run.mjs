@@ -15,7 +15,10 @@ const required = (flag) => {
   return value;
 };
 const outputPath = required('--out');
+const suiteVersion = Number(valueAfter('--suite') ?? 1);
+if (suiteVersion !== 1 && suiteVersion !== 2) throw new Error(`Unknown AI regression suite: ${suiteVersion}`);
 const manifest = await buildAiRegressionRun(root, {
+  suiteVersion,
   runId: required('--run-id'),
   responsesDir: required('--responses-dir'),
   executedAt: required('--executed-at'),

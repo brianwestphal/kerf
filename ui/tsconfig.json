@@ -29,6 +29,6 @@
     "types": ["node", "vitest/globals"],
     "outDir": "./dist"
   },
-  "include": ["src/**/*", "tests/**/*", "ux-demo/**/*"],
+  "include": ["src/**/*", "tests/**/*", "ux-demo/**/*", "docs/examples/**/*"],
   "exclude": ["dist", "dist-demo", "node_modules", "test-results"]
 }

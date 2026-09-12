@@ -9,6 +9,11 @@ recipes](./docs/recipes.md). Each has a stable catalog route, runnable state,
 public-subpath source, semantic layout ownership, and explicit application
 customization boundaries.
 
+When no primitive matches, keep the semantics application-owned while reusing
+the layout vocabulary. The typed
+[`command-palette-adapter.tsx`](./docs/examples/command-palette-adapter.tsx)
+shows this boundary explicitly; it is reference source, not a package export.
+
 ```bash
 npm install kerfjs @kerfjs/ui
 ```

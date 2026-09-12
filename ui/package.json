@@ -197,7 +197,7 @@
     "ai:regressions:record": "node scripts/record-ai-regression-run.mjs",
     "ai:regressions:score": "node scripts/score-ai-regression.mjs",
     "check:guidance": "node scripts/check-decision-guidance.mjs",
-    "lint": "eslint src tests ux-demo --max-warnings 0",
+    "lint": "eslint src tests ux-demo docs/examples --max-warnings 0",
     "typecheck": "node node_modules/typescript7/bin/tsc --noEmit",
     "test": "npm run test:unit && npm run test:bundle",
     "test:unit": "vitest run tests/unit --coverage",

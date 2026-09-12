@@ -32,6 +32,10 @@ compositions, and supported Web Awesome choices; checked generation and drift
 gates keep its ids, imports, CSS paths, relationships, routes, and links aligned
 with the package and production catalog.
 
+Code-generating tools can pair that selection inventory with the shipped
+`@kerfjs/ui/ai/public-api-signatures-v1.md` declaration snapshot for exact
+props, callback shapes, return values, and supported import paths.
+
 ## Production recipes
 
 The [production composition recipes](https://github.com/brianwestphal/kerf/blob/main/ui/docs/recipes.md)
@@ -43,6 +47,14 @@ Each has a stable UX-catalog route and names what the recipe owns versus the
 application adapter. They use public component subpaths and semantic
 `layout.css`/`sidebar.css` roles rather than copied component markup or private
 descendant styling.
+
+The package does not currently export a command palette. Its typed
+[application-local adapter example](https://github.com/brianwestphal/kerf/blob/main/ui/docs/examples/command-palette-adapter.tsx)
+shows how a genuinely custom concept can still reuse `layout.css`, one layout
+root and inset owner, and `.kui-control-cluster` without pretending the
+semantics are package-owned. Ranking, history, keyboard and focus policy,
+availability, actions, and copy remain application concerns; the recurring
+concept is tracked for upstream consideration.
 
 ```bash
 npm install kerfjs @kerfjs/ui

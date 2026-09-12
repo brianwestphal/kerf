@@ -6,6 +6,9 @@ const sha256 = (value) => createHash('sha256').update(value).digest('hex');
 export const AI_REGRESSION_V1_CONTEXT_SNAPSHOTS = new Map([
   ['revised-recipes-catalog', 'ai-regressions/contexts/revised-recipes-catalog-v1.snapshot.json'],
 ]);
+export const AI_REGRESSION_V2_CONTEXT_SNAPSHOTS = new Map([
+  ['revised-recipes-catalog', 'ai-regressions/contexts/revised-recipes-catalog-v2.snapshot.json'],
+]);
 
 export async function buildAiRegressionContext(root, condition, { snapshotPath } = {}) {
   if (snapshotPath) {

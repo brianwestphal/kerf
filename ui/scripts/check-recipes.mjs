@@ -3,7 +3,7 @@ import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
-const [artifact, packageJson, loaders, docs, selection, skill, llms] = await Promise.all([
+const [artifact, packageJson, loaders, docs, selection, skill, llms, adapter] = await Promise.all([
   readFile(resolve(root, 'ai/component-catalog.json'), 'utf8').then(JSON.parse),
   readFile(resolve(root, 'package.json'), 'utf8').then(JSON.parse),
   readFile(resolve(root, 'ux-demo/recipes/loaders.ts'), 'utf8'),
@@ -11,6 +11,7 @@ const [artifact, packageJson, loaders, docs, selection, skill, llms] = await Pro
   readFile(resolve(root, 'docs/component-selection.md'), 'utf8'),
   readFile(resolve(root, 'ai/skill.md'), 'utf8'),
   readFile(resolve(root, 'llms.txt'), 'utf8'),
+  readFile(resolve(root, 'ux-demo/recipes/mount-recipe.ts'), 'utf8'),
 ]);
 const expected = ['recipe-app-shell', 'recipe-navigation-sidebar', 'recipe-workspace-header', 'recipe-master-detail-dialog', 'recipe-composer-form', 'recipe-list-workspace-states', 'recipe-compact-toolbar'];
 const recipes = artifact.entries.filter((entry) => entry.kind === 'recipe');
@@ -35,6 +36,11 @@ for (const entry of recipes) {
   if (!selection.includes(`?component=${entry.id}`)) fail(`component-selection.md does not link ${entry.id}`);
 }
 for (const surface of [skill, llms]) if (!surface.includes('docs/recipes.md')) fail('AI guidance must link docs/recipes.md');
+for (const required of ['delegateActions(', 'wireResizableRegions(', 'onCommit:', 'let disposed = false', 'stopMount()']) {
+  if (!adapter.includes(required)) fail(`copyable recipe mount adapter is missing ${required}`);
+}
+if (!docs.includes('[`mount-recipe.ts`](../ux-demo/recipes/mount-recipe.ts)')) fail('recipes.md must link the copyable mount adapter');
+if (!packageJson.files.includes('ux-demo/recipes')) fail('package must deliver recipe source and its mount adapter');
 try { await access(resolve(root, 'ux-demo/recipes/recipes.css')); } catch { fail('shared recipe CSS is missing'); }
 if (failures.length) { console.error('[check-recipes] Recipe catalog drifted:\n'); failures.forEach((failure) => console.error(`- ${failure}`)); process.exitCode = 1; }
 else console.log('[check-recipes] OK — seven lazy production-backed recipes, routes, imports, and guidance are synchronized.');

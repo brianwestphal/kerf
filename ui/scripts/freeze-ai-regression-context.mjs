@@ -11,8 +11,11 @@ const valueAfter = (flag) => {
 };
 const conditionId = valueAfter('--condition');
 const outputPath = valueAfter('--out');
-if (!conditionId || !outputPath) throw new Error('Usage: freeze-ai-regression-context --condition <id> --out <path>');
-const conditions = JSON.parse(await readFile(resolve(root, 'ai-regressions/conditions.json'), 'utf8')).conditions;
+const suiteVersion = Number(valueAfter('--suite') ?? 1);
+if (!conditionId || !outputPath) throw new Error('Usage: freeze-ai-regression-context --suite <1|2> --condition <id> --out <path>');
+if (suiteVersion !== 1 && suiteVersion !== 2) throw new Error(`Unknown AI regression suite: ${suiteVersion}`);
+const conditionsPath = suiteVersion === 2 ? 'ai-regressions/conditions-v2.json' : 'ai-regressions/conditions.json';
+const conditions = JSON.parse(await readFile(resolve(root, conditionsPath), 'utf8')).conditions;
 const condition = conditions.find(({ id }) => id === conditionId);
 if (!condition) throw new Error(`Unknown AI regression condition: ${conditionId}`);
 const context = await buildAiRegressionContext(root, condition);

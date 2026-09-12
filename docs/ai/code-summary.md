@@ -4,7 +4,11 @@ A directory map + reverse index ("where do I look for X?") for Claude Code sessi
 
 The optional `ui/ux-demo/recipes/` directory contains seven literal dynamic
 recipe chunks, a shared per-instance controller contract, and semantic
-container-responsive CSS. `ui/scripts/check-recipes.mjs` keeps those sources,
+container-responsive CSS. Its copyable `mount-recipe.ts` adapter owns stable-root
+delegation, form/dialog forwarding, resize commits, and idempotent disposal.
+The application-local `ui/docs/examples/command-palette-adapter.tsx` demonstrates
+canonical layout ownership for a recurring concept the package does not export.
+`ui/scripts/check-recipes.mjs` keeps those sources,
 canonical `ui/ai/component-catalog.json` facts, package imports, docs, and
 stable catalog routes synchronized.
 
@@ -20,6 +24,9 @@ analysis so copied class names cannot impersonate component reuse;
 the opt-in compile probe records a separate, non-executing evidence sidecar with
 fixed compiler options and package/declaration hashes. Suite-v2 import
 alternatives are layered over the unchanged v1 oracle.
+`ui/ai-regressions/suite-v2.json`, `conditions-v2.json`, and
+`run-v2.schema.json` make that selection explicit while legacy manifests keep
+rebuilding through the frozen v1 paths.
 The internal [September 13 Astra repeat findings](../../ui/ai-regressions/results/2026-09-13/findings.md)
 index three additional measured runs, preserved raw responses and the execution
 protocol; frozen structural scores remain separate from compile/runtime quality.
