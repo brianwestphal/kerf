@@ -168,6 +168,11 @@ check verifies that every public runtime value and supported Web Awesome
 overlap remains represented, and rejects stale package imports or broken local
 recipe links.
 
+`ui/ai/public-api-signatures-v1.md` is generated from the emitted declarations
+for the corpus-facing UI subpaths and `kerfjs/actions`. It gives code-generating
+tools exact prop, callback, return, and import contracts alongside the
+selection-oriented catalog; the package gate rejects a stale snapshot.
+
 `ui/ai/component-catalog.json` is the canonical versioned machine-readable
 inventory, with an adjacent JSON Schema. It covers every public visual/helper
 export, the layout and sidebar compositions, and all supported Web Awesome
@@ -203,11 +208,15 @@ and invocations, required wiring capture, semantic layout classes and owners,
 public CSS boundaries, accessibility, and honest upstream escalation.
 
 The deterministic package gate validates the corpus and condition schemas,
-freezes the pre-recipe guidance baseline at its full source revision, assembles
-the live revised catalog/recipe context with source hashes, and replays pinned
-passing and adversarial responses. It never calls a model. Live or paid runs,
-build/browser probes, and bounded visual review remain explicit opt-in evidence;
-canned fixtures are inference and cannot be reported as measured improvement.
+freezes the pre-recipe baseline and the exact suite-v1 revised context, and
+replays pinned passing and adversarial responses without changing their scorer.
+Suite-v2 overrides separately accept equivalent supported resize and delegated
+action import paths. An opt-in, non-executing TypeScript probe records separate
+schema-described compile evidence against fixed compiler options and hashed
+emitted declarations; it never treats a structural score as a successful
+compile. Live or paid runs, browser probes, and bounded visual review remain
+explicit opt-in evidence; canned fixtures are inference and cannot be reported
+as measured improvement.
 
 ## 21.8 Versioning and releases
 

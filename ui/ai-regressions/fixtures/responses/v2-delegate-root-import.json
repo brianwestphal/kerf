@@ -1,0 +1,6 @@
+{
+  "caseId": "compact-exclusive-choice",
+  "files": {
+    "choice.ts": "import { delegate } from 'kerfjs';\nconst root = document.querySelector<HTMLElement>('#app')!;\nconst stopActions = delegate(root, 'click', '[data-action]', () => {});\nvoid stopActions;\n"
+  }
+}

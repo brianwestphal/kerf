@@ -1,0 +1,6 @@
+{
+  "caseId": "application-shell",
+  "files": {
+    "shell.ts": "import { wireResizableRegions } from '@kerfjs/ui/wire-resizable-regions';\nconst root = document.querySelector<HTMLElement>('#app')!;\nconst stopResize = wireResizableRegions(root, { onCommit: ({ id, size }) => console.log(id, size) });\nvoid stopResize;\n"
+  }
+}

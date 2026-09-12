@@ -7,7 +7,9 @@ not public monolithic components, with responsive, keyboard, state,
 theme/contrast/motion, zoom, drift, and ownership coverage. Source of truth:
 `docs/21-ui-package.md` and `ui/docs/recipes.md`.
 
-The UI package also has an internal deterministic AI-regression foundation.
+The UI package also has an internal deterministic AI-regression foundation,
+including frozen versioned contexts, generated public declaration signatures,
+and an opt-in non-executing TypeScript compile-evidence sidecar.
 Seven neutral tasks keep prompts separate from private structural oracles; a
 frozen pre-recipe context and the live revised catalog/recipe context assemble
 with content hashes. AST-aware scoring requires actual imported invocations and

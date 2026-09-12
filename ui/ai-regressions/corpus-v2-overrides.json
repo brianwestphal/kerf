@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 2,
+  "cases": {
+    "application-shell": {
+      "requiredWiringAny": [
+        {
+          "id": "wireResizableRegions",
+          "options": [
+            { "name": "wireResizableRegions", "specifier": "@kerfjs/ui/wire-resizable-regions", "captured": true },
+            { "name": "wireResizableRegions", "specifier": "@kerfjs/ui", "captured": true }
+          ]
+        }
+      ]
+    },
+    "compact-exclusive-choice": {
+      "requiredWiringAny": [
+        {
+          "id": "delegated-actions",
+          "options": [
+            { "name": "delegateActions", "specifier": "kerfjs/actions", "captured": true },
+            { "name": "delegate", "specifier": "kerfjs", "captured": true }
+          ]
+        }
+      ]
+    },
+    "navigation-sections": {
+      "requiredWiringAny": [
+        {
+          "id": "delegated-actions",
+          "options": [
+            { "name": "delegateActions", "specifier": "kerfjs/actions", "captured": true },
+            { "name": "delegate", "specifier": "kerfjs", "captured": true }
+          ]
+        }
+      ]
+    },
+    "master-detail-dialog": {
+      "requiredWiringAny": [
+        {
+          "id": "delegated-actions",
+          "options": [
+            { "name": "delegateActions", "specifier": "kerfjs/actions", "captured": true },
+            { "name": "delegate", "specifier": "kerfjs", "captured": true }
+          ]
+        }
+      ]
+    }
+  }
+}

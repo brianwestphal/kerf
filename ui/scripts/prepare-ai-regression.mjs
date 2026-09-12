@@ -3,7 +3,7 @@ import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { buildAiRegressionContext } from './lib/ai-regression-context.mjs';
+import { AI_REGRESSION_V1_CONTEXT_SNAPSHOTS, buildAiRegressionContext } from './lib/ai-regression-context.mjs';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 const readJson = async (path) => JSON.parse(await readFile(resolve(root, path), 'utf8'));
@@ -27,7 +27,7 @@ const requests = [];
 for (const testCase of selectedCases) {
   const prompt = (await readFile(resolve(root, 'ai-regressions', testCase.prompt), 'utf8')).trim();
   for (const condition of selectedConditions) {
-    const context = await buildAiRegressionContext(root, condition);
+    const context = await buildAiRegressionContext(root, condition, { snapshotPath: AI_REGRESSION_V1_CONTEXT_SNAPSHOTS.get(condition.id) });
     requests.push({
       schemaVersion: 1,
       caseId: testCase.id,

@@ -1,12 +1,18 @@
 ---
 name: kerf-ui
 description: Build interfaces with kerfjs and the @kerfjs/ui production component package. Use whenever code imports @kerfjs/ui or a task asks for Kerf UI components.
-kerf-ui-skill-version: 1.11.0
+kerf-ui-skill-version: 1.12.0
 ---
 
 # Building with @kerfjs/ui
 
-Read `../docs/component-selection.md` first, then `../docs/recipes.md`, `../README.md`, `../docs/component-contract.md`, and `../docs/accessibility.md` before changing a consuming interface. Read `../docs/webawesome-theme.md` when using Web Awesome components or changing shared theme tokens.
+Read `../docs/component-selection.md` first, then `./component-catalog.json`,
+`./public-api-signatures-v1.md`, `../docs/recipes.md`, `../README.md`,
+`../docs/component-contract.md`, and `../docs/accessibility.md` before changing
+a consuming interface. Use the signature snapshot for exact props, callbacks,
+return values, and supported import paths; do not infer them from examples.
+Read `../docs/webawesome-theme.md` when using Web Awesome components or changing
+shared theme tokens.
 
 Choose from the need, not from visual resemblance:
 

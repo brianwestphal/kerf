@@ -4,7 +4,7 @@ import { resolve } from 'node:path';
 
 import ts from 'typescript';
 
-import { buildAiRegressionContext } from './ai-regression-context.mjs';
+import { AI_REGRESSION_V1_CONTEXT_SNAPSHOTS, buildAiRegressionContext } from './ai-regression-context.mjs';
 import { scoreAiRegression } from './ai-regression-score.mjs';
 
 const sha256 = (value) => createHash('sha256').update(value).digest('hex');
@@ -40,7 +40,7 @@ export async function buildAiRegressionRun(root, options) {
   const contextRecords = [];
   const results = [];
   for (const condition of conditions) {
-    const context = await buildAiRegressionContext(root, condition);
+    const context = await buildAiRegressionContext(root, condition, { snapshotPath: AI_REGRESSION_V1_CONTEXT_SNAPSHOTS.get(condition.id) });
     contextRecords.push({ id: condition.id, sourceRevision: context.sourceRevision, sha256: context.sha256, sources: context.sources });
     for (const [requestIndex, testCase] of corpus.cases.entries()) {
       const responsePath = `${options.responsesDir}/${condition.id}/${testCase.id}.json`;

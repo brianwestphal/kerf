@@ -20,8 +20,10 @@ classes, and failure patterns remain in the oracle. The three conditions are:
 - `current-guidance`: a checked-in, hand-authored concise bundle derived from
   guidance immediately before production recipes landed, pinned by its own
   content hash and the full reference revision;
-- `revised-recipes-catalog`: live guidance, the canonical machine catalog, and
-  the production-backed recipe docs and sources.
+- `revised-recipes-catalog`: for suite v1, a checked-in snapshot of the exact
+  revised guidance, canonical machine catalog, and production-backed recipe
+  docs and sources used by the recorded runs. Later guidance changes cannot
+  retroactively alter those manifests or scores.
 
 Run `npm run check:ai-regressions` to validate schemas, prompts, catalog and
 package references, context assembly, and adversarial scorer fixtures. It is
@@ -53,6 +55,30 @@ exposed model identity/settings plus corpus, scorer, prompt, context, source,
 and saved-response hashes. Keeping execution metadata outside the response
 avoids asking an output to contain its own hash.
 
+Suite-v2 scoring keeps the frozen v1 scorer intact while accepting equivalent
+supported public wiring imports: `wireResizableRegions` from its dedicated UI
+subpath or the UI root, and either `delegateActions` from `kerfjs/actions` or
+`delegate` from `kerfjs`. The v2 overrides and fixtures are checked separately
+from all v1 run manifests.
+
+To add static TypeScript evidence for a saved response without executing any
+generated source:
+
+```bash
+npm run ai:regressions:compile -- \
+  --response path/to/response.json \
+  --out path/to/compile-evidence.json
+```
+
+The opt-in probe accepts only relative `.ts`, `.tsx`, `.d.ts`, and `.css`
+response paths, compiles the code in an in-memory host with fixed options, and
+records normalized diagnostics plus hashes for the raw response, compiler
+options, TypeScript version, exact package versions, and their emitted
+declaration sets. Its schema is `compile-evidence.schema.json`. This sidecar is
+independent of the structural score and never executes response files,
+configuration, or build scripts. Regenerate the human-readable declaration
+context with `npm run ai:signatures:sync`; the normal check rejects stale output.
+
 A response is JSON with a `files` object whose values are TypeScript/TSX/CSS
 source strings. A missing recurring concept may also include
 `followUp: { "suggested": true, "concept": "…" }`.
@@ -69,8 +95,9 @@ Results keep reuse, wiring, layout, accessibility, and escalation separate;
 there is no weighted composite.
 
 These structural checks are not a substitute for building and interacting with
-generated code. A later opt-in runner may add compile, Playwright geometry,
-keyboard, contrast, reduced-motion, and screenshot evidence. It must record the
+generated code. The opt-in compile probe covers only public type compatibility;
+a later runner may add Playwright geometry, keyboard, contrast, reduced-motion,
+and screenshot evidence. It must record the
 exact model version and settings, prompt/context/source/scorer revisions and
 hashes, and raw-output hash. Paid or nondeterministic generation must never be
 part of push or pull-request CI, and canned fixtures must never be described as

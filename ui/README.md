@@ -64,6 +64,12 @@ documentation/recipe links. The adjacent
 [`component-catalog.schema.json`](./ai/component-catalog.schema.json) describes
 the versioned format.
 
+For code generation, pair catalog selection guidance with the checked-in
+[`public-api-signatures-v1.md`](./ai/public-api-signatures-v1.md) declaration
+snapshot. It is generated from the emitted `@kerfjs/ui` declarations and the
+installed `kerfjs/actions` declaration, so callback names, props, return values,
+and accepted import paths do not have to be inferred from examples.
+
 `npm run catalog:sync` deterministically projects the fields used by the UX
 catalog into `ux-demo/catalog.generated.ts`. Do not edit that generated file.
 `npm run check:catalog` rejects stale generated output, exports and package

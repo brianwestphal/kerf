@@ -2,18 +2,21 @@ import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { buildAiRegressionContext } from './lib/ai-regression-context.mjs';
+import { AI_REGRESSION_V1_CONTEXT_SNAPSHOTS, buildAiRegressionContext } from './lib/ai-regression-context.mjs';
 import { scoreAiRegression } from './lib/ai-regression-score.mjs';
+import { scoreAiRegressionV2 } from './lib/ai-regression-score-v2.mjs';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 const readJson = async (path) => JSON.parse(await readFile(resolve(root, path), 'utf8'));
-const [corpus, schema, conditions, conditionsSchema, responseSchema, runSchema, expected, catalog, packageJson] = await Promise.all([
+const [corpus, schema, conditions, conditionsSchema, responseSchema, runSchema, compileSchema, overrides, expected, catalog, packageJson] = await Promise.all([
   readJson('ai-regressions/corpus.json'),
   readJson('ai-regressions/corpus.schema.json'),
   readJson('ai-regressions/conditions.json'),
   readJson('ai-regressions/conditions.schema.json'),
   readJson('ai-regressions/response.schema.json'),
   readJson('ai-regressions/run.schema.json'),
+  readJson('ai-regressions/compile-evidence.schema.json'),
+  readJson('ai-regressions/corpus-v2-overrides.json'),
   readJson('ai-regressions/fixtures/expected-scores.json'),
   readJson('ai/component-catalog.json'),
   readJson('package.json'),
@@ -22,15 +25,18 @@ const failures = [];
 const fail = (message) => failures.push(message);
 const expectedCases = ['application-shell', 'compact-exclusive-choice', 'navigation-sections', 'workspace-states', 'master-detail-dialog', 'tokenized-search', 'missing-recurring-concept'];
 const expectedConditions = ['none', 'current-guidance', 'revised-recipes-catalog'];
+const expectedV1RevisedContextSha256 = 'f3cd2e13c1fb516a1f69f108825b487ac9ad65e64ac67ef31200c3278e783816';
 
 if (schema.properties?.schemaVersion?.const !== 1 || schema.additionalProperties !== false) fail('corpus schema must pin version 1 and reject unknown root fields');
 if (responseSchema.additionalProperties !== false || responseSchema.properties?.run) fail('model responses must reject unknown fields and keep run metadata separate');
 if (runSchema.properties?.evidence?.const !== 'measured' || runSchema.additionalProperties !== false) fail('run schema must identify measured evidence and reject unknown root fields');
+if (compileSchema.properties?.schemaVersion?.const !== 1 || compileSchema.additionalProperties !== false) fail('compile evidence schema must pin version 1 and reject unknown root fields');
 if (corpus.schemaVersion !== 1 || !Array.isArray(corpus.cases)) fail('corpus must declare schemaVersion 1 and cases');
 if (JSON.stringify(corpus.cases.map(({ id }) => id)) !== JSON.stringify(expectedCases)) fail('corpus must contain the seven task fixtures in stable order');
 if (new Set(corpus.cases.map(({ id }) => id)).size !== corpus.cases.length) fail('case ids must be unique');
 if (JSON.stringify(conditions.conditions?.map(({ id }) => id)) !== JSON.stringify(expectedConditions)) fail('conditions must be none, current-guidance, and revised-recipes-catalog');
 if (!packageJson.scripts?.['ai:regressions:record']?.includes('record-ai-regression-run.mjs')) fail('package scripts must expose the opt-in run recorder');
+if (!packageJson.scripts?.['ai:regressions:compile']?.includes('compile-ai-regression-response.mjs')) fail('package scripts must expose the opt-in compile probe');
 
 const catalogIds = new Set(catalog.entries.map(({ id }) => id));
 for (const testCase of corpus.cases) {
@@ -57,11 +63,41 @@ const revised = conditions.conditions.find(({ id }) => id === 'revised-recipes-c
 for (const required of ['ai/component-catalog.json', 'docs/recipes.md', 'ux-demo/recipes/app-shell.tsx', 'ux-demo/recipes/recipes.css']) {
   if (!revised.sourcePaths.includes(required)) fail(`revised context is missing ${required}`);
 }
+const revisedSnapshot = AI_REGRESSION_V1_CONTEXT_SNAPSHOTS.get('revised-recipes-catalog');
+if (revisedSnapshot !== 'ai-regressions/contexts/revised-recipes-catalog-v1.snapshot.json') fail('v1 revised context must resolve through its checked-in snapshot');
 for (const condition of conditions.conditions) {
-  const first = await buildAiRegressionContext(root, condition);
-  const second = await buildAiRegressionContext(root, condition);
+  const snapshotPath = AI_REGRESSION_V1_CONTEXT_SNAPSHOTS.get(condition.id);
+  const first = await buildAiRegressionContext(root, condition, { snapshotPath });
+  const second = await buildAiRegressionContext(root, condition, { snapshotPath });
   if (first.sha256 !== second.sha256 || first.text !== second.text) fail(`${condition.id} context assembly is nondeterministic`);
+  if (condition.id === 'revised-recipes-catalog' && first.sha256 !== expectedV1RevisedContextSha256) fail('suite-v1 revised context snapshot changed');
   if (condition.expectedSha256 && first.sources[0]?.sha256 !== condition.expectedSha256) fail(`${condition.id} frozen source content changed without a new condition`);
+}
+
+if (overrides.schemaVersion !== 2 || !overrides.cases || Array.isArray(overrides.cases)) fail('v2 corpus overrides must declare schemaVersion 2 and keyed cases');
+for (const [caseId, override] of Object.entries(overrides.cases ?? {})) {
+  const testCase = corpus.cases.find(({ id }) => id === caseId);
+  if (!testCase) { fail(`v2 overrides reference unknown case ${caseId}`); continue; }
+  for (const requirement of override.requiredWiringAny ?? []) {
+    if (!requirement.id || !Array.isArray(requirement.options) || requirement.options.length < 2) fail(`${caseId} v2 wiring alternative must name at least two options`);
+    for (const option of requirement.options ?? []) {
+      if (!option.name || !option.specifier || option.captured !== true) fail(`${caseId} v2 wiring options must name a captured public call`);
+      if (option.specifier.startsWith('@kerfjs/ui')) {
+        const subpath = option.specifier.replace('@kerfjs/ui', '.') || '.';
+        if (!(subpath in packageJson.exports)) fail(`${caseId} v2 wiring references stale UI import ${option.specifier}`);
+      }
+    }
+  }
+}
+
+for (const [file, code] of [
+  ['v2-resize-dedicated-import.json', 'wiring:wireResizableRegions'],
+  ['v2-delegate-root-import.json', 'wiring:delegated-actions'],
+]) {
+  const response = await readJson(`ai-regressions/fixtures/responses/${file}`);
+  const base = corpus.cases.find(({ id }) => id === response.caseId);
+  const result = scoreAiRegressionV2({ ...base, ...overrides.cases[response.caseId] }, response, catalog);
+  if (!result.checks.find((check) => check.code === code)?.pass) fail(`${file} must pass ${code} in the v2 equivalent-import scorer`);
 }
 
 for (const fixture of expected.fixtures) {

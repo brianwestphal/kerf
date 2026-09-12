@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kerfjs.dev/schemas/ai-regression-compile-evidence-v1.json",
+  "title": "Kerf UI AI regression compile evidence",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "caseId",
+    "responseSha256",
+    "compilerOptionsSha256",
+    "typescriptVersion",
+    "packages",
+    "compiledFiles",
+    "passed",
+    "diagnostics"
+  ],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "caseId": { "type": ["string", "null"] },
+    "responseSha256": { "$ref": "#/$defs/sha256" },
+    "compilerOptionsSha256": { "$ref": "#/$defs/sha256" },
+    "typescriptVersion": { "type": "string", "minLength": 1 },
+    "packages": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "version", "declarationSetSha256"],
+        "properties": {
+          "name": { "type": "string", "minLength": 1 },
+          "version": { "type": "string", "minLength": 1 },
+          "declarationSetSha256": { "$ref": "#/$defs/sha256" }
+        }
+      }
+    },
+    "compiledFiles": { "type": "integer", "minimum": 1 },
+    "passed": { "type": "boolean" },
+    "diagnostics": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["code", "message"],
+        "properties": {
+          "code": { "type": "integer" },
+          "file": { "type": "string" },
+          "line": { "type": "integer", "minimum": 1 },
+          "column": { "type": "integer", "minimum": 1 },
+          "message": { "type": "string" }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  }
+}

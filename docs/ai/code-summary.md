@@ -10,12 +10,16 @@ stable catalog routes synchronized.
 
 `ui/ai-regressions/` is the internal deterministic AI-choice regression
 foundation: seven neutral prompt fixtures, schema-described private oracles,
-three reproducible context conditions (including a full-revision frozen
-pre-recipe baseline), and adversarial response fixtures. The scorer under
+three reproducible context conditions (including frozen suite-v1 pre-recipe and
+revised-context snapshots), and adversarial response fixtures. The scorer under
 `ui/scripts/lib/ai-regression-*.mjs` uses the TypeScript AST plus CSS/layout
 analysis so copied class names cannot impersonate component reuse;
 `check-ai-regressions.mjs` runs without a model in the normal UI gate, while
 `prepare-ai-regression.mjs` emits hashed provider-neutral opt-in requests.
+`ui/ai/public-api-signatures-v1.md` snapshots corpus-facing emitted declarations;
+the opt-in compile probe records a separate, non-executing evidence sidecar with
+fixed compiler options and package/declaration hashes. Suite-v2 import
+alternatives are layered over the unchanged v1 oracle.
 The internal [September 13 Astra repeat findings](../../ui/ai-regressions/results/2026-09-13/findings.md)
 index three additional measured runs, preserved raw responses and the execution
 protocol; frozen structural scores remain separate from compile/runtime quality.
