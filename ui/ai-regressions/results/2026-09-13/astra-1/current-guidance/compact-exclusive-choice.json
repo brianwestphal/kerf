@@ -1,0 +1,6 @@
+{
+  "caseId": "compact-exclusive-choice",
+  "files": {
+    "WorkspaceViewChoice.tsx": "import { SegmentedControl } from '@kerfjs/ui/segmented-control';\nimport '@kerfjs/ui/layout.css';\n\nexport type WorkspaceView = 'board' | 'list' | 'timeline';\nexport type WorkspaceAction = { type: 'workspace/view-changed'; view: WorkspaceView };\nconst options = [{ value: 'board', label: 'Board' }, { value: 'list', label: 'List' }, { value: 'timeline', label: 'Timeline' }] as const;\n\n// The application's reducer owns the selected view; this adapter sends a stable action.\nexport function WorkspaceViewChoice({ value, dispatch }: {\n  value: WorkspaceView; dispatch: (action: WorkspaceAction) => void;\n}) {\n  return <SegmentedControl aria-label=\"Workspace view\" value={value} options={options}\n    onChange={(next: string) => {\n      if (options.some(option => option.value === next) && next !== value)\n        dispatch({ type: 'workspace/view-changed', view: next as WorkspaceView });\n    }} />;\n}\n"
+  }
+}

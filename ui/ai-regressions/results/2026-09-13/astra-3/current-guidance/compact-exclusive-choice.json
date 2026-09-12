@@ -1,0 +1,6 @@
+{
+  "caseId": "compact-exclusive-choice",
+  "files": {
+    "WorkspaceViewChoice.tsx": "import { SegmentedControl } from '@kerfjs/ui/segmented-control';\nimport '@kerfjs/ui/layout.css';\n\nexport type WorkspaceView = 'board' | 'list' | 'timeline';\nexport type WorkspaceAction = { type: 'workspace.view.change'; view: WorkspaceView };\nconst options = [{value:'board', label:'Board'}, {value:'list', label:'List'}, {value:'timeline', label:'Timeline'}];\nexport function WorkspaceViewChoice({value, dispatch}: {value: WorkspaceView; dispatch: (action: WorkspaceAction) => void}) {\n  return <SegmentedControl aria-label=\"Workspace view\" value={value} options={options} onValueChange={(next: string) => {\n    if ((next === 'board' || next === 'list' || next === 'timeline') && next !== value) {\n      dispatch({type:'workspace.view.change', view:next});\n    }\n  }}/>;\n}\n// Place this controlled choice inside the application's Toolbar. The component\n// owns its exclusive-choice keyboard interaction; the application owns the value.\n"
+  }
+}

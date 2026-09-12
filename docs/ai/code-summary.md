@@ -16,6 +16,9 @@ pre-recipe baseline), and adversarial response fixtures. The scorer under
 analysis so copied class names cannot impersonate component reuse;
 `check-ai-regressions.mjs` runs without a model in the normal UI gate, while
 `prepare-ai-regression.mjs` emits hashed provider-neutral opt-in requests.
+The internal [September 13 Astra repeat findings](../../ui/ai-regressions/results/2026-09-13/findings.md)
+index three additional measured runs, preserved raw responses and the execution
+protocol; frozen structural scores remain separate from compile/runtime quality.
 
 ## Directory tree
 

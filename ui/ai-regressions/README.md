@@ -6,6 +6,11 @@ better than another.
 
 The first three-run internal result and its limitations are recorded in
 [`results/2026-09-12/findings.md`](./results/2026-09-12/findings.md).
+Three additional Astra repeats, using the same frozen inputs and scorer, are
+recorded in [`results/2026-09-13/findings.md`](./results/2026-09-13/findings.md),
+with their [execution protocol](./results/2026-09-13/protocol.md). These replace
+the requested Fable run by user direction; they do not measure Fable or model
+equivalence.
 
 `corpus.json` keeps seven task-shaped prompts separate from their scoring
 oracles. Prompt files contain product needs only; component names, imports,
