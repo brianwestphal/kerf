@@ -5,7 +5,7 @@ const packageLock = JSON.parse(await readFile(new URL('../package-lock.json', im
 
 const expectedPolicy = {
   esbuild: true,
-  sharp: true,
+  fsevents: false,
   'file:../..': false,
 };
 const actualPolicy = packageJson.allowScripts ?? {};
@@ -13,7 +13,7 @@ if (JSON.stringify(actualPolicy) !== JSON.stringify(expectedPolicy)) {
   throw new Error(`site allowScripts must be ${JSON.stringify(expectedPolicy)}`);
 }
 
-const expectedInstallers = ['esbuild@0.27.7', 'sharp@0.33.5', 'sharp@0.34.5'];
+const expectedInstallers = ['esbuild@0.28.2', 'fsevents@2.3.3'];
 const installers = Object.entries(packageLock.packages)
   // The root package has this preinstall script by definition; only audit
   // dependency installers that npm may execute after the policy check.
@@ -25,4 +25,4 @@ if (JSON.stringify(installers) !== JSON.stringify(expectedInstallers)) {
   throw new Error(`site install-script packages changed; review and update the policy: ${installers.join(', ')}`);
 }
 
-console.log(`Site install-script policy: approved ${expectedInstallers.join(', ')}; denied local Kerf prepare script`);
+console.log('Site install-script policy: approved esbuild; denied fsevents and local Kerf prepare script');

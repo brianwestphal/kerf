@@ -14,6 +14,9 @@ export default defineConfig({
   ],
   webServer: {
     command: 'npm run preview -- --host 127.0.0.1 --port 4321',
+    // Astro 7 auto-backgrounds preview under detected AI agents. Playwright
+    // owns this process and needs it to remain in the foreground.
+    env: { ASTRO_PREVIEW_BACKGROUND: '0' },
     port: 4321,
     reuseExistingServer: true,
   },
