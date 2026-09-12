@@ -146,6 +146,7 @@
       "import": "./dist/index.js"
     },
     "./foundation.css": "./src/foundation.css",
+    "./layout.css": "./src/layout.css",
     "./webawesome.css": "./src/webawesome.css",
     "./styles.css": "./src/styles.css",
     "./lucide-icon.css": "./src/lucide-icon.css",

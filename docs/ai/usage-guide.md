@@ -73,6 +73,15 @@ the complete layer is intentional. Manual CSS subpaths remain available for
 custom pipelines. App overrides belong later in the cascade or on a scoped
 `--kui-*` owner.
 
+For application spacing, import `@kerfjs/ui/layout.css`, put `.kui-layout` on
+the composition root, and choose exactly one semantic owner for each page
+gutter, pane/surface/dialog body, section stack, control cluster, metadata row,
+and pane scroll region. The `--kui-layout-*` roles derive from the spacing scale
+and reduce coherently at narrow CSS viewports. Keep toolbar/header chrome
+outside body insets; avoid doubled padding, one-off compensation, arbitrary
+centering, and competing document/pane/list scrollers. The task-oriented table
+and examples are in [`ui/docs/layout.md`](../../ui/docs/layout.md).
+
 The package keeps app policy outside components: wire emitted `data-action`
 hooks at the mount root, retain every disposer, and let the app own menu/tab
 state, routing, and persistence. `wireResizableRegions(root, { onCommit })` and

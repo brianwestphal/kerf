@@ -61,6 +61,15 @@ another inset. Consumers can change the geometry coherently through the shared
 `--kui-sidebar-*` tokens instead of wrapper padding, negative margins, or
 duplicated numeric offsets.
 
+`layout.css` is the application-level spacing composition. Seven semantic
+variables map the existing spacing scale to page gutters, pane insets, section
+rhythm, control clusters, inline metadata, surface bodies, and dialog bodies.
+The matching `.kui-*` classes give each boundary one owner, while
+`.kui-scroll-owner` establishes the single overflow region within a pane.
+`.kui-layout` reduces the large roles by one scale step below `48rem`, and
+`.kui-layout--compact` opts into that density at any width. The layer does not
+specify a product shell, reading width, or component-internal geometry.
+
 For an app that also uses Web Awesome's free component set, one optional import
 provides Web Awesome's base stylesheet plus Kerf's Hot Sheet 2-aligned theme:
 
@@ -146,8 +155,10 @@ themes, contrast, motion, selection, resize, and feedback states.
 Unit coverage uses the root repository thresholds. Consumer bundles prove
 component-reachable and transitive CSS, root/SSR isolation, JavaScript
 tree-shaking, peer externalization, and opt-in custom-element registration.
-Playwright runs the catalog in Chromium, Firefox, and WebKit and captures wide
-and narrow review images.
+Playwright runs the catalog in Chromium, Firefox, and WebKit and captures wide,
+intermediate, narrow, and 200%-zoom review images. Geometry assertions verify
+that the shell's page, preview surface, pane, and dialog each have one semantic
+spacing owner and that the sidebar remains the sole pane scroll owner.
 
 AI-oriented entry points ship with the package at `ui/ai/skill.md` and
 `ui/llms.txt`. They route tools to the component contract, accessibility rules,

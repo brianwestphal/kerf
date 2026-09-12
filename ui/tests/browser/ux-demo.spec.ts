@@ -27,6 +27,48 @@ test('loads component-reachable package CSS through browser subpaths', async ({ 
   await expect(page.locator('[data-component="empty-state"] .kui-loading-spinner')).toHaveCSS('display', 'block');
 });
 
+test('applies one semantic layout owner across responsive and 200% zoom layouts', async ({ page, browserName }) => {
+  const cases = [
+    { name: 'wide', width: 1440, height: 900, rootFontSize: '', expected: { page: 32, pane: 16, surface: 16, dialog: 24 } },
+    { name: 'intermediate', width: 900, height: 900, rootFontSize: '', expected: { page: 32, pane: 16, surface: 16, dialog: 24 } },
+    { name: 'narrow', width: 390, height: 844, rootFontSize: '', expected: { page: 16, pane: 12, surface: 12, dialog: 16 } },
+    { name: 'zoom-200', width: 720, height: 900, rootFontSize: '200%', expected: { page: 32, pane: 24, surface: 24, dialog: 32 } },
+  ] as const;
+
+  for (const layout of cases) {
+    await page.setViewportSize({ width: layout.width, height: layout.height });
+    await page.goto('/?component=headers');
+    if (layout.rootFontSize) await page.locator('html').evaluate((element, size) => { element.style.fontSize = size; }, layout.rootFontSize);
+    if (layout.name === 'intermediate' || layout.name === 'zoom-200') await page.locator('[data-action="toggle-theme"]').click();
+
+    const geometry = await page.evaluate(() => {
+      const number = (selector: string, property: string) => parseFloat(window.getComputedStyle(document.querySelector(selector)!).getPropertyValue(property));
+      const sidebar = document.querySelector<HTMLElement>('.catalog-sidebar')!;
+      return {
+        page: number('.catalog-detail', 'padding-left'),
+        surface: number('.catalog-stage', 'padding-left'),
+        pane: number('.catalog-canvas', 'padding-left'),
+        dialog: number('.demo-dialog__body', 'padding-left'),
+        scrollOwners: document.querySelectorAll('.catalog-sidebar.kui-scroll-owner').length,
+        sidebarOverflow: window.getComputedStyle(sidebar).overflowY,
+        horizontalOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      };
+    });
+    expect(geometry).toMatchObject({ ...layout.expected, scrollOwners: 1, sidebarOverflow: 'auto' });
+    expect(geometry.horizontalOverflow).toBeLessThanOrEqual(1);
+
+    if (browserName === 'chromium') await page.screenshot({ path: `test-results/layout-${layout.name}.png`, fullPage: true });
+  }
+
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/?component=headers');
+  await page.locator('.kui-layout').evaluate((element) => element.classList.add('kui-layout--compact'));
+  await expect.poll(() => page.locator('.catalog-detail').evaluate((element) => parseFloat(window.getComputedStyle(element).paddingLeft))).toBe(16);
+  await expect.poll(() => page.locator('.catalog-canvas').evaluate((element) => parseFloat(window.getComputedStyle(element).paddingLeft))).toBe(12);
+  await expect(page.locator('.catalog-stage')).toHaveClass(/kui-surface-body/);
+  await expect(page.locator('.catalog-stage')).not.toHaveClass(/kui-pane-body|kui-dialog-body/);
+});
+
 test('edits, removes, and clears controlled token search content', async ({ page, browserName }) => {
   await page.setViewportSize({ width: 1100, height: 760 });
   await page.goto('/?component=token-search-field');

@@ -47,6 +47,15 @@ controlled by `--kui-sidebar-gutter`, `--kui-sidebar-row-padding-inline`,
 Import `@kerfjs/ui/sidebar.css` when using explicit component subpaths; the
 complete `styles.css` layer already includes it.
 
+`@kerfjs/ui/layout.css` adds application-level spacing roles without creating
+an application shell. Put `.kui-layout` at the composition root, then give each
+boundary one owner: `.kui-page-gutter`, `.kui-pane-body`,
+`.kui-section-stack`, `.kui-control-cluster`, `.kui-inline-metadata`,
+`.kui-surface-body`, `.kui-dialog-body`, or `.kui-scroll-owner`. Do not combine
+two inset owners on one element or place wrapper padding around component-owned
+header and toolbar chrome. The [layout contract](./layout.md) defines the
+responsive and compact reductions.
+
 ## Imports and side effects
 
 Every component has an explicit JS and CSS subpath. In CSS-aware browser builds,

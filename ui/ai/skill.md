@@ -1,7 +1,7 @@
 ---
 name: kerf-ui
 description: Build interfaces with kerfjs and the @kerfjs/ui production component package. Use whenever code imports @kerfjs/ui or a task asks for Kerf UI components.
-kerf-ui-skill-version: 1.8.0
+kerf-ui-skill-version: 1.9.0
 ---
 
 # Building with @kerfjs/ui
@@ -46,6 +46,7 @@ Hard rules:
 13. The Web Awesome theme makes Tooltip and Popover arrowless by default. Keep that default unless a pointer materially clarifies the anchor; opt back in with `--wa-tooltip-arrow-size`, `--kui-wa-popover-arrow-size`, or a popover's public `--arrow-size`, and use `without-arrow` when local no-arrow intent should survive theme changes.
 14. Treat the complete Web Awesome catalog as support coverage, not a recommendation list. Consider Popup when it replaces custom anchored positioning. Prefer Kerf `Select` over direct Dropdown/Dropdown Item/Select/Option composition, `SegmentedControl` over Button Group, `TabBar` or `SegmentedControl` over Web Awesome Tabs, `LucideIcon` over Web Awesome Icon, and `ResizableRegion` over Split Panel. Use Tree/Tree Item, Animated Image, and Comparison only for a specific required behavior; avoid Zoomable Frame.
 15. Build navigation sidebars with one `.kui-sidebar` content gutter and the shared icon/label columns. Headers and rows align on content, including iconless rows. Put bordered or filled blocks in `.kui-sidebar-surface`: the border stays flush to the gutter and its contents align to the label column. Do not stack wrapper padding, align text to a decorative border, or compensate with negative margins. Import `@kerfjs/ui/sidebar.css` when using component subpaths; override `--kui-sidebar-*` tokens only at the shared composition boundary.
+16. Build application spacing from `@kerfjs/ui/layout.css`. Put `.kui-layout` on the composition root and assign exactly one semantic owner to each page gutter, pane or surface body, section stack, control cluster, metadata row, dialog body, and scroll region. Keep toolbar/header chrome outside body insets. Let controls wrap or relocate at narrow widths instead of shrinking hit targets. Do not invent one-off offsets, unrelated centered max-widths, doubled padding, or competing scroll containers; adapt `--kui-layout-*` at the composition boundary.
 
 Common mistakes:
 
@@ -60,3 +61,5 @@ Common mistakes:
 | Add demo-only markup for a production state | Add the state to the production component, then render that export in the catalog |
 | Choose a listed ecosystem component by default | Apply the component-selection guidance above; catalog coverage means supported and themed, not preferred |
 | Indent a sidebar panel until its border matches header text | Keep the surface flush to `.kui-sidebar` and use `.kui-sidebar-surface` to align its contents |
+| Pad a page, pane, and nested card independently | Import `layout.css` and choose the single semantic inset owner for each real boundary |
+| Let the document, pane, and list all scroll | Keep fixed chrome outside one `.kui-scroll-owner` per pane |

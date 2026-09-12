@@ -95,6 +95,23 @@ align with that column. Avoid nested wrapper padding, moving a decorative
 border onto the text column, or repairing either with negative margins; change
 the shared `--kui-sidebar-*` tokens at the composition boundary instead.
 
+## Application spacing and scroll ownership
+
+Import `@kerfjs/ui/layout.css`, put `.kui-layout` on the composition root, and
+choose one semantic owner for each real boundary:
+
+- `.kui-page-gutter` for the page edge;
+- `.kui-pane-body`, `.kui-surface-body`, or `.kui-dialog-body` for one body inset;
+- `.kui-section-stack`, `.kui-control-cluster`, or `.kui-inline-metadata` for the appropriate relationship;
+- `.kui-scroll-owner` for the one scrolling region inside a pane.
+
+The `--kui-layout-*` variables derive from the existing spacing scale and the
+larger roles reduce one step below `48rem`, including when browser zoom reduces
+the CSS viewport. Do not combine body-inset classes on one element, add wrapper
+padding around toolbar or header chrome, or let the document, pane, and list
+compete for scrolling. Reading width and centering remain explicit application
+decisions.
+
 ## Web Awesome Select
 
 `Select` renders Web Awesome markup without registering custom elements. Opt in

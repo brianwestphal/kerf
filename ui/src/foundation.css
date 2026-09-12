@@ -17,6 +17,13 @@
   --kui-space-m: var(--wa-space-m, 1rem);
   --kui-space-l: var(--wa-space-l, 1.5rem);
   --kui-space-xl: var(--wa-space-xl, 2rem);
+  --kui-layout-page-gutter: var(--kui-space-xl);
+  --kui-layout-pane-inset: var(--kui-space-m);
+  --kui-layout-section-gap: var(--kui-space-l);
+  --kui-layout-control-gap: var(--kui-space-xs);
+  --kui-layout-metadata-gap: var(--kui-space-2xs);
+  --kui-layout-surface-inset: var(--kui-space-m);
+  --kui-layout-dialog-inset: var(--kui-space-l);
   --kui-radius-s: var(--wa-border-radius-s, .1875rem);
   --kui-radius-m: var(--wa-border-radius-m, .375rem);
   --kui-radius-l: var(--wa-border-radius-l, .75rem);

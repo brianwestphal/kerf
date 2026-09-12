@@ -32,6 +32,7 @@ Components return Kerf `SafeHtml`. They do not own application state or attach t
 | `MenuItem` | `@kerfjs/ui/menu-item` | `@kerfjs/ui/menu-item.css` |
 | `MenuHeader` | `@kerfjs/ui/menu-header` | `@kerfjs/ui/menu-header.css` |
 | Sidebar composition | — | `@kerfjs/ui/sidebar.css` |
+| Application layout composition | — | `@kerfjs/ui/layout.css` |
 | `ResizableRegion` | `@kerfjs/ui/resizable-region` | `@kerfjs/ui/resizable-region.css` |
 | `wireResizableRegions` | `@kerfjs/ui/wire-resizable-regions` | — |
 | `AppTab` | `@kerfjs/ui/app-tab` | `@kerfjs/ui/app-tab.css` |
@@ -91,6 +92,21 @@ margin. Override the shared `--kui-sidebar-*` tokens on the composition when a
 product needs different geometry. Intentionally break the grid only for a
 full-bleed surface, a distinct navigation hierarchy, or a deliberately
 different reading width.
+
+## Spacing and application layout
+
+Import `@kerfjs/ui/layout.css` and put `.kui-layout` on the composition root.
+Semantic roles then identify the one owner for page gutters, pane and surface
+insets, section stacks, control clusters, inline metadata, dialog bodies, and
+pane scrolling. The defaults use the existing `--kui-space-*` scale and reduce
+one step below `48rem`; `.kui-layout--compact` applies that density explicitly.
+The manual subpath carries standalone fallbacks when foundation CSS is delivered
+separately.
+
+Do not stack two inset classes on one boundary, wrap a `Toolbar` or header in
+competing padding, or give a pane more than one `.kui-scroll-owner`. Reading
+width and centering remain explicit application decisions. See the complete
+[layout decision table](./docs/layout.md) for correct and incorrect examples.
 
 ## Web Awesome theme
 
@@ -216,6 +232,7 @@ than default patterns. The detailed rationale lives in the theme contract.
 - [Apple HIG translation](./docs/apple-hig.md)
 - [Accessibility and keyboard contracts](./docs/accessibility.md)
 - [Component and integration contract](./docs/component-contract.md)
+- [Spacing and application layout](./docs/layout.md)
 - [Web Awesome theme contract](./docs/webawesome-theme.md)
 - [UX catalog contract](./docs/ux-demo.md)
 - [AI guide](./ai/skill.md)

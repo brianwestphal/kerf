@@ -164,6 +164,17 @@ describe('consumer bundle boundaries', () => {
     expect(buttonInputs).not.toContain('@awesome.me/webawesome/dist/components/checkbox/checkbox.js');
   });
 
+  it('keeps the manual layout CSS subpath self-sufficient', async () => {
+    const result = await bundle("import '@kerfjs/ui/layout.css';");
+    const inputs = Object.keys(result.metafile!.inputs).join('\n');
+    const css = output(result, '.css');
+    expect(inputs).toContain('src/layout.css');
+    expect(inputs).not.toContain('src/foundation.css');
+    expect(css).toContain('.kui-page-gutter');
+    expect(css).toContain('var(--kui-layout-page-gutter, var(--kui-space-xl, 2rem))');
+    expect(css).toContain('var(--kui-layout-control-gap, var(--kui-space-xs, .5rem))');
+  });
+
   it('declares only style delivery and custom-element registration as side effects', async () => {
     const pkg = JSON.parse(await readFile(new URL('../../package.json', import.meta.url), 'utf8')) as { sideEffects: string[]; exports: Record<string, unknown> };
     expect(pkg.sideEffects).toEqual(['**/*.css', './dist/browser/*.js', './dist/select-register.js']);
@@ -178,6 +189,7 @@ describe('consumer bundle boundaries', () => {
     expect(pkg.exports['./wire-tab-bars']).toBeDefined();
     expect(pkg.exports['./toolbar.css']).toBe('./src/toolbar.css');
     expect(pkg.exports['./sidebar.css']).toBe('./src/sidebar.css');
+    expect(pkg.exports['./layout.css']).toBe('./src/layout.css');
     expect(pkg.exports['./tab-bar.css']).toBe('./src/tab-bar.css');
     expect(pkg.exports['./segmented-control.css']).toBe('./src/segmented-control.css');
     expect(pkg.exports['./token-search-field.css']).toBe('./src/token-search-field.css');

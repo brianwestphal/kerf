@@ -1,4 +1,5 @@
 import '@kerfjs/ui/select/register';
+import '@kerfjs/ui/layout.css';
 import '@kerfjs/ui/sidebar.css';
 import '@kerfjs/ui/webawesome.css';
 import './style.css';
@@ -284,7 +285,7 @@ function HeadersDemo() {
     <PageHeader title="UI foundations" action={button('New pattern', 'log-add')} />
     <div class="demo-dialog">
       <DialogHeader title="Package details" titleId="package-title" summary="Production-backed primitives with explicit contracts." summaryId="package-summary" icon={icon(Wrench, 'wrench')} actions={button('Done', 'log-done')} />
-      <div class="demo-dialog__body"><ValueTable label="Package metadata"><div><dt>Package</dt><dd>@kerfjs/ui</dd></div><div><dt>Rendering</dt><dd>Kerf SafeHtml</dd></div><div><dt>Styles</dt><dd>Explicit CSS subpaths</dd></div></ValueTable></div>
+      <div class="demo-dialog__body kui-dialog-body"><ValueTable label="Package metadata"><div><dt>Package</dt><dd>@kerfjs/ui</dd></div><div><dt>Rendering</dt><dd>Kerf SafeHtml</dd></div><div><dt>Styles</dt><dd>Explicit CSS subpaths</dd></div></ValueTable></div>
     </div>
   </div>;
 }
@@ -303,8 +304,8 @@ function ValueTableDemo() {
 
 function ResizeDemo() {
   return <div class="demo-resize-shell" data-demo="resize">
-    <ResizableRegion id="catalog-panel" label="Catalog panel" size={regionSize.value} min={180} max={420}><div class="demo-resize-panel"><strong>Resizable panel</strong><span>Use the handle with a pointer, arrow keys, Home, or End.</span></div></ResizableRegion>
-    <div class="demo-resize-content"><span>Committed width</span><strong data-region-size>{regionSize.value}px</strong></div>
+    <ResizableRegion id="catalog-panel" label="Catalog panel" size={regionSize.value} min={180} max={420}><div class="demo-resize-panel kui-pane-body"><strong>Resizable panel</strong><span>Use the handle with a pointer, arrow keys, Home, or End.</span></div></ResizableRegion>
+    <div class="demo-resize-content kui-pane-body"><span>Committed width</span><strong data-region-size>{regionSize.value}px</strong></div>
   </div>;
 }
 
@@ -428,8 +429,8 @@ function revealSelectedSidebarItem(id: CatalogId, block: ScrollLogicalPosition =
 
 mount(app, () => {
   const selected = findCatalogEntry(selectedDemo.value)!;
-  return <main class="catalog-shell">
-    <aside class="catalog-sidebar" aria-label="Component catalog">
+  return <main class="catalog-shell kui-layout">
+    <aside class="catalog-sidebar kui-scroll-owner" aria-label="Component catalog">
       <header class="catalog-brand">
         <span class="catalog-mark" aria-hidden="true">K</span>
         <div><p class="catalog-eyebrow">Kerf</p><h1>UI components</h1><p>Production catalog</p></div>
@@ -454,7 +455,7 @@ mount(app, () => {
         </section>
       </nav>
     </aside>
-    <article class="catalog-detail">
+    <article class="catalog-detail kui-page-gutter">
       <header class="catalog-header">
         <div><p class="catalog-eyebrow">{selected.source === 'webawesome' ? `Web Awesome · ${selected.category}` : selected.category}</p><h2>{selected.name}</h2><p>{selected.description}</p></div>
         <div class="catalog-settings" role="group" aria-label="Catalog display settings">
@@ -463,8 +464,8 @@ mount(app, () => {
           <button type="button" data-action="toggle-motion" aria-pressed={String(reducedMotion.value)}>{icon(ZapOff, 'zap-off')}<span>Reduce motion</span></button>
         </div>
       </header>
-      <section class="catalog-stage" aria-label={`${selected.name} preview`}>
-        <div class="catalog-canvas"><Stage /></div>
+      <section class="catalog-stage kui-surface-body" aria-label={`${selected.name} preview`}>
+        <div class="catalog-canvas kui-pane-body"><Stage /></div>
         <footer class="catalog-stage__footer"><output class="catalog-log" aria-live="polite">{actionLog.value}</output><span>{selected.source === 'webawesome' ? 'Web Awesome component · Kerf theme' : selected.kind === 'component' ? 'Kerf first-class component · production CSS' : 'Kerf composition · production CSS'}</span></footer>
       </section>
       <DemoRelationships entry={selected} />

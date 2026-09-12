@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Added a canonical `@kerfjs/ui/layout.css` vocabulary for responsive page, pane, section, control, metadata, surface, dialog, and scroll ownership, with semantic variables, compact/narrow behavior, consumer and AI guidance, normalized catalog compositions, and wide/intermediate/narrow/200%-zoom geometry coverage.
 - Added a need-first `@kerfjs/ui` component-selection matrix and automated drift gate so AI tools choose among reuse, composition, thin application adapters, custom semantics, and overlapping Web Awesome components without inferring contracts from implementation CSS.
 - Fixed `@kerfjs/ui` `Select` option icons disappearing after a Kerf rerender. Icon slots now have stable per-select/per-choice keys and preserve Web Awesome-owned slot state, while custom selected content is keyed by the controlled value so it updates cleanly.
 - Added a shared `@kerfjs/ui` sidebar spacing composition: one gutter and icon/label grid now align menu headers, icon-bearing rows, iconless rows, and the contents of flush bordered surfaces, with public tokens, consumer/AI guidance, a responsive catalog specimen, and browser geometry coverage. The documentation site's primary navigation and table of contents now consume the same composition across desktop, tablet, and mobile layouts.
