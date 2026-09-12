@@ -168,6 +168,15 @@ check verifies that every public runtime value and supported Web Awesome
 overlap remains represented, and rejects stale package imports or broken local
 recipe links.
 
+`ui/ai/component-catalog.json` is the canonical versioned machine-readable
+inventory, with an adjacent JSON Schema. It covers every public visual/helper
+export, the layout and sidebar compositions, and all supported Web Awesome
+entries. `ui/scripts/sync-component-catalog.mjs` deterministically emits the
+checked-in typed UX-catalog projection; the catalog gate verifies exports,
+browser/CSS/registration paths, relationships, Web Awesome's installed custom
+elements manifest, AI coverage, renderer routes, public CSS hooks, and links.
+The package's JavaScript and side-effect boundaries do not change.
+
 ## 21.6 Versioning and releases
 
 `scripts/release.sh` bumps `kerfjs`, `eslint-plugin-kerfjs`,

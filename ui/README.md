@@ -48,6 +48,23 @@ Components return Kerf `SafeHtml`. They do not own application state or attach t
 | `DialogHeader` | `@kerfjs/ui/dialog-header` | `@kerfjs/ui/dialog-header.css` |
 | `ValueTable` | `@kerfjs/ui/value-table` | `@kerfjs/ui/value-table.css` |
 
+## Machine-readable catalog
+
+AI tools can retrieve the shipped [`ai/component-catalog.json`](./ai/component-catalog.json)
+for the exhaustive component and composition inventory. It is the canonical
+source for ids, public exports, purpose and selection guidance, relationships,
+delivery and side effects, companion wiring, application-owned policy,
+variants, accessibility obligations, public CSS hooks, routes, and current
+documentation/recipe links. The adjacent
+[`component-catalog.schema.json`](./ai/component-catalog.schema.json) describes
+the versioned format.
+
+`npm run catalog:sync` deterministically projects the fields used by the UX
+catalog into `ux-demo/catalog.generated.ts`. Do not edit that generated file.
+`npm run check:catalog` rejects stale generated output, exports and package
+paths, Web Awesome manifest drift, invalid relationships, broken links, or a
+missing AI-guidance entry. Prose remains authored where design nuance matters.
+
 Import components from their explicit JavaScript subpaths. CSS-aware browser
 bundlers such as Vite, webpack, and esbuild follow each subpath's `browser`
 condition, collect its foundation and component CSS, and retain styles for any

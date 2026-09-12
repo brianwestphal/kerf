@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/brianwestphal/kerf/main/ui/ai/component-catalog.schema.json",
+  "title": "Kerf UI component catalog",
+  "type": "object",
+  "required": ["schemaVersion", "package", "description", "entries"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "schemaVersion": { "const": 1 },
+    "package": { "const": "@kerfjs/ui" },
+    "description": { "type": "string", "minLength": 1 },
+    "entries": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/entry" }
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "entry": {
+      "type": "object",
+      "required": ["id", "name", "category", "kind", "source", "purpose", "useWhen", "avoidWhen", "delivery", "links"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "name": { "type": "string", "minLength": 1 },
+        "category": { "type": "string", "minLength": 1 },
+        "kind": { "enum": ["component", "composition"] },
+        "source": { "enum": ["kerf", "webawesome"] },
+        "description": { "type": "string" },
+        "purpose": { "type": "string", "minLength": 1 },
+        "customElement": { "type": "string" },
+        "publicExports": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+        "useWhen": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+        "avoidWhen": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+        "recommendation": { "enum": ["supported", "conditional", "exceptional", "underlying", "avoid"] },
+        "alternatives": { "type": "array", "items": { "$ref": "#/$defs/alternative" } },
+        "uses": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+        "wiring": { "type": "array", "items": { "$ref": "#/$defs/wiring" } },
+        "appOwns": { "type": "array", "items": { "type": "string" } },
+        "variants": { "type": "array", "items": { "type": "string" } },
+        "accessibility": { "type": "array", "items": { "type": "string" } },
+        "publicClasses": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+        "publicTokens": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+        "delivery": { "$ref": "#/$defs/delivery" },
+        "links": { "$ref": "#/$defs/links" }
+      },
+      "additionalProperties": false
+    },
+    "alternative": {
+      "type": "object",
+      "required": ["id", "relationship"],
+      "properties": { "id": { "type": "string" }, "relationship": { "type": "string" }, "when": { "type": "string" } },
+      "additionalProperties": false
+    },
+    "wiring": {
+      "type": "object",
+      "required": ["export", "import", "required"],
+      "properties": { "export": { "type": "string" }, "import": { "type": "string" }, "required": { "type": "boolean" }, "reason": { "type": "string" } },
+      "additionalProperties": false
+    },
+    "delivery": {
+      "type": "object",
+      "required": ["sideEffects"],
+      "properties": {
+        "browserImport": { "type": "string" },
+        "manualCssImport": { "type": "string" },
+        "registrationImport": { "type": "string" },
+        "themeCssImport": { "type": "string" },
+        "sideEffects": { "type": "array", "items": { "type": "string" } }
+      },
+      "additionalProperties": false
+    },
+    "links": {
+      "type": "object",
+      "required": ["catalogRoute", "documentation", "recipe"],
+      "properties": { "catalogRoute": { "type": "string" }, "documentation": { "type": "string" }, "recipe": { "type": "string" } },
+      "additionalProperties": false
+    }
+  }
+}

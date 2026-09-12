@@ -67,6 +67,9 @@ button { font: inherit; }
 .demo-dialog__body { min-width: 0; }
 .demo-resize-shell { display: flex; width: 100%; max-width: 54rem; min-height: 15rem; overflow: hidden; border: 1px solid var(--kui-color-border); border-radius: var(--kui-radius-m); background: var(--kui-color-surface-lowered); box-shadow: var(--kui-shadow-s); }
 .demo-resize-panel { display: grid; height: 100%; background: var(--kui-color-surface); align-content: start; gap: var(--kui-layout-metadata-gap); }
+.demo-layout { width: min(100%, 46rem); }
+.demo-layout__surface { border: 1px solid var(--kui-color-border); border-radius: var(--kui-radius-l); background: var(--kui-color-surface); }
+.demo-layout__surface p { margin: var(--kui-layout-metadata-gap) 0 0; color: var(--kui-color-text-muted); }
 .demo-resize-panel span, .demo-control-stack p { color: var(--kui-color-text-quiet); font-size: var(--kui-font-s); }
 .demo-resize-content { display: grid; min-width: 10rem; place-content: center; text-align: center; }
 .demo-resize-content strong { font-size: 1.8rem; }

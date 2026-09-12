@@ -69,6 +69,25 @@ test('applies one semantic layout owner across responsive and 200% zoom layouts'
   await expect(page.locator('.catalog-stage')).not.toHaveClass(/kui-pane-body|kui-dialog-body/);
 });
 
+test('routes the generated application-layout composition at wide and narrow sizes', async ({ page, browserName }) => {
+  await page.setViewportSize({ width: 1100, height: 760 });
+  await page.goto('/?component=layout');
+  const demo = page.locator('[data-demo="layout"]');
+  await expect(demo).toBeVisible();
+  await expect(page.locator('[data-item-id="layout"]')).toHaveAttribute('aria-current', 'page');
+  const wideGutter = Number.parseFloat(await demo.evaluate((element) => window.getComputedStyle(element).paddingInlineStart));
+  await demo.getByRole('button', { name: 'Primary action' }).click();
+  await expect(page.locator('.catalog-log')).toHaveText('Add action requested');
+  if (browserName === 'chromium') await page.screenshot({ path: 'test-results/component-catalog-layout-wide.png', fullPage: true });
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  const narrowGutter = Number.parseFloat(await demo.evaluate((element) => window.getComputedStyle(element).paddingInlineStart));
+  expect(narrowGutter).toBeLessThan(wideGutter);
+  await expect(demo.getByRole('button', { name: 'Secondary action' })).toBeVisible();
+  if (browserName === 'chromium') await page.screenshot({ path: 'test-results/component-catalog-layout-narrow.png', fullPage: true });
+});
+
 test('edits, removes, and clears controlled token search content', async ({ page, browserName }) => {
   await page.setViewportSize({ width: 1100, height: 760 });
   await page.goto('/?component=token-search-field');

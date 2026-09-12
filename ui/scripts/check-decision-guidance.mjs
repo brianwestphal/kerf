@@ -23,12 +23,13 @@ const overlaps = [
   'wa-comparison', 'wa-zoomable-frame',
 ];
 
-const [selection, indexSource, catalogSource, packageSource] = await Promise.all([
+const [selection, indexSource, componentCatalogSource, packageSource] = await Promise.all([
   readFile(selectionPath, 'utf8'),
   readFile(resolve(root, 'src/index.ts'), 'utf8'),
-  readFile(resolve(root, 'ux-demo/catalog.ts'), 'utf8'),
+  readFile(resolve(root, 'ai/component-catalog.json'), 'utf8'),
   readFile(resolve(root, 'package.json'), 'utf8'),
 ]);
+const componentCatalog = JSON.parse(componentCatalogSource);
 const packageJson = JSON.parse(packageSource);
 const failures = [];
 
@@ -49,7 +50,7 @@ for (const name of runtimeExports) {
 }
 
 for (const id of overlaps) {
-  if (!catalogSource.includes(`id: '${id}'`)) fail(`decision overlap ${id} is missing from the UX catalog`);
+  if (!componentCatalog.entries.some((entry) => entry.id === id)) fail(`decision overlap ${id} is missing from the component catalog`);
   if (!selection.includes(`\`${id}\``)) fail(`component-selection.md does not decide supported overlap ${id}`);
 }
 
@@ -67,13 +68,16 @@ for (const phrase of requiredPhrases) {
 }
 
 const importPattern = /`(@kerfjs\/ui(?:\/[a-z0-9./*-]+)?)`/g;
+function packageExports(subpath) {
+  return subpath in packageJson.exports || Object.keys(packageJson.exports).some((pattern) => pattern.endsWith('*') && subpath.startsWith(pattern.slice(0, -1)));
+}
 for (const path of requiredDocs) {
   const contents = await readFile(path, 'utf8');
   for (const match of contents.matchAll(importPattern)) {
     const specifier = match[1];
     if (specifier.includes('*')) continue;
     const subpath = specifier === '@kerfjs/ui' ? '.' : `.${specifier.slice('@kerfjs/ui'.length)}`;
-    if (!(subpath in packageJson.exports)) fail(`${relative(root, path)} contains stale package import ${specifier}`);
+    if (!packageExports(subpath)) fail(`${relative(root, path)} contains stale package import ${specifier}`);
   }
 }
 

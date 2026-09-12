@@ -1,7 +1,7 @@
 ---
 name: kerf-ui
 description: Build interfaces with kerfjs and the @kerfjs/ui production component package. Use whenever code imports @kerfjs/ui or a task asks for Kerf UI components.
-kerf-ui-skill-version: 1.9.0
+kerf-ui-skill-version: 1.10.0
 ---
 
 # Building with @kerfjs/ui
@@ -27,7 +27,7 @@ Quick routing:
 | Adjustable or static columns | `ResizableRegion` or CSS grid | Use the component only for a user-operable controlled separator. |
 | Structured or ordinary search | `TokenSearchField` or an input | Use token search only when text and ordered filter chips form one editor. |
 
-The exhaustive public-component, helper, import, ownership, and Web Awesome overlap matrix is in [`component-selection.md`](../docs/component-selection.md). Use its linked recipes instead of inferring behavior from CSS.
+The concise human decision matrix is in [`component-selection.md`](../docs/component-selection.md). For exhaustive tool retrieval, load [`component-catalog.json`](./component-catalog.json), the canonical metadata for every public component/helper, composition, and supported Web Awesome entry. Use its linked current recipes instead of inferring behavior from CSS.
 
 Hard rules:
 

@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Added a shipped, schema-described `@kerfjs/ui` machine-readable component catalog with deterministic typed UX projection and drift gates for public exports, package/CSS/registration paths, relationships, Web Awesome manifest coverage, AI guidance, routes, CSS hooks, and documentation links.
 - Added a canonical `@kerfjs/ui/layout.css` vocabulary for responsive page, pane, section, control, metadata, surface, dialog, and scroll ownership, with semantic variables, compact/narrow behavior, consumer and AI guidance, normalized catalog compositions, and wide/intermediate/narrow/200%-zoom geometry coverage.
 - Added a need-first `@kerfjs/ui` component-selection matrix and automated drift gate so AI tools choose among reuse, composition, thin application adapters, custom semantics, and overlapping Web Awesome components without inferring contracts from implementation CSS.
 - Fixed `@kerfjs/ui` `Select` option icons disappearing after a Kerf rerender. Icon slots now have stable per-select/per-choice keys and preserve Web Awesome-owned slot state, while custom selected content is keyed by the controlled value so it updates cleanly.

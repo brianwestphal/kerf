@@ -11,6 +11,13 @@ product state and policy; use custom markup when the semantic contract differs.
 Recurring cross-product custom patterns belong in an upstream component or
 recipe request, not in duplicated markup or private-descendant CSS.
 
+The shipped [`component-catalog.json`](../ai/component-catalog.json) is the
+canonical machine-readable inventory. Its facts are projected into the UX
+catalog deterministically; package checks compare them with runtime exports,
+package delivery paths, Web Awesome's installed manifest, AI guidance, and
+documentation links. Nuanced prose in this contract and the selection guide
+remains authored rather than generated.
+
 ## Ownership boundaries
 
 - Components own semantic markup, stable anatomy, documented variants, ARIA projection, and package CSS hooks.

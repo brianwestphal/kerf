@@ -25,6 +25,13 @@ segmented choices and selects; banners and empty states from callouts and
 toasts; toolbars from page/dialog headers; resizable panes from CSS grid; and
 token search from ordinary text input.
 
+For AI tools and other automated consumers, the package ships
+`@kerfjs/ui/ai/component-catalog.json` with an adjacent JSON Schema. It is the
+canonical exhaustive inventory for Kerf components, helpers, layout/sidebar
+compositions, and supported Web Awesome choices; checked generation and drift
+gates keep its ids, imports, CSS paths, relationships, routes, and links aligned
+with the package and production catalog.
+
 ```bash
 npm install kerfjs @kerfjs/ui
 ```

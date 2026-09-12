@@ -1,8 +1,37 @@
+import { readFile } from 'node:fs/promises';
+import { resolve } from 'node:path';
+
 import { describe, expect, it } from 'vitest';
 
 import { catalog, catalogCategories, catalogEntriesUsing, catalogSections, findCatalogEntry, isCatalogId, kerfCatalog, webAwesomeCatalog, webAwesomeCatalogSections, webAwesomeCategories } from '../../ux-demo/catalog.js';
 
 describe('UX catalog metadata', () => {
+  it('projects the shipped machine-readable catalog without losing decision facts', async () => {
+    const artifact = JSON.parse(await readFile(resolve(import.meta.dirname, '../../ai/component-catalog.json'), 'utf8')) as {
+      schemaVersion: number;
+      package: string;
+      entries: Array<{
+        id: string;
+        publicExports?: string[];
+        useWhen: string[];
+        avoidWhen: string[];
+        delivery: { registrationImport?: string };
+        links: { catalogRoute: string; documentation: string; recipe: string };
+      }>;
+    };
+
+    expect(artifact.schemaVersion).toBe(1);
+    expect(artifact.package).toBe('@kerfjs/ui');
+    expect(artifact.entries.map(({ id }) => id)).toEqual(catalog.map(({ id }) => id));
+    expect(artifact.entries).toHaveLength(93);
+    expect(artifact.entries.every((entry) => entry.useWhen.length > 0 && entry.avoidWhen.length > 0)).toBe(true);
+    expect(artifact.entries.every((entry) => entry.links.catalogRoute === `?component=${entry.id}` && entry.links.documentation && entry.links.recipe)).toBe(true);
+    expect(artifact.entries.find(({ id }) => id === 'tab-bar')?.publicExports).toEqual(['TabBar', 'wireTabBars', 'reorderTabs']);
+    expect(artifact.entries.find(({ id }) => id === 'resize')?.publicExports).toEqual(['ResizableRegion', 'clampRegionSize', 'resizeRegionFromPointer', 'wireResizableRegions']);
+    expect(artifact.entries.find(({ id }) => id === 'select')?.delivery.registrationImport).toBe('@kerfjs/ui/select/register');
+    expect(artifact.entries.find(({ id }) => id === 'wa-button')?.delivery.registrationImport).toBe('@awesome.me/webawesome/dist/components/button/button.js');
+  });
+
   it('keeps routes unique and dependency references valid', () => {
     const ids = catalog.map((entry) => entry.id);
     expect(new Set(ids).size).toBe(ids.length);
@@ -46,7 +75,7 @@ describe('UX catalog metadata', () => {
       'EmptyState',
       'LoadingSpinner',
     ]);
-    expect(kerfCatalog.filter((entry) => entry.kind === 'composition').map((entry) => entry.id)).toEqual(['webawesome-theme', 'headers', 'menu', 'feedback']);
+    expect(kerfCatalog.filter((entry) => entry.kind === 'composition').map((entry) => entry.id)).toEqual(['webawesome-theme', 'layout', 'headers', 'menu', 'feedback']);
     expect(webAwesomeCatalog).toHaveLength(70);
     expect(webAwesomeCatalog.every((entry) => entry.source === 'webawesome' && entry.kind === 'component')).toBe(true);
     expect(webAwesomeCatalog.map((entry) => entry.id)).toContain('wa-button');

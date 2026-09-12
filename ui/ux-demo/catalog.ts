@@ -1,3 +1,5 @@
+import { generatedKerfCatalog, generatedWebAwesomeCatalog } from './catalog.generated.js';
+
 export const catalogCategories = ['Foundation', 'Structure', 'Navigation', 'Controls', 'Feedback'] as const;
 export type KerfCatalogCategory = typeof catalogCategories[number];
 
@@ -15,111 +17,11 @@ export interface CatalogEntry {
   uses?: readonly string[];
 }
 
-export const webAwesomeCatalog = [
-  { id: 'wa-button', name: 'Button', category: 'Actions', kind: 'component', source: 'webawesome', description: 'Action control with semantic variants, appearances, loading, and icon support.', uses: ['wa-icon', 'wa-spinner'] },
-  { id: 'wa-button-group', name: 'Button Group', category: 'Actions', kind: 'component', source: 'webawesome', description: 'Exceptional grouped actions; prefer Kerf SegmentedControl for exclusive choices.', uses: ['wa-button'] },
-  { id: 'wa-copy-button', name: 'Copy Button', category: 'Actions', kind: 'component', source: 'webawesome', description: 'Copies a supplied value and announces success or failure.', uses: ['wa-icon', 'wa-tooltip'] },
-  { id: 'wa-dropdown', name: 'Dropdown', category: 'Actions', kind: 'component', source: 'webawesome', description: 'Action-menu primitive; prefer Kerf Select when choosing a value.', uses: ['wa-dropdown-item', 'wa-popup'] },
-  { id: 'wa-dropdown-item', name: 'Dropdown Item', category: 'Actions', kind: 'component', source: 'webawesome', description: 'Action-menu row; prefer Kerf Select options for value selection.', uses: ['wa-icon'] },
+export const kerfCatalog = generatedKerfCatalog satisfies readonly CatalogEntry[];
+export const webAwesomeCatalog = generatedWebAwesomeCatalog satisfies readonly CatalogEntry[];
 
-  { id: 'wa-checkbox', name: 'Checkbox', category: 'Forms', kind: 'component', source: 'webawesome', description: 'Binary form control with checked, indeterminate, and disabled states.', uses: ['wa-icon'] },
-  { id: 'wa-checkbox-group', name: 'Checkbox Group', category: 'Forms', kind: 'component', source: 'webawesome', description: 'Labels and validates a related set of checkboxes.', uses: ['wa-checkbox'] },
-  { id: 'wa-color-picker', name: 'Color Picker', category: 'Forms', kind: 'component', source: 'webawesome', description: 'Color input with swatches, formats, opacity, and eyedropper support.', uses: ['wa-button', 'wa-button-group', 'wa-input', 'wa-popup'] },
-  { id: 'wa-input', name: 'Input', category: 'Forms', kind: 'component', source: 'webawesome', description: 'Text input with labels, hints, clear controls, and semantic appearances.', uses: ['wa-icon'] },
-  { id: 'wa-known-date', name: 'Known Date', category: 'Forms', kind: 'component', source: 'webawesome', description: 'Experimental segmented field for partially or fully known dates.', uses: [] },
-  { id: 'wa-number-input', name: 'Number Input', category: 'Forms', kind: 'component', source: 'webawesome', description: 'Numeric input with keyboard and stepper controls.', uses: ['wa-icon'] },
-  { id: 'wa-option', name: 'Option', category: 'Forms', kind: 'component', source: 'webawesome', description: 'Underlying ecosystem option; prefer choices passed to Kerf Select.', uses: ['wa-icon'] },
-  { id: 'wa-otp-input', name: 'OTP Input', category: 'Forms', kind: 'component', source: 'webawesome', description: 'Experimental segmented one-time-password input.', uses: [] },
-  { id: 'wa-radio', name: 'Radio', category: 'Forms', kind: 'component', source: 'webawesome', description: 'Single-choice control used inside a radio group.', uses: ['wa-icon'] },
-  { id: 'wa-radio-group', name: 'Radio Group', category: 'Forms', kind: 'component', source: 'webawesome', description: 'Labels and manages a mutually exclusive set of radios.', uses: ['wa-radio'] },
-  { id: 'wa-rating', name: 'Rating', category: 'Forms', kind: 'component', source: 'webawesome', description: 'Interactive rating control with accessible labeling.', uses: ['wa-icon'] },
-  { id: 'wa-select', name: 'Select', category: 'Forms', kind: 'component', source: 'webawesome', description: 'Underlying ecosystem field; prefer Kerf Select for app UI.', uses: ['wa-icon', 'wa-popup', 'wa-tag', 'wa-option'] },
-  { id: 'wa-slider', name: 'Slider', category: 'Forms', kind: 'component', source: 'webawesome', description: 'Range input with markers and value tooltip support.', uses: ['wa-tooltip'] },
-  { id: 'wa-switch', name: 'Switch', category: 'Forms', kind: 'component', source: 'webawesome', description: 'Immediate on/off setting control.', uses: [] },
-  { id: 'wa-textarea', name: 'Textarea', category: 'Forms', kind: 'component', source: 'webawesome', description: 'Multiline text field with labels, hints, and resize behavior.', uses: [] },
-  { id: 'wa-time-input', name: 'Time Input', category: 'Forms', kind: 'component', source: 'webawesome', description: 'Experimental segmented time field with an optional picker.', uses: ['wa-icon', 'wa-popup'] },
-
-  { id: 'wa-accordion', name: 'Accordion', category: 'Layout', kind: 'component', source: 'webawesome', description: 'Coordinates one or more collapsible content sections.', uses: ['wa-accordion-item'] },
-  { id: 'wa-accordion-item', name: 'Accordion Item', category: 'Layout', kind: 'component', source: 'webawesome', description: 'Experimental labeled disclosure section used by an accordion.', uses: ['wa-icon'] },
-  { id: 'wa-card', name: 'Card', category: 'Layout', kind: 'component', source: 'webawesome', description: 'Groups related content and optional header, media, and footer slots.', uses: [] },
-  { id: 'wa-details', name: 'Details', category: 'Layout', kind: 'component', source: 'webawesome', description: 'Single disclosure panel for secondary information.', uses: ['wa-icon'] },
-  { id: 'wa-dialog', name: 'Dialog', category: 'Layout', kind: 'component', source: 'webawesome', description: 'Modal surface for focused tasks and confirmations.', uses: ['wa-button'] },
-  { id: 'wa-divider', name: 'Divider', category: 'Layout', kind: 'component', source: 'webawesome', description: 'Visual separator for related groups of content.', uses: [] },
-  { id: 'wa-drawer', name: 'Drawer', category: 'Layout', kind: 'component', source: 'webawesome', description: 'Edge-anchored modal surface for navigation or secondary tasks.', uses: ['wa-button'] },
-  { id: 'wa-page', name: 'Page', category: 'Layout', kind: 'component', source: 'webawesome', description: 'Responsive application shell with navigation, banner, and main slots.', uses: [] },
-  { id: 'wa-scroller', name: 'Scroller', category: 'Layout', kind: 'component', source: 'webawesome', description: 'Overflow container with accessible scrolling affordances.', uses: [] },
-  { id: 'wa-split-panel', name: 'Split Panel', category: 'Layout', kind: 'component', source: 'webawesome', description: 'Alternative split API; prefer Kerf ResizableRegion for application panes.', uses: [] },
-
-  { id: 'wa-breadcrumb', name: 'Breadcrumb', category: 'Navigation', kind: 'component', source: 'webawesome', description: 'Ordered navigation trail for the current location.', uses: ['wa-icon', 'wa-breadcrumb-item'] },
-  { id: 'wa-breadcrumb-item', name: 'Breadcrumb Item', category: 'Navigation', kind: 'component', source: 'webawesome', description: 'One link or current-location item in a breadcrumb.', uses: [] },
-  { id: 'wa-pagination', name: 'Pagination', category: 'Navigation', kind: 'component', source: 'webawesome', description: 'Experimental page navigation for a bounded result set.', uses: ['wa-icon'] },
-  { id: 'wa-tab', name: 'Tab', category: 'Navigation', kind: 'component', source: 'webawesome', description: 'Ecosystem tab label; prefer Kerf TabBar or SegmentedControl.', uses: [] },
-  { id: 'wa-tab-group', name: 'Tab Group', category: 'Navigation', kind: 'component', source: 'webawesome', description: 'Ecosystem tabs; prefer Kerf TabBar or SegmentedControl.', uses: ['wa-button', 'wa-tab', 'wa-tab-panel'] },
-  { id: 'wa-tab-panel', name: 'Tab Panel', category: 'Navigation', kind: 'component', source: 'webawesome', description: 'Ecosystem tab panel; prefer app-owned panels with Kerf navigation.', uses: [] },
-  { id: 'wa-tree', name: 'Tree', category: 'Navigation', kind: 'component', source: 'webawesome', description: 'Specialized hierarchy; use only when the product requires tree behavior.', uses: ['wa-tree-item'] },
-  { id: 'wa-tree-item', name: 'Tree Item', category: 'Navigation', kind: 'component', source: 'webawesome', description: 'Specialized tree row; use only as part of a required tree.', uses: ['wa-checkbox', 'wa-icon', 'wa-spinner'] },
-
-  { id: 'wa-badge', name: 'Badge', category: 'Feedback', kind: 'component', source: 'webawesome', description: 'Compact status or count label with semantic variants.', uses: [] },
-  { id: 'wa-callout', name: 'Callout', category: 'Feedback', kind: 'component', source: 'webawesome', description: 'Prominent contextual message with semantic variants.', uses: [] },
-  { id: 'wa-progress-bar', name: 'Progress Bar', category: 'Feedback', kind: 'component', source: 'webawesome', description: 'Linear indicator for determinate or indeterminate progress.', uses: [] },
-  { id: 'wa-progress-ring', name: 'Progress Ring', category: 'Feedback', kind: 'component', source: 'webawesome', description: 'Circular indicator for determinate or indeterminate progress.', uses: [] },
-  { id: 'wa-skeleton', name: 'Skeleton', category: 'Feedback', kind: 'component', source: 'webawesome', description: 'Placeholder shape for content that is still loading.', uses: [] },
-  { id: 'wa-spinner', name: 'Spinner', category: 'Feedback', kind: 'component', source: 'webawesome', description: 'Compact indeterminate activity indicator.', uses: [] },
-  { id: 'wa-tag', name: 'Tag', category: 'Feedback', kind: 'component', source: 'webawesome', description: 'Compact categorization label with optional removal action.', uses: ['wa-button'] },
-  { id: 'wa-toast', name: 'Toast', category: 'Feedback', kind: 'component', source: 'webawesome', description: 'Placement-aware stack of transient notifications.', uses: ['wa-toast-item'] },
-  { id: 'wa-toast-item', name: 'Toast Item', category: 'Feedback', kind: 'component', source: 'webawesome', description: 'One dismissible notification inside a toast stack.', uses: ['wa-icon', 'wa-progress-ring'] },
-  { id: 'wa-tooltip', name: 'Tooltip', category: 'Feedback', kind: 'component', source: 'webawesome', description: 'Brief contextual label anchored to a control.', uses: ['wa-popup'] },
-
-  { id: 'wa-animated-image', name: 'Animated Image', category: 'Media', kind: 'component', source: 'webawesome', description: 'Specialized animated media; use only for a concrete product requirement.', uses: ['wa-icon'] },
-  { id: 'wa-avatar', name: 'Avatar', category: 'Media', kind: 'component', source: 'webawesome', description: 'Person or entity image with initials fallback.', uses: ['wa-icon'] },
-  { id: 'wa-carousel', name: 'Carousel', category: 'Media', kind: 'component', source: 'webawesome', description: 'Navigable horizontal or vertical collection of slides.', uses: ['wa-icon', 'wa-carousel-item'] },
-  { id: 'wa-carousel-item', name: 'Carousel Item', category: 'Media', kind: 'component', source: 'webawesome', description: 'One content slide inside a carousel.', uses: [] },
-  { id: 'wa-comparison', name: 'Comparison', category: 'Media', kind: 'component', source: 'webawesome', description: 'Specialized before-and-after media; use only when specifically required.', uses: ['wa-icon'] },
-  { id: 'wa-icon', name: 'Icon', category: 'Media', kind: 'component', source: 'webawesome', description: 'Ecosystem icon renderer; use Kerf LucideIcon in application UI.', uses: [] },
-  { id: 'wa-markdown', name: 'Markdown', category: 'Media', kind: 'component', source: 'webawesome', description: 'Experimental renderer for trusted Markdown content.', uses: [] },
-  { id: 'wa-qr-code', name: 'QR Code', category: 'Media', kind: 'component', source: 'webawesome', description: 'Scannable QR representation of a supplied value.', uses: [] },
-  { id: 'wa-zoomable-frame', name: 'Zoomable Frame', category: 'Media', kind: 'component', source: 'webawesome', description: 'Avoid for application UI; keep embedded-media behavior application-owned.', uses: ['wa-icon'] },
-
-  { id: 'wa-animation', name: 'Animation', category: 'Helpers', kind: 'component', source: 'webawesome', description: 'Declarative Web Animations API wrapper with preset effects.', uses: ['select'] },
-  { id: 'wa-format-bytes', name: 'Format Bytes', category: 'Helpers', kind: 'component', source: 'webawesome', description: 'Locale-aware byte and bit value formatter.', uses: [] },
-  { id: 'wa-format-date', name: 'Format Date', category: 'Helpers', kind: 'component', source: 'webawesome', description: 'Locale-aware date and time formatter.', uses: [] },
-  { id: 'wa-format-number', name: 'Format Number', category: 'Helpers', kind: 'component', source: 'webawesome', description: 'Locale-aware number, currency, unit, and percentage formatter.', uses: [] },
-  { id: 'wa-include', name: 'Include', category: 'Helpers', kind: 'component', source: 'webawesome', description: 'Loads and injects an external HTML fragment.', uses: [] },
-  { id: 'wa-intersection-observer', name: 'Intersection Observer', category: 'Helpers', kind: 'component', source: 'webawesome', description: 'Declaratively emits visibility changes for slotted content.', uses: [] },
-  { id: 'wa-mutation-observer', name: 'Mutation Observer', category: 'Helpers', kind: 'component', source: 'webawesome', description: 'Declaratively emits DOM mutation records for slotted content.', uses: [] },
-  { id: 'wa-popover', name: 'Popover', category: 'Helpers', kind: 'component', source: 'webawesome', description: 'Anchored non-modal surface built on popup positioning.', uses: ['wa-popup'] },
-  { id: 'wa-popup', name: 'Popup', category: 'Helpers', kind: 'component', source: 'webawesome', description: 'Preferred low-level anchored positioning when Tooltip or Popover do not fit.', uses: [] },
-  { id: 'wa-random-content', name: 'Random Content', category: 'Helpers', kind: 'component', source: 'webawesome', description: 'Experimental helper that selects one slotted item at random.', uses: [] },
-  { id: 'wa-relative-time', name: 'Relative Time', category: 'Helpers', kind: 'component', source: 'webawesome', description: 'Locale-aware human description of a date relative to now.', uses: [] },
-  { id: 'wa-resize-observer', name: 'Resize Observer', category: 'Helpers', kind: 'component', source: 'webawesome', description: 'Declaratively emits size changes for slotted content.', uses: [] },
-] as const satisfies readonly CatalogEntry[];
-
+export type KerfCatalogId = typeof kerfCatalog[number]['id'];
 export type WebAwesomeCatalogId = typeof webAwesomeCatalog[number]['id'];
-
-export const kerfCatalog = [
-  { id: 'lucide-icon', name: 'LucideIcon', category: 'Foundation', kind: 'component', source: 'kerf', description: 'Decorative and meaningfully labeled Lucide-compatible icons.', uses: [] },
-  { id: 'webawesome-theme', name: 'Web Awesome theme', category: 'Foundation', kind: 'composition', source: 'kerf', description: 'Kerf palettes, typography, geometry, and focus styling across free Web Awesome component families.', uses: webAwesomeCatalog.map((entry) => entry.id) },
-  { id: 'toolbar', name: 'Toolbar', category: 'Structure', kind: 'component', source: 'kerf', description: 'Leading, centered, and trailing toolbar composition.', uses: ['toolbar-text', 'toolbar-control-group'] },
-  { id: 'toolbar-control-group', name: 'ToolbarControlGroup', category: 'Structure', kind: 'component', source: 'kerf', description: 'Contained, borderless, pressed, and single-control toolbar groups.', uses: ['lucide-icon', 'segmented-control'] },
-  { id: 'toolbar-text', name: 'ToolbarText', category: 'Structure', kind: 'component', source: 'kerf', description: 'Large, default, and compact toolbar identity text.', uses: [] },
-  { id: 'headers', name: 'Header composition', category: 'Structure', kind: 'composition', source: 'kerf', description: 'Page, dialog, and definition-list hierarchy.', uses: ['page-header', 'dialog-header', 'value-table'] },
-  { id: 'page-header', name: 'PageHeader', category: 'Structure', kind: 'component', source: 'kerf', description: 'Page identity with an optional trailing action.', uses: [] },
-  { id: 'dialog-header', name: 'DialogHeader', category: 'Structure', kind: 'component', source: 'kerf', description: 'Dialog title, summary, icon, and action hierarchy.', uses: ['lucide-icon'] },
-  { id: 'value-table', name: 'ValueTable', category: 'Structure', kind: 'component', source: 'kerf', description: 'Semantic key/value rows with inset separators.', uses: [] },
-  { id: 'menu', name: 'Menu composition', category: 'Navigation', kind: 'composition', source: 'kerf', description: 'Navigation rows and section headers with explicit state.', uses: ['menu-header', 'menu-item'] },
-  { id: 'menu-header', name: 'MenuHeader', category: 'Navigation', kind: 'component', source: 'kerf', description: 'Section headings with optional action and disclosure states.', uses: ['lucide-icon'] },
-  { id: 'menu-item', name: 'MenuItem', category: 'Navigation', kind: 'component', source: 'kerf', description: 'Selectable, disabled, trailing, and multiline navigation rows.', uses: ['lucide-icon'] },
-  { id: 'tabs', name: 'AppTab', category: 'Navigation', kind: 'component', source: 'kerf', description: 'Roving-tabindex-ready tabs with optional close affordances.', uses: ['lucide-icon'] },
-  { id: 'tab-bar', name: 'TabBar', category: 'Navigation', kind: 'component', source: 'kerf', description: 'Controlled, reorderable tab strips with horizontal overflow.', uses: ['tabs', 'toolbar-control-group'] },
-  { id: 'segmented-control', name: 'SegmentedControl', category: 'Controls', kind: 'component', source: 'kerf', description: 'Controlled exclusive choices in toolbar, rounded-rectangle, and pill presentations.', uses: ['lucide-icon'] },
-  { id: 'token-search-field', name: 'TokenSearchField', category: 'Controls', kind: 'component', source: 'kerf', description: 'Token-controlled search editor with ordered, editable, removable filter chips.', uses: ['lucide-icon'] },
-  { id: 'resize', name: 'ResizableRegion', category: 'Controls', kind: 'component', source: 'kerf', description: 'Pointer and keyboard-operable split region.', uses: [] },
-  { id: 'select', name: 'Select', category: 'Controls', kind: 'component', source: 'kerf', description: 'Controlled Web Awesome select with grouped choices and rerender-stable icon slots.', uses: ['lucide-icon', 'wa-select', 'wa-option'] },
-  { id: 'feedback', name: 'Feedback composition', category: 'Feedback', kind: 'composition', source: 'kerf', description: 'Banners, empty states, and labeled progress.', uses: ['state-banner', 'empty-state', 'loading-spinner'] },
-  { id: 'state-banner', name: 'StateBanner', category: 'Feedback', kind: 'component', source: 'kerf', description: 'Polite status and assertive alert feedback with semantic tones.', uses: ['lucide-icon'] },
-  { id: 'empty-state', name: 'EmptyState', category: 'Feedback', kind: 'component', source: 'kerf', description: 'Actionable empty and busy content states.', uses: ['lucide-icon', 'loading-spinner'] },
-  { id: 'loading-spinner', name: 'LoadingSpinner', category: 'Feedback', kind: 'component', source: 'kerf', description: 'Meaningfully labeled or decorative progress.', uses: [] },
-] as const satisfies readonly CatalogEntry[];
 
 export const catalog = [...kerfCatalog, ...webAwesomeCatalog] as const satisfies readonly CatalogEntry[];
 export type CatalogId = typeof catalog[number]['id'];

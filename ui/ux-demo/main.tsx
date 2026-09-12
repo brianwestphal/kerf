@@ -28,7 +28,7 @@ import { batch, delegate, delegateCapture, mount, signal } from 'kerfjs';
 import { delegateActions } from 'kerfjs/actions';
 import { ArrowDownAZ, Bell, Check, ChevronDown, ChevronLeft, ChevronRight, CircleHelp, Columns3, Contrast, Folder, GitCompare, Inbox, List, Moon, MoreHorizontal, PanelLeft, PanelLeftOpen, Pin, Plus, Search, Settings, SlidersHorizontal, Star, Wrench, ZapOff } from 'lucide';
 
-import { catalog, catalogEntriesUsing, type CatalogEntry, type CatalogId, catalogSections, findCatalogEntry, isCatalogId, webAwesomeCatalog, type WebAwesomeCatalogId, webAwesomeCatalogSections } from './catalog.js';
+import { catalog, catalogEntriesUsing, type CatalogEntry, type CatalogId, catalogSections, findCatalogEntry, isCatalogId, type KerfCatalogId, webAwesomeCatalog, type WebAwesomeCatalogId, webAwesomeCatalogSections } from './catalog.js';
 
 const app = document.querySelector<HTMLElement>('#app');
 if (!app) throw new Error('Missing #app');
@@ -352,9 +352,23 @@ function LoadingSpinnerDemo() {
   return <div class="demo-spinner-grid" data-demo="loading-spinner"><article><LoadingSpinner label="Loading preview" /><strong>Meaningful</strong><span>Exposes its supplied label</span></article><article><LoadingSpinner /><strong>Decorative</strong><span>Hidden from assistive technology</span></article></div>;
 }
 
-const demos: Partial<Record<CatalogId, () => ReturnType<typeof ToolbarDemo>>> = {
+function LayoutDemo() {
+  return <div class="demo-layout kui-page-gutter" data-demo="layout">
+    <section class="kui-section-stack">
+      <PageHeader title="Semantic layout" action={button('New item', 'log-add')} />
+      <div class="demo-layout__surface kui-surface-body kui-section-stack">
+        <div><strong>One owner per boundary</strong><p>Page, surface, section, controls, metadata, and scrolling each have a named role.</p></div>
+        <div class="kui-control-cluster">{button('Primary action', 'log-add')}{button('Secondary action', 'log-more')}</div>
+        <div class="kui-inline-metadata"><span>Responsive density</span><span>·</span><span>Shared spacing scale</span></div>
+      </div>
+    </section>
+  </div>;
+}
+
+const demos: Record<KerfCatalogId, () => ReturnType<typeof ToolbarDemo>> = {
   'lucide-icon': LucideIconDemo,
   'webawesome-theme': WebAwesomeThemeDemo,
+  layout: LayoutDemo,
   toolbar: ToolbarDemo,
   'toolbar-control-group': ToolbarControlGroupDemo,
   'segmented-control': SegmentedControlDemo,
@@ -393,7 +407,7 @@ function Stage() {
     return <LoadingSpinner label={`Loading ${selected.name} preview`} />;
   }
   if (selected.source === 'webawesome') return webAwesomeDemos![selected.id as WebAwesomeCatalogId]();
-  return demos[selectedDemo.value]!();
+  return demos[selectedDemo.value as KerfCatalogId]();
 }
 
 function DemoRelationships({ entry }: { entry: CatalogEntry }) {

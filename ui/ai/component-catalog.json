@@ -1,0 +1,4171 @@
+{
+  "$schema": "./component-catalog.schema.json",
+  "schemaVersion": 1,
+  "package": "@kerfjs/ui",
+  "description": "Machine-readable selection, composition, delivery, ownership, and accessibility metadata for Kerf UI and its supported Web Awesome set.",
+  "entries": [
+    {
+      "id": "lucide-icon",
+      "name": "LucideIcon",
+      "category": "Foundation",
+      "kind": "component",
+      "source": "kerf",
+      "description": "Decorative and meaningfully labeled Lucide-compatible icons.",
+      "uses": [],
+      "purpose": "Decorative and meaningfully labeled Lucide-compatible icons.",
+      "publicExports": [
+        "LucideIcon"
+      ],
+      "useWhen": [
+        "Render a decorative or explicitly labeled Lucide-compatible icon in Kerf application UI."
+      ],
+      "avoidWhen": [
+        "Do not use an icon as the only name of an unfamiliar action."
+      ],
+      "alternatives": [
+        {
+          "id": "wa-icon",
+          "relationship": "prefer-over"
+        }
+      ],
+      "appOwns": [
+        "icon choice",
+        "meaningful label"
+      ],
+      "variants": [
+        "decorative",
+        "labeled"
+      ],
+      "accessibility": [
+        "Decorative icons are aria-hidden; meaningful icons require a label."
+      ],
+      "delivery": {
+        "browserImport": "@kerfjs/ui/lucide-icon",
+        "manualCssImport": "@kerfjs/ui/lucide-icon.css",
+        "sideEffects": [
+          "browser-condition-css"
+        ]
+      },
+      "wiring": [],
+      "publicClasses": [],
+      "publicTokens": [],
+      "links": {
+        "catalogRoute": "?component=lucide-icon",
+        "documentation": "docs/component-selection.md",
+        "recipe": "docs/component-selection.md#problem-to-component-matrix"
+      }
+    },
+    {
+      "id": "webawesome-theme",
+      "name": "Web Awesome theme",
+      "category": "Foundation",
+      "kind": "composition",
+      "source": "kerf",
+      "description": "Kerf palettes, typography, geometry, and focus styling across free Web Awesome component families.",
+      "uses": [
+        "wa-button",
+        "wa-button-group",
+        "wa-copy-button",
+        "wa-dropdown",
+        "wa-dropdown-item",
+        "wa-checkbox",
+        "wa-checkbox-group",
+        "wa-color-picker",
+        "wa-input",
+        "wa-known-date",
+        "wa-number-input",
+        "wa-option",
+        "wa-otp-input",
+        "wa-radio",
+        "wa-radio-group",
+        "wa-rating",
+        "wa-select",
+        "wa-slider",
+        "wa-switch",
+        "wa-textarea",
+        "wa-time-input",
+        "wa-accordion",
+        "wa-accordion-item",
+        "wa-card",
+        "wa-details",
+        "wa-dialog",
+        "wa-divider",
+        "wa-drawer",
+        "wa-page",
+        "wa-scroller",
+        "wa-split-panel",
+        "wa-breadcrumb",
+        "wa-breadcrumb-item",
+        "wa-pagination",
+        "wa-tab",
+        "wa-tab-group",
+        "wa-tab-panel",
+        "wa-tree",
+        "wa-tree-item",
+        "wa-badge",
+        "wa-callout",
+        "wa-progress-bar",
+        "wa-progress-ring",
+        "wa-skeleton",
+        "wa-spinner",
+        "wa-tag",
+        "wa-toast",
+        "wa-toast-item",
+        "wa-tooltip",
+        "wa-animated-image",
+        "wa-avatar",
+        "wa-carousel",
+        "wa-carousel-item",
+        "wa-comparison",
+        "wa-icon",
+        "wa-markdown",
+        "wa-qr-code",
+        "wa-zoomable-frame",
+        "wa-animation",
+        "wa-format-bytes",
+        "wa-format-date",
+        "wa-format-number",
+        "wa-include",
+        "wa-intersection-observer",
+        "wa-mutation-observer",
+        "wa-popover",
+        "wa-popup",
+        "wa-random-content",
+        "wa-relative-time",
+        "wa-resize-observer"
+      ],
+      "purpose": "Kerf palettes, typography, geometry, and focus styling across free Web Awesome component families.",
+      "publicExports": [],
+      "useWhen": [
+        "Theme individually registered free Web Awesome components to match Kerf UI."
+      ],
+      "avoidWhen": [
+        "Do not treat theme coverage as a recommendation or import the full registration bundle."
+      ],
+      "alternatives": [],
+      "appOwns": [
+        "individual component registration",
+        "semantic token overrides"
+      ],
+      "variants": [
+        "light",
+        "dark",
+        "invert"
+      ],
+      "accessibility": [
+        "Preserve Web Awesome semantics and Kerf focus/contrast tokens."
+      ],
+      "delivery": {
+        "manualCssImport": "@kerfjs/ui/webawesome.css",
+        "sideEffects": [
+          "css"
+        ]
+      },
+      "wiring": [],
+      "publicClasses": [],
+      "publicTokens": [
+        "--kui-disclosure-icon-scale",
+        "--kui-wa-carousel-control-size",
+        "--kui-wa-carousel-dot-hit-size",
+        "--kui-wa-carousel-dot-size",
+        "--kui-wa-carousel-icon-size",
+        "--kui-wa-popover-arrow-size"
+      ],
+      "links": {
+        "catalogRoute": "?component=webawesome-theme",
+        "documentation": "docs/component-selection.md",
+        "recipe": "docs/webawesome-theme.md#component-selection-guidance"
+      }
+    },
+    {
+      "id": "layout",
+      "name": "Application layout",
+      "category": "Foundation",
+      "kind": "composition",
+      "source": "kerf",
+      "description": "Semantic spacing, wrapping, and scroll-owner roles for application layout boundaries.",
+      "uses": [],
+      "purpose": "Semantic spacing, wrapping, and scroll-owner roles for application layout boundaries.",
+      "publicExports": [],
+      "useWhen": [
+        "Assign one semantic spacing and scroll owner to each real application layout boundary."
+      ],
+      "avoidWhen": [
+        "Do not stack inset roles, wrap component-owned chrome in competing padding, or invent unrelated centered measures."
+      ],
+      "alternatives": [],
+      "appOwns": [
+        "layout hierarchy",
+        "reading width",
+        "responsive relocation"
+      ],
+      "variants": [
+        "responsive",
+        "compact",
+        "fixed density"
+      ],
+      "accessibility": [
+        "Keep reading and focus order coherent when controls wrap or relocate."
+      ],
+      "delivery": {
+        "manualCssImport": "@kerfjs/ui/layout.css",
+        "sideEffects": [
+          "css"
+        ]
+      },
+      "wiring": [],
+      "publicClasses": [
+        "kui-control-cluster",
+        "kui-dialog-body",
+        "kui-inline-metadata",
+        "kui-layout",
+        "kui-layout--compact",
+        "kui-layout--fixed-density",
+        "kui-page-gutter",
+        "kui-pane-body",
+        "kui-scroll-owner",
+        "kui-section-stack",
+        "kui-surface-body"
+      ],
+      "publicTokens": [
+        "--kui-layout-control-gap",
+        "--kui-layout-dialog-inset",
+        "--kui-layout-metadata-gap",
+        "--kui-layout-page-gutter",
+        "--kui-layout-pane-inset",
+        "--kui-layout-section-gap",
+        "--kui-layout-surface-inset",
+        "--kui-space-2xs",
+        "--kui-space-l",
+        "--kui-space-m",
+        "--kui-space-s",
+        "--kui-space-xl",
+        "--kui-space-xs"
+      ],
+      "links": {
+        "catalogRoute": "?component=layout",
+        "documentation": "docs/component-selection.md",
+        "recipe": "docs/layout.md#decision-table"
+      }
+    },
+    {
+      "id": "toolbar",
+      "name": "Toolbar",
+      "category": "Structure",
+      "kind": "component",
+      "source": "kerf",
+      "description": "Leading, centered, and trailing toolbar composition.",
+      "uses": [
+        "toolbar-text",
+        "toolbar-control-group"
+      ],
+      "purpose": "Leading, centered, and trailing toolbar composition.",
+      "publicExports": [
+        "Toolbar"
+      ],
+      "useWhen": [
+        "Compose persistent application chrome with leading, center, and trailing regions."
+      ],
+      "avoidWhen": [
+        "Do not use for a page title or dialog heading."
+      ],
+      "alternatives": [
+        {
+          "id": "page-header",
+          "relationship": "nearest"
+        },
+        {
+          "id": "dialog-header",
+          "relationship": "nearest"
+        }
+      ],
+      "appOwns": [
+        "actions",
+        "command availability",
+        "responsive relocation"
+      ],
+      "variants": [
+        "divider",
+        "no divider",
+        "centered content"
+      ],
+      "accessibility": [
+        "Supply a label when the toolbar needs an accessible name."
+      ],
+      "delivery": {
+        "browserImport": "@kerfjs/ui/toolbar",
+        "manualCssImport": "@kerfjs/ui/toolbar.css",
+        "sideEffects": [
+          "browser-condition-css"
+        ]
+      },
+      "wiring": [],
+      "publicClasses": [
+        "kui-toolbar",
+        "kui-toolbar__center",
+        "kui-toolbar__leading",
+        "kui-toolbar__trailing"
+      ],
+      "publicTokens": [
+        "--kui-color-border",
+        "--kui-color-surface",
+        "--kui-font-sans"
+      ],
+      "links": {
+        "catalogRoute": "?component=toolbar",
+        "documentation": "docs/component-selection.md",
+        "recipe": "docs/component-selection.md#ambiguous-choices"
+      }
+    },
+    {
+      "id": "toolbar-control-group",
+      "name": "ToolbarControlGroup",
+      "category": "Structure",
+      "kind": "component",
+      "source": "kerf",
+      "description": "Contained, borderless, pressed, and single-control toolbar groups.",
+      "uses": [
+        "lucide-icon",
+        "segmented-control"
+      ],
+      "purpose": "Contained, borderless, pressed, and single-control toolbar groups.",
+      "publicExports": [
+        "ToolbarControlGroup"
+      ],
+      "useWhen": [
+        "Group related controls inside a toolbar with a supported visual treatment."
+      ],
+      "avoidWhen": [
+        "Do not use merely to align unrelated buttons or to imitate an exclusive choice."
+      ],
+      "alternatives": [
+        {
+          "id": "segmented-control",
+          "relationship": "nearest"
+        },
+        {
+          "id": "wa-button-group",
+          "relationship": "prefer-over"
+        }
+      ],
+      "appOwns": [
+        "actions",
+        "pressed state",
+        "expanded state"
+      ],
+      "variants": [
+        "contained",
+        "borderless",
+        "pressed",
+        "single"
+      ],
+      "accessibility": [
+        "Name the group when its relationship is not evident from context."
+      ],
+      "delivery": {
+        "browserImport": "@kerfjs/ui/toolbar-control-group",
+        "manualCssImport": "@kerfjs/ui/toolbar-control-group.css",
+        "sideEffects": [
+          "browser-condition-css"
+        ]
+      },
+      "wiring": [],
+      "publicClasses": [
+        "kui-toolbar-control-group"
+      ],
+      "publicTokens": [
+        "--kui-color-brand-on-quiet",
+        "--kui-color-neutral-border-loud",
+        "--kui-color-neutral-border-normal",
+        "--kui-color-neutral-fill-loud",
+        "--kui-color-neutral-fill-normal",
+        "--kui-color-neutral-on-loud",
+        "--kui-color-neutral-on-quiet",
+        "--kui-color-surface",
+        "--kui-focus-ring",
+        "--kui-radius-pill",
+        "--kui-shadow-s",
+        "--kui-toolbar-control-background",
+        "--kui-toolbar-control-border",
+        "--kui-toolbar-control-color",
+        "--kui-toolbar-control-dark-border",
+        "--kui-toolbar-control-hover-background",
+        "--kui-toolbar-control-pressed-background",
+        "--kui-toolbar-control-pressed-border",
+        "--kui-toolbar-control-pressed-color",
+        "--kui-toolbar-control-selected-background",
+        "--kui-toolbar-control-selected-color",
+        "--kui-toolbar-control-selected-shadow"
+      ],
+      "links": {
+        "catalogRoute": "?component=toolbar-control-group",
+        "documentation": "docs/component-selection.md",
+        "recipe": "docs/component-selection.md#problem-to-component-matrix"
+      }
+    },
+    {
+      "id": "toolbar-text",
+      "name": "ToolbarText",
+      "category": "Structure",
+      "kind": "component",
+      "source": "kerf",
+      "description": "Large, default, and compact toolbar identity text.",
+      "uses": [],
+      "purpose": "Large, default, and compact toolbar identity text.",
+      "publicExports": [
+        "ToolbarText"
+      ],
+      "useWhen": [
+        "Render toolbar identity text at a supported hierarchy size."
+      ],
+      "avoidWhen": [
+        "Do not substitute it for document heading semantics."
+      ],
+      "alternatives": [
+        {
+          "id": "page-header",
+          "relationship": "nearest"
+        }
+      ],
+      "appOwns": [
+        "text",
+        "responsive priority"
+      ],
+      "variants": [
+        "large",
+        "default",
+        "small"
+      ],
+      "accessibility": [],
+      "delivery": {
+        "browserImport": "@kerfjs/ui/toolbar-text",
+        "manualCssImport": "@kerfjs/ui/toolbar-text.css",
+        "sideEffects": [
+          "browser-condition-css"
+        ]
+      },
+      "wiring": [],
+      "publicClasses": [
+        "kui-toolbar-text"
+      ],
+      "publicTokens": [
+        "--kui-color-neutral-on-quiet",
+        "--kui-font-m",
+        "--kui-font-mono",
+        "--kui-font-s",
+        "--kui-font-xs"
+      ],
+      "links": {
+        "catalogRoute": "?component=toolbar-text",
+        "documentation": "docs/component-selection.md",
+        "recipe": "docs/component-selection.md#problem-to-component-matrix"
+      }
+    },
+    {
+      "id": "headers",
+      "name": "Header composition",
+      "category": "Structure",
+      "kind": "composition",
+      "source": "kerf",
+      "description": "Page, dialog, and definition-list hierarchy.",
+      "uses": [
+        "page-header",
+        "dialog-header",
+        "value-table"
+      ],
+      "purpose": "Page, dialog, and definition-list hierarchy.",
+      "publicExports": [],
+      "useWhen": [
+        "Compose page, dialog, and definition-list hierarchy from their distinct primitives."
+      ],
+      "avoidWhen": [
+        "Do not reuse one header primitive only because its typography looks similar."
+      ],
+      "alternatives": [
+        {
+          "id": "toolbar",
+          "relationship": "nearest"
+        },
+        {
+          "id": "page-header",
+          "relationship": "nearest"
+        },
+        {
+          "id": "dialog-header",
+          "relationship": "nearest"
+        }
+      ],
+      "appOwns": [
+        "scope hierarchy",
+        "copy",
+        "actions"
+      ],
+      "variants": [
+        "page",
+        "dialog",
+        "key/value"
+      ],
+      "accessibility": [
+        "Preserve heading and description relationships for the containing surface."
+      ],
+      "delivery": {
+        "sideEffects": [
+          "css"
+        ]
+      },
+      "wiring": [],
+      "publicClasses": [],
+      "publicTokens": [],
+      "links": {
+        "catalogRoute": "?component=headers",
+        "documentation": "docs/component-selection.md",
+        "recipe": "docs/component-selection.md#ambiguous-choices"
+      }
+    },
+    {
+      "id": "page-header",
+      "name": "PageHeader",
+      "category": "Structure",
+      "kind": "component",
+      "source": "kerf",
+      "description": "Page identity with an optional trailing action.",
+      "uses": [],
+      "purpose": "Page identity with an optional trailing action.",
+      "publicExports": [
+        "PageHeader"
+      ],
+      "useWhen": [
+        "Identify a page with its primary heading and optional trailing action."
+      ],
+      "avoidWhen": [
+        "Do not use for persistent app chrome or a modal task."
+      ],
+      "alternatives": [
+        {
+          "id": "toolbar",
+          "relationship": "nearest"
+        },
+        {
+          "id": "dialog-header",
+          "relationship": "nearest"
+        }
+      ],
+      "appOwns": [
+        "title",
+        "action",
+        "responsive placement"
+      ],
+      "variants": [
+        "title",
+        "title with action"
+      ],
+      "accessibility": [
+        "Use once for the page primary heading."
+      ],
+      "delivery": {
+        "browserImport": "@kerfjs/ui/page-header",
+        "manualCssImport": "@kerfjs/ui/page-header.css",
+        "sideEffects": [
+          "browser-condition-css"
+        ]
+      },
+      "wiring": [],
+      "publicClasses": [
+        "kui-page-header",
+        "kui-page-header__action"
+      ],
+      "publicTokens": [
+        "--kui-color-border",
+        "--kui-color-surface",
+        "--kui-color-text",
+        "--kui-font-2xl",
+        "--kui-font-l",
+        "--kui-page-header-background",
+        "--kui-page-header-border",
+        "--kui-page-header-foreground",
+        "--kui-space-m"
+      ],
+      "links": {
+        "catalogRoute": "?component=page-header",
+        "documentation": "docs/component-selection.md",
+        "recipe": "docs/component-selection.md#ambiguous-choices"
+      }
+    },
+    {
+      "id": "dialog-header",
+      "name": "DialogHeader",
+      "category": "Structure",
+      "kind": "component",
+      "source": "kerf",
+      "description": "Dialog title, summary, icon, and action hierarchy.",
+      "uses": [
+        "lucide-icon"
+      ],
+      "purpose": "Dialog title, summary, icon, and action hierarchy.",
+      "publicExports": [
+        "DialogHeader"
+      ],
+      "useWhen": [
+        "Label a focused dialog task with title, summary, icon, and actions."
+      ],
+      "avoidWhen": [
+        "Do not use as the page heading or as a replacement for modal behavior."
+      ],
+      "alternatives": [
+        {
+          "id": "page-header",
+          "relationship": "nearest"
+        },
+        {
+          "id": "wa-dialog",
+          "relationship": "prefer-over"
+        }
+      ],
+      "appOwns": [
+        "open state",
+        "focus lifecycle",
+        "dismissal",
+        "copy"
+      ],
+      "variants": [
+        "title",
+        "summary",
+        "icon",
+        "actions"
+      ],
+      "accessibility": [
+        "Connect title and summary ids to the dialog host."
+      ],
+      "delivery": {
+        "browserImport": "@kerfjs/ui/dialog-header",
+        "manualCssImport": "@kerfjs/ui/dialog-header.css",
+        "sideEffects": [
+          "browser-condition-css"
+        ]
+      },
+      "wiring": [],
+      "publicClasses": [
+        "kui-dialog-header",
+        "kui-dialog-header__actions",
+        "kui-dialog-header__copy",
+        "kui-dialog-header__icon"
+      ],
+      "publicTokens": [
+        "--kui-color-border",
+        "--kui-color-brand-fill-quiet",
+        "--kui-color-brand-on-quiet",
+        "--kui-color-text",
+        "--kui-color-text-quiet",
+        "--kui-dialog-header-border",
+        "--kui-dialog-header-icon-background",
+        "--kui-dialog-header-icon-foreground",
+        "--kui-font-l",
+        "--kui-radius-circle",
+        "--kui-space-2xs",
+        "--kui-space-l",
+        "--kui-space-m",
+        "--kui-space-xs"
+      ],
+      "links": {
+        "catalogRoute": "?component=dialog-header",
+        "documentation": "docs/component-selection.md",
+        "recipe": "docs/component-selection.md#ambiguous-choices"
+      }
+    },
+    {
+      "id": "value-table",
+      "name": "ValueTable",
+      "category": "Structure",
+      "kind": "component",
+      "source": "kerf",
+      "description": "Semantic key/value rows with inset separators.",
+      "uses": [],
+      "purpose": "Semantic key/value rows with inset separators.",
+      "publicExports": [
+        "ValueTable"
+      ],
+      "useWhen": [
+        "Present read-only label/value facts as a semantic definition list."
+      ],
+      "avoidWhen": [
+        "Do not use for editable fields or row/column tabular data."
+      ],
+      "alternatives": [],
+      "appOwns": [
+        "values",
+        "formatting",
+        "empty policy"
+      ],
+      "variants": [
+        "labeled",
+        "unlabeled"
+      ],
+      "accessibility": [
+        "Supply dt/dd children and a label when context does not name the list."
+      ],
+      "delivery": {
+        "browserImport": "@kerfjs/ui/value-table",
+        "manualCssImport": "@kerfjs/ui/value-table.css",
+        "sideEffects": [
+          "browser-condition-css"
+        ]
+      },
+      "wiring": [],
+      "publicClasses": [
+        "kui-value-table"
+      ],
+      "publicTokens": [
+        "--kui-color-border",
+        "--kui-color-surface-lowered",
+        "--kui-color-text",
+        "--kui-color-text-quiet",
+        "--kui-font-weight-semibold",
+        "--kui-radius-m",
+        "--kui-space-2xs",
+        "--kui-space-m",
+        "--kui-space-xs",
+        "--kui-value-table-background",
+        "--kui-value-table-border"
+      ],
+      "links": {
+        "catalogRoute": "?component=value-table",
+        "documentation": "docs/component-selection.md",
+        "recipe": "docs/component-selection.md#problem-to-component-matrix"
+      }
+    },
+    {
+      "id": "menu",
+      "name": "Menu composition",
+      "category": "Navigation",
+      "kind": "composition",
+      "source": "kerf",
+      "description": "Navigation rows and section headers with explicit state.",
+      "uses": [
+        "menu-header",
+        "menu-item"
+      ],
+      "purpose": "Navigation rows and section headers with explicit state.",
+      "publicExports": [],
+      "useWhen": [
+        "Compose sidebar section headers and navigation rows on one shared icon/label grid."
+      ],
+      "avoidWhen": [
+        "Do not stack wrapper padding, align text to borders, or use the pattern for unrelated inline controls."
+      ],
+      "alternatives": [],
+      "appOwns": [
+        "information architecture",
+        "routing",
+        "responsive shell behavior"
+      ],
+      "variants": [
+        "section",
+        "icon rows",
+        "iconless rows",
+        "surface"
+      ],
+      "accessibility": [
+        "Use native links for link navigation and retain MenuItem button semantics for actions."
+      ],
+      "delivery": {
+        "manualCssImport": "@kerfjs/ui/sidebar.css",
+        "sideEffects": [
+          "css"
+        ]
+      },
+      "wiring": [],
+      "publicClasses": [
+        "kui-menu-header",
+        "kui-menu-item",
+        "kui-menu-item__icon",
+        "kui-menu-item__label",
+        "kui-menu-item__trailing",
+        "kui-sidebar",
+        "kui-sidebar-section",
+        "kui-sidebar-surface"
+      ],
+      "publicTokens": [
+        "--kui-color-border",
+        "--kui-color-surface-raised",
+        "--kui-radius-m",
+        "--kui-sidebar-column-gap",
+        "--kui-sidebar-gutter",
+        "--kui-sidebar-icon-column-width",
+        "--kui-sidebar-label-inset",
+        "--kui-sidebar-row-padding-inline",
+        "--kui-sidebar-surface-border-width",
+        "--kui-space-2xs",
+        "--kui-space-s"
+      ],
+      "links": {
+        "catalogRoute": "?component=menu",
+        "documentation": "docs/component-selection.md",
+        "recipe": "docs/component-selection.md#correct-composition-and-duplicated-markup-trap"
+      }
+    },
+    {
+      "id": "menu-header",
+      "name": "MenuHeader",
+      "category": "Navigation",
+      "kind": "component",
+      "source": "kerf",
+      "description": "Section headings with optional action and disclosure states.",
+      "uses": [
+        "lucide-icon"
+      ],
+      "purpose": "Section headings with optional action and disclosure states.",
+      "publicExports": [
+        "MenuHeader"
+      ],
+      "useWhen": [
+        "Label a navigation section with an optional action or disclosure state."
+      ],
+      "avoidWhen": [
+        "Do not use as a page or dialog title."
+      ],
+      "alternatives": [
+        {
+          "id": "page-header",
+          "relationship": "nearest"
+        },
+        {
+          "id": "dialog-header",
+          "relationship": "nearest"
+        }
+      ],
+      "appOwns": [
+        "section organization",
+        "expanded state",
+        "action policy"
+      ],
+      "variants": [
+        "heading",
+        "action",
+        "toggle"
+      ],
+      "accessibility": [
+        "The application controls and updates disclosure state."
+      ],
+      "delivery": {
+        "browserImport": "@kerfjs/ui/menu-header",
+        "manualCssImport": "@kerfjs/ui/menu-header.css",
+        "sideEffects": [
+          "browser-condition-css"
+        ]
+      },
+      "wiring": [],
+      "publicClasses": [
+        "kui-menu-header",
+        "kui-menu-header--toggle"
+      ],
+      "publicTokens": [
+        "--kui-color-neutral-border-quiet",
+        "--kui-color-neutral-on-quiet",
+        "--kui-focus-ring",
+        "--kui-font-xs",
+        "--kui-menu-header-color",
+        "--kui-menu-header-hover-background",
+        "--kui-sidebar-row-padding-inline"
+      ],
+      "links": {
+        "catalogRoute": "?component=menu-header",
+        "documentation": "docs/component-selection.md",
+        "recipe": "docs/component-selection.md#problem-to-component-matrix"
+      }
+    },
+    {
+      "id": "menu-item",
+      "name": "MenuItem",
+      "category": "Navigation",
+      "kind": "component",
+      "source": "kerf",
+      "description": "Selectable, disabled, trailing, and multiline navigation rows.",
+      "uses": [
+        "lucide-icon"
+      ],
+      "purpose": "Selectable, disabled, trailing, and multiline navigation rows.",
+      "publicExports": [
+        "MenuItem"
+      ],
+      "useWhen": [
+        "Render a selectable, disabled, trailing, or multiline sidebar/navigation action row."
+      ],
+      "avoidWhen": [
+        "Do not use for an ordinary inline link, form button, or isolated ARIA menuitem."
+      ],
+      "alternatives": [],
+      "appOwns": [
+        "routing",
+        "selection",
+        "permissions",
+        "action handling"
+      ],
+      "variants": [
+        "selected",
+        "pressed",
+        "disabled",
+        "trailing",
+        "multiline"
+      ],
+      "accessibility": [
+        "Uses native button activation; selected maps to aria-current and pressed to aria-pressed."
+      ],
+      "delivery": {
+        "browserImport": "@kerfjs/ui/menu-item",
+        "manualCssImport": "@kerfjs/ui/menu-item.css",
+        "sideEffects": [
+          "browser-condition-css"
+        ]
+      },
+      "wiring": [],
+      "publicClasses": [
+        "kui-menu-item",
+        "kui-menu-item__icon",
+        "kui-menu-item__label",
+        "kui-menu-item__trailing"
+      ],
+      "publicTokens": [
+        "--kui-color-brand-fill-normal",
+        "--kui-color-brand-on-quiet",
+        "--kui-color-neutral-fill-quiet",
+        "--kui-color-neutral-on-normal",
+        "--kui-color-neutral-on-quiet",
+        "--kui-focus-ring",
+        "--kui-menu-item-color",
+        "--kui-menu-item-hover-background",
+        "--kui-menu-item-selected-background",
+        "--kui-menu-item-selected-color",
+        "--kui-sidebar-column-gap",
+        "--kui-sidebar-icon-column-width",
+        "--kui-sidebar-row-padding-inline",
+        "--kui-space-xs"
+      ],
+      "links": {
+        "catalogRoute": "?component=menu-item",
+        "documentation": "docs/component-selection.md",
+        "recipe": "docs/component-selection.md#problem-to-component-matrix"
+      }
+    },
+    {
+      "id": "tabs",
+      "name": "AppTab",
+      "category": "Navigation",
+      "kind": "component",
+      "source": "kerf",
+      "description": "Roving-tabindex-ready tabs with optional close affordances.",
+      "uses": [
+        "lucide-icon"
+      ],
+      "purpose": "Roving-tabindex-ready tabs with optional close affordances.",
+      "publicExports": [
+        "AppTab"
+      ],
+      "useWhen": [
+        "Render one controlled application tab inside TabBar."
+      ],
+      "avoidWhen": [
+        "Do not render alone or use for a compact settings choice."
+      ],
+      "alternatives": [
+        {
+          "id": "segmented-control",
+          "relationship": "nearest"
+        }
+      ],
+      "appOwns": [
+        "tab identity",
+        "selection",
+        "close policy",
+        "content"
+      ],
+      "variants": [
+        "selected",
+        "closable",
+        "draggable",
+        "leading",
+        "trailing"
+      ],
+      "accessibility": [
+        "Compose in a tablist and pair with an application-owned tabpanel."
+      ],
+      "delivery": {
+        "browserImport": "@kerfjs/ui/app-tab",
+        "manualCssImport": "@kerfjs/ui/app-tab.css",
+        "sideEffects": [
+          "browser-condition-css"
+        ]
+      },
+      "wiring": [],
+      "publicClasses": [
+        "kui-app-tab",
+        "kui-app-tab__close",
+        "kui-app-tab__name",
+        "kui-app-tab__select",
+        "kui-app-tab__trailing"
+      ],
+      "publicTokens": [
+        "--kui-app-tab-color",
+        "--kui-app-tab-drop-indicator",
+        "--kui-app-tab-hover-background",
+        "--kui-app-tab-selected-background",
+        "--kui-app-tab-selected-border",
+        "--kui-app-tab-selected-color",
+        "--kui-color-brand-border-normal",
+        "--kui-color-brand-on-quiet",
+        "--kui-color-neutral-border-normal",
+        "--kui-color-neutral-on-quiet",
+        "--kui-color-surface",
+        "--kui-color-text",
+        "--kui-focus-ring",
+        "--kui-font-xs",
+        "--kui-radius-pill",
+        "--kui-shadow-s",
+        "--kui-space-2xs",
+        "--kui-space-s",
+        "--kui-space-xs"
+      ],
+      "links": {
+        "catalogRoute": "?component=tabs",
+        "documentation": "docs/component-selection.md",
+        "recipe": "docs/accessibility.md#tabs"
+      }
+    },
+    {
+      "id": "tab-bar",
+      "name": "TabBar",
+      "category": "Navigation",
+      "kind": "component",
+      "source": "kerf",
+      "description": "Controlled, reorderable tab strips with horizontal overflow.",
+      "uses": [
+        "tabs",
+        "toolbar-control-group"
+      ],
+      "purpose": "Controlled, reorderable tab strips with horizontal overflow.",
+      "publicExports": [
+        "TabBar",
+        "wireTabBars",
+        "reorderTabs"
+      ],
+      "useWhen": [
+        "Switch application tabpanels with optional overflow, closing, and reordering."
+      ],
+      "avoidWhen": [
+        "Do not use for a compact local toggle or a long value list."
+      ],
+      "alternatives": [
+        {
+          "id": "segmented-control",
+          "relationship": "nearest"
+        },
+        {
+          "id": "select",
+          "relationship": "nearest"
+        },
+        {
+          "id": "wa-tab-group",
+          "relationship": "prefer-over"
+        }
+      ],
+      "appOwns": [
+        "ordered tabs",
+        "selection",
+        "panels",
+        "routing",
+        "persistence"
+      ],
+      "variants": [
+        "leading",
+        "trailing",
+        "overflow",
+        "reorderable"
+      ],
+      "accessibility": [
+        "Keep exactly one selected tab at tabindex 0 and preserve the wiring keyboard model."
+      ],
+      "delivery": {
+        "browserImport": "@kerfjs/ui/tab-bar",
+        "manualCssImport": "@kerfjs/ui/tab-bar.css",
+        "sideEffects": [
+          "browser-condition-css"
+        ]
+      },
+      "wiring": [
+        {
+          "export": "wireTabBars",
+          "import": "@kerfjs/ui/wire-tab-bars",
+          "required": true
+        },
+        {
+          "export": "reorderTabs",
+          "import": "@kerfjs/ui/wire-tab-bars",
+          "required": false
+        }
+      ],
+      "publicClasses": [
+        "kui-tab-bar",
+        "kui-tab-bar__leading",
+        "kui-tab-bar__tabs",
+        "kui-tab-bar__trailing"
+      ],
+      "publicTokens": [
+        "--kui-color-border",
+        "--kui-color-surface-lowered",
+        "--kui-space-2xs",
+        "--kui-tab-bar-background",
+        "--kui-tab-bar-border"
+      ],
+      "links": {
+        "catalogRoute": "?component=tab-bar",
+        "documentation": "docs/component-selection.md",
+        "recipe": "docs/accessibility.md#tabs"
+      }
+    },
+    {
+      "id": "segmented-control",
+      "name": "SegmentedControl",
+      "category": "Controls",
+      "kind": "component",
+      "source": "kerf",
+      "description": "Controlled exclusive choices in toolbar, rounded-rectangle, and pill presentations.",
+      "uses": [
+        "lucide-icon"
+      ],
+      "purpose": "Controlled exclusive choices in toolbar, rounded-rectangle, and pill presentations.",
+      "publicExports": [
+        "SegmentedControl"
+      ],
+      "useWhen": [
+        "Expose a small controlled exclusive choice set."
+      ],
+      "avoidWhen": [
+        "Do not use for tabpanel semantics or many choices."
+      ],
+      "alternatives": [
+        {
+          "id": "tab-bar",
+          "relationship": "nearest"
+        },
+        {
+          "id": "select",
+          "relationship": "nearest"
+        },
+        {
+          "id": "wa-button-group",
+          "relationship": "prefer-over"
+        }
+      ],
+      "appOwns": [
+        "value",
+        "labels",
+        "action",
+        "persistence"
+      ],
+      "variants": [
+        "filled",
+        "outlined",
+        "toolbar",
+        "rounded",
+        "pill",
+        "equal width",
+        "small"
+      ],
+      "accessibility": [
+        "Keep choice labels meaningful and every enabled native button in sequential Tab order."
+      ],
+      "delivery": {
+        "browserImport": "@kerfjs/ui/segmented-control",
+        "manualCssImport": "@kerfjs/ui/segmented-control.css",
+        "sideEffects": [
+          "browser-condition-css"
+        ]
+      },
+      "wiring": [],
+      "publicClasses": [
+        "kui-segmented-control",
+        "kui-segmented-control__item"
+      ],
+      "publicTokens": [
+        "--kui-color-brand-on-quiet",
+        "--kui-color-neutral-border-normal",
+        "--kui-color-neutral-fill-normal",
+        "--kui-color-neutral-on-quiet",
+        "--kui-color-surface",
+        "--kui-focus-ring",
+        "--kui-font-2xs",
+        "--kui-font-weight-semibold",
+        "--kui-font-xs",
+        "--kui-radius-pill",
+        "--kui-segmented-background",
+        "--kui-segmented-border",
+        "--kui-segmented-foreground",
+        "--kui-segmented-hover-background",
+        "--kui-segmented-item-radius",
+        "--kui-segmented-radius",
+        "--kui-segmented-selected-background",
+        "--kui-segmented-selected-border",
+        "--kui-segmented-selected-foreground",
+        "--kui-segmented-selected-shadow",
+        "--kui-shadow-s",
+        "--kui-toolbar-control-color",
+        "--kui-toolbar-control-hover-background",
+        "--kui-toolbar-control-selected-background",
+        "--kui-toolbar-control-selected-color",
+        "--kui-toolbar-control-selected-shadow"
+      ],
+      "links": {
+        "catalogRoute": "?component=segmented-control",
+        "documentation": "docs/component-selection.md",
+        "recipe": "docs/accessibility.md#segmentedcontrol"
+      }
+    },
+    {
+      "id": "token-search-field",
+      "name": "TokenSearchField",
+      "category": "Controls",
+      "kind": "component",
+      "source": "kerf",
+      "description": "Token-controlled search editor with ordered, editable, removable filter chips.",
+      "uses": [
+        "lucide-icon"
+      ],
+      "purpose": "Token-controlled search editor with ordered, editable, removable filter chips.",
+      "publicExports": [
+        "TokenSearchField",
+        "readTokenSearchField",
+        "placeTokenSearchCaret"
+      ],
+      "useWhen": [
+        "Combine DOM-owned free text with ordered editable/removable filter tokens in one searchbox."
+      ],
+      "avoidWhen": [
+        "Do not use for ordinary text input or separately labeled filter controls."
+      ],
+      "alternatives": [
+        {
+          "id": "wa-input",
+          "relationship": "prefer-over"
+        }
+      ],
+      "appOwns": [
+        "parsing",
+        "suggestions",
+        "tokens",
+        "query execution",
+        "results"
+      ],
+      "variants": [
+        "tokens",
+        "free text",
+        "disabled"
+      ],
+      "accessibility": [
+        "Announce result changes when useful and keep tokens atomic during editing."
+      ],
+      "delivery": {
+        "browserImport": "@kerfjs/ui/token-search-field",
+        "manualCssImport": "@kerfjs/ui/token-search-field.css",
+        "sideEffects": [
+          "browser-condition-css"
+        ]
+      },
+      "wiring": [
+        {
+          "export": "readTokenSearchField",
+          "import": "@kerfjs/ui/token-search-field",
+          "required": true
+        },
+        {
+          "export": "placeTokenSearchCaret",
+          "import": "@kerfjs/ui/token-search-field",
+          "required": false
+        }
+      ],
+      "publicClasses": [
+        "kui-token-search",
+        "kui-token-search__clear",
+        "kui-token-search__editor",
+        "kui-token-search__leading",
+        "kui-token-search__token",
+        "kui-token-search__token-edit",
+        "kui-token-search__token-remove",
+        "kui-token-search__trailing"
+      ],
+      "publicTokens": [
+        "--kui-color-accent",
+        "--kui-color-accent-text",
+        "--kui-color-border",
+        "--kui-color-focus",
+        "--kui-color-surface",
+        "--kui-color-text",
+        "--kui-color-text-quiet",
+        "--kui-focus-ring",
+        "--kui-font-s",
+        "--kui-font-xs",
+        "--kui-radius-pill",
+        "--kui-token-search-background",
+        "--kui-token-search-border",
+        "--kui-token-search-token-background",
+        "--kui-token-search-token-foreground"
+      ],
+      "links": {
+        "catalogRoute": "?component=token-search-field",
+        "documentation": "docs/component-selection.md",
+        "recipe": "docs/accessibility.md#tokensearchfield"
+      }
+    },
+    {
+      "id": "resize",
+      "name": "ResizableRegion",
+      "category": "Controls",
+      "kind": "component",
+      "source": "kerf",
+      "description": "Pointer and keyboard-operable split region.",
+      "uses": [],
+      "purpose": "Pointer and keyboard-operable split region.",
+      "publicExports": [
+        "ResizableRegion",
+        "clampRegionSize",
+        "resizeRegionFromPointer",
+        "wireResizableRegions"
+      ],
+      "useWhen": [
+        "Provide a controlled user-resizable application pane."
+      ],
+      "avoidWhen": [
+        "Do not use for static columns; use CSS grid."
+      ],
+      "alternatives": [
+        {
+          "id": "layout",
+          "relationship": "nearest"
+        },
+        {
+          "id": "wa-split-panel",
+          "relationship": "prefer-over"
+        }
+      ],
+      "appOwns": [
+        "size",
+        "min/max policy",
+        "collapse policy",
+        "persistence"
+      ],
+      "variants": [
+        "horizontal",
+        "vertical",
+        "start edge",
+        "end edge",
+        "collapsed"
+      ],
+      "accessibility": [
+        "Preserve separator naming, value ARIA, and keyboard behavior."
+      ],
+      "delivery": {
+        "browserImport": "@kerfjs/ui/resizable-region",
+        "manualCssImport": "@kerfjs/ui/resizable-region.css",
+        "sideEffects": [
+          "browser-condition-css"
+        ]
+      },
+      "wiring": [
+        {
+          "export": "wireResizableRegions",
+          "import": "@kerfjs/ui/wire-resizable-regions",
+          "required": true
+        },
+        {
+          "export": "clampRegionSize",
+          "import": "@kerfjs/ui/resizable-region",
+          "required": false
+        },
+        {
+          "export": "resizeRegionFromPointer",
+          "import": "@kerfjs/ui/resizable-region",
+          "required": false
+        }
+      ],
+      "publicClasses": [
+        "kui-resizable-region",
+        "kui-resizable-region__content",
+        "kui-resizable-region__handle"
+      ],
+      "publicTokens": [
+        "--kui-color-border",
+        "--kui-color-neutral-on-quiet",
+        "--kui-color-text-link",
+        "--kui-focus-ring",
+        "--kui-radius-s",
+        "--kui-resizable-region-handle-active-color",
+        "--kui-resizable-region-handle-color",
+        "--kui-resizable-region-separator-color",
+        "--kui-resizable-region-size"
+      ],
+      "links": {
+        "catalogRoute": "?component=resize",
+        "documentation": "docs/component-selection.md",
+        "recipe": "docs/accessibility.md#resizableregion"
+      }
+    },
+    {
+      "id": "select",
+      "name": "Select",
+      "category": "Controls",
+      "kind": "component",
+      "source": "kerf",
+      "description": "Controlled Web Awesome select with grouped choices and rerender-stable icon slots.",
+      "uses": [
+        "lucide-icon",
+        "wa-select",
+        "wa-option"
+      ],
+      "purpose": "Controlled Web Awesome select with grouped choices and rerender-stable icon slots.",
+      "publicExports": [
+        "Select"
+      ],
+      "useWhen": [
+        "Choose a controlled value from a moderate or long list, including grouped and icon-bearing choices."
+      ],
+      "avoidWhen": [
+        "Do not use for commands or a small choice set that should stay visible."
+      ],
+      "alternatives": [
+        {
+          "id": "segmented-control",
+          "relationship": "nearest"
+        },
+        {
+          "id": "wa-select",
+          "relationship": "prefer-over"
+        },
+        {
+          "id": "wa-dropdown",
+          "relationship": "prefer-over"
+        }
+      ],
+      "appOwns": [
+        "value",
+        "validation",
+        "choices",
+        "domain mapping"
+      ],
+      "variants": [
+        "placeholder",
+        "disabled",
+        "fit menu",
+        "grouped",
+        "custom selected content"
+      ],
+      "accessibility": [
+        "Verify the live value, standard events, focus, and rendered output."
+      ],
+      "delivery": {
+        "browserImport": "@kerfjs/ui/select",
+        "manualCssImport": "@kerfjs/ui/select.css",
+        "registrationImport": "@kerfjs/ui/select/register",
+        "sideEffects": [
+          "custom-element-registration"
+        ]
+      },
+      "wiring": [],
+      "publicClasses": [
+        "kui-select",
+        "kui-select--custom-selected",
+        "kui-select--fit-menu",
+        "kui-select__custom-selected",
+        "kui-select__group",
+        "kui-select__group--separated",
+        "kui-select__group-title",
+        "kui-select__icon"
+      ],
+      "publicTokens": [
+        "--kui-color-brand-fill-normal",
+        "--kui-color-brand-on-quiet",
+        "--kui-color-neutral-border-quiet",
+        "--kui-color-neutral-on-quiet",
+        "--kui-disclosure-icon-scale",
+        "--kui-font-2xs"
+      ],
+      "links": {
+        "catalogRoute": "?component=select",
+        "documentation": "docs/component-selection.md",
+        "recipe": "docs/component-selection.md#web-awesome-overlap-policy"
+      }
+    },
+    {
+      "id": "feedback",
+      "name": "Feedback composition",
+      "category": "Feedback",
+      "kind": "composition",
+      "source": "kerf",
+      "description": "Banners, empty states, and labeled progress.",
+      "uses": [
+        "state-banner",
+        "empty-state",
+        "loading-spinner"
+      ],
+      "purpose": "Banners, empty states, and labeled progress.",
+      "publicExports": [],
+      "useWhen": [
+        "Compose persistent status, empty/busy content, and compact loading feedback."
+      ],
+      "avoidWhen": [
+        "Do not collapse different message lifetimes or urgency into one visual treatment."
+      ],
+      "alternatives": [
+        {
+          "id": "state-banner",
+          "relationship": "nearest"
+        },
+        {
+          "id": "empty-state",
+          "relationship": "nearest"
+        },
+        {
+          "id": "wa-callout",
+          "relationship": "prefer-over"
+        },
+        {
+          "id": "wa-toast",
+          "relationship": "prefer-over"
+        }
+      ],
+      "appOwns": [
+        "state mapping",
+        "message lifetime",
+        "recovery policy"
+      ],
+      "variants": [
+        "banner",
+        "empty",
+        "busy",
+        "spinner"
+      ],
+      "accessibility": [
+        "Choose polite status versus assertive alert deliberately."
+      ],
+      "delivery": {
+        "sideEffects": [
+          "css"
+        ]
+      },
+      "wiring": [],
+      "publicClasses": [],
+      "publicTokens": [],
+      "links": {
+        "catalogRoute": "?component=feedback",
+        "documentation": "docs/component-selection.md",
+        "recipe": "docs/component-selection.md#ambiguous-choices"
+      }
+    },
+    {
+      "id": "state-banner",
+      "name": "StateBanner",
+      "category": "Feedback",
+      "kind": "component",
+      "source": "kerf",
+      "description": "Polite status and assertive alert feedback with semantic tones.",
+      "uses": [
+        "lucide-icon"
+      ],
+      "purpose": "Polite status and assertive alert feedback with semantic tones.",
+      "publicExports": [
+        "StateBanner"
+      ],
+      "useWhen": [
+        "Place persistent inline semantic status beside affected work."
+      ],
+      "avoidWhen": [
+        "Do not use for an absent-content screen or transient confirmation."
+      ],
+      "alternatives": [
+        {
+          "id": "empty-state",
+          "relationship": "nearest"
+        },
+        {
+          "id": "wa-callout",
+          "relationship": "prefer-over"
+        },
+        {
+          "id": "wa-toast",
+          "relationship": "prefer-over"
+        }
+      ],
+      "appOwns": [
+        "state mapping",
+        "message lifetime",
+        "retry behavior",
+        "copy"
+      ],
+      "variants": [
+        "neutral",
+        "info",
+        "success",
+        "warning",
+        "danger",
+        "status",
+        "alert"
+      ],
+      "accessibility": [
+        "Use alert urgency only for an attention-requiring failure."
+      ],
+      "delivery": {
+        "browserImport": "@kerfjs/ui/state-banner",
+        "manualCssImport": "@kerfjs/ui/state-banner.css",
+        "sideEffects": [
+          "browser-condition-css"
+        ]
+      },
+      "wiring": [],
+      "publicClasses": [
+        "kui-state-banner",
+        "kui-state-banner__action",
+        "kui-state-banner__copy",
+        "kui-state-banner__icon"
+      ],
+      "publicTokens": [
+        "--kui-color-brand-border-quiet",
+        "--kui-color-brand-fill-quiet",
+        "--kui-color-brand-on-quiet",
+        "--kui-color-danger-border-quiet",
+        "--kui-color-danger-fill-quiet",
+        "--kui-color-danger-on-quiet",
+        "--kui-color-neutral-border-normal",
+        "--kui-color-neutral-fill-quiet",
+        "--kui-color-neutral-on-normal",
+        "--kui-color-success-border-normal",
+        "--kui-color-success-fill-quiet",
+        "--kui-color-success-on-quiet",
+        "--kui-color-surface",
+        "--kui-color-text-link",
+        "--kui-color-warning-border-normal",
+        "--kui-color-warning-fill-quiet",
+        "--kui-color-warning-on-quiet",
+        "--kui-font-2xs",
+        "--kui-font-xs",
+        "--kui-radius-pill",
+        "--kui-space-xs",
+        "--kui-state-banner-action-background",
+        "--kui-state-banner-action-hover-background",
+        "--kui-state-banner-background",
+        "--kui-state-banner-border",
+        "--kui-state-banner-danger-background",
+        "--kui-state-banner-danger-border",
+        "--kui-state-banner-danger-foreground",
+        "--kui-state-banner-detail",
+        "--kui-state-banner-foreground",
+        "--kui-state-banner-info-background",
+        "--kui-state-banner-info-border",
+        "--kui-state-banner-info-foreground",
+        "--kui-state-banner-neutral-background",
+        "--kui-state-banner-neutral-border",
+        "--kui-state-banner-neutral-foreground",
+        "--kui-state-banner-success-background",
+        "--kui-state-banner-success-border",
+        "--kui-state-banner-success-foreground",
+        "--kui-state-banner-warning-background",
+        "--kui-state-banner-warning-border",
+        "--kui-state-banner-warning-foreground"
+      ],
+      "links": {
+        "catalogRoute": "?component=state-banner",
+        "documentation": "docs/component-selection.md",
+        "recipe": "docs/component-selection.md#ambiguous-choices"
+      }
+    },
+    {
+      "id": "empty-state",
+      "name": "EmptyState",
+      "category": "Feedback",
+      "kind": "component",
+      "source": "kerf",
+      "description": "Actionable empty and busy content states.",
+      "uses": [
+        "lucide-icon",
+        "loading-spinner"
+      ],
+      "purpose": "Actionable empty and busy content states.",
+      "publicExports": [
+        "EmptyState"
+      ],
+      "useWhen": [
+        "Explain absent or busy content and offer an optional recovery action."
+      ],
+      "avoidWhen": [
+        "Do not use for an inline update or transient success."
+      ],
+      "alternatives": [
+        {
+          "id": "state-banner",
+          "relationship": "nearest"
+        },
+        {
+          "id": "wa-toast",
+          "relationship": "prefer-over"
+        }
+      ],
+      "appOwns": [
+        "empty/busy policy",
+        "recovery action",
+        "copy"
+      ],
+      "variants": [
+        "actionable",
+        "busy",
+        "illustrated"
+      ],
+      "accessibility": [
+        "Busy state uses aria-busy; the illustration never supplies the only label."
+      ],
+      "delivery": {
+        "browserImport": "@kerfjs/ui/empty-state",
+        "manualCssImport": "@kerfjs/ui/empty-state.css",
+        "sideEffects": [
+          "browser-condition-css"
+        ]
+      },
+      "wiring": [],
+      "publicClasses": [
+        "kui-empty-state",
+        "kui-empty-state__action",
+        "kui-empty-state__icon"
+      ],
+      "publicTokens": [
+        "--kui-color-neutral-on-quiet",
+        "--kui-color-text",
+        "--kui-empty-state-foreground",
+        "--kui-empty-state-title",
+        "--kui-font-l",
+        "--kui-font-s",
+        "--kui-space-xl",
+        "--kui-space-xs"
+      ],
+      "links": {
+        "catalogRoute": "?component=empty-state",
+        "documentation": "docs/component-selection.md",
+        "recipe": "docs/component-selection.md#ambiguous-choices"
+      }
+    },
+    {
+      "id": "loading-spinner",
+      "name": "LoadingSpinner",
+      "category": "Feedback",
+      "kind": "component",
+      "source": "kerf",
+      "description": "Meaningfully labeled or decorative progress.",
+      "uses": [],
+      "purpose": "Meaningfully labeled or decorative progress.",
+      "publicExports": [
+        "LoadingSpinner"
+      ],
+      "useWhen": [
+        "Show compact labeled or decorative indeterminate activity in Kerf UI."
+      ],
+      "avoidWhen": [
+        "Do not use for known progress."
+      ],
+      "alternatives": [
+        {
+          "id": "wa-spinner",
+          "relationship": "prefer-over"
+        },
+        {
+          "id": "wa-progress-bar",
+          "relationship": "prefer-over"
+        },
+        {
+          "id": "wa-progress-ring",
+          "relationship": "prefer-over"
+        }
+      ],
+      "appOwns": [
+        "loading lifecycle",
+        "adjacent status copy"
+      ],
+      "variants": [
+        "labeled",
+        "decorative"
+      ],
+      "accessibility": [
+        "Labeled spinners use role img; decorative spinners are hidden and stop for reduced motion."
+      ],
+      "delivery": {
+        "browserImport": "@kerfjs/ui/loading-spinner",
+        "manualCssImport": "@kerfjs/ui/loading-spinner.css",
+        "sideEffects": [
+          "browser-condition-css"
+        ]
+      },
+      "wiring": [],
+      "publicClasses": [
+        "kui-loading-spinner"
+      ],
+      "publicTokens": [],
+      "links": {
+        "catalogRoute": "?component=loading-spinner",
+        "documentation": "docs/component-selection.md",
+        "recipe": "docs/component-selection.md#problem-to-component-matrix"
+      }
+    },
+    {
+      "id": "wa-button",
+      "name": "Button",
+      "category": "Actions",
+      "kind": "component",
+      "source": "webawesome",
+      "description": "Action control with semantic variants, appearances, loading, and icon support.",
+      "uses": [
+        "wa-icon",
+        "wa-spinner"
+      ],
+      "purpose": "Action control with semantic variants, appearances, loading, and icon support.",
+      "customElement": "wa-button",
+      "useWhen": [
+        "Action control with semantic variants, appearances, loading, and icon support."
+      ],
+      "avoidWhen": [
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+      ],
+      "recommendation": "supported",
+      "alternatives": [],
+      "delivery": {
+        "registrationImport": "@awesome.me/webawesome/dist/components/button/button.js",
+        "themeCssImport": "@kerfjs/ui/webawesome.css",
+        "sideEffects": [
+          "custom-element-registration"
+        ]
+      },
+      "links": {
+        "catalogRoute": "?component=wa-button",
+        "documentation": "docs/webawesome-theme.md#coverage",
+        "recipe": "docs/webawesome-theme.md#coverage"
+      }
+    },
+    {
+      "id": "wa-button-group",
+      "name": "Button Group",
+      "category": "Actions",
+      "kind": "component",
+      "source": "webawesome",
+      "description": "Exceptional grouped actions; prefer Kerf SegmentedControl for exclusive choices.",
+      "uses": [
+        "wa-button"
+      ],
+      "purpose": "Exceptional grouped actions; prefer Kerf SegmentedControl for exclusive choices.",
+      "customElement": "wa-button-group",
+      "useWhen": [
+        "Exceptional grouped actions; prefer Kerf SegmentedControl for exclusive choices."
+      ],
+      "avoidWhen": [
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+      ],
+      "recommendation": "conditional",
+      "alternatives": [
+        {
+          "id": "segmented-control",
+          "relationship": "prefer-kerf"
+        }
+      ],
+      "delivery": {
+        "registrationImport": "@awesome.me/webawesome/dist/components/button-group/button-group.js",
+        "themeCssImport": "@kerfjs/ui/webawesome.css",
+        "sideEffects": [
+          "custom-element-registration"
+        ]
+      },
+      "links": {
+        "catalogRoute": "?component=wa-button-group",
+        "documentation": "docs/webawesome-theme.md#coverage",
+        "recipe": "docs/component-selection.md#web-awesome-overlap-policy"
+      }
+    },
+    {
+      "id": "wa-copy-button",
+      "name": "Copy Button",
+      "category": "Actions",
+      "kind": "component",
+      "source": "webawesome",
+      "description": "Copies a supplied value and announces success or failure.",
+      "uses": [
+        "wa-icon",
+        "wa-tooltip"
+      ],
+      "purpose": "Copies a supplied value and announces success or failure.",
+      "customElement": "wa-copy-button",
+      "useWhen": [
+        "Copies a supplied value and announces success or failure."
+      ],
+      "avoidWhen": [
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+      ],
+      "recommendation": "supported",
+      "alternatives": [],
+      "delivery": {
+        "registrationImport": "@awesome.me/webawesome/dist/components/copy-button/copy-button.js",
+        "themeCssImport": "@kerfjs/ui/webawesome.css",
+        "sideEffects": [
+          "custom-element-registration"
+        ]
+      },
+      "links": {
+        "catalogRoute": "?component=wa-copy-button",
+        "documentation": "docs/webawesome-theme.md#coverage",
+        "recipe": "docs/webawesome-theme.md#coverage"
+      }
+    },
+    {
+      "id": "wa-dropdown",
+      "name": "Dropdown",
+      "category": "Actions",
+      "kind": "component",
+      "source": "webawesome",
+      "description": "Action-menu primitive; prefer Kerf Select when choosing a value.",
+      "uses": [
+        "wa-dropdown-item",
+        "wa-popup"
+      ],
+      "purpose": "Action-menu primitive; prefer Kerf Select when choosing a value.",
+      "customElement": "wa-dropdown",
+      "useWhen": [
+        "Action-menu primitive; prefer Kerf Select when choosing a value."
+      ],
+      "avoidWhen": [
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+      ],
+      "recommendation": "conditional",
+      "alternatives": [
+        {
+          "id": "select",
+          "relationship": "prefer-kerf"
+        }
+      ],
+      "delivery": {
+        "registrationImport": "@awesome.me/webawesome/dist/components/dropdown/dropdown.js",
+        "themeCssImport": "@kerfjs/ui/webawesome.css",
+        "sideEffects": [
+          "custom-element-registration"
+        ]
+      },
+      "links": {
+        "catalogRoute": "?component=wa-dropdown",
+        "documentation": "docs/webawesome-theme.md#coverage",
+        "recipe": "docs/component-selection.md#web-awesome-overlap-policy"
+      }
+    },
+    {
+      "id": "wa-dropdown-item",
+      "name": "Dropdown Item",
+      "category": "Actions",
+      "kind": "component",
+      "source": "webawesome",
+      "description": "Action-menu row; prefer Kerf Select options for value selection.",
+      "uses": [
+        "wa-icon"
+      ],
+      "purpose": "Action-menu row; prefer Kerf Select options for value selection.",
+      "customElement": "wa-dropdown-item",
+      "useWhen": [
+        "Action-menu row; prefer Kerf Select options for value selection."
+      ],
+      "avoidWhen": [
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+      ],
+      "recommendation": "conditional",
+      "alternatives": [
+        {
+          "id": "select",
+          "relationship": "prefer-kerf"
+        }
+      ],
+      "delivery": {
+        "registrationImport": "@awesome.me/webawesome/dist/components/dropdown-item/dropdown-item.js",
+        "themeCssImport": "@kerfjs/ui/webawesome.css",
+        "sideEffects": [
+          "custom-element-registration"
+        ]
+      },
+      "links": {
+        "catalogRoute": "?component=wa-dropdown-item",
+        "documentation": "docs/webawesome-theme.md#coverage",
+        "recipe": "docs/component-selection.md#web-awesome-overlap-policy"
+      }
+    },
+    {
+      "id": "wa-checkbox",
+      "name": "Checkbox",
+      "category": "Forms",
+      "kind": "component",
+      "source": "webawesome",
+      "description": "Binary form control with checked, indeterminate, and disabled states.",
+      "uses": [
+        "wa-icon"
+      ],
+      "purpose": "Binary form control with checked, indeterminate, and disabled states.",
+      "customElement": "wa-checkbox",
+      "useWhen": [
+        "Binary form control with checked, indeterminate, and disabled states."
+      ],
+      "avoidWhen": [
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+      ],
+      "recommendation": "supported",
+      "alternatives": [],
+      "delivery": {
+        "registrationImport": "@awesome.me/webawesome/dist/components/checkbox/checkbox.js",
+        "themeCssImport": "@kerfjs/ui/webawesome.css",
+        "sideEffects": [
+          "custom-element-registration"
+        ]
+      },
+      "links": {
+        "catalogRoute": "?component=wa-checkbox",
+        "documentation": "docs/webawesome-theme.md#coverage",
+        "recipe": "docs/webawesome-theme.md#coverage"
+      }
+    },
+    {
+      "id": "wa-checkbox-group",
+      "name": "Checkbox Group",
+      "category": "Forms",
+      "kind": "component",
+      "source": "webawesome",
+      "description": "Labels and validates a related set of checkboxes.",
+      "uses": [
+        "wa-checkbox"
+      ],
+      "purpose": "Labels and validates a related set of checkboxes.",
+      "customElement": "wa-checkbox-group",
+      "useWhen": [
+        "Labels and validates a related set of checkboxes."
+      ],
+      "avoidWhen": [
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+      ],
+      "recommendation": "supported",
+      "alternatives": [],
+      "delivery": {
+        "registrationImport": "@awesome.me/webawesome/dist/components/checkbox-group/checkbox-group.js",
+        "themeCssImport": "@kerfjs/ui/webawesome.css",
+        "sideEffects": [
+          "custom-element-registration"
+        ]
+      },
+      "links": {
+        "catalogRoute": "?component=wa-checkbox-group",
+        "documentation": "docs/webawesome-theme.md#coverage",
+        "recipe": "docs/webawesome-theme.md#coverage"
+      }
+    },
+    {
+      "id": "wa-color-picker",
+      "name": "Color Picker",
+      "category": "Forms",
+      "kind": "component",
+      "source": "webawesome",
+      "description": "Color input with swatches, formats, opacity, and eyedropper support.",
+      "uses": [
+        "wa-button",
+        "wa-button-group",
+        "wa-input",
+        "wa-popup"
+      ],
+      "purpose": "Color input with swatches, formats, opacity, and eyedropper support.",
+      "customElement": "wa-color-picker",
+      "useWhen": [
+        "Color input with swatches, formats, opacity, and eyedropper support."
+      ],
+      "avoidWhen": [
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+      ],
+      "recommendation": "supported",
+      "alternatives": [],
+      "delivery": {
+        "registrationImport": "@awesome.me/webawesome/dist/components/color-picker/color-picker.js",
+        "themeCssImport": "@kerfjs/ui/webawesome.css",
+        "sideEffects": [
+          "custom-element-registration"
+        ]
+      },
+      "links": {
+        "catalogRoute": "?component=wa-color-picker",
+        "documentation": "docs/webawesome-theme.md#coverage",
+        "recipe": "docs/webawesome-theme.md#coverage"
+      }
+    },
+    {
+      "id": "wa-input",
+      "name": "Input",
+      "category": "Forms",
+      "kind": "component",
+      "source": "webawesome",
+      "description": "Text input with labels, hints, clear controls, and semantic appearances.",
+      "uses": [
+        "wa-icon"
+      ],
+      "purpose": "Text input with labels, hints, clear controls, and semantic appearances.",
+      "customElement": "wa-input",
+      "useWhen": [
+        "Text input with labels, hints, clear controls, and semantic appearances."
+      ],
+      "avoidWhen": [
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+      ],
+      "recommendation": "supported",
+      "alternatives": [
+        {
+          "id": "token-search-field",
+          "relationship": "prefer-kerf"
+        }
+      ],
+      "delivery": {
+        "registrationImport": "@awesome.me/webawesome/dist/components/input/input.js",
+        "themeCssImport": "@kerfjs/ui/webawesome.css",
+        "sideEffects": [
+          "custom-element-registration"
+        ]
+      },
+      "links": {
+        "catalogRoute": "?component=wa-input",
+        "documentation": "docs/webawesome-theme.md#coverage",
+        "recipe": "docs/component-selection.md#web-awesome-overlap-policy"
+      }
+    },
+    {
+      "id": "wa-known-date",
+      "name": "Known Date",
+      "category": "Forms",
+      "kind": "component",
+      "source": "webawesome",
+      "description": "Experimental segmented field for partially or fully known dates.",
+      "uses": [],
+      "purpose": "Experimental segmented field for partially or fully known dates.",
+      "customElement": "wa-known-date",
+      "useWhen": [
+        "Experimental segmented field for partially or fully known dates."
+      ],
+      "avoidWhen": [
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+      ],
+      "recommendation": "supported",
+      "alternatives": [],
+      "delivery": {
+        "registrationImport": "@awesome.me/webawesome/dist/components/known-date/known-date.js",
+        "themeCssImport": "@kerfjs/ui/webawesome.css",
+        "sideEffects": [
+          "custom-element-registration"
+        ]
+      },
+      "links": {
+        "catalogRoute": "?component=wa-known-date",
+        "documentation": "docs/webawesome-theme.md#coverage",
+        "recipe": "docs/webawesome-theme.md#coverage"
+      }
+    },
+    {
+      "id": "wa-number-input",
+      "name": "Number Input",
+      "category": "Forms",
+      "kind": "component",
+      "source": "webawesome",
+      "description": "Numeric input with keyboard and stepper controls.",
+      "uses": [
+        "wa-icon"
+      ],
+      "purpose": "Numeric input with keyboard and stepper controls.",
+      "customElement": "wa-number-input",
+      "useWhen": [
+        "Numeric input with keyboard and stepper controls."
+      ],
+      "avoidWhen": [
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+      ],
+      "recommendation": "supported",
+      "alternatives": [],
+      "delivery": {
+        "registrationImport": "@awesome.me/webawesome/dist/components/number-input/number-input.js",
+        "themeCssImport": "@kerfjs/ui/webawesome.css",
+        "sideEffects": [
+          "custom-element-registration"
+        ]
+      },
+      "links": {
+        "catalogRoute": "?component=wa-number-input",
+        "documentation": "docs/webawesome-theme.md#coverage",
+        "recipe": "docs/webawesome-theme.md#coverage"
+      }
+    },
+    {
+      "id": "wa-option",
+      "name": "Option",
+      "category": "Forms",
+      "kind": "component",
+      "source": "webawesome",
+      "description": "Underlying ecosystem option; prefer choices passed to Kerf Select.",
+      "uses": [
+        "wa-icon"
+      ],
+      "purpose": "Underlying ecosystem option; prefer choices passed to Kerf Select.",
+      "customElement": "wa-option",
+      "useWhen": [
+        "Underlying ecosystem option; prefer choices passed to Kerf Select."
+      ],
+      "avoidWhen": [
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+      ],
+      "recommendation": "underlying",
+      "alternatives": [
+        {
+          "id": "select",
+          "relationship": "prefer-kerf"
+        }
+      ],
+      "delivery": {
+        "registrationImport": "@awesome.me/webawesome/dist/components/option/option.js",
+        "themeCssImport": "@kerfjs/ui/webawesome.css",
+        "sideEffects": [
+          "custom-element-registration"
+        ]
+      },
+      "links": {
+        "catalogRoute": "?component=wa-option",
+        "documentation": "docs/webawesome-theme.md#coverage",
+        "recipe": "docs/component-selection.md#web-awesome-overlap-policy"
+      }
+    },
+    {
+      "id": "wa-otp-input",
+      "name": "OTP Input",
+      "category": "Forms",
+      "kind": "component",
+      "source": "webawesome",
+      "description": "Experimental segmented one-time-password input.",
+      "uses": [],
+      "purpose": "Experimental segmented one-time-password input.",
+      "customElement": "wa-otp-input",
+      "useWhen": [
+        "Experimental segmented one-time-password input."
+      ],
+      "avoidWhen": [
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+      ],
+      "recommendation": "supported",
+      "alternatives": [],
+      "delivery": {
+        "registrationImport": "@awesome.me/webawesome/dist/components/otp-input/otp-input.js",
+        "themeCssImport": "@kerfjs/ui/webawesome.css",
+        "sideEffects": [
+          "custom-element-registration"
+        ]
+      },
+      "links": {
+        "catalogRoute": "?component=wa-otp-input",
+        "documentation": "docs/webawesome-theme.md#coverage",
+        "recipe": "docs/webawesome-theme.md#coverage"
+      }
+    },
+    {
+      "id": "wa-radio",
+      "name": "Radio",
+      "category": "Forms",
+      "kind": "component",
+      "source": "webawesome",
+      "description": "Single-choice control used inside a radio group.",
+      "uses": [
+        "wa-icon"
+      ],
+      "purpose": "Single-choice control used inside a radio group.",
+      "customElement": "wa-radio",
+      "useWhen": [
+        "Single-choice control used inside a radio group."
+      ],
+      "avoidWhen": [
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+      ],
+      "recommendation": "supported",
+      "alternatives": [],
+      "delivery": {
+        "registrationImport": "@awesome.me/webawesome/dist/components/radio/radio.js",
+        "themeCssImport": "@kerfjs/ui/webawesome.css",
+        "sideEffects": [
+          "custom-element-registration"
+        ]
+      },
+      "links": {
+        "catalogRoute": "?component=wa-radio",
+        "documentation": "docs/webawesome-theme.md#coverage",
+        "recipe": "docs/webawesome-theme.md#coverage"
+      }
+    },
+    {
+      "id": "wa-radio-group",
+      "name": "Radio Group",
+      "category": "Forms",
+      "kind": "component",
+      "source": "webawesome",
+      "description": "Labels and manages a mutually exclusive set of radios.",
+      "uses": [
+        "wa-radio"
+      ],
+      "purpose": "Labels and manages a mutually exclusive set of radios.",
+      "customElement": "wa-radio-group",
+      "useWhen": [
+        "Labels and manages a mutually exclusive set of radios."
+      ],
+      "avoidWhen": [
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+      ],
+      "recommendation": "supported",
+      "alternatives": [],
+      "delivery": {
+        "registrationImport": "@awesome.me/webawesome/dist/components/radio-group/radio-group.js",
+        "themeCssImport": "@kerfjs/ui/webawesome.css",
+        "sideEffects": [
+          "custom-element-registration"
+        ]
+      },
+      "links": {
+        "catalogRoute": "?component=wa-radio-group",
+        "documentation": "docs/webawesome-theme.md#coverage",
+        "recipe": "docs/webawesome-theme.md#coverage"
+      }
+    },
+    {
+      "id": "wa-rating",
+      "name": "Rating",
+      "category": "Forms",
+      "kind": "component",
+      "source": "webawesome",
+      "description": "Interactive rating control with accessible labeling.",
+      "uses": [
+        "wa-icon"
+      ],
+      "purpose": "Interactive rating control with accessible labeling.",
+      "customElement": "wa-rating",
+      "useWhen": [
+        "Interactive rating control with accessible labeling."
+      ],
+      "avoidWhen": [
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+      ],
+      "recommendation": "supported",
+      "alternatives": [],
+      "delivery": {
+        "registrationImport": "@awesome.me/webawesome/dist/components/rating/rating.js",
+        "themeCssImport": "@kerfjs/ui/webawesome.css",
+        "sideEffects": [
+          "custom-element-registration"
+        ]
+      },
+      "links": {
+        "catalogRoute": "?component=wa-rating",
+        "documentation": "docs/webawesome-theme.md#coverage",
+        "recipe": "docs/webawesome-theme.md#coverage"
+      }
+    },
+    {
+      "id": "wa-select",
+      "name": "Select",
+      "category": "Forms",
+      "kind": "component",
+      "source": "webawesome",
+      "description": "Underlying ecosystem field; prefer Kerf Select for app UI.",
+      "uses": [
+        "wa-icon",
+        "wa-popup",
+        "wa-tag",
+        "wa-option"
+      ],
+      "purpose": "Underlying ecosystem field; prefer Kerf Select for app UI.",
+      "customElement": "wa-select",
+      "useWhen": [
+        "Underlying ecosystem field; prefer Kerf Select for app UI."
+      ],
+      "avoidWhen": [
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+      ],
+      "recommendation": "underlying",
+      "alternatives": [
+        {
+          "id": "select",
+          "relationship": "prefer-kerf"
+        }
+      ],
+      "delivery": {
+        "registrationImport": "@awesome.me/webawesome/dist/components/select/select.js",
+        "themeCssImport": "@kerfjs/ui/webawesome.css",
+        "sideEffects": [
+          "custom-element-registration"
+        ]
+      },
+      "links": {
+        "catalogRoute": "?component=wa-select",
+        "documentation": "docs/webawesome-theme.md#coverage",
+        "recipe": "docs/component-selection.md#web-awesome-overlap-policy"
+      }
+    },
+    {
+      "id": "wa-slider",
+      "name": "Slider",
+      "category": "Forms",
+      "kind": "component",
+      "source": "webawesome",
+      "description": "Range input with markers and value tooltip support.",
+      "uses": [
+        "wa-tooltip"
+      ],
+      "purpose": "Range input with markers and value tooltip support.",
+      "customElement": "wa-slider",
+      "useWhen": [
+        "Range input with markers and value tooltip support."
+      ],
+      "avoidWhen": [
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+      ],
+      "recommendation": "supported",
+      "alternatives": [],
+      "delivery": {
+        "registrationImport": "@awesome.me/webawesome/dist/components/slider/slider.js",
+        "themeCssImport": "@kerfjs/ui/webawesome.css",
+        "sideEffects": [
+          "custom-element-registration"
+        ]
+      },
+      "links": {
+        "catalogRoute": "?component=wa-slider",
+        "documentation": "docs/webawesome-theme.md#coverage",
+        "recipe": "docs/webawesome-theme.md#coverage"
+      }
+    },
+    {
+      "id": "wa-switch",
+      "name": "Switch",
+      "category": "Forms",
+      "kind": "component",
+      "source": "webawesome",
+      "description": "Immediate on/off setting control.",
+      "uses": [],
+      "purpose": "Immediate on/off setting control.",
+      "customElement": "wa-switch",
+      "useWhen": [
+        "Immediate on/off setting control."
+      ],
+      "avoidWhen": [
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+      ],
+      "recommendation": "supported",
+      "alternatives": [],
+      "delivery": {
+        "registrationImport": "@awesome.me/webawesome/dist/components/switch/switch.js",
+        "themeCssImport": "@kerfjs/ui/webawesome.css",
+        "sideEffects": [
+          "custom-element-registration"
+        ]
+      },
+      "links": {
+        "catalogRoute": "?component=wa-switch",
+        "documentation": "docs/webawesome-theme.md#coverage",
+        "recipe": "docs/webawesome-theme.md#coverage"
+      }
+    },
+    {
+      "id": "wa-textarea",
+      "name": "Textarea",
+      "category": "Forms",
+      "kind": "component",
+      "source": "webawesome",
+      "description": "Multiline text field with labels, hints, and resize behavior.",
+      "uses": [],
+      "purpose": "Multiline text field with labels, hints, and resize behavior.",
+      "customElement": "wa-textarea",
+      "useWhen": [
+        "Multiline text field with labels, hints, and resize behavior."
+      ],
+      "avoidWhen": [
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+      ],
+      "recommendation": "supported",
+      "alternatives": [],
+      "delivery": {
+        "registrationImport": "@awesome.me/webawesome/dist/components/textarea/textarea.js",
+        "themeCssImport": "@kerfjs/ui/webawesome.css",
+        "sideEffects": [
+          "custom-element-registration"
+        ]
+      },
+      "links": {
+        "catalogRoute": "?component=wa-textarea",
+        "documentation": "docs/webawesome-theme.md#coverage",
+        "recipe": "docs/webawesome-theme.md#coverage"
+      }
+    },
+    {
+      "id": "wa-time-input",
+      "name": "Time Input",
+      "category": "Forms",
+      "kind": "component",
+      "source": "webawesome",
+      "description": "Experimental segmented time field with an optional picker.",
+      "uses": [
+        "wa-icon",
+        "wa-popup"
+      ],
+      "purpose": "Experimental segmented time field with an optional picker.",
+      "customElement": "wa-time-input",
+      "useWhen": [
+        "Experimental segmented time field with an optional picker."
+      ],
+      "avoidWhen": [
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+      ],
+      "recommendation": "supported",
+      "alternatives": [],
+      "delivery": {
+        "registrationImport": "@awesome.me/webawesome/dist/components/time-input/time-input.js",
+        "themeCssImport": "@kerfjs/ui/webawesome.css",
+        "sideEffects": [
+          "custom-element-registration"
+        ]
+      },
+      "links": {
+        "catalogRoute": "?component=wa-time-input",
+        "documentation": "docs/webawesome-theme.md#coverage",
+        "recipe": "docs/webawesome-theme.md#coverage"
+      }
+    },
+    {
+      "id": "wa-accordion",
+      "name": "Accordion",
+      "category": "Layout",
+      "kind": "component",
+      "source": "webawesome",
+      "description": "Coordinates one or more collapsible content sections.",
+      "uses": [
+        "wa-accordion-item"
+      ],
+      "purpose": "Coordinates one or more collapsible content sections.",
+      "customElement": "wa-accordion",
+      "useWhen": [
+        "Coordinates one or more collapsible content sections."
+      ],
+      "avoidWhen": [
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+      ],
+      "recommendation": "supported",
+      "alternatives": [],
+      "delivery": {
+        "registrationImport": "@awesome.me/webawesome/dist/components/accordion/accordion.js",
+        "themeCssImport": "@kerfjs/ui/webawesome.css",
+        "sideEffects": [
+          "custom-element-registration"
+        ]
+      },
+      "links": {
+        "catalogRoute": "?component=wa-accordion",
+        "documentation": "docs/webawesome-theme.md#coverage",
+        "recipe": "docs/webawesome-theme.md#coverage"
+      }
+    },
+    {
+      "id": "wa-accordion-item",
+      "name": "Accordion Item",
+      "category": "Layout",
+      "kind": "component",
+      "source": "webawesome",
+      "description": "Experimental labeled disclosure section used by an accordion.",
+      "uses": [
+        "wa-icon"
+      ],
+      "purpose": "Experimental labeled disclosure section used by an accordion.",
+      "customElement": "wa-accordion-item",
+      "useWhen": [
+        "Experimental labeled disclosure section used by an accordion."
+      ],
+      "avoidWhen": [
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+      ],
+      "recommendation": "supported",
+      "alternatives": [],
+      "delivery": {
+        "registrationImport": "@awesome.me/webawesome/dist/components/accordion-item/accordion-item.js",
+        "themeCssImport": "@kerfjs/ui/webawesome.css",
+        "sideEffects": [
+          "custom-element-registration"
+        ]
+      },
+      "links": {
+        "catalogRoute": "?component=wa-accordion-item",
+        "documentation": "docs/webawesome-theme.md#coverage",
+        "recipe": "docs/webawesome-theme.md#coverage"
+      }
+    },
+    {
+      "id": "wa-card",
+      "name": "Card",
+      "category": "Layout",
+      "kind": "component",
+      "source": "webawesome",
+      "description": "Groups related content and optional header, media, and footer slots.",
+      "uses": [],
+      "purpose": "Groups related content and optional header, media, and footer slots.",
+      "customElement": "wa-card",
+      "useWhen": [
+        "Groups related content and optional header, media, and footer slots."
+      ],
+      "avoidWhen": [
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+      ],
+      "recommendation": "supported",
+      "alternatives": [],
+      "delivery": {
+        "registrationImport": "@awesome.me/webawesome/dist/components/card/card.js",
+        "themeCssImport": "@kerfjs/ui/webawesome.css",
+        "sideEffects": [
+          "custom-element-registration"
+        ]
+      },
+      "links": {
+        "catalogRoute": "?component=wa-card",
+        "documentation": "docs/webawesome-theme.md#coverage",
+        "recipe": "docs/webawesome-theme.md#coverage"
+      }
+    },
+    {
+      "id": "wa-details",
+      "name": "Details",
+      "category": "Layout",
+      "kind": "component",
+      "source": "webawesome",
+      "description": "Single disclosure panel for secondary information.",
+      "uses": [
+        "wa-icon"
+      ],
+      "purpose": "Single disclosure panel for secondary information.",
+      "customElement": "wa-details",
+      "useWhen": [
+        "Single disclosure panel for secondary information."
+      ],
+      "avoidWhen": [
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+      ],
+      "recommendation": "supported",
+      "alternatives": [],
+      "delivery": {
+        "registrationImport": "@awesome.me/webawesome/dist/components/details/details.js",
+        "themeCssImport": "@kerfjs/ui/webawesome.css",
+        "sideEffects": [
+          "custom-element-registration"
+        ]
+      },
+      "links": {
+        "catalogRoute": "?component=wa-details",
+        "documentation": "docs/webawesome-theme.md#coverage",
+        "recipe": "docs/webawesome-theme.md#coverage"
+      }
+    },
+    {
+      "id": "wa-dialog",
+      "name": "Dialog",
+      "category": "Layout",
+      "kind": "component",
+      "source": "webawesome",
+      "description": "Modal surface for focused tasks and confirmations.",
+      "uses": [
+        "wa-button"
+      ],
+      "purpose": "Modal surface for focused tasks and confirmations.",
+      "customElement": "wa-dialog",
+      "useWhen": [
+        "Modal surface for focused tasks and confirmations."
+      ],
+      "avoidWhen": [
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+      ],
+      "recommendation": "supported",
+      "alternatives": [],
+      "delivery": {
+        "registrationImport": "@awesome.me/webawesome/dist/components/dialog/dialog.js",
+        "themeCssImport": "@kerfjs/ui/webawesome.css",
+        "sideEffects": [
+          "custom-element-registration"
+        ]
+      },
+      "links": {
+        "catalogRoute": "?component=wa-dialog",
+        "documentation": "docs/webawesome-theme.md#coverage",
+        "recipe": "docs/webawesome-theme.md#coverage"
+      }
+    },
+    {
+      "id": "wa-divider",
+      "name": "Divider",
+      "category": "Layout",
+      "kind": "component",
+      "source": "webawesome",
+      "description": "Visual separator for related groups of content.",
+      "uses": [],
+      "purpose": "Visual separator for related groups of content.",
+      "customElement": "wa-divider",
+      "useWhen": [
+        "Visual separator for related groups of content."
+      ],
+      "avoidWhen": [
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+      ],
+      "recommendation": "supported",
+      "alternatives": [],
+      "delivery": {
+        "registrationImport": "@awesome.me/webawesome/dist/components/divider/divider.js",
+        "themeCssImport": "@kerfjs/ui/webawesome.css",
+        "sideEffects": [
+          "custom-element-registration"
+        ]
+      },
+      "links": {
+        "catalogRoute": "?component=wa-divider",
+        "documentation": "docs/webawesome-theme.md#coverage",
+        "recipe": "docs/webawesome-theme.md#coverage"
+      }
+    },
+    {
+      "id": "wa-drawer",
+      "name": "Drawer",
+      "category": "Layout",
+      "kind": "component",
+      "source": "webawesome",
+      "description": "Edge-anchored modal surface for navigation or secondary tasks.",
+      "uses": [
+        "wa-button"
+      ],
+      "purpose": "Edge-anchored modal surface for navigation or secondary tasks.",
+      "customElement": "wa-drawer",
+      "useWhen": [
+        "Edge-anchored modal surface for navigation or secondary tasks."
+      ],
+      "avoidWhen": [
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+      ],
+      "recommendation": "supported",
+      "alternatives": [],
+      "delivery": {
+        "registrationImport": "@awesome.me/webawesome/dist/components/drawer/drawer.js",
+        "themeCssImport": "@kerfjs/ui/webawesome.css",
+        "sideEffects": [
+          "custom-element-registration"
+        ]
+      },
+      "links": {
+        "catalogRoute": "?component=wa-drawer",
+        "documentation": "docs/webawesome-theme.md#coverage",
+        "recipe": "docs/webawesome-theme.md#coverage"
+      }
+    },
+    {
+      "id": "wa-page",
+      "name": "Page",
+      "category": "Layout",
+      "kind": "component",
+      "source": "webawesome",
+      "description": "Responsive application shell with navigation, banner, and main slots.",
+      "uses": [],
+      "purpose": "Responsive application shell with navigation, banner, and main slots.",
+      "customElement": "wa-page",
+      "useWhen": [
+        "Responsive application shell with navigation, banner, and main slots."
+      ],
+      "avoidWhen": [
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+      ],
+      "recommendation": "supported",
+      "alternatives": [],
+      "delivery": {
+        "registrationImport": "@awesome.me/webawesome/dist/components/page/page.js",
+        "themeCssImport": "@kerfjs/ui/webawesome.css",
+        "sideEffects": [
+          "custom-element-registration"
+        ]
+      },
+      "links": {
+        "catalogRoute": "?component=wa-page",
+        "documentation": "docs/webawesome-theme.md#coverage",
+        "recipe": "docs/webawesome-theme.md#coverage"
+      }
+    },
+    {
+      "id": "wa-scroller",
+      "name": "Scroller",
+      "category": "Layout",
+      "kind": "component",
+      "source": "webawesome",
+      "description": "Overflow container with accessible scrolling affordances.",
+      "uses": [],
+      "purpose": "Overflow container with accessible scrolling affordances.",
+      "customElement": "wa-scroller",
+      "useWhen": [
+        "Overflow container with accessible scrolling affordances."
+      ],
+      "avoidWhen": [
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+      ],
+      "recommendation": "supported",
+      "alternatives": [],
+      "delivery": {
+        "registrationImport": "@awesome.me/webawesome/dist/components/scroller/scroller.js",
+        "themeCssImport": "@kerfjs/ui/webawesome.css",
+        "sideEffects": [
+          "custom-element-registration"
+        ]
+      },
+      "links": {
+        "catalogRoute": "?component=wa-scroller",
+        "documentation": "docs/webawesome-theme.md#coverage",
+        "recipe": "docs/webawesome-theme.md#coverage"
+      }
+    },
+    {
+      "id": "wa-split-panel",
+      "name": "Split Panel",
+      "category": "Layout",
+      "kind": "component",
+      "source": "webawesome",
+      "description": "Alternative split API; prefer Kerf ResizableRegion for application panes.",
+      "uses": [],
+      "purpose": "Alternative split API; prefer Kerf ResizableRegion for application panes.",
+      "customElement": "wa-split-panel",
+      "useWhen": [
+        "Alternative split API; prefer Kerf ResizableRegion for application panes."
+      ],
+      "avoidWhen": [
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+      ],
+      "recommendation": "conditional",
+      "alternatives": [
+        {
+          "id": "resize",
+          "relationship": "prefer-kerf"
+        }
+      ],
+      "delivery": {
+        "registrationImport": "@awesome.me/webawesome/dist/components/split-panel/split-panel.js",
+        "themeCssImport": "@kerfjs/ui/webawesome.css",
+        "sideEffects": [
+          "custom-element-registration"
+        ]
+      },
+      "links": {
+        "catalogRoute": "?component=wa-split-panel",
+        "documentation": "docs/webawesome-theme.md#coverage",
+        "recipe": "docs/component-selection.md#web-awesome-overlap-policy"
+      }
+    },
+    {
+      "id": "wa-breadcrumb",
+      "name": "Breadcrumb",
+      "category": "Navigation",
+      "kind": "component",
+      "source": "webawesome",
+      "description": "Ordered navigation trail for the current location.",
+      "uses": [
+        "wa-icon",
+        "wa-breadcrumb-item"
+      ],
+      "purpose": "Ordered navigation trail for the current location.",
+      "customElement": "wa-breadcrumb",
+      "useWhen": [
+        "Ordered navigation trail for the current location."
+      ],
+      "avoidWhen": [
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+      ],
+      "recommendation": "supported",
+      "alternatives": [],
+      "delivery": {
+        "registrationImport": "@awesome.me/webawesome/dist/components/breadcrumb/breadcrumb.js",
+        "themeCssImport": "@kerfjs/ui/webawesome.css",
+        "sideEffects": [
+          "custom-element-registration"
+        ]
+      },
+      "links": {
+        "catalogRoute": "?component=wa-breadcrumb",
+        "documentation": "docs/webawesome-theme.md#coverage",
+        "recipe": "docs/webawesome-theme.md#coverage"
+      }
+    },
+    {
+      "id": "wa-breadcrumb-item",
+      "name": "Breadcrumb Item",
+      "category": "Navigation",
+      "kind": "component",
+      "source": "webawesome",
+      "description": "One link or current-location item in a breadcrumb.",
+      "uses": [],
+      "purpose": "One link or current-location item in a breadcrumb.",
+      "customElement": "wa-breadcrumb-item",
+      "useWhen": [
+        "One link or current-location item in a breadcrumb."
+      ],
+      "avoidWhen": [
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+      ],
+      "recommendation": "supported",
+      "alternatives": [],
+      "delivery": {
+        "registrationImport": "@awesome.me/webawesome/dist/components/breadcrumb-item/breadcrumb-item.js",
+        "themeCssImport": "@kerfjs/ui/webawesome.css",
+        "sideEffects": [
+          "custom-element-registration"
+        ]
+      },
+      "links": {
+        "catalogRoute": "?component=wa-breadcrumb-item",
+        "documentation": "docs/webawesome-theme.md#coverage",
+        "recipe": "docs/webawesome-theme.md#coverage"
+      }
+    },
+    {
+      "id": "wa-pagination",
+      "name": "Pagination",
+      "category": "Navigation",
+      "kind": "component",
+      "source": "webawesome",
+      "description": "Experimental page navigation for a bounded result set.",
+      "uses": [
+        "wa-icon"
+      ],
+      "purpose": "Experimental page navigation for a bounded result set.",
+      "customElement": "wa-pagination",
+      "useWhen": [
+        "Experimental page navigation for a bounded result set."
+      ],
+      "avoidWhen": [
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+      ],
+      "recommendation": "supported",
+      "alternatives": [],
+      "delivery": {
+        "registrationImport": "@awesome.me/webawesome/dist/components/pagination/pagination.js",
+        "themeCssImport": "@kerfjs/ui/webawesome.css",
+        "sideEffects": [
+          "custom-element-registration"
+        ]
+      },
+      "links": {
+        "catalogRoute": "?component=wa-pagination",
+        "documentation": "docs/webawesome-theme.md#coverage",
+        "recipe": "docs/webawesome-theme.md#coverage"
+      }
+    },
+    {
+      "id": "wa-tab",
+      "name": "Tab",
+      "category": "Navigation",
+      "kind": "component",
+      "source": "webawesome",
+      "description": "Ecosystem tab label; prefer Kerf TabBar or SegmentedControl.",
+      "uses": [],
+      "purpose": "Ecosystem tab label; prefer Kerf TabBar or SegmentedControl.",
+      "customElement": "wa-tab",
+      "useWhen": [
+        "Ecosystem tab label; prefer Kerf TabBar or SegmentedControl."
+      ],
+      "avoidWhen": [
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+      ],
+      "recommendation": "conditional",
+      "alternatives": [
+        {
+          "id": "tab-bar",
+          "relationship": "prefer-kerf"
+        },
+        {
+          "id": "segmented-control",
+          "relationship": "prefer-kerf"
+        }
+      ],
+      "delivery": {
+        "registrationImport": "@awesome.me/webawesome/dist/components/tab/tab.js",
+        "themeCssImport": "@kerfjs/ui/webawesome.css",
+        "sideEffects": [
+          "custom-element-registration"
+        ]
+      },
+      "links": {
+        "catalogRoute": "?component=wa-tab",
+        "documentation": "docs/webawesome-theme.md#coverage",
+        "recipe": "docs/component-selection.md#web-awesome-overlap-policy"
+      }
+    },
+    {
+      "id": "wa-tab-group",
+      "name": "Tab Group",
+      "category": "Navigation",
+      "kind": "component",
+      "source": "webawesome",
+      "description": "Ecosystem tabs; prefer Kerf TabBar or SegmentedControl.",
+      "uses": [
+        "wa-button",
+        "wa-tab",
+        "wa-tab-panel"
+      ],
+      "purpose": "Ecosystem tabs; prefer Kerf TabBar or SegmentedControl.",
+      "customElement": "wa-tab-group",
+      "useWhen": [
+        "Ecosystem tabs; prefer Kerf TabBar or SegmentedControl."
+      ],
+      "avoidWhen": [
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+      ],
+      "recommendation": "conditional",
+      "alternatives": [
+        {
+          "id": "tab-bar",
+          "relationship": "prefer-kerf"
+        },
+        {
+          "id": "segmented-control",
+          "relationship": "prefer-kerf"
+        }
+      ],
+      "delivery": {
+        "registrationImport": "@awesome.me/webawesome/dist/components/tab-group/tab-group.js",
+        "themeCssImport": "@kerfjs/ui/webawesome.css",
+        "sideEffects": [
+          "custom-element-registration"
+        ]
+      },
+      "links": {
+        "catalogRoute": "?component=wa-tab-group",
+        "documentation": "docs/webawesome-theme.md#coverage",
+        "recipe": "docs/component-selection.md#web-awesome-overlap-policy"
+      }
+    },
+    {
+      "id": "wa-tab-panel",
+      "name": "Tab Panel",
+      "category": "Navigation",
+      "kind": "component",
+      "source": "webawesome",
+      "description": "Ecosystem tab panel; prefer app-owned panels with Kerf navigation.",
+      "uses": [],
+      "purpose": "Ecosystem tab panel; prefer app-owned panels with Kerf navigation.",
+      "customElement": "wa-tab-panel",
+      "useWhen": [
+        "Ecosystem tab panel; prefer app-owned panels with Kerf navigation."
+      ],
+      "avoidWhen": [
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+      ],
+      "recommendation": "conditional",
+      "alternatives": [
+        {
+          "id": "tab-bar",
+          "relationship": "prefer-kerf"
+        }
+      ],
+      "delivery": {
+        "registrationImport": "@awesome.me/webawesome/dist/components/tab-panel/tab-panel.js",
+        "themeCssImport": "@kerfjs/ui/webawesome.css",
+        "sideEffects": [
+          "custom-element-registration"
+        ]
+      },
+      "links": {
+        "catalogRoute": "?component=wa-tab-panel",
+        "documentation": "docs/webawesome-theme.md#coverage",
+        "recipe": "docs/component-selection.md#web-awesome-overlap-policy"
+      }
+    },
+    {
+      "id": "wa-tree",
+      "name": "Tree",
+      "category": "Navigation",
+      "kind": "component",
+      "source": "webawesome",
+      "description": "Specialized hierarchy; use only when the product requires tree behavior.",
+      "uses": [
+        "wa-tree-item"
+      ],
+      "purpose": "Specialized hierarchy; use only when the product requires tree behavior.",
+      "customElement": "wa-tree",
+      "useWhen": [
+        "Specialized hierarchy; use only when the product requires tree behavior."
+      ],
+      "avoidWhen": [
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+      ],
+      "recommendation": "exceptional",
+      "alternatives": [],
+      "delivery": {
+        "registrationImport": "@awesome.me/webawesome/dist/components/tree/tree.js",
+        "themeCssImport": "@kerfjs/ui/webawesome.css",
+        "sideEffects": [
+          "custom-element-registration"
+        ]
+      },
+      "links": {
+        "catalogRoute": "?component=wa-tree",
+        "documentation": "docs/webawesome-theme.md#coverage",
+        "recipe": "docs/component-selection.md#web-awesome-overlap-policy"
+      }
+    },
+    {
+      "id": "wa-tree-item",
+      "name": "Tree Item",
+      "category": "Navigation",
+      "kind": "component",
+      "source": "webawesome",
+      "description": "Specialized tree row; use only as part of a required tree.",
+      "uses": [
+        "wa-checkbox",
+        "wa-icon",
+        "wa-spinner"
+      ],
+      "purpose": "Specialized tree row; use only as part of a required tree.",
+      "customElement": "wa-tree-item",
+      "useWhen": [
+        "Specialized tree row; use only as part of a required tree."
+      ],
+      "avoidWhen": [
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+      ],
+      "recommendation": "exceptional",
+      "alternatives": [],
+      "delivery": {
+        "registrationImport": "@awesome.me/webawesome/dist/components/tree-item/tree-item.js",
+        "themeCssImport": "@kerfjs/ui/webawesome.css",
+        "sideEffects": [
+          "custom-element-registration"
+        ]
+      },
+      "links": {
+        "catalogRoute": "?component=wa-tree-item",
+        "documentation": "docs/webawesome-theme.md#coverage",
+        "recipe": "docs/component-selection.md#web-awesome-overlap-policy"
+      }
+    },
+    {
+      "id": "wa-badge",
+      "name": "Badge",
+      "category": "Feedback",
+      "kind": "component",
+      "source": "webawesome",
+      "description": "Compact status or count label with semantic variants.",
+      "uses": [],
+      "purpose": "Compact status or count label with semantic variants.",
+      "customElement": "wa-badge",
+      "useWhen": [
+        "Compact status or count label with semantic variants."
+      ],
+      "avoidWhen": [
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+      ],
+      "recommendation": "supported",
+      "alternatives": [],
+      "delivery": {
+        "registrationImport": "@awesome.me/webawesome/dist/components/badge/badge.js",
+        "themeCssImport": "@kerfjs/ui/webawesome.css",
+        "sideEffects": [
+          "custom-element-registration"
+        ]
+      },
+      "links": {
+        "catalogRoute": "?component=wa-badge",
+        "documentation": "docs/webawesome-theme.md#coverage",
+        "recipe": "docs/webawesome-theme.md#coverage"
+      }
+    },
+    {
+      "id": "wa-callout",
+      "name": "Callout",
+      "category": "Feedback",
+      "kind": "component",
+      "source": "webawesome",
+      "description": "Prominent contextual message with semantic variants.",
+      "uses": [],
+      "purpose": "Prominent contextual message with semantic variants.",
+      "customElement": "wa-callout",
+      "useWhen": [
+        "Prominent contextual message with semantic variants."
+      ],
+      "avoidWhen": [
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+      ],
+      "recommendation": "supported",
+      "alternatives": [
+        {
+          "id": "state-banner",
+          "relationship": "prefer-kerf"
+        }
+      ],
+      "delivery": {
+        "registrationImport": "@awesome.me/webawesome/dist/components/callout/callout.js",
+        "themeCssImport": "@kerfjs/ui/webawesome.css",
+        "sideEffects": [
+          "custom-element-registration"
+        ]
+      },
+      "links": {
+        "catalogRoute": "?component=wa-callout",
+        "documentation": "docs/webawesome-theme.md#coverage",
+        "recipe": "docs/component-selection.md#web-awesome-overlap-policy"
+      }
+    },
+    {
+      "id": "wa-progress-bar",
+      "name": "Progress Bar",
+      "category": "Feedback",
+      "kind": "component",
+      "source": "webawesome",
+      "description": "Linear indicator for determinate or indeterminate progress.",
+      "uses": [],
+      "purpose": "Linear indicator for determinate or indeterminate progress.",
+      "customElement": "wa-progress-bar",
+      "useWhen": [
+        "Linear indicator for determinate or indeterminate progress."
+      ],
+      "avoidWhen": [
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+      ],
+      "recommendation": "supported",
+      "alternatives": [],
+      "delivery": {
+        "registrationImport": "@awesome.me/webawesome/dist/components/progress-bar/progress-bar.js",
+        "themeCssImport": "@kerfjs/ui/webawesome.css",
+        "sideEffects": [
+          "custom-element-registration"
+        ]
+      },
+      "links": {
+        "catalogRoute": "?component=wa-progress-bar",
+        "documentation": "docs/webawesome-theme.md#coverage",
+        "recipe": "docs/webawesome-theme.md#coverage"
+      }
+    },
+    {
+      "id": "wa-progress-ring",
+      "name": "Progress Ring",
+      "category": "Feedback",
+      "kind": "component",
+      "source": "webawesome",
+      "description": "Circular indicator for determinate or indeterminate progress.",
+      "uses": [],
+      "purpose": "Circular indicator for determinate or indeterminate progress.",
+      "customElement": "wa-progress-ring",
+      "useWhen": [
+        "Circular indicator for determinate or indeterminate progress."
+      ],
+      "avoidWhen": [
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+      ],
+      "recommendation": "supported",
+      "alternatives": [],
+      "delivery": {
+        "registrationImport": "@awesome.me/webawesome/dist/components/progress-ring/progress-ring.js",
+        "themeCssImport": "@kerfjs/ui/webawesome.css",
+        "sideEffects": [
+          "custom-element-registration"
+        ]
+      },
+      "links": {
+        "catalogRoute": "?component=wa-progress-ring",
+        "documentation": "docs/webawesome-theme.md#coverage",
+        "recipe": "docs/webawesome-theme.md#coverage"
+      }
+    },
+    {
+      "id": "wa-skeleton",
+      "name": "Skeleton",
+      "category": "Feedback",
+      "kind": "component",
+      "source": "webawesome",
+      "description": "Placeholder shape for content that is still loading.",
+      "uses": [],
+      "purpose": "Placeholder shape for content that is still loading.",
+      "customElement": "wa-skeleton",
+      "useWhen": [
+        "Placeholder shape for content that is still loading."
+      ],
+      "avoidWhen": [
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+      ],
+      "recommendation": "supported",
+      "alternatives": [],
+      "delivery": {
+        "registrationImport": "@awesome.me/webawesome/dist/components/skeleton/skeleton.js",
+        "themeCssImport": "@kerfjs/ui/webawesome.css",
+        "sideEffects": [
+          "custom-element-registration"
+        ]
+      },
+      "links": {
+        "catalogRoute": "?component=wa-skeleton",
+        "documentation": "docs/webawesome-theme.md#coverage",
+        "recipe": "docs/webawesome-theme.md#coverage"
+      }
+    },
+    {
+      "id": "wa-spinner",
+      "name": "Spinner",
+      "category": "Feedback",
+      "kind": "component",
+      "source": "webawesome",
+      "description": "Compact indeterminate activity indicator.",
+      "uses": [],
+      "purpose": "Compact indeterminate activity indicator.",
+      "customElement": "wa-spinner",
+      "useWhen": [
+        "Compact indeterminate activity indicator."
+      ],
+      "avoidWhen": [
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+      ],
+      "recommendation": "supported",
+      "alternatives": [
+        {
+          "id": "loading-spinner",
+          "relationship": "prefer-kerf"
+        }
+      ],
+      "delivery": {
+        "registrationImport": "@awesome.me/webawesome/dist/components/spinner/spinner.js",
+        "themeCssImport": "@kerfjs/ui/webawesome.css",
+        "sideEffects": [
+          "custom-element-registration"
+        ]
+      },
+      "links": {
+        "catalogRoute": "?component=wa-spinner",
+        "documentation": "docs/webawesome-theme.md#coverage",
+        "recipe": "docs/component-selection.md#web-awesome-overlap-policy"
+      }
+    },
+    {
+      "id": "wa-tag",
+      "name": "Tag",
+      "category": "Feedback",
+      "kind": "component",
+      "source": "webawesome",
+      "description": "Compact categorization label with optional removal action.",
+      "uses": [
+        "wa-button"
+      ],
+      "purpose": "Compact categorization label with optional removal action.",
+      "customElement": "wa-tag",
+      "useWhen": [
+        "Compact categorization label with optional removal action."
+      ],
+      "avoidWhen": [
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+      ],
+      "recommendation": "supported",
+      "alternatives": [
+        {
+          "id": "token-search-field",
+          "relationship": "prefer-kerf"
+        }
+      ],
+      "delivery": {
+        "registrationImport": "@awesome.me/webawesome/dist/components/tag/tag.js",
+        "themeCssImport": "@kerfjs/ui/webawesome.css",
+        "sideEffects": [
+          "custom-element-registration"
+        ]
+      },
+      "links": {
+        "catalogRoute": "?component=wa-tag",
+        "documentation": "docs/webawesome-theme.md#coverage",
+        "recipe": "docs/component-selection.md#web-awesome-overlap-policy"
+      }
+    },
+    {
+      "id": "wa-toast",
+      "name": "Toast",
+      "category": "Feedback",
+      "kind": "component",
+      "source": "webawesome",
+      "description": "Placement-aware stack of transient notifications.",
+      "uses": [
+        "wa-toast-item"
+      ],
+      "purpose": "Placement-aware stack of transient notifications.",
+      "customElement": "wa-toast",
+      "useWhen": [
+        "Placement-aware stack of transient notifications."
+      ],
+      "avoidWhen": [
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+      ],
+      "recommendation": "supported",
+      "alternatives": [
+        {
+          "id": "state-banner",
+          "relationship": "prefer-kerf"
+        },
+        {
+          "id": "empty-state",
+          "relationship": "prefer-kerf"
+        }
+      ],
+      "delivery": {
+        "registrationImport": "@awesome.me/webawesome/dist/components/toast/toast.js",
+        "themeCssImport": "@kerfjs/ui/webawesome.css",
+        "sideEffects": [
+          "custom-element-registration"
+        ]
+      },
+      "links": {
+        "catalogRoute": "?component=wa-toast",
+        "documentation": "docs/webawesome-theme.md#coverage",
+        "recipe": "docs/component-selection.md#web-awesome-overlap-policy"
+      }
+    },
+    {
+      "id": "wa-toast-item",
+      "name": "Toast Item",
+      "category": "Feedback",
+      "kind": "component",
+      "source": "webawesome",
+      "description": "One dismissible notification inside a toast stack.",
+      "uses": [
+        "wa-icon",
+        "wa-progress-ring"
+      ],
+      "purpose": "One dismissible notification inside a toast stack.",
+      "customElement": "wa-toast-item",
+      "useWhen": [
+        "One dismissible notification inside a toast stack."
+      ],
+      "avoidWhen": [
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+      ],
+      "recommendation": "supported",
+      "alternatives": [
+        {
+          "id": "state-banner",
+          "relationship": "prefer-kerf"
+        },
+        {
+          "id": "empty-state",
+          "relationship": "prefer-kerf"
+        }
+      ],
+      "delivery": {
+        "registrationImport": "@awesome.me/webawesome/dist/components/toast-item/toast-item.js",
+        "themeCssImport": "@kerfjs/ui/webawesome.css",
+        "sideEffects": [
+          "custom-element-registration"
+        ]
+      },
+      "links": {
+        "catalogRoute": "?component=wa-toast-item",
+        "documentation": "docs/webawesome-theme.md#coverage",
+        "recipe": "docs/component-selection.md#web-awesome-overlap-policy"
+      }
+    },
+    {
+      "id": "wa-tooltip",
+      "name": "Tooltip",
+      "category": "Feedback",
+      "kind": "component",
+      "source": "webawesome",
+      "description": "Brief contextual label anchored to a control.",
+      "uses": [
+        "wa-popup"
+      ],
+      "purpose": "Brief contextual label anchored to a control.",
+      "customElement": "wa-tooltip",
+      "useWhen": [
+        "Brief contextual label anchored to a control."
+      ],
+      "avoidWhen": [
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+      ],
+      "recommendation": "supported",
+      "alternatives": [],
+      "delivery": {
+        "registrationImport": "@awesome.me/webawesome/dist/components/tooltip/tooltip.js",
+        "themeCssImport": "@kerfjs/ui/webawesome.css",
+        "sideEffects": [
+          "custom-element-registration"
+        ]
+      },
+      "links": {
+        "catalogRoute": "?component=wa-tooltip",
+        "documentation": "docs/webawesome-theme.md#coverage",
+        "recipe": "docs/webawesome-theme.md#coverage"
+      }
+    },
+    {
+      "id": "wa-animated-image",
+      "name": "Animated Image",
+      "category": "Media",
+      "kind": "component",
+      "source": "webawesome",
+      "description": "Specialized animated media; use only for a concrete product requirement.",
+      "uses": [
+        "wa-icon"
+      ],
+      "purpose": "Specialized animated media; use only for a concrete product requirement.",
+      "customElement": "wa-animated-image",
+      "useWhen": [
+        "Specialized animated media; use only for a concrete product requirement."
+      ],
+      "avoidWhen": [
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+      ],
+      "recommendation": "exceptional",
+      "alternatives": [],
+      "delivery": {
+        "registrationImport": "@awesome.me/webawesome/dist/components/animated-image/animated-image.js",
+        "themeCssImport": "@kerfjs/ui/webawesome.css",
+        "sideEffects": [
+          "custom-element-registration"
+        ]
+      },
+      "links": {
+        "catalogRoute": "?component=wa-animated-image",
+        "documentation": "docs/webawesome-theme.md#coverage",
+        "recipe": "docs/component-selection.md#web-awesome-overlap-policy"
+      }
+    },
+    {
+      "id": "wa-avatar",
+      "name": "Avatar",
+      "category": "Media",
+      "kind": "component",
+      "source": "webawesome",
+      "description": "Person or entity image with initials fallback.",
+      "uses": [
+        "wa-icon"
+      ],
+      "purpose": "Person or entity image with initials fallback.",
+      "customElement": "wa-avatar",
+      "useWhen": [
+        "Person or entity image with initials fallback."
+      ],
+      "avoidWhen": [
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+      ],
+      "recommendation": "supported",
+      "alternatives": [],
+      "delivery": {
+        "registrationImport": "@awesome.me/webawesome/dist/components/avatar/avatar.js",
+        "themeCssImport": "@kerfjs/ui/webawesome.css",
+        "sideEffects": [
+          "custom-element-registration"
+        ]
+      },
+      "links": {
+        "catalogRoute": "?component=wa-avatar",
+        "documentation": "docs/webawesome-theme.md#coverage",
+        "recipe": "docs/webawesome-theme.md#coverage"
+      }
+    },
+    {
+      "id": "wa-carousel",
+      "name": "Carousel",
+      "category": "Media",
+      "kind": "component",
+      "source": "webawesome",
+      "description": "Navigable horizontal or vertical collection of slides.",
+      "uses": [
+        "wa-icon",
+        "wa-carousel-item"
+      ],
+      "purpose": "Navigable horizontal or vertical collection of slides.",
+      "customElement": "wa-carousel",
+      "useWhen": [
+        "Navigable horizontal or vertical collection of slides."
+      ],
+      "avoidWhen": [
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+      ],
+      "recommendation": "supported",
+      "alternatives": [],
+      "delivery": {
+        "registrationImport": "@awesome.me/webawesome/dist/components/carousel/carousel.js",
+        "themeCssImport": "@kerfjs/ui/webawesome.css",
+        "sideEffects": [
+          "custom-element-registration"
+        ]
+      },
+      "links": {
+        "catalogRoute": "?component=wa-carousel",
+        "documentation": "docs/webawesome-theme.md#coverage",
+        "recipe": "docs/webawesome-theme.md#coverage"
+      }
+    },
+    {
+      "id": "wa-carousel-item",
+      "name": "Carousel Item",
+      "category": "Media",
+      "kind": "component",
+      "source": "webawesome",
+      "description": "One content slide inside a carousel.",
+      "uses": [],
+      "purpose": "One content slide inside a carousel.",
+      "customElement": "wa-carousel-item",
+      "useWhen": [
+        "One content slide inside a carousel."
+      ],
+      "avoidWhen": [
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+      ],
+      "recommendation": "supported",
+      "alternatives": [],
+      "delivery": {
+        "registrationImport": "@awesome.me/webawesome/dist/components/carousel-item/carousel-item.js",
+        "themeCssImport": "@kerfjs/ui/webawesome.css",
+        "sideEffects": [
+          "custom-element-registration"
+        ]
+      },
+      "links": {
+        "catalogRoute": "?component=wa-carousel-item",
+        "documentation": "docs/webawesome-theme.md#coverage",
+        "recipe": "docs/webawesome-theme.md#coverage"
+      }
+    },
+    {
+      "id": "wa-comparison",
+      "name": "Comparison",
+      "category": "Media",
+      "kind": "component",
+      "source": "webawesome",
+      "description": "Specialized before-and-after media; use only when specifically required.",
+      "uses": [
+        "wa-icon"
+      ],
+      "purpose": "Specialized before-and-after media; use only when specifically required.",
+      "customElement": "wa-comparison",
+      "useWhen": [
+        "Specialized before-and-after media; use only when specifically required."
+      ],
+      "avoidWhen": [
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+      ],
+      "recommendation": "exceptional",
+      "alternatives": [],
+      "delivery": {
+        "registrationImport": "@awesome.me/webawesome/dist/components/comparison/comparison.js",
+        "themeCssImport": "@kerfjs/ui/webawesome.css",
+        "sideEffects": [
+          "custom-element-registration"
+        ]
+      },
+      "links": {
+        "catalogRoute": "?component=wa-comparison",
+        "documentation": "docs/webawesome-theme.md#coverage",
+        "recipe": "docs/component-selection.md#web-awesome-overlap-policy"
+      }
+    },
+    {
+      "id": "wa-icon",
+      "name": "Icon",
+      "category": "Media",
+      "kind": "component",
+      "source": "webawesome",
+      "description": "Ecosystem icon renderer; use Kerf LucideIcon in application UI.",
+      "uses": [],
+      "purpose": "Ecosystem icon renderer; use Kerf LucideIcon in application UI.",
+      "customElement": "wa-icon",
+      "useWhen": [
+        "Ecosystem icon renderer; use Kerf LucideIcon in application UI."
+      ],
+      "avoidWhen": [
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+      ],
+      "recommendation": "avoid",
+      "alternatives": [
+        {
+          "id": "lucide-icon",
+          "relationship": "prefer-kerf"
+        }
+      ],
+      "delivery": {
+        "registrationImport": "@awesome.me/webawesome/dist/components/icon/icon.js",
+        "themeCssImport": "@kerfjs/ui/webawesome.css",
+        "sideEffects": [
+          "custom-element-registration"
+        ]
+      },
+      "links": {
+        "catalogRoute": "?component=wa-icon",
+        "documentation": "docs/webawesome-theme.md#coverage",
+        "recipe": "docs/component-selection.md#web-awesome-overlap-policy"
+      }
+    },
+    {
+      "id": "wa-markdown",
+      "name": "Markdown",
+      "category": "Media",
+      "kind": "component",
+      "source": "webawesome",
+      "description": "Experimental renderer for trusted Markdown content.",
+      "uses": [],
+      "purpose": "Experimental renderer for trusted Markdown content.",
+      "customElement": "wa-markdown",
+      "useWhen": [
+        "Experimental renderer for trusted Markdown content."
+      ],
+      "avoidWhen": [
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+      ],
+      "recommendation": "supported",
+      "alternatives": [],
+      "delivery": {
+        "registrationImport": "@awesome.me/webawesome/dist/components/markdown/markdown.js",
+        "themeCssImport": "@kerfjs/ui/webawesome.css",
+        "sideEffects": [
+          "custom-element-registration"
+        ]
+      },
+      "links": {
+        "catalogRoute": "?component=wa-markdown",
+        "documentation": "docs/webawesome-theme.md#coverage",
+        "recipe": "docs/webawesome-theme.md#coverage"
+      }
+    },
+    {
+      "id": "wa-qr-code",
+      "name": "QR Code",
+      "category": "Media",
+      "kind": "component",
+      "source": "webawesome",
+      "description": "Scannable QR representation of a supplied value.",
+      "uses": [],
+      "purpose": "Scannable QR representation of a supplied value.",
+      "customElement": "wa-qr-code",
+      "useWhen": [
+        "Scannable QR representation of a supplied value."
+      ],
+      "avoidWhen": [
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+      ],
+      "recommendation": "supported",
+      "alternatives": [],
+      "delivery": {
+        "registrationImport": "@awesome.me/webawesome/dist/components/qr-code/qr-code.js",
+        "themeCssImport": "@kerfjs/ui/webawesome.css",
+        "sideEffects": [
+          "custom-element-registration"
+        ]
+      },
+      "links": {
+        "catalogRoute": "?component=wa-qr-code",
+        "documentation": "docs/webawesome-theme.md#coverage",
+        "recipe": "docs/webawesome-theme.md#coverage"
+      }
+    },
+    {
+      "id": "wa-zoomable-frame",
+      "name": "Zoomable Frame",
+      "category": "Media",
+      "kind": "component",
+      "source": "webawesome",
+      "description": "Avoid for application UI; keep embedded-media behavior application-owned.",
+      "uses": [
+        "wa-icon"
+      ],
+      "purpose": "Avoid for application UI; keep embedded-media behavior application-owned.",
+      "customElement": "wa-zoomable-frame",
+      "useWhen": [
+        "Avoid for application UI; keep embedded-media behavior application-owned."
+      ],
+      "avoidWhen": [
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+      ],
+      "recommendation": "avoid",
+      "alternatives": [],
+      "delivery": {
+        "registrationImport": "@awesome.me/webawesome/dist/components/zoomable-frame/zoomable-frame.js",
+        "themeCssImport": "@kerfjs/ui/webawesome.css",
+        "sideEffects": [
+          "custom-element-registration"
+        ]
+      },
+      "links": {
+        "catalogRoute": "?component=wa-zoomable-frame",
+        "documentation": "docs/webawesome-theme.md#coverage",
+        "recipe": "docs/component-selection.md#web-awesome-overlap-policy"
+      }
+    },
+    {
+      "id": "wa-animation",
+      "name": "Animation",
+      "category": "Helpers",
+      "kind": "component",
+      "source": "webawesome",
+      "description": "Declarative Web Animations API wrapper with preset effects.",
+      "uses": [
+        "select"
+      ],
+      "purpose": "Declarative Web Animations API wrapper with preset effects.",
+      "customElement": "wa-animation",
+      "useWhen": [
+        "Declarative Web Animations API wrapper with preset effects."
+      ],
+      "avoidWhen": [
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+      ],
+      "recommendation": "supported",
+      "alternatives": [],
+      "delivery": {
+        "registrationImport": "@awesome.me/webawesome/dist/components/animation/animation.js",
+        "themeCssImport": "@kerfjs/ui/webawesome.css",
+        "sideEffects": [
+          "custom-element-registration"
+        ]
+      },
+      "links": {
+        "catalogRoute": "?component=wa-animation",
+        "documentation": "docs/webawesome-theme.md#coverage",
+        "recipe": "docs/webawesome-theme.md#coverage"
+      }
+    },
+    {
+      "id": "wa-format-bytes",
+      "name": "Format Bytes",
+      "category": "Helpers",
+      "kind": "component",
+      "source": "webawesome",
+      "description": "Locale-aware byte and bit value formatter.",
+      "uses": [],
+      "purpose": "Locale-aware byte and bit value formatter.",
+      "customElement": "wa-format-bytes",
+      "useWhen": [
+        "Locale-aware byte and bit value formatter."
+      ],
+      "avoidWhen": [
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+      ],
+      "recommendation": "supported",
+      "alternatives": [],
+      "delivery": {
+        "registrationImport": "@awesome.me/webawesome/dist/components/format-bytes/format-bytes.js",
+        "themeCssImport": "@kerfjs/ui/webawesome.css",
+        "sideEffects": [
+          "custom-element-registration"
+        ]
+      },
+      "links": {
+        "catalogRoute": "?component=wa-format-bytes",
+        "documentation": "docs/webawesome-theme.md#coverage",
+        "recipe": "docs/webawesome-theme.md#coverage"
+      }
+    },
+    {
+      "id": "wa-format-date",
+      "name": "Format Date",
+      "category": "Helpers",
+      "kind": "component",
+      "source": "webawesome",
+      "description": "Locale-aware date and time formatter.",
+      "uses": [],
+      "purpose": "Locale-aware date and time formatter.",
+      "customElement": "wa-format-date",
+      "useWhen": [
+        "Locale-aware date and time formatter."
+      ],
+      "avoidWhen": [
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+      ],
+      "recommendation": "supported",
+      "alternatives": [],
+      "delivery": {
+        "registrationImport": "@awesome.me/webawesome/dist/components/format-date/format-date.js",
+        "themeCssImport": "@kerfjs/ui/webawesome.css",
+        "sideEffects": [
+          "custom-element-registration"
+        ]
+      },
+      "links": {
+        "catalogRoute": "?component=wa-format-date",
+        "documentation": "docs/webawesome-theme.md#coverage",
+        "recipe": "docs/webawesome-theme.md#coverage"
+      }
+    },
+    {
+      "id": "wa-format-number",
+      "name": "Format Number",
+      "category": "Helpers",
+      "kind": "component",
+      "source": "webawesome",
+      "description": "Locale-aware number, currency, unit, and percentage formatter.",
+      "uses": [],
+      "purpose": "Locale-aware number, currency, unit, and percentage formatter.",
+      "customElement": "wa-format-number",
+      "useWhen": [
+        "Locale-aware number, currency, unit, and percentage formatter."
+      ],
+      "avoidWhen": [
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+      ],
+      "recommendation": "supported",
+      "alternatives": [],
+      "delivery": {
+        "registrationImport": "@awesome.me/webawesome/dist/components/format-number/format-number.js",
+        "themeCssImport": "@kerfjs/ui/webawesome.css",
+        "sideEffects": [
+          "custom-element-registration"
+        ]
+      },
+      "links": {
+        "catalogRoute": "?component=wa-format-number",
+        "documentation": "docs/webawesome-theme.md#coverage",
+        "recipe": "docs/webawesome-theme.md#coverage"
+      }
+    },
+    {
+      "id": "wa-include",
+      "name": "Include",
+      "category": "Helpers",
+      "kind": "component",
+      "source": "webawesome",
+      "description": "Loads and injects an external HTML fragment.",
+      "uses": [],
+      "purpose": "Loads and injects an external HTML fragment.",
+      "customElement": "wa-include",
+      "useWhen": [
+        "Loads and injects an external HTML fragment."
+      ],
+      "avoidWhen": [
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+      ],
+      "recommendation": "supported",
+      "alternatives": [],
+      "delivery": {
+        "registrationImport": "@awesome.me/webawesome/dist/components/include/include.js",
+        "themeCssImport": "@kerfjs/ui/webawesome.css",
+        "sideEffects": [
+          "custom-element-registration"
+        ]
+      },
+      "links": {
+        "catalogRoute": "?component=wa-include",
+        "documentation": "docs/webawesome-theme.md#coverage",
+        "recipe": "docs/webawesome-theme.md#coverage"
+      }
+    },
+    {
+      "id": "wa-intersection-observer",
+      "name": "Intersection Observer",
+      "category": "Helpers",
+      "kind": "component",
+      "source": "webawesome",
+      "description": "Declaratively emits visibility changes for slotted content.",
+      "uses": [],
+      "purpose": "Declaratively emits visibility changes for slotted content.",
+      "customElement": "wa-intersection-observer",
+      "useWhen": [
+        "Declaratively emits visibility changes for slotted content."
+      ],
+      "avoidWhen": [
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+      ],
+      "recommendation": "supported",
+      "alternatives": [],
+      "delivery": {
+        "registrationImport": "@awesome.me/webawesome/dist/components/intersection-observer/intersection-observer.js",
+        "themeCssImport": "@kerfjs/ui/webawesome.css",
+        "sideEffects": [
+          "custom-element-registration"
+        ]
+      },
+      "links": {
+        "catalogRoute": "?component=wa-intersection-observer",
+        "documentation": "docs/webawesome-theme.md#coverage",
+        "recipe": "docs/webawesome-theme.md#coverage"
+      }
+    },
+    {
+      "id": "wa-mutation-observer",
+      "name": "Mutation Observer",
+      "category": "Helpers",
+      "kind": "component",
+      "source": "webawesome",
+      "description": "Declaratively emits DOM mutation records for slotted content.",
+      "uses": [],
+      "purpose": "Declaratively emits DOM mutation records for slotted content.",
+      "customElement": "wa-mutation-observer",
+      "useWhen": [
+        "Declaratively emits DOM mutation records for slotted content."
+      ],
+      "avoidWhen": [
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+      ],
+      "recommendation": "supported",
+      "alternatives": [],
+      "delivery": {
+        "registrationImport": "@awesome.me/webawesome/dist/components/mutation-observer/mutation-observer.js",
+        "themeCssImport": "@kerfjs/ui/webawesome.css",
+        "sideEffects": [
+          "custom-element-registration"
+        ]
+      },
+      "links": {
+        "catalogRoute": "?component=wa-mutation-observer",
+        "documentation": "docs/webawesome-theme.md#coverage",
+        "recipe": "docs/webawesome-theme.md#coverage"
+      }
+    },
+    {
+      "id": "wa-popover",
+      "name": "Popover",
+      "category": "Helpers",
+      "kind": "component",
+      "source": "webawesome",
+      "description": "Anchored non-modal surface built on popup positioning.",
+      "uses": [
+        "wa-popup"
+      ],
+      "purpose": "Anchored non-modal surface built on popup positioning.",
+      "customElement": "wa-popover",
+      "useWhen": [
+        "Anchored non-modal surface built on popup positioning."
+      ],
+      "avoidWhen": [
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+      ],
+      "recommendation": "supported",
+      "alternatives": [],
+      "delivery": {
+        "registrationImport": "@awesome.me/webawesome/dist/components/popover/popover.js",
+        "themeCssImport": "@kerfjs/ui/webawesome.css",
+        "sideEffects": [
+          "custom-element-registration"
+        ]
+      },
+      "links": {
+        "catalogRoute": "?component=wa-popover",
+        "documentation": "docs/webawesome-theme.md#coverage",
+        "recipe": "docs/webawesome-theme.md#coverage"
+      }
+    },
+    {
+      "id": "wa-popup",
+      "name": "Popup",
+      "category": "Helpers",
+      "kind": "component",
+      "source": "webawesome",
+      "description": "Preferred low-level anchored positioning when Tooltip or Popover do not fit.",
+      "uses": [],
+      "purpose": "Preferred low-level anchored positioning when Tooltip or Popover do not fit.",
+      "customElement": "wa-popup",
+      "useWhen": [
+        "Preferred low-level anchored positioning when Tooltip or Popover do not fit."
+      ],
+      "avoidWhen": [
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+      ],
+      "recommendation": "conditional",
+      "alternatives": [],
+      "delivery": {
+        "registrationImport": "@awesome.me/webawesome/dist/components/popup/popup.js",
+        "themeCssImport": "@kerfjs/ui/webawesome.css",
+        "sideEffects": [
+          "custom-element-registration"
+        ]
+      },
+      "links": {
+        "catalogRoute": "?component=wa-popup",
+        "documentation": "docs/webawesome-theme.md#coverage",
+        "recipe": "docs/component-selection.md#web-awesome-overlap-policy"
+      }
+    },
+    {
+      "id": "wa-random-content",
+      "name": "Random Content",
+      "category": "Helpers",
+      "kind": "component",
+      "source": "webawesome",
+      "description": "Experimental helper that selects one slotted item at random.",
+      "uses": [],
+      "purpose": "Experimental helper that selects one slotted item at random.",
+      "customElement": "wa-random-content",
+      "useWhen": [
+        "Experimental helper that selects one slotted item at random."
+      ],
+      "avoidWhen": [
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+      ],
+      "recommendation": "supported",
+      "alternatives": [],
+      "delivery": {
+        "registrationImport": "@awesome.me/webawesome/dist/components/random-content/random-content.js",
+        "themeCssImport": "@kerfjs/ui/webawesome.css",
+        "sideEffects": [
+          "custom-element-registration"
+        ]
+      },
+      "links": {
+        "catalogRoute": "?component=wa-random-content",
+        "documentation": "docs/webawesome-theme.md#coverage",
+        "recipe": "docs/webawesome-theme.md#coverage"
+      }
+    },
+    {
+      "id": "wa-relative-time",
+      "name": "Relative Time",
+      "category": "Helpers",
+      "kind": "component",
+      "source": "webawesome",
+      "description": "Locale-aware human description of a date relative to now.",
+      "uses": [],
+      "purpose": "Locale-aware human description of a date relative to now.",
+      "customElement": "wa-relative-time",
+      "useWhen": [
+        "Locale-aware human description of a date relative to now."
+      ],
+      "avoidWhen": [
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+      ],
+      "recommendation": "supported",
+      "alternatives": [],
+      "delivery": {
+        "registrationImport": "@awesome.me/webawesome/dist/components/relative-time/relative-time.js",
+        "themeCssImport": "@kerfjs/ui/webawesome.css",
+        "sideEffects": [
+          "custom-element-registration"
+        ]
+      },
+      "links": {
+        "catalogRoute": "?component=wa-relative-time",
+        "documentation": "docs/webawesome-theme.md#coverage",
+        "recipe": "docs/webawesome-theme.md#coverage"
+      }
+    },
+    {
+      "id": "wa-resize-observer",
+      "name": "Resize Observer",
+      "category": "Helpers",
+      "kind": "component",
+      "source": "webawesome",
+      "description": "Declaratively emits size changes for slotted content.",
+      "uses": [],
+      "purpose": "Declaratively emits size changes for slotted content.",
+      "customElement": "wa-resize-observer",
+      "useWhen": [
+        "Declaratively emits size changes for slotted content."
+      ],
+      "avoidWhen": [
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+      ],
+      "recommendation": "supported",
+      "alternatives": [],
+      "delivery": {
+        "registrationImport": "@awesome.me/webawesome/dist/components/resize-observer/resize-observer.js",
+        "themeCssImport": "@kerfjs/ui/webawesome.css",
+        "sideEffects": [
+          "custom-element-registration"
+        ]
+      },
+      "links": {
+        "catalogRoute": "?component=wa-resize-observer",
+        "documentation": "docs/webawesome-theme.md#coverage",
+        "recipe": "docs/webawesome-theme.md#coverage"
+      }
+    }
+  ]
+}

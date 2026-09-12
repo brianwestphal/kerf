@@ -185,6 +185,8 @@
     "dev": "npm run build && vite --config ux-demo/vite.config.ts",
     "demo:build": "npm run build && vite build --config ux-demo/vite.config.ts && node scripts/check-demo-bundle.mjs",
     "demo:serve": "vite preview --config ux-demo/vite.config.ts",
+    "catalog:sync": "node scripts/sync-component-catalog.mjs",
+    "check:catalog": "node scripts/sync-component-catalog.mjs --check && node scripts/check-component-catalog.mjs",
     "check:guidance": "node scripts/check-decision-guidance.mjs",
     "lint": "eslint src tests ux-demo --max-warnings 0",
     "typecheck": "node node_modules/typescript7/bin/tsc --noEmit",
@@ -192,7 +194,7 @@
     "test:unit": "vitest run tests/unit --coverage",
     "test:bundle": "npm run build && vitest run tests/bundle",
     "test:e2e": "npm run demo:build && playwright test",
-    "check": "npm run check:guidance && npm run lint && npm run typecheck && npm test && npm run demo:build && npm pack --dry-run",
+    "check": "npm run check:catalog && npm run check:guidance && npm run lint && npm run typecheck && npm test && npm run demo:build && npm pack --dry-run",
     "prepublishOnly": "npm run check"
   },
   "peerDependencies": {

@@ -124,6 +124,10 @@ keep product policy in a thin application adapter, and write custom markup only
 for a genuinely different contract. The exhaustive use/avoid, alternatives,
 wiring, ownership, import, and recipe routing lives in
 [`ui/docs/component-selection.md`](../../ui/docs/component-selection.md).
+For exhaustive tool retrieval, load the shipped
+[`ui/ai/component-catalog.json`](../../ui/ai/component-catalog.json); its
+versioned schema and drift gate keep public exports, delivery paths,
+relationships, catalog routes, and current documentation links synchronized.
 
 For visual review, `ui/ux-demo/` groups every public visual component by category
 in a master/detail catalog. Each `?component=<id>` route renders one focused
