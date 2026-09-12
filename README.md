@@ -84,7 +84,7 @@ Write plain `.tsx` and build with your existing esbuild / Vite / tsup — no ext
 - Need a full ecosystem (router + forms + data + SSR streaming) → **Next.js / Remix / SolidStart**.
 - Building a deeply componentised design-system app → **React / Solid / Svelte**.
 - Need React Native / cross-platform mobile → **React** (Kerf + Tauri/Electron also covers many of these cases).
-- Building a static site → **Astro** (we use it for *this* project's site).
+- Building a conventional content-first static site → **Astro**. Kerf's own site deliberately uses a small Kerf JSX generator so the documentation shell doubles as a complete framework demonstration.
 - Already invested in a framework where switching cost outweighs the bundle size gain.
 
 ## Quick tour

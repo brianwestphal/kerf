@@ -70,12 +70,9 @@ jobs:
       - run: npm run build
       - run: npm ci
         working-directory: site
-      - name: Build site and reject route-collision warnings
+      - name: Check and build Kerf documentation site
         working-directory: site
-        run: |
-          set -o pipefail
-          npm run build 2>&1 | tee "$RUNNER_TEMP/kerf-site-build.log"
-          node ../scripts/check-site-build-output.mjs < "$RUNNER_TEMP/kerf-site-build.log"
+        run: npm run check
 
   # The plugin's peerDependencies range is a TESTED range: every ESLint major
   # it names is exercised here. Adding a major to the range means adding it to

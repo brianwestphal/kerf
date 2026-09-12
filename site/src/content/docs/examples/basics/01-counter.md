@@ -3,9 +3,6 @@ title: 1 · Counter
 description: Hello-world for kerf — one signal, one mount.
 ---
 
-import { Code } from '@astrojs/starlight/components';
-import LiveExample from '../../../../components/examples/basics/01-counter.astro';
-import source from '../../../../examples/basics/01-counter/main.tsx?raw';
 
 The smallest possible kerf app. A signal holds the count, `mount` binds JSX to a DOM element, and a delegated click handler increments. Re-renders happen automatically when `count.value` changes.
 

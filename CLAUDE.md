@@ -10,7 +10,7 @@ The name *kerf* is a woodworking term — the narrow strip a saw blade removes. 
 
 ## Tech Stack
 
-- **Runtime**: Browser (modern, ES2022+). Node 22.12+ for build/test (Astro requirement).
+- **Runtime**: Browser (modern, ES2022+). Node 22.12+ for build/test and the repository-owned static documentation generator.
 - **Language**: TypeScript (strict mode, ESM-only). Dual-track toolchain: the **native TypeScript 7** compiler (installed as the `typescript7` npm alias; invoked as `node node_modules/typescript7/bin/tsc`) runs every typecheck gate (`npm run typecheck`, the three `-p` dist-typing gates, the docs-examples compile), while **`typescript@6`** (the JS-API bridge release — the native 7 package ships no JS API) stays the resolvable `typescript` package for API consumers: tsup's `.d.ts` build and typescript-eslint. Don't collapse the two — `@typescript-eslint` caps its peer at `<6.1.0` and rollup-plugin-dts needs `lib/typescript.js`.
 - **Build**: tsup (esbuild + dts emit via typescript@6; `ignoreDeprecations: '6.0'` is set in `tsup.config.ts`'s `dts.compilerOptions` because tsup hardcodes the TS-7-removed `baseUrl` into the dts build — keep that waiver out of tsconfig.json so the native 7 gates stay strict). Outputs ESM + types.
 - **Tests**: vitest with `happy-dom` as the default environment. `tests/unit/toElement.test.ts` overrides to `jsdom` (via `@vitest-environment jsdom`) because happy-dom's `DOMParser('image/svg+xml')` returns a document with `null` `documentElement` for SVG input — jsdom gets it right, and so do real browsers. Both `jsdom` and `@types/jsdom` are devDeps for that one file; do not remove them.
@@ -239,7 +239,7 @@ The same rule applies to commit messages — `git log` is a public-facing surfac
 
 Any Markdown table that compares kerf against other frameworks must follow two conventions so the table reads cleanly across the docs:
 
-- **Wrap the table in `<div class="kerf-compare"> … </div>`.** The kerf-compare stylesheet (`site/src/styles/kerf-compare.css`, registered in `site/astro.config.mjs`'s `customCss`) gives the kerf row a slight accent-tinted background so a reader scanning the table can spot it without re-reading the labels. The detector is `tr:has(td:first-child > strong:only-child)` — i.e. the first cell renders as a single `<strong>` element — so the kerf row's first cell must be exactly `**kerf**` in the Markdown source.
+- **Wrap the table in `<div class="kerf-compare"> … </div>`.** The kerf-compare stylesheet (`site/src/styles/kerf-compare.css`, imported by `site/src/styles/site.css`) gives the kerf row a slight accent-tinted background so a reader scanning the table can spot it without re-reading the labels. The detector is `tr:has(td:first-child > strong:only-child)` — i.e. the first cell renders as a single `<strong>` element — so the kerf row's first cell must be exactly `**kerf**` in the Markdown source.
 - **Bold the best value in each numeric column.** Use Markdown `**…**` on whichever framework's value wins the column on the lower-is-better (or higher-is-better, depending on the metric) ordering. This is an author decision per column, not computed by CSS. The kerf row's first cell being bold (`**kerf**`) is what triggers the row highlight; bold values inside the row's data cells are independent and indicate "best in column."
 
 If the table has no numeric columns to rank, skip the bold-best step and just wrap for the row highlight.
@@ -248,12 +248,12 @@ If the table has no numeric columns to rank, skip the bold-best step and just wr
 
 Cross-framework benchmark numbers (kerf vs Lit, kerf vs React, etc.) published on the site come from the **official upstream [krausest/js-framework-benchmark](https://krausest.github.io/js-framework-benchmark/current.html)**. kerf is a merged upstream entry (`frameworks/keyed/kerfjs`), so krausest measures kerf alongside every competitor on **one reference machine in one run** — the canonical, independently-reproducible, apples-to-apples comparison. Those are the numbers we publish; do NOT paste ad-hoc local-machine numbers into the site or docs.
 
-**Refreshing the published numbers.** Run `node bench/import-krausest.mjs`, which fetches krausest's published results, extracts the tracked frameworks' medians, and writes the git-tracked `bench/results.json` (the homepage `PerfTable.astro` imports it at build time) + `bench/results.md`. Commit both. Re-run whenever krausest republishes — most importantly after a kerf release, once krausest re-runs with the bumped `frameworks/keyed/kerfjs` version (their entry pins a published kerfjs version; a fresh kerf release warrants a follow-up upstream PR bumping that pin so the next krausest run measures current kerf). Also re-import on a reference-framework bump or ~6-month sanity check. Edit `TRACKED_DIRS` in the importer to change which frameworks appear.
+**Refreshing the published numbers.** Run `node bench/import-krausest.mjs`, which fetches krausest's published results, extracts the tracked frameworks' medians, and writes the git-tracked `bench/results.json` (the site content generator reads it for the homepage performance table) + `bench/results.md`. Commit both. Re-run whenever krausest republishes — most importantly after a kerf release, once krausest re-runs with the bumped `frameworks/keyed/kerfjs` version (their entry pins a published kerfjs version; a fresh kerf release warrants a follow-up upstream PR bumping that pin so the next krausest run measures current kerf). Also re-import on a reference-framework bump or ~6-month sanity check. Edit `TRACKED_DIRS` in the importer to change which frameworks appear.
 
 **The local harness (`bench/run.sh` + `bench/aggregate-results.mjs`) is now dev-only.** Use it for "did my change move the needle?" profiling on your own machine (`bash bench/run.sh keyed/kerfjs --count=10`, then `node bench/aggregate-results.mjs > bench/results.local.md`). It reads the local M1-Pro `bench/.bench-cache/` and writes the **gitignored** `bench/results.local.{json,md}` — deliberately NOT the published `bench/results.json`, so a local run can't clobber the krausest snapshot. `bench/preflight.sh` still gates local runs for clean-machine measurement. These local numbers are for iteration signal only and must not be published.
 
 What this means for the site:
-- The homepage `PerfTable.astro` (wired to `bench/results.json`) shows the most recent committed krausest import. Re-commit only from `bench/import-krausest.mjs`.
+- The homepage performance table (rendered from `bench/results.json` by `site/scripts/lib/site-content.mjs`) shows the most recent committed krausest import. Re-commit only from `bench/import-krausest.mjs`.
 - Per-framework migration pages (`/kerf/migrating/{react,lit,vanjs,…}/`) may cite the krausest numbers for framework pairs that krausest measures. For a pair krausest doesn't cover (e.g. Alpine), keep the §5 "Perf numbers" section a one-paragraph qualitative note ("Both frameworks are in the same performance cluster on the krausest benchmark").
 - The bench-ai design doc (`docs/ai-codegen-bench-design.md`) is the separate *AI-codegen* benchmark; its leaderboard cadence is defined there and is independent of this krausest-import convention.
 
@@ -301,7 +301,7 @@ Numbered docs in `docs/` cover the design. Reading order:
 6. `6-jsx-runtime.md` — JSX → HTML strings, server use.
 7. `7-svg.md` — namespace handling.
 8. `8-api-reference.md` — every export.
-9. `9-live-demo.md` — the GitHub Pages deploy of `examples/reactivity-demo`.
+9. `9-live-demo.md` — the Kerf-owned static documentation application and the GitHub Pages deploy of `examples/reactivity-demo`.
 10. `10-migrating.md` — the `/kerf/migrating/` comparison hub (coming-from-React/Alpine/Lit/vanjs pages).
 11. `11-dev-warnings.md` — the opt-in `KERF_DEV_WARN_*` env-gated dev-warn family (rebuilt listeners, untracked signals, narrow store sets, delegate-in-effect, each-in-morph-skip, duplicate keys, value-only re-renders, stale bindings, list rebinds) and the rules each new warning must follow.
 12. `12-ai-assistant-configs.md` — how the drop-in Claude Code skill + Cursor rules ship inside the npm package, the canonical-file version + marker contract, and the `kerfjs/ai-assistant-configs` ESLint rule.

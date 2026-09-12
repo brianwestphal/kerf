@@ -131,7 +131,7 @@ export function renderSearch() {
             {state.value === 'loading' && <LoadingSpinner label="Searching" />}
           </label>
           <div class="kerf-search-body">{resultList()}</div>
-          <footer><span>Pre-rendered by Astro</span><span>Search + UI by Kerf</span></footer>
+          <footer><span>Static HTML by Kerf</span><span>Search + UI by Kerf</span></footer>
         </section>
       </div>
     </dialog>

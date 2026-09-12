@@ -77,19 +77,44 @@ test('keeps every established public page directly loadable', async ({ request }
   expect(await legacy.text()).toContain('/kerf/examples/basics/09-raw-sanitize/');
 });
 
-test('ships prerendered content and upgrades navigation to an SPA', async ({ page, request }, testInfo) => {
+test('ships Kerf-rendered content and upgrades navigation to an SPA', async ({ page, request }, testInfo) => {
   const response = await request.get('./');
   expect(response.ok()).toBe(true);
-  expect(await response.text()).toContain('Reactive UI that touches only the bytes that changed.');
+  const html = await response.text();
+  expect(html).toContain('Reactive UI that touches only the bytes that changed.');
+  expect(html).toContain('data-component="menu-header"');
+  expect(html).not.toContain('/_astro/');
 
   await page.goto('./');
-  await expect(page.getByRole('heading', { name: 'Static at the door. Reactive once you’re inside.' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Static at the door. Kerf all the way through.' })).toBeVisible();
+  await expect(page.getByText('One signal, one precise update')).toBeVisible();
   await page.screenshot({ path: testInfo.outputPath(`homepage-${testInfo.project.name}.png`), fullPage: true });
   await page.evaluate(() => (window as typeof window & { __kerfSpaSentinel?: string }).__kerfSpaSentinel = 'preserved');
   await page.getByRole('link', { name: 'Get started' }).click();
   await expect(page).toHaveURL(/\/kerf\/getting-started\/$/);
   await expect(page.getByRole('heading', { name: 'Getting started' })).toBeVisible();
   expect(await page.evaluate(() => (window as typeof window & { __kerfSpaSentinel?: string }).__kerfSpaSentinel)).toBe('preserved');
+});
+
+test('adapts the Kerf UI navigation for desktop, tablet, and mobile', async ({ page }, testInfo) => {
+  await page.goto('./docs/overview/');
+  const sidebar = page.locator('[data-site-sidebar]');
+  const menu = page.getByRole('button', { name: 'Open navigation' });
+  if (testInfo.project.name === 'chromium') {
+    await expect(sidebar).toBeVisible();
+    await expect(menu).toBeHidden();
+    await expect(page.locator('.site-toc')).toBeVisible();
+  } else {
+    await expect(menu).toBeVisible();
+    await expect(sidebar).not.toBeInViewport();
+    await menu.click();
+    await expect(sidebar).toBeInViewport();
+    await expect(page.getByRole('button', { name: 'Close navigation' })).toBeVisible();
+    await page.getByRole('button', { name: 'Getting started' }).click();
+    await expect(page).toHaveURL(/\/kerf\/getting-started\/$/);
+    await expect(sidebar).not.toBeInViewport();
+  }
+  await page.screenshot({ path: testInfo.outputPath(`responsive-${testInfo.project.name}.png`), fullPage: true });
 });
 
 test('loads the generated search index only after a query', async ({ page }, testInfo) => {
@@ -104,7 +129,7 @@ test('loads the generated search index only after a query', async ({ page }, tes
   await page.getByRole('searchbox', { name: 'Search documentation' }).fill('signals');
   await expect(page.getByRole('option').first()).toBeVisible();
   expect(pagefindRequests.length).toBeGreaterThan(0);
-  await expect(page.locator('[data-component="toolbar"]')).toBeVisible();
+  await expect(page.getByLabel('Search controls')).toBeVisible();
   await page.screenshot({ path: testInfo.outputPath(`search-${testInfo.project.name}.png`), fullPage: true });
 });
 
@@ -117,4 +142,12 @@ test('reactive showcase switches @kerfjs/ui states in place', async ({ page }) =
   await page.getByRole('button', { name: 'Lazy search' }).click();
   await expect(page.getByText('Search waits until you need it')).toBeVisible();
   expect(await page.evaluate(() => (window as typeof window & { __kerfShowcaseNode?: Element }).__kerfShowcaseNode?.isConnected)).toBe(true);
+});
+
+test('runs basic examples from isolated Kerf-built pages', async ({ page }) => {
+  await page.goto('./examples/basics/01-counter/');
+  const frame = page.frameLocator('.kerf-live-example-frame');
+  await expect(frame.getByText('0')).toBeVisible();
+  await frame.getByRole('button', { name: 'Increment' }).click();
+  await expect(frame.getByText('1')).toBeVisible();
 });

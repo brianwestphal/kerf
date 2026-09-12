@@ -16,8 +16,8 @@
  * (`kerfjs@4.1.0` in the "for reproducibility" note) is fine too: the check is on the
  * MAJOR, so it passes until the major moves and then correctly demands an update.
  *
- * What it asserts, over the SOURCE docs only (the Starlight copies are regenerated
- * from these by `sync-docs.mjs`, so the source is the single place to fix):
+ * What it asserts, over the SOURCE docs only (the site copies are regenerated from
+ * these by `sync-docs.mjs`, so the source is the single place to fix):
  *  - every `kerfjs@<version>` reference is on `package.json`'s major, and
  *  - every `@preact/signals-core@<version>` reference is on the major of the
  *    `@preact/signals-core` range in `package.json`'s `dependencies`.

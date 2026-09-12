@@ -185,8 +185,8 @@ node bench/import-krausest.mjs FILE   # or parse a local results.ts copy offline
 It fetches krausest's published `webdriver-ts-results` data, extracts the
 tracked frameworks' medians, and writes two git-tracked files:
 
-- **`bench/results.json`** — a structured snapshot the homepage's
-  `site/src/components/PerfTable.astro` imports at build time.
+- **`bench/results.json`** — a structured snapshot the homepage content
+  renderer in `site/scripts/lib/site-content.mjs` reads at build time.
 - **`bench/results.md`** — the full CPU / memory / size markdown tables.
 
 Commit both whenever krausest republishes (most importantly after a kerf
@@ -194,8 +194,8 @@ release, once krausest re-runs with the bumped upstream `frameworks/keyed/kerfjs
 pin — the GitHub Pages build doesn't fetch krausest at build time, so
 `bench/results.json` IS the source of truth then). Edit `TRACKED_DIRS` in the
 importer to change which frameworks appear; the homepage table is a further
-subset (5 scenarios × 4 frameworks) controlled by `SUBSET_SCENARIOS` /
-`SUBSET_FRAMEWORKS` in `PerfTable.astro`.
+subset (5 scenarios × 4 frameworks) controlled by the scenario/framework lists
+in `site/scripts/lib/site-content.mjs`.
 
 ### Local dev snapshot (not published)
 

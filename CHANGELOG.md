@@ -6,12 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
-- Rebuilt the documentation site as a static-first Kerf application: every existing route remains pre-rendered and directly loadable, Astro upgrades later navigation to SPA swaps, Pagefind search loads its generated index only after the first query, and the home page now demonstrates live `kerfjs` and `@kerfjs/ui` components.
+- Removed Astro and Starlight from the documentation site. A repository-owned generator now renders all 52 routes from Kerf JSX; `@kerfjs/ui` owns the full shell (including `MenuHeader`, `MenuItem`, `Toolbar`, and `PageHeader`), `kerfjs/router` plus `morph()` provide static-first SPA navigation, standalone Pagefind remains lazy, basic examples run in isolated Kerf-built pages, and desktop/tablet/mobile layouts have dedicated navigation and browser coverage.
 - Added a reusable controlled `TokenSearchField` to `@kerfjs/ui`, extracting Hot Sheet 2's free-text plus ordered atomic filter-chip field with accessible edit/remove/clear actions, DOM read and caret helpers, tree-shakeable styles, and full catalog coverage.
 - Reorganized the largest catch-all unit suites into behavior-focused files while preserving all 1,554 existing tests, assertion counts, transition matrices, coverage, and feature-index mappings.
-- Added a read-only pull-request site-build job and a tested output guard that rejects Astro route-collision and future-hard-error warnings before merge.
+- Added a read-only pull-request site-check job that validates content uniqueness, lint, types, unit behavior, and the complete static output before merge.
 - Expanded the `@kerfjs/ui` pull-request browser gate from Chromium-only coverage to the full Chromium, Firefox, and WebKit suite, with Playwright binary caching keyed to the UI lockfile.
-- Added a strict npm install-script policy for the site: only the reviewed `esbuild` and `sharp` binary installers run, the linked root package's Husky-only `prepare` is denied, and a preinstall checker detects lockfile installer drift.
+- Added a strict npm install-script policy for the site: only the reviewed `esbuild` binary installer runs, optional `fsevents` and the linked root package's Husky-only `prepare` are denied, and a preinstall checker detects lockfile installer drift.
 - Updated the root and UI browser-test harnesses for Node 26: Playwright 1.63 removes the deprecated ESM loader registration, and normalized color variables keep web-server and worker output free of `NO_COLOR`/`FORCE_COLOR` conflict warnings.
 - Cleaned generated root and `@kerfjs/ui` ESM shims so downstream bundlers no longer report ignored bare chunk imports, and deduplicated source-map directives without weakening package tree shaking.
 - Added explicit Web Awesome component-selection guidance and aligned UX descriptions: prefer Kerf Select, SegmentedControl, TabBar, LucideIcon, and ResizableRegion for common app patterns; consider Popup for custom anchoring; reserve specialized ecosystem alternatives for concrete requirements. ResizableRegion now includes Hot Sheet 2's overridable 1px separator plus hover/focus grip.

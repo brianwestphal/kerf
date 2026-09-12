@@ -29,9 +29,6 @@ hero:
       variant: minimal
 ---
 
-import { Card, CardGrid, Code } from '@astrojs/starlight/components';
-import KerfShowcase from '../../components/KerfShowcase.astro';
-import PerfTable from '../../components/PerfTable.astro';
 
 <KerfShowcase />
 
@@ -54,7 +51,8 @@ import PerfTable from '../../components/PerfTable.astro';
 
 ## It works like this
 
-<Code lang="ts" code={`import { signal, mount } from 'kerfjs';
+```ts
+import { signal, mount } from 'kerfjs';
 
 const count = signal(0);
 
@@ -63,7 +61,8 @@ mount(document.getElementById('app')!, () => (
     <button data-action="inc">+</button>
     <span>{count.value}</span>
   </div>
-));`} />
+));
+```
 
 That's it. Your JSX renders to HTML strings, kerf's native diff applies the minimum DOM mutations to make the live tree match, and signals re-run the render only when something they read actually changed.
 

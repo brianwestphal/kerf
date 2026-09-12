@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Publish the repo-root llms.txt at the site root so it resolves at
 // https://brianwestphal.github.io/kerf/llms.txt (the URL submitted to the
-// llms.txt directories). Astro copies site/public/ verbatim to the base root,
+// llms.txt directories). The site renderer copies site/public/ to the base root,
 // so this just mirrors the canonical root file into public/.
 //
 // The root llms.txt uses absolute URLs (GitHub blob links), so it serves

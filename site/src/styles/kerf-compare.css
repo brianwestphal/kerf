@@ -17,7 +17,7 @@
  * first column. */
 
 .kerf-compare table {
-  /* Inherit Starlight's default table styling; we layer on row + cell tweaks. */
+  /* Inherit the site table styling; layer on row + cell tweaks. */
   font-variant-numeric: tabular-nums;
 }
 
@@ -34,4 +34,4 @@
 }
 
 /* Best-in-column bolding is done by the Markdown source via `**value**`.
- * No CSS work needed beyond what Starlight already gives `<strong>`. */
+ * No CSS work is needed beyond the site's default `<strong>` styling. */

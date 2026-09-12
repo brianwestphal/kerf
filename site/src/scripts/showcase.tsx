@@ -19,7 +19,7 @@ const details: Record<ShowcaseMode, { title: string; detail: string; values: rea
   },
   navigation: {
     title: 'The next page feels instant',
-    detail: 'Astro pre-renders every route for SEO, then upgrades internal links to client-side swaps.',
+    detail: 'Kerf renders every route to static HTML, then its postcard router handles in-app navigation.',
     values: [['First visit', 'Static HTML'], ['Next route', 'SPA swap'], ['URLs', 'Preserved']],
   },
 };

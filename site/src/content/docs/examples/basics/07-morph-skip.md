@@ -3,9 +3,6 @@ title: 7 · data-morph-skip
 description: Embed a library-owned subtree that survives every re-render.
 ---
 
-import { Code } from '@astrojs/starlight/components';
-import LiveExample from '../../../../components/examples/basics/07-morph-skip.astro';
-import source from '../../../../examples/basics/07-morph-skip/main.tsx?raw';
 
 Some elements are owned by something other than kerf — Chart.js canvases, Monaco editors, third-party widgets. The diff must not recurse into them. `data-morph-skip` is the contract: any element with that attribute (any value, even empty) and its entire subtree are preserved verbatim across re-renders.
 

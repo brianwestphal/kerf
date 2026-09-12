@@ -3,7 +3,6 @@ title: Migrating to Kerf
 description: Side-by-side translations from React, Vue, Svelte, Solid, Preact, Alpine, Lit, vanjs, htmx, Angular, jQuery, Redux, and Astro to Kerf. Bundle size, mental model, and gotchas per source framework.
 ---
 
-import { Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
 
 Kerf doesn't try to replace your framework. But if you've already decided to leave one — or you're building something new and weighing the cluster — these pages show your current code translated, line for line, into kerf.
 

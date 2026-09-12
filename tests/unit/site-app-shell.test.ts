@@ -26,13 +26,17 @@ describe('documentation site application shell', () => {
     expect(source).toMatch(/async function runSearch[\s\S]*await loadPagefind\(\)/);
   });
 
-  it('registers static-first SPA and search overrides', () => {
-    const config = readFileSync(join(cwd(), 'site/astro.config.mjs'), 'utf8');
-    const head = readFileSync(join(cwd(), 'site/src/components/Head.astro'), 'utf8');
+  it('uses one Kerf UI shell for static rendering and client routing', () => {
+    const view = readFileSync(join(cwd(), 'site/src/scripts/site-view.tsx'), 'utf8');
+    const client = readFileSync(join(cwd(), 'site/src/scripts/site.tsx'), 'utf8');
+    const renderer = readFileSync(join(cwd(), 'site/scripts/render-site.tsx'), 'utf8');
 
-    expect(config).toContain("Head: './src/components/Head.astro'");
-    expect(config).toContain("Search: './src/components/Search.astro'");
-    expect(head).toContain('<ClientRouter />');
+    expect(view).toContain("from '@kerfjs/ui'");
+    expect(view).toContain('<MenuHeader');
+    expect(view).toContain('<MenuItem');
+    expect(view).toContain('<PageHeader');
+    expect(client).toContain("from 'kerfjs/router'");
+    expect(renderer).toContain('renderSiteDocument');
   });
 
   it('audits dependency install scripts without counting the site preinstall itself', () => {

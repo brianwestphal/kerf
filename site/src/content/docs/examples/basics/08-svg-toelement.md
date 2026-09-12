@@ -3,9 +3,6 @@ title: 8 · JSX SVG via toElement
 description: Slider drives an SVG circle — the easy case (SVG inside JSX) plus the toElement escape hatch.
 ---
 
-import { Code } from '@astrojs/starlight/components';
-import LiveExample from '../../../../components/examples/basics/08-svg-toelement.astro';
-import source from '../../../../examples/basics/08-svg-toelement/main.tsx?raw';
 
 SVG inside JSX with `<svg>` as the JSX root works without ceremony — the HTML5 parser switches into "foreign content" mode for descendants, namespaces are correct.
 

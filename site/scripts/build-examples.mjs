@@ -7,11 +7,12 @@
 //    examples/reactivity-demo/) → public/demo/. Both `npm run site:dev` and
 //    `npm run site:build` read public/demo and serve it at /kerf/demo/.
 //
-// The basic examples are NOT built here — they're inlined into their docs
-// pages via per-example Astro wrapper components, bundled by Astro itself.
+// Basic examples are emitted as isolated pages under run/basics/. The docs
+// generator embeds them in responsive iframes so each example keeps an
+// independent #app root and lifecycle across client-side page navigation.
 
 import { execSync } from 'node:child_process';
-import { cpSync, existsSync, mkdirSync, rmSync } from 'node:fs';
+import { cpSync, existsSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { build } from 'vite';
@@ -35,6 +36,44 @@ const COMPLETE_APPS = [
   'virtual-list',
   'router',
 ];
+
+const BASIC_APPS = [
+  '01-counter',
+  '02-computed-totals',
+  '03-store',
+  '04-mount-delegate',
+  '05-keyed-list',
+  '06-capture-delegate',
+  '07-morph-skip',
+  '08-svg-toelement',
+  '09-raw-sanitize',
+];
+
+async function buildBasicApps() {
+  const outRoot = resolve(siteRoot, 'public/run/basics');
+  if (existsSync(outRoot)) rmSync(outRoot, { recursive: true, force: true });
+  mkdirSync(outRoot, { recursive: true });
+
+  for (const name of BASIC_APPS) {
+    const appRoot = resolve(siteRoot, 'src/examples/basics', name);
+    const outDir = resolve(outRoot, name);
+    await build({
+      root: appRoot,
+      base: `/kerf/run/basics/${name}/`,
+      publicDir: false,
+      esbuild: { jsx: 'automatic', jsxImportSource: 'kerfjs' },
+      build: {
+        outDir,
+        emptyOutDir: true,
+        lib: { entry: resolve(appRoot, 'main.tsx'), formats: ['es'] },
+        rollupOptions: { output: { entryFileNames: 'app.js' } },
+      },
+      logLevel: 'warn',
+    });
+    writeFileSync(resolve(outDir, 'index.html'), `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="/kerf/assets/site.css"></head><body class="basic-example-body"><div id="app" class="kerf-live-example"></div><script type="module" src="./app.js"></script></body></html>`);
+  }
+  console.log(`[build-examples] built ${BASIC_APPS.length} basic apps → public/run/basics/`);
+}
 
 async function buildCompleteApps() {
   const outDir = resolve(siteRoot, 'public/run');
@@ -94,6 +133,7 @@ function buildDemo() {
 
 async function main() {
   await buildCompleteApps();
+  await buildBasicApps();
   buildDemo();
 }
 

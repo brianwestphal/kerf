@@ -3,9 +3,6 @@ title: 4 · Mount + delegate
 description: One listener at the root, dispatched by data-action — survives every re-render.
 ---
 
-import { Code } from '@astrojs/starlight/components';
-import LiveExample from '../../../../components/examples/basics/04-mount-delegate.astro';
-import source from '../../../../examples/basics/04-mount-delegate/main.tsx?raw';
 
 A common UI pattern: a toolbar with several buttons, each with a different action. Bind one delegated `click` listener at the mount root and dispatch by `data-action`. The handlers survive every re-render because they live on the root, not on individual buttons.
 

@@ -1,5 +1,3 @@
-@import '@kerfjs/ui/styles.css';
-
 :root {
   --sl-color-accent-low: light-dark(#fff0f5, #3b1422);
   --sl-color-accent: light-dark(#c91f57, #ff6b9a);

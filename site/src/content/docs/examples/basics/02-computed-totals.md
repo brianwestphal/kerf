@@ -3,9 +3,6 @@ title: 2 · Computed totals
 description: signal + computed — three inputs derive three live totals.
 ---
 
-import { Code } from '@astrojs/starlight/components';
-import LiveExample from '../../../../components/examples/basics/02-computed-totals.astro';
-import source from '../../../../examples/basics/02-computed-totals/main.tsx?raw';
 
 `computed()` derives a value from other signals. It's lazy and memoized — recomputes only when its dependencies change, and only when a consumer reads it.
 

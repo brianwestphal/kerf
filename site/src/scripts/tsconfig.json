@@ -14,7 +14,7 @@
     "noEmit": true,
     "jsx": "react-jsx",
     "jsxImportSource": "kerfjs",
-    "types": []
+    "types": ["node"]
   },
-  "include": ["./*.ts", "./*.tsx"]
+  "include": ["./*.ts", "./*.tsx", "../generated/*.json", "../../scripts/*.tsx"]
 }

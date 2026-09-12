@@ -3,7 +3,12 @@ import tsParser from '@typescript-eslint/parser';
 
 export default [
   {
-    files: ['src/scripts/**/*.ts', 'src/scripts/**/*.tsx', 'tests/**/*.ts', 'playwright.config.ts'],
+    files: ['scripts/**/*.mjs'],
+    languageOptions: { ecmaVersion: 'latest', sourceType: 'module' },
+    rules: { ...js.configs.recommended.rules, 'no-undef': 'off' },
+  },
+  {
+    files: ['src/scripts/**/*.ts', 'src/scripts/**/*.tsx', 'scripts/**/*.tsx', 'tests/**/*.ts', 'playwright.config.ts', 'vite.config.ts'],
     languageOptions: {
       ecmaVersion: 'latest',
       parser: tsParser,

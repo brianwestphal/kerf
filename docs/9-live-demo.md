@@ -1,120 +1,106 @@
-# 9. Live demo (GitHub Pages)
+# 9. Documentation site and live demo (GitHub Pages)
 
-The nine-section reactivity demo under [`examples/reactivity-demo/`](../examples/reactivity-demo) is published as a live site at <https://brianwestphal.github.io/kerf/demo/>. Anyone can play with kerf without cloning the repo or running a local dev server.
+The documentation site at <https://brianwestphal.github.io/kerf/> and the
+nine-section reactivity demo at <https://brianwestphal.github.io/kerf/demo/>
+ship together as one static GitHub Pages artifact. There is no application
+server or runtime API.
 
-This doc covers what the deploy is, how it's wired up, and the constraints that shape it.
-
-The documentation site is also a production Kerf example. Astro and Starlight pre-render
-every documentation route as complete HTML, preserving direct-link SEO and the existing
-`/kerf/.../` URL structure. Astro's client router upgrades internal links after the first
-page arrives, so subsequent navigation swaps pages without a full document reload.
-
-Interactive site chrome is rendered with `kerfjs` and `@kerfjs/ui`. Pagefind generates its
-search index from the pre-rendered HTML during the build, and the Kerf command palette loads
-that index only after the visitor types a query. The home page architecture panel is a live
-Kerf mount built from `SegmentedControl`, `StateBanner`, and `ValueTable` primitives.
+The documentation site is itself a production Kerf application. A small
+repository-owned generator reads the hand-authored Markdown corpus and renders
+all 52 public routes from Kerf JSX. The same shell uses `@kerfjs/ui`
+`MenuHeader`, `MenuItem`, `Toolbar`, `PageHeader`, search states, and showcase
+controls. After the first static page arrives, `kerfjs/router` updates browser
+history and `morph()` swaps in the next pre-rendered page without reloading the
+document.
 
 ## 9.1 What gets published
 
-A single GitHub Pages artifact contains two builds, served from one origin:
+The artifact contains:
 
-- `https://brianwestphal.github.io/kerf/` — the marketing + docs site, built from [`site/`](../site) (Astro + Starlight).
-- `https://brianwestphal.github.io/kerf/demo/` — the nine-section reactivity demo, built from [`examples/reactivity-demo/`](../examples/reactivity-demo).
+- `/kerf/` — 52 complete documentation pages, an explicit `404.html`, a legacy
+  redirect, sitemap, icons, and a standalone Pagefind index.
+- `/kerf/run/basics/<name>/` — nine isolated, Vite-built basic examples embedded
+  by their corresponding guide pages.
+- `/kerf/run/<name>/` — eleven complete example applications.
+- `/kerf/demo/` — the separate nine-section interactive framework tour.
 
-Both are static asset bundles. There is no server-side rendering, no API. The site has Pagefind search built in; the demo does not.
+Every documentation URL is complete searchable HTML before JavaScript runs.
+The client script adds SPA navigation, responsive navigation controls, search,
+theme switching, and live homepage behavior.
 
-## 9.2 How it builds
+## 9.2 Build pipeline
 
-`npm run site:build` runs `astro build`, whose `prebuild` npm hook chains four steps before Astro itself runs:
+`npm run site:build` enters `site/`, installs its locked dependencies, and runs
+the following pipeline:
 
-1. **`sync-docs`** — generates `site/src/content/docs/docs/*.md` and `api.md` from `docs/N-*.md` and the AI usage guide. Single source of truth = `docs/`.
-2. **`build-examples`** — runs in two passes:
-   - Builds each complete app (`site/src/examples/complete/<name>/`) via Vite into `site/public/run/<name>/`. Each app's docs page links here as **Run live →**.
-   - Builds the nine-section reactivity demo (`examples/reactivity-demo/`) via its own Vite config (base `/kerf/demo/`) and copies the result into `site/public/demo/`.
-3. **`build-icons`** — generates the site's icon assets.
-4. **`gen-llms-txt`** — regenerates the site's `llms.txt` AI-discovery index.
+1. `sync-docs` maintains the explicit map of internal versus published docs.
+2. `build-examples` emits basic and complete applications under `public/run/`
+   and copies the reactivity demo to `public/demo/`.
+3. `build-icons` and `gen-llms-txt` generate public metadata assets.
+4. `build-content` parses frontmatter and Markdown, expands the small set of
+   repository-owned content directives, assigns heading anchors, and writes an
+   ignored page-data artifact.
+5. Vite bundles `site/src/scripts/site.tsx` and the shared stylesheet.
+6. `site/scripts/render-site.tsx` renders every route through
+   `renderSiteDocument()`, copies `public/`, and writes the 404, legacy redirect,
+   and sitemap.
+7. Pagefind indexes the completed static HTML under `site/dist/`.
 
-Astro then runs and copies `public/` into `dist/` as part of its normal static asset handling. The result: `site/dist/` contains the Starlight site at the root, the runnable complete apps under `dist/run/<name>/`, and the reactivity demo under `dist/demo/`. One artifact, one upload, no manual `cp` step.
+The `/kerf` base is owned by the renderer and Vite config. Complete and basic
+example bases are assigned per app in `site/scripts/build-examples.mjs`; the
+reactivity demo keeps its own `/kerf/demo/` Vite base.
 
-Bases:
+## 9.3 Client navigation and responsive shell
 
-- Starlight `base: '/kerf'` is configured in [`site/astro.config.mjs`](../site/astro.config.mjs).
-- Each complete-app build uses `base: '/kerf/run/<name>/'` (set per-app inside [`site/scripts/build-examples.mjs`](../site/scripts/build-examples.mjs)).
-- Reactivity-demo `base: '/kerf/demo/'` lives in [`examples/reactivity-demo/vite.config.ts`](../examples/reactivity-demo/vite.config.ts).
+`site/src/scripts/site-view.tsx` is the shared server-rendered shell. Desktop
+uses a persistent Kerf UI navigation sidebar and an on-page contents rail.
+Tablet and mobile use the same sidebar as an off-canvas drawer, opened from the
+Kerf UI toolbar; Escape, the scrim, a navigation choice, or the Close button
+dismisses it. Mobile collapses cards and pagination into one-column layouts and
+keeps tables/code horizontally scrollable.
 
-Without those bases, root-relative URLs would 404 on Pages.
+`site/src/scripts/site.tsx` installs the postcard router. On an internal route
+change it fetches that route's static HTML, parses `#site-root`, and asks
+`morph()` to apply the smallest DOM change. A missing or non-document target
+falls back to normal navigation, which is how the independent demo and runnable
+apps leave the documentation shell. Pagefind is dynamically imported only
+after the first non-empty search query.
 
-The basic single-concept examples (9 of them) are **not** built by this pipeline. They're inlined into their docs pages via per-example Astro wrapper components (`site/src/components/examples/basics/<n>-<name>.astro`), so Astro itself bundles their scripts as part of the normal `astro build`.
+## 9.4 Deployment
 
-## 9.3 How it deploys
+`.github/workflows/pages.yml` runs on every push to `main`:
 
-[`.github/workflows/pages.yml`](../.github/workflows/pages.yml) runs on every push to `main`:
+1. Install and build the root Kerf package.
+2. Run `npm run site:build` to produce the combined `site/dist/` artifact.
+3. Upload the artifact with GitHub's Pages upload action.
+4. Deploy from a separate least-privilege job with Pages/OIDC permissions.
 
-1. `npm ci` → installs kerf's deps.
-2. `npm run build` → emits `dist/` for the kerf package itself, which the demo and the complete apps consume via `kerfjs: file:..` (in `site/`) and `kerfjs: file:../..` (in `examples/reactivity-demo/`).
-3. `npm run site:build` → runs `prebuild` (sync-docs + build-examples) then `astro build`, producing the combined `site/dist/`.
-4. `actions/configure-pages@v5` → wires up Pages metadata.
-5. `actions/upload-pages-artifact@v3` with `path: site/dist` → uploads the bundle.
-6. A separate `deploy` job uses `actions/deploy-pages@v4` to publish.
+GitHub Pages source must be configured once as **GitHub Actions** in repository
+settings.
 
-The workflow uses least-privilege permissions — top-level `contents: read`, with `pages: write` / `id-token: write` granted only to the deploy job — and a single `pages` concurrency group with `cancel-in-progress: true`, so an overlapping push cancels the older in-flight run rather than queueing behind it.
+## 9.5 Install-script policy
 
-### 9.3.1 Install-script policy
+The site enables npm's strict allow-scripts mode. The reviewed locked installer
+set contains `esbuild` (allowed) and optional `fsevents` (denied); the linked
+root package's repository-only `prepare` script is also denied.
+`site/scripts/check-install-script-policy.mjs` runs during every install and
+fails if dependency churn changes that set.
 
-The site has a narrow npm install-script policy in `site/package.json`. It
-allows the locked `esbuild` and `sharp` installers that provide required
-platform binaries, and explicitly denies the local `kerfjs: file:..`
-dependency's `prepare` script because Husky setup is a repository concern, not
-a site dependency build step. `site/.npmrc` enables npm's
-`strict-allow-scripts` mode, so npm 11.19.1 and newer fail on any unreviewed
-installer instead of merely warning; older npm releases ignore that setting.
-
-`site/scripts/check-install-script-policy.mjs` runs as `preinstall` on every
-supported install. It pins the reviewed package/version set from
-`site/package-lock.json` (`esbuild@0.27.7`, `sharp@0.33.5`, and
-`sharp@0.34.5`) and fails when dependency churn introduces or upgrades an
-install script. Review the package and its lifecycle command before updating
-both the lockfile expectation and `allowScripts`; do not use npm's
-`dangerously-allow-all-scripts` escape hatch.
-
-## 9.4 One-time repo setup
-
-GitHub Pages source must be set to **GitHub Actions** in repo settings (`Settings → Pages → Source: GitHub Actions`). The workflow cannot enable Pages itself — that toggle is configured manually once.
-
-## 9.5 Constraints and non-goals
-
-- **Two builds, one origin.** The site at `/kerf/` and the demo at `/kerf/demo/` are independent — different framework, different toolchain, different bundles. They share only the artifact upload step. A change in one cannot break the other at build time.
-- **No redirect from the old `/kerf/` root.** Before this layout, `/kerf/` *was* the demo. After, `/kerf/` is the Starlight home and the demo continues to deploy at `/kerf/demo/`. The demo is **fully supported and the canonical "play with kerf" URL** — README.md links to it directly, and the build pipeline rebuilds it on every push to `main`. The Starlight site nav was deliberately reshaped (KF-49) to surface inline single-concept examples next to their docs, but the nine-section reactivity demo at `/kerf/demo/` remains the right link to send a colleague who wants to explore the framework outside the docs context. Anyone with a stale bookmark for the old `/kerf/` (root demo URL) lands on the marketing site instead — if preserving those inbound links matters, add a `site/public/_redirects` (or equivalent) in a follow-up.
-- **No server-side rendering.** `SafeHtml.toString()` works server-side, but both deploys are pure client-side mounts.
-- **Tied to the package homepage.** The `homepage` field in `package.json` points at the Pages site (`https://brianwestphal.github.io/kerf/`) — npm uses `homepage` as the package's project landing page, and the docs site is the front door; the GitHub repo remains the canonical source of truth.
-
-## 9.6 Local preview
-
-```bash
-npm run build           # required first — site / demo / complete apps all consume kerfjs file:..
-npm run site:dev        # builds the site, then serves the production output at
-                        # http://localhost:4321/kerf/ via `astro preview`
-                        # — search and other build-only behavior work locally.
-npm run site:dev:hmr    # `astro dev` instead — fast HMR for editing content,
-                        # but search and Pagefind index are disabled.
-```
-
-Both scripts run the `sync-docs` + `build-examples` pre-step (via `prebuild` for `site:dev`, `predev:hmr` for `site:dev:hmr`), so `/kerf/`, `/kerf/demo/`, and `/kerf/run/<name>/` all resolve from one local server.
-
-The first run takes longer because that pre-step builds each complete app + copies the reactivity demo into `site/public/`. Subsequent runs reuse the build cache.
-
-For a static preview without rebuilding:
+## 9.6 Local preview and verification
 
 ```bash
-npm run site:build
-cd site && npx astro preview
+npm run build
+npm run site:dev       # production build + Vite preview at /kerf/
+npm run site:build     # build without starting a server
+cd site && npm run test:e2e
 ```
+
+The browser suite covers direct loading of every established URL, static HTML,
+SPA history preservation, lazy search, live components, isolated examples, and
+desktop/tablet/mobile navigation behavior.
 
 ## 9.7 Update triggers
 
-Update this doc whenever:
-
-- Either build's base path or output location changes.
-- The Pages workflow is renamed, restructured, or replaced.
-- A third build is added under the same Pages deploy.
-- The repo moves to a new owner or name (the Pages URL changes accordingly).
+Update this document whenever the base path, route renderer, Pages workflow,
+example output layout, Pagefind integration, or responsive navigation contract
+changes.

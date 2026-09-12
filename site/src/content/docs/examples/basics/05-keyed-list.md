@@ -3,9 +3,6 @@ title: 5 · Keyed list with focus survival
 description: each() with reorder + an auto-tick that mutates the list while you type — focus, text, and caret survive every reshuffle.
 ---
 
-import { Code } from '@astrojs/starlight/components';
-import LiveExample from '../../../../components/examples/basics/05-keyed-list.astro';
-import source from '../../../../examples/basics/05-keyed-list/main.tsx?raw';
 
 The list reconciler matches rows by `data-key` (or `id`), preserves the matched DOM node, and only inserts/removes/moves what changed. The user-visible payoff: an `<input>` inside a row keeps its focus, value, and caret position even when the list reorders around it.
 

@@ -16,7 +16,7 @@
  *    simply absent on a fresh clone, which is fine).
  *
  * The scan is whole-file: prose, HTML comments, and fenced code blocks all
- * count, because Starlight renders all three.
+ * count, because the site publishes all three.
  *
  * Run via:
  *   node scripts/check-doc-site-tickets.mjs
@@ -39,7 +39,7 @@ function walkMarkdown(dir, out = []) {
   try {
     entries = readdirSync(dir);
   } catch {
-    // Generated Starlight copies are gitignored — absent on a fresh clone.
+    // Generated site copies are gitignored — absent on a fresh clone.
     return out;
   }
   for (const name of entries) {

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Generate the favicon set + PWA manifest from the canonical SVG sources in
- * `src/assets/`. Outputs land in `public/` so Astro picks them up as static
+ * `src/assets/`. Outputs land in `public/` so the site renderer copies them as static
  * assets at the configured base (/kerf/).
  *
  * Sources (committed):
@@ -40,7 +40,7 @@ const MASK_SRC = resolve(srcDir, 'mask-icon.svg');
 mkdirSync(outDir, { recursive: true });
 
 // PNG sizes wired into the head + manifest below. Keep this list and the
-// head config in astro.config.mjs in sync — adding a size here without a
+// head links in site-view.tsx in sync — adding a size here without a
 // matching <link> tag emits an orphan asset, and vice versa.
 const PNG_TARGETS = [
   { size: 16,  name: 'favicon-16.png' },
@@ -89,10 +89,10 @@ console.log('[build-icons] wrote public/favicon.svg');
 copyFileSync(MASK_SRC, resolve(outDir, 'mask-icon.svg'));
 console.log('[build-icons] wrote public/mask-icon.svg');
 
-// Web app manifest. `start_url` and `scope` are base-prefixed (matches astro
-// `base: '/kerf'` in astro.config.mjs). `theme_color` matches the lighter end
+// Web app manifest. `start_url` and `scope` match the `/kerf` base owned by
+// vite.config.ts and site-view.tsx. `theme_color` matches the lighter end
 // of the favicon's red gradient — Android uses it for the toolbar tint when
-// the site is added to home screen. `background_color` matches Starlight's
+// the site is added to home screen. `background_color` matches the site's
 // dark surface so the splash transition stays consistent in either theme.
 const manifest = {
   name: 'kerf',

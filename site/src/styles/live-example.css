@@ -4,7 +4,7 @@
  * baseline so individual main.tsx files don't need to repeat presentation CSS.
  *
  * The wrapper is rendered as <div id="app" class="kerf-live-example"> inside
- * a per-example .astro component. */
+ * an isolated page under /run/basics/. */
 
 /* ── wrapper ───────────────────────────────────────────────────────────── */
 
@@ -68,12 +68,7 @@
 .kerf-live-example button:not([class]) {
   appearance: none;
   cursor: pointer;
-  /* Starlight's markdown content styles add `margin-bottom: 1.25rem` to
-   * buttons by default — that pushes a button's effective box well below
-   * its visual extent, breaking `align-items: center` inside flex rows
-   * (the button gets centered *with its margin*, so the button itself
-   * lands at the top of the row). Force margin: 0 so demo buttons live
-   * inside their visible bounds. */
+  /* Keep controls inside their visible flex bounds. */
   margin: 0;
   padding: 0.4rem 0.9rem;
   border: 1px solid color-mix(in srgb, var(--sl-color-text) 22%, transparent);

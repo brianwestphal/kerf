@@ -27,7 +27,7 @@ kerf is web-only. The runtime targets the DOM directly. *(Note: kerf + Tauri or 
 
 → **[Astro](https://astro.build/)**
 
-If the page is fundamentally content (docs, marketing, a blog), Astro will out-deliver everyone. Use Astro for the shell and drop kerf into specific interactive islands if you need them. (We do exactly that for [this site](https://github.com/brianwestphal/kerf/tree/main/site).)
+If the page is fundamentally content (docs, marketing, a blog), Astro remains a strong default. Use Astro for the shell and drop kerf into specific interactive islands if you need them. Kerf's own documentation site instead uses a small repository-owned static generator because demonstrating a complete Kerf UI shell is one of its goals.
 
 ---
 

@@ -56,7 +56,7 @@ Each `/kerf/migrating/<framework>/` page follows the same five-section shape:
 
 Two entry points to the hub:
 
-- **Sidebar nav** — a `Migrating` section in `site/astro.config.mjs` with one entry per page (the index, the incremental-adoption page, and one per source framework). Always-visible, lets readers who are already on the docs site find it without going through the homepage.
+- **Sidebar nav** — a `Migrating` `MenuHeader` group in `site/scripts/lib/site-content.mjs`, rendered through the shared Kerf UI shell with one item per page. It is persistent on desktop and available from the tablet/mobile drawer.
 - **Hero CTA** — a `Coming from React?` button next to **Get started** / **View examples** on the homepage hero. The CTA links to the `/migrating/` index, not directly to the React page, so vanjs / Lit / Alpine arrivals aren't dead-ended. Framework-specific detection is intentionally NOT done.
 
 ## 10.6 Why not a tabbed view

@@ -7,11 +7,10 @@
 //
 // Kerfjs resolves from `site/node_modules/kerfjs` (a `file:..` symlink to the
 // repo root), so this build naturally exercises the latest `dist/`. The site
-// also has its own `tsconfig.json` that extends `astro/tsconfigs/strict`,
-// which Vite walks up to find when transforming the example apps' `.tsx`.
-// So `site/node_modules` must be populated before we run any build — the
-// root `npm ci` doesn't install site deps (they're a separate npm project),
-// so the CI `browser:` job hits a missing-astro error without this step.
+// has its own Vite toolchain and standalone `tsconfig.json`, which Vite walks
+// up to find when transforming the example apps' `.tsx`. So `site/node_modules`
+// must be populated before we run any build — the root `npm ci` doesn't install
+// site deps because they are a separate npm project.
 
 import { execSync } from 'node:child_process';
 import { existsSync, mkdirSync, rmSync } from 'node:fs';
@@ -27,12 +26,12 @@ const siteRoot = resolve(repoRoot, 'site');
 const outRoot = __dirname;
 
 function ensureSiteDeps() {
-  // Astro is what `site/tsconfig.json` extends and what Vite resolves when
-  // walking up from each app root. If it's missing, install site deps once.
+  // Vite builds these apps from the site's dependency tree. If it is missing,
+  // install site deps once.
   // Idempotent: `npm install` is a no-op when the lockfile is already
   // satisfied. Use `npm ci` in CI for a clean install when node_modules is
   // entirely absent — it's faster + lockfile-strict.
-  if (existsSync(resolve(siteRoot, 'node_modules/astro'))) return;
+  if (existsSync(resolve(siteRoot, 'node_modules/vite'))) return;
   const cmd = existsSync(resolve(siteRoot, 'node_modules'))
     ? 'npm install --no-audit --no-fund --silent'
     : 'npm ci --no-audit --no-fund --silent';

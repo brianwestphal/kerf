@@ -2,6 +2,7 @@ import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
   testDir: './tests',
+  testMatch: '**/*.spec.ts',
   fullyParallel: true,
   reporter: 'list',
   use: {
@@ -10,13 +11,11 @@ export default defineConfig({
   },
   projects: [
     { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
+    { name: 'tablet-chromium', use: { ...devices['iPad Pro 11'] } },
     { name: 'mobile-chromium', use: { ...devices['Pixel 7'] } },
   ],
   webServer: {
     command: 'npm run preview -- --host 127.0.0.1 --port 4321',
-    // Astro 7 auto-backgrounds preview under detected AI agents. Playwright
-    // owns this process and needs it to remain in the foreground.
-    env: { ASTRO_PREVIEW_BACKGROUND: '0' },
     port: 4321,
     reuseExistingServer: true,
   },

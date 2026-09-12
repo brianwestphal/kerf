@@ -3,9 +3,6 @@ title: 3 · Store
 description: defineStore — same cart, named state and actions.
 ---
 
-import { Code } from '@astrojs/starlight/components';
-import LiveExample from '../../../../components/examples/basics/03-store.astro';
-import source from '../../../../examples/basics/03-store/main.tsx?raw';
 
 A store is a thin convention layer over signals: named actions, a predictable shape, and `reset()` for free. Use stores when state has multiple consumers or when actions are non-trivial.
 

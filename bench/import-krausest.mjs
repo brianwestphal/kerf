@@ -14,7 +14,7 @@
  *   node bench/import-krausest.mjs <file.ts>  # parse a local results.ts copy
  *
  * Writes:
- *   - bench/results.json — CPU snapshot the homepage `PerfTable.astro` imports
+ *   - bench/results.json — CPU snapshot the site content generator imports
  *     at build time (same schema as before, plus a `source` block).
  *   - bench/results.md   — full human-readable CPU / memory / size tables.
  *
@@ -157,7 +157,7 @@ const tracked = TRACKED_DIRS.map((dir) => {
 
 const importedAt = new Date().toISOString();
 
-// ── results.json — CPU snapshot for PerfTable.astro ────────────────────────
+// ── results.json — CPU snapshot for the homepage performance table ─────────
 const snapshot = {
   capturedAt: importedAt,
   source: {

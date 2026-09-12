@@ -3,7 +3,6 @@ title: Complete apps
 description: Nine small but real apps, each exercising the patterns kerf is built around.
 ---
 
-import CompleteAppsGrid from '../../../../components/CompleteAppsGrid.astro';
 
 Nine runnable showcase apps. Each has its own page, an animated preview, and a one-click **Run live** below. They live under [`site/src/examples/complete/`](https://github.com/brianwestphal/kerf/tree/main/site/src/examples/complete) as real projects (drop into a fresh project with `kerfjs` installed and they run — eight are Vite projects; the live poll is served as authored source with no build at all). Two more complete apps in that directory — an htmx-style cart island and a Redux-style counter store — are demonstrated inside the [htmx](/kerf/migrating/htmx/) and [Redux](/kerf/migrating/redux/) migration guides instead.
 

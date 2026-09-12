@@ -3,9 +3,6 @@ title: 6 · Capture-phase delegate
 description: delegateCapture for non-bubbling events — focus and blur.
 ---
 
-import { Code } from '@astrojs/starlight/components';
-import LiveExample from '../../../../components/examples/basics/06-capture-delegate.astro';
-import source from '../../../../examples/basics/06-capture-delegate/main.tsx?raw';
 
 `focus` and `blur` don't bubble. `delegate()` (which uses bubble-phase) won't see them. `delegateCapture()` installs the listener with `capture: true` so the same root-based dispatch works.
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Historically synced ../docs/*.md into src/content/docs so Starlight rendered
+// Historically synced ../docs/*.md into src/content/docs so the site rendered
 // them verbatim. The site now presents its own consumer-authored pages instead
 // (the numbered docs/*.md stay the INTERNAL source of truth and are no longer
 // published verbatim), so every entry in MAP below has a `null` target and this
@@ -42,7 +42,7 @@ export const MAP = {
 };
 
 // Slug rewrites for inter-doc links: `(N-name.md)` and `(N-name.md#anchor)`
-// in the source need to point at the Starlight slug, which lives under /kerf/.
+// in the source need to point at the public slug, which lives under /kerf/.
 // Keep this aligned with MAP above.
 const LINK_REWRITE = {
   '1-overview.md': '/kerf/docs/overview/',
@@ -115,8 +115,7 @@ async function main() {
   // KF-211: the published /ai marketing page was removed along with the
   // /ai-evidence/ tree. `docs/ai/usage-guide.md` stays as the canonical
   // AI-tool reference (fetched directly by llms.txt-aware assistants); it
-  // is no longer mirrored as a Starlight page.
-  // eslint-disable-next-line no-console
+  // is no longer mirrored as a public page.
   console.log(`[sync-docs] wrote ${written.length} files`);
 }
 
@@ -124,7 +123,6 @@ async function main() {
 // check imports `MAP`) must not write files as a side effect.
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   main().catch((err) => {
-    // eslint-disable-next-line no-console
     console.error('[sync-docs] failed:', err);
     process.exit(1);
   });

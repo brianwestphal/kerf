@@ -5,7 +5,7 @@ description: Astro is a meta-framework; kerf is an island runtime. They compose.
 
 You're using (or considering) Astro. You're reading this because you want a tiny client-side reactivity layer for the interactive bits of your Astro site without adding the React / Preact / Vue / Svelte runtime as a peer dependency. Astro and kerf are not competitors — Astro is a meta-framework for content-driven sites that ships zero JS by default; kerf is a runtime for the interactive islands inside an Astro page.
 
-**This site is built with Astro and uses kerf for its own interactive examples.** The pattern below is the one the kerf site uses. See [`site/`](https://github.com/brianwestphal/kerf/tree/main/site) for the reference setup — that's the working Astro+kerf composition this page documents.
+**This site no longer uses Astro.** It is now generated and navigated entirely by Kerf so the documentation itself can exercise the full Kerf UI shell. The pattern below remains the recommended composition for an existing Astro content site that wants small interactive islands.
 
 ## 1. Where each tool fits
 

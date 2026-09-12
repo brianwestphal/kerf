@@ -6,8 +6,8 @@
  *   - the complete-apps index renders `.app-grid` of `.app-card`s, each with
  *     its own `.app-cta` (the small variant).
  *
- * Colors reuse Starlight's own action-button variables so these buttons match
- * the homepage hero's primary/secondary actions in both light and dark themes. */
+ * Colors reuse the site semantic aliases so these buttons match the homepage
+ * hero's primary/secondary actions in both light and dark themes. */
 
 .app-cta {
   display: flex;
@@ -32,8 +32,7 @@
   transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 }
 
-/* Primary — filled accent (mirrors Starlight's `.link-button.primary`, which
- * uses black text for guaranteed contrast on the accent fill in both themes). */
+/* Primary — filled accent with a high-contrast foreground in both themes. */
 .app-cta__run {
   color: var(--sl-color-black);
   background: var(--sl-color-text-accent);
@@ -61,8 +60,7 @@
 
 .app-grid {
   display: grid;
-  /* 15rem min keeps two columns inside Starlight's ~650px content column
-   * (between both sidebars) and collapses to one on mobile. */
+  /* 15rem min keeps two columns in the reading column and collapses on mobile. */
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr));
   gap: 1.25rem;
   margin-top: 1.5rem;

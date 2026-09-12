@@ -3,9 +3,6 @@ title: 9 · raw() + sanitization
 description: Markdown preview. raw() injects HTML, DOMPurify guarantees it's safe.
 ---
 
-import { Code } from '@astrojs/starlight/components';
-import LiveExample from '../../../../components/examples/basics/09-raw-sanitize.astro';
-import source from '../../../../examples/basics/09-raw-sanitize/main.tsx?raw';
 
 `raw(html)` injects pre-escaped HTML into the JSX output, no further escaping. Use it for: pre-rendered Markdown, server fragments, SVG icon literals, sanitized user input. It's `new SafeHtml(html)` — the caller is responsible for ensuring the input is safe.
 

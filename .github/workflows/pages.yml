@@ -29,10 +29,9 @@ jobs:
         with: { node-version: '${{ env.NODE_VERSION }}', cache: npm }
       - run: npm ci
       - run: npm run build
-      # site:build's prebuild hook handles everything else:
-      #   - sync-docs (docs/*.md → Starlight pages)
-      #   - build-examples (each complete app → public/run/<name>/, reactivity-demo → public/demo/)
-      # Astro then copies public/ into dist/, producing one combined artifact.
+      # site:build generates Markdown content, builds all runnable examples,
+      # renders every route with the shared Kerf JSX shell, then indexes the
+      # completed static artifact with Pagefind.
       - run: npm run site:build
       - uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5.0.0
       - uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3.0.1
