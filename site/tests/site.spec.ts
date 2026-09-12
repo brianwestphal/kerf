@@ -99,6 +99,7 @@ test('ships Kerf-rendered content and upgrades navigation to an SPA', async ({ p
 test('adapts the Kerf UI navigation for desktop, tablet, and mobile', async ({ page }, testInfo) => {
   await page.goto('./docs/overview/');
   const sidebar = page.locator('[data-site-sidebar]');
+  const navigation = sidebar.locator('.site-navigation');
   const menu = page.getByRole('button', { name: 'Open navigation' });
   if (testInfo.project.name === 'chromium') {
     await expect(sidebar).toBeVisible();
@@ -109,7 +110,34 @@ test('adapts the Kerf UI navigation for desktop, tablet, and mobile', async ({ p
     await expect(sidebar).not.toBeInViewport();
     await menu.click();
     await expect(sidebar).toBeInViewport();
+    await expect.poll(async () => (await sidebar.boundingBox())?.x).toBe(0);
     await expect(page.getByRole('button', { name: 'Close navigation' })).toBeVisible();
+  }
+  const alignment = await navigation.evaluate((node) => {
+    const bounds = node.getBoundingClientRect();
+    const styles = getComputedStyle(node);
+    const header = node.querySelector<HTMLElement>('.kui-menu-header h2')!.getBoundingClientRect();
+    const row = node.querySelector<HTMLElement>('.kui-menu-item')!.getBoundingClientRect();
+    const label = node.querySelector<HTMLElement>('.kui-menu-item__label')!.getBoundingClientRect();
+    return {
+      gutter: Math.abs(row.left - (bounds.left + parseFloat(styles.paddingLeft))),
+      labelColumn: Math.abs(header.left - label.left),
+      reservedIconColumn: label.left - row.left,
+    };
+  });
+  expect(alignment.gutter).toBeLessThanOrEqual(1);
+  expect(alignment.labelColumn).toBeLessThanOrEqual(1);
+  expect(alignment.reservedIconColumn).toBeGreaterThan(30);
+  if (testInfo.project.name === 'chromium') {
+    const tocAlignment = await page.locator('.site-toc').evaluate((node) => {
+      const header = node.querySelector<HTMLElement>('.kui-menu-header h2')!.getBoundingClientRect();
+      const label = node.querySelector<HTMLElement>('.kui-menu-item__label')!.getBoundingClientRect();
+      return Math.abs(header.left - label.left);
+    });
+    expect(tocAlignment).toBeLessThanOrEqual(1);
+  }
+  await page.screenshot({ path: testInfo.outputPath(`sidebar-spacing-${testInfo.project.name}.png`) });
+  if (testInfo.project.name !== 'chromium') {
     await page.getByRole('button', { name: 'Getting started' }).click();
     await expect(page).toHaveURL(/\/kerf\/getting-started\/$/);
     await expect(sidebar).not.toBeInViewport();

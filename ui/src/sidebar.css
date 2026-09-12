@@ -1,10 +1,10 @@
 .kui-sidebar {
-  padding-inline: var(--kui-sidebar-gutter);
+  padding-inline: var(--kui-sidebar-gutter, var(--kui-space-s, .75rem));
 }
 
 .kui-sidebar .kui-menu-item {
-  padding-inline: var(--kui-sidebar-row-padding-inline);
-  grid-template-columns: var(--kui-sidebar-icon-column-width) minmax(0, 1fr) auto;
+  padding-inline: var(--kui-sidebar-row-padding-inline, .55rem);
+  grid-template-columns: var(--kui-sidebar-icon-column-width, 1.125rem) minmax(0, 1fr) auto;
 }
 
 .kui-sidebar .kui-menu-item__icon { grid-column: 1; }
@@ -12,21 +12,21 @@
 .kui-sidebar .kui-menu-item__trailing { grid-column: 3; }
 
 .kui-sidebar .kui-menu-header {
-  padding-inline: var(--kui-sidebar-label-inset) var(--kui-sidebar-row-padding-inline);
+  padding-inline: var(--kui-sidebar-label-inset, calc(var(--kui-sidebar-row-padding-inline, .55rem) + var(--kui-sidebar-icon-column-width, 1.125rem) + var(--kui-sidebar-column-gap, .5rem))) var(--kui-sidebar-row-padding-inline, .55rem);
 }
 
 .kui-sidebar-section {
   display: grid;
   min-width: 0;
-  gap: var(--kui-space-2xs);
+  gap: var(--kui-space-2xs, .25rem);
 }
 
 .kui-sidebar-surface {
   min-width: 0;
-  padding: var(--kui-space-s) calc(var(--kui-sidebar-label-inset) - var(--kui-sidebar-surface-border-width));
-  border: var(--kui-sidebar-surface-border-width) solid var(--kui-color-border);
-  border-radius: var(--kui-radius-m);
-  background: var(--kui-color-surface-raised);
+  padding: var(--kui-space-s, .75rem) calc(var(--kui-sidebar-label-inset, calc(var(--kui-sidebar-row-padding-inline, .55rem) + var(--kui-sidebar-icon-column-width, 1.125rem) + var(--kui-sidebar-column-gap, .5rem))) - var(--kui-sidebar-surface-border-width, 1px));
+  border: var(--kui-sidebar-surface-border-width, 1px) solid var(--kui-color-border, currentColor);
+  border-radius: var(--kui-radius-m, .375rem);
+  background: var(--kui-color-surface-raised, Canvas);
 }
 
 .kui-sidebar .kui-sidebar {

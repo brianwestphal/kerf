@@ -34,8 +34,8 @@ function routeHref(path: string) {
 }
 
 function navigation(groups: NavigationGroup[], currentPath: string) {
-  return <nav class="site-navigation" aria-label="Documentation">
-    {groups.map((group) => <section class="site-navigation__group">
+  return <nav class="site-navigation kui-sidebar" aria-label="Documentation">
+    {groups.map((group) => <section class="site-navigation__group kui-sidebar-section">
       <MenuHeader label={group.label} />
       <div class="site-navigation__items">
         {group.items.map(([label, path]) => <MenuItem action="navigate" itemId={path} label={label} selected={currentPath === path} />)}
@@ -46,7 +46,7 @@ function navigation(groups: NavigationGroup[], currentPath: string) {
 
 function tableOfContents(page: SitePage) {
   if (page.toc.length === 0) return null;
-  return <aside class="site-toc" aria-label="On this page">
+  return <aside class="site-toc kui-sidebar" aria-label="On this page">
     <MenuHeader label="On this page" />
     {page.toc.map((entry) => <MenuItem action="scroll-to" itemId={entry.id} label={entry.label} className={`site-toc__item site-toc__item--${entry.depth}`} />)}
     <MenuItem action="scroll-to" itemId="site-top" label="Back to top" icon={icon('top')} className="site-toc__top" />
