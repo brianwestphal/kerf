@@ -112,6 +112,11 @@
       "browser": "./dist/browser/segmented-control.js",
       "import": "./dist/segmented-control.js"
     },
+    "./token-search-field": {
+      "types": "./dist/token-search-field.d.ts",
+      "browser": "./dist/browser/token-search-field.js",
+      "import": "./dist/token-search-field.js"
+    },
     "./select/register": {
       "types": "./dist/select-register.d.ts",
       "import": "./dist/select-register.js"
@@ -156,6 +161,7 @@
     "./loading-spinner.css": "./src/loading-spinner.css",
     "./select.css": "./src/select.css",
     "./segmented-control.css": "./src/segmented-control.css",
+    "./token-search-field.css": "./src/token-search-field.css",
     "./state-banner.css": "./src/state-banner.css",
     "./empty-state.css": "./src/empty-state.css",
     "./dialog-header.css": "./src/dialog-header.css",

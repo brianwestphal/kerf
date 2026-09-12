@@ -87,6 +87,18 @@ describe('consumer bundle boundaries', () => {
     expect(inputs).not.toContain('@awesome.me/webawesome');
   });
 
+  it('keeps TokenSearchField and its reachable icon CSS isolated', async () => {
+    const result = await bundle("import { TokenSearchField } from '@kerfjs/ui/token-search-field'; console.log(String(TokenSearchField({ id: 'search', label: 'Search' }))); ");
+    const inputs = Object.keys(result.metafile!.inputs).join('\n');
+    const css = output(result, '.css');
+    expect(inputs).toContain('dist/browser/token-search-field.js');
+    expect(css).toContain('.kui-token-search');
+    expect(css).toContain('[data-lucide]');
+    expect(css).not.toContain('.kui-toolbar');
+    expect(css).not.toContain('.kui-select');
+    expect(inputs).not.toContain('@awesome.me/webawesome');
+  });
+
   it('keeps the TabBar component and opt-in wiring free of Web Awesome registration', async () => {
     const result = await bundle("import { TabBar } from '@kerfjs/ui/tab-bar'; import { reorderTabs, wireTabBars } from '@kerfjs/ui/wire-tab-bars'; console.log(TabBar, reorderTabs, wireTabBars); ");
     const inputs = Object.keys(result.metafile!.inputs).join('\n');
@@ -162,9 +174,11 @@ describe('consumer bundle boundaries', () => {
     expect(pkg.exports['./select/register']).toBeDefined();
     expect(pkg.exports['./tab-bar']).toBeDefined();
     expect(pkg.exports['./segmented-control']).toBeDefined();
+    expect(pkg.exports['./token-search-field']).toBeDefined();
     expect(pkg.exports['./wire-tab-bars']).toBeDefined();
     expect(pkg.exports['./toolbar.css']).toBe('./src/toolbar.css');
     expect(pkg.exports['./tab-bar.css']).toBe('./src/tab-bar.css');
     expect(pkg.exports['./segmented-control.css']).toBe('./src/segmented-control.css');
+    expect(pkg.exports['./token-search-field.css']).toBe('./src/token-search-field.css');
   });
 });

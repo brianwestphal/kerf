@@ -38,6 +38,7 @@ Components return Kerf `SafeHtml`. They do not own application state or attach t
 | `LoadingSpinner` | `@kerfjs/ui/loading-spinner` | `@kerfjs/ui/loading-spinner.css` |
 | `Select` | `@kerfjs/ui/select` | `@kerfjs/ui/select.css` |
 | `SegmentedControl` | `@kerfjs/ui/segmented-control` | `@kerfjs/ui/segmented-control.css` |
+| `TokenSearchField`, `readTokenSearchField`, `placeTokenSearchCaret` | `@kerfjs/ui/token-search-field` | `@kerfjs/ui/token-search-field.css` |
 | `StateBanner` | `@kerfjs/ui/state-banner` | `@kerfjs/ui/state-banner.css` |
 | `EmptyState` | `@kerfjs/ui/empty-state` | `@kerfjs/ui/empty-state.css` |
 | `DialogHeader` | `@kerfjs/ui/dialog-header` | `@kerfjs/ui/dialog-header.css` |
@@ -136,6 +137,17 @@ Each choice remains a native button in sequential Tab order and exposes its
 value through `data-segment-value`. Override an instance through
 `--kui-segmented-{background|border|foreground|hover-background}` and
 `--kui-segmented-selected-{background|foreground|border|shadow}`.
+
+`TokenSearchField` is a token-controlled contenteditable searchbox that keeps
+free text and ordered filter chips in one field. Its editable text stays
+DOM-owned between token changes so typing does not replace the caret. Tokens
+expose stable edit/remove actions and remain atomic during editing; the app owns
+parsing, suggestions, query execution, and state. Use `readTokenSearchField()`
+after browser input to recover text plus token offsets, and
+`placeTokenSearchCaret()` when restoring focus after a controlled update.
+Clear actions should empty the editor's `textContent` before clearing app state.
+Override its surface through `--kui-token-search-{background|border}` and its
+chips through `--kui-token-search-token-{background|foreground}`.
 
 `TabBar` is controlled: pass ordered `AppTab` children, then wire its keyboard
 and same-bar drag behavior with `wireTabBars(root, { onReorder })`. During a

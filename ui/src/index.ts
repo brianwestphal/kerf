@@ -26,6 +26,14 @@ export {
 export { Select, type SelectChoice, type SelectProps } from './select.js';
 export { StateBanner, type StateBannerProps, type StateBannerTone } from './state-banner.js';
 export { TabBar, type TabBarProps } from './tab-bar.js';
+export {
+  placeTokenSearchCaret,
+  readTokenSearchField,
+  TokenSearchField,
+  type TokenSearchFieldProps,
+  type TokenSearchFieldValue,
+  type TokenSearchToken,
+} from './token-search-field.js';
 export { Toolbar, type ToolbarProps } from './toolbar.js';
 export { ToolbarControlGroup, type ToolbarControlGroupProps } from './toolbar-control-group.js';
 export { ToolbarText, type ToolbarTextProps, type ToolbarTextSize } from './toolbar-text.js';

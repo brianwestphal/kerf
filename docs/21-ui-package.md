@@ -83,6 +83,7 @@ nor `webawesome.css` do not install or bundle it.
 | Layout | `PageHeader`, `DialogHeader`, `ValueTable` | Page/dialog hierarchy and semantic definition lists |
 | Resize | `ResizableRegion`, `wireResizableRegions` | Pointer-captured resize plus arrows, Shift acceleration, Home, and End |
 | Choice controls | `SegmentedControl`, `Select` | Controlled exclusive buttons with toolbar/rounded/pill presentation; grouped Web Awesome popup choices with optional Lucide icons |
+| Search | `TokenSearchField`, `readTokenSearchField`, `placeTokenSearchCaret` | DOM-owned free text plus controlled ordered atomic filter chips; DOM reading and caret restoration without application query grammar |
 | Feedback | `StateBanner`, `EmptyState`, `LoadingSpinner` | Status/alert, empty/busy, and meaningful/decorative progress states |
 
 ## 21.4 Accessibility contract
@@ -96,6 +97,10 @@ nor `webawesome.css` do not install or bundle it.
 - `SegmentedControl` labels a group of native pressed buttons. Every enabled
   choice stays in sequential Tab order; the app handles its action and owns the
   selected value.
+- `TokenSearchField` exposes a named contenteditable searchbox, atomic chips
+  with named edit/remove buttons, and a named clear action. The application
+  owns parsing, suggestions, result feedback, and state; editable text remains
+  DOM-owned between controlled token changes to preserve the caret.
 - `AppTab` renders `role="tab"`, `aria-selected`, roving `tabindex`, and keyboard
   shortcut metadata. `TabBar` provides the containing list and scroll owner;
   `wireTabBars` provides arrows/Home/End, close activation, pointer reorder,
@@ -121,7 +126,8 @@ semantic theme tokens. All 70 free Web Awesome 3.12 modules have focused routes
 under a distinct collapsible ecosystem section with category subgroups, while a
 dedicated gallery spans Web Awesome actions, forms, structure/navigation,
 feedback, media, and formatting. The catalog includes every ToolbarControlGroup
-variant, toolbar/rounded/pill SegmentedControl variants, all StateBanner tones
+variant, toolbar/rounded/pill SegmentedControl variants, editable and disabled
+TokenSearchField states, all StateBanner tones
 plus a scoped palette override, reorderable overflowing tabs, light and dark
 themes, contrast, motion, selection, resize, and feedback states.
 Unit coverage uses the root repository thresholds. Consumer bundles prove

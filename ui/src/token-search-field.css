@@ -1,0 +1,141 @@
+.kui-token-search {
+  --kui-token-search-background: var(--kui-color-surface);
+  --kui-token-search-border: var(--kui-color-border);
+  --kui-token-search-token-background: var(--kui-color-accent);
+  --kui-token-search-token-foreground: var(--kui-color-accent-text);
+
+  display: grid;
+  width: 100%;
+  min-width: 0;
+  min-height: 2.5rem;
+  padding: .25rem .5rem;
+  box-sizing: border-box;
+  border: 1px solid var(--kui-token-search-border);
+  border-radius: var(--kui-radius-pill);
+  color: var(--kui-color-text);
+  background: var(--kui-token-search-background);
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
+  align-items: start;
+  gap: .4rem;
+}
+
+.kui-token-search:focus-within {
+  border-color: var(--kui-color-focus);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--kui-color-focus) 22%, transparent);
+}
+
+.kui-token-search[data-disabled="true"] {
+  opacity: .55;
+}
+
+.kui-token-search__leading {
+  display: inline-flex;
+  width: 1rem;
+  height: 1rem;
+  margin-block-start: .45rem;
+  color: var(--kui-color-text-quiet);
+}
+
+.kui-token-search__leading svg {
+  width: 100%;
+  height: 100%;
+}
+
+.kui-token-search__editor {
+  min-width: 5rem;
+  min-height: 1.75rem;
+  padding-block: .25rem 0;
+  outline: 0;
+  caret-color: var(--kui-color-accent-text);
+  font-size: var(--kui-font-s);
+  line-height: 1.35;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  cursor: text;
+}
+
+.kui-token-search__editor:empty::before {
+  color: var(--kui-color-text-quiet);
+  content: attr(data-placeholder);
+  pointer-events: none;
+}
+
+.kui-token-search__token {
+  display: inline-flex;
+  min-height: 1.45rem;
+  margin-inline: .125rem;
+  padding-inline-start: .45rem;
+  border-radius: var(--kui-radius-pill);
+  color: var(--kui-token-search-token-foreground);
+  background: var(--kui-token-search-token-background);
+  font-size: var(--kui-font-xs);
+  line-height: 1;
+  white-space: nowrap;
+  vertical-align: middle;
+  align-items: center;
+  gap: .1rem;
+}
+
+.kui-token-search__token button,
+.kui-token-search__clear {
+  appearance: none;
+  display: inline-grid;
+  padding: 0;
+  border: 0;
+  color: inherit;
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
+  place-items: center;
+}
+
+.kui-token-search__token-edit {
+  min-height: 1.45rem;
+}
+
+.kui-token-search__token-remove {
+  width: 1.35rem;
+  height: 1.35rem;
+  border-radius: var(--kui-radius-pill) !important;
+}
+
+.kui-token-search__token-remove:hover,
+.kui-token-search__token-remove:focus-visible,
+.kui-token-search__clear:hover,
+.kui-token-search__clear:focus-visible {
+  background: color-mix(in srgb, currentColor 12%, transparent);
+}
+
+.kui-token-search__token button:focus-visible,
+.kui-token-search__clear:focus-visible {
+  outline: var(--kui-focus-ring);
+  outline-offset: 1px;
+}
+
+.kui-token-search button:disabled {
+  cursor: default;
+}
+
+.kui-token-search__token svg {
+  width: .7rem;
+  height: .7rem;
+}
+
+.kui-token-search__clear,
+.kui-token-search__trailing {
+  width: 1.5rem;
+  min-height: 1.75rem;
+  color: var(--kui-color-text-quiet);
+}
+
+.kui-token-search__clear svg,
+.kui-token-search__trailing svg {
+  width: .85rem;
+  height: .85rem;
+}
+
+@media (forced-colors: active) {
+  .kui-token-search__token {
+    border: 1px solid ButtonText;
+  }
+}

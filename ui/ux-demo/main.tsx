@@ -15,13 +15,14 @@ import { SegmentedControl } from '@kerfjs/ui/segmented-control';
 import { Select } from '@kerfjs/ui/select';
 import { StateBanner } from '@kerfjs/ui/state-banner';
 import { TabBar } from '@kerfjs/ui/tab-bar';
+import { readTokenSearchField, TokenSearchField, type TokenSearchToken } from '@kerfjs/ui/token-search-field';
 import { Toolbar } from '@kerfjs/ui/toolbar';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
 import { ValueTable } from '@kerfjs/ui/value-table';
 import { wireResizableRegions } from '@kerfjs/ui/wire-resizable-regions';
 import { reorderTabs, wireTabBars } from '@kerfjs/ui/wire-tab-bars';
-import { delegate, delegateCapture, mount, signal } from 'kerfjs';
+import { batch, delegate, delegateCapture, mount, signal } from 'kerfjs';
 import { delegateActions } from 'kerfjs/actions';
 import { ArrowDownAZ, Bell, Check, ChevronDown, ChevronLeft, ChevronRight, CircleHelp, Columns3, Contrast, Folder, GitCompare, Inbox, List, Moon, MoreHorizontal, PanelLeft, PanelLeftOpen, Pin, Plus, Search, Settings, SlidersHorizontal, Star, Wrench, ZapOff } from 'lucide';
 
@@ -47,6 +48,11 @@ const tabBarTabs = signal([
   { id: 'examples', name: 'Consumer examples' },
 ]);
 const selectedChoice = signal('balanced');
+const tokenSearchQuery = signal('NOT  AND parser');
+const tokenSearchTokens = signal<TokenSearchToken[]>([
+  { value: 'tag:client', label: 'tag:client', offset: 4, accessibleLabel: 'client tag' },
+  { value: 'is:active', label: 'is:active', offset: 4 },
+]);
 const bannerTone = signal<'neutral' | 'info' | 'success' | 'warning' | 'danger'>('info');
 const toolbarChoice = signal<'list' | 'columns' | 'settings'>('list');
 const inspectorSection = signal<'summary' | 'activity' | 'files'>('summary');
@@ -202,6 +208,20 @@ function SegmentedControlDemo() {
   </section>;
 }
 
+function TokenSearchFieldDemo() {
+  return <section class="token-search-demo" data-demo="token-search-field" aria-label="TokenSearchField states">
+    <article>
+      <header><h3>Structured ticket search</h3><p>Text and atomic filters remain in one keyboard-focusable editor.</p></header>
+      <TokenSearchField id="catalog-search" label="Search tickets" query={tokenSearchQuery.value} tokens={tokenSearchTokens.value} autofocus editorAttributes={{ 'data-demo-token-search': 'true' }} />
+      <output aria-live="polite">{tokenSearchTokens.value.length} filters · {tokenSearchQuery.value || 'No free text'}</output>
+    </article>
+    <article>
+      <header><h3>Disabled</h3><p>Controlled read-only state preserves the complete expression.</p></header>
+      <TokenSearchField id="disabled-search" label="Saved search" query="release" tokens={[{ value: 'tag:design-system', label: 'tag:design-system', offset: 7 }]} disabled />
+    </article>
+  </section>;
+}
+
 function ToolbarTextDemo() {
   return <div class="demo-text-variants" data-demo="toolbar-text">
     <div><span>Large</span><ToolbarText text="Component library" size="large" /></div>
@@ -331,6 +351,7 @@ const demos: Partial<Record<CatalogId, () => ReturnType<typeof ToolbarDemo>>> = 
   toolbar: ToolbarDemo,
   'toolbar-control-group': ToolbarControlGroupDemo,
   'segmented-control': SegmentedControlDemo,
+  'token-search-field': TokenSearchFieldDemo,
   'toolbar-text': ToolbarTextDemo,
   menu: MenuDemo,
   'menu-header': MenuHeaderDemo,
@@ -515,6 +536,31 @@ const stopActions = delegateActions(app, 'click', {
     if (id === 'display-density' && (value === 'compact' || value === 'comfortable' || value === 'roomy')) displayDensity.value = value;
     if (value) actionLog.value = `Selected ${value}`;
   },
+  'edit-search-token': (_event, element) => {
+    const value = element.getAttribute('data-token-value');
+    const token = tokenSearchTokens.value.find((candidate) => candidate.value === value);
+    if (!token) return;
+    const offset = token.offset ?? tokenSearchQuery.value.length;
+    batch(() => {
+      tokenSearchTokens.value = tokenSearchTokens.value.filter((candidate) => candidate.value !== value);
+      tokenSearchQuery.value = `${tokenSearchQuery.value.slice(0, offset)}${token.value} ${tokenSearchQuery.value.slice(offset)}`;
+    });
+    actionLog.value = `Editing ${token.label}`;
+  },
+  'remove-search-token': (_event, element) => {
+    const value = element.getAttribute('data-token-value');
+    tokenSearchTokens.value = tokenSearchTokens.value.filter((token) => token.value !== value);
+    actionLog.value = `Removed ${value}`;
+  },
+  'clear-token-search': (_event, element) => {
+    const editor = element.closest('[data-component="token-search-field"]')?.querySelector<HTMLElement>('[data-token-search-editor]');
+    if (editor) editor.textContent = '';
+    batch(() => {
+      tokenSearchQuery.value = '';
+      tokenSearchTokens.value = [];
+    });
+    actionLog.value = 'Search cleared';
+  },
   'cycle-tone': () => { const tones = ['neutral', 'info', 'success', 'warning', 'danger'] as const; bannerTone.value = tones[(tones.indexOf(bannerTone.value) + 1) % tones.length]!; actionLog.value = `Banner tone: ${bannerTone.value}`; },
   'toggle-theme': () => { darkTheme.value = !darkTheme.value; document.documentElement.classList.toggle('demo-dark', darkTheme.value); actionLog.value = darkTheme.value ? 'Dark theme on' : 'Dark theme off'; },
   'toggle-contrast': () => { increasedContrast.value = !increasedContrast.value; document.documentElement.classList.toggle('demo-contrast', increasedContrast.value); actionLog.value = increasedContrast.value ? 'Increased contrast on' : 'Increased contrast off'; },
@@ -546,6 +592,11 @@ const stopResize = wireResizableRegions(app, { onCommit: ({ size }) => { regionS
 const stopSelect = delegate(app, 'change', 'wa-select', (_event, element) => {
   const value = (element as HTMLElement & { value?: string }).value;
   if (value === 'quiet' || value === 'balanced' || value === 'explicit') selectedChoice.value = value;
+});
+const stopTokenSearch = delegate(app, 'input', '[data-demo-token-search="true"]', (_event, element) => {
+  const value = readTokenSearchField(element as HTMLElement, tokenSearchTokens.value);
+  tokenSearchQuery.value = value.query;
+  tokenSearchTokens.value = value.tokens;
 });
 const stopRelationships = delegate(app, 'change', '[name="related-component"]', (_event, element) => {
   const value = (element as HTMLElement & { value?: string }).value;
@@ -615,4 +666,4 @@ const stopTabs = delegate<HTMLButtonElement>(app, 'keydown', '[data-demo="tabs"]
 });
 const stopTabBars = wireTabBars(app, { onReorder: ({ barId, sourceId, targetId, position, source }) => { tabBarTabs.value = reorderTabs(tabBarTabs.value, (tab) => tab.id, sourceId, targetId, position); actionLog.value = `${source === 'pointer' ? 'Dragged' : 'Moved'} ${sourceId} ${position} ${targetId} in ${barId}`; } });
 
-window.addEventListener('pagehide', () => { stopActions(); stopResize(); stopSelect(); stopRelationships(); stopAnimationSelects(); stopAnimationRanges(); stopAnimationEvents.forEach((dispose) => dispose()); stopIntersectionObserver(); stopMutationObserver(); stopResizeObserver(); stopTabs(); stopTabBars(); }, { once: true });
+window.addEventListener('pagehide', () => { stopActions(); stopResize(); stopSelect(); stopTokenSearch(); stopRelationships(); stopAnimationSelects(); stopAnimationRanges(); stopAnimationEvents.forEach((dispose) => dispose()); stopIntersectionObserver(); stopMutationObserver(); stopResizeObserver(); stopTabs(); stopTabBars(); }, { once: true });

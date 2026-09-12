@@ -39,6 +39,7 @@ describe('UX catalog metadata', () => {
       'AppTab',
       'TabBar',
       'SegmentedControl',
+      'TokenSearchField',
       'ResizableRegion',
       'Select',
       'StateBanner',
@@ -62,6 +63,7 @@ describe('UX catalog metadata', () => {
     expect(catalogEntriesUsing('wa-select').map((entry) => entry.id)).toEqual(['webawesome-theme', 'select']);
     expect(catalogEntriesUsing('wa-carousel-item').map((entry) => entry.id)).toEqual(['webawesome-theme', 'wa-carousel']);
     expect(catalogEntriesUsing('segmented-control').map((entry) => entry.id)).toEqual(['toolbar-control-group']);
+    expect(findCatalogEntry('token-search-field')?.uses).toEqual(['lucide-icon']);
   });
 
   it('marks supported ecosystem alternatives without presenting them as defaults', () => {

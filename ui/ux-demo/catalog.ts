@@ -112,6 +112,7 @@ export const kerfCatalog = [
   { id: 'tabs', name: 'AppTab', category: 'Navigation', kind: 'component', source: 'kerf', description: 'Roving-tabindex-ready tabs with optional close affordances.', uses: ['lucide-icon'] },
   { id: 'tab-bar', name: 'TabBar', category: 'Navigation', kind: 'component', source: 'kerf', description: 'Controlled, reorderable tab strips with horizontal overflow.', uses: ['tabs', 'toolbar-control-group'] },
   { id: 'segmented-control', name: 'SegmentedControl', category: 'Controls', kind: 'component', source: 'kerf', description: 'Controlled exclusive choices in toolbar, rounded-rectangle, and pill presentations.', uses: ['lucide-icon'] },
+  { id: 'token-search-field', name: 'TokenSearchField', category: 'Controls', kind: 'component', source: 'kerf', description: 'Token-controlled search editor with ordered, editable, removable filter chips.', uses: ['lucide-icon'] },
   { id: 'resize', name: 'ResizableRegion', category: 'Controls', kind: 'component', source: 'kerf', description: 'Pointer and keyboard-operable split region.', uses: [] },
   { id: 'select', name: 'Select', category: 'Controls', kind: 'component', source: 'kerf', description: 'Web Awesome select adapter with grouped choices.', uses: ['lucide-icon', 'wa-select', 'wa-option'] },
   { id: 'feedback', name: 'Feedback composition', category: 'Feedback', kind: 'composition', source: 'kerf', description: 'Banners, empty states, and labeled progress.', uses: ['state-banner', 'empty-state', 'loading-spinner'] },

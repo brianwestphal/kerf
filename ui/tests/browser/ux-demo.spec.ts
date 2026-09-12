@@ -27,6 +27,39 @@ test('loads component-reachable package CSS through browser subpaths', async ({ 
   await expect(page.locator('[data-component="empty-state"] .kui-loading-spinner')).toHaveCSS('display', 'block');
 });
 
+test('edits, removes, and clears controlled token search content', async ({ page, browserName }) => {
+  await page.setViewportSize({ width: 1100, height: 760 });
+  await page.goto('/?component=token-search-field');
+  const demo = page.locator('[data-demo="token-search-field"]');
+  const editor = demo.getByRole('searchbox', { name: 'Search tickets' });
+  await expect(editor).toBeFocused();
+  await expect(editor.locator('[data-component="token-search-token"]')).toHaveCount(2);
+  const disabled = demo.getByRole('searchbox', { name: 'Saved search' });
+  await expect(disabled).toHaveAttribute('contenteditable', 'false');
+  await expect(disabled.locator('button')).toHaveCount(2);
+  await expect(disabled.locator('button').first()).toBeDisabled();
+  await expect(disabled.locator('button').last()).toBeDisabled();
+  if (browserName === 'chromium') await page.screenshot({ path: 'test-results/token-search-field-light-wide.png', fullPage: true });
+
+  await demo.getByRole('button', { name: 'Remove client tag' }).click();
+  await expect(editor.locator('[data-component="token-search-token"]')).toHaveCount(1);
+  await demo.getByRole('button', { name: 'Edit is:active' }).click();
+  await expect(editor).toContainText('is:active');
+  await expect(editor.locator('[data-component="token-search-token"]')).toHaveCount(0);
+  await editor.press('End');
+  await editor.pressSequentially(' owner');
+  await expect(demo.locator('output')).toContainText('owner');
+
+  await demo.getByRole('button', { name: 'Clear search' }).first().click();
+  await expect(editor).toHaveText('');
+  await expect(editor).toHaveAttribute('data-placeholder', 'Search');
+
+  await page.reload();
+  await page.locator('[data-action="toggle-theme"]').click();
+  await page.setViewportSize({ width: 390, height: 844 });
+  if (browserName === 'chromium') await page.screenshot({ path: 'test-results/token-search-field-dark-narrow.png', fullPage: true });
+});
+
 test('themes representative free Web Awesome families with overridable semantic tokens', async ({ page, browserName }) => {
   await page.setViewportSize({ width: 1440, height: 1100 });
   await page.goto('/?component=webawesome-theme');

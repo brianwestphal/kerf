@@ -51,6 +51,19 @@ re-renders. Keep labels unique and meaningful even when `content` shows only an
 icon. Use tabs—not a segmented control—when choices switch page regions that
 need `tab`/`tabpanel` semantics.
 
+## TokenSearchField
+
+`TokenSearchField` exposes the editable surface as a named `searchbox`. Each
+chip is atomic (`contenteditable="false"`) and contains separately named edit
+and remove buttons; the clear action is also named. Disabled fields publish
+`aria-disabled` and stop editing without hiding the current expression. The
+application owns query parsing and must announce result-count or loading
+changes separately when that feedback is useful. Use `readTokenSearchField()`
+to ignore the chip buttons' visible text when reading browser-edited content,
+and `placeTokenSearchCaret()` to restore a text caret without landing inside a
+chip. Editable text is DOM-owned between token changes; a clear handler empties
+the editor's `textContent` before updating application state.
+
 ## Verification matrix
 
 For each changed component, inspect default, hover, focus, disabled, selected/pressed, busy/error, long-content, wide, narrow, light, dark, increased-contrast, reduced-motion, keyboard-only, and 200%-zoom states where applicable. DOM order must match reading and focus order, with no clipping or unreachable action.

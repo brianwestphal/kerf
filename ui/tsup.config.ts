@@ -17,6 +17,7 @@ const entries = [
   'loading-spinner',
   'select',
   'segmented-control',
+  'token-search-field',
   'select-register',
   'state-banner',
   'empty-state',
