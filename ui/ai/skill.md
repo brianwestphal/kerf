@@ -1,12 +1,33 @@
 ---
 name: kerf-ui
 description: Build interfaces with kerfjs and the @kerfjs/ui production component package. Use whenever code imports @kerfjs/ui or a task asks for Kerf UI components.
-kerf-ui-skill-version: 1.7.1
+kerf-ui-skill-version: 1.8.0
 ---
 
 # Building with @kerfjs/ui
 
-Read `../README.md`, `../docs/component-contract.md`, and `../docs/accessibility.md` before changing a consuming interface. Read `../docs/webawesome-theme.md` when using Web Awesome components or changing shared theme tokens.
+Read `../docs/component-selection.md` first, then `../README.md`, `../docs/component-contract.md`, and `../docs/accessibility.md` before changing a consuming interface. Read `../docs/webawesome-theme.md` when using Web Awesome components or changing shared theme tokens.
+
+Choose from the need, not from visual resemblance:
+
+1. Search the Kerf catalog and preferred Web Awesome subset.
+2. Reuse a primitive when purpose, anatomy, state, and interaction match.
+3. Compose primitives for recurring layout without restyling private descendants.
+4. Add a thin application adapter for copy, domain mapping, actions, routing, persistence, permissions, and transport.
+5. Build custom markup only when the semantic contract differs; if it recurs across products, open an upstream component or recipe request.
+
+Quick routing:
+
+| Need | Choose | Nearest alternatives / boundary |
+| --- | --- | --- |
+| Navigation row | `MenuItem` | Use an ordinary link or button when sidebar/menu anatomy and state do not apply. |
+| Page chrome or heading | `Toolbar`, `PageHeader`, or `DialogHeader` | Toolbar is persistent chrome; page and dialog headers identify different scopes. |
+| Exclusive choice | `TabBar`, `SegmentedControl`, or `Select` | Tabs switch tabpanels; segments expose a few choices; Select handles a longer value list. |
+| Status or absent content | `StateBanner` or `EmptyState` | Web Awesome callouts suit ecosystem content; toasts are transient and never the only record of important state. |
+| Adjustable or static columns | `ResizableRegion` or CSS grid | Use the component only for a user-operable controlled separator. |
+| Structured or ordinary search | `TokenSearchField` or an input | Use token search only when text and ordered filter chips form one editor. |
+
+The exhaustive public-component, helper, import, ownership, and Web Awesome overlap matrix is in [`component-selection.md`](../docs/component-selection.md). Use its linked recipes instead of inferring behavior from CSS.
 
 Hard rules:
 

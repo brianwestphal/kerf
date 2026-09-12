@@ -2,6 +2,15 @@
 
 `@kerfjs/ui` components are plain functions that return Kerf `SafeHtml`. They have no component instance or lifecycle.
 
+## Selection boundary
+
+Begin with the [need-first component matrix](./component-selection.md). Reuse a
+primitive only when purpose, anatomy, state, and interaction match. Compose
+public primitives for recurring layout; add a thin application adapter for
+product state and policy; use custom markup when the semantic contract differs.
+Recurring cross-product custom patterns belong in an upstream component or
+recipe request, not in duplicated markup or private-descendant CSS.
+
 ## Ownership boundaries
 
 - Components own semantic markup, stable anatomy, documented variants, ARIA projection, and package CSS hooks.

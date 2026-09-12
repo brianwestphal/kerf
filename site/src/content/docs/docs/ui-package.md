@@ -8,6 +8,23 @@ production-backed structure, navigation, form, and feedback primitives without
 adding a component runtime: every component is still a plain function returning
 Kerf `SafeHtml`.
 
+## Choose from the interface need
+
+Search the catalog first. Reuse a component when its purpose, anatomy, state,
+and interaction match; compose existing primitives for recurring layout; and
+keep product copy, domain mapping, actions, routing, persistence, permissions,
+and transport in a thin application adapter. Write custom markup only for a
+genuinely different semantic contract, and propose a shared component or recipe
+when that pattern recurs across products.
+
+The package's [component selection matrix](https://github.com/brianwestphal/kerf/blob/main/ui/docs/component-selection.md)
+maps every public primitive to use/avoid guidance, alternatives, required
+wiring, application ownership, import paths, and recipes. It also distinguishes
+common ambiguities: menu rows from ordinary buttons and links; tabs from
+segmented choices and selects; banners and empty states from callouts and
+toasts; toolbars from page/dialog headers; resizable panes from CSS grid; and
+token search from ordinary text input.
+
 ```bash
 npm install kerfjs @kerfjs/ui
 ```

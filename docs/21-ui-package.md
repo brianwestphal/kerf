@@ -151,7 +151,11 @@ and narrow review images.
 
 AI-oriented entry points ship with the package at `ui/ai/skill.md` and
 `ui/llms.txt`. They route tools to the component contract, accessibility rules,
-and catalog rather than asking an assistant to infer behavior from CSS.
+catalog, and the need-first `ui/docs/component-selection.md` decision matrix
+rather than asking an assistant to infer behavior from CSS. The UI package
+check verifies that every public runtime value and supported Web Awesome
+overlap remains represented, and rejects stale package imports or broken local
+recipe links.
 
 ## 21.6 Versioning and releases
 

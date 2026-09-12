@@ -109,6 +109,13 @@ SegmentedControl's native-button names and pressed state; do not remove the
 provided focus, reduced-motion, or forced-color styles. See
 [`docs/21-ui-package.md`](../21-ui-package.md) and `ui/ai/skill.md`.
 
+Choose UI from the interface need rather than an export name or visual
+resemblance. Search first, reuse a semantic match, compose public primitives,
+keep product policy in a thin application adapter, and write custom markup only
+for a genuinely different contract. The exhaustive use/avoid, alternatives,
+wiring, ownership, import, and recipe routing lives in
+[`ui/docs/component-selection.md`](../../ui/docs/component-selection.md).
+
 For visual review, `ui/ux-demo/` groups every public visual component by category
 in a master/detail catalog. Each `?component=<id>` route renders one focused
 production demo inside chrome that consumes the same semantic light/dark tokens;

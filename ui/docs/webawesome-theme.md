@@ -129,6 +129,9 @@ static content and labels that constraint next to the rendered output.
 
 The catalog lists every free Web Awesome component so support can be inspected;
 listing does not make each component the preferred Kerf application pattern.
+The [need-first decision matrix](./component-selection.md#web-awesome-overlap-policy)
+is the exhaustive Kerf/Web Awesome overlap index; the rules below explain the
+highest-risk choices.
 
 - Consider `wa-popup` for low-level anchored positioning when its flip, shift,
   or placement behavior avoids custom positioning code. Prefer the higher-level

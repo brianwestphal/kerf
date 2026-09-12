@@ -4,6 +4,7 @@ Accessible, production-backed UI primitives for kerf applications.
 
 - [Package guide](./README.md)
 - [AI skill](./ai/skill.md)
+- [Need-first component selection matrix](./docs/component-selection.md)
 - [Component contract](./docs/component-contract.md)
 - [Web Awesome theme contract](./docs/webawesome-theme.md)
 - [Accessibility and keyboard contracts](./docs/accessibility.md)
@@ -12,6 +13,8 @@ Accessible, production-backed UI primitives for kerf applications.
 - [UX catalog](./docs/ux-demo.md)
 
 The UX catalog is a category-grouped master/detail review surface with a focused route for every public visual component plus composition demos. Its collapsible ecosystem section also lists all 70 free Web Awesome 3.12 components, each with a focused themed route. Related entries use one grouped `Uses` / `Used by` selector across both sets; the shell, display preferences, and selected component share one semantic theme.
+
+Choose from the interface need: search the catalog, reuse a semantic match, compose existing primitives, add a thin application adapter for product concerns, and use custom markup only for a genuinely different contract. The selection matrix covers every public visual/helper export and the supported-but-not-preferred Web Awesome overlaps, including required wiring, application ownership, import subpaths, alternatives, and recipe links.
 
 Public components: `LucideIcon`, `Toolbar`, `ToolbarControlGroup`, `ToolbarText`, `SegmentedControl`, `TokenSearchField`, `readTokenSearchField`, `placeTokenSearchCaret`, `MenuItem`, `MenuHeader`, `ResizableRegion`, `wireResizableRegions`, `AppTab`, `TabBar`, `wireTabBars`, `reorderTabs`, `PageHeader`, `LoadingSpinner`, `Select`, `StateBanner`, `EmptyState`, `DialogHeader`, and `ValueTable`. `SegmentedControl` is controlled and supports toolbar, rounded-rectangle, and pill presentations with native pressed buttons in sequential Tab order. `Select` preserves icon-bearing option slots across Kerf rerenders and keys custom selected content by the controlled value. `TokenSearchField` controls tokens while keeping editable text DOM-owned between token changes, combining free text with ordered atomic filter chips while leaving query parsing and results to the application. Semantic state palettes are opinionated, Web Awesome-compatible, and overridable globally, by tone, or per instance.
 

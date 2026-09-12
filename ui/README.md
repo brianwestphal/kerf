@@ -2,6 +2,8 @@
 
 Accessible, composable UI primitives for [kerf](https://github.com/brianwestphal/kerf). The package ships production components, component-reachable CSS, accessibility and keyboard contracts, an AI-readable guide, and a production-backed UX catalog.
 
+Start interface work with the [need-first component selection matrix](./docs/component-selection.md). It distinguishes direct reuse, composition, thin application adapters, and genuinely custom semantics, with imports, required wiring, application ownership, alternatives, and recipes for every public primitive.
+
 ```bash
 npm install kerfjs @kerfjs/ui
 ```
@@ -209,6 +211,7 @@ than default patterns. The detailed rationale lives in the theme contract.
 
 ## Design and tool guidance
 
+- [Component selection and composition](./docs/component-selection.md)
 - [Design philosophy](./docs/design-philosophy.md)
 - [Apple HIG translation](./docs/apple-hig.md)
 - [Accessibility and keyboard contracts](./docs/accessibility.md)
