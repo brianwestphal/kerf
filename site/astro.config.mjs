@@ -24,12 +24,17 @@ export default defineConfig({
       description:
         'Tiny reactive UI framework — fine-grained signals + DOM diff + JSX. ~11 KB, no virtual DOM, no compiler.',
       customCss: [
+        './src/styles/kerf-site.css',
         './src/styles/live-example.css',
         './src/styles/kerf-compare.css',
         './src/styles/app-showcase.css',
         './src/styles/responsive-tables.css',
         './src/styles/home-hero.css',
       ],
+      components: {
+        Head: './src/components/Head.astro',
+        Search: './src/components/Search.astro',
+      },
       head: [
         {
           // KF-67: when the sidebar contains the current page deep enough that

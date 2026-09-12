@@ -1,0 +1,21 @@
+---
+import { renderShowcase } from '../scripts/showcase';
+
+const markup = renderShowcase().toString();
+---
+
+<section class="kerf-live-showcase" aria-labelledby="kerf-live-showcase-title">
+  <div class="kerf-live-showcase__intro">
+    <p class="kerf-live-showcase__eyebrow">This site is the demo</p>
+    <h2 id="kerf-live-showcase-title">Static at the door. Reactive once you’re inside.</h2>
+    <p>Every URL arrives as searchable HTML. After load, Kerf and <code>@kerfjs/ui</code> take over the interactive surfaces while Astro swaps pages without a reload.</p>
+  </div>
+  <div class="kerf-showcase-host" set:html={markup} />
+</section>
+
+<script>
+  import { hydrateShowcase } from '../scripts/showcase';
+
+  hydrateShowcase();
+  document.addEventListener('astro:page-load', hydrateShowcase);
+</script>

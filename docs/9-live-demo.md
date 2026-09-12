@@ -4,6 +4,16 @@ The nine-section reactivity demo under [`examples/reactivity-demo/`](../examples
 
 This doc covers what the deploy is, how it's wired up, and the constraints that shape it.
 
+The documentation site is also a production Kerf example. Astro and Starlight pre-render
+every documentation route as complete HTML, preserving direct-link SEO and the existing
+`/kerf/.../` URL structure. Astro's client router upgrades internal links after the first
+page arrives, so subsequent navigation swaps pages without a full document reload.
+
+Interactive site chrome is rendered with `kerfjs` and `@kerfjs/ui`. Pagefind generates its
+search index from the pre-rendered HTML during the build, and the Kerf command palette loads
+that index only after the visitor types a query. The home page architecture panel is a live
+Kerf mount built from `SegmentedControl`, `StateBanner`, and `ValueTable` primitives.
+
 ## 9.1 What gets published
 
 A single GitHub Pages artifact contains two builds, served from one origin:

@@ -15,7 +15,9 @@ if (JSON.stringify(actualPolicy) !== JSON.stringify(expectedPolicy)) {
 
 const expectedInstallers = ['esbuild@0.27.7', 'sharp@0.33.5', 'sharp@0.34.5'];
 const installers = Object.entries(packageLock.packages)
-  .filter(([, entry]) => entry.hasInstallScript)
+  // The root package has this preinstall script by definition; only audit
+  // dependency installers that npm may execute after the policy check.
+  .filter(([path, entry]) => path.startsWith('node_modules/') && entry.hasInstallScript)
   .map(([path, entry]) => `${path.split('node_modules/').at(-1)}@${entry.version}`)
   .sort();
 

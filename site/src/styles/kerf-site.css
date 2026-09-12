@@ -1,0 +1,303 @@
+@import '@kerfjs/ui/styles.css';
+
+:root {
+  --sl-color-accent-low: light-dark(#fff0f5, #3b1422);
+  --sl-color-accent: light-dark(#c91f57, #ff6b9a);
+  --sl-color-accent-high: light-dark(#70102f, #ffd6e3);
+  --kui-color-brand-fill-loud: var(--sl-color-accent);
+  --kui-color-brand-on-quiet: var(--sl-color-accent-high);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-image:
+    radial-gradient(circle at 76% -10%, color-mix(in srgb, var(--sl-color-accent) 10%, transparent), transparent 30rem),
+    linear-gradient(180deg, color-mix(in srgb, var(--sl-color-bg) 96%, var(--sl-color-accent-low)), var(--sl-color-bg) 30rem);
+}
+
+.header {
+  backdrop-filter: blur(20px) saturate(135%);
+}
+
+.kerf-search-host,
+.kerf-search {
+  width: 100%;
+}
+
+.kerf-search-trigger {
+  min-height: 2.5rem;
+  border: 1px solid var(--sl-color-gray-5);
+  background: color-mix(in srgb, var(--sl-color-bg-nav) 88%, transparent);
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.kerf-search-trigger .kui-menu-item__label {
+  color: var(--sl-color-gray-2);
+}
+
+.kerf-search-trigger kbd {
+  padding: .15rem .45rem;
+  border: 1px solid var(--sl-color-gray-5);
+  border-radius: .35rem;
+  color: var(--sl-color-gray-2);
+  background: var(--sl-color-gray-6);
+  font: 600 .7rem/1 var(--kui-font-sans);
+}
+
+.kerf-search-dialog {
+  position: fixed;
+  z-index: 1000;
+  inset: 0;
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.kerf-search-dialog:not([open]) {
+  display: none;
+}
+
+.kerf-search-scrim {
+  display: grid;
+  min-height: 100%;
+  padding: clamp(1rem, 8vh, 5rem) 1rem 1rem;
+  box-sizing: border-box;
+  background: rgb(8 8 12 / .62);
+  backdrop-filter: blur(12px);
+  place-items: start center;
+}
+
+.kerf-search-panel {
+  width: min(46rem, 100%);
+  max-height: min(42rem, calc(100vh - 2rem));
+  overflow: hidden;
+  border: 1px solid var(--kui-color-border);
+  border-radius: 1rem;
+  background: var(--kui-color-surface);
+  box-shadow: 0 1.5rem 5rem rgb(0 0 0 / .35);
+}
+
+.kerf-search-panel .kui-toolbar {
+  height: 3.75rem;
+  min-height: 3.75rem;
+  border-radius: 1rem 1rem 0 0;
+}
+
+.kerf-search-close {
+  width: auto;
+  grid-template-columns: auto;
+}
+
+.kerf-search-field {
+  display: grid;
+  margin: 1rem;
+  border: 1px solid var(--kui-color-border);
+  border-radius: .75rem;
+  background: var(--kui-color-surface-lowered);
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: .7rem;
+  padding: 0 .9rem;
+}
+
+.kerf-search-field:focus-within {
+  border-color: var(--kui-color-brand-border-loud);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--kui-color-brand-fill-loud) 18%, transparent);
+}
+
+.kerf-search-field input {
+  min-height: 3.25rem;
+  border: 0;
+  outline: 0;
+  color: var(--kui-color-text);
+  background: transparent;
+  font: 500 1rem var(--kui-font-sans);
+}
+
+.kerf-search-field .kui-loading-spinner {
+  width: 1rem;
+  height: 1rem;
+}
+
+.kerf-search-body {
+  min-height: 16rem;
+  max-height: min(29rem, calc(100vh - 14rem));
+  padding: 0 1rem 1rem;
+  overflow-y: auto;
+}
+
+.kerf-search-results {
+  display: grid;
+  gap: .3rem;
+}
+
+.kerf-search-result {
+  color: var(--kui-color-text);
+  text-decoration: none;
+  grid-template-columns: minmax(0, 1fr) auto;
+  padding: .7rem .8rem;
+}
+
+.kerf-search-result__copy {
+  display: grid;
+  min-width: 0;
+  gap: .2rem;
+}
+
+.kerf-search-result__copy strong,
+.kerf-search-result__copy span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.kerf-search-result__copy span {
+  color: var(--kui-color-text-quiet);
+  font-size: var(--kui-font-s);
+}
+
+.kerf-search-panel footer {
+  display: flex;
+  justify-content: space-between;
+  padding: .65rem 1rem;
+  border-top: 1px solid var(--kui-color-border-quiet);
+  color: var(--kui-color-text-quiet);
+  font: 600 var(--kui-font-2xs) var(--kui-font-sans);
+  letter-spacing: .02em;
+}
+
+@media (max-width: 49.99rem) {
+  .kerf-search-trigger {
+    width: 2.5rem;
+    padding: 0;
+    grid-template-columns: 1fr;
+  }
+
+  .kerf-search-trigger .kui-menu-item__label {
+    font-size: 0;
+  }
+
+  .kerf-search-trigger .kui-menu-item__label::before {
+    content: '⌕';
+    font-size: 1.35rem;
+  }
+
+  .kerf-search-trigger .kui-menu-item__trailing {
+    display: none;
+  }
+
+  .kerf-search-scrim {
+    padding: .5rem;
+  }
+
+  .kerf-search-panel {
+    max-height: calc(100vh - 1rem);
+    border-radius: .8rem;
+  }
+
+  .kerf-search-body {
+    max-height: calc(100vh - 13rem);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  ::view-transition-old(root) {
+    animation: 120ms ease-out both fade-out;
+  }
+
+  ::view-transition-new(root) {
+    animation: 180ms ease-out both fade-in;
+  }
+}
+
+@keyframes fade-out {
+  to { opacity: 0; }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+}
+
+.kerf-live-showcase {
+  display: grid;
+  margin: 1rem 0 3rem;
+  padding: clamp(1.25rem, 4vw, 2.25rem);
+  border: 1px solid color-mix(in srgb, var(--sl-color-accent) 24%, var(--sl-color-gray-5));
+  border-radius: 1.25rem;
+  background: linear-gradient(145deg, color-mix(in srgb, var(--sl-color-accent-low) 54%, var(--sl-color-bg)), var(--sl-color-bg));
+  grid-template-columns: minmax(0, 4fr) minmax(20rem, 5fr);
+  gap: clamp(1.5rem, 5vw, 4rem);
+  align-items: center;
+  box-shadow: 0 1rem 3rem rgb(0 0 0 / .08);
+}
+
+.kerf-live-showcase__intro h2 {
+  margin: .35rem 0 .75rem;
+  font-size: clamp(1.65rem, 3vw, 2.4rem);
+  line-height: 1.05;
+  letter-spacing: -.035em;
+}
+
+.kerf-live-showcase__intro > p:last-child {
+  color: var(--sl-color-gray-2);
+  line-height: 1.6;
+}
+
+.kerf-live-showcase__eyebrow {
+  margin: 0;
+  color: var(--sl-color-accent-high);
+  font-size: .72rem;
+  font-weight: 750;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+}
+
+.kerf-showcase {
+  display: grid;
+  gap: .8rem;
+}
+
+.kerf-showcase .kui-state-banner {
+  border-radius: .75rem;
+}
+
+.kerf-showcase .kui-state-banner__copy {
+  display: grid;
+  gap: .2rem;
+}
+
+.kerf-showcase .kui-state-banner__copy span {
+  overflow: visible;
+  white-space: normal;
+}
+
+.kerf-showcase .kui-value-table {
+  border-radius: .75rem;
+  background: color-mix(in srgb, var(--kui-color-surface) 80%, transparent);
+}
+
+@media (max-width: 56rem) {
+  .kerf-live-showcase {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 32rem) {
+  .kerf-live-showcase {
+    margin-inline: -.5rem;
+    padding: 1rem;
+  }
+
+  .kerf-showcase .kui-segmented-control {
+    grid-template-columns: 1fr;
+    border-radius: .75rem;
+  }
+}

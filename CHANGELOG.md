@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Rebuilt the documentation site as a static-first Kerf application: every existing route remains pre-rendered and directly loadable, Astro upgrades later navigation to SPA swaps, Pagefind search loads its generated index only after the first query, and the home page now demonstrates live `kerfjs` and `@kerfjs/ui` components.
 - Added a reusable controlled `TokenSearchField` to `@kerfjs/ui`, extracting Hot Sheet 2's free-text plus ordered atomic filter-chip field with accessible edit/remove/clear actions, DOM read and caret helpers, tree-shakeable styles, and full catalog coverage.
 - Reorganized the largest catch-all unit suites into behavior-focused files while preserving all 1,554 existing tests, assertion counts, transition matrices, coverage, and feature-index mappings.
 - Added a read-only pull-request site-build job and a tested output guard that rejects Astro route-collision and future-hard-error warnings before merge.

@@ -1,0 +1,14 @@
+---
+import { renderSearch } from '../scripts/search';
+
+const markup = renderSearch().toString();
+---
+
+<div class="kerf-search-host" set:html={markup} />
+
+<script>
+  import { hydrateSearch } from '../scripts/search';
+
+  hydrateSearch();
+  document.addEventListener('astro:page-load', hydrateSearch);
+</script>
