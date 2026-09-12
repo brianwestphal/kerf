@@ -72,6 +72,8 @@ button { font: inherit; }
 .demo-resize-content strong { font-size: 1.8rem; }
 .demo-control-stack { width: min(30rem, 100%); align-content: start; }
 .demo-control-stack > label { font-weight: 700; }
+.demo-select-selected { display: inline-flex; min-width: 0; align-items: center; gap: .5rem; }
+.demo-select-selected svg { width: 1rem; height: 1rem; flex: none; }
 .demo-spinner-row { display: flex; min-height: 3rem; padding: .75rem; border: 1px solid var(--kui-color-border); border-radius: var(--kui-radius-m); align-items: center; gap: .5rem; }
 .demo-icon-grid, .demo-spinner-grid, .demo-empty-grid { display: grid; width: min(46rem, 100%); grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
 .demo-icon-grid article, .demo-spinner-grid article, .demo-empty-grid article { display: grid; min-width: 0; padding: 1.25rem; border: 1px solid var(--kui-color-border); border-radius: var(--kui-radius-m); background: var(--kui-color-surface); box-shadow: var(--kui-shadow-s); align-content: center; justify-items: center; gap: .45rem; text-align: center; }

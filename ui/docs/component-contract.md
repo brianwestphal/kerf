@@ -64,6 +64,13 @@ override `--wa-*` values after the theme import. The shared `--wa-*` values feed
 both Web Awesome controls and Kerf's `--kui-*` foundation aliases, preventing a
 second application palette.
 
+`Select` owns its custom-element reconciliation seam. It gives each slotted
+option icon a stable key and leaves the upgraded Web Awesome-owned slot subtree
+untouched on later Kerf renders. Its custom selected slot is keyed by the
+controlled value so changed selections replace that content. Applications
+should pass ordinary `choices` and `renderSelected` output rather than adding
+their own morph-control attributes.
+
 `kerfjs` is a peer dependency and remains external in every build. Importing a toolbar must not bundle a second Kerf runtime, another UI component, Web Awesome registration, the UX catalog, or development tooling.
 
 ## Extracted versus application-specific

@@ -314,8 +314,8 @@ function SelectDemo() {
     <Select name="rendering-balance" value={selectedChoice.value} ariaLabel="Rendering balance" choices={[
       { value: 'quiet', label: 'Quiet', icon: Bell, iconName: 'bell', group: 'Attention' },
       { value: 'balanced', label: 'Balanced', icon: SlidersHorizontal, iconName: 'sliders-horizontal', group: 'Attention' },
-      { value: 'explicit', label: 'Explicit', icon: Check, iconName: 'check', group: 'Control', separatorBefore: true },
-    ]} />
+      { value: 'explicit', label: 'Explicit', icon: Wrench, iconName: 'wrench', group: 'Control', separatorBefore: true },
+    ]} renderSelected={(choice) => <span class="demo-select-selected">{choice.icon ? <LucideIcon icon={choice.icon} name={choice.iconName ?? choice.label.toLowerCase().replaceAll(' ', '-')} /> : null}<span>{choice.label}</span></span>} />
     <p>Live value: <strong data-select-value>{selectedChoice.value}</strong></p>
   </div>;
 }

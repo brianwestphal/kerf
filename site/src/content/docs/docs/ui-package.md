@@ -89,7 +89,9 @@ import '@kerfjs/ui/select/register';
 ```
 
 Web Awesome is an optional peer, so it stays out of applications and bundles
-that use neither the Select registration entry nor the shared theme.
+that use neither the Select registration entry nor the shared theme. Icon-bearing
+choices keep their slotted icons across Kerf rerenders, and custom selected
+content follows the controlled value without application-side morph workarounds.
 
 ## Accessibility
 

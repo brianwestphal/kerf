@@ -81,7 +81,10 @@ return disposers. Tab dragging automatically scrolls toward a nearby horizontal
 edge to expose earlier or later drop targets. Apply tab reorder reports with
 `reorderTabs()`. Import
 `@kerfjs/ui/select/register` once only when using Select; that is the explicit
-custom-element side effect and Web Awesome is otherwise optional.
+custom-element side effect and Web Awesome is otherwise optional. Supply
+icon-bearing choices and `renderSelected` output directly: `Select` preserves
+the Web Awesome option slots across Kerf rerenders and replaces custom selected
+content when the controlled value changes.
 
 Use `SegmentedControl` for a small exclusive choice set. Pick
 `appearance="toolbar"` when nesting it in `ToolbarControlGroup`; standalone

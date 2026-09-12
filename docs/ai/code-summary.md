@@ -414,7 +414,10 @@ resolution remain CSS-free. `kerfjs` and optional Web Awesome stay external;
 manual CSS source subpaths and the deliberate full `styles.css` layer remain
 exported. The package's consumer-bundle gate proves those CSS boundaries,
 root-barrel JavaScript tree-shaking, and that `Select` stays registration-free
-until `@kerfjs/ui/select/register` is imported.
+until `@kerfjs/ui/select/register` is imported. `Select` also owns the morph
+boundary for its upgraded Web Awesome markup: stable skipped option-icon keys
+retain slotted elements across rerenders, while value-keyed custom selected
+content is replaced when the controlled selection changes.
 
 ## Where to look for X
 

@@ -1,7 +1,7 @@
 ---
 name: kerf-ui
 description: Build interfaces with kerfjs and the @kerfjs/ui production component package. Use whenever code imports @kerfjs/ui or a task asks for Kerf UI components.
-kerf-ui-skill-version: 1.7.0
+kerf-ui-skill-version: 1.7.1
 ---
 
 # Building with @kerfjs/ui
@@ -15,7 +15,7 @@ Hard rules:
 3. Keep state, product copy, persistence, and domain mappings in the application. Do not add product-specific actions or fields to a generic component.
 4. Wire `data-action` hooks from one stable root with `delegate()` or `delegateActions()` and retain disposers.
 5. Use the opinionated `--kui-color-*` semantic ramps and component-level override properties. Override tokens at the narrowest useful scope; do not hard-code appearance-specific colors or replace private descendant rules.
-6. `Select` is pure until the app explicitly imports `@kerfjs/ui/select/register`; do not import Web Awesome's full registration bundle. When an app uses Web Awesome components, import the CSS-only `@kerfjs/ui/webawesome.css` theme once and keep importing individual Web Awesome component modules so their JavaScript remains tree-shakeable.
+6. `Select` is pure until the app explicitly imports `@kerfjs/ui/select/register`; do not import Web Awesome's full registration bundle. When an app uses Web Awesome components, import the CSS-only `@kerfjs/ui/webawesome.css` theme once and keep importing individual Web Awesome component modules so their JavaScript remains tree-shakeable. Pass icon-bearing `choices` and `renderSelected` content normally: `Select` preserves its slotted option icons across Kerf rerenders and keys selected content by the controlled value, so app wrappers must not add competing morph-control attributes.
 7. Decorative icons are hidden; controls are named; focus is visible; state never relies on color alone; reduced motion and increased contrast remain usable.
 8. `ResizableRegion` uses `wireResizableRegions()` for Arrow, Shift+Arrow, Home/End, and pointer behavior. The app owns size persistence.
 9. Use controlled `SegmentedControl` for a small exclusive choice set. Select `appearance="toolbar"` when nesting it inside `ToolbarControlGroup`; use rounded or pill shapes for standalone contexts. Handle its action, update `value`, keep meaningful choice labels, and preserve every enabled native button in sequential Tab order.

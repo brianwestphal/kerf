@@ -192,6 +192,10 @@ import '@kerfjs/ui/select/register';
 ```
 
 That boundary keeps Web Awesome and its custom-element side effects out of bundles that use unrelated components. Automated consumer-bundle tests enforce it.
+`Select` also owns the Kerf/Web Awesome reconciliation boundary: option icons
+keep stable slotted elements across rerenders, and `renderSelected` content is
+replaced when the controlled value changes. Consumers do not need to add
+`data-key` or `data-morph-skip` workarounds around choice icons.
 
 For application choices and panes, prefer Kerf's purpose-built primitives:
 `Select` over direct Web Awesome selection/dropdown composition,

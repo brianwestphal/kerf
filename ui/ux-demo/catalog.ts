@@ -114,7 +114,7 @@ export const kerfCatalog = [
   { id: 'segmented-control', name: 'SegmentedControl', category: 'Controls', kind: 'component', source: 'kerf', description: 'Controlled exclusive choices in toolbar, rounded-rectangle, and pill presentations.', uses: ['lucide-icon'] },
   { id: 'token-search-field', name: 'TokenSearchField', category: 'Controls', kind: 'component', source: 'kerf', description: 'Token-controlled search editor with ordered, editable, removable filter chips.', uses: ['lucide-icon'] },
   { id: 'resize', name: 'ResizableRegion', category: 'Controls', kind: 'component', source: 'kerf', description: 'Pointer and keyboard-operable split region.', uses: [] },
-  { id: 'select', name: 'Select', category: 'Controls', kind: 'component', source: 'kerf', description: 'Web Awesome select adapter with grouped choices.', uses: ['lucide-icon', 'wa-select', 'wa-option'] },
+  { id: 'select', name: 'Select', category: 'Controls', kind: 'component', source: 'kerf', description: 'Controlled Web Awesome select with grouped choices and rerender-stable icon slots.', uses: ['lucide-icon', 'wa-select', 'wa-option'] },
   { id: 'feedback', name: 'Feedback composition', category: 'Feedback', kind: 'composition', source: 'kerf', description: 'Banners, empty states, and labeled progress.', uses: ['state-banner', 'empty-state', 'loading-spinner'] },
   { id: 'state-banner', name: 'StateBanner', category: 'Feedback', kind: 'component', source: 'kerf', description: 'Polite status and assertive alert feedback with semantic tones.', uses: ['lucide-icon'] },
   { id: 'empty-state', name: 'EmptyState', category: 'Feedback', kind: 'component', source: 'kerf', description: 'Actionable empty and busy content states.', uses: ['lucide-icon', 'loading-spinner'] },

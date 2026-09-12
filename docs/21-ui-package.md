@@ -79,7 +79,11 @@ modules keeps their JavaScript tree-shakeable.
 `Select` is a Web Awesome adapter. Rendering it is pure; custom-element
 registration happens only after `import '@kerfjs/ui/select/register'`. Web
 Awesome is an optional peer so apps that use neither that registration entry
-nor `webawesome.css` do not install or bundle it.
+nor `webawesome.css` do not install or bundle it. Option icon slots carry
+stable per-select/per-choice morph keys and preserve the upgraded custom
+element's slot state across application rerenders. Custom selected content is
+keyed by the controlled value, so it is replaced when the selection changes
+instead of retaining stale content.
 
 ## 21.3 Initial component set
 

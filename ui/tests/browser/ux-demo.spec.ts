@@ -327,6 +327,60 @@ test('disclosure and breadcrumb chevrons match the Kerf Select scale', async ({ 
   expect(selectTransform).toMatch(/^matrix\(0\.5, 0, 0, 0\.5,/);
 });
 
+test('preserves Select option icons across Kerf rerenders and replaces selected content by value', async ({ page, browserName }) => {
+  await page.setViewportSize({ width: 1100, height: 760 });
+  await page.goto('/?component=select');
+  const demo = page.locator('[data-demo="select"]');
+  const select = demo.locator('[name="rendering-balance"]');
+  const optionIcons = select.locator('wa-option .kui-select__icon');
+  await expect(optionIcons).toHaveCount(3);
+  await expect(select.locator('.kui-select__custom-selected [data-lucide="sliders-horizontal"]')).toBeVisible();
+  await expect(select.locator('.kui-select__custom-selected')).toHaveAttribute('data-key', 'rendering-balance:balanced:custom-selected');
+  await optionIcons.evaluateAll((icons) => icons.forEach((icon, index) => { icon.setAttribute('data-browser-identity', String(index)); }));
+
+  await page.locator('[data-action="toggle-theme"]').click();
+  await expect(optionIcons).toHaveCount(3);
+  await expect(optionIcons.nth(0)).toHaveAttribute('data-browser-identity', '0');
+  await expect(optionIcons.nth(1)).toHaveAttribute('data-browser-identity', '1');
+  await expect(optionIcons.nth(2)).toHaveAttribute('data-browser-identity', '2');
+  await expect(select.locator('wa-option[value="quiet"] [data-lucide="bell"]')).toBeAttached();
+  await expect(select.locator('wa-option[value="balanced"] [data-lucide="sliders-horizontal"]')).toBeAttached();
+  await expect(select.locator('wa-option[value="explicit"] [data-lucide="wrench"]')).toBeAttached();
+
+  await select.evaluate((element) => {
+    const control = element as HTMLElement & { value: string };
+    control.value = 'explicit';
+    control.dispatchEvent(new Event('change', { bubbles: true, composed: true }));
+  });
+  await expect(page.locator('[data-select-value]')).toHaveText('explicit');
+  await expect(select.locator('.kui-select__custom-selected')).toHaveAttribute('data-key', 'rendering-balance:explicit:custom-selected');
+  await expect(select.locator('.kui-select__custom-selected [data-lucide="wrench"]')).toBeVisible();
+  await expect(optionIcons.nth(0)).toHaveAttribute('data-browser-identity', '0');
+  await expect(optionIcons.nth(1)).toHaveAttribute('data-browser-identity', '1');
+  await expect(optionIcons.nth(2)).toHaveAttribute('data-browser-identity', '2');
+
+  await Promise.all([
+    select.evaluate((element) => new Promise<void>((resolve) => element.addEventListener('wa-after-show', () => resolve(), { once: true }))),
+    select.click(),
+  ]);
+  await expect(select.locator('wa-option[value="explicit"]')).toBeVisible();
+  if (browserName === 'chromium') {
+    await page.screenshot({ path: 'test-results/select-icon-slots-wide.png' });
+    await Promise.all([
+      select.evaluate((element) => new Promise<void>((resolve) => element.addEventListener('wa-after-hide', () => resolve(), { once: true }))),
+      page.keyboard.press('Escape'),
+    ]);
+    await page.setViewportSize({ width: 390, height: 844 });
+    await demo.scrollIntoViewIfNeeded();
+    await Promise.all([
+      select.evaluate((element) => new Promise<void>((resolve) => element.addEventListener('wa-after-show', () => resolve(), { once: true }))),
+      select.click(),
+    ]);
+    await expect(select.locator('wa-option[value="explicit"]')).toBeVisible();
+    await page.screenshot({ path: 'test-results/select-icon-slots-narrow.png' });
+  }
+});
+
 test('animation specimen exposes settings, transport, lifecycle, and reduced-motion behavior', async ({ page, browserName }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/?component=wa-animation');
