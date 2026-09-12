@@ -710,6 +710,8 @@ test('reorders and horizontally scrolls controlled TabBars', async ({ page, brow
   await expect(bar.getByRole('tab')).toHaveCount(7);
   const source = bar.locator('.kui-app-tab[data-tab-id="components"]');
   const target = bar.locator('.kui-app-tab[data-tab-id="design-guidance"]');
+  await strip.evaluate((node) => { node.scrollLeft = 0; });
+  await expect.poll(() => strip.evaluate((node) => node.scrollLeft)).toBe(0);
   await source.dragTo(target, { targetPosition: { x: 100, y: 16 } });
   await expect(page.locator('[data-tab-order]')).toContainText('Design guidance · Components');
   if (browserName === 'chromium') await page.screenshot({ path: 'test-results/tab-bar-overflow-wide.png', fullPage: true });
