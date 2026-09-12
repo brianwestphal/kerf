@@ -23,7 +23,7 @@
         "id": { "type": "string", "minLength": 1 },
         "name": { "type": "string", "minLength": 1 },
         "category": { "type": "string", "minLength": 1 },
-        "kind": { "enum": ["component", "composition"] },
+        "kind": { "enum": ["component", "composition", "recipe"] },
         "source": { "enum": ["kerf", "webawesome"] },
         "description": { "type": "string" },
         "purpose": { "type": "string", "minLength": 1 },

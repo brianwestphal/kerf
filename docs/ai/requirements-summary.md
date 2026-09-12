@@ -1,5 +1,12 @@
 # Requirements summary — kerf
 
+`@kerfjs/ui` ships seven production-backed reference recipes (application
+shell, sidebar, workspace header, master-detail dialog, composer form,
+list-state lifecycle, and compact toolbar). They are lazy catalog compositions,
+not public monolithic components, with responsive, keyboard, state,
+theme/contrast/motion, zoom, drift, and ownership coverage. Source of truth:
+`docs/21-ui-package.md` and `ui/docs/recipes.md`.
+
 Synthesized view of every numbered doc in `docs/`, with status markers. Read this for a quick "what does kerf do" overview without opening every file.
 
 Status markers:

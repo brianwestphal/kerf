@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Added seven lazy, production-backed `@kerfjs/ui` composition recipes for application shells, sidebars, workspace headers, master-detail dialogs, composer forms, list-state lifecycles, and mixed-control toolbars, with stable catalog routes, canonical AI metadata, drift gates, responsive/keyboard/state coverage, and copyable ownership guidance.
 - Added a shipped, schema-described `@kerfjs/ui` machine-readable component catalog with deterministic typed UX projection and drift gates for public exports, package/CSS/registration paths, relationships, Web Awesome manifest coverage, AI guidance, routes, CSS hooks, and documentation links.
 - Added a canonical `@kerfjs/ui/layout.css` vocabulary for responsive page, pane, section, control, metadata, surface, dialog, and scroll ownership, with semantic variables, compact/narrow behavior, consumer and AI guidance, normalized catalog compositions, and wide/intermediate/narrow/200%-zoom geometry coverage.
 - Added a need-first `@kerfjs/ui` component-selection matrix and automated drift gate so AI tools choose among reuse, composition, thin application adapters, custom semantics, and overlapping Web Awesome components without inferring contracts from implementation CSS.

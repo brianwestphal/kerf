@@ -32,6 +32,18 @@ compositions, and supported Web Awesome choices; checked generation and drift
 gates keep its ids, imports, CSS paths, relationships, routes, and links aligned
 with the package and production catalog.
 
+## Production recipes
+
+The [production composition recipes](https://github.com/brianwestphal/kerf/blob/main/ui/docs/recipes.md)
+show seven complete application boundaries: a resizable desktop shell,
+navigation sidebar, workspace header, master-detail dialog, composer form,
+list loading/empty/stale/error/populated states, and a compact toolbar that
+distinguishes grouped actions, segmented choices, Select, and ordinary buttons.
+Each has a stable UX-catalog route and names what the recipe owns versus the
+application adapter. They use public component subpaths and semantic
+`layout.css`/`sidebar.css` roles rather than copied component markup or private
+descendant styling.
+
 ```bash
 npm install kerfjs @kerfjs/ui
 ```

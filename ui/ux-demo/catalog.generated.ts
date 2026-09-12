@@ -318,6 +318,115 @@ export const generatedKerfCatalog = [
     "source": "kerf",
     "description": "Meaningfully labeled or decorative progress.",
     "uses": []
+  },
+  {
+    "id": "recipe-app-shell",
+    "name": "Desktop application shell",
+    "category": "Recipes",
+    "kind": "recipe",
+    "source": "kerf",
+    "description": "Toolbar, navigation, content, and inspector shell with controlled resizing and explicit pane scroll owners.",
+    "uses": [
+      "toolbar",
+      "toolbar-text",
+      "toolbar-control-group",
+      "menu-header",
+      "menu-item",
+      "page-header",
+      "resize",
+      "value-table",
+      "layout"
+    ]
+  },
+  {
+    "id": "recipe-navigation-sidebar",
+    "name": "Navigation sidebar",
+    "category": "Recipes",
+    "kind": "recipe",
+    "source": "kerf",
+    "description": "Aligned navigation sections with icon and iconless rows, a surface block, disclosure, and footer actions.",
+    "uses": [
+      "menu-header",
+      "menu-item",
+      "toolbar",
+      "toolbar-control-group"
+    ]
+  },
+  {
+    "id": "recipe-workspace-header",
+    "name": "Workspace header",
+    "category": "Recipes",
+    "kind": "recipe",
+    "source": "kerf",
+    "description": "Page identity with primary, secondary, and overflow actions that relocate at narrow widths.",
+    "uses": [
+      "page-header",
+      "state-banner",
+      "layout"
+    ]
+  },
+  {
+    "id": "recipe-master-detail-dialog",
+    "name": "Master-detail dialog",
+    "category": "Recipes",
+    "kind": "recipe",
+    "source": "kerf",
+    "description": "Production modal containing a DialogHeader, navigable record master list, and ValueTable detail.",
+    "uses": [
+      "dialog-header",
+      "menu-header",
+      "menu-item",
+      "value-table",
+      "wa-dialog",
+      "wa-button"
+    ]
+  },
+  {
+    "id": "recipe-composer-form",
+    "name": "Composer form",
+    "category": "Recipes",
+    "kind": "recipe",
+    "source": "kerf",
+    "description": "Label, help, validation, status, and action rhythm for a realistic publishing form.",
+    "uses": [
+      "select",
+      "state-banner",
+      "wa-input",
+      "wa-textarea",
+      "wa-button",
+      "layout"
+    ]
+  },
+  {
+    "id": "recipe-list-workspace-states",
+    "name": "List workspace states",
+    "category": "Recipes",
+    "kind": "recipe",
+    "source": "kerf",
+    "description": "Deterministic loading, empty, populated, stale refresh, and error states around one stable list workspace.",
+    "uses": [
+      "page-header",
+      "state-banner",
+      "empty-state",
+      "loading-spinner",
+      "layout"
+    ]
+  },
+  {
+    "id": "recipe-compact-toolbar",
+    "name": "Compact toolbar choices and actions",
+    "category": "Recipes",
+    "kind": "recipe",
+    "source": "kerf",
+    "description": "A compact toolbar that distinguishes grouped commands, a visible exclusive choice, a longer Select, and one ordinary action.",
+    "uses": [
+      "toolbar",
+      "toolbar-text",
+      "toolbar-control-group",
+      "segmented-control",
+      "select",
+      "lucide-icon"
+    ]
   }
 ] as const;
 

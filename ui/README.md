@@ -4,6 +4,11 @@ Accessible, composable UI primitives for [kerf](https://github.com/brianwestphal
 
 Start interface work with the [need-first component selection matrix](./docs/component-selection.md). It distinguishes direct reuse, composition, thin application adapters, and genuinely custom semantics, with imports, required wiring, application ownership, alternatives, and recipes for every public primitive.
 
+For connective application patterns, use the seven [production composition
+recipes](./docs/recipes.md). Each has a stable catalog route, runnable state,
+public-subpath source, semantic layout ownership, and explicit application
+customization boundaries.
+
 ```bash
 npm install kerfjs @kerfjs/ui
 ```

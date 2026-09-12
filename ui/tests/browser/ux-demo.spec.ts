@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-import { catalog, kerfCatalog, webAwesomeCatalog } from '../../ux-demo/catalog.js';
+import { catalog, catalogSections, kerfCatalog, webAwesomeCatalog } from '../../ux-demo/catalog.js';
 
 test('loads the Web Awesome specimen bundle only when a matching route needs it', async ({ page }) => {
   await page.goto('/?component=lucide-icon');
@@ -517,7 +517,7 @@ test('observer specimens expose visible, user-driven events', async ({ page, bro
 test('catalog routes every production component family and supports its stateful controls', async ({ page, browserName }) => {
   test.setTimeout(90_000);
   await page.goto('/');
-  await expect(page.locator('.catalog-sidebar [data-component="menu-header"]')).toHaveCount(6);
+  await expect(page.locator('.catalog-sidebar [data-component="menu-header"]')).toHaveCount(catalogSections.length + 1);
   await expect(page.locator('.catalog-sidebar [data-component="menu-item"]')).toHaveCount(kerfCatalog.length);
   const ecosystemToggle = page.getByRole('button', { name: `Web Awesome (${webAwesomeCatalog.length})` });
   await expect(ecosystemToggle).toHaveAttribute('aria-expanded', 'false');
@@ -530,7 +530,8 @@ test('catalog routes every production component family and supports its stateful
   await expect(page.locator('[data-demo="lucide-icon"]')).toBeVisible();
   for (const entry of catalog) {
     await page.goto(`/?component=${entry.id}`);
-    await expect(page.locator(`[data-demo="${entry.id}"]`)).toBeVisible();
+    const stableRouteMarker = entry.kind === 'recipe' ? 'data-recipe' : 'data-demo';
+    await expect(page.locator(`[${stableRouteMarker}="${entry.id}"]`)).toBeVisible();
     if (entry.source === 'webawesome') {
       await expect(page.locator(entry.id).first()).toBeAttached();
       await expect(page.locator('[data-webawesome-catalog]')).toBeVisible();
@@ -558,7 +559,11 @@ test('catalog routes every production component family and supports its stateful
   await expect(page.getByRole('group', { name: 'Used by' })).toBeVisible();
   await page.keyboard.press('Escape');
   await page.goto('/?component=resize');
-  await expect(page.locator('[data-relationships-for="resize"]')).toHaveCount(0);
+  const resizeRelationships = page.locator('[data-relationships-for="resize"]');
+  await expect(resizeRelationships.locator('[name="related-component"]')).toHaveCount(1);
+  await resizeRelationships.locator('[name="related-component"]').click();
+  await expect(page.getByRole('group', { name: 'Used by' })).toContainText('Desktop application shell');
+  await page.keyboard.press('Escape');
 
   const themeButton = page.locator('[data-action="toggle-theme"]');
   await themeButton.click();

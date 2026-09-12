@@ -6,6 +6,7 @@ Accessible, production-backed UI primitives for kerf applications.
 - [AI skill](./ai/skill.md)
 - [Machine-readable component catalog](./ai/component-catalog.json)
 - [Need-first component selection matrix](./docs/component-selection.md)
+- [Production composition recipes](./docs/recipes.md)
 - [Component contract](./docs/component-contract.md)
 - [Web Awesome theme contract](./docs/webawesome-theme.md)
 - [Accessibility and keyboard contracts](./docs/accessibility.md)

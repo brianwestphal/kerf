@@ -177,7 +177,22 @@ browser/CSS/registration paths, relationships, Web Awesome's installed custom
 elements manifest, AI coverage, renderer routes, public CSS hooks, and links.
 The package's JavaScript and side-effect boundaries do not change.
 
-## 21.6 Versioning and releases
+## 21.6 Production composition recipes
+
+Seven task-oriented recipes bridge primitives and product adapters: a resizable
+application shell, navigation sidebar, workspace header, master-detail dialog,
+composer form, list-state lifecycle, and compact mixed-control toolbar. They
+are lazy catalog modules rather than new runtime exports. Each uses public
+component subpaths plus `layout.css`/`sidebar.css`, declares what the recipe
+owns versus application policy, and has a stable `?component=recipe-*` route.
+`ui/docs/recipes.md` is the copyable guide; canonical recipe facts live beside
+component facts in `ui/ai/component-catalog.json` and project into the typed
+catalog. A dedicated drift gate checks sources, imports, loaders, routes, and AI
+links. Browser coverage exercises keyboard flows, deterministic transitions,
+light/dark/contrast/reduced-motion, wide/intermediate/narrow layout, and 200%
+zoom.
+
+## 21.7 Versioning and releases
 
 `scripts/release.sh` bumps `kerfjs`, `eslint-plugin-kerfjs`,
 `create-kerf-component`, and `@kerfjs/ui` together. The dedicated

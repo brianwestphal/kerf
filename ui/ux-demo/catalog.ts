@@ -1,6 +1,6 @@
 import { generatedKerfCatalog, generatedWebAwesomeCatalog } from './catalog.generated.js';
 
-export const catalogCategories = ['Foundation', 'Structure', 'Navigation', 'Controls', 'Feedback'] as const;
+export const catalogCategories = ['Foundation', 'Structure', 'Navigation', 'Controls', 'Feedback', 'Recipes'] as const;
 export type KerfCatalogCategory = typeof catalogCategories[number];
 
 export const webAwesomeCategories = ['Actions', 'Forms', 'Layout', 'Navigation', 'Feedback', 'Media', 'Helpers'] as const;
@@ -11,7 +11,7 @@ export interface CatalogEntry {
   id: string;
   name: string;
   category: CatalogCategory;
-  kind: 'component' | 'composition';
+  kind: 'component' | 'composition' | 'recipe';
   source: 'kerf' | 'webawesome';
   description: string;
   uses?: readonly string[];
@@ -19,11 +19,12 @@ export interface CatalogEntry {
 
 export const kerfCatalog = generatedKerfCatalog satisfies readonly CatalogEntry[];
 export const webAwesomeCatalog = generatedWebAwesomeCatalog satisfies readonly CatalogEntry[];
+export const recipeCatalog = kerfCatalog.filter((entry) => entry.kind === 'recipe');
 
 export type KerfCatalogId = typeof kerfCatalog[number]['id'];
 export type WebAwesomeCatalogId = typeof webAwesomeCatalog[number]['id'];
 
-export const catalog = [...kerfCatalog, ...webAwesomeCatalog] as const satisfies readonly CatalogEntry[];
+export const catalog = [...kerfCatalog.filter((entry) => entry.kind !== 'recipe'), ...webAwesomeCatalog, ...recipeCatalog] as const satisfies readonly CatalogEntry[];
 export type CatalogId = typeof catalog[number]['id'];
 
 export const catalogSections = catalogCategories.map((category) => ({

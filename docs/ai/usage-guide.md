@@ -101,6 +101,12 @@ controls support filled or outlined surfaces and rounded or pill shapes. Handle
 its action at the root, read `data-segment-value`, update the controlled value,
 and keep all choices in normal Tab order.
 
+When several primitives form a shell, sidebar, workspace header,
+master-detail dialog, composer, list-state surface, or mixed-control toolbar,
+start from `ui/docs/recipes.md`. The runnable recipes use only public production
+subpaths and semantic layout owners. Preserve the included primitives and
+replace only application copy, state, permissions, persistence, and transport.
+
 When the app uses Web Awesome's broader free component set, import
 `@kerfjs/ui/webawesome.css` once. That CSS-only entry includes Web Awesome's
 base stylesheet and the Hot Sheet 2-aligned Kerf theme but registers no custom

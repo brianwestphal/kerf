@@ -1,12 +1,12 @@
 ---
 name: kerf-ui
 description: Build interfaces with kerfjs and the @kerfjs/ui production component package. Use whenever code imports @kerfjs/ui or a task asks for Kerf UI components.
-kerf-ui-skill-version: 1.10.0
+kerf-ui-skill-version: 1.11.0
 ---
 
 # Building with @kerfjs/ui
 
-Read `../docs/component-selection.md` first, then `../README.md`, `../docs/component-contract.md`, and `../docs/accessibility.md` before changing a consuming interface. Read `../docs/webawesome-theme.md` when using Web Awesome components or changing shared theme tokens.
+Read `../docs/component-selection.md` first, then `../docs/recipes.md`, `../README.md`, `../docs/component-contract.md`, and `../docs/accessibility.md` before changing a consuming interface. Read `../docs/webawesome-theme.md` when using Web Awesome components or changing shared theme tokens.
 
 Choose from the need, not from visual resemblance:
 
@@ -26,6 +26,11 @@ Quick routing:
 | Status or absent content | `StateBanner` or `EmptyState` | Web Awesome callouts suit ecosystem content; toasts are transient and never the only record of important state. |
 | Adjustable or static columns | `ResizableRegion` or CSS grid | Use the component only for a user-operable controlled separator. |
 | Structured or ordinary search | `TokenSearchField` or an input | Use token search only when text and ordered filter chips form one editor. |
+
+For a complete shell, sidebar, workspace header, master-detail dialog, composer
+form, list-state lifecycle, or mixed-control toolbar, start from the runnable
+reference in [`docs/recipes.md`](../docs/recipes.md). Preserve its production
+primitives and semantic ownership; replace application state, policy, and copy.
 
 The concise human decision matrix is in [`component-selection.md`](../docs/component-selection.md). For exhaustive tool retrieval, load [`component-catalog.json`](./component-catalog.json), the canonical metadata for every public component/helper, composition, and supported Web Awesome entry. Use its linked current recipes instead of inferring behavior from CSS.
 

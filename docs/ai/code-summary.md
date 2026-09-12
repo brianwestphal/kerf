@@ -2,6 +2,12 @@
 
 A directory map + reverse index ("where do I look for X?") for Claude Code sessions and other AI assistants. Keep this in sync with `src/` whenever a file is added, removed, or renamed.
 
+The optional `ui/ux-demo/recipes/` directory contains seven literal dynamic
+recipe chunks, a shared per-instance controller contract, and semantic
+container-responsive CSS. `ui/scripts/check-recipes.mjs` keeps those sources,
+canonical `ui/ai/component-catalog.json` facts, package imports, docs, and
+stable catalog routes synchronized.
+
 ## Directory tree
 
 ```

@@ -23,7 +23,7 @@ describe('UX catalog metadata', () => {
     expect(artifact.schemaVersion).toBe(1);
     expect(artifact.package).toBe('@kerfjs/ui');
     expect(artifact.entries.map(({ id }) => id)).toEqual(catalog.map(({ id }) => id));
-    expect(artifact.entries).toHaveLength(93);
+    expect(artifact.entries).toHaveLength(100);
     expect(artifact.entries.every((entry) => entry.useWhen.length > 0 && entry.avoidWhen.length > 0)).toBe(true);
     expect(artifact.entries.every((entry) => entry.links.catalogRoute === `?component=${entry.id}` && entry.links.documentation && entry.links.recipe)).toBe(true);
     expect(artifact.entries.find(({ id }) => id === 'tab-bar')?.publicExports).toEqual(['TabBar', 'wireTabBars', 'reorderTabs']);
@@ -86,12 +86,12 @@ describe('UX catalog metadata', () => {
     expect(findCatalogEntry('empty-state')?.uses).toEqual(['lucide-icon', 'loading-spinner']);
     expect(findCatalogEntry('toolbar-control-group')?.uses).toEqual(['lucide-icon', 'segmented-control']);
     expect(findCatalogEntry('missing')).toBeUndefined();
-    expect(catalogEntriesUsing('loading-spinner').map((entry) => entry.id)).toEqual(['feedback', 'empty-state']);
-    expect(catalogEntriesUsing('resize')).toEqual([]);
+    expect(catalogEntriesUsing('loading-spinner').map((entry) => entry.id)).toEqual(['feedback', 'empty-state', 'recipe-list-workspace-states']);
+    expect(catalogEntriesUsing('resize').map((entry) => entry.id)).toEqual(['recipe-app-shell']);
     expect(findCatalogEntry('wa-select')?.uses).toEqual(['wa-icon', 'wa-popup', 'wa-tag', 'wa-option']);
     expect(catalogEntriesUsing('wa-select').map((entry) => entry.id)).toEqual(['webawesome-theme', 'select']);
     expect(catalogEntriesUsing('wa-carousel-item').map((entry) => entry.id)).toEqual(['webawesome-theme', 'wa-carousel']);
-    expect(catalogEntriesUsing('segmented-control').map((entry) => entry.id)).toEqual(['toolbar-control-group']);
+    expect(catalogEntriesUsing('segmented-control').map((entry) => entry.id)).toEqual(['toolbar-control-group', 'recipe-compact-toolbar']);
     expect(findCatalogEntry('token-search-field')?.uses).toEqual(['lucide-icon']);
   });
 

@@ -29,6 +29,8 @@ import { delegateActions } from 'kerfjs/actions';
 import { ArrowDownAZ, Bell, Check, ChevronDown, ChevronLeft, ChevronRight, CircleHelp, Columns3, Contrast, Folder, GitCompare, Inbox, List, Moon, MoreHorizontal, PanelLeft, PanelLeftOpen, Pin, Plus, Search, Settings, SlidersHorizontal, Star, Wrench, ZapOff } from 'lucide';
 
 import { catalog, catalogEntriesUsing, type CatalogEntry, type CatalogId, catalogSections, findCatalogEntry, isCatalogId, type KerfCatalogId, webAwesomeCatalog, type WebAwesomeCatalogId, webAwesomeCatalogSections } from './catalog.js';
+import { isRecipeId, type RecipeId, recipeLoaders } from './recipes/loaders.js';
+import type { RecipeController } from './recipes/types.js';
 
 const app = document.querySelector<HTMLElement>('#app');
 if (!app) throw new Error('Missing #app');
@@ -66,6 +68,9 @@ const reducedMotion = signal(false);
 const webAwesomeReady = signal(false);
 let webAwesomeDemos: Record<WebAwesomeCatalogId, () => ReturnType<typeof ToolbarDemo>> | undefined;
 let webAwesomeLoad: Promise<void> | undefined;
+const recipeControllers = new Map<RecipeId, RecipeController>();
+const recipeLoads = new Map<RecipeId, Promise<void>>();
+const recipeRevision = signal(0);
 
 const icon = (node: Parameters<typeof LucideIcon>[0]['icon'], name: string) => <LucideIcon icon={node} name={name} />;
 const button = (label: string, action: string) => <button type="button" class="demo-button" data-action={action}>{label}</button>;
@@ -365,7 +370,7 @@ function LayoutDemo() {
   </div>;
 }
 
-const demos: Record<KerfCatalogId, () => ReturnType<typeof ToolbarDemo>> = {
+const demos: Record<Exclude<KerfCatalogId, RecipeId>, () => ReturnType<typeof ToolbarDemo>> = {
   'lucide-icon': LucideIconDemo,
   'webawesome-theme': WebAwesomeThemeDemo,
   layout: LayoutDemo,
@@ -399,15 +404,35 @@ function ensureWebAwesomeDemos(): Promise<void> {
   return webAwesomeLoad;
 }
 
+function ensureRecipe(id: RecipeId): Promise<void> {
+  const pending = recipeLoads.get(id);
+  if (pending) return pending;
+  const load = recipeLoaders[id]().then(({ createRecipe }) => {
+    recipeControllers.set(id, createRecipe((message) => { actionLog.value = message; }));
+    recipeRevision.value += 1;
+  });
+  recipeLoads.set(id, load);
+  return load;
+}
+
 function Stage() {
   const selected = findCatalogEntry(selectedDemo.value)!;
+  if (isRecipeId(selected.id)) {
+    void recipeRevision.value;
+    const controller = recipeControllers.get(selected.id);
+    if (!controller) {
+      void ensureRecipe(selected.id);
+      return <LoadingSpinner label={`Loading ${selected.name} recipe`} />;
+    }
+    return controller.render();
+  }
   const needsWebAwesome = selected.source === 'webawesome' || selected.id === 'webawesome-theme';
   if (needsWebAwesome && !webAwesomeReady.value) {
     void ensureWebAwesomeDemos();
     return <LoadingSpinner label={`Loading ${selected.name} preview`} />;
   }
   if (selected.source === 'webawesome') return webAwesomeDemos![selected.id as WebAwesomeCatalogId]();
-  return demos[selectedDemo.value as KerfCatalogId]();
+  return demos[selectedDemo.value as Exclude<KerfCatalogId, RecipeId>]();
 }
 
 function DemoRelationships({ entry }: { entry: CatalogEntry }) {
@@ -427,6 +452,7 @@ function selectDemo(id: string): void {
   if (!isCatalogId(id)) return;
   const selected = findCatalogEntry(id)!;
   if (selected.source === 'webawesome' || selected.id === 'webawesome-theme') void ensureWebAwesomeDemos();
+  if (isRecipeId(selected.id)) void ensureRecipe(selected.id);
   selectedDemo.value = id;
   if (selected.source === 'webawesome') webAwesomeExpanded.value = true;
   const url = new URL(location.href);
@@ -493,6 +519,12 @@ const stopActions = delegateActions(app, 'click', {
   'select-demo': (_event, element) => {
     const id = element.getAttribute('data-item-id');
     if (id) selectDemo(id);
+  },
+  'recipe-action': (_event, element) => {
+    const id = selectedDemo.value;
+    if (!isRecipeId(id)) return;
+    const target = element as HTMLElement;
+    recipeControllers.get(id)?.action(target.dataset.recipeCommand ?? '', target);
   },
   'toggle-webawesome-catalog': () => { webAwesomeExpanded.value = !webAwesomeExpanded.value; actionLog.value = webAwesomeExpanded.value ? 'Web Awesome catalog expanded' : 'Web Awesome catalog collapsed'; },
   'show-wa-dialog': () => { actionLog.value = 'Dialog opened'; const dialog = document.querySelector<HTMLElement & { open: boolean }>('#catalog-wa-dialog'); if (dialog) dialog.open = true; },
@@ -610,10 +642,21 @@ const stopActions = delegateActions(app, 'click', {
   'log-danger': () => { actionLog.value = 'Danger banner action'; },
 });
 
-const stopResize = wireResizableRegions(app, { onCommit: ({ size }) => { regionSize.value = size; actionLog.value = `Panel resized to ${size}px`; } });
+const stopResize = wireResizableRegions(app, { onCommit: ({ id, size }) => {
+  if (id.startsWith('recipe-') && isRecipeId(selectedDemo.value)) recipeControllers.get(selectedDemo.value)?.resize?.(id, size);
+  else { regionSize.value = size; actionLog.value = `Panel resized to ${size}px`; }
+} });
 const stopSelect = delegate(app, 'change', 'wa-select', (_event, element) => {
   const value = (element as HTMLElement & { value?: string }).value;
   if (value === 'quiet' || value === 'balanced' || value === 'explicit') selectedChoice.value = value;
+});
+const dispatchRecipeChange = (_event: Event, element: Element) => {
+  if (isRecipeId(selectedDemo.value)) recipeControllers.get(selectedDemo.value)?.change?.(element as HTMLElement);
+};
+const stopRecipeChanges = delegate(app, 'change', '[data-recipe] wa-select, [data-recipe] wa-input, [data-recipe] wa-textarea', dispatchRecipeChange);
+const stopRecipeInputs = delegate(app, 'input', '[data-recipe] wa-input, [data-recipe] wa-textarea', dispatchRecipeChange);
+const stopRecipeDialogs = delegate(app, 'wa-after-hide', '[data-recipe] wa-dialog', (_event, element) => {
+  if (isRecipeId(selectedDemo.value)) recipeControllers.get(selectedDemo.value)?.afterHide?.(element as HTMLElement);
 });
 const stopTokenSearch = delegate(app, 'input', '[data-demo-token-search="true"]', (_event, element) => {
   const value = readTokenSearchField(element as HTMLElement, tokenSearchTokens.value);
@@ -688,4 +731,4 @@ const stopTabs = delegate<HTMLButtonElement>(app, 'keydown', '[data-demo="tabs"]
 });
 const stopTabBars = wireTabBars(app, { onReorder: ({ barId, sourceId, targetId, position, source }) => { tabBarTabs.value = reorderTabs(tabBarTabs.value, (tab) => tab.id, sourceId, targetId, position); actionLog.value = `${source === 'pointer' ? 'Dragged' : 'Moved'} ${sourceId} ${position} ${targetId} in ${barId}`; } });
 
-window.addEventListener('pagehide', () => { stopActions(); stopResize(); stopSelect(); stopTokenSearch(); stopRelationships(); stopAnimationSelects(); stopAnimationRanges(); stopAnimationEvents.forEach((dispose) => dispose()); stopIntersectionObserver(); stopMutationObserver(); stopResizeObserver(); stopTabs(); stopTabBars(); }, { once: true });
+window.addEventListener('pagehide', () => { stopActions(); stopResize(); stopSelect(); stopRecipeChanges(); stopRecipeInputs(); stopRecipeDialogs(); stopTokenSearch(); stopRelationships(); stopAnimationSelects(); stopAnimationRanges(); stopAnimationEvents.forEach((dispose) => dispose()); stopIntersectionObserver(); stopMutationObserver(); stopResizeObserver(); stopTabs(); stopTabBars(); }, { once: true });

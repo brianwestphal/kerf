@@ -15,6 +15,24 @@ The application adapter is usually a plain function that maps domain state to
 component props plus stable `data-action` values. It is not a fork of package
 markup or CSS.
 
+## Production recipes
+
+Use the [complete recipe guide](./recipes.md) when several primitives form one
+application boundary:
+
+| Task | Stable catalog route |
+| --- | --- |
+| Desktop application shell | [Catalog](../ux-demo/) · `?component=recipe-app-shell` |
+| Navigation sidebar | [Catalog](../ux-demo/) · `?component=recipe-navigation-sidebar` |
+| Workspace header | [Catalog](../ux-demo/) · `?component=recipe-workspace-header` |
+| Master-detail dialog | [Catalog](../ux-demo/) · `?component=recipe-master-detail-dialog` |
+| Composer form | [Catalog](../ux-demo/) · `?component=recipe-composer-form` |
+| List workspace states | [Catalog](../ux-demo/) · `?component=recipe-list-workspace-states` |
+| Compact toolbar choices and actions | [Catalog](../ux-demo/) · `?component=recipe-compact-toolbar` |
+
+Recipes use public production exports and show ownership boundaries; they are
+copyable reference compositions, not new monolithic components.
+
 ## Problem-to-component matrix
 
 | Interface need | Use when | Do not use when; nearest alternative | Required wiring | Application owns | Import | Recipe |

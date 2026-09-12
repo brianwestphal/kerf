@@ -176,6 +176,7 @@
     "src/*.css",
     "ai",
     "docs",
+    "ux-demo/recipes",
     "llms.txt",
     "README.md",
     "LICENSE"
@@ -187,6 +188,7 @@
     "demo:serve": "vite preview --config ux-demo/vite.config.ts",
     "catalog:sync": "node scripts/sync-component-catalog.mjs",
     "check:catalog": "node scripts/sync-component-catalog.mjs --check && node scripts/check-component-catalog.mjs",
+    "check:recipes": "node scripts/check-recipes.mjs",
     "check:guidance": "node scripts/check-decision-guidance.mjs",
     "lint": "eslint src tests ux-demo --max-warnings 0",
     "typecheck": "node node_modules/typescript7/bin/tsc --noEmit",
@@ -194,7 +196,7 @@
     "test:unit": "vitest run tests/unit --coverage",
     "test:bundle": "npm run build && vitest run tests/bundle",
     "test:e2e": "npm run demo:build && playwright test",
-    "check": "npm run check:catalog && npm run check:guidance && npm run lint && npm run typecheck && npm test && npm run demo:build && npm pack --dry-run",
+    "check": "npm run check:catalog && npm run check:recipes && npm run check:guidance && npm run lint && npm run typecheck && npm test && npm run demo:build && npm pack --dry-run",
     "prepublishOnly": "npm run check"
   },
   "peerDependencies": {

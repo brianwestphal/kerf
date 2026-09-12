@@ -2,9 +2,13 @@
 
 Run `npm run dev` from `ui/`. The catalog is a development and review surface, not a second implementation.
 
+Seven lazy production-composition routes live under the `Recipes` category.
+Each `?component=recipe-*` route uses public package primitives, real wiring,
+deterministic state, and semantic layout owners from the [recipe guide](./recipes.md).
+
 - It imports public component subpaths, exercising their browser-selected reachable CSS rather than a catalog-only style path.
 - Every first-party visual component and every free Web Awesome 3.12 component has its own stable `?component=<id>` URL and focused demo. Composite header, menu, feedback, and theme scenarios remain addressable alongside their subcomponents; the root opens the first Kerf component.
-- `ai/component-catalog.json` is the canonical catalog metadata. A deterministic checked-in projection supplies the demo's unique id, category, kind (`component` or `composition`), source (`kerf` or `webawesome`), name, description, and direct `uses` dependencies; first-party and Web Awesome renderer maps are exhaustively typed against its generated id unions.
+- `ai/component-catalog.json` is the canonical catalog metadata. A deterministic checked-in projection supplies the demo's unique id, category, kind (`component`, `composition`, or `recipe`), source (`kerf` or `webawesome`), name, description, and direct `uses` dependencies; first-party, recipe, and Web Awesome renderer maps are exhaustively typed against its generated id unions.
 - The master/detail shell groups first-party routes by category with production `MenuHeader` and `MenuItem` components. The 70 ecosystem components live in a separate `Web Awesome` disclosure with seven subgroups, so they remain discoverable without being presented as first-class `@kerfjs/ui` exports. Direct Web Awesome routes open the disclosure and reveal the selected row at wide sizes; narrow layouts keep the expanded list in document flow rather than introducing a competing nested scroller.
 - The shell itself uses `@kerfjs/ui/layout.css`: its detail region owns one page gutter, the preview surface and canvas own one inset each, the sidebar is its only pane scroll owner, and header/dialog plus resize compositions use the matching body roles. Geometry coverage checks wide, intermediate, narrow, and 200% zoom layouts.
 - Catalog-only brand marks, preview dimensions, checkerboard tiles, and the compound display-settings control retain local geometry because they are specimen chrome or intrinsic control anatomy rather than reusable application spacing roles.
