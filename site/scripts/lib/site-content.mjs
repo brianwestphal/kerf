@@ -2,11 +2,9 @@ import { readFile, readdir } from 'node:fs/promises';
 import { basename, extname, join, relative, resolve, sep } from 'node:path';
 
 import { Marked } from 'marked';
+import { BASE_PATH, LEGACY_REDIRECTS } from '../../site.config.mjs';
 
-export const BASE_PATH = '/kerf';
-export const LEGACY_REDIRECTS = {
-  '/examples/basics/09-raw-sanitise/': '/kerf/examples/basics/09-raw-sanitize/',
-};
+export { BASE_PATH, LEGACY_REDIRECTS };
 
 const COMPLETE_APPS = [
   ['todomvc', 'TodoMVC', 'defineStore, each, delegated events, and localStorage.', 'Animated preview of the TodoMVC example'],

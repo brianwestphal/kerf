@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { LEGACY_REDIRECTS } from '../../site/scripts/lib/site-content.mjs';
+import { LEGACY_REDIRECTS } from '../../site/site.config.mjs';
 
 describe('site config', () => {
   it('defines one normalized legacy redirect for the renamed raw-sanitize example', () => {
