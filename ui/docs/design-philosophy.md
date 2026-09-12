@@ -24,6 +24,45 @@ Unrelated updates must not close controls, move focus, reset a draft, replace a 
 
 Establish one reading order and one dominant action per decision point. Group first with alignment, spacing, typography, and shared surfaces. A border, fill, badge, or nested card must communicate a real distinction.
 
+### Sidebar content aligns; borders do not
+
+A sidebar has one content gutter and explicit icon and label columns. Section
+headers, icon-bearing rows, and iconless rows share the label column. A bordered
+panel beneath a header begins at the content gutter; its internal padding brings
+its text back to the label column. The border is decoration, not an alignment
+anchor.
+
+Use the package composition so the geometry has one owner:
+
+```tsx
+<aside class="kui-sidebar">
+  <section class="kui-sidebar-section">
+    <MenuHeader label="Workspace" />
+    <MenuItem action="open" label="Inbox" icon={inboxIcon} />
+    <MenuItem action="open" label="Drafts" />
+    <div class="kui-sidebar-surface">Panel contents</div>
+  </section>
+</aside>
+```
+
+Do not indent the bordered surface to the label column or add padding to every
+wrapper. Both produce a second indentation level and make the border compete
+with content for alignment:
+
+```tsx
+<aside class="sidebar padded">
+  <section class="padded">
+    <MenuHeader label="Workspace" />
+    <div class="panel indented-to-heading">Panel contents</div>
+  </section>
+</aside>
+```
+
+Break the grid only when a surface is intentionally full bleed, belongs to a
+different navigation hierarchy, or needs a distinct reading width. Make that
+exception explicit at the boundary instead of compensating with a one-off
+negative margin.
+
 ### Prefer directness
 
 Use the shortest understandable, recoverable interaction. Avoid modes, dialogs, confirmations, and explicit saves when direct manipulation can safely express the same result. Low ceremony still requires a discoverable affordance, visible focus, and honest feedback.

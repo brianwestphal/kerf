@@ -1,4 +1,5 @@
 import '@kerfjs/ui/select/register';
+import '@kerfjs/ui/sidebar.css';
 import '@kerfjs/ui/webawesome.css';
 import './style.css';
 
@@ -231,13 +232,18 @@ function ToolbarTextDemo() {
 }
 
 function MenuDemo() {
-  return <div class="demo-menu" data-demo="menu">
+  return <div class="demo-menu kui-sidebar" data-demo="menu">
     <MenuHeader label="Workspace" action="log-add" actionLabel="Add workspace" actionIcon={icon(Plus, 'plus')} />
     <MenuItem action="log-inbox" itemId="inbox" label="Inbox" icon={icon(Inbox, 'inbox')} trailing={<span>12</span>} selected />
     <MenuItem action="log-projects" itemId="projects" label="Projects" icon={icon(Folder, 'folder')} trailing={icon(ChevronRight, 'chevron-right')} />
+    <MenuItem action="log-drafts" itemId="drafts" label="Drafts without a visible icon" />
     <MenuHeader label="Tools" toggle expanded action="log-tools" actionIcon={icon(ChevronDown, 'chevron-down')} />
     <MenuItem action="log-settings" label="A multiline item demonstrates content that wraps without clipping" icon={icon(Wrench, 'wrench')} multiline />
     <MenuItem action="disabled" label="Unavailable" icon={icon(CircleHelp, 'circle-help')} disabled />
+    <section class="kui-sidebar-section">
+      <MenuHeader label="Details" />
+      <div class="kui-sidebar-surface" data-sidebar-surface><strong>Shared label column</strong><p>The border stays on the gutter.</p></div>
+    </section>
   </div>;
 }
 
@@ -568,6 +574,7 @@ const stopActions = delegateActions(app, 'click', {
   'log-add': () => { actionLog.value = 'Add action requested'; },
   'log-inbox': () => { actionLog.value = 'Inbox selected'; },
   'log-projects': () => { actionLog.value = 'Projects selected'; },
+  'log-drafts': () => { actionLog.value = 'Drafts selected'; },
   'log-tools': () => { actionLog.value = 'Tools toggled'; },
   'log-settings': () => { actionLog.value = 'Settings selected'; },
   'log-done': () => { actionLog.value = 'Done'; },

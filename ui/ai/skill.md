@@ -1,7 +1,7 @@
 ---
 name: kerf-ui
 description: Build interfaces with kerfjs and the @kerfjs/ui production component package. Use whenever code imports @kerfjs/ui or a task asks for Kerf UI components.
-kerf-ui-skill-version: 1.6.0
+kerf-ui-skill-version: 1.7.0
 ---
 
 # Building with @kerfjs/ui
@@ -24,6 +24,7 @@ Hard rules:
 12. Demo work uses public production component subpaths and their browser-selected CSS. Give every public visual component its own category-grouped catalog route; list themed third-party components under a clearly labeled collapsible ecosystem section, with a focused route for each. Declare direct `uses` relationships so `Used by` stays derivable, and theme shell chrome through the same semantic tokens as the stage instead of drawing a substitute.
 13. The Web Awesome theme makes Tooltip and Popover arrowless by default. Keep that default unless a pointer materially clarifies the anchor; opt back in with `--wa-tooltip-arrow-size`, `--kui-wa-popover-arrow-size`, or a popover's public `--arrow-size`, and use `without-arrow` when local no-arrow intent should survive theme changes.
 14. Treat the complete Web Awesome catalog as support coverage, not a recommendation list. Consider Popup when it replaces custom anchored positioning. Prefer Kerf `Select` over direct Dropdown/Dropdown Item/Select/Option composition, `SegmentedControl` over Button Group, `TabBar` or `SegmentedControl` over Web Awesome Tabs, `LucideIcon` over Web Awesome Icon, and `ResizableRegion` over Split Panel. Use Tree/Tree Item, Animated Image, and Comparison only for a specific required behavior; avoid Zoomable Frame.
+15. Build navigation sidebars with one `.kui-sidebar` content gutter and the shared icon/label columns. Headers and rows align on content, including iconless rows. Put bordered or filled blocks in `.kui-sidebar-surface`: the border stays flush to the gutter and its contents align to the label column. Do not stack wrapper padding, align text to a decorative border, or compensate with negative margins. Import `@kerfjs/ui/sidebar.css` when using component subpaths; override `--kui-sidebar-*` tokens only at the shared composition boundary.
 
 Common mistakes:
 
@@ -37,3 +38,4 @@ Common mistakes:
 | Maintain a root list of component styles | Import each visual component from its JS subpath; its reachable CSS follows automatically |
 | Add demo-only markup for a production state | Add the state to the production component, then render that export in the catalog |
 | Choose a listed ecosystem component by default | Apply the component-selection guidance above; catalog coverage means supported and themed, not preferred |
+| Indent a sidebar panel until its border matches header text | Keep the surface flush to `.kui-sidebar` and use `.kui-sidebar-surface` to align its contents |

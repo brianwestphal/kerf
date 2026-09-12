@@ -23,6 +23,12 @@
   --kui-radius-circle: var(--wa-border-radius-circle, 50%);
   --kui-radius-pill: var(--wa-border-radius-pill, 999px);
   --kui-disclosure-icon-scale: .5;
+  --kui-sidebar-gutter: var(--kui-space-s);
+  --kui-sidebar-row-padding-inline: .55rem;
+  --kui-sidebar-icon-column-width: 1.125rem;
+  --kui-sidebar-column-gap: var(--kui-space-xs);
+  --kui-sidebar-label-inset: calc(var(--kui-sidebar-row-padding-inline) + var(--kui-sidebar-icon-column-width) + var(--kui-sidebar-column-gap));
+  --kui-sidebar-surface-border-width: 1px;
 
   /* macOS Tahoe light semantics used by Hot Sheet 2, with a compatible dark extension. */
   --kui-color-surface: var(--wa-color-surface-default, light-dark(#fff, #1c1c1e));

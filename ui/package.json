@@ -154,6 +154,7 @@
     "./toolbar-text.css": "./src/toolbar-text.css",
     "./menu-item.css": "./src/menu-item.css",
     "./menu-header.css": "./src/menu-header.css",
+    "./sidebar.css": "./src/sidebar.css",
     "./resizable-region.css": "./src/resizable-region.css",
     "./app-tab.css": "./src/app-tab.css",
     "./tab-bar.css": "./src/tab-bar.css",

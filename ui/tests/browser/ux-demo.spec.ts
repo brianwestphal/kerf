@@ -513,22 +513,40 @@ test('matches Hot Sheet menu and toolbar control geometry', async ({ page, brows
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/?component=menu');
   const menu = page.locator('[data-demo="menu"]');
-  const alignment = await menu.evaluate((node) => {
+  const sidebarAlignment = () => menu.evaluate((node) => {
     const action = node.querySelector<HTMLElement>('.kui-menu-header button')!.getBoundingClientRect();
     const row = node.querySelector<HTMLElement>('[data-item-id="projects"]')!.getBoundingClientRect();
+    const rowLabel = node.querySelector<HTMLElement>('[data-item-id="projects"] .kui-menu-item__label')!.getBoundingClientRect();
+    const iconlessLabel = node.querySelector<HTMLElement>('[data-item-id="drafts"] .kui-menu-item__label')!.getBoundingClientRect();
+    const sectionLabel = node.querySelector<HTMLElement>('.kui-sidebar-section .kui-menu-header h2')!.getBoundingClientRect();
+    const surface = node.querySelector<HTMLElement>('[data-sidebar-surface]')!.getBoundingClientRect();
+    const surfaceLabel = node.querySelector<HTMLElement>('[data-sidebar-surface] strong')!.getBoundingClientRect();
     const plus = node.querySelector<HTMLElement>('.kui-menu-header [data-lucide="plus"]')!.getBoundingClientRect();
     const disclosure = node.querySelector<HTMLElement>('[data-item-id="projects"] [data-lucide="chevron-right"]')!.getBoundingClientRect();
     return {
       rightEdge: Math.abs(action.right - row.right),
       iconCenter: Math.abs((plus.left + plus.width / 2) - (disclosure.left + disclosure.width / 2)),
+      iconlessLabelColumn: Math.abs(iconlessLabel.left - rowLabel.left),
+      headerLabelColumn: Math.abs(sectionLabel.left - rowLabel.left),
+      surfaceLabelColumn: Math.abs(surfaceLabel.left - rowLabel.left),
+      surfaceGutter: Math.abs(surface.left - row.left),
     };
   });
-  expect(alignment.rightEdge).toBeLessThanOrEqual(1);
-  expect(alignment.iconCenter).toBeLessThanOrEqual(1);
+  const expectSidebarAlignment = (alignment: Awaited<ReturnType<typeof sidebarAlignment>>) => {
+    expect(alignment.rightEdge).toBeLessThanOrEqual(1);
+    expect(alignment.iconCenter).toBeLessThanOrEqual(1);
+    expect(alignment.iconlessLabelColumn).toBeLessThanOrEqual(1);
+    expect(alignment.headerLabelColumn).toBeLessThanOrEqual(1);
+    expect(alignment.surfaceLabelColumn).toBeLessThanOrEqual(1);
+    expect(alignment.surfaceGutter).toBeLessThanOrEqual(1);
+  };
+  expectSidebarAlignment(await sidebarAlignment());
   if (browserName === 'chromium') {
-    await menu.screenshot({ path: 'test-results/menu-action-alignment-wide.png' });
+    await menu.screenshot({ path: 'test-results/sidebar-content-alignment-wide.png' });
     await page.locator('[data-relationships-for="menu"]').screenshot({ path: 'test-results/related-components-selector-wide.png' });
     await page.setViewportSize({ width: 390, height: 844 });
+    expectSidebarAlignment(await sidebarAlignment());
+    await menu.screenshot({ path: 'test-results/sidebar-content-alignment-narrow.png' });
     await page.locator('[data-relationships-for="menu"]').screenshot({ path: 'test-results/related-components-selector-narrow.png' });
     await page.setViewportSize({ width: 1440, height: 900 });
   }

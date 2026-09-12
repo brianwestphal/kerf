@@ -1,8 +1,8 @@
-.kui-menu-header { --kui-menu-header-color: var(--kui-color-neutral-on-quiet); --kui-menu-header-hover-background: var(--kui-color-neutral-border-quiet); display: flex; width: 100%; min-height: 1.8rem; padding: .2rem .55rem; border: 0; box-sizing: border-box; color: var(--kui-menu-header-color); background: transparent; align-items: center; justify-content: space-between; font: inherit; }
+.kui-menu-header { --kui-menu-header-color: var(--kui-color-neutral-on-quiet); --kui-menu-header-hover-background: var(--kui-color-neutral-border-quiet); display: flex; width: 100%; min-height: 1.8rem; padding: .2rem var(--kui-sidebar-row-padding-inline); border: 0; box-sizing: border-box; color: var(--kui-menu-header-color); background: transparent; align-items: center; justify-content: space-between; font: inherit; }
 .kui-menu-header h2, .kui-menu-header > span { margin: 0; font-size: var(--kui-font-xs); font-weight: 650; letter-spacing: .04em; text-transform: uppercase; }
 .kui-menu-header button, .kui-menu-header--toggle { cursor: pointer; }
 .kui-menu-header button { display: grid; width: 1.95rem; height: 1.65rem; padding: 0; border: 0; border-radius: .35rem; color: inherit; background: transparent; place-items: center; }
-.kui-menu-header:not(.kui-menu-header--toggle) button { margin-inline-end: -.55rem; }
+.kui-menu-header:not(.kui-menu-header--toggle) button { margin-inline-end: calc(-1 * var(--kui-sidebar-row-padding-inline)); }
 .kui-menu-header button:hover, .kui-menu-header--toggle:hover { background: var(--kui-menu-header-hover-background); }
 .kui-menu-header button:focus-visible, .kui-menu-header--toggle:focus-visible { outline: var(--kui-focus-ring); outline-offset: 1px; }
 .kui-menu-header button:disabled { cursor: not-allowed; opacity: .48; }

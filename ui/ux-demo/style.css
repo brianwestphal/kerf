@@ -54,6 +54,11 @@ button { font: inherit; }
 .demo-button { min-height: 2rem; padding: 0 .75rem; border: 1px solid var(--kui-color-border); border-radius: var(--kui-radius-pill); color: var(--kui-color-text); background: var(--kui-color-surface-raised); cursor: pointer; }
 .demo-button:hover { background: var(--kui-color-surface-lowered); }
 .demo-menu { width: min(30rem, 100%); padding: .75rem; border: 1px solid var(--kui-color-border); border-radius: var(--kui-radius-m); background: var(--kui-color-surface); box-shadow: var(--kui-shadow-s); }
+.demo-menu.kui-sidebar { display: grid; gap: .15rem; }
+.demo-menu .kui-sidebar-section { margin-block-start: .65rem; }
+.demo-menu .kui-sidebar-surface strong, .demo-menu .kui-sidebar-surface p { margin: 0; }
+.demo-menu .kui-sidebar-surface strong { font-size: var(--kui-font-s); }
+.demo-menu .kui-sidebar-surface p { margin-block-start: .2rem; color: var(--kui-color-text-quiet); font-size: var(--kui-font-xs); line-height: 1.35; }
 .demo-tabs { display: flex; width: min(42rem, 100%); min-height: 4.5rem; padding: 1rem; border: 1px solid var(--kui-color-border); border-radius: var(--kui-radius-m); background: var(--kui-color-surface-lowered); align-items: flex-start; gap: .35rem; }
 .demo-tab-bar-frame { display: grid; width: min(42rem, 100%); overflow: hidden; border: 1px solid var(--kui-color-border); border-radius: var(--kui-radius-l); background: var(--kui-color-surface); box-shadow: var(--kui-shadow-s); gap: 0; }
 .demo-tab-bar-frame > p { margin: 0; padding: .65rem .75rem; overflow: hidden; color: var(--kui-color-text-quiet); font-size: var(--kui-font-2xs); text-overflow: ellipsis; white-space: nowrap; }

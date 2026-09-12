@@ -177,6 +177,7 @@ describe('consumer bundle boundaries', () => {
     expect(pkg.exports['./token-search-field']).toBeDefined();
     expect(pkg.exports['./wire-tab-bars']).toBeDefined();
     expect(pkg.exports['./toolbar.css']).toBe('./src/toolbar.css');
+    expect(pkg.exports['./sidebar.css']).toBe('./src/sidebar.css');
     expect(pkg.exports['./tab-bar.css']).toBe('./src/tab-bar.css');
     expect(pkg.exports['./segmented-control.css']).toBe('./src/segmented-control.css');
     expect(pkg.exports['./token-search-field.css']).toBe('./src/token-search-field.css');

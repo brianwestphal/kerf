@@ -70,6 +70,14 @@ neutral, brand/info, success, warning, and danger palette. Override the global
 semantic tokens, a tone variable, or a component property such as
 `--kui-state-banner-background` without replacing component selectors.
 
+For a navigation rail, import `@kerfjs/ui/sidebar.css` and use
+`.kui-sidebar`, `.kui-sidebar-section`, and `.kui-sidebar-surface`. The
+composition gives headers plus icon-bearing and iconless rows one shared label
+column. Bordered surfaces stay flush to the sidebar gutter while their contents
+align with that column. Avoid nested wrapper padding, moving a decorative
+border onto the text column, or repairing either with negative margins; change
+the shared `--kui-sidebar-*` tokens at the composition boundary instead.
+
 ## Web Awesome Select
 
 `Select` renders Web Awesome markup without registering custom elements. Opt in

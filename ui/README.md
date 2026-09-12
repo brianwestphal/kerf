@@ -29,6 +29,7 @@ Components return Kerf `SafeHtml`. They do not own application state or attach t
 | `ToolbarText` | `@kerfjs/ui/toolbar-text` | `@kerfjs/ui/toolbar-text.css` |
 | `MenuItem` | `@kerfjs/ui/menu-item` | `@kerfjs/ui/menu-item.css` |
 | `MenuHeader` | `@kerfjs/ui/menu-header` | `@kerfjs/ui/menu-header.css` |
+| Sidebar composition | — | `@kerfjs/ui/sidebar.css` |
 | `ResizableRegion` | `@kerfjs/ui/resizable-region` | `@kerfjs/ui/resizable-region.css` |
 | `wireResizableRegions` | `@kerfjs/ui/wire-resizable-regions` | — |
 | `AppTab` | `@kerfjs/ui/app-tab` | `@kerfjs/ui/app-tab.css` |
@@ -61,6 +62,33 @@ entry for a browser build with a custom styling pipeline. The exported
 `foundation.css` and component CSS paths remain available for fully manual
 delivery. Load application overrides after package styles, or scope `--kui-*`
 variables directly on a component instance.
+
+## Sidebar alignment
+
+Import `@kerfjs/ui/sidebar.css` and put menu sections inside `.kui-sidebar`.
+The composition establishes one content gutter, reserves one icon column, and
+aligns `MenuHeader`, icon-bearing `MenuItem`, and iconless `MenuItem` labels.
+Use `.kui-sidebar-surface` for bordered or filled content below a header: its
+border remains flush with the gutter while its internal content returns to the
+shared label column.
+
+```tsx
+<aside class="kui-sidebar">
+  <section class="kui-sidebar-section">
+    <MenuHeader label="Workspace" />
+    <MenuItem action="open" label="Inbox" icon={inboxIcon} />
+    <MenuItem action="open" label="Drafts" />
+    <div class="kui-sidebar-surface">Workspace details</div>
+  </section>
+</aside>
+```
+
+Do not add padding to both the sidebar and each section, indent a panel until
+its border matches the heading text, or repair either mistake with a negative
+margin. Override the shared `--kui-sidebar-*` tokens on the composition when a
+product needs different geometry. Intentionally break the grid only for a
+full-bleed surface, a distinct navigation hierarchy, or a deliberately
+different reading width.
 
 ## Web Awesome theme
 

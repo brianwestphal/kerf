@@ -27,6 +27,17 @@ separator with a compact grip that appears on hover or keyboard focus. Override
 `--kui-resizable-region-handle-active-color` on a region when its containing
 surface needs a different contrast level.
 
+`.kui-sidebar` owns a single outer gutter and reserves a stable icon column so
+icon-bearing and iconless `MenuItem` labels align. It also moves `MenuHeader`
+labels onto that text column. `.kui-sidebar-surface` stays flush with the outer
+gutter while its contents align with the labels, and `.kui-sidebar-section`
+groups the composition without adding another inset. The shared geometry is
+controlled by `--kui-sidebar-gutter`, `--kui-sidebar-row-padding-inline`,
+`--kui-sidebar-icon-column-width`, `--kui-sidebar-column-gap`,
+`--kui-sidebar-label-inset`, and `--kui-sidebar-surface-border-width`.
+Import `@kerfjs/ui/sidebar.css` when using explicit component subpaths; the
+complete `styles.css` layer already includes it.
+
 ## Imports and side effects
 
 Every component has an explicit JS and CSS subpath. In CSS-aware browser builds,

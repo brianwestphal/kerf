@@ -52,6 +52,15 @@ defaults for neutral, brand/info, success, warning, and danger roles. Stateful
 components expose scoped custom properties, so an application may override the
 complete theme, one semantic tone, or one instance.
 
+`sidebar.css` is the package's layout composition for navigation rails. Its
+`.kui-sidebar` class establishes one content gutter and one icon/label grid for
+`MenuHeader` and `MenuItem`; iconless rows reserve the icon column. A
+`.kui-sidebar-surface` border remains flush to the gutter while its internal
+content aligns with row labels, and `.kui-sidebar-section` adds grouping without
+another inset. Consumers can change the geometry coherently through the shared
+`--kui-sidebar-*` tokens instead of wrapper padding, negative margins, or
+duplicated numeric offsets.
+
 For an app that also uses Web Awesome's free component set, one optional import
 provides Web Awesome's base stylesheet plus Kerf's Hot Sheet 2-aligned theme:
 
