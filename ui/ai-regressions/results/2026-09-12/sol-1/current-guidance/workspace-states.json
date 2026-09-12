@@ -1,0 +1,10 @@
+{
+  "caseId": "workspace-states",
+  "files": {
+    "ListWorkspace.tsx": "import { EmptyState } from '@kerfjs/ui/empty-state';\nimport { LoadingSpinner } from '@kerfjs/ui/loading-spinner';\nimport { StateBanner } from '@kerfjs/ui/state-banner';\nimport '@kerfjs/ui/layout.css';\n\ntype Item = { id: string; title: string };\ntype WorkspaceState =\n  | { phase: 'loading'; items: [] }\n  | { phase: 'ready'; items: Item[] }\n  | { phase: 'refreshing'; items: Item[] }\n  | { phase: 'failed'; items: Item[]; message: string };\n\ntype Props = { state: WorkspaceState; retry: () => void; createItem: () => void };\n\nexport function ListWorkspace({ state, retry, createItem }: Props) {\n  if (state.phase === 'loading') {\n    return <main className=\"kui-layout kui-page\" aria-busy=\"true\"><LoadingSpinner label=\"Loading items\" /></main>;\n  }\n\n  const hasItems = state.items.length > 0;\n  return (\n    <main className=\"kui-layout kui-page\" aria-busy={state.phase === 'refreshing'}>\n      <h1>Items</h1>\n      {state.phase === 'refreshing' && (\n        <StateBanner tone=\"info\"><LoadingSpinner label=\"Refreshing items\" /> Showing saved items while refreshing.</StateBanner>\n      )}\n      {state.phase === 'failed' && (\n        <StateBanner tone=\"danger\" role=\"alert\">\n          <strong>Refresh failed.</strong> {state.message} <button type=\"button\" onClick={retry}>Try again</button>\n        </StateBanner>\n      )}\n      {hasItems ? (\n        <ul aria-label=\"Items\">{state.items.map(item => <li key={item.id}>{item.title}</li>)}</ul>\n      ) : state.phase === 'failed' ? (\n        <p>No items could be loaded. Use Try again to recover.</p>\n      ) : (\n        <EmptyState title=\"No items yet\" description=\"Create the first item for this workspace.\" action={<button type=\"button\" onClick={createItem}>Create item</button>} />\n      )}\n    </main>\n  );\n}\n"
+  },
+  "followUp": {
+    "suggested": false,
+    "concept": "Existing loading, empty, and persistent inline status primitives cover the state model while the application retains stale data during refresh."
+  }
+}

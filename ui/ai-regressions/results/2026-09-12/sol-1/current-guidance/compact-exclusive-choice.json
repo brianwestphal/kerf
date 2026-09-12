@@ -1,0 +1,10 @@
+{
+  "caseId": "compact-exclusive-choice",
+  "files": {
+    "WorkspaceViewChoice.tsx": "import { SegmentedControl } from '@kerfjs/ui/segmented-control';\n\ntype WorkspaceView = 'board' | 'list' | 'timeline';\ntype Props = { value: WorkspaceView; dispatch: (action: { type: 'workspace.view.changed'; value: WorkspaceView }) => void };\n\nconst options = [\n  { value: 'board', label: 'Board' },\n  { value: 'list', label: 'List' },\n  { value: 'timeline', label: 'Timeline' }\n] as const;\n\nexport function WorkspaceViewChoice({ value, dispatch }: Props) {\n  return (\n    <SegmentedControl\n      aria-label=\"Workspace view\"\n      value={value}\n      options={options}\n      onValueChange={(next: WorkspaceView) => dispatch({ type: 'workspace.view.changed', value: next })}\n    />\n  );\n}\n"
+  },
+  "followUp": {
+    "suggested": false,
+    "concept": "SegmentedControl already owns the keyboard-accessible single-selection contract; the adapter only maps its value change to a stable product action."
+  }
+}

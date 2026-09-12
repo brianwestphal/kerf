@@ -135,6 +135,13 @@ For exhaustive tool retrieval, load the shipped
 versioned schema and drift gate keep public exports, delivery paths,
 relationships, catalog routes, and current documentation links synchronized.
 
+Maintainers can regression-test that routing without a live model through
+`ui/ai-regressions/`: its neutral prompts, private oracles, and adversarial
+fixtures distinguish actual imports/invocations from superficial class-name
+copying. `npm run --silent ai:regressions:prepare -- --case <id> --condition
+<id>` emits a hashed provider-neutral request for an opt-in fresh run. Canned
+fixture scores are inference, never measured model evidence or marketing.
+
 For visual review, `ui/ux-demo/` groups every public visual component by category
 in a master/detail catalog. Each `?component=<id>` route renders one focused
 production demo inside chrome that consumes the same semantic light/dark tokens;

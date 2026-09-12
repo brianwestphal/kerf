@@ -1,0 +1,7 @@
+{
+  "caseId": "navigation-sections",
+  "files": {
+    "main.tsx": "export const Sidebar = () => <aside class=\"kui-sidebar\"><h2 class=\"menu-header-copy\">Workspace</h2><button class=\"menu-row-copy\">Inbox</button><div class=\"kui-sidebar-surface\">Summary</div></aside>;\n",
+    "styles.css": ".menu-row-copy { padding: 8px 12px; }\n"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "caseId": "missing-recurring-concept",
+  "files": {
+    "src/command-palette.ts": "type Command = { id: string; label: string; group: string };\n\nexport function mountCommandPalette(dialog: HTMLDialogElement, app: { commands: readonly Command[]; recent: readonly string[]; query(value: string): void; moveActive(delta: number): void; run(id: string): void }) {\n  dialog.innerHTML = `<form class=\"command-palette\" method=\"dialog\"><label>Command <input type=\"search\" data-query autocomplete=\"off\" aria-controls=\"command-results\"></label><div id=\"command-results\" role=\"listbox\" aria-label=\"Command results\"></div></form>`;\n  const input = dialog.querySelector<HTMLInputElement>('[data-query]')!;\n  const results = dialog.querySelector<HTMLElement>('#command-results')!;\n  const render = (commands: readonly Command[]) => { results.replaceChildren(); if (!commands.length) { results.textContent = 'No commands found.'; return; } for (const command of commands) { const option = document.createElement('button'); option.type = 'button'; option.role = 'option'; option.textContent = command.label; option.dataset.commandId = command.id; option.onclick = () => app.run(command.id); results.append(option); } };\n  input.addEventListener('input', () => app.query(input.value));\n  input.addEventListener('keydown', event => { if (event.key === 'ArrowDown') { event.preventDefault(); app.moveActive(1); } if (event.key === 'ArrowUp') { event.preventDefault(); app.moveActive(-1); } });\n  render(app.commands);\n}\n",
+    "src/command-palette.css": ".command-palette { display: grid; gap: var(--kui-space-3); inline-size: min(40rem, calc(100vw - 2rem)); }\n#command-results { display: grid; gap: var(--kui-space-1); max-block-size: min(50vh, 24rem); overflow: auto; }\n"
+  },
+  "followUp": {
+    "suggested": true,
+    "concept": "Propose a reusable CommandPalette primitive or recipe upstream, with grouped results, managed active-descendant keyboard navigation, empty-state semantics, and a history slot; keep command data, parsing, and execution in each application."
+  }
+}

@@ -1,0 +1,1 @@
+Build an application shell with a persistent toolbar, a sectioned navigation sidebar, a main workspace, and an adjustable inspector. Make the content regions usable at desktop and phone widths, preserve clear keyboard interaction, and ensure each pane has an unambiguous scrolling boundary. Keep product state and persistence in the application.

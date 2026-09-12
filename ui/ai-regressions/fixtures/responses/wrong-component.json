@@ -1,0 +1,6 @@
+{
+  "caseId": "compact-exclusive-choice",
+  "files": {
+    "main.tsx": "import '@awesome.me/webawesome/dist/components/button-group/button-group.js';\n\nexport const Choice = () => <wa-button-group><button>Board</button><button>List</button><button>Timeline</button></wa-button-group>;\n"
+  }
+}

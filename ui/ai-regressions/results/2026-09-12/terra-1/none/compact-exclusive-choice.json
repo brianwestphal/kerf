@@ -1,0 +1,7 @@
+{
+  "caseId": "compact-exclusive-choice",
+  "files": {
+    "WorkspaceViewChoice.tsx": "export type WorkspaceView = 'board' | 'list' | 'timeline';\n\ntype Props = { value: WorkspaceView; dispatch: (action: { type: 'workspace/viewChanged'; view: WorkspaceView }) => void };\nconst views: WorkspaceView[] = ['board', 'list', 'timeline'];\n\nexport function WorkspaceViewChoice({ value, dispatch }: Props) {\n  return <div className=\"view-choice\" role=\"radiogroup\" aria-label=\"Workspace view\">\n    {views.map(view => <button key={view} type=\"button\" role=\"radio\" aria-checked={value === view} className={value === view ? 'selected' : ''} onClick={() => dispatch({ type: 'workspace/viewChanged', view })}>{view[0].toUpperCase() + view.slice(1)}</button>)}\n  </div>;\n}\n",
+    "workspace-view-choice.css": ".view-choice{display:inline-flex;padding:2px;border:1px solid #cbd3df;border-radius:.4rem;background:#f4f6f8}.view-choice button{border:0;border-radius:.25rem;background:transparent;padding:.3rem .55rem;color:#334155}.view-choice button.selected{background:#fff;box-shadow:0 1px 2px #0002;color:#102a56;font-weight:600}.view-choice button:focus-visible{outline:2px solid #2563eb;outline-offset:2px}"
+  }
+}

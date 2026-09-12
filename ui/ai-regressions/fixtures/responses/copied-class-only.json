@@ -1,0 +1,6 @@
+{
+  "caseId": "compact-exclusive-choice",
+  "files": {
+    "main.tsx": "export const Choice = () => <div class=\"kui-segmented-control segment-copy\"><button>Board</button><button>List</button><button>Timeline</button></div>;\n"
+  }
+}

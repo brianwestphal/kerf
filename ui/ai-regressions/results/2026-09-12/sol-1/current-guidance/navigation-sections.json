@@ -1,0 +1,11 @@
+{
+  "caseId": "navigation-sections",
+  "files": {
+    "WorkspaceNavigation.tsx": "import { MenuHeader } from '@kerfjs/ui/menu-header';\nimport { MenuItem } from '@kerfjs/ui/menu-item';\nimport '@kerfjs/ui/layout.css';\nimport './workspace-navigation.css';\n\nconst HomeIcon = () => <svg aria-hidden=\"true\" viewBox=\"0 0 16 16\"><path d=\"M2 8 8 2l6 6v6H9v-4H7v4H2Z\" /></svg>;\n\nexport function WorkspaceNavigation() {\n  return (\n    <nav className=\"workspace-nav kui-sidebar\" aria-label=\"Workspace navigation\">\n      <section className=\"kui-sidebar-section\">\n        <MenuHeader>Workspace</MenuHeader>\n        <MenuItem href=\"/home\" icon={<HomeIcon />} selected aria-current=\"page\">Home</MenuItem>\n        <MenuItem href=\"/activity\">Activity</MenuItem>\n        <MenuItem href=\"/archive\" disabled>Archive unavailable</MenuItem>\n      </section>\n      <section className=\"kui-sidebar-section\">\n        <MenuHeader>Projects</MenuHeader>\n        <MenuItem href=\"/projects/alpha\">Alpha</MenuItem>\n        <MenuItem href=\"/projects/beta\">Beta</MenuItem>\n      </section>\n      <section className=\"workspace-summary kui-sidebar-surface\" aria-labelledby=\"workspace-summary-title\">\n        <h2 id=\"workspace-summary-title\">Team workspace</h2>\n        <p>12 members · 4 active projects</p>\n      </section>\n      <div className=\"nav-footer\" aria-label=\"Workspace actions\">\n        <button type=\"button\">Settings</button>\n        <button type=\"button\">Help</button>\n      </div>\n    </nav>\n  );\n}\n",
+    "workspace-navigation.css": ".workspace-nav { display: flex; flex-direction: column; min-block-size: 100%; }\n.workspace-summary { padding: var(--kui-space-surface); }\n.workspace-summary h2 { font: inherit; font-weight: 600; margin: 0; }\n.workspace-summary p { margin-block: var(--kui-space-control) 0; }\n.nav-footer { display: flex; flex-wrap: wrap; gap: var(--kui-space-control); margin-block-start: auto; }\n.nav-footer button { min-block-size: 2.75rem; }\n"
+  },
+  "followUp": {
+    "suggested": false,
+    "concept": "The sidebar uses one kui-sidebar gutter, section primitives, and a single inset surface without duplicated wrapper padding or negative margins."
+  }
+}

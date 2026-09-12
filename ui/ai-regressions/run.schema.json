@@ -1,0 +1,133 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Kerf UI measured AI regression run",
+  "type": "object",
+  "required": ["schemaVersion", "evidence", "runId", "executedAt", "executor", "harness", "conditions", "results", "summary"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "evidence": { "const": "measured" },
+    "runId": { "type": "string", "minLength": 1 },
+    "executedAt": { "type": "string", "format": "date-time" },
+    "executor": {
+      "type": "object",
+      "required": ["provider", "model", "modelVersion", "settings", "isolationUnit", "conditionSessions"],
+      "additionalProperties": false,
+      "properties": {
+        "provider": { "type": "string", "minLength": 1 },
+        "model": { "type": "string", "minLength": 1 },
+        "modelVersion": { "type": "string", "minLength": 1 },
+        "settings": { "type": "object" },
+        "isolationUnit": { "const": "condition" },
+        "conditionSessions": {
+          "type": "object",
+          "required": ["none", "current-guidance", "revised-recipes-catalog"],
+          "additionalProperties": false,
+          "properties": {
+            "none": { "type": "string", "minLength": 1 },
+            "current-guidance": { "type": "string", "minLength": 1 },
+            "revised-recipes-catalog": { "type": "string", "minLength": 1 }
+          }
+        }
+      }
+    },
+    "harness": {
+      "type": "object",
+      "required": ["baseRevision", "corpusSha256", "conditionsSha256", "catalogSha256", "scorerSha256", "catalogSchemaSha256", "corpusSchemaSha256", "conditionsSchemaSha256", "responseSchemaSha256", "runSchemaSha256", "typescriptVersion"],
+      "additionalProperties": false,
+      "properties": {
+        "baseRevision": { "type": "string", "pattern": "^[a-f0-9]{40}$" },
+        "corpusSha256": { "$ref": "#/$defs/digest" },
+        "conditionsSha256": { "$ref": "#/$defs/digest" },
+        "catalogSha256": { "$ref": "#/$defs/digest" },
+        "scorerSha256": { "$ref": "#/$defs/digest" },
+        "catalogSchemaSha256": { "$ref": "#/$defs/digest" },
+        "corpusSchemaSha256": { "$ref": "#/$defs/digest" },
+        "conditionsSchemaSha256": { "$ref": "#/$defs/digest" },
+        "responseSchemaSha256": { "$ref": "#/$defs/digest" },
+        "runSchemaSha256": { "$ref": "#/$defs/digest" },
+        "typescriptVersion": { "type": "string", "minLength": 1 }
+      }
+    },
+    "conditions": { "type": "array", "minItems": 3, "items": { "$ref": "#/$defs/condition" } },
+    "results": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/result" } },
+    "summary": { "type": "array", "minItems": 3, "items": { "$ref": "#/$defs/summary" } }
+  },
+  "$defs": {
+    "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "source": {
+      "type": "object",
+      "required": ["path", "sha256"],
+      "additionalProperties": false,
+      "properties": { "path": { "type": "string" }, "sha256": { "$ref": "#/$defs/digest" } }
+    },
+    "condition": {
+      "type": "object",
+      "required": ["id", "sourceRevision", "sha256", "sources"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string" },
+        "sourceRevision": { "type": ["string", "null"] },
+        "sha256": { "$ref": "#/$defs/digest" },
+        "sources": { "type": "array", "items": { "$ref": "#/$defs/source" } }
+      }
+    },
+    "check": {
+      "type": "object",
+      "required": ["code", "pass", "detail"],
+      "additionalProperties": false,
+      "properties": { "code": { "type": "string" }, "pass": { "type": "boolean" }, "detail": { "type": "string" } }
+    },
+    "dimensions": {
+      "type": "object",
+      "required": ["reuse", "wiring", "layout", "accessibility", "escalation"],
+      "additionalProperties": false,
+      "properties": {
+        "reuse": { "type": "boolean" }, "wiring": { "type": "boolean" }, "layout": { "type": "boolean" },
+        "accessibility": { "type": "boolean" }, "escalation": { "type": "boolean" }
+      }
+    },
+    "score": {
+      "type": "object",
+      "required": ["caseId", "pass", "dimensions", "checks"],
+      "additionalProperties": false,
+      "properties": {
+        "caseId": { "type": "string" }, "pass": { "type": "boolean" },
+        "dimensions": { "$ref": "#/$defs/dimensions" },
+        "checks": { "type": "array", "items": { "$ref": "#/$defs/check" } }
+      }
+    },
+    "result": {
+      "type": "object",
+      "required": ["caseId", "condition", "sessionId", "requestOrdinal", "promptSha256", "contextSha256", "responsePath", "responseSha256", "score"],
+      "additionalProperties": false,
+      "properties": {
+        "caseId": { "type": "string" }, "condition": { "type": "string" },
+        "sessionId": { "type": "string", "minLength": 1 }, "requestOrdinal": { "type": "integer", "minimum": 1, "maximum": 7 },
+        "promptSha256": { "$ref": "#/$defs/digest" }, "contextSha256": { "$ref": "#/$defs/digest" },
+        "responsePath": { "type": "string" }, "responseSha256": { "$ref": "#/$defs/digest" },
+        "score": { "$ref": "#/$defs/score" }
+      }
+    },
+    "dimensionCount": {
+      "type": "object", "required": ["passes", "applicable"], "additionalProperties": false,
+      "properties": { "passes": { "type": "integer", "minimum": 0 }, "applicable": { "type": "integer", "minimum": 0 } }
+    },
+    "summary": {
+      "type": "object",
+      "required": ["condition", "staticHardPasses", "totalCases", "dimensions"],
+      "additionalProperties": false,
+      "properties": {
+        "condition": { "type": "string" }, "staticHardPasses": { "type": "integer", "minimum": 0 }, "totalCases": { "type": "integer", "minimum": 1 },
+        "dimensions": {
+          "type": "object", "required": ["reuse", "wiring", "layout", "accessibility", "escalation"], "additionalProperties": false,
+          "properties": {
+            "reuse": { "$ref": "#/$defs/dimensionCount" }, "wiring": { "$ref": "#/$defs/dimensionCount" },
+            "layout": { "$ref": "#/$defs/dimensionCount" }, "accessibility": { "$ref": "#/$defs/dimensionCount" },
+            "escalation": { "$ref": "#/$defs/dimensionCount" }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "caseId": "compact-exclusive-choice",
+  "files": {
+    "WorkspaceViewChoice.tsx": "import { SegmentedControl } from '@kerfjs/ui/segmented-control';\nimport { Toolbar } from '@kerfjs/ui/toolbar';\nimport '@kerfjs/ui/layout.css';\nimport './view-choice.css';\n\nexport type WorkspaceView = 'board' | 'list' | 'timeline';\nexport type WorkspaceAction = { type: 'workspace.view.set'; view: WorkspaceView };\nconst options = [\n  { value: 'board', label: 'Board' },\n  { value: 'list', label: 'List' },\n  { value: 'timeline', label: 'Timeline' },\n];\nexport function WorkspaceViewChoice({ value, dispatch }: {\n  value: WorkspaceView; dispatch: (action: WorkspaceAction) => void;\n}) {\n  return <div className=\"kui-layout\">\n    <Toolbar aria-label=\"Workspace tools\" className=\"workspace-tools\">\n      <SegmentedControl aria-label=\"Workspace view\" value={value} options={options}\n        onChange={(next: string) => {\n          if (next === 'board' || next === 'list' || next === 'timeline') {\n            dispatch({ type: 'workspace.view.set', view: next });\n          }\n        }} />\n    </Toolbar>\n  </div>;\n}\n// The primitive owns radio-group semantics, roving focus, and arrow-key selection.\n// The application owns the selected view and any persistence.\n",
+    "view-choice.css": ".workspace-tools { display:flex; flex-wrap:wrap; min-inline-size:0; }\n:focus-visible { outline:2px solid currentColor; outline-offset:2px; }\n"
+  }
+}

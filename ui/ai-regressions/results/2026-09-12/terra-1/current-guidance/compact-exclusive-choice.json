@@ -1,0 +1,6 @@
+{
+  "caseId": "compact-exclusive-choice",
+  "files": {
+    "src/workspace-view-switcher.ts": "import { SegmentedControl } from '@kerfjs/ui/segmented-control';\n\ntype WorkspaceView = 'board' | 'list' | 'timeline';\n\nexport function mountWorkspaceViewSwitcher(target: HTMLElement, app: { view: WorkspaceView; dispatch(action: { type: 'workspace.view.changed'; view: WorkspaceView }): void }) {\n  return SegmentedControl({\n    target,\n    label: 'Workspace view',\n    value: app.view,\n    options: [\n      { value: 'board', label: 'Board' },\n      { value: 'list', label: 'List' },\n      { value: 'timeline', label: 'Timeline' }\n    ],\n    onChange: (view: WorkspaceView) => app.dispatch({ type: 'workspace.view.changed', view })\n  });\n}\n"
+  }
+}

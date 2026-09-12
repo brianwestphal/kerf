@@ -1,0 +1,1 @@
+The product needs a reusable command palette with grouped results, keyboard navigation, an empty state, and recent-command history. Check the available package before building it. Produce the thinnest honest application composition possible and say what should happen upstream if this semantic concept recurs across products.

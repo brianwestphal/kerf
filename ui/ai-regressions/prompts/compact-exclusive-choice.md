@@ -1,0 +1,1 @@
+Add a compact three-option choice for switching the workspace between Board, List, and Timeline. It belongs in a toolbar, exposes one selected value at a time, remains keyboard accessible, and sends a stable application action when the value changes.

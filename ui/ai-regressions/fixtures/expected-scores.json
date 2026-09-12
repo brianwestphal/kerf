@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "fixtures": [
+    { "file": "responses/compact-choice-valid.json", "pass": true, "mustFail": [] },
+    { "file": "responses/wrong-component.json", "pass": false, "mustFail": ["component:segmented-control", "avoid:wa-button-group", "wiring:delegateActions"] },
+    { "file": "responses/duplicated-navigation.json", "pass": false, "mustFail": ["component:menu-header", "component:menu-item", "duplicate:menu-header-copy", "duplicate:menu-row-copy", "css:semantic-spacing"] },
+    { "file": "responses/copied-class-only.json", "pass": false, "mustFail": ["component:segmented-control", "duplicate:segment-copy"] },
+    { "file": "responses/competing-layout-owners.json", "pass": false, "mustFail": ["layout:single-inset-owner", "css:public-boundary", "css:semantic-spacing"] },
+    { "file": "responses/invalid-source.json", "pass": false, "mustFail": ["source:parse"] },
+    { "file": "responses/import-call-provenance-loophole.json", "pass": false, "mustFail": ["component:segmented-control", "wiring:delegateActions"] },
+    { "file": "responses/mixed-valid-and-duplicated-choice.json", "pass": false, "mustFail": ["duplicate:competing-native-options"] }
+  ]
+}

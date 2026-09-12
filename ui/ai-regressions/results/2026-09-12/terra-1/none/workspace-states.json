@@ -1,0 +1,7 @@
+{
+  "caseId": "workspace-states",
+  "files": {
+    "ItemWorkspace.tsx": "type Status = 'loading' | 'empty' | 'ready' | 'refreshing' | 'error';\ntype Item = { id: string; title: string };\ntype Props = { status: Status; items: Item[]; error?: string; retry: () => void };\n\nexport function ItemWorkspace({ status, items, error, retry }: Props) {\n  const initialLoad = status === 'loading' && items.length === 0;\n  return <section aria-labelledby=\"items-heading\" aria-busy={initialLoad || status === 'refreshing'}>\n    <header><h1 id=\"items-heading\">Items</h1>{status === 'refreshing' && <span role=\"status\">Refreshing items…</span>}</header>\n    {error && <div role=\"alert\"><strong>Couldn’t update items.</strong><span> {error}</span><button onClick={retry}>Try again</button></div>}\n    {initialLoad ? <p role=\"status\">Loading items…</p> : items.length ? <ul>{items.map(item => <li key={item.id}>{item.title}</li>)}</ul> : <div><h2>No items yet</h2><p>Create an item to begin organizing your work.</p><button onClick={retry}>Refresh</button></div>}\n  </section>;\n}\n",
+    "item-workspace.css": "[role=alert]{display:flex;gap:.5rem;align-items:center;margin:.75rem 0;padding:.75rem;border-left:4px solid #b45309;background:#fffbeb;color:#451a03}[role=alert] button{margin-left:auto}ul{padding:0;list-style:none}li{padding:.75rem;border-bottom:1px solid #d8dee8}"
+  }
+}

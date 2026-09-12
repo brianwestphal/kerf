@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Kerf UI local AI regression corpus",
+  "type": "object",
+  "required": ["schemaVersion", "cases"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "cases": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "prompt", "requiredComponentIds", "requiredImports", "requiredClasses", "requiredWiring", "forbiddenComponentIds", "forbiddenPatterns", "forbidHardcodedSpacing", "maxScrollOwners", "requiresFollowUp"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "prompt": { "type": "string", "minLength": 1 },
+          "requiredComponentIds": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+          "requiredImports": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+          "requiredClasses": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+          "requiredWiring": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["name", "specifier", "captured"],
+              "additionalProperties": false,
+              "properties": { "name": { "type": "string" }, "specifier": { "type": "string" }, "captured": { "type": "boolean" } }
+            }
+          },
+          "forbiddenComponentIds": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+          "forbiddenPatterns": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+          "forbidHardcodedSpacing": { "type": "boolean" },
+          "maxScrollOwners": { "type": "integer", "minimum": 0 },
+          "requiresFollowUp": { "type": "boolean" }
+        }
+      }
+    }
+  }
+}

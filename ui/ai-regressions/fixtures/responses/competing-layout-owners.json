@@ -1,0 +1,7 @@
+{
+  "caseId": "application-shell",
+  "files": {
+    "main.tsx": "import { Toolbar } from '@kerfjs/ui/toolbar';\nimport { MenuHeader } from '@kerfjs/ui/menu-header';\nimport { MenuItem } from '@kerfjs/ui/menu-item';\nimport { ResizableRegion, wireResizableRegions } from '@kerfjs/ui/resizable-region';\nimport '@kerfjs/ui/layout.css';\nimport '@kerfjs/ui/sidebar.css';\nconst off = wireResizableRegions(document.body);\nexport const Shell = () => <div class=\"kui-layout kui-page-gutter kui-pane-body\"><Toolbar leading=\"App\" /><aside class=\"kui-sidebar\"><MenuHeader label=\"Work\" /><MenuItem action=\"open\" label=\"Inbox\" /></aside><ResizableRegion id=\"main\" size={400}>Main</ResizableRegion><div class=\"kui-scroll-owner\">Inspector</div></div>;\nexport const dispose = off;\n",
+    "styles.css": ".kui-menu-item .kui-menu-item__label { padding: 12px; gap: 8px; }\n"
+  }
+}

@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Added a deterministic internal `@kerfjs/ui` AI-regression foundation with seven task-shaped prompts, frozen/current/revised context conditions, AST-aware structural scoring, and adversarial fixtures that catch component substitution, duplicated primitives, and spacing/layout ownership regressions without invoking a live model in CI.
 - Added seven lazy, production-backed `@kerfjs/ui` composition recipes for application shells, sidebars, workspace headers, master-detail dialogs, composer forms, list-state lifecycles, and mixed-control toolbars, with stable catalog routes, canonical AI metadata, drift gates, responsive/keyboard/state coverage, and copyable ownership guidance.
 - Added a shipped, schema-described `@kerfjs/ui` machine-readable component catalog with deterministic typed UX projection and drift gates for public exports, package/CSS/registration paths, relationships, Web Awesome manifest coverage, AI guidance, routes, CSS hooks, and documentation links.
 - Added a canonical `@kerfjs/ui/layout.css` vocabulary for responsive page, pane, section, control, metadata, surface, dialog, and scroll ownership, with semantic variables, compact/narrow behavior, consumer and AI guidance, normalized catalog compositions, and wide/intermediate/narrow/200%-zoom geometry coverage.

@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Kerf UI AI regression response",
+  "type": "object",
+  "required": ["caseId", "files"],
+  "additionalProperties": false,
+  "properties": {
+    "caseId": { "type": "string", "minLength": 1 },
+    "files": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": { "type": "string" }
+    },
+    "followUp": {
+      "type": "object",
+      "required": ["suggested", "concept"],
+      "additionalProperties": false,
+      "properties": {
+        "suggested": { "type": "boolean" },
+        "concept": { "type": "string" }
+      }
+    }
+  }
+}

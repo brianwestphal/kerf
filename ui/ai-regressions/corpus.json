@@ -1,0 +1,96 @@
+{
+  "schemaVersion": 1,
+  "cases": [
+    {
+      "id": "application-shell",
+      "prompt": "prompts/application-shell.md",
+      "requiredComponentIds": ["toolbar", "menu-header", "menu-item", "resize", "layout", "menu"],
+      "requiredImports": ["@kerfjs/ui/toolbar", "@kerfjs/ui/menu-header", "@kerfjs/ui/menu-item", "@kerfjs/ui/resizable-region", "@kerfjs/ui/layout.css", "@kerfjs/ui/sidebar.css"],
+      "requiredClasses": ["kui-layout", "kui-sidebar", "kui-scroll-owner"],
+      "requiredWiring": [{ "name": "wireResizableRegions", "specifier": "@kerfjs/ui/resizable-region", "captured": true }],
+      "forbiddenComponentIds": ["wa-split-panel"],
+      "forbiddenPatterns": ["menu-row-copy", "resize-handle-copy"],
+      "forbidHardcodedSpacing": true,
+      "maxScrollOwners": 3,
+      "requiresFollowUp": false
+    },
+    {
+      "id": "compact-exclusive-choice",
+      "prompt": "prompts/compact-exclusive-choice.md",
+      "requiredComponentIds": ["segmented-control"],
+      "requiredImports": ["@kerfjs/ui/segmented-control"],
+      "requiredClasses": [],
+      "requiredWiring": [{ "name": "delegateActions", "specifier": "kerfjs/actions", "captured": true }],
+      "forbiddenComponentIds": ["wa-button-group", "tab-bar", "select"],
+      "forbiddenPatterns": ["segment-copy"],
+      "forbidHardcodedSpacing": false,
+      "maxScrollOwners": 0,
+      "requiresFollowUp": false
+    },
+    {
+      "id": "navigation-sections",
+      "prompt": "prompts/navigation-sections.md",
+      "requiredComponentIds": ["menu-header", "menu-item", "menu"],
+      "requiredImports": ["@kerfjs/ui/menu-header", "@kerfjs/ui/menu-item", "@kerfjs/ui/sidebar.css"],
+      "requiredClasses": ["kui-sidebar", "kui-sidebar-section", "kui-sidebar-surface"],
+      "requiredWiring": [{ "name": "delegateActions", "specifier": "kerfjs/actions", "captured": true }],
+      "forbiddenComponentIds": [],
+      "forbiddenPatterns": ["menu-header-copy", "menu-row-copy"],
+      "forbidHardcodedSpacing": true,
+      "maxScrollOwners": 1,
+      "requiresFollowUp": false
+    },
+    {
+      "id": "workspace-states",
+      "prompt": "prompts/workspace-states.md",
+      "requiredComponentIds": ["state-banner", "empty-state", "loading-spinner", "layout"],
+      "requiredImports": ["@kerfjs/ui/state-banner", "@kerfjs/ui/empty-state", "@kerfjs/ui/loading-spinner", "@kerfjs/ui/layout.css"],
+      "requiredClasses": ["kui-section-stack"],
+      "requiredWiring": [],
+      "forbiddenComponentIds": ["wa-toast", "wa-toast-item"],
+      "forbiddenPatterns": ["spinner-copy", "error-box-copy"],
+      "forbidHardcodedSpacing": true,
+      "maxScrollOwners": 1,
+      "requiresFollowUp": false
+    },
+    {
+      "id": "master-detail-dialog",
+      "prompt": "prompts/master-detail-dialog.md",
+      "requiredComponentIds": ["dialog-header", "menu-item", "value-table", "layout", "menu"],
+      "requiredImports": ["@kerfjs/ui/dialog-header", "@kerfjs/ui/menu-item", "@kerfjs/ui/value-table", "@kerfjs/ui/layout.css", "@kerfjs/ui/sidebar.css"],
+      "requiredClasses": ["kui-dialog-body", "kui-sidebar"],
+      "requiredWiring": [{ "name": "delegateActions", "specifier": "kerfjs/actions", "captured": true }],
+      "forbiddenComponentIds": [],
+      "forbiddenPatterns": ["dialog-title-copy", "definition-list-copy"],
+      "forbidHardcodedSpacing": true,
+      "maxScrollOwners": 1,
+      "requiresFollowUp": false
+    },
+    {
+      "id": "tokenized-search",
+      "prompt": "prompts/tokenized-search.md",
+      "requiredComponentIds": ["token-search-field"],
+      "requiredImports": ["@kerfjs/ui/token-search-field"],
+      "requiredClasses": [],
+      "requiredWiring": [{ "name": "readTokenSearchField", "specifier": "@kerfjs/ui/token-search-field", "captured": false }, { "name": "placeTokenSearchCaret", "specifier": "@kerfjs/ui/token-search-field", "captured": false }],
+      "forbiddenComponentIds": ["wa-input"],
+      "forbiddenPatterns": ["token-chip-copy", "search-editor-copy"],
+      "forbidHardcodedSpacing": false,
+      "maxScrollOwners": 0,
+      "requiresFollowUp": false
+    },
+    {
+      "id": "missing-recurring-concept",
+      "prompt": "prompts/missing-recurring-concept.md",
+      "requiredComponentIds": ["layout"],
+      "requiredImports": ["@kerfjs/ui/layout.css"],
+      "requiredClasses": ["kui-control-cluster"],
+      "requiredWiring": [],
+      "forbiddenComponentIds": [],
+      "forbiddenPatterns": ["pretend-kerf-command-palette"],
+      "forbidHardcodedSpacing": true,
+      "maxScrollOwners": 0,
+      "requiresFollowUp": true
+    }
+  ]
+}

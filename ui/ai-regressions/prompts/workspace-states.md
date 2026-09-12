@@ -1,0 +1,1 @@
+Render one list workspace through initial loading, empty, populated, background refresh, and recoverable failure states. Important errors must remain next to the affected content, refresh must not erase stale data, and every state must be understandable without relying on color alone.

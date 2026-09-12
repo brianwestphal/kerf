@@ -1,0 +1,10 @@
+{
+  "caseId": "tokenized-search",
+  "files": {
+    "WorkspaceSearch.tsx": "import { useState } from 'react';\nimport { TokenSearchField } from '@kerfjs/ui/token-search-field';\n\ntype FilterToken = { id: string; label: string; value: string };\ntype SearchModel = { text: string; tokens: FilterToken[] };\ntype Props = { initialValue: SearchModel; parse: (text: string) => SearchModel; suggestions: (model: SearchModel) => string[]; onSearch: (model: SearchModel) => void };\n\nexport function WorkspaceSearch({ initialValue, parse, suggestions, onSearch }: Props) {\n  const [model, setModel] = useState(initialValue);\n\n  function change(next: SearchModel) {\n    setModel(next);\n    onSearch(next);\n  }\n\n  return (\n    <TokenSearchField\n      aria-label=\"Search workspace\"\n      value={model.text}\n      tokens={model.tokens}\n      suggestions={suggestions(model)}\n      onValueChange={(text: string) => change({ ...model, text })}\n      onParse={(text: string) => change(parse(text))}\n      onTokenRemove={(id: string) => change({ ...model, tokens: model.tokens.filter(token => token.id !== id) })}\n      onTokenReplace={(id: string, token: FilterToken) => change({ ...model, tokens: model.tokens.map(current => current.id === id ? token : current) })}\n      onClear={() => change({ text: '', tokens: [] })}\n      restoreCaretOnEdit\n    />\n  );\n}\n"
+  },
+  "followUp": {
+    "suggested": false,
+    "concept": "TokenSearchField owns unified searchbox editing, ordered tokens, removal, replacement, and caret behavior; parsing and suggestions stay in the application adapter."
+  }
+}

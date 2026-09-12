@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "conditions": [
+    { "id": "none", "description": "Task only; no Kerf UI guidance.", "sourcePaths": [] },
+    {
+      "id": "current-guidance",
+      "description": "Frozen hand-authored concise bundle derived from guidance at the revision immediately before production recipes landed.",
+      "sourceRevision": "4ed4515fb372cf4dc45325452fa4347bdaa080b0",
+      "expectedSha256": "976b0e9c41cf251804107bbe2d7024d8734da7d58dfe9efed1dbd6ce24b64d28",
+      "sourcePaths": ["ai-regressions/contexts/current-guidance-4ed4515.md"]
+    },
+    {
+      "id": "revised-recipes-catalog",
+      "description": "Current guidance plus the canonical catalog and production-backed recipe layer.",
+      "sourcePaths": [
+        "ai/skill.md",
+        "docs/component-selection.md",
+        "docs/layout.md",
+        "docs/accessibility.md",
+        "ai/component-catalog.json",
+        "docs/recipes.md",
+        "ux-demo/recipes/app-shell.tsx",
+        "ux-demo/recipes/navigation-sidebar.tsx",
+        "ux-demo/recipes/workspace-header.tsx",
+        "ux-demo/recipes/master-detail-dialog.tsx",
+        "ux-demo/recipes/composer-form.tsx",
+        "ux-demo/recipes/list-workspace-states.tsx",
+        "ux-demo/recipes/compact-toolbar.tsx",
+        "ux-demo/recipes/recipes.css"
+      ]
+    }
+  ]
+}

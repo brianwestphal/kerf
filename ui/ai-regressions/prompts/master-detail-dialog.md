@@ -1,0 +1,1 @@
+Build a master-detail dialog with a selectable item list, a title and summary connected to the dialog semantics, read-only metadata, and primary and secondary actions. At narrow widths the detail should stack below the list without clipping or adding competing scroll containers.

@@ -1,0 +1,6 @@
+{
+  "caseId": "tokenized-search",
+  "files": {
+    "src/tokenized-search.ts": "import { TokenSearchField } from '@kerfjs/ui/token-search-field';\n\ntype Token = { id: string; label: string; value: string };\nexport function mountSearch(target: HTMLElement, app: { query: string; tokens: Token[]; parse(query: string): void; suggest(query: string): void; replaceToken(id: string, value: string): void; removeToken(id: string): void; clear(): void; restoreCaret(): void }) {\n  return TokenSearchField({\n    target,\n    label: 'Search tasks',\n    value: app.query,\n    tokens: app.tokens,\n    onInput: (query: string) => { app.parse(query); app.suggest(query); },\n    onTokenRemove: (id: string) => { app.removeToken(id); app.restoreCaret(); },\n    onTokenReplace: (id: string, value: string) => { app.replaceToken(id, value); app.restoreCaret(); },\n    onClear: () => { app.clear(); app.restoreCaret(); }\n  });\n}\n"
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "caseId": "compact-exclusive-choice",
+  "files": {
+    "main.tsx": "import { SegmentedControl as UnusedKerfControl } from '@kerfjs/ui/segmented-control';\nimport { delegateActions as unusedKerfDelegate } from 'kerfjs/actions';\nfunction SegmentedControl() { return <div>Copied control</div>; }\nfunction delegateActions() { return () => undefined; }\nconst off = delegateActions();\nexport const choice = <SegmentedControl />;\nexport const dispose = off;\n"
+  }
+}

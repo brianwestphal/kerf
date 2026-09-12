@@ -1,0 +1,6 @@
+{
+  "caseId": "compact-exclusive-choice",
+  "files": {
+    "main.tsx": "import { delegateActions } from 'kerfjs/actions';\nimport { SegmentedControl } from '@kerfjs/ui/segmented-control';\nconst off = delegateActions(document.body, 'click', {});\nexport const choice = <SegmentedControl value= choices={[]} />;\nexport const dispose = off;\n"
+  }
+}

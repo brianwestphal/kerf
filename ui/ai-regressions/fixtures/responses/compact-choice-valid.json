@@ -1,0 +1,7 @@
+{
+  "caseId": "compact-exclusive-choice",
+  "files": {
+    "main.tsx": "import { delegateActions } from 'kerfjs/actions';\nimport { SegmentedControl } from '@kerfjs/ui/segmented-control';\n\nexport function mountChoice(root: HTMLElement, value: string) {\n  const off = delegateActions(root, 'click', { 'set-view': (_event, target) => console.log(target.dataset.segmentValue) });\n  const view = <SegmentedControl ariaLabel=\"Workspace view\" action=\"set-view\" value={value} choices={[{ value: 'board', label: 'Board' }, { value: 'list', label: 'List' }, { value: 'timeline', label: 'Timeline' }]} appearance=\"toolbar\" />;\n  return { view, dispose: off };\n}\n",
+    "styles.css": ""
+  }
+}

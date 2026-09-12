@@ -1,0 +1,1 @@
+Build a navigation sidebar with two labeled sections, rows with and without icons, a selected row, one disabled row, an inset workspace-summary block, and compact footer actions. The labels and surfaces should share a consistent alignment without compensating negative margins.

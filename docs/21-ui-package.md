@@ -192,7 +192,24 @@ links. Browser coverage exercises keyboard flows, deterministic transitions,
 light/dark/contrast/reduced-motion, wide/intermediate/narrow layout, and 200%
 zoom.
 
-## 21.7 Versioning and releases
+## 21.7 Local AI regression foundation
+
+`ui/ai-regressions/` is an internal authoring harness, not a shipped component
+surface or public comparison. Seven neutral, task-shaped prompts cover the
+application shell, compact exclusive choice, navigation composition, workspace
+states, master-detail dialog, tokenized search, and a recurring concept the
+package does not provide. Their private oracles check actual AST-proven imports
+and invocations, required wiring capture, semantic layout classes and owners,
+public CSS boundaries, accessibility, and honest upstream escalation.
+
+The deterministic package gate validates the corpus and condition schemas,
+freezes the pre-recipe guidance baseline at its full source revision, assembles
+the live revised catalog/recipe context with source hashes, and replays pinned
+passing and adversarial responses. It never calls a model. Live or paid runs,
+build/browser probes, and bounded visual review remain explicit opt-in evidence;
+canned fixtures are inference and cannot be reported as measured improvement.
+
+## 21.8 Versioning and releases
 
 `scripts/release.sh` bumps `kerfjs`, `eslint-plugin-kerfjs`,
 `create-kerf-component`, and `@kerfjs/ui` together. The dedicated

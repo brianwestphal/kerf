@@ -1,0 +1,1 @@
+Build a search editor where free text and ordered removable filter tokens share one searchbox. The application owns parsing and suggestions; editing, clearing, token replacement, and caret restoration must remain usable from the keyboard and announced with an appropriate accessible name.
