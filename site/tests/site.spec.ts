@@ -124,12 +124,14 @@ test('adapts the Kerf UI navigation for desktop, tablet, and mobile', async ({ p
       gutter: Math.abs(row.left - (bounds.left + parseFloat(styles.paddingLeft))),
       labelColumn: Math.abs(header.left - label.left),
       labelInset: label.left - row.left,
+      labelWidth: label.width,
       rowPadding: parseFloat(getComputedStyle(rowNode).paddingLeft),
     };
   });
   expect(alignment.gutter).toBeLessThanOrEqual(1);
   expect(alignment.labelColumn).toBeLessThanOrEqual(1);
   expect(Math.abs(alignment.labelInset - alignment.rowPadding)).toBeLessThanOrEqual(1);
+  expect(alignment.labelWidth).toBeGreaterThan(160);
   if (testInfo.project.name === 'chromium') {
     const tocAlignment = await page.locator('.site-toc').evaluate((node) => {
       const header = node.querySelector<HTMLElement>('.kui-menu-header h2')!.getBoundingClientRect();
@@ -138,10 +140,12 @@ test('adapts the Kerf UI navigation for desktop, tablet, and mobile', async ({ p
       const topLabel = node.querySelector<HTMLElement>('.site-toc__top .kui-menu-item__label')!.getBoundingClientRect();
       return {
         labelColumn: Math.abs(header.left - label.left),
+        labelWidth: label.width,
         topIconColumn: topLabel.left - topRow.left,
       };
     });
     expect(tocAlignment.labelColumn).toBeLessThanOrEqual(1);
+    expect(tocAlignment.labelWidth).toBeGreaterThan(120);
     expect(tocAlignment.topIconColumn).toBeGreaterThan(30);
   }
   await page.screenshot({ path: testInfo.outputPath(`sidebar-spacing-${testInfo.project.name}.png`) });
