@@ -98,6 +98,15 @@
         border-radius: 0 4px 4px 0;
       }
       .preview hr { border: 0; border-top: 1px solid #cbd5e1; margin: 1.5em 0; }
+      @media (max-width: 600px) {
+        html, body { height: auto; min-height: 100%; }
+        .shell { height: auto; min-height: 100vh; grid-template-rows: auto auto; }
+        #app { display: block; }
+        header { align-items: flex-start; flex-direction: column; gap: 0.55rem; }
+        .editor { grid-template-columns: 1fr; }
+        .pane { min-height: 55vh; padding: 1.25rem; }
+        .editor-pane { border-right: 0; border-bottom: 1px solid var(--border); }
+      }
     </style>
   </head>
   <body>

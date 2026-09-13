@@ -1,4 +1,10 @@
+import { readdir } from 'node:fs/promises';
+import { join, relative, sep } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
 import { expect, test } from '@playwright/test';
+
+const distRoot = fileURLToPath(new URL('../dist/', import.meta.url));
 
 const viewports = [
   { name: 'desktop', width: 1440, height: 1000 },
@@ -6,16 +12,31 @@ const viewports = [
   { name: 'mobile', width: 390, height: 844 },
 ] as const;
 
-test('visually audits every sitemap route at desktop, tablet, and mobile widths', async ({ page, request }, testInfo) => {
+const clientRedirects = new Map([
+  ['examples/basics/09-raw-sanitise/', '**/examples/basics/09-raw-sanitize/'],
+]);
+
+async function builtHtmlRoutes(directory = distRoot): Promise<string[]> {
+  const entries = await readdir(directory, { withFileTypes: true });
+  const routes = await Promise.all(entries.map(async (entry) => {
+    const path = join(directory, entry.name);
+    if (entry.isDirectory()) return builtHtmlRoutes(path);
+    if (!entry.isFile() || !entry.name.endsWith('.html')) return [];
+
+    const outputPath = relative(distRoot, path).split(sep).join('/');
+    if (outputPath === 'index.html') return [''];
+    if (outputPath.endsWith('/index.html')) return [outputPath.slice(0, -'index.html'.length)];
+    return [outputPath];
+  }));
+  return routes.flat();
+}
+
+test('visually audits every built HTML surface at desktop, tablet, and mobile widths', async ({ page }, testInfo) => {
   test.setTimeout(180_000);
   test.skip(process.env.KERF_FULL_VISUAL_AUDIT !== '1', 'Run explicitly with npm run test:visual.');
   test.skip(testInfo.project.name !== 'chromium', 'One browser captures the responsive visual matrix.');
-  const sitemapResponse = await request.get('sitemap.xml');
-  expect(sitemapResponse.ok()).toBe(true);
-  const sitemap = await sitemapResponse.text();
-  const allRoutes = [...sitemap.matchAll(/<loc>https:\/\/brianwestphal\.github\.io\/kerf\/(.*?)<\/loc>/g)]
-    .map((match) => match[1] ?? '');
-  expect(allRoutes).toHaveLength(52);
+  const allRoutes = (await builtHtmlRoutes()).sort();
+  expect(allRoutes).toHaveLength(75);
   const routes = process.env.KERF_VISUAL_ROUTE
     ? allRoutes.filter((route) => route === process.env.KERF_VISUAL_ROUTE)
     : allRoutes;
@@ -25,10 +46,13 @@ test('visually audits every sitemap route at desktop, tablet, and mobile widths'
     await page.setViewportSize(viewport);
     for (const route of routes) {
       const response = await page.goto(`./${route}`, { waitUntil: 'load' });
-      expect.soft(response?.ok(), `${route || '/'} loads at ${viewport.name}`).toBe(true);
+      const responseIsHealthy = response?.ok() || (route === '404.html' && response?.status() === 404);
+      expect.soft(responseIsHealthy, `${route || '/'} loads at ${viewport.name}`).toBe(true);
+      const redirectDestination = clientRedirects.get(route);
+      if (redirectDestination) await page.waitForURL(redirectDestination);
       await page.evaluate(() => document.fonts.ready);
       const health = await page.evaluate(() => {
-        const main = document.querySelector<HTMLElement>('main');
+        const content = document.querySelector<HTMLElement>('main, [role="main"], #app, #root') ?? document.body;
         const viewportWidth = document.documentElement.clientWidth;
         const brokenImages = [...document.images]
           .filter((image) => image.complete && image.naturalWidth === 0)
@@ -52,8 +76,8 @@ test('visually audits every sitemap route at desktop, tablet, and mobile widths'
           });
         return {
           documentOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
-          mainWidth: main?.getBoundingClientRect().width ?? 0,
-          mainHeight: main?.getBoundingClientRect().height ?? 0,
+          contentWidth: content.getBoundingClientRect().width,
+          contentHeight: content.getBoundingClientRect().height,
           brokenImages,
           overflowingElements,
         };
@@ -65,8 +89,8 @@ test('visually audits every sitemap route at desktop, tablet, and mobile widths'
         animations: 'disabled',
       });
       expect.soft(health.documentOverflow, `${route || '/'} horizontal overflow at ${viewport.name}: ${health.overflowingElements.join(' | ')}`).toBeLessThanOrEqual(1);
-      expect.soft(health.mainWidth, `${route || '/'} main width at ${viewport.name}`).toBeGreaterThan(0);
-      expect.soft(health.mainHeight, `${route || '/'} main height at ${viewport.name}`).toBeGreaterThan(0);
+      expect.soft(health.contentWidth, `${route || '/'} content width at ${viewport.name}`).toBeGreaterThan(0);
+      expect.soft(health.contentHeight, `${route || '/'} content height at ${viewport.name}`).toBeGreaterThan(0);
       expect.soft(health.brokenImages, `${route || '/'} broken images at ${viewport.name}`).toEqual([]);
     }
   }

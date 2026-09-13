@@ -44,6 +44,13 @@
       .rs-detail dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 0.35rem 0.75rem; font-size: 0.85rem; }
       .rs-detail dt { color: #64748b; }
       .rs-detail dd { margin: 0; font-family: ui-monospace, monospace; }
+      @media (max-width: 600px) {
+        body { padding: 1rem; }
+        .rs { grid-template-columns: 1fr; }
+        .rs-row { gap: 0.45rem; padding-inline: 0.65rem; }
+        .rs-name { min-width: 80px; }
+        .rs-region { min-width: 0; }
+      }
     </style>
   </head>
   <body>

@@ -240,6 +240,42 @@ test('wraps long inline API identifiers inside the mobile viewport', async ({ pa
   await page.screenshot({ path: testInfo.outputPath('api-inline-code-mobile.png') });
 });
 
+test('stacks dense standalone examples into readable mobile layouts', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'mobile-chromium', 'The mobile project owns these narrow-width regressions.');
+
+  await page.goto('./run/kanban/');
+  const columns = await page.locator('.col').evaluateAll((nodes) => nodes.map((node) => node.getBoundingClientRect().toJSON()));
+  expect(columns).toHaveLength(3);
+  expect(Math.abs(columns[0]!.x - columns[1]!.x)).toBeLessThanOrEqual(1);
+  expect(columns[1]!.y).toBeGreaterThanOrEqual(columns[0]!.bottom);
+
+  await page.goto('./run/dashboard/');
+  const chart = await page.locator('.chart-host').evaluate((node) => {
+    const bounds = node.getBoundingClientRect();
+    return { left: bounds.left, right: bounds.right, viewportWidth: document.documentElement.clientWidth };
+  });
+  expect(chart.left).toBeGreaterThanOrEqual(0);
+  expect(chart.right).toBeLessThanOrEqual(chart.viewportWidth);
+
+  await page.goto('./run/row-selector/');
+  const rowSelector = await page.locator('.rs').evaluate((node) => {
+    const main = node.querySelector<HTMLElement>('.rs-main')!.getBoundingClientRect();
+    const detail = node.querySelector<HTMLElement>('.rs-detail')!.getBoundingClientRect();
+    return { main: main.toJSON(), detail: detail.toJSON() };
+  });
+  expect(Math.abs(rowSelector.main.x - rowSelector.detail.x)).toBeLessThanOrEqual(1);
+  expect(rowSelector.detail.y).toBeGreaterThanOrEqual(rowSelector.main.bottom);
+  expect(rowSelector.main.width).toBeGreaterThan(300);
+
+  await page.goto('./run/markdown-editor/');
+  const panes = await page.locator('.pane').evaluateAll((nodes) => nodes.map((node) => node.getBoundingClientRect().toJSON()));
+  expect(panes).toHaveLength(2);
+  expect(Math.abs(panes[0]!.x - panes[1]!.x)).toBeLessThanOrEqual(1);
+  expect(panes[1]!.y).toBeGreaterThanOrEqual(panes[0]!.bottom);
+  expect(panes[0]!.width).toBeGreaterThan(350);
+  await page.screenshot({ path: testInfo.outputPath('standalone-examples-mobile.png'), fullPage: true });
+});
+
 test('loads the generated search index only after a query', async ({ page }, testInfo) => {
   const pagefindRequests: string[] = [];
   page.on('request', (request) => {

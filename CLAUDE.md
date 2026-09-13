@@ -180,11 +180,11 @@ npm run check:full        # KF-118: extended pre-push gate — `check` plus the 
 ```
 
 Visually validate every site-facing change with Playwright, not just DOM
-assertions. From `site/`, `npm run test:visual` builds 156 full-page captures for
-all 52 sitemap routes at desktop, tablet, and mobile widths while checking page
+assertions. From `site/`, `npm run test:visual` builds 225 full-page captures for
+all 75 emitted HTML surfaces at desktop, tablet, and mobile widths while checking page
 overflow, broken images, and collapsed main content. Inspect the generated
-captures before handoff. Set `KERF_VISUAL_ROUTE=api/` (or another sitemap-relative
-route) to focus the matrix while iterating, then run the unfiltered command.
+captures before handoff. Set `KERF_VISUAL_ROUTE=api/` (or another built route such as
+`run/chat/`) to focus the matrix while iterating, then run the unfiltered command.
 
 `npm run check` is what the husky pre-commit hook runs — the canonical "is everything green" command for fast local turnaround and the minimum gate immediately before every push. It includes lint, TypeScript compilation/typechecking, unit tests, and the production build. `npm run check:full` is the heavier opt-in gate: use it when browser-sensitive work also needs local Playwright coverage (SVG/MathML namespacing, IME composition, mutation counts, stateful attributes — anything the happy-dom unit tests can't model truthfully). CI runs both on every push/PR (see `.github/workflows/ci.yml`).
 
