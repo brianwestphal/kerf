@@ -11,8 +11,8 @@
 // generator embeds them in responsive iframes so each example keeps an
 // independent #app root and lifecycle across client-side page navigation.
 
-import { execSync } from 'node:child_process';
-import { cpSync, existsSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
+import { spawnSync } from 'node:child_process';
+import { cpSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { build } from 'vite';
@@ -115,14 +115,91 @@ async function buildCompleteApps() {
   console.log(`[build-examples] built ${COMPLETE_APPS.length} complete apps → public/run/`);
 }
 
+export function demoInstallEnvironment(parentEnvironment = process.env) {
+  const environment = { ...parentEnvironment };
+
+  // Vite's programmatic build sets NODE_ENV=production on the host process.
+  // npm treats that inherited value as `--omit=dev`, which would omit this
+  // demo's own Vite and TypeScript packages. The explicit CLI include below is
+  // the install contract; clearing inherited omit state makes it unambiguous
+  // across npm versions.
+  delete environment.NODE_ENV;
+  delete environment.npm_config_omit;
+  delete environment.NPM_CONFIG_OMIT;
+  delete environment.npm_config_production;
+  delete environment.NPM_CONFIG_PRODUCTION;
+
+  return environment;
+}
+
+export function runDemoCommand(phase, command, args, options) {
+  console.log(`[build-examples] ${phase}: ${[command, ...args].join(' ')}`);
+  const result = spawnSync(command, args, {
+    cwd: options.cwd,
+    env: options.env,
+    stdio: 'inherit',
+  });
+
+  if (result.error) {
+    throw new Error(`${phase} could not start ${command}: ${result.error.message}`, { cause: result.error });
+  }
+  if (result.status !== 0) {
+    const outcome = result.signal === null ? `exit ${result.status}` : `signal ${result.signal}`;
+    throw new Error(`${phase} failed (${outcome}): ${[command, ...args].join(' ')}`);
+  }
+}
+
+export function assertLocalDemoTool(demoSrc, packageName, binName = packageName) {
+  const packagePath = resolve(demoSrc, 'node_modules', packageName, 'package.json');
+  if (!existsSync(packagePath)) {
+    throw new Error(`reactivity demo install did not provide local ${packageName} at ${packagePath}; refusing an ancestor node_modules fallback`);
+  }
+  const binPath = resolve(demoSrc, 'node_modules', '.bin', binName);
+  if (!existsSync(binPath) && !existsSync(`${binPath}.cmd`)) {
+    throw new Error(`reactivity demo install did not provide local ${binName} executable at ${binPath}; refusing an ancestor node_modules fallback`);
+  }
+
+  return JSON.parse(readFileSync(packagePath, 'utf8')).version;
+}
+
+function npmInvocation(environment) {
+  const npmExecPath = environment.npm_execpath;
+  return npmExecPath === undefined
+    ? { command: 'npm', args: [] }
+    : { command: process.execPath, args: [npmExecPath] };
+}
+
+export function installDemoDependencies(demoSrc, parentEnvironment = process.env) {
+  const environment = demoInstallEnvironment(parentEnvironment);
+  const npm = npmInvocation(environment);
+  runDemoCommand(
+    'installing reactivity demo dependencies',
+    npm.command,
+    [...npm.args, 'ci', '--include=dev', '--no-audit', '--no-fund'],
+    { cwd: demoSrc, env: environment },
+  );
+
+  return {
+    viteVersion: assertLocalDemoTool(demoSrc, 'vite', 'vite'),
+    typescriptVersion: assertLocalDemoTool(demoSrc, 'typescript', 'tsc'),
+  };
+}
+
 function buildDemo() {
   const demoSrc = resolve(repoRoot, 'examples/reactivity-demo');
   const demoDist = resolve(demoSrc, 'dist');
   const target = resolve(siteRoot, 'public/demo');
+  const npm = npmInvocation(process.env);
 
   // Build the demo via its own Vite config (already set to base /kerf/demo/).
-  execSync('npm install --no-audit --no-fund --silent', { cwd: demoSrc, stdio: 'inherit' });
-  execSync('npm run build --silent', { cwd: demoSrc, stdio: 'inherit' });
+  const { viteVersion } = installDemoDependencies(demoSrc);
+  console.log(`[build-examples] reactivity demo local toolchain: vite@${viteVersion}`);
+  runDemoCommand(
+    'building reactivity demo',
+    npm.command,
+    [...npm.args, 'run', 'build'],
+    { cwd: demoSrc, env: { ...process.env, NODE_ENV: 'production' } },
+  );
 
   if (existsSync(target)) rmSync(target, { recursive: true, force: true });
   mkdirSync(target, { recursive: true });
@@ -137,7 +214,9 @@ async function main() {
   buildDemo();
 }
 
-main().catch((err) => {
-  console.error('[build-examples] failed:', err);
-  process.exit(1);
-});
+if (process.argv[1] !== undefined && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  main().catch((err) => {
+    console.error('[build-examples] failed:', err);
+    process.exit(1);
+  });
+}
