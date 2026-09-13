@@ -117,24 +117,32 @@ test('adapts the Kerf UI navigation for desktop, tablet, and mobile', async ({ p
     const bounds = node.getBoundingClientRect();
     const styles = getComputedStyle(node);
     const header = node.querySelector<HTMLElement>('.kui-menu-header h2')!.getBoundingClientRect();
-    const row = node.querySelector<HTMLElement>('.kui-menu-item')!.getBoundingClientRect();
+    const rowNode = node.querySelector<HTMLElement>('.kui-menu-item')!;
+    const row = rowNode.getBoundingClientRect();
     const label = node.querySelector<HTMLElement>('.kui-menu-item__label')!.getBoundingClientRect();
     return {
       gutter: Math.abs(row.left - (bounds.left + parseFloat(styles.paddingLeft))),
       labelColumn: Math.abs(header.left - label.left),
-      reservedIconColumn: label.left - row.left,
+      labelInset: label.left - row.left,
+      rowPadding: parseFloat(getComputedStyle(rowNode).paddingLeft),
     };
   });
   expect(alignment.gutter).toBeLessThanOrEqual(1);
   expect(alignment.labelColumn).toBeLessThanOrEqual(1);
-  expect(alignment.reservedIconColumn).toBeGreaterThan(30);
+  expect(Math.abs(alignment.labelInset - alignment.rowPadding)).toBeLessThanOrEqual(1);
   if (testInfo.project.name === 'chromium') {
     const tocAlignment = await page.locator('.site-toc').evaluate((node) => {
       const header = node.querySelector<HTMLElement>('.kui-menu-header h2')!.getBoundingClientRect();
       const label = node.querySelector<HTMLElement>('.kui-menu-item__label')!.getBoundingClientRect();
-      return Math.abs(header.left - label.left);
+      const topRow = node.querySelector<HTMLElement>('.site-toc__top')!.getBoundingClientRect();
+      const topLabel = node.querySelector<HTMLElement>('.site-toc__top .kui-menu-item__label')!.getBoundingClientRect();
+      return {
+        labelColumn: Math.abs(header.left - label.left),
+        topIconColumn: topLabel.left - topRow.left,
+      };
     });
-    expect(tocAlignment).toBeLessThanOrEqual(1);
+    expect(tocAlignment.labelColumn).toBeLessThanOrEqual(1);
+    expect(tocAlignment.topIconColumn).toBeGreaterThan(30);
   }
   await page.screenshot({ path: testInfo.outputPath(`sidebar-spacing-${testInfo.project.name}.png`) });
   if (testInfo.project.name !== 'chromium') {

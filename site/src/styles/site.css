@@ -109,6 +109,8 @@ a { color: var(--kui-color-text-link); }
 .site-sidebar__close { display: none; width: auto; grid-template-columns: auto; }
 
 .site-navigation {
+  --kui-sidebar-icon-column-width: 0rem;
+  --kui-sidebar-column-gap: 0rem;
   padding-block: .65rem;
   padding-inline: var(--kui-sidebar-gutter, var(--kui-space-s));
   overflow-y: auto;
@@ -117,7 +119,10 @@ a { color: var(--kui-color-text-link); }
 
 .site-navigation__group + .site-navigation__group { margin-top: .65rem; }
 .site-navigation__items { display: grid; gap: .1rem; }
-.site-navigation .kui-menu-item { min-height: 2.25rem; }
+.site-navigation .kui-menu-item {
+  min-height: 2.25rem;
+  column-gap: var(--kui-sidebar-column-gap);
+}
 
 .site-sidebar__footer {
   padding: .75rem 1rem;
