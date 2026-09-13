@@ -24,6 +24,8 @@
     "check": "npm run lint && npm run typecheck && npm run test:unit && npm run build",
     "pretest:e2e": "npm run build",
     "test:e2e": "playwright test",
+    "pretest:visual": "npm run build",
+    "test:visual": "KERF_FULL_VISUAL_AUDIT=1 playwright test tests/full-visual-audit.spec.ts --project=chromium",
     "pretypecheck": "npm run build-content",
     "typecheck": "node node_modules/typescript/bin/tsc -p src/scripts/tsconfig.json"
   },

@@ -179,6 +179,13 @@ npm run check:audit       # KF-450: `npm audit --omit=dev --audit-level=high` �
 npm run check:full        # KF-118: extended pre-push gate — `check` plus the production audit and the Playwright browser suite (chromium/firefox/webkit), which exercises tests/dist/consumer-app/ end-to-end
 ```
 
+Visually validate every site-facing change with Playwright, not just DOM
+assertions. From `site/`, `npm run test:visual` builds 156 full-page captures for
+all 52 sitemap routes at desktop, tablet, and mobile widths while checking page
+overflow, broken images, and collapsed main content. Inspect the generated
+captures before handoff. Set `KERF_VISUAL_ROUTE=api/` (or another sitemap-relative
+route) to focus the matrix while iterating, then run the unfiltered command.
+
 `npm run check` is what the husky pre-commit hook runs — the canonical "is everything green" command for fast local turnaround and the minimum gate immediately before every push. It includes lint, TypeScript compilation/typechecking, unit tests, and the production build. `npm run check:full` is the heavier opt-in gate: use it when browser-sensitive work also needs local Playwright coverage (SVG/MathML namespacing, IME composition, mutation counts, stateful attributes — anything the happy-dom unit tests can't model truthfully). CI runs both on every push/PR (see `.github/workflows/ci.yml`).
 
 Coverage thresholds (`vitest.config.ts`): **100% lines and functions, 98.5% branches, 99.5% statements** on `src/`. Lines and functions are the load-bearing pair — they are what catches genuinely unexercised code. Branches and statements sit below 100 for one enumerated reason: defensive arms that cannot be exercised by construction (a `parentElement !== null` guard on a node the reconciler just found attached, a `?? ''` after a regex that always matches, loop-completion branches). KF-103 first lowered branches to 99 for that class; KF-452 moved both numbers again when vitest 4 replaced `v8-to-istanbul` with `ast-v8-to-istanbul`, which maps V8's counters onto the AST rather than onto transpiled line ranges and so resolves guards the old mapping silently credited as covered. **Coverage did not get worse — the instrument got sharper.** `vitest.config.ts` names all seventeen affected branches. If these numbers need to move again, name the branches that moved them; never lower them to make a build pass.

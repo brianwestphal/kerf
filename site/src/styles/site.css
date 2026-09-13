@@ -180,9 +180,9 @@ a { color: var(--kui-color-text-link); }
 .site-article blockquote { margin: 1.5rem 0; padding: .15rem 1rem; border-left: 3px solid var(--site-accent); color: var(--kui-color-text-quiet); background: var(--kui-color-brand-fill-quiet); }
 .site-article hr { margin: 3rem 0; border: 0; border-top: 1px solid var(--site-border); }
 .site-article img { max-width: 100%; height: auto; }
-.site-article code { padding: .12em .35em; border-radius: .3rem; background: var(--site-code); font: .88em/1.5 var(--kui-font-mono); }
+.site-article code { padding: .12em .35em; border-radius: .3rem; background: var(--site-code); font: .88em/1.5 var(--kui-font-mono); overflow-wrap: anywhere; }
 .site-article pre { max-width: 100%; padding: 1rem; overflow: auto; border: 1px solid var(--site-border); border-radius: .75rem; background: var(--site-code); line-height: 1.55; }
-.site-article pre code { padding: 0; background: transparent; }
+.site-article pre code { padding: 0; background: transparent; overflow-wrap: normal; }
 
 .code-block { margin: 1.5rem 0; }
 .code-block figcaption { padding: .45rem .85rem; border: 1px solid var(--site-border); border-bottom: 0; border-radius: .75rem .75rem 0 0; color: var(--kui-color-text-quiet); background: var(--kui-color-surface-lowered); font: 600 var(--kui-font-xs) var(--kui-font-sans); }

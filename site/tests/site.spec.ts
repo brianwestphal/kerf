@@ -220,6 +220,26 @@ test('groups toolbar actions around a flexible search control', async ({ page },
   }
 });
 
+test('wraps long inline API identifiers inside the mobile viewport', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'mobile-chromium', 'The mobile project owns this narrow-width regression.');
+  await page.goto('./api/');
+  const identifier = page.getByText('document.implementation.createHTMLDocument()', { exact: true });
+  await expect(identifier).toBeVisible();
+  const geometry = await identifier.evaluate((node) => {
+    const bounds = node.getBoundingClientRect();
+    return {
+      documentOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      left: bounds.left,
+      right: bounds.right,
+      viewportWidth: document.documentElement.clientWidth,
+    };
+  });
+  expect(geometry.documentOverflow).toBeLessThanOrEqual(1);
+  expect(geometry.left).toBeGreaterThanOrEqual(0);
+  expect(geometry.right).toBeLessThanOrEqual(geometry.viewportWidth);
+  await page.screenshot({ path: testInfo.outputPath('api-inline-code-mobile.png') });
+});
+
 test('loads the generated search index only after a query', async ({ page }, testInfo) => {
   const pagefindRequests: string[] = [];
   page.on('request', (request) => {
