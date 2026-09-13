@@ -1,4 +1,4 @@
-import { MenuHeader, MenuItem, PageHeader, Toolbar } from '@kerfjs/ui';
+import { MenuHeader, MenuItem, PageHeader, Toolbar, ToolbarControlGroup } from '@kerfjs/ui';
 import { raw, renderDocument, type SafeHtml } from 'kerfjs';
 
 export interface SitePage {
@@ -83,9 +83,22 @@ export function renderSite(pages: SitePage[], groups: NavigationGroup[], current
       <Toolbar
         className="site-toolbar"
         label="Site controls"
-        leading={<><MenuItem action="open-nav" label="Menu" accessibleLabel="Open navigation" icon={icon('menu')} className="site-toolbar__menu" /><a class="site-toolbar__brand" href={`${BASE}/`}>Kerf</a></>}
+        leading={<>
+          <ToolbarControlGroup label="Navigation" className="site-toolbar__navigation-group" appearance="borderless" single>
+            <button type="button" class="site-toolbar__button" data-action="open-nav" aria-label="Open navigation" aria-expanded="false">{icon('menu')}</button>
+          </ToolbarControlGroup>
+          <a class="site-toolbar__brand" href={`${BASE}/`}>Kerf</a>
+        </>}
         center={<div class="kerf-search-host" data-morph-skip></div>}
-        trailing={<><MenuItem action="history-back" label="Back" accessibleLabel="Go back" icon={icon('back')} className="site-toolbar__icon" /><MenuItem action="history-forward" label="Forward" accessibleLabel="Go forward" icon={icon('forward')} className="site-toolbar__icon" /><MenuItem action="toggle-theme" label="Theme" accessibleLabel="Toggle color theme" icon={icon('theme')} className="site-toolbar__icon" /></>}
+        trailing={<>
+          <ToolbarControlGroup label="History" className="site-toolbar__history-group" appearance="borderless">
+            <button type="button" class="site-toolbar__button" data-action="history-back" aria-label="Go back">{icon('back')}</button>
+            <button type="button" class="site-toolbar__button" data-action="history-forward" aria-label="Go forward">{icon('forward')}</button>
+          </ToolbarControlGroup>
+          <ToolbarControlGroup label="Appearance" className="site-toolbar__appearance-group" appearance="borderless" single>
+            <button type="button" class="site-toolbar__button" data-action="toggle-theme" aria-label="Toggle color theme">{icon('theme')}</button>
+          </ToolbarControlGroup>
+        </>}
       />
       <div class="site-page-grid">
         <main id="site-top" class="site-main" data-pagefind-body>

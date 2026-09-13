@@ -1,4 +1,4 @@
-import { EmptyState, LoadingSpinner, MenuItem, StateBanner, Toolbar, ToolbarText } from '@kerfjs/ui';
+import { EmptyState, LoadingSpinner, StateBanner, Toolbar, ToolbarControlGroup, ToolbarText } from '@kerfjs/ui';
 import { delegate, each, mount, signal } from 'kerfjs';
 
 interface PagefindData {
@@ -109,20 +109,20 @@ function resultList() {
 
 export function renderSearch() {
   return <div class="kerf-search" data-search-open={String(open.value)}>
-    <MenuItem
-      action="open-search"
-      className="kerf-search-trigger"
-      label="Search docs"
-      accessibleLabel="Search documentation"
-      trailing={<kbd aria-hidden="true">⌘ K</kbd>}
-    />
+    <ToolbarControlGroup label="Search" className="kerf-search-group" single>
+      <button type="button" class="kerf-search-trigger" data-action="open-search" aria-label="Search documentation">
+        <span class="kerf-search-trigger__icon" aria-hidden="true">⌕</span>
+        <span class="kerf-search-trigger__label">Search docs</span>
+        <kbd aria-hidden="true">⌘ K</kbd>
+      </button>
+    </ToolbarControlGroup>
     <dialog class="kerf-search-dialog" open={open.value} aria-label="Search documentation">
       <div class="kerf-search-scrim" data-action="close-search">
         <section class="kerf-search-panel" aria-label="Search documentation">
           <Toolbar
             label="Search controls"
             leading={<ToolbarText text="Search the docs" size="large" />}
-            trailing={<MenuItem action="close-search" className="kerf-search-close" label="Close" />}
+            trailing={<ToolbarControlGroup label="Close search" appearance="borderless" single><button type="button" class="kerf-search-close" data-action="close-search">Close</button></ToolbarControlGroup>}
           />
           <label class="kerf-search-field">
             <span class="sr-only">Search documentation</span>

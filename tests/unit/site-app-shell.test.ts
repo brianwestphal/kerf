@@ -10,8 +10,10 @@ describe('documentation site application shell', () => {
     const showcase = readFileSync(join(cwd(), 'site/src/scripts/showcase.tsx'), 'utf8');
 
     expect(search).toContain("from '@kerfjs/ui'");
-    expect(search).toContain('<MenuItem');
-    expect(search).toContain('<Toolbar');
+    expect(search).toContain('<ToolbarControlGroup');
+    expect(search).toContain('<button type="button"');
+    expect(search).not.toContain('MenuItem');
+    expect(search).toMatch(/<Toolbar\s/);
     expect(search).toContain('Search the Kerf handbook');
     expect(showcase).toContain('<SegmentedControl');
     expect(showcase).toContain('<StateBanner');
@@ -35,6 +37,7 @@ describe('documentation site application shell', () => {
     expect(view).toContain('<MenuHeader');
     expect(view).toContain('<MenuItem');
     expect(view).toContain('<PageHeader');
+    expect(view).toContain('<ToolbarControlGroup');
     expect(client).toContain("from 'kerfjs/router'");
     expect(renderer).toContain('renderSiteDocument');
   });

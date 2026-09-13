@@ -153,6 +153,73 @@ test('adapts the Kerf UI navigation for desktop, tablet, and mobile', async ({ p
   await page.screenshot({ path: testInfo.outputPath(`responsive-${testInfo.project.name}.png`), fullPage: true });
 });
 
+test('groups toolbar actions around a flexible search control', async ({ page }, testInfo) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('./docs/overview/');
+  const toolbar = page.getByLabel('Site controls');
+  const navigationGroup = toolbar.locator(':scope > .kui-toolbar__leading > .site-toolbar__navigation-group');
+  const searchGroup = toolbar.locator(':scope > .kui-toolbar__center .kerf-search-group');
+  const trailingGroups = toolbar.locator(':scope > .kui-toolbar__trailing > [data-component="toolbar-control-group"]');
+  const search = page.getByRole('button', { name: 'Search documentation' });
+
+  await expect(searchGroup).toHaveAttribute('data-component', 'toolbar-control-group');
+  await expect(trailingGroups).toHaveCount(2);
+  await expect(search).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Go back' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Go forward' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Toggle color theme' })).toBeVisible();
+  if (testInfo.project.name === 'chromium') await expect(navigationGroup).toBeHidden();
+  else await expect(navigationGroup).toBeVisible();
+
+  const measure = () => toolbar.evaluate((node) => {
+    const center = node.querySelector<HTMLElement>(':scope > .kui-toolbar__center')!;
+    const trailing = node.querySelector<HTMLElement>(':scope > .kui-toolbar__trailing')!;
+    const searchControl = center.querySelector<HTMLElement>('.kerf-search-group')!;
+    const hint = searchControl.querySelector<HTMLElement>('kbd')!;
+    const centerBounds = center.getBoundingClientRect();
+    const trailingBounds = trailing.getBoundingClientRect();
+    const searchBounds = searchControl.getBoundingClientRect();
+    return {
+      documentOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      toolbarOverflow: node.scrollWidth - node.clientWidth,
+      centerWidth: centerBounds.width,
+      searchWidth: searchBounds.width,
+      overlap: searchBounds.right - trailingBounds.left,
+      hintVisible: getComputedStyle(hint).display !== 'none',
+    };
+  });
+
+  const geometry = await measure();
+  expect(geometry.documentOverflow).toBeLessThanOrEqual(1);
+  expect(geometry.toolbarOverflow).toBeLessThanOrEqual(1);
+  expect(Math.abs(geometry.searchWidth - geometry.centerWidth)).toBeLessThanOrEqual(1);
+  expect(geometry.searchWidth).toBeGreaterThan(64);
+  expect(geometry.overlap).toBeLessThanOrEqual(1);
+  expect(geometry.hintVisible).toBe(testInfo.project.name !== 'mobile-chromium');
+
+  const originalTheme = await page.locator('html').getAttribute('data-theme');
+  await page.getByRole('button', { name: 'Toggle color theme' }).click();
+  await expect.poll(() => page.locator('html').getAttribute('data-theme')).not.toBe(originalTheme);
+  await page.screenshot({ path: testInfo.outputPath(`toolbar-groups-${testInfo.project.name}.png`) });
+
+  if (testInfo.project.name === 'chromium') {
+    // A 320 CSS-pixel viewport is the 200% reflow equivalent of a 640px window.
+    await page.setViewportSize({ width: 320, height: 720 });
+    await expect(navigationGroup).toBeVisible();
+    await expect(toolbar.locator('.site-toolbar__brand')).toBeHidden();
+    const narrowGeometry = await measure();
+    expect(narrowGeometry.documentOverflow).toBeLessThanOrEqual(1);
+    expect(narrowGeometry.toolbarOverflow).toBeLessThanOrEqual(1);
+    expect(narrowGeometry.searchWidth).toBeGreaterThan(64);
+    expect(narrowGeometry.hintVisible).toBe(false);
+    await expect(search).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Go back' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Go forward' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Toggle color theme' })).toBeVisible();
+    await page.screenshot({ path: testInfo.outputPath('toolbar-groups-320px-200-percent.png') });
+  }
+});
+
 test('loads the generated search index only after a query', async ({ page }, testInfo) => {
   const pagefindRequests: string[] = [];
   page.on('request', (request) => {
