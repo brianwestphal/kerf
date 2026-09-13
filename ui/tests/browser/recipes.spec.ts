@@ -1,7 +1,7 @@
 import type { Locator, Page } from '@playwright/test';
 import { expect, test } from '@playwright/test';
 
-const recipeIds = ['recipe-app-shell', 'recipe-navigation-sidebar', 'recipe-workspace-header', 'recipe-master-detail-dialog', 'recipe-composer-form', 'recipe-list-workspace-states', 'recipe-compact-toolbar'] as const;
+const recipeIds = ['recipe-app-shell', 'recipe-navigation-sidebar', 'recipe-workspace-header', 'recipe-master-detail-dialog', 'recipe-composer-form', 'recipe-list-workspace-states', 'recipe-compact-toolbar', 'recipe-command-palette'] as const;
 
 async function openRecipe(page: Page, id: typeof recipeIds[number]) {
   await page.goto(`/?component=${id}`);
@@ -137,6 +137,33 @@ test('runs dialog focus lifecycle, form validation, and every list transition', 
     await page.locator('[data-action="toggle-contrast"]').click();
     await list.screenshot({ path: 'test-results/recipe-list-error-contrast.png' });
   }
+});
+
+test('supports command palette search, keyboard selection, empty state, and focus restoration', async ({ page, browserName }) => {
+  const recipe = await openRecipe(page, 'recipe-command-palette');
+  const launcher = recipe.getByRole('button', { name: 'Open command palette' });
+  const dialog = page.locator('wa-dialog.recipe-command-palette__dialog');
+  await activateDialogAndWaitForShow(dialog, () => launcher.click());
+  const search = dialog.getByRole('combobox', { name: 'Search commands' });
+  await expect(search).toBeFocused();
+  await expect(dialog.getByRole('group', { name: 'Recent commands' })).toBeVisible();
+  if (browserName === 'chromium') await page.screenshot({ path: 'test-results/recipe-command-palette-wide.png' });
+  await search.press('ArrowDown');
+  await expect(search).toHaveAttribute('aria-activedescendant', 'recipe-command-option-1');
+  await search.fill('settings');
+  await expect(dialog.getByRole('option', { name: 'Open workspace settings' })).toBeVisible();
+  await search.press('Enter');
+  await expect(dialog).toHaveJSProperty('open', false);
+  await expect(launcher).toBeFocused();
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await activateDialogAndWaitForShow(dialog, () => launcher.click());
+  await search.fill('no such command');
+  await expect(dialog.getByRole('status').filter({ hasText: 'No matching commands' })).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
+  if (browserName === 'chromium') await page.screenshot({ path: 'test-results/recipe-command-palette-empty.png' });
+  await page.keyboard.press('Escape');
+  await expect(launcher).toBeFocused();
 });
 
 test('preserves reduced-motion and high-contrast semantics', async ({ page, browserName }) => {

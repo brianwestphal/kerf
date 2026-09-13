@@ -44,12 +44,14 @@ icons, split handles, or borders.
    measure, declare one named application variable at its page boundary; do not
    give unrelated panes arbitrary `max-width` and `margin: auto` values.
 
-These roles also apply when a package primitive does not exist. For example,
-the application-local [command-palette adapter](./examples/command-palette-adapter.tsx)
-uses one `.kui-layout` boundary, one `.kui-surface-body` inset, section rhythm,
-and a `.kui-control-cluster` for its related footer commands. Its search,
-results, ranking, history, shortcuts, focus policy, and actions remain custom
-application semantics; layout reuse does not turn it into a Kerf UI export.
+These roles also apply when a package primitive does not exist. The complete
+[command-palette recipe](./recipes.md#command-palette) owns the reusable modal,
+search/result, keyboard, empty-state, and focus anatomy. The smaller
+[application adapter](./examples/command-palette-adapter.tsx) uses one
+`.kui-layout` boundary, one `.kui-surface-body` inset, section rhythm, and a
+`.kui-control-cluster` when that full composition is unnecessary. Ranking,
+history, permissions, and actions remain application semantics; recipe reuse
+does not turn it into a Kerf UI runtime export.
 
 ```tsx
 <main class="kui-layout">

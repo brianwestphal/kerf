@@ -38,7 +38,7 @@ export async function buildAiRegressionRun(root, options) {
   const scorerPath = v2 ? 'scripts/lib/ai-regression-score-v2.mjs' : 'scripts/lib/ai-regression-score.mjs';
   const runSchemaPath = v2 ? 'ai-regressions/run-v2.schema.json' : 'ai-regressions/run.schema.json';
   const paths = ['ai-regressions/corpus.json', conditionsPath, 'ai/component-catalog.json', scorerPath, 'ai/component-catalog.schema.json', 'ai-regressions/corpus.schema.json', conditionsSchemaPath, 'ai-regressions/response.schema.json', runSchemaPath];
-  const [corpusText, conditionsText, catalogText, scorerText, catalogSchemaText, corpusSchemaText, conditionsSchemaText, responseSchemaText, runSchemaText] = await Promise.all(paths.map((path) => read(root, path)));
+  const [corpusText, conditionsText, catalogText, scorerText, catalogSchemaText, corpusSchemaText, conditionsSchemaText, responseSchemaText, runSchemaText] = await Promise.all(paths.map((path) => path === 'ai/component-catalog.json' && options.catalogText !== undefined ? Promise.resolve(options.catalogText) : read(root, path)));
   const [suiteText, overridesText, publicApiSignaturesText, baseScorerText] = v2
     ? await Promise.all([
       read(root, 'ai-regressions/suite-v2.json'),

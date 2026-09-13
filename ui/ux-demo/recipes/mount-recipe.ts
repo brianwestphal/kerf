@@ -17,8 +17,10 @@ export function mountRecipe(root: HTMLElement, controller: RecipeController): ()
     },
   });
   const dispatchChange = (_event: Event, element: Element) => controller.change?.(element as HTMLElement);
-  const stopChanges = delegate(root, 'change', 'wa-select, wa-input, wa-textarea', dispatchChange);
-  const stopInputs = delegate(root, 'input', 'wa-input, wa-textarea', dispatchChange);
+  const stopChanges = delegate(root, 'change', 'wa-select, wa-input, wa-textarea, [data-recipe-input]', dispatchChange);
+  const stopInputs = delegate(root, 'input', 'wa-input, wa-textarea, [data-recipe-input]', dispatchChange);
+  const stopKeys = delegate(root, 'keydown', '[data-recipe-keydown]', (event, element) => controller.keydown?.(event as KeyboardEvent, element as HTMLElement));
+  const stopShownDialogs = delegate(root, 'wa-after-show', 'wa-dialog', (_event, element) => controller.afterShow?.(element as HTMLElement));
   const stopDialogs = delegate(root, 'wa-after-hide', 'wa-dialog', (_event, element) => controller.afterHide?.(element as HTMLElement));
   const stopResize = wireResizableRegions(root, {
     onCommit: ({ id, size }) => controller.resize?.(id, size),
@@ -30,6 +32,8 @@ export function mountRecipe(root: HTMLElement, controller: RecipeController): ()
     disposed = true;
     stopResize();
     stopDialogs();
+    stopShownDialogs();
+    stopKeys();
     stopInputs();
     stopChanges();
     stopActions();

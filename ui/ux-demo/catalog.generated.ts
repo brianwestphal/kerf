@@ -427,6 +427,19 @@ export const generatedKerfCatalog = [
       "select",
       "lucide-icon"
     ]
+  },
+  {
+    "id": "recipe-command-palette",
+    "name": "Command palette",
+    "category": "Recipes",
+    "kind": "recipe",
+    "source": "kerf",
+    "description": "A copyable modal command search with grouped results, keyboard selection, empty state, and focus restoration.",
+    "uses": [
+      "dialog-header",
+      "wa-dialog",
+      "layout"
+    ]
   }
 ] as const;
 

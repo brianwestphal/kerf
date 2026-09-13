@@ -20,7 +20,7 @@ The UX catalog is a category-grouped master/detail review surface with a focused
 
 Choose from the interface need: search the catalog, reuse a semantic match, compose existing primitives, add a thin application adapter for product concerns, and use custom markup only for a genuinely different contract. The selection matrix covers every public visual/helper export and the supported-but-not-preferred Web Awesome overlaps, including required wiring, application ownership, import subpaths, alternatives, and recipe links.
 
-There is no `@kerfjs/ui` command-palette export. The typed application-local example at `docs/examples/command-palette-adapter.tsx` shows how missing semantics can still use `layout.css`, one layout root and inset owner, and a `kui-control-cluster`. Ranking, history, shortcuts, focus policy, availability, actions, and copy stay in the app; propose the recurring concept upstream.
+There is no `@kerfjs/ui` command-palette runtime export. Start with the production composition at `docs/recipes.md#command-palette` for modal search, grouped results, keyboard selection, empty state, and focus restoration. The smaller typed application-local example at `docs/examples/command-palette-adapter.tsx` demonstrates the policy boundary. Ranking, history, permissions, availability, actions, and copy stay in the app.
 
 AI tools that need exhaustive retrieval should load `@kerfjs/ui/ai/component-catalog.json`. It is the canonical checked-in source for stable ids, exports, purpose, selection guidance, relationships, delivery and side effects, wiring, application ownership, variants, accessibility, public CSS hooks, catalog routes, and current documentation/recipe links. Its adjacent JSON Schema describes the format.
 

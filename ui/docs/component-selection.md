@@ -29,21 +29,22 @@ application boundary:
 | Composer form | [Catalog](../ux-demo/) · `?component=recipe-composer-form` |
 | List workspace states | [Catalog](../ux-demo/) · `?component=recipe-list-workspace-states` |
 | Compact toolbar choices and actions | [Catalog](../ux-demo/) · `?component=recipe-compact-toolbar` |
+| Command palette | [Catalog](../ux-demo/) · `?component=recipe-command-palette` |
 
 Recipes use public production exports and show ownership boundaries; they are
 copyable reference compositions, not new monolithic components.
 
 ## Missing recurring concepts
 
-Kerf UI does not currently export a command-palette component or recipe. Keep
-that semantic contract application-local; do not invent a package
-command-palette import or present custom markup as package-owned.
+Kerf UI does not export a command-palette component. Start from the
+[production command-palette recipe](./recipes.md#command-palette) for its modal,
+search, grouped-result, keyboard, empty-state, and focus contract; do not invent
+a package command-palette import or present the recipe as a runtime export.
 The typed [application adapter example](./examples/command-palette-adapter.tsx)
 imports `@kerfjs/ui/layout.css`, assigns one `.kui-layout` root and one surface
 inset, and groups its related footer commands with `.kui-control-cluster` while
 the application owns ranking, history, shortcuts, focus policy, availability,
-actions, and copy. If the concept recurs across products, open an upstream
-component or recipe request.
+actions, and copy. Use it when the complete modal recipe is unnecessary.
 
 ## Problem-to-component matrix
 

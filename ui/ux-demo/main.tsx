@@ -653,8 +653,14 @@ const stopSelect = delegate(app, 'change', 'wa-select', (_event, element) => {
 const dispatchRecipeChange = (_event: Event, element: Element) => {
   if (isRecipeId(selectedDemo.value)) recipeControllers.get(selectedDemo.value)?.change?.(element as HTMLElement);
 };
-const stopRecipeChanges = delegate(app, 'change', '[data-recipe] wa-select, [data-recipe] wa-input, [data-recipe] wa-textarea', dispatchRecipeChange);
-const stopRecipeInputs = delegate(app, 'input', '[data-recipe] wa-input, [data-recipe] wa-textarea', dispatchRecipeChange);
+const stopRecipeChanges = delegate(app, 'change', '[data-recipe] wa-select, [data-recipe] wa-input, [data-recipe] wa-textarea, [data-recipe] [data-recipe-input]', dispatchRecipeChange);
+const stopRecipeInputs = delegate(app, 'input', '[data-recipe] wa-input, [data-recipe] wa-textarea, [data-recipe] [data-recipe-input]', dispatchRecipeChange);
+const stopRecipeKeys = delegate(app, 'keydown', '[data-recipe] [data-recipe-keydown]', (event, element) => {
+  if (isRecipeId(selectedDemo.value)) recipeControllers.get(selectedDemo.value)?.keydown?.(event as KeyboardEvent, element as HTMLElement);
+});
+const stopRecipeShownDialogs = delegate(app, 'wa-after-show', '[data-recipe] wa-dialog', (_event, element) => {
+  if (isRecipeId(selectedDemo.value)) recipeControllers.get(selectedDemo.value)?.afterShow?.(element as HTMLElement);
+});
 const stopRecipeDialogs = delegate(app, 'wa-after-hide', '[data-recipe] wa-dialog', (_event, element) => {
   if (isRecipeId(selectedDemo.value)) recipeControllers.get(selectedDemo.value)?.afterHide?.(element as HTMLElement);
 });
@@ -731,4 +737,4 @@ const stopTabs = delegate<HTMLButtonElement>(app, 'keydown', '[data-demo="tabs"]
 });
 const stopTabBars = wireTabBars(app, { onReorder: ({ barId, sourceId, targetId, position, source }) => { tabBarTabs.value = reorderTabs(tabBarTabs.value, (tab) => tab.id, sourceId, targetId, position); actionLog.value = `${source === 'pointer' ? 'Dragged' : 'Moved'} ${sourceId} ${position} ${targetId} in ${barId}`; } });
 
-window.addEventListener('pagehide', () => { stopActions(); stopResize(); stopSelect(); stopRecipeChanges(); stopRecipeInputs(); stopRecipeDialogs(); stopTokenSearch(); stopRelationships(); stopAnimationSelects(); stopAnimationRanges(); stopAnimationEvents.forEach((dispose) => dispose()); stopIntersectionObserver(); stopMutationObserver(); stopResizeObserver(); stopTabs(); stopTabBars(); }, { once: true });
+window.addEventListener('pagehide', () => { stopActions(); stopResize(); stopSelect(); stopRecipeChanges(); stopRecipeInputs(); stopRecipeKeys(); stopRecipeShownDialogs(); stopRecipeDialogs(); stopTokenSearch(); stopRelationships(); stopAnimationSelects(); stopAnimationRanges(); stopAnimationEvents.forEach((dispose) => dispose()); stopIntersectionObserver(); stopMutationObserver(); stopResizeObserver(); stopTabs(); stopTabBars(); }, { once: true });

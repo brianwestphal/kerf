@@ -65,7 +65,8 @@ const requiredPhrases = [
   'Problem-to-component matrix',
   'Correct composition and duplicated-markup trap',
   'Missing recurring concepts',
-  'does not currently export a command-palette',
+  'does not export a command-palette component',
+  'recipe-command-palette',
 ];
 for (const phrase of requiredPhrases) {
   if (!selection.includes(phrase)) fail(`component-selection.md is missing required decision guidance: ${phrase}`);
