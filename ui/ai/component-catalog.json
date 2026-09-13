@@ -739,15 +739,15 @@
       "category": "Navigation",
       "kind": "composition",
       "source": "kerf",
-      "description": "Navigation rows and section headers with explicit state.",
+      "description": "Navigation rows, section headers, surfaces, and footer actions on shared interaction and content rails.",
       "uses": [
         "menu-header",
         "menu-item"
       ],
-      "purpose": "Navigation rows and section headers with explicit state.",
+      "purpose": "Navigation rows, section headers, surfaces, and footer actions on shared interaction and content rails.",
       "publicExports": [],
       "useWhen": [
-        "Compose sidebar section headers and navigation rows on one shared icon/label grid."
+        "Compose a sidebar on a 10px highlight rail and nested 20px content rail, with 24px icon slots and scoped 44px action targets."
       ],
       "avoidWhen": [
         "Do not stack wrapper padding, align text to borders, or use the pattern for unrelated inline controls."
@@ -762,10 +762,11 @@
         "section",
         "icon rows",
         "iconless rows",
-        "surface"
+        "surface",
+        "sidebar toolbar"
       ],
       "accessibility": [
-        "Use native links for link navigation and retain MenuItem button semantics for actions."
+        "Use native links for link navigation, retain MenuItem button semantics for actions, and keep standalone header and toolbar actions at least 44px square."
       ],
       "delivery": {
         "manualCssImport": "@kerfjs/ui/sidebar.css",
@@ -782,16 +783,22 @@
         "kui-menu-item__trailing",
         "kui-sidebar",
         "kui-sidebar-section",
-        "kui-sidebar-surface"
+        "kui-sidebar-surface",
+        "kui-sidebar-toolbar"
       ],
       "publicTokens": [
         "--kui-color-border",
         "--kui-color-surface-raised",
         "--kui-radius-m",
         "--kui-sidebar-column-gap",
+        "--kui-sidebar-action-target-size",
+        "--kui-sidebar-content-inset",
         "--kui-sidebar-gutter",
+        "--kui-sidebar-highlight-gutter",
         "--kui-sidebar-icon-column-width",
+        "--kui-sidebar-icon-slot-size",
         "--kui-sidebar-label-inset",
+        "--kui-sidebar-row-min-size",
         "--kui-sidebar-row-padding-inline",
         "--kui-sidebar-surface-border-width",
         "--kui-space-2xs",
@@ -856,7 +863,8 @@
       "wiring": [],
       "publicClasses": [
         "kui-menu-header",
-        "kui-menu-header--toggle"
+        "kui-menu-header--toggle",
+        "kui-menu-header__action-layer"
       ],
       "publicTokens": [
         "--kui-color-neutral-border-quiet",
@@ -4190,10 +4198,10 @@
       "source": "kerf",
       "purpose": "Aligned navigation sections with icon and iconless rows, a surface block, disclosure, and footer actions.",
       "uses": ["menu-header", "menu-item", "toolbar", "toolbar-control-group"],
-      "useWhen": ["A workspace sidebar needs shared header and row alignment plus compact utility actions."],
+      "useWhen": ["A workspace sidebar needs a 10px interaction rail, a 20px content rail, 24px icon slots, and 44px row and utility-action targets."],
       "avoidWhen": ["Use ordinary links when menu selection, section, and sidebar anatomy do not apply."],
       "appOwns": ["information architecture", "routing", "permissions", "disclosure state"],
-      "accessibility": ["Native buttons retain names, current state, sequential focus, and disclosure state."],
+      "accessibility": ["Native buttons retain names, current state, sequential focus, and disclosure state; rows and standalone footer actions remain at least 44px tall."],
       "delivery": { "sideEffects": ["lazy-recipe-css"] },
       "links": { "catalogRoute": "?component=recipe-navigation-sidebar", "documentation": "docs/recipes.md#navigation-sidebar", "recipe": "docs/recipes.md#navigation-sidebar" }
     },

@@ -53,13 +53,14 @@ components expose scoped custom properties, so an application may override the
 complete theme, one semantic tone, or one instance.
 
 `sidebar.css` is the package's layout composition for navigation rails. Its
-`.kui-sidebar` class establishes one content gutter and one icon/label grid for
-`MenuHeader` and `MenuItem`; iconless rows reserve the icon column. A
-`.kui-sidebar-surface` border remains flush to the gutter while its internal
-content aligns with row labels, and `.kui-sidebar-section` adds grouping without
-another inset. Consumers can change the geometry coherently through the shared
-`--kui-sidebar-*` tokens instead of wrapper padding, negative margins, or
-duplicated numeric offsets.
+`.kui-sidebar` class establishes a 10px interaction rail and nested 20px content
+rail for `MenuHeader`, `MenuItem`, surfaces, and sidebar toolbars. Iconless
+content starts at 20px; icon rows use a 24px slot and 10px gap, placing labels
+at 54px. Rows and standalone header/toolbar actions remain at least 44px while
+24px icons stay centered. `.kui-sidebar-surface` puts its border on the outer
+rail and `.kui-sidebar-section` adds grouping without another inset. Consumers
+adapt the canonical `--kui-sidebar-*` tokens instead of wrapper padding,
+negative margins, shrunken targets, or duplicated numeric offsets.
 
 `layout.css` is the application-level spacing composition. Seven semantic
 variables map the existing spacing scale to page gutters, pane insets, section

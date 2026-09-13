@@ -1,4 +1,10 @@
-.kui-menu-item { --kui-menu-item-color: var(--kui-color-neutral-on-normal); --kui-menu-item-hover-background: var(--kui-color-neutral-fill-quiet); --kui-menu-item-selected-color: var(--kui-color-brand-on-quiet); --kui-menu-item-selected-background: var(--kui-color-brand-fill-normal); display: grid; width: 100%; min-height: 2.1rem; padding: .35rem var(--kui-sidebar-row-padding-inline); border: 0; border-radius: .5rem; color: var(--kui-menu-item-color); background: transparent; cursor: pointer; grid-template-columns: var(--kui-sidebar-icon-column-width) minmax(0, 1fr) auto; align-items: center; column-gap: var(--kui-sidebar-column-gap); font: inherit; text-align: start; }
+.kui-menu-item { --kui-menu-item-color: var(--kui-color-neutral-on-normal); --kui-menu-item-hover-background: var(--kui-color-neutral-fill-quiet); --kui-menu-item-selected-color: var(--kui-color-brand-on-quiet); --kui-menu-item-selected-background: var(--kui-color-brand-fill-normal); display: grid; width: 100%; min-height: 2.1rem; padding: .35rem var(--kui-sidebar-row-padding-inline); border: 0; border-radius: .5rem; color: var(--kui-menu-item-color); background: transparent; cursor: pointer; grid-template-columns: minmax(0, 1fr) auto; align-items: center; column-gap: var(--kui-sidebar-column-gap); font: inherit; text-align: start; }
+.kui-menu-item[data-has-icon="true"] { grid-template-columns: var(--kui-sidebar-icon-column-width) minmax(0, 1fr) auto; }
+.kui-menu-item[data-has-icon="true"] .kui-menu-item__icon { grid-column: 1; }
+.kui-menu-item[data-has-icon="true"] .kui-menu-item__label { grid-column: 2; }
+.kui-menu-item[data-has-icon="true"] .kui-menu-item__trailing { grid-column: 3; }
+.kui-menu-item[data-has-icon="false"] .kui-menu-item__label { grid-column: 1; }
+.kui-menu-item[data-has-icon="false"] .kui-menu-item__trailing { grid-column: 2; }
 .kui-menu-item:hover { background: var(--kui-menu-item-hover-background); }
 .kui-menu-item:disabled { color: var(--kui-color-neutral-on-quiet); cursor: not-allowed; opacity: .58; }
 .kui-menu-item[aria-current="page"], .kui-menu-item[aria-pressed="true"] { color: var(--kui-menu-item-selected-color); background: var(--kui-menu-item-selected-background); font-weight: 650; }

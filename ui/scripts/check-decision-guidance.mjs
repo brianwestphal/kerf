@@ -72,6 +72,24 @@ for (const phrase of requiredPhrases) {
   if (!selection.includes(phrase)) fail(`component-selection.md is missing required decision guidance: ${phrase}`);
 }
 
+const sidebarEntry = componentCatalog.entries.find((entry) => entry.id === 'menu');
+for (const className of ['kui-sidebar', 'kui-sidebar-surface', 'kui-sidebar-toolbar']) {
+  if (!sidebarEntry?.publicClasses.includes(className)) fail(`sidebar catalog entry is missing public class ${className}`);
+}
+for (const token of [
+  '--kui-sidebar-highlight-gutter',
+  '--kui-sidebar-content-inset',
+  '--kui-sidebar-icon-slot-size',
+  '--kui-sidebar-action-target-size',
+  '--kui-sidebar-row-min-size',
+]) {
+  if (!sidebarEntry?.publicTokens.includes(token)) fail(`sidebar catalog entry is missing public token ${token}`);
+}
+const sidebarGuidance = `${selection}\n${await readFile(resolve(root, 'ai/skill.md'), 'utf8')}\n${await readFile(resolve(root, 'README.md'), 'utf8')}`;
+for (const phrase of ['10px interaction', '20px content', '24px icon', '44px']) {
+  if (!sidebarGuidance.includes(phrase)) fail(`sidebar decision guidance is missing the canonical ${phrase} contract`);
+}
+
 const missingConceptSource = ts.createSourceFile('command-palette-adapter.tsx', missingConcept, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
 if (missingConceptSource.parseDiagnostics.length) fail('command-palette adapter example must parse as TSX');
 for (const required of [

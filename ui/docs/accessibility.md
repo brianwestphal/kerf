@@ -7,6 +7,7 @@ These are normative contracts for package components and consuming applications.
 - All controls have accessible names and visible `:focus-visible` treatment.
 - Decorative `LucideIcon` output is `aria-hidden`; pass `label` only when the SVG itself conveys meaning.
 - `MenuItem` uses native button Enter/Space behavior. `selected` maps to `aria-current="page"`; `pressed` maps to `aria-pressed`. It deliberately does not emit `role="menuitem"` in isolation—a true ARIA menu must own arrow, Home/End, Escape, and focus behavior as one widget.
+- In `.kui-sidebar`, menu rows and standalone `MenuHeader` or `.kui-sidebar-toolbar` actions keep a minimum 44px target in both dimensions. Their 24px icons are centered inside that target; do not reduce the target to the visible icon.
 - `LoadingSpinner` is either labeled (`role="img"`) or hidden. Its rotation stops for reduced motion.
 - `StateBanner` defaults to polite `role="status"`; use `urgency="alert"` only for an attention-requiring failure.
 - `EmptyState` reports busy state through `aria-busy` and never relies on an illustration as its label.

@@ -108,11 +108,14 @@ variables directly on a component instance.
 ## Sidebar alignment
 
 Import `@kerfjs/ui/sidebar.css` and put menu sections inside `.kui-sidebar`.
-The composition establishes one content gutter, reserves one icon column, and
-aligns `MenuHeader`, icon-bearing `MenuItem`, and iconless `MenuItem` labels.
-Use `.kui-sidebar-surface` for bordered or filled content below a header: its
-border remains flush with the gutter while its internal content returns to the
-shared label column.
+The composition establishes a 10px outer interaction/highlight rail and a 20px
+content rail. Iconless rows, section labels, surface content, and toolbar text
+start on the content rail. Icon rows add a 24px icon slot and 10px gap, so their
+labels start 54px from the sidebar edge. Rows and standalone header or toolbar
+actions remain at least 44px tall; action icons stay 24px and centered in that
+target. Use `.kui-sidebar-surface` for bordered or filled content whose border
+begins on the interaction rail, and `.kui-sidebar-toolbar` for a header or
+footer toolbar that joins the same rails.
 
 ```tsx
 <aside class="kui-sidebar">
@@ -126,11 +129,14 @@ shared label column.
 ```
 
 Do not add padding to both the sidebar and each section, indent a panel until
-its border matches the heading text, or repair either mistake with a negative
-margin. Override the shared `--kui-sidebar-*` tokens on the composition when a
-product needs different geometry. Intentionally break the grid only for a
-full-bleed surface, a distinct navigation hierarchy, or a deliberately
-different reading width.
+its border matches the content rail, or repair either mistake with a negative
+margin. Override `--kui-sidebar-highlight-gutter`,
+`--kui-sidebar-content-inset`, `--kui-sidebar-icon-slot-size`,
+`--kui-sidebar-column-gap`, `--kui-sidebar-action-target-size`, and
+`--kui-sidebar-row-min-size` together at the composition boundary when a
+product needs different geometry. The older gutter, row-padding, icon-column,
+and label-inset names remain compatibility fallbacks. Break the rails only for
+a full-bleed surface or a genuinely different navigation hierarchy.
 
 ## Spacing and application layout
 

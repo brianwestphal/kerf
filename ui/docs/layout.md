@@ -31,6 +31,9 @@ icons, split handles, or borders.
    copy of itself.
 2. `Toolbar`, `PageHeader`, and `DialogHeader` own their chrome. Put the body
    class on their following content, not around the header.
+   The exception is the deliberate `.kui-sidebar-toolbar` composition, which
+   places a header or footer `Toolbar` on the sidebar's public rails without a
+   second wrapper inset.
 3. A bordered surface owns its border; one `.kui-surface-body` inside or on the
    surface owns its content inset. Nested cards do not accumulate wrapper
    padding merely to look centered.

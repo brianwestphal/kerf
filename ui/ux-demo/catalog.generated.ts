@@ -179,7 +179,7 @@ export const generatedKerfCatalog = [
     "category": "Navigation",
     "kind": "composition",
     "source": "kerf",
-    "description": "Navigation rows and section headers with explicit state.",
+    "description": "Navigation rows, section headers, surfaces, and footer actions on shared interaction and content rails.",
     "uses": [
       "menu-header",
       "menu-item"

@@ -19,7 +19,6 @@
 .recipe-sidebar { display: grid; width: min(22rem, 100%); min-height: 32rem; margin-inline: auto; grid-template-rows: minmax(0, 1fr) auto; }
 .recipe-sidebar__body { min-height: 0; }
 .recipe-sidebar__footer { border-block-start: 1px solid var(--kui-color-border); }
-.recipe-sidebar__footer .kui-toolbar { min-height: auto; }
 
 .recipe-header { display: grid; gap: var(--kui-layout-section-gap); }
 .recipe-header__context { margin: 0; }

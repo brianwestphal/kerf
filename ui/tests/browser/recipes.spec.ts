@@ -96,10 +96,26 @@ test('supports keyboard shell/sidebar controls and controlled toolbar interactio
   await expect(separator).toHaveAttribute('aria-valuenow', '320');
 
   const sidebar = await openRecipe(page, 'recipe-navigation-sidebar');
+  const sidebarGeometry = () => sidebar.evaluate((node) => {
+    const body = node.querySelector<HTMLElement>('.kui-sidebar')!.getBoundingClientRect();
+    const icon = node.querySelector<HTMLElement>('[data-item-id="inbox"] .kui-menu-item__icon')!.getBoundingClientRect();
+    const iconLabel = node.querySelector<HTMLElement>('[data-item-id="inbox"] .kui-menu-item__label')!.getBoundingClientRect();
+    const plainLabel = node.querySelector<HTMLElement>('[data-item-id="drafts"] .kui-menu-item__label')!.getBoundingClientRect();
+    const surfaceContent = node.querySelector<HTMLElement>('.kui-sidebar-surface strong')!.getBoundingClientRect();
+    const footerActions = [...node.querySelectorAll<HTMLElement>('.kui-sidebar-toolbar .kui-toolbar-control-group')].map((element) => element.getBoundingClientRect());
+    return { iconStart: icon.left - body.left, iconWidth: icon.width, iconLabelStart: iconLabel.left - body.left, plainStart: plainLabel.left - body.left, surfaceStart: surfaceContent.left - body.left, footerTargets: footerActions.map(({ width, height }) => [width, height]) };
+  });
+  expect(await sidebarGeometry()).toEqual({ iconStart: 20, iconWidth: 24, iconLabelStart: 54, plainStart: 20, surfaceStart: 20, footerTargets: [[44, 44], [44, 44]] });
   const projects = sidebar.getByRole('button', { name: 'Projects' });
   await projects.focus();
   await projects.press('Enter');
   await expect(projects).toHaveAttribute('aria-expanded', 'false');
+  await projects.press('Enter');
+  await expect(projects).toHaveAttribute('aria-expanded', 'true');
+  expect(await sidebarGeometry()).toEqual({ iconStart: 20, iconWidth: 24, iconLabelStart: 54, plainStart: 20, surfaceStart: 20, footerTargets: [[44, 44], [44, 44]] });
+  const drafts = sidebar.getByRole('button', { name: 'Drafts without an icon' });
+  await drafts.click();
+  await expect(drafts).toHaveAttribute('aria-current', 'page');
 
   const toolbar = await openRecipe(page, 'recipe-compact-toolbar');
   const filter = toolbar.getByRole('button', { name: 'Toggle filters' });

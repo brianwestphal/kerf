@@ -124,12 +124,14 @@ semantic tokens, a tone variable, or a component property such as
 `--kui-state-banner-background` without replacing component selectors.
 
 For a navigation rail, import `@kerfjs/ui/sidebar.css` and use
-`.kui-sidebar`, `.kui-sidebar-section`, and `.kui-sidebar-surface`. The
-composition gives headers plus icon-bearing and iconless rows one shared label
-column. Bordered surfaces stay flush to the sidebar gutter while their contents
-align with that column. Avoid nested wrapper padding, moving a decorative
-border onto the text column, or repairing either with negative margins; change
-the shared `--kui-sidebar-*` tokens at the composition boundary instead.
+`.kui-sidebar`, `.kui-sidebar-section`, `.kui-sidebar-surface`, and
+`.kui-sidebar-toolbar`. The composition owns a 10px interaction rail, a nested
+20px content rail, 24px icon slots with a 10px gap, and 44px row/action targets.
+Iconless rows, section labels, surface content, and toolbar text start at 20px;
+icon labels start at 54px. Keep decorative borders on the interaction rail and
+24px icons centered in their full targets. Avoid nested wrapper padding,
+border-aligned text, shrunken targets, and compensating negative margins;
+change the shared `--kui-sidebar-*` tokens at the composition boundary instead.
 
 ## Application spacing and scroll ownership
 

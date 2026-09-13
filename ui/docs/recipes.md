@@ -39,9 +39,12 @@ only public `--kui-layout-*`, `--kui-sidebar-*`, and component variables.
 
 [Open the recipe](../ux-demo/?component=recipe-navigation-sidebar) · [TSX source](../ux-demo/recipes/navigation-sidebar.tsx)
 
-One `.kui-sidebar` owns the gutter and icon/label columns across headers,
-icon-bearing rows, iconless rows, the surface block, and footer actions. The app
-owns routes, permissions, labels, selection, and disclosure state.
+One `.kui-sidebar` owns the 10px interaction and 20px content rails across
+headers, icon-bearing and iconless rows, and surfaces. Icon rows use the shared
+24px slot plus 10px gap; rows remain at least 44px tall. The footer `Toolbar`
+uses `.kui-sidebar-toolbar`, keeping its text on the content rail and its
+standalone actions in centered 44px targets. The app owns routes, permissions,
+labels, selection, and disclosure state.
 
 ## Workspace header
 

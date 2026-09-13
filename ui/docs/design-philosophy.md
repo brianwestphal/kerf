@@ -24,13 +24,14 @@ Unrelated updates must not close controls, move focus, reset a draft, replace a 
 
 Establish one reading order and one dominant action per decision point. Group first with alignment, spacing, typography, and shared surfaces. A border, fill, badge, or nested card must communicate a real distinction.
 
-### Sidebar content aligns; borders do not
+### Sidebar interaction and content use distinct rails
 
-A sidebar has one content gutter and explicit icon and label columns. Section
-headers, icon-bearing rows, and iconless rows share the label column. A bordered
-panel beneath a header begins at the content gutter; its internal padding brings
-its text back to the label column. The border is decoration, not an alignment
-anchor.
+A sidebar has a 10px interaction/highlight rail and a nested 20px content rail.
+Section labels, iconless rows, surface content, and toolbar text start at 20px;
+an icon row adds a 24px icon slot and 10px gap before its label. A bordered
+panel begins on the 10px rail because the border is decoration, not a content
+anchor. Rows and standalone actions keep 44px targets even though their icons
+remain 24px.
 
 Use the package composition so the geometry has one owner:
 
@@ -45,7 +46,7 @@ Use the package composition so the geometry has one owner:
 </aside>
 ```
 
-Do not indent the bordered surface to the label column or add padding to every
+Do not indent the bordered surface to the content rail or add padding to every
 wrapper. Both produce a second indentation level and make the border compete
 with content for alignment:
 

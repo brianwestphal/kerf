@@ -43,10 +43,14 @@ describe('production UI primitives', () => {
 
   it('renders menu navigation, toggle, action, disabled, and multiline states', () => {
     const item = asHtml(MenuItem({ label: 'Projects', icon, trailing: icon, selected: true, action: 'open', itemId: 'projects', className: 'project', style: 'color:blue', pressed: false, accessibleLabel: 'Open projects', title: 'Projects', multiline: true, state: 'ready', tabIndex: -1 }));
-    expect(item).toContain('data-action="open" data-item-id="projects" data-multiline="true" data-state="ready"');
+    expect(item).toContain('data-action="open" data-item-id="projects" data-has-icon="true" data-multiline="true" data-state="ready"');
     expect(item).toContain('aria-label="Open projects" aria-current="page" aria-pressed="false"');
-    expect(asHtml(MenuItem({ label: 'Disabled', action: 'none', disabled: true }))).toContain('disabled');
-    expect(asHtml(MenuHeader({ label: 'Tools', action: 'toggle', actionIcon: icon, expanded: false, toggle: true }))).toContain('aria-expanded="false"');
+    const iconless = asHtml(MenuItem({ label: 'Disabled', action: 'none', disabled: true }));
+    expect(iconless).toContain('data-has-icon="false"');
+    expect(iconless).toContain('disabled');
+    const toggle = asHtml(MenuHeader({ label: 'Tools', action: 'toggle', actionIcon: icon, expanded: false, toggle: true }));
+    expect(toggle).toContain('aria-expanded="false"');
+    expect(toggle).toContain('class="kui-menu-header__action-layer"');
     const header = asHtml(MenuHeader({ label: 'Workspace', action: 'add', actionLabel: 'Add', actionIcon: icon, actionDisabled: true, disabledReason: 'Unavailable' }));
     expect(header).toContain('<h2>Workspace</h2>');
     expect(header).toContain('title="Unavailable" disabled');

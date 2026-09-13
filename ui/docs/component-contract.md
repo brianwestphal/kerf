@@ -43,14 +43,19 @@ separator with a compact grip that appears on hover or keyboard focus. Override
 `--kui-resizable-region-handle-active-color` on a region when its containing
 surface needs a different contrast level.
 
-`.kui-sidebar` owns a single outer gutter and reserves a stable icon column so
-icon-bearing and iconless `MenuItem` labels align. It also moves `MenuHeader`
-labels onto that text column. `.kui-sidebar-surface` stays flush with the outer
-gutter while its contents align with the labels, and `.kui-sidebar-section`
-groups the composition without adding another inset. The shared geometry is
-controlled by `--kui-sidebar-gutter`, `--kui-sidebar-row-padding-inline`,
-`--kui-sidebar-icon-column-width`, `--kui-sidebar-column-gap`,
-`--kui-sidebar-label-inset`, and `--kui-sidebar-surface-border-width`.
+`.kui-sidebar` owns a 10px interaction/highlight rail and a nested 20px content
+rail. Iconless rows, section labels, surface contents, and sidebar-toolbar text
+start at 20px. Icon rows reserve a 24px slot plus a 10px gap, placing their
+labels at 54px. Rows and standalone header/toolbar actions are at least 44px;
+their 24px icons are centered without moving the visible content rail.
+`.kui-sidebar-surface` puts its decorative border on the 10px rail, and
+`.kui-sidebar-section` groups content without another inset. Use
+`.kui-sidebar-toolbar` for a header or footer toolbar on the same rails. The
+canonical controls are `--kui-sidebar-highlight-gutter`,
+`--kui-sidebar-content-inset`, `--kui-sidebar-icon-slot-size`,
+`--kui-sidebar-column-gap`, `--kui-sidebar-action-target-size`,
+`--kui-sidebar-row-min-size`, and `--kui-sidebar-surface-border-width`; the
+older gutter, row-padding, icon-column, and label-inset tokens are fallbacks.
 Import `@kerfjs/ui/sidebar.css` when using explicit component subpaths; the
 complete `styles.css` layer already includes it.
 
