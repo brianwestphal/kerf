@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "caseId": "application-shell",
+  "responseSha256": "23876b9c0776104ee90279cc9049e31ce41485e8270e3f2e0d5fba0c3b6e57bb",
+  "compilerOptionsSha256": "5a894821bf7692bd7e2cfb94da6ecc902ade4562dd11f33be49e8c507135ec9a",
+  "typescriptVersion": "6.0.3",
+  "packages": [
+    {
+      "name": "@kerfjs/ui",
+      "version": "4.4.1",
+      "declarationSetSha256": "fa4b755aa92b142c042baa837ae25f4dd2e638a456f6862a3c87991353c66c75"
+    },
+    {
+      "name": "kerfjs",
+      "version": "4.4.1",
+      "declarationSetSha256": "6d0687d54c33813e12189b5d4dafe85947b0461f1630fa6028bc57febfa61fe0"
+    }
+  ],
+  "compiledFiles": 1,
+  "passed": false,
+  "diagnostics": [
+    {
+      "code": 2322,
+      "file": "response/ApplicationShell.tsx",
+      "line": 10,
+      "column": 66,
+      "message": "Type 'CSSProperties' is not assignable to type 'AttrLike<string>'."
+    },
+    {
+      "code": 2322,
+      "file": "response/ApplicationShell.tsx",
+      "line": 12,
+      "column": 194,
+      "message": "Type '{ children: \"navigation\" | \"workspace\" | \"inspector\"; key: \"navigation\" | \"workspace\" | \"inspector\"; type: \"button\"; \"aria-pressed\": boolean; onClick: () => void; }' is not assignable to type 'HTMLButtonAttrs'.\n  Property 'key' does not exist on type 'HTMLButtonAttrs'."
+    },
+    {
+      "code": 2322,
+      "file": "response/ApplicationShell.tsx",
+      "line": 13,
+      "column": 111,
+      "message": "Type '{ children: (SafeHtml | SafeHtml[])[]; key: string; }' is not assignable to type 'KerfBaseAttrs'.\n  Property 'key' does not exist on type 'KerfBaseAttrs'."
+    },
+    {
+      "code": 2322,
+      "file": "response/ApplicationShell.tsx",
+      "line": 13,
+      "column": 190,
+      "message": "Type '{ children: string; key: string; \"aria-current\": string | undefined; onClick: () => void; }' is not assignable to type 'HTMLButtonAttrs'.\n  Property 'key' does not exist on type 'HTMLButtonAttrs'."
+    },
+    {
+      "code": 2322,
+      "file": "response/ApplicationShell.tsx",
+      "line": 15,
+      "column": 203,
+      "message": "Type 'number' is not assignable to type 'AttrLike<string>'."
+    },
+    {
+      "code": 7006,
+      "file": "response/ApplicationShell.tsx",
+      "line": 15,
+      "column": 227,
+      "message": "Parameter 'event' implicitly has an 'any' type."
+    }
+  ]
+}

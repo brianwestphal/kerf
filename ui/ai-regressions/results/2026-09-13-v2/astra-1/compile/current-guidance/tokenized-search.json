@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "caseId": "tokenized-search",
+  "responseSha256": "774813fc4b7e290973cd2011aefd9e4354bb0e7a560a22f5598bb7414dd8cf77",
+  "compilerOptionsSha256": "5a894821bf7692bd7e2cfb94da6ecc902ade4562dd11f33be49e8c507135ec9a",
+  "typescriptVersion": "6.0.3",
+  "packages": [
+    {
+      "name": "@kerfjs/ui",
+      "version": "4.4.1",
+      "declarationSetSha256": "fa4b755aa92b142c042baa837ae25f4dd2e638a456f6862a3c87991353c66c75"
+    },
+    {
+      "name": "kerfjs",
+      "version": "4.4.1",
+      "declarationSetSha256": "6d0687d54c33813e12189b5d4dafe85947b0461f1630fa6028bc57febfa61fe0"
+    }
+  ],
+  "compiledFiles": 1,
+  "passed": false,
+  "diagnostics": [
+    {
+      "code": 2322,
+      "file": "response/SearchEditor.tsx",
+      "line": 52,
+      "column": 5,
+      "message": "Type '{ children: (false | SafeHtml)[]; className: string; role: string; \"aria-label\": string; onSubmit: (event: any) => void; }' is not assignable to type 'HTMLFormAttrs'.\n  Property 'onSubmit' does not exist on type 'HTMLFormAttrs'."
+    },
+    {
+      "code": 7006,
+      "file": "response/SearchEditor.tsx",
+      "line": 52,
+      "column": 15,
+      "message": "Parameter 'event' implicitly has an 'any' type."
+    },
+    {
+      "code": 2322,
+      "file": "response/SearchEditor.tsx",
+      "line": 53,
+      "column": 23,
+      "message": "Type '{ ref: RefObject<FieldHandle | null>; \"aria-label\": string; value: SearchValue; onChange: (value: SearchValue) => void; onCaretChange: Dispatch<...>; onTokenRemove: (id: string) => void; onTokenEdit: (id: string) => void; onCommitText: (text: string) => void; onClear: () => void; }' is not assignable to type 'TokenSearchFieldProps'.\n  Property 'ref' does not exist on type 'TokenSearchFieldProps'."
+    },
+    {
+      "code": 2322,
+      "file": "response/SearchEditor.tsx",
+      "line": 62,
+      "column": 46,
+      "message": "Type '{ children: SafeHtml; key: string; }' is not assignable to type 'HTMLLiAttrs'.\n  Property 'key' does not exist on type 'HTMLLiAttrs'."
+    },
+    {
+      "code": 2322,
+      "file": "response/SearchEditor.tsx",
+      "line": 63,
+      "column": 31,
+      "message": "Type '{ children: string; type: \"button\"; onClick: () => void; }' is not assignable to type 'HTMLButtonAttrs'.\n  Property 'onClick' does not exist on type 'HTMLButtonAttrs'."
+    },
+    {
+      "code": 2322,
+      "file": "response/SearchEditor.tsx",
+      "line": 65,
+      "column": 41,
+      "message": "Type '{ children: string; type: \"button\"; onClick: () => void; }' is not assignable to type 'HTMLButtonAttrs'.\n  Property 'onClick' does not exist on type 'HTMLButtonAttrs'."
+    }
+  ]
+}

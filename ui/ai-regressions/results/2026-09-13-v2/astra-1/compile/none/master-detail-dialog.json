@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "caseId": "master-detail-dialog",
+  "responseSha256": "ac9e5952bbc699c9eb479e80452851bd52501cac5eef1ba71f4538c87a4124b6",
+  "compilerOptionsSha256": "5a894821bf7692bd7e2cfb94da6ecc902ade4562dd11f33be49e8c507135ec9a",
+  "typescriptVersion": "6.0.3",
+  "packages": [
+    {
+      "name": "@kerfjs/ui",
+      "version": "4.4.1",
+      "declarationSetSha256": "fa4b755aa92b142c042baa837ae25f4dd2e638a456f6862a3c87991353c66c75"
+    },
+    {
+      "name": "kerfjs",
+      "version": "4.4.1",
+      "declarationSetSha256": "6d0687d54c33813e12189b5d4dafe85947b0461f1630fa6028bc57febfa61fe0"
+    }
+  ],
+  "compiledFiles": 1,
+  "passed": false,
+  "diagnostics": [
+    {
+      "code": 2322,
+      "file": "response/MasterDetailDialog.tsx",
+      "line": 9,
+      "column": 18,
+      "message": "Type '{ children: SafeHtml; ref: RefObject<HTMLDialogElement | null>; className: string; \"aria-labelledby\": string; \"aria-describedby\": string; onCancel: (event: any) => void; }' is not assignable to type 'HTMLDialogAttrs'.\n  Property 'ref' does not exist on type 'HTMLDialogAttrs'."
+    },
+    {
+      "code": 7006,
+      "file": "response/MasterDetailDialog.tsx",
+      "line": 9,
+      "column": 131,
+      "message": "Parameter 'event' implicitly has an 'any' type."
+    },
+    {
+      "code": 2322,
+      "file": "response/MasterDetailDialog.tsx",
+      "line": 11,
+      "column": 134,
+      "message": "Type '{ children: SafeHtml[]; key: string; }' is not assignable to type 'HTMLLabelAttrs'.\n  Property 'key' does not exist on type 'HTMLLabelAttrs'."
+    },
+    {
+      "code": 2322,
+      "file": "response/MasterDetailDialog.tsx",
+      "line": 11,
+      "column": 228,
+      "message": "Type '{ type: \"radio\"; name: string; checked: boolean; onChange: () => void; }' is not assignable to type 'HTMLInputAttrs'.\n  Property 'onChange' does not exist on type 'HTMLInputAttrs'."
+    },
+    {
+      "code": 2322,
+      "file": "response/MasterDetailDialog.tsx",
+      "line": 12,
+      "column": 188,
+      "message": "Type '{ children: SafeHtml[]; key: number; }' is not assignable to type 'KerfBaseAttrs'.\n  Property 'key' does not exist on type 'KerfBaseAttrs'."
+    },
+    {
+      "code": 2322,
+      "file": "response/MasterDetailDialog.tsx",
+      "line": 13,
+      "column": 35,
+      "message": "Type '{ children: string; type: \"button\"; onClick: () => void; }' is not assignable to type 'HTMLButtonAttrs'.\n  Property 'onClick' does not exist on type 'HTMLButtonAttrs'."
+    },
+    {
+      "code": 2322,
+      "file": "response/MasterDetailDialog.tsx",
+      "line": 13,
+      "column": 107,
+      "message": "Type '{ children: string; type: \"button\"; disabled: boolean; onClick: () => void; }' is not assignable to type 'HTMLButtonAttrs'.\n  Property 'onClick' does not exist on type 'HTMLButtonAttrs'."
+    }
+  ]
+}

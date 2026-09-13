@@ -1,0 +1,100 @@
+{
+  "schemaVersion": 1,
+  "caseId": "missing-recurring-concept",
+  "responseSha256": "09d206f4c9972bc92719e22e80ac475fb93be88f46bfe575623ce3d6d2accc64",
+  "compilerOptionsSha256": "5a894821bf7692bd7e2cfb94da6ecc902ade4562dd11f33be49e8c507135ec9a",
+  "typescriptVersion": "6.0.3",
+  "packages": [
+    {
+      "name": "@kerfjs/ui",
+      "version": "4.4.1",
+      "declarationSetSha256": "fa4b755aa92b142c042baa837ae25f4dd2e638a456f6862a3c87991353c66c75"
+    },
+    {
+      "name": "kerfjs",
+      "version": "4.4.1",
+      "declarationSetSha256": "6d0687d54c33813e12189b5d4dafe85947b0461f1630fa6028bc57febfa61fe0"
+    }
+  ],
+  "compiledFiles": 1,
+  "passed": false,
+  "diagnostics": [
+    {
+      "code": 2322,
+      "file": "response/CommandPalette.tsx",
+      "line": 49,
+      "column": 18,
+      "message": "Type '{ children: SafeHtml[]; ref: RefObject<HTMLDialogElement | null>; className: string; \"aria-labelledby\": string; onCancel: (event: any) => void; }' is not assignable to type 'HTMLDialogAttrs'.\n  Property 'ref' does not exist on type 'HTMLDialogAttrs'."
+    },
+    {
+      "code": 7006,
+      "file": "response/CommandPalette.tsx",
+      "line": 50,
+      "column": 15,
+      "message": "Parameter 'event' implicitly has an 'any' type."
+    },
+    {
+      "code": 2322,
+      "file": "response/CommandPalette.tsx",
+      "line": 51,
+      "column": 19,
+      "message": "Type 'SafeHtml' is not assignable to type 'string'."
+    },
+    {
+      "code": 2322,
+      "file": "response/CommandPalette.tsx",
+      "line": 54,
+      "column": 14,
+      "message": "Type '{ ref: RefObject<HTMLInputElement | null>; id: string; role: string; \"aria-autocomplete\": string; \"aria-expanded\": string; \"aria-controls\": string; \"aria-activedescendant\": string | undefined; value: string; onChange: (event: any) => void; onKeyDown: (event: any) => void; }' is not assignable to type 'HTMLInputAttrs'.\n  Property 'ref' does not exist on type 'HTMLInputAttrs'."
+    },
+    {
+      "code": 7006,
+      "file": "response/CommandPalette.tsx",
+      "line": 57,
+      "column": 33,
+      "message": "Parameter 'event' implicitly has an 'any' type."
+    },
+    {
+      "code": 7006,
+      "file": "response/CommandPalette.tsx",
+      "line": 58,
+      "column": 20,
+      "message": "Parameter 'event' implicitly has an 'any' type."
+    },
+    {
+      "code": 2322,
+      "file": "response/CommandPalette.tsx",
+      "line": 67,
+      "column": 49,
+      "message": "Type '{ children: (SafeHtml | SafeHtml[])[]; key: string; role: string; \"aria-labelledby\": string; }' is not assignable to type 'KerfBaseAttrs'.\n  Property 'key' does not exist on type 'KerfBaseAttrs'."
+    },
+    {
+      "code": 2322,
+      "file": "response/CommandPalette.tsx",
+      "line": 69,
+      "column": 47,
+      "message": "Type '{ children: (string | false | SafeHtml)[]; key: string; id: string; role: string; \"aria-selected\": boolean; className: string; onPointerDown: (event: any) => any; onClick: () => void; }' is not assignable to type 'KerfBaseAttrs'.\n  Property 'key' does not exist on type 'KerfBaseAttrs'."
+    },
+    {
+      "code": 7006,
+      "file": "response/CommandPalette.tsx",
+      "line": 71,
+      "column": 28,
+      "message": "Parameter 'event' implicitly has an 'any' type."
+    },
+    {
+      "code": 2322,
+      "file": "response/CommandPalette.tsx",
+      "line": 76,
+      "column": 67,
+      "message": "Type '{ title: string; description: string; }' is not assignable to type 'EmptyStateProps'.\n  Property 'description' does not exist on type 'EmptyStateProps'."
+    },
+    {
+      "code": 2322,
+      "file": "response/CommandPalette.tsx",
+      "line": 78,
+      "column": 29,
+      "message": "Type '{ children: string; type: \"button\"; onClick: () => void; }' is not assignable to type 'HTMLButtonAttrs'.\n  Property 'onClick' does not exist on type 'HTMLButtonAttrs'."
+    }
+  ]
+}

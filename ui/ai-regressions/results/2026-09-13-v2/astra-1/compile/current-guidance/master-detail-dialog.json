@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "caseId": "master-detail-dialog",
+  "responseSha256": "78949ddf866649206b24ac7852646e56837eedbb77a9eec66aefaf21536e999f",
+  "compilerOptionsSha256": "5a894821bf7692bd7e2cfb94da6ecc902ade4562dd11f33be49e8c507135ec9a",
+  "typescriptVersion": "6.0.3",
+  "packages": [
+    {
+      "name": "@kerfjs/ui",
+      "version": "4.4.1",
+      "declarationSetSha256": "fa4b755aa92b142c042baa837ae25f4dd2e638a456f6862a3c87991353c66c75"
+    },
+    {
+      "name": "kerfjs",
+      "version": "4.4.1",
+      "declarationSetSha256": "6d0687d54c33813e12189b5d4dafe85947b0461f1630fa6028bc57febfa61fe0"
+    }
+  ],
+  "compiledFiles": 1,
+  "passed": false,
+  "diagnostics": [
+    {
+      "code": 2322,
+      "file": "response/ItemDialog.tsx",
+      "line": 23,
+      "column": 18,
+      "message": "Type '{ children: SafeHtml; ref: RefObject<HTMLDialogElement | null>; className: string; \"aria-labelledby\": string; \"aria-describedby\": string; onCancel: (event: any) => void; }' is not assignable to type 'HTMLDialogAttrs'.\n  Property 'ref' does not exist on type 'HTMLDialogAttrs'."
+    },
+    {
+      "code": 7006,
+      "file": "response/ItemDialog.tsx",
+      "line": 25,
+      "column": 15,
+      "message": "Parameter 'event' implicitly has an 'any' type."
+    },
+    {
+      "code": 2322,
+      "file": "response/ItemDialog.tsx",
+      "line": 28,
+      "column": 23,
+      "message": "Type 'SafeHtml' is not assignable to type 'string'."
+    },
+    {
+      "code": 2322,
+      "file": "response/ItemDialog.tsx",
+      "line": 30,
+      "column": 31,
+      "message": "Type '{ children: string; type: \"button\"; onClick: () => void; \"aria-label\": string; }' is not assignable to type 'HTMLButtonAttrs'.\n  Property 'onClick' does not exist on type 'HTMLButtonAttrs'."
+    },
+    {
+      "code": 2322,
+      "file": "response/ItemDialog.tsx",
+      "line": 37,
+      "column": 63,
+      "message": "Type '{ children: (string | SafeHtml)[]; className: string; key: string; }' is not assignable to type 'HTMLLabelAttrs'.\n  Property 'key' does not exist on type 'HTMLLabelAttrs'."
+    },
+    {
+      "code": 2322,
+      "file": "response/ItemDialog.tsx",
+      "line": 39,
+      "column": 52,
+      "message": "Type '{ type: \"radio\"; name: string; value: string; checked: boolean; onChange: () => void; }' is not assignable to type 'HTMLInputAttrs'.\n  Property 'onChange' does not exist on type 'HTMLInputAttrs'."
+    },
+    {
+      "code": 2322,
+      "file": "response/ItemDialog.tsx",
+      "line": 52,
+      "column": 31,
+      "message": "Type '{ children: string; type: \"button\"; onClick: () => void; }' is not assignable to type 'HTMLButtonAttrs'.\n  Property 'onClick' does not exist on type 'HTMLButtonAttrs'."
+    },
+    {
+      "code": 2322,
+      "file": "response/ItemDialog.tsx",
+      "line": 53,
+      "column": 52,
+      "message": "Type '{ children: string; type: \"button\"; disabled: false; onClick: () => void; }' is not assignable to type 'HTMLButtonAttrs'.\n  Property 'onClick' does not exist on type 'HTMLButtonAttrs'."
+    }
+  ]
+}

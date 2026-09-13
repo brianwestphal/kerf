@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "caseId": "navigation-sections",
+  "responseSha256": "5291c064f2f7ff8e97a23c27792fa3a2031d90ae972a63aa94da4163fe80e3a6",
+  "compilerOptionsSha256": "5a894821bf7692bd7e2cfb94da6ecc902ade4562dd11f33be49e8c507135ec9a",
+  "typescriptVersion": "6.0.3",
+  "packages": [
+    {
+      "name": "@kerfjs/ui",
+      "version": "4.4.1",
+      "declarationSetSha256": "fa4b755aa92b142c042baa837ae25f4dd2e638a456f6862a3c87991353c66c75"
+    },
+    {
+      "name": "kerfjs",
+      "version": "4.4.1",
+      "declarationSetSha256": "6d0687d54c33813e12189b5d4dafe85947b0461f1630fa6028bc57febfa61fe0"
+    }
+  ],
+  "compiledFiles": 1,
+  "passed": false,
+  "diagnostics": [
+    {
+      "code": 2322,
+      "file": "response/Navigation.tsx",
+      "line": 13,
+      "column": 19,
+      "message": "Type '{ id: string; label: string; }' is not assignable to type 'MenuHeaderProps'.\n  Property 'id' does not exist on type 'MenuHeaderProps'."
+    },
+    {
+      "code": 2322,
+      "file": "response/Navigation.tsx",
+      "line": 15,
+      "column": 66,
+      "message": "Type '{ label: string; icon: SafeHtml; selected: boolean; \"aria-current\": string | undefined; onClick: () => void; }' is not assignable to type 'MenuItemProps'.\n  Property 'onClick' does not exist on type 'MenuItemProps'."
+    },
+    {
+      "code": 2322,
+      "file": "response/Navigation.tsx",
+      "line": 17,
+      "column": 66,
+      "message": "Type '{ label: string; selected: boolean; \"aria-current\": string | undefined; onClick: () => void; }' is not assignable to type 'MenuItemProps'.\n  Property 'onClick' does not exist on type 'MenuItemProps'."
+    },
+    {
+      "code": 2322,
+      "file": "response/Navigation.tsx",
+      "line": 20,
+      "column": 19,
+      "message": "Type '{ id: string; label: string; }' is not assignable to type 'MenuHeaderProps'.\n  Property 'id' does not exist on type 'MenuHeaderProps'."
+    },
+    {
+      "code": 2322,
+      "file": "response/Navigation.tsx",
+      "line": 22,
+      "column": 65,
+      "message": "Type '{ label: string; icon: SafeHtml; selected: boolean; \"aria-current\": string | undefined; onClick: () => void; }' is not assignable to type 'MenuItemProps'.\n  Property 'onClick' does not exist on type 'MenuItemProps'."
+    },
+    {
+      "code": 2741,
+      "file": "response/Navigation.tsx",
+      "line": 23,
+      "column": 8,
+      "message": "Property 'action' is missing in type '{ label: string; disabled: true; }' but required in type 'MenuItemProps'."
+    },
+    {
+      "code": 2322,
+      "file": "response/Navigation.tsx",
+      "line": 30,
+      "column": 29,
+      "message": "Type '{ children: string; type: \"button\"; onClick: () => void; }' is not assignable to type 'HTMLButtonAttrs'.\n  Property 'onClick' does not exist on type 'HTMLButtonAttrs'."
+    },
+    {
+      "code": 2322,
+      "file": "response/Navigation.tsx",
+      "line": 31,
+      "column": 29,
+      "message": "Type '{ children: string; type: \"button\"; onClick: () => void; }' is not assignable to type 'HTMLButtonAttrs'.\n  Property 'onClick' does not exist on type 'HTMLButtonAttrs'."
+    }
+  ]
+}

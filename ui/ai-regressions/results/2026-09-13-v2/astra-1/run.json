@@ -1,0 +1,2521 @@
+{
+  "schemaVersion": 2,
+  "evidence": "measured",
+  "runId": "astra-1",
+  "executedAt": "2026-09-13T00:09:25Z",
+  "executor": {
+    "provider": "codex-collaboration",
+    "model": "gpt-6-astra",
+    "modelVersion": "gpt-6-astra",
+    "settings": {
+      "reasoningEffort": "medium",
+      "temperature": "not exposed",
+      "seed": "not exposed",
+      "isolation": "fork_turns:none",
+      "modelSnapshot": "runtime alias only; underlying build not exposed",
+      "protocolPath": "ai-regressions/results/2026-09-13-v2/protocol.md",
+      "protocolSha256": "66ac845323a3bb6c297340d4470a438c9ba69d867218effc8212383c235e4470",
+      "recordedAtMeaning": "cohort completion and scoring time; executions occurred immediately beforehand"
+    },
+    "isolationUnit": "condition",
+    "conditionSessions": {
+      "none": "/root/astra_v2_none_clean",
+      "current-guidance": "/root/astra_v2_current_clean",
+      "revised-recipes-catalog": "/root/astra_v2_revised_clean"
+    }
+  },
+  "harness": {
+    "baseRevision": "5314edc76cccae4b6e4aa94bc76e63a1e401a74b",
+    "suiteId": "kerf-ui-authoring-v2",
+    "suiteSha256": "cb41482279475501a854d4a0b92fc3905944790c2af078005853e8564c2a3cb9",
+    "corpusSha256": "67dae8d51bdc22e543cb1585b0c10a620d305e9a2072e6b18b0f32a3d520bbe2",
+    "conditionsSha256": "2a016dad05088b1b0426483a50fe3b854eb1f1492166df9bff40c2a31d143ba8",
+    "catalogSha256": "87613e020c97806c82d6758b1559c30c6f6463f57acc5eb85e0d42b245458cd4",
+    "scorerSha256": "109bf8fba2a93036874b43b21b3235d18792b17bc292876b67df4aa6b87a27be",
+    "overridesSha256": "8fd73ab01e765c4a816e34bf286f6d1c64bd39c44403dacd27699f3b61d62b91",
+    "publicApiSignaturesSha256": "121aa3843fb23e598b14139ab380563d39000d35f98ac76a919e112a47bccccd",
+    "catalogSchemaSha256": "9e3f993a8dd58c925393a2a4ad1d214758e44ba2e244652dceca56f7970375f7",
+    "corpusSchemaSha256": "1fe3ee346d47f3377eefda3401dc3014e55ac8aedcdf492c9aec1a58d2f4864b",
+    "conditionsSchemaSha256": "347d5565ea8ec9447ee8690f7a81b17494d99149a57468198f60f843acd967eb",
+    "responseSchemaSha256": "dcc480e86aeb2c7acb9a4812b16f1e53a3884328ccd3602c2944918dbba283cd",
+    "runSchemaSha256": "7cad8ce71eeec8a8cea360a27dc346d3f5e81369fbe3e70fb2a79005888eac7e",
+    "typescriptVersion": "6.0.3"
+  },
+  "conditions": [
+    {
+      "id": "none",
+      "sourceRevision": null,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sources": []
+    },
+    {
+      "id": "current-guidance",
+      "sourceRevision": "4ed4515fb372cf4dc45325452fa4347bdaa080b0",
+      "sha256": "f13d7863d973c0290f0636fec9a2889dbd7e2800a39d49725f0d363847500659",
+      "sources": [
+        {
+          "path": "ai-regressions/contexts/current-guidance-4ed4515.md",
+          "sha256": "976b0e9c41cf251804107bbe2d7024d8734da7d58dfe9efed1dbd6ce24b64d28"
+        }
+      ]
+    },
+    {
+      "id": "revised-recipes-catalog",
+      "sourceRevision": null,
+      "sha256": "b3c7e4cf215ac83afc9f014df81f0547cc629b504657da9bc19eeed34061eb98",
+      "sources": [
+        {
+          "path": "ai/skill.md",
+          "sha256": "98e33e1d0c28613357e915bc002384220c0b2309d920a0639e9d470a10a7966a"
+        },
+        {
+          "path": "ai/public-api-signatures-v1.md",
+          "sha256": "121aa3843fb23e598b14139ab380563d39000d35f98ac76a919e112a47bccccd"
+        },
+        {
+          "path": "docs/component-selection.md",
+          "sha256": "348c4d089e49e38c848f534826303d38a457013a1762e5bcd47a8a31c9bcfc82"
+        },
+        {
+          "path": "docs/layout.md",
+          "sha256": "9627b5ae939500994a22f9265e50da379b454f60dd82ef440201386aa750864c"
+        },
+        {
+          "path": "docs/accessibility.md",
+          "sha256": "8e162a6fe84c19e5d43d3cf292f7024f12574c98e86a7c328652121799112793"
+        },
+        {
+          "path": "ai/component-catalog.json",
+          "sha256": "87613e020c97806c82d6758b1559c30c6f6463f57acc5eb85e0d42b245458cd4"
+        },
+        {
+          "path": "docs/recipes.md",
+          "sha256": "d27f6f8b0dce09eeb756d68b581b0e6e00187b4643ea6ec165b7336098ab5002"
+        },
+        {
+          "path": "docs/examples/command-palette-adapter.tsx",
+          "sha256": "f0f002e84fdf7faebf25181e92c607c6c06a44dbd7d173786a8c440772bf2d11"
+        },
+        {
+          "path": "ux-demo/recipes/mount-recipe.ts",
+          "sha256": "15e574989c47ae073f38cd358a787e43ac9127640a539cf396e8b8886572eea9"
+        },
+        {
+          "path": "ux-demo/recipes/app-shell.tsx",
+          "sha256": "5b04b597ee195056a97864e075c341b39f1dc6aba4368c366fe18eca0162a3b1"
+        },
+        {
+          "path": "ux-demo/recipes/navigation-sidebar.tsx",
+          "sha256": "a878f36a4e707da64dca4631963815bfe139146a3829c453ab7db9153ac628a9"
+        },
+        {
+          "path": "ux-demo/recipes/workspace-header.tsx",
+          "sha256": "c4fe7e00970db9aba5fb9e25442284620968e4cbed29c577ef4a14ab699f3f54"
+        },
+        {
+          "path": "ux-demo/recipes/master-detail-dialog.tsx",
+          "sha256": "5011bd7a931094ea6578613d64e477373659069f27907fc26c0c51fdf0af2938"
+        },
+        {
+          "path": "ux-demo/recipes/composer-form.tsx",
+          "sha256": "0075e8acc46a9d56a8738b20c57975e809535b9a89724c207f1510af50e93b8a"
+        },
+        {
+          "path": "ux-demo/recipes/list-workspace-states.tsx",
+          "sha256": "3bdb46d5bb9993bed277b89cb9f92884ef1054ff40a6fafa510bac2a21625e59"
+        },
+        {
+          "path": "ux-demo/recipes/compact-toolbar.tsx",
+          "sha256": "946907c1ee94c7aa4036e79bf25ffc68881cbcf66f4809138f1aa5b58af6e3fb"
+        },
+        {
+          "path": "ux-demo/recipes/recipes.css",
+          "sha256": "144fafe77ea4baf8eb09ccf1827621a8aa1a91b1b35a02fb797ed4c6897cb7a9"
+        }
+      ]
+    }
+  ],
+  "results": [
+    {
+      "caseId": "application-shell",
+      "condition": "none",
+      "sessionId": "/root/astra_v2_none_clean",
+      "requestOrdinal": 1,
+      "promptSha256": "bffe7198bd365739e33c5108001be4a368818001a268de3ec1d0ce29d6a796a6",
+      "contextSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "responsePath": "ai-regressions/results/2026-09-13-v2/astra-1/none/application-shell.json",
+      "responseSha256": "23876b9c0776104ee90279cc9049e31ce41485e8270e3f2e0d5fba0c3b6e57bb",
+      "score": {
+        "caseId": "application-shell",
+        "pass": false,
+        "dimensions": {
+          "reuse": false,
+          "wiring": false,
+          "layout": false,
+          "accessibility": true,
+          "escalation": true
+        },
+        "checks": [
+          {
+            "code": "source:parse",
+            "pass": true,
+            "detail": "TypeScript and TSX parse without syntax errors"
+          },
+          {
+            "code": "import:@kerfjs/ui/toolbar",
+            "pass": false,
+            "detail": "imports @kerfjs/ui/toolbar"
+          },
+          {
+            "code": "import:@kerfjs/ui/menu-header",
+            "pass": false,
+            "detail": "imports @kerfjs/ui/menu-header"
+          },
+          {
+            "code": "import:@kerfjs/ui/menu-item",
+            "pass": false,
+            "detail": "imports @kerfjs/ui/menu-item"
+          },
+          {
+            "code": "import:@kerfjs/ui/resizable-region",
+            "pass": false,
+            "detail": "imports @kerfjs/ui/resizable-region"
+          },
+          {
+            "code": "import:@kerfjs/ui/layout.css",
+            "pass": false,
+            "detail": "imports @kerfjs/ui/layout.css"
+          },
+          {
+            "code": "import:@kerfjs/ui/sidebar.css",
+            "pass": false,
+            "detail": "imports @kerfjs/ui/sidebar.css"
+          },
+          {
+            "code": "component:toolbar",
+            "pass": false,
+            "detail": "uses toolbar through an imported invocation, not a copied class name"
+          },
+          {
+            "code": "component:menu-header",
+            "pass": false,
+            "detail": "uses menu-header through an imported invocation, not a copied class name"
+          },
+          {
+            "code": "component:menu-item",
+            "pass": false,
+            "detail": "uses menu-item through an imported invocation, not a copied class name"
+          },
+          {
+            "code": "component:resize",
+            "pass": false,
+            "detail": "uses resize through an imported invocation, not a copied class name"
+          },
+          {
+            "code": "component:layout",
+            "pass": true,
+            "detail": "uses layout through an imported invocation, not a copied class name"
+          },
+          {
+            "code": "component:menu",
+            "pass": true,
+            "detail": "uses menu through an imported invocation, not a copied class name"
+          },
+          {
+            "code": "avoid:wa-split-panel",
+            "pass": true,
+            "detail": "does not substitute wa-split-panel"
+          },
+          {
+            "code": "class:kui-layout",
+            "pass": false,
+            "detail": "uses semantic class kui-layout"
+          },
+          {
+            "code": "class:kui-sidebar",
+            "pass": false,
+            "detail": "uses semantic class kui-sidebar"
+          },
+          {
+            "code": "class:kui-scroll-owner",
+            "pass": false,
+            "detail": "uses semantic class kui-scroll-owner"
+          },
+          {
+            "code": "wiring:wireResizableRegions",
+            "pass": false,
+            "detail": "requires one captured alternative: wireResizableRegions from @kerfjs/ui/wire-resizable-regions, wireResizableRegions from @kerfjs/ui"
+          },
+          {
+            "code": "duplicate:menu-row-copy",
+            "pass": true,
+            "detail": "does not introduce menu-row-copy"
+          },
+          {
+            "code": "duplicate:resize-handle-copy",
+            "pass": true,
+            "detail": "does not introduce resize-handle-copy"
+          },
+          {
+            "code": "layout:scroll-owners",
+            "pass": true,
+            "detail": "declares 0; maximum 3"
+          },
+          {
+            "code": "layout:single-inset-owner",
+            "pass": true,
+            "detail": "each element has at most one semantic inset owner"
+          },
+          {
+            "code": "css:public-boundary",
+            "pass": true,
+            "detail": "does not reach through a Kerf component root"
+          },
+          {
+            "code": "css:semantic-spacing",
+            "pass": false,
+            "detail": "hard-coded spacing: padding: .75rem 1rem, padding: 1rem, padding: .65rem, gap: .5rem, margin-bottom: 1rem, padding: 1rem, gap: .5rem, margin-top: .5rem"
+          },
+          {
+            "code": "a11y:named-buttons",
+            "pass": true,
+            "detail": "native buttons have text or an accessible name"
+          }
+        ]
+      }
+    },
+    {
+      "caseId": "compact-exclusive-choice",
+      "condition": "none",
+      "sessionId": "/root/astra_v2_none_clean",
+      "requestOrdinal": 2,
+      "promptSha256": "da66a16ce6314246df5f07e7ec078a4acc69e092041ea8af4c4249350318bdc8",
+      "contextSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "responsePath": "ai-regressions/results/2026-09-13-v2/astra-1/none/compact-exclusive-choice.json",
+      "responseSha256": "b106b34b3940757e1bdab1588f932bd98ff4213a28232242246ee850b6ad0801",
+      "score": {
+        "caseId": "compact-exclusive-choice",
+        "pass": false,
+        "dimensions": {
+          "reuse": false,
+          "wiring": false,
+          "layout": true,
+          "accessibility": true,
+          "escalation": true
+        },
+        "checks": [
+          {
+            "code": "source:parse",
+            "pass": true,
+            "detail": "TypeScript and TSX parse without syntax errors"
+          },
+          {
+            "code": "import:@kerfjs/ui/segmented-control",
+            "pass": false,
+            "detail": "imports @kerfjs/ui/segmented-control"
+          },
+          {
+            "code": "component:segmented-control",
+            "pass": false,
+            "detail": "uses segmented-control through an imported invocation, not a copied class name"
+          },
+          {
+            "code": "avoid:wa-button-group",
+            "pass": true,
+            "detail": "does not substitute wa-button-group"
+          },
+          {
+            "code": "avoid:tab-bar",
+            "pass": true,
+            "detail": "does not substitute tab-bar"
+          },
+          {
+            "code": "avoid:select",
+            "pass": true,
+            "detail": "does not substitute select"
+          },
+          {
+            "code": "wiring:delegated-actions",
+            "pass": false,
+            "detail": "requires one captured alternative: delegateActions from kerfjs/actions, delegate from kerfjs"
+          },
+          {
+            "code": "duplicate:segment-copy",
+            "pass": true,
+            "detail": "does not introduce segment-copy"
+          },
+          {
+            "code": "duplicate:competing-native-options",
+            "pass": true,
+            "detail": "declares 0 native buttons alongside the package choice contract"
+          },
+          {
+            "code": "layout:scroll-owners",
+            "pass": true,
+            "detail": "declares 0; maximum 0"
+          },
+          {
+            "code": "layout:single-inset-owner",
+            "pass": true,
+            "detail": "each element has at most one semantic inset owner"
+          },
+          {
+            "code": "css:public-boundary",
+            "pass": true,
+            "detail": "does not reach through a Kerf component root"
+          },
+          {
+            "code": "css:semantic-spacing",
+            "pass": true,
+            "detail": "hard-coded spacing: gap: 2px, padding: 3px, padding: .35rem .65rem"
+          },
+          {
+            "code": "a11y:named-buttons",
+            "pass": true,
+            "detail": "native buttons have text or an accessible name"
+          }
+        ]
+      }
+    },
+    {
+      "caseId": "navigation-sections",
+      "condition": "none",
+      "sessionId": "/root/astra_v2_none_clean",
+      "requestOrdinal": 3,
+      "promptSha256": "6378048c1f0719c17aae1e76f733f77c3457214d81505f69445f203c0df8defe",
+      "contextSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "responsePath": "ai-regressions/results/2026-09-13-v2/astra-1/none/navigation-sections.json",
+      "responseSha256": "926c3f671f19523ba11473412a0346c2cdd0d250a14211f51b59749154a97656",
+      "score": {
+        "caseId": "navigation-sections",
+        "pass": false,
+        "dimensions": {
+          "reuse": false,
+          "wiring": false,
+          "layout": false,
+          "accessibility": false,
+          "escalation": true
+        },
+        "checks": [
+          {
+            "code": "source:parse",
+            "pass": true,
+            "detail": "TypeScript and TSX parse without syntax errors"
+          },
+          {
+            "code": "import:@kerfjs/ui/menu-header",
+            "pass": false,
+            "detail": "imports @kerfjs/ui/menu-header"
+          },
+          {
+            "code": "import:@kerfjs/ui/menu-item",
+            "pass": false,
+            "detail": "imports @kerfjs/ui/menu-item"
+          },
+          {
+            "code": "import:@kerfjs/ui/sidebar.css",
+            "pass": false,
+            "detail": "imports @kerfjs/ui/sidebar.css"
+          },
+          {
+            "code": "component:menu-header",
+            "pass": false,
+            "detail": "uses menu-header through an imported invocation, not a copied class name"
+          },
+          {
+            "code": "component:menu-item",
+            "pass": false,
+            "detail": "uses menu-item through an imported invocation, not a copied class name"
+          },
+          {
+            "code": "component:menu",
+            "pass": true,
+            "detail": "uses menu through an imported invocation, not a copied class name"
+          },
+          {
+            "code": "class:kui-sidebar",
+            "pass": false,
+            "detail": "uses semantic class kui-sidebar"
+          },
+          {
+            "code": "class:kui-sidebar-section",
+            "pass": false,
+            "detail": "uses semantic class kui-sidebar-section"
+          },
+          {
+            "code": "class:kui-sidebar-surface",
+            "pass": false,
+            "detail": "uses semantic class kui-sidebar-surface"
+          },
+          {
+            "code": "wiring:delegated-actions",
+            "pass": false,
+            "detail": "requires one captured alternative: delegateActions from kerfjs/actions, delegate from kerfjs"
+          },
+          {
+            "code": "duplicate:menu-header-copy",
+            "pass": true,
+            "detail": "does not introduce menu-header-copy"
+          },
+          {
+            "code": "duplicate:menu-row-copy",
+            "pass": true,
+            "detail": "does not introduce menu-row-copy"
+          },
+          {
+            "code": "duplicate:navigation-native-row",
+            "pass": false,
+            "detail": "declares 1 native navigation buttons instead of MenuItem rows"
+          },
+          {
+            "code": "layout:scroll-owners",
+            "pass": true,
+            "detail": "declares 0; maximum 1"
+          },
+          {
+            "code": "layout:single-inset-owner",
+            "pass": true,
+            "detail": "each element has at most one semantic inset owner"
+          },
+          {
+            "code": "css:public-boundary",
+            "pass": true,
+            "detail": "does not reach through a Kerf component root"
+          },
+          {
+            "code": "css:semantic-spacing",
+            "pass": false,
+            "detail": "hard-coded spacing: padding: .65rem, gap: 1rem, padding: 1rem, gap: 1.25rem, margin: 0 0 .4rem, gap: .5rem, padding); border: 1px solid transparent, padding); border: 1px solid #bac1cc, margin: .4rem 0 0, gap: .5rem, padding: .4rem var(--row-padding)"
+          },
+          {
+            "code": "a11y:named-buttons",
+            "pass": false,
+            "detail": "unnamed buttons: NavigationSidebar.tsx:9"
+          }
+        ]
+      }
+    },
+    {
+      "caseId": "workspace-states",
+      "condition": "none",
+      "sessionId": "/root/astra_v2_none_clean",
+      "requestOrdinal": 4,
+      "promptSha256": "7e5a148d9b6cf5bce16a8853a3bda63b77e545858cf81b2bcd2893b54515ccb6",
+      "contextSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "responsePath": "ai-regressions/results/2026-09-13-v2/astra-1/none/workspace-states.json",
+      "responseSha256": "ac8cf13e0fe238a960c79dffbf4897b61fe04e127ff71b8a3d71a78765f1b92d",
+      "score": {
+        "caseId": "workspace-states",
+        "pass": false,
+        "dimensions": {
+          "reuse": false,
+          "wiring": true,
+          "layout": false,
+          "accessibility": true,
+          "escalation": true
+        },
+        "checks": [
+          {
+            "code": "source:parse",
+            "pass": true,
+            "detail": "TypeScript and TSX parse without syntax errors"
+          },
+          {
+            "code": "import:@kerfjs/ui/state-banner",
+            "pass": false,
+            "detail": "imports @kerfjs/ui/state-banner"
+          },
+          {
+            "code": "import:@kerfjs/ui/empty-state",
+            "pass": false,
+            "detail": "imports @kerfjs/ui/empty-state"
+          },
+          {
+            "code": "import:@kerfjs/ui/loading-spinner",
+            "pass": false,
+            "detail": "imports @kerfjs/ui/loading-spinner"
+          },
+          {
+            "code": "import:@kerfjs/ui/layout.css",
+            "pass": false,
+            "detail": "imports @kerfjs/ui/layout.css"
+          },
+          {
+            "code": "component:state-banner",
+            "pass": false,
+            "detail": "uses state-banner through an imported invocation, not a copied class name"
+          },
+          {
+            "code": "component:empty-state",
+            "pass": false,
+            "detail": "uses empty-state through an imported invocation, not a copied class name"
+          },
+          {
+            "code": "component:loading-spinner",
+            "pass": false,
+            "detail": "uses loading-spinner through an imported invocation, not a copied class name"
+          },
+          {
+            "code": "component:layout",
+            "pass": true,
+            "detail": "uses layout through an imported invocation, not a copied class name"
+          },
+          {
+            "code": "avoid:wa-toast",
+            "pass": true,
+            "detail": "does not substitute wa-toast"
+          },
+          {
+            "code": "avoid:wa-toast-item",
+            "pass": true,
+            "detail": "does not substitute wa-toast-item"
+          },
+          {
+            "code": "class:kui-section-stack",
+            "pass": false,
+            "detail": "uses semantic class kui-section-stack"
+          },
+          {
+            "code": "duplicate:spinner-copy",
+            "pass": true,
+            "detail": "does not introduce spinner-copy"
+          },
+          {
+            "code": "duplicate:error-box-copy",
+            "pass": true,
+            "detail": "does not introduce error-box-copy"
+          },
+          {
+            "code": "layout:scroll-owners",
+            "pass": true,
+            "detail": "declares 0; maximum 1"
+          },
+          {
+            "code": "layout:single-inset-owner",
+            "pass": true,
+            "detail": "each element has at most one semantic inset owner"
+          },
+          {
+            "code": "css:public-boundary",
+            "pass": true,
+            "detail": "does not reach through a Kerf component root"
+          },
+          {
+            "code": "css:semantic-spacing",
+            "pass": false,
+            "detail": "hard-coded spacing: padding: 1rem, gap: 1rem, padding: .5rem .75rem, padding: 1rem, margin-bottom: 1rem, padding: 2rem, padding-block: .5rem"
+          },
+          {
+            "code": "a11y:named-buttons",
+            "pass": true,
+            "detail": "native buttons have text or an accessible name"
+          }
+        ]
+      }
+    },
+    {
+      "caseId": "master-detail-dialog",
+      "condition": "none",
+      "sessionId": "/root/astra_v2_none_clean",
+      "requestOrdinal": 5,
+      "promptSha256": "8a1c7bdfa3d6b9754d0a257dac78a7e1574c998fa9db056e4fe9e20c986036bf",
+      "contextSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "responsePath": "ai-regressions/results/2026-09-13-v2/astra-1/none/master-detail-dialog.json",
+      "responseSha256": "ac9e5952bbc699c9eb479e80452851bd52501cac5eef1ba71f4538c87a4124b6",
+      "score": {
+        "caseId": "master-detail-dialog",
+        "pass": false,
+        "dimensions": {
+          "reuse": false,
+          "wiring": false,
+          "layout": false,
+          "accessibility": true,
+          "escalation": true
+        },
+        "checks": [
+          {
+            "code": "source:parse",
+            "pass": true,
+            "detail": "TypeScript and TSX parse without syntax errors"
+          },
+          {
+            "code": "import:@kerfjs/ui/dialog-header",
+            "pass": false,
+            "detail": "imports @kerfjs/ui/dialog-header"
+          },
+          {
+            "code": "import:@kerfjs/ui/menu-item",
+            "pass": false,
+            "detail": "imports @kerfjs/ui/menu-item"
+          },
+          {
+            "code": "import:@kerfjs/ui/value-table",
+            "pass": false,
+            "detail": "imports @kerfjs/ui/value-table"
+          },
+          {
+            "code": "import:@kerfjs/ui/layout.css",
+            "pass": false,
+            "detail": "imports @kerfjs/ui/layout.css"
+          },
+          {
+            "code": "import:@kerfjs/ui/sidebar.css",
+            "pass": false,
+            "detail": "imports @kerfjs/ui/sidebar.css"
+          },
+          {
+            "code": "component:dialog-header",
+            "pass": false,
+            "detail": "uses dialog-header through an imported invocation, not a copied class name"
+          },
+          {
+            "code": "component:menu-item",
+            "pass": false,
+            "detail": "uses menu-item through an imported invocation, not a copied class name"
+          },
+          {
+            "code": "component:value-table",
+            "pass": false,
+            "detail": "uses value-table through an imported invocation, not a copied class name"
+          },
+          {
+            "code": "component:layout",
+            "pass": true,
+            "detail": "uses layout through an imported invocation, not a copied class name"
+          },
+          {
+            "code": "component:menu",
+            "pass": true,
+            "detail": "uses menu through an imported invocation, not a copied class name"
+          },
+          {
+            "code": "class:kui-dialog-body",
+            "pass": false,
+            "detail": "uses semantic class kui-dialog-body"
+          },
+          {
+            "code": "class:kui-sidebar",
+            "pass": false,
+            "detail": "uses semantic class kui-sidebar"
+          },
+          {
+            "code": "wiring:delegated-actions",
+            "pass": false,
+            "detail": "requires one captured alternative: delegateActions from kerfjs/actions, delegate from kerfjs"
+          },
+          {
+            "code": "duplicate:dialog-title-copy",
+            "pass": true,
+            "detail": "does not introduce dialog-title-copy"
+          },
+          {
+            "code": "duplicate:definition-list-copy",
+            "pass": true,
+            "detail": "does not introduce definition-list-copy"
+          },
+          {
+            "code": "layout:scroll-owners",
+            "pass": true,
+            "detail": "declares 0; maximum 1"
+          },
+          {
+            "code": "layout:single-inset-owner",
+            "pass": true,
+            "detail": "each element has at most one semantic inset owner"
+          },
+          {
+            "code": "css:public-boundary",
+            "pass": true,
+            "detail": "does not reach through a Kerf component root"
+          },
+          {
+            "code": "css:semantic-spacing",
+            "pass": false,
+            "detail": "hard-coded spacing: padding: 1.5rem, gap: 1.5rem, padding: .75rem, gap: .5rem, padding: .65rem .25rem, margin-block: .75rem, margin: .25rem 0 0, gap: .75rem, margin-top: 1.5rem, padding: .6rem .9rem, padding: 1rem"
+          },
+          {
+            "code": "a11y:named-buttons",
+            "pass": true,
+            "detail": "native buttons have text or an accessible name"
+          }
+        ]
+      }
+    },
+    {
+      "caseId": "tokenized-search",
+      "condition": "none",
+      "sessionId": "/root/astra_v2_none_clean",
+      "requestOrdinal": 6,
+      "promptSha256": "3594623b9bf98649231fd411ff6613bb34f25b0d2020813eb824106fc296ce23",
+      "contextSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "responsePath": "ai-regressions/results/2026-09-13-v2/astra-1/none/tokenized-search.json",
+      "responseSha256": "1e1ffaec719581e988b87c38ad42004d229f48c62f811a7e63cf391d33558cf4",
+      "score": {
+        "caseId": "tokenized-search",
+        "pass": false,
+        "dimensions": {
+          "reuse": false,
+          "wiring": true,
+          "layout": true,
+          "accessibility": true,
+          "escalation": true
+        },
+        "checks": [
+          {
+            "code": "source:parse",
+            "pass": true,
+            "detail": "TypeScript and TSX parse without syntax errors"
+          },
+          {
+            "code": "import:@kerfjs/ui/token-search-field",
+            "pass": false,
+            "detail": "imports @kerfjs/ui/token-search-field"
+          },
+          {
+            "code": "component:token-search-field",
+            "pass": false,
+            "detail": "uses token-search-field through an imported invocation, not a copied class name"
+          },
+          {
+            "code": "avoid:wa-input",
+            "pass": true,
+            "detail": "does not substitute wa-input"
+          },
+          {
+            "code": "duplicate:token-chip-copy",
+            "pass": true,
+            "detail": "does not introduce token-chip-copy"
+          },
+          {
+            "code": "duplicate:search-editor-copy",
+            "pass": true,
+            "detail": "does not introduce search-editor-copy"
+          },
+          {
+            "code": "duplicate:search-editor",
+            "pass": true,
+            "detail": "declares 0 competing native search editors"
+          },
+          {
+            "code": "layout:scroll-owners",
+            "pass": true,
+            "detail": "declares 0; maximum 0"
+          },
+          {
+            "code": "layout:single-inset-owner",
+            "pass": true,
+            "detail": "each element has at most one semantic inset owner"
+          },
+          {
+            "code": "css:public-boundary",
+            "pass": true,
+            "detail": "does not reach through a Kerf component root"
+          },
+          {
+            "code": "css:semantic-spacing",
+            "pass": true,
+            "detail": "hard-coded spacing: gap: .4rem, padding: .5rem, padding: .45rem, padding: .35rem, margin: .25rem 0, padding: .25rem, padding: .5rem"
+          },
+          {
+            "code": "a11y:named-buttons",
+            "pass": true,
+            "detail": "native buttons have text or an accessible name"
+          }
+        ]
+      }
+    },
+    {
+      "caseId": "missing-recurring-concept",
+      "condition": "none",
+      "sessionId": "/root/astra_v2_none_clean",
+      "requestOrdinal": 7,
+      "promptSha256": "3d2cc6235003ea621c9f1713d0efaa6173198188d796ad64eba4d04fc30197a6",
+      "contextSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "responsePath": "ai-regressions/results/2026-09-13-v2/astra-1/none/missing-recurring-concept.json",
+      "responseSha256": "e89ee757b9118ebaf1b1759d0bf062ff690e33ee1483257f30c8de73b7bfb43e",
+      "score": {
+        "caseId": "missing-recurring-concept",
+        "pass": false,
+        "dimensions": {
+          "reuse": false,
+          "wiring": true,
+          "layout": false,
+          "accessibility": true,
+          "escalation": true
+        },
+        "checks": [
+          {
+            "code": "source:parse",
+            "pass": true,
+            "detail": "TypeScript and TSX parse without syntax errors"
+          },
+          {
+            "code": "import:@kerfjs/ui/layout.css",
+            "pass": false,
+            "detail": "imports @kerfjs/ui/layout.css"
+          },
+          {
+            "code": "component:layout",
+            "pass": true,
+            "detail": "uses layout through an imported invocation, not a copied class name"
+          },
+          {
+            "code": "class:kui-control-cluster",
+            "pass": false,
+            "detail": "uses semantic class kui-control-cluster"
+          },
+          {
+            "code": "duplicate:pretend-kerf-command-palette",
+            "pass": true,
+            "detail": "does not introduce pretend-kerf-command-palette"
+          },
+          {
+            "code": "layout:scroll-owners",
+            "pass": true,
+            "detail": "declares 0; maximum 0"
+          },
+          {
+            "code": "layout:single-inset-owner",
+            "pass": true,
+            "detail": "each element has at most one semantic inset owner"
+          },
+          {
+            "code": "css:public-boundary",
+            "pass": true,
+            "detail": "does not reach through a Kerf component root"
+          },
+          {
+            "code": "css:semantic-spacing",
+            "pass": false,
+            "detail": "hard-coded spacing: padding: 1.25rem, padding: .6rem, margin-top: .4rem, padding: .7rem, margin-top: 1rem, padding: .5rem 1rem"
+          },
+          {
+            "code": "a11y:named-buttons",
+            "pass": true,
+            "detail": "native buttons have text or an accessible name"
+          },
+          {
+            "code": "follow-up:missing-concept",
+            "pass": true,
+            "detail": "recurring missing concepts are proposed upstream explicitly"
+          }
+        ]
+      }
+    },
+    {
+      "caseId": "application-shell",
+      "condition": "current-guidance",
+      "sessionId": "/root/astra_v2_current_clean",
+      "requestOrdinal": 1,
+      "promptSha256": "bffe7198bd365739e33c5108001be4a368818001a268de3ec1d0ce29d6a796a6",
+      "contextSha256": "f13d7863d973c0290f0636fec9a2889dbd7e2800a39d49725f0d363847500659",
+      "responsePath": "ai-regressions/results/2026-09-13-v2/astra-1/current-guidance/application-shell.json",
+      "responseSha256": "5f3df84df7e0d47b416cb80854610c9b4fd2765cc419b39ef5d4ab2fb1abaef3",
+      "score": {
+        "caseId": "application-shell",
+        "pass": false,
+        "dimensions": {
+          "reuse": false,
+          "wiring": false,
+          "layout": false,
+          "accessibility": true,
+          "escalation": true
+        },
+        "checks": [
+          {
+            "code": "source:parse",
+            "pass": true,
+            "detail": "TypeScript and TSX parse without syntax errors"
+          },
+          {
+            "code": "import:@kerfjs/ui/toolbar",
+            "pass": true,
+            "detail": "imports @kerfjs/ui/toolbar"
+          },
+          {
+            "code": "import:@kerfjs/ui/menu-header",
+            "pass": true,
+            "detail": "imports @kerfjs/ui/menu-header"
+          },
+          {
+            "code": "import:@kerfjs/ui/menu-item",
+            "pass": true,
+            "detail": "imports @kerfjs/ui/menu-item"
+          },
+          {
+            "code": "import:@kerfjs/ui/resizable-region",
+            "pass": true,
+            "detail": "imports @kerfjs/ui/resizable-region"
+          },
+          {
+            "code": "import:@kerfjs/ui/layout.css",
+            "pass": true,
+            "detail": "imports @kerfjs/ui/layout.css"
+          },
+          {
+            "code": "import:@kerfjs/ui/sidebar.css",
+            "pass": false,
+            "detail": "imports @kerfjs/ui/sidebar.css"
+          },
+          {
+            "code": "component:toolbar",
+            "pass": true,
+            "detail": "uses toolbar through an imported invocation, not a copied class name"
+          },
+          {
+            "code": "component:menu-header",
+            "pass": true,
+            "detail": "uses menu-header through an imported invocation, not a copied class name"
+          },
+          {
+            "code": "component:menu-item",
+            "pass": true,
+            "detail": "uses menu-item through an imported invocation, not a copied class name"
+          },
+          {
+            "code": "component:resize",
+            "pass": true,
+            "detail": "uses resize through an imported invocation, not a copied class name"
+          },
+          {
+            "code": "component:layout",
+            "pass": true,
+            "detail": "uses layout through an imported invocation, not a copied class name"
+          },
+          {
+            "code": "component:menu",
+            "pass": true,
+            "detail": "uses menu through an imported invocation, not a copied class name"
+          },
+          {
+            "code": "avoid:wa-split-panel",
+            "pass": true,
+            "detail": "does not substitute wa-split-panel"
+          },
+          {
+            "code": "class:kui-layout",
+            "pass": true,
+            "detail": "uses semantic class kui-layout"
+          },
+          {
+            "code": "class:kui-sidebar",
+            "pass": true,
+            "detail": "uses semantic class kui-sidebar"
+          },
+          {
+            "code": "class:kui-scroll-owner",
+            "pass": false,
+            "detail": "uses semantic class kui-scroll-owner"
+          },
+          {
+            "code": "wiring:wireResizableRegions",
+            "pass": false,
+            "detail": "requires one captured alternative: wireResizableRegions from @kerfjs/ui/wire-resizable-regions, wireResizableRegions from @kerfjs/ui"
+          },
+          {
+            "code": "duplicate:menu-row-copy",
+            "pass": true,
+            "detail": "does not introduce menu-row-copy"
+          },
+          {
+            "code": "duplicate:resize-handle-copy",
+            "pass": true,
+            "detail": "does not introduce resize-handle-copy"
+          },
+          {
+            "code": "layout:scroll-owners",
+            "pass": true,
+            "detail": "declares 0; maximum 3"
+          },
+          {
+            "code": "layout:single-inset-owner",
+            "pass": true,
+            "detail": "each element has at most one semantic inset owner"
+          },
+          {
+            "code": "css:public-boundary",
+            "pass": true,
+            "detail": "does not reach through a Kerf component root"
+          },
+          {
+            "code": "css:semantic-spacing",
+            "pass": true,
+            "detail": "uses semantic layout spacing rather than one-off lengths"
+          },
+          {
+            "code": "a11y:named-buttons",
+            "pass": true,
+            "detail": "native buttons have text or an accessible name"
+          }
+        ]
+      }
+    },
+    {
+      "caseId": "compact-exclusive-choice",
+      "condition": "current-guidance",
+      "sessionId": "/root/astra_v2_current_clean",
+      "requestOrdinal": 2,
+      "promptSha256": "da66a16ce6314246df5f07e7ec078a4acc69e092041ea8af4c4249350318bdc8",
+      "contextSha256": "f13d7863d973c0290f0636fec9a2889dbd7e2800a39d49725f0d363847500659",
+      "responsePath": "ai-regressions/results/2026-09-13-v2/astra-1/current-guidance/compact-exclusive-choice.json",
+      "responseSha256": "777c52673f7ea6c1d9b7a991f1458b76f43ffa2d037da509d0aef2b60ddfb016",
+      "score": {
+        "caseId": "compact-exclusive-choice",
+        "pass": false,
+        "dimensions": {
+          "reuse": true,
+          "wiring": false,
+          "layout": true,
+          "accessibility": true,
+          "escalation": true
+        },
+        "checks": [
+          {
+            "code": "source:parse",
+            "pass": true,
+            "detail": "TypeScript and TSX parse without syntax errors"
+          },
+          {
+            "code": "import:@kerfjs/ui/segmented-control",
+            "pass": true,
+            "detail": "imports @kerfjs/ui/segmented-control"
+          },
+          {
+            "code": "component:segmented-control",
+            "pass": true,
+            "detail": "uses segmented-control through an imported invocation, not a copied class name"
+          },
+          {
+            "code": "avoid:wa-button-group",
+            "pass": true,
+            "detail": "does not substitute wa-button-group"
+          },
+          {
+            "code": "avoid:tab-bar",
+            "pass": true,
+            "detail": "does not substitute tab-bar"
+          },
+          {
+            "code": "avoid:select",
+            "pass": true,
+            "detail": "does not substitute select"
+          },
+          {
+            "code": "wiring:delegated-actions",
+            "pass": false,
+            "detail": "requires one captured alternative: delegateActions from kerfjs/actions, delegate from kerfjs"
+          },
+          {
+            "code": "duplicate:segment-copy",
+            "pass": true,
+            "detail": "does not introduce segment-copy"
+          },
+          {
+            "code": "duplicate:competing-native-options",
+            "pass": true,
+            "detail": "declares 0 native buttons alongside the package choice contract"
+          },
+          {
+            "code": "layout:scroll-owners",
+            "pass": true,
+            "detail": "declares 0; maximum 0"
+          },
+          {
+            "code": "layout:single-inset-owner",
+            "pass": true,
+            "detail": "each element has at most one semantic inset owner"
+          },
+          {
+            "code": "css:public-boundary",
+            "pass": true,
+            "detail": "does not reach through a Kerf component root"
+          },
+          {
+            "code": "css:semantic-spacing",
+            "pass": true,
+            "detail": "uses semantic layout spacing rather than one-off lengths"
+          },
+          {
+            "code": "a11y:named-buttons",
+            "pass": true,
+            "detail": "native buttons have text or an accessible name"
+          }
+        ]
+      }
+    },
+    {
+      "caseId": "navigation-sections",
+      "condition": "current-guidance",
+      "sessionId": "/root/astra_v2_current_clean",
+      "requestOrdinal": 3,
+      "promptSha256": "6378048c1f0719c17aae1e76f733f77c3457214d81505f69445f203c0df8defe",
+      "contextSha256": "f13d7863d973c0290f0636fec9a2889dbd7e2800a39d49725f0d363847500659",
+      "responsePath": "ai-regressions/results/2026-09-13-v2/astra-1/current-guidance/navigation-sections.json",
+      "responseSha256": "5291c064f2f7ff8e97a23c27792fa3a2031d90ae972a63aa94da4163fe80e3a6",
+      "score": {
+        "caseId": "navigation-sections",
+        "pass": false,
+        "dimensions": {
+          "reuse": false,
+          "wiring": false,
+          "layout": true,
+          "accessibility": true,
+          "escalation": true
+        },
+        "checks": [
+          {
+            "code": "source:parse",
+            "pass": true,
+            "detail": "TypeScript and TSX parse without syntax errors"
+          },
+          {
+            "code": "import:@kerfjs/ui/menu-header",
+            "pass": true,
+            "detail": "imports @kerfjs/ui/menu-header"
+          },
+          {
+            "code": "import:@kerfjs/ui/menu-item",
+            "pass": true,
+            "detail": "imports @kerfjs/ui/menu-item"
+          },
+          {
+            "code": "import:@kerfjs/ui/sidebar.css",
+            "pass": false,
+            "detail": "imports @kerfjs/ui/sidebar.css"
+          },
+          {
+            "code": "component:menu-header",
+            "pass": true,
+            "detail": "uses menu-header through an imported invocation, not a copied class name"
+          },
+          {
+            "code": "component:menu-item",
+            "pass": true,
+            "detail": "uses menu-item through an imported invocation, not a copied class name"
+          },
+          {
+            "code": "component:menu",
+            "pass": true,
+            "detail": "uses menu through an imported invocation, not a copied class name"
+          },
+          {
+            "code": "class:kui-sidebar",
+            "pass": true,
+            "detail": "uses semantic class kui-sidebar"
+          },
+          {
+            "code": "class:kui-sidebar-section",
+            "pass": true,
+            "detail": "uses semantic class kui-sidebar-section"
+          },
+          {
+            "code": "class:kui-sidebar-surface",
+            "pass": true,
+            "detail": "uses semantic class kui-sidebar-surface"
+          },
+          {
+            "code": "wiring:delegated-actions",
+            "pass": false,
+            "detail": "requires one captured alternative: delegateActions from kerfjs/actions, delegate from kerfjs"
+          },
+          {
+            "code": "duplicate:menu-header-copy",
+            "pass": true,
+            "detail": "does not introduce menu-header-copy"
+          },
+          {
+            "code": "duplicate:menu-row-copy",
+            "pass": true,
+            "detail": "does not introduce menu-row-copy"
+          },
+          {
+            "code": "duplicate:navigation-native-row",
+            "pass": false,
+            "detail": "declares 2 native navigation buttons instead of MenuItem rows"
+          },
+          {
+            "code": "layout:scroll-owners",
+            "pass": true,
+            "detail": "declares 0; maximum 1"
+          },
+          {
+            "code": "layout:single-inset-owner",
+            "pass": true,
+            "detail": "each element has at most one semantic inset owner"
+          },
+          {
+            "code": "css:public-boundary",
+            "pass": true,
+            "detail": "does not reach through a Kerf component root"
+          },
+          {
+            "code": "css:semantic-spacing",
+            "pass": true,
+            "detail": "uses semantic layout spacing rather than one-off lengths"
+          },
+          {
+            "code": "a11y:named-buttons",
+            "pass": true,
+            "detail": "native buttons have text or an accessible name"
+          }
+        ]
+      }
+    },
+    {
+      "caseId": "workspace-states",
+      "condition": "current-guidance",
+      "sessionId": "/root/astra_v2_current_clean",
+      "requestOrdinal": 4,
+      "promptSha256": "7e5a148d9b6cf5bce16a8853a3bda63b77e545858cf81b2bcd2893b54515ccb6",
+      "contextSha256": "f13d7863d973c0290f0636fec9a2889dbd7e2800a39d49725f0d363847500659",
+      "responsePath": "ai-regressions/results/2026-09-13-v2/astra-1/current-guidance/workspace-states.json",
+      "responseSha256": "55a614a657b735b522366e3ac0fa61e3856d47f33fc2ac7c51addcd50b58ea3e",
+      "score": {
+        "caseId": "workspace-states",
+        "pass": false,
+        "dimensions": {
+          "reuse": true,
+          "wiring": true,
+          "layout": false,
+          "accessibility": true,
+          "escalation": true
+        },
+        "checks": [
+          {
+            "code": "source:parse",
+            "pass": true,
+            "detail": "TypeScript and TSX parse without syntax errors"
+          },
+          {
+            "code": "import:@kerfjs/ui/state-banner",
+            "pass": true,
+            "detail": "imports @kerfjs/ui/state-banner"
+          },
+          {
+            "code": "import:@kerfjs/ui/empty-state",
+            "pass": true,
+            "detail": "imports @kerfjs/ui/empty-state"
+          },
+          {
+            "code": "import:@kerfjs/ui/loading-spinner",
+            "pass": true,
+            "detail": "imports @kerfjs/ui/loading-spinner"
+          },
+          {
+            "code": "import:@kerfjs/ui/layout.css",
+            "pass": true,
+            "detail": "imports @kerfjs/ui/layout.css"
+          },
+          {
+            "code": "component:state-banner",
+            "pass": true,
+            "detail": "uses state-banner through an imported invocation, not a copied class name"
+          },
+          {
+            "code": "component:empty-state",
+            "pass": true,
+            "detail": "uses empty-state through an imported invocation, not a copied class name"
+          },
+          {
+            "code": "component:loading-spinner",
+            "pass": true,
+            "detail": "uses loading-spinner through an imported invocation, not a copied class name"
+          },
+          {
+            "code": "component:layout",
+            "pass": true,
+            "detail": "uses layout through an imported invocation, not a copied class name"
+          },
+          {
+            "code": "avoid:wa-toast",
+            "pass": true,
+            "detail": "does not substitute wa-toast"
+          },
+          {
+            "code": "avoid:wa-toast-item",
+            "pass": true,
+            "detail": "does not substitute wa-toast-item"
+          },
+          {
+            "code": "class:kui-section-stack",
+            "pass": false,
+            "detail": "uses semantic class kui-section-stack"
+          },
+          {
+            "code": "duplicate:spinner-copy",
+            "pass": true,
+            "detail": "does not introduce spinner-copy"
+          },
+          {
+            "code": "duplicate:error-box-copy",
+            "pass": true,
+            "detail": "does not introduce error-box-copy"
+          },
+          {
+            "code": "layout:scroll-owners",
+            "pass": true,
+            "detail": "declares 0; maximum 1"
+          },
+          {
+            "code": "layout:single-inset-owner",
+            "pass": true,
+            "detail": "each element has at most one semantic inset owner"
+          },
+          {
+            "code": "css:public-boundary",
+            "pass": true,
+            "detail": "does not reach through a Kerf component root"
+          },
+          {
+            "code": "css:semantic-spacing",
+            "pass": true,
+            "detail": "uses semantic layout spacing rather than one-off lengths"
+          },
+          {
+            "code": "a11y:named-buttons",
+            "pass": true,
+            "detail": "native buttons have text or an accessible name"
+          }
+        ]
+      }
+    },
+    {
+      "caseId": "master-detail-dialog",
+      "condition": "current-guidance",
+      "sessionId": "/root/astra_v2_current_clean",
+      "requestOrdinal": 5,
+      "promptSha256": "8a1c7bdfa3d6b9754d0a257dac78a7e1574c998fa9db056e4fe9e20c986036bf",
+      "contextSha256": "f13d7863d973c0290f0636fec9a2889dbd7e2800a39d49725f0d363847500659",
+      "responsePath": "ai-regressions/results/2026-09-13-v2/astra-1/current-guidance/master-detail-dialog.json",
+      "responseSha256": "78949ddf866649206b24ac7852646e56837eedbb77a9eec66aefaf21536e999f",
+      "score": {
+        "caseId": "master-detail-dialog",
+        "pass": false,
+        "dimensions": {
+          "reuse": false,
+          "wiring": false,
+          "layout": false,
+          "accessibility": true,
+          "escalation": true
+        },
+        "checks": [
+          {
+            "code": "source:parse",
+            "pass": true,
+            "detail": "TypeScript and TSX parse without syntax errors"
+          },
+          {
+            "code": "import:@kerfjs/ui/dialog-header",
+            "pass": true,
+            "detail": "imports @kerfjs/ui/dialog-header"
+          },
+          {
+            "code": "import:@kerfjs/ui/menu-item",
+            "pass": false,
+            "detail": "imports @kerfjs/ui/menu-item"
+          },
+          {
+            "code": "import:@kerfjs/ui/value-table",
+            "pass": false,
+            "detail": "imports @kerfjs/ui/value-table"
+          },
+          {
+            "code": "import:@kerfjs/ui/layout.css",
+            "pass": true,
+            "detail": "imports @kerfjs/ui/layout.css"
+          },
+          {
+            "code": "import:@kerfjs/ui/sidebar.css",
+            "pass": false,
+            "detail": "imports @kerfjs/ui/sidebar.css"
+          },
+          {
+            "code": "component:dialog-header",
+            "pass": true,
+            "detail": "uses dialog-header through an imported invocation, not a copied class name"
+          },
+          {
+            "code": "component:menu-item",
+            "pass": false,
+            "detail": "uses menu-item through an imported invocation, not a copied class name"
+          },
+          {
+            "code": "component:value-table",
+            "pass": false,
+            "detail": "uses value-table through an imported invocation, not a copied class name"
+          },
+          {
+            "code": "component:layout",
+            "pass": true,
+            "detail": "uses layout through an imported invocation, not a copied class name"
+          },
+          {
+            "code": "component:menu",
+            "pass": true,
+            "detail": "uses menu through an imported invocation, not a copied class name"
+          },
+          {
+            "code": "class:kui-dialog-body",
+            "pass": true,
+            "detail": "uses semantic class kui-dialog-body"
+          },
+          {
+            "code": "class:kui-sidebar",
+            "pass": false,
+            "detail": "uses semantic class kui-sidebar"
+          },
+          {
+            "code": "wiring:delegated-actions",
+            "pass": false,
+            "detail": "requires one captured alternative: delegateActions from kerfjs/actions, delegate from kerfjs"
+          },
+          {
+            "code": "duplicate:dialog-title-copy",
+            "pass": true,
+            "detail": "does not introduce dialog-title-copy"
+          },
+          {
+            "code": "duplicate:definition-list-copy",
+            "pass": true,
+            "detail": "does not introduce definition-list-copy"
+          },
+          {
+            "code": "layout:scroll-owners",
+            "pass": true,
+            "detail": "declares 0; maximum 1"
+          },
+          {
+            "code": "layout:single-inset-owner",
+            "pass": true,
+            "detail": "each element has at most one semantic inset owner"
+          },
+          {
+            "code": "css:public-boundary",
+            "pass": true,
+            "detail": "does not reach through a Kerf component root"
+          },
+          {
+            "code": "css:semantic-spacing",
+            "pass": true,
+            "detail": "uses semantic layout spacing rather than one-off lengths"
+          },
+          {
+            "code": "a11y:named-buttons",
+            "pass": true,
+            "detail": "native buttons have text or an accessible name"
+          }
+        ]
+      }
+    },
+    {
+      "caseId": "tokenized-search",
+      "condition": "current-guidance",
+      "sessionId": "/root/astra_v2_current_clean",
+      "requestOrdinal": 6,
+      "promptSha256": "3594623b9bf98649231fd411ff6613bb34f25b0d2020813eb824106fc296ce23",
+      "contextSha256": "f13d7863d973c0290f0636fec9a2889dbd7e2800a39d49725f0d363847500659",
+      "responsePath": "ai-regressions/results/2026-09-13-v2/astra-1/current-guidance/tokenized-search.json",
+      "responseSha256": "774813fc4b7e290973cd2011aefd9e4354bb0e7a560a22f5598bb7414dd8cf77",
+      "score": {
+        "caseId": "tokenized-search",
+        "pass": true,
+        "dimensions": {
+          "reuse": true,
+          "wiring": true,
+          "layout": true,
+          "accessibility": true,
+          "escalation": true
+        },
+        "checks": [
+          {
+            "code": "source:parse",
+            "pass": true,
+            "detail": "TypeScript and TSX parse without syntax errors"
+          },
+          {
+            "code": "import:@kerfjs/ui/token-search-field",
+            "pass": true,
+            "detail": "imports @kerfjs/ui/token-search-field"
+          },
+          {
+            "code": "component:token-search-field",
+            "pass": true,
+            "detail": "uses token-search-field through an imported invocation, not a copied class name"
+          },
+          {
+            "code": "avoid:wa-input",
+            "pass": true,
+            "detail": "does not substitute wa-input"
+          },
+          {
+            "code": "duplicate:token-chip-copy",
+            "pass": true,
+            "detail": "does not introduce token-chip-copy"
+          },
+          {
+            "code": "duplicate:search-editor-copy",
+            "pass": true,
+            "detail": "does not introduce search-editor-copy"
+          },
+          {
+            "code": "duplicate:search-editor",
+            "pass": true,
+            "detail": "declares 0 competing native search editors"
+          },
+          {
+            "code": "layout:scroll-owners",
+            "pass": true,
+            "detail": "declares 0; maximum 0"
+          },
+          {
+            "code": "layout:single-inset-owner",
+            "pass": true,
+            "detail": "each element has at most one semantic inset owner"
+          },
+          {
+            "code": "css:public-boundary",
+            "pass": true,
+            "detail": "does not reach through a Kerf component root"
+          },
+          {
+            "code": "css:semantic-spacing",
+            "pass": true,
+            "detail": "uses semantic layout spacing rather than one-off lengths"
+          },
+          {
+            "code": "a11y:named-buttons",
+            "pass": true,
+            "detail": "native buttons have text or an accessible name"
+          }
+        ]
+      }
+    },
+    {
+      "caseId": "missing-recurring-concept",
+      "condition": "current-guidance",
+      "sessionId": "/root/astra_v2_current_clean",
+      "requestOrdinal": 7,
+      "promptSha256": "3d2cc6235003ea621c9f1713d0efaa6173198188d796ad64eba4d04fc30197a6",
+      "contextSha256": "f13d7863d973c0290f0636fec9a2889dbd7e2800a39d49725f0d363847500659",
+      "responsePath": "ai-regressions/results/2026-09-13-v2/astra-1/current-guidance/missing-recurring-concept.json",
+      "responseSha256": "09d206f4c9972bc92719e22e80ac475fb93be88f46bfe575623ce3d6d2accc64",
+      "score": {
+        "caseId": "missing-recurring-concept",
+        "pass": false,
+        "dimensions": {
+          "reuse": true,
+          "wiring": true,
+          "layout": false,
+          "accessibility": true,
+          "escalation": true
+        },
+        "checks": [
+          {
+            "code": "source:parse",
+            "pass": true,
+            "detail": "TypeScript and TSX parse without syntax errors"
+          },
+          {
+            "code": "import:@kerfjs/ui/layout.css",
+            "pass": true,
+            "detail": "imports @kerfjs/ui/layout.css"
+          },
+          {
+            "code": "component:layout",
+            "pass": true,
+            "detail": "uses layout through an imported invocation, not a copied class name"
+          },
+          {
+            "code": "class:kui-control-cluster",
+            "pass": false,
+            "detail": "uses semantic class kui-control-cluster"
+          },
+          {
+            "code": "duplicate:pretend-kerf-command-palette",
+            "pass": true,
+            "detail": "does not introduce pretend-kerf-command-palette"
+          },
+          {
+            "code": "layout:scroll-owners",
+            "pass": true,
+            "detail": "declares 0; maximum 0"
+          },
+          {
+            "code": "layout:single-inset-owner",
+            "pass": true,
+            "detail": "each element has at most one semantic inset owner"
+          },
+          {
+            "code": "css:public-boundary",
+            "pass": true,
+            "detail": "does not reach through a Kerf component root"
+          },
+          {
+            "code": "css:semantic-spacing",
+            "pass": true,
+            "detail": "uses semantic layout spacing rather than one-off lengths"
+          },
+          {
+            "code": "a11y:named-buttons",
+            "pass": true,
+            "detail": "native buttons have text or an accessible name"
+          },
+          {
+            "code": "follow-up:missing-concept",
+            "pass": true,
+            "detail": "recurring missing concepts are proposed upstream explicitly"
+          }
+        ]
+      }
+    },
+    {
+      "caseId": "application-shell",
+      "condition": "revised-recipes-catalog",
+      "sessionId": "/root/astra_v2_revised_clean",
+      "requestOrdinal": 1,
+      "promptSha256": "bffe7198bd365739e33c5108001be4a368818001a268de3ec1d0ce29d6a796a6",
+      "contextSha256": "b3c7e4cf215ac83afc9f014df81f0547cc629b504657da9bc19eeed34061eb98",
+      "responsePath": "ai-regressions/results/2026-09-13-v2/astra-1/revised-recipes-catalog/application-shell.json",
+      "responseSha256": "0c9b528e13da9fbe7d7b1ded1dbd83a1afe9fe59d319c67fcb8f87478c3c6491",
+      "score": {
+        "caseId": "application-shell",
+        "pass": true,
+        "dimensions": {
+          "reuse": true,
+          "wiring": true,
+          "layout": true,
+          "accessibility": true,
+          "escalation": true
+        },
+        "checks": [
+          {
+            "code": "source:parse",
+            "pass": true,
+            "detail": "TypeScript and TSX parse without syntax errors"
+          },
+          {
+            "code": "import:@kerfjs/ui/toolbar",
+            "pass": true,
+            "detail": "imports @kerfjs/ui/toolbar"
+          },
+          {
+            "code": "import:@kerfjs/ui/menu-header",
+            "pass": true,
+            "detail": "imports @kerfjs/ui/menu-header"
+          },
+          {
+            "code": "import:@kerfjs/ui/menu-item",
+            "pass": true,
+            "detail": "imports @kerfjs/ui/menu-item"
+          },
+          {
+            "code": "import:@kerfjs/ui/resizable-region",
+            "pass": true,
+            "detail": "imports @kerfjs/ui/resizable-region"
+          },
+          {
+            "code": "import:@kerfjs/ui/layout.css",
+            "pass": true,
+            "detail": "imports @kerfjs/ui/layout.css"
+          },
+          {
+            "code": "import:@kerfjs/ui/sidebar.css",
+            "pass": true,
+            "detail": "imports @kerfjs/ui/sidebar.css"
+          },
+          {
+            "code": "component:toolbar",
+            "pass": true,
+            "detail": "uses toolbar through an imported invocation, not a copied class name"
+          },
+          {
+            "code": "component:menu-header",
+            "pass": true,
+            "detail": "uses menu-header through an imported invocation, not a copied class name"
+          },
+          {
+            "code": "component:menu-item",
+            "pass": true,
+            "detail": "uses menu-item through an imported invocation, not a copied class name"
+          },
+          {
+            "code": "component:resize",
+            "pass": true,
+            "detail": "uses resize through an imported invocation, not a copied class name"
+          },
+          {
+            "code": "component:layout",
+            "pass": true,
+            "detail": "uses layout through an imported invocation, not a copied class name"
+          },
+          {
+            "code": "component:menu",
+            "pass": true,
+            "detail": "uses menu through an imported invocation, not a copied class name"
+          },
+          {
+            "code": "avoid:wa-split-panel",
+            "pass": true,
+            "detail": "does not substitute wa-split-panel"
+          },
+          {
+            "code": "class:kui-layout",
+            "pass": true,
+            "detail": "uses semantic class kui-layout"
+          },
+          {
+            "code": "class:kui-sidebar",
+            "pass": true,
+            "detail": "uses semantic class kui-sidebar"
+          },
+          {
+            "code": "class:kui-scroll-owner",
+            "pass": true,
+            "detail": "uses semantic class kui-scroll-owner"
+          },
+          {
+            "code": "wiring:wireResizableRegions",
+            "pass": true,
+            "detail": "calls wireResizableRegions from supported subpath @kerfjs/ui/wire-resizable-regions and retains its disposer/result"
+          },
+          {
+            "code": "duplicate:menu-row-copy",
+            "pass": true,
+            "detail": "does not introduce menu-row-copy"
+          },
+          {
+            "code": "duplicate:resize-handle-copy",
+            "pass": true,
+            "detail": "does not introduce resize-handle-copy"
+          },
+          {
+            "code": "layout:scroll-owners",
+            "pass": true,
+            "detail": "declares 3; maximum 3"
+          },
+          {
+            "code": "layout:single-inset-owner",
+            "pass": true,
+            "detail": "each element has at most one semantic inset owner"
+          },
+          {
+            "code": "css:public-boundary",
+            "pass": true,
+            "detail": "does not reach through a Kerf component root"
+          },
+          {
+            "code": "css:semantic-spacing",
+            "pass": true,
+            "detail": "uses semantic layout spacing rather than one-off lengths"
+          },
+          {
+            "code": "a11y:named-buttons",
+            "pass": true,
+            "detail": "native buttons have text or an accessible name"
+          }
+        ]
+      }
+    },
+    {
+      "caseId": "compact-exclusive-choice",
+      "condition": "revised-recipes-catalog",
+      "sessionId": "/root/astra_v2_revised_clean",
+      "requestOrdinal": 2,
+      "promptSha256": "da66a16ce6314246df5f07e7ec078a4acc69e092041ea8af4c4249350318bdc8",
+      "contextSha256": "b3c7e4cf215ac83afc9f014df81f0547cc629b504657da9bc19eeed34061eb98",
+      "responsePath": "ai-regressions/results/2026-09-13-v2/astra-1/revised-recipes-catalog/compact-exclusive-choice.json",
+      "responseSha256": "c7fadcb91b510a863d447b7e77d535a0dc45e6a0e426aeaaffa8a42724020b97",
+      "score": {
+        "caseId": "compact-exclusive-choice",
+        "pass": true,
+        "dimensions": {
+          "reuse": true,
+          "wiring": true,
+          "layout": true,
+          "accessibility": true,
+          "escalation": true
+        },
+        "checks": [
+          {
+            "code": "source:parse",
+            "pass": true,
+            "detail": "TypeScript and TSX parse without syntax errors"
+          },
+          {
+            "code": "import:@kerfjs/ui/segmented-control",
+            "pass": true,
+            "detail": "imports @kerfjs/ui/segmented-control"
+          },
+          {
+            "code": "component:segmented-control",
+            "pass": true,
+            "detail": "uses segmented-control through an imported invocation, not a copied class name"
+          },
+          {
+            "code": "avoid:wa-button-group",
+            "pass": true,
+            "detail": "does not substitute wa-button-group"
+          },
+          {
+            "code": "avoid:tab-bar",
+            "pass": true,
+            "detail": "does not substitute tab-bar"
+          },
+          {
+            "code": "avoid:select",
+            "pass": true,
+            "detail": "does not substitute select"
+          },
+          {
+            "code": "wiring:delegated-actions",
+            "pass": true,
+            "detail": "calls delegateActions from supported subpath kerfjs/actions and retains its disposer/result"
+          },
+          {
+            "code": "duplicate:segment-copy",
+            "pass": true,
+            "detail": "does not introduce segment-copy"
+          },
+          {
+            "code": "duplicate:competing-native-options",
+            "pass": true,
+            "detail": "declares 0 native buttons alongside the package choice contract"
+          },
+          {
+            "code": "layout:scroll-owners",
+            "pass": true,
+            "detail": "declares 0; maximum 0"
+          },
+          {
+            "code": "layout:single-inset-owner",
+            "pass": true,
+            "detail": "each element has at most one semantic inset owner"
+          },
+          {
+            "code": "css:public-boundary",
+            "pass": true,
+            "detail": "does not reach through a Kerf component root"
+          },
+          {
+            "code": "css:semantic-spacing",
+            "pass": true,
+            "detail": "uses semantic layout spacing rather than one-off lengths"
+          },
+          {
+            "code": "a11y:named-buttons",
+            "pass": true,
+            "detail": "native buttons have text or an accessible name"
+          }
+        ]
+      }
+    },
+    {
+      "caseId": "navigation-sections",
+      "condition": "revised-recipes-catalog",
+      "sessionId": "/root/astra_v2_revised_clean",
+      "requestOrdinal": 3,
+      "promptSha256": "6378048c1f0719c17aae1e76f733f77c3457214d81505f69445f203c0df8defe",
+      "contextSha256": "b3c7e4cf215ac83afc9f014df81f0547cc629b504657da9bc19eeed34061eb98",
+      "responsePath": "ai-regressions/results/2026-09-13-v2/astra-1/revised-recipes-catalog/navigation-sections.json",
+      "responseSha256": "c363e31bb5fa3e03b0615df776fdbb4a8e196b27ed31ec847950537efc373cdc",
+      "score": {
+        "caseId": "navigation-sections",
+        "pass": true,
+        "dimensions": {
+          "reuse": true,
+          "wiring": true,
+          "layout": true,
+          "accessibility": true,
+          "escalation": true
+        },
+        "checks": [
+          {
+            "code": "source:parse",
+            "pass": true,
+            "detail": "TypeScript and TSX parse without syntax errors"
+          },
+          {
+            "code": "import:@kerfjs/ui/menu-header",
+            "pass": true,
+            "detail": "imports @kerfjs/ui/menu-header"
+          },
+          {
+            "code": "import:@kerfjs/ui/menu-item",
+            "pass": true,
+            "detail": "imports @kerfjs/ui/menu-item"
+          },
+          {
+            "code": "import:@kerfjs/ui/sidebar.css",
+            "pass": true,
+            "detail": "imports @kerfjs/ui/sidebar.css"
+          },
+          {
+            "code": "component:menu-header",
+            "pass": true,
+            "detail": "uses menu-header through an imported invocation, not a copied class name"
+          },
+          {
+            "code": "component:menu-item",
+            "pass": true,
+            "detail": "uses menu-item through an imported invocation, not a copied class name"
+          },
+          {
+            "code": "component:menu",
+            "pass": true,
+            "detail": "uses menu through an imported invocation, not a copied class name"
+          },
+          {
+            "code": "class:kui-sidebar",
+            "pass": true,
+            "detail": "uses semantic class kui-sidebar"
+          },
+          {
+            "code": "class:kui-sidebar-section",
+            "pass": true,
+            "detail": "uses semantic class kui-sidebar-section"
+          },
+          {
+            "code": "class:kui-sidebar-surface",
+            "pass": true,
+            "detail": "uses semantic class kui-sidebar-surface"
+          },
+          {
+            "code": "wiring:delegated-actions",
+            "pass": true,
+            "detail": "calls delegateActions from supported subpath kerfjs/actions and retains its disposer/result"
+          },
+          {
+            "code": "duplicate:menu-header-copy",
+            "pass": true,
+            "detail": "does not introduce menu-header-copy"
+          },
+          {
+            "code": "duplicate:menu-row-copy",
+            "pass": true,
+            "detail": "does not introduce menu-row-copy"
+          },
+          {
+            "code": "duplicate:navigation-native-row",
+            "pass": true,
+            "detail": "declares 0 native navigation buttons instead of MenuItem rows"
+          },
+          {
+            "code": "layout:scroll-owners",
+            "pass": true,
+            "detail": "declares 1; maximum 1"
+          },
+          {
+            "code": "layout:single-inset-owner",
+            "pass": true,
+            "detail": "each element has at most one semantic inset owner"
+          },
+          {
+            "code": "css:public-boundary",
+            "pass": true,
+            "detail": "does not reach through a Kerf component root"
+          },
+          {
+            "code": "css:semantic-spacing",
+            "pass": true,
+            "detail": "uses semantic layout spacing rather than one-off lengths"
+          },
+          {
+            "code": "a11y:named-buttons",
+            "pass": true,
+            "detail": "native buttons have text or an accessible name"
+          }
+        ]
+      }
+    },
+    {
+      "caseId": "workspace-states",
+      "condition": "revised-recipes-catalog",
+      "sessionId": "/root/astra_v2_revised_clean",
+      "requestOrdinal": 4,
+      "promptSha256": "7e5a148d9b6cf5bce16a8853a3bda63b77e545858cf81b2bcd2893b54515ccb6",
+      "contextSha256": "b3c7e4cf215ac83afc9f014df81f0547cc629b504657da9bc19eeed34061eb98",
+      "responsePath": "ai-regressions/results/2026-09-13-v2/astra-1/revised-recipes-catalog/workspace-states.json",
+      "responseSha256": "84d232079a969eb5817b212b2572a3e2dab0067bda26e8b994fa7c1e6af919af",
+      "score": {
+        "caseId": "workspace-states",
+        "pass": true,
+        "dimensions": {
+          "reuse": true,
+          "wiring": true,
+          "layout": true,
+          "accessibility": true,
+          "escalation": true
+        },
+        "checks": [
+          {
+            "code": "source:parse",
+            "pass": true,
+            "detail": "TypeScript and TSX parse without syntax errors"
+          },
+          {
+            "code": "import:@kerfjs/ui/state-banner",
+            "pass": true,
+            "detail": "imports @kerfjs/ui/state-banner"
+          },
+          {
+            "code": "import:@kerfjs/ui/empty-state",
+            "pass": true,
+            "detail": "imports @kerfjs/ui/empty-state"
+          },
+          {
+            "code": "import:@kerfjs/ui/loading-spinner",
+            "pass": true,
+            "detail": "imports @kerfjs/ui/loading-spinner"
+          },
+          {
+            "code": "import:@kerfjs/ui/layout.css",
+            "pass": true,
+            "detail": "imports @kerfjs/ui/layout.css"
+          },
+          {
+            "code": "component:state-banner",
+            "pass": true,
+            "detail": "uses state-banner through an imported invocation, not a copied class name"
+          },
+          {
+            "code": "component:empty-state",
+            "pass": true,
+            "detail": "uses empty-state through an imported invocation, not a copied class name"
+          },
+          {
+            "code": "component:loading-spinner",
+            "pass": true,
+            "detail": "uses loading-spinner through an imported invocation, not a copied class name"
+          },
+          {
+            "code": "component:layout",
+            "pass": true,
+            "detail": "uses layout through an imported invocation, not a copied class name"
+          },
+          {
+            "code": "avoid:wa-toast",
+            "pass": true,
+            "detail": "does not substitute wa-toast"
+          },
+          {
+            "code": "avoid:wa-toast-item",
+            "pass": true,
+            "detail": "does not substitute wa-toast-item"
+          },
+          {
+            "code": "class:kui-section-stack",
+            "pass": true,
+            "detail": "uses semantic class kui-section-stack"
+          },
+          {
+            "code": "duplicate:spinner-copy",
+            "pass": true,
+            "detail": "does not introduce spinner-copy"
+          },
+          {
+            "code": "duplicate:error-box-copy",
+            "pass": true,
+            "detail": "does not introduce error-box-copy"
+          },
+          {
+            "code": "layout:scroll-owners",
+            "pass": true,
+            "detail": "declares 1; maximum 1"
+          },
+          {
+            "code": "layout:single-inset-owner",
+            "pass": true,
+            "detail": "each element has at most one semantic inset owner"
+          },
+          {
+            "code": "css:public-boundary",
+            "pass": true,
+            "detail": "does not reach through a Kerf component root"
+          },
+          {
+            "code": "css:semantic-spacing",
+            "pass": true,
+            "detail": "uses semantic layout spacing rather than one-off lengths"
+          },
+          {
+            "code": "a11y:named-buttons",
+            "pass": true,
+            "detail": "native buttons have text or an accessible name"
+          }
+        ]
+      }
+    },
+    {
+      "caseId": "master-detail-dialog",
+      "condition": "revised-recipes-catalog",
+      "sessionId": "/root/astra_v2_revised_clean",
+      "requestOrdinal": 5,
+      "promptSha256": "8a1c7bdfa3d6b9754d0a257dac78a7e1574c998fa9db056e4fe9e20c986036bf",
+      "contextSha256": "b3c7e4cf215ac83afc9f014df81f0547cc629b504657da9bc19eeed34061eb98",
+      "responsePath": "ai-regressions/results/2026-09-13-v2/astra-1/revised-recipes-catalog/master-detail-dialog.json",
+      "responseSha256": "047e7461086f81f438e12581161206d398018a6cbd881e9c6bf3f078e805118f",
+      "score": {
+        "caseId": "master-detail-dialog",
+        "pass": true,
+        "dimensions": {
+          "reuse": true,
+          "wiring": true,
+          "layout": true,
+          "accessibility": true,
+          "escalation": true
+        },
+        "checks": [
+          {
+            "code": "source:parse",
+            "pass": true,
+            "detail": "TypeScript and TSX parse without syntax errors"
+          },
+          {
+            "code": "import:@kerfjs/ui/dialog-header",
+            "pass": true,
+            "detail": "imports @kerfjs/ui/dialog-header"
+          },
+          {
+            "code": "import:@kerfjs/ui/menu-item",
+            "pass": true,
+            "detail": "imports @kerfjs/ui/menu-item"
+          },
+          {
+            "code": "import:@kerfjs/ui/value-table",
+            "pass": true,
+            "detail": "imports @kerfjs/ui/value-table"
+          },
+          {
+            "code": "import:@kerfjs/ui/layout.css",
+            "pass": true,
+            "detail": "imports @kerfjs/ui/layout.css"
+          },
+          {
+            "code": "import:@kerfjs/ui/sidebar.css",
+            "pass": true,
+            "detail": "imports @kerfjs/ui/sidebar.css"
+          },
+          {
+            "code": "component:dialog-header",
+            "pass": true,
+            "detail": "uses dialog-header through an imported invocation, not a copied class name"
+          },
+          {
+            "code": "component:menu-item",
+            "pass": true,
+            "detail": "uses menu-item through an imported invocation, not a copied class name"
+          },
+          {
+            "code": "component:value-table",
+            "pass": true,
+            "detail": "uses value-table through an imported invocation, not a copied class name"
+          },
+          {
+            "code": "component:layout",
+            "pass": true,
+            "detail": "uses layout through an imported invocation, not a copied class name"
+          },
+          {
+            "code": "component:menu",
+            "pass": true,
+            "detail": "uses menu through an imported invocation, not a copied class name"
+          },
+          {
+            "code": "class:kui-dialog-body",
+            "pass": true,
+            "detail": "uses semantic class kui-dialog-body"
+          },
+          {
+            "code": "class:kui-sidebar",
+            "pass": true,
+            "detail": "uses semantic class kui-sidebar"
+          },
+          {
+            "code": "wiring:delegated-actions",
+            "pass": true,
+            "detail": "calls delegateActions from supported subpath kerfjs/actions and retains its disposer/result"
+          },
+          {
+            "code": "duplicate:dialog-title-copy",
+            "pass": true,
+            "detail": "does not introduce dialog-title-copy"
+          },
+          {
+            "code": "duplicate:definition-list-copy",
+            "pass": true,
+            "detail": "does not introduce definition-list-copy"
+          },
+          {
+            "code": "layout:scroll-owners",
+            "pass": true,
+            "detail": "declares 0; maximum 1"
+          },
+          {
+            "code": "layout:single-inset-owner",
+            "pass": true,
+            "detail": "each element has at most one semantic inset owner"
+          },
+          {
+            "code": "css:public-boundary",
+            "pass": true,
+            "detail": "does not reach through a Kerf component root"
+          },
+          {
+            "code": "css:semantic-spacing",
+            "pass": true,
+            "detail": "uses semantic layout spacing rather than one-off lengths"
+          },
+          {
+            "code": "a11y:named-buttons",
+            "pass": true,
+            "detail": "native buttons have text or an accessible name"
+          }
+        ]
+      }
+    },
+    {
+      "caseId": "tokenized-search",
+      "condition": "revised-recipes-catalog",
+      "sessionId": "/root/astra_v2_revised_clean",
+      "requestOrdinal": 6,
+      "promptSha256": "3594623b9bf98649231fd411ff6613bb34f25b0d2020813eb824106fc296ce23",
+      "contextSha256": "b3c7e4cf215ac83afc9f014df81f0547cc629b504657da9bc19eeed34061eb98",
+      "responsePath": "ai-regressions/results/2026-09-13-v2/astra-1/revised-recipes-catalog/tokenized-search.json",
+      "responseSha256": "7c3b5ac818d5f0a763c51cb65e8f504f356edfe6fc63a94e9b39f39a8deef040",
+      "score": {
+        "caseId": "tokenized-search",
+        "pass": true,
+        "dimensions": {
+          "reuse": true,
+          "wiring": true,
+          "layout": true,
+          "accessibility": true,
+          "escalation": true
+        },
+        "checks": [
+          {
+            "code": "source:parse",
+            "pass": true,
+            "detail": "TypeScript and TSX parse without syntax errors"
+          },
+          {
+            "code": "import:@kerfjs/ui/token-search-field",
+            "pass": true,
+            "detail": "imports @kerfjs/ui/token-search-field"
+          },
+          {
+            "code": "component:token-search-field",
+            "pass": true,
+            "detail": "uses token-search-field through an imported invocation, not a copied class name"
+          },
+          {
+            "code": "avoid:wa-input",
+            "pass": true,
+            "detail": "does not substitute wa-input"
+          },
+          {
+            "code": "duplicate:token-chip-copy",
+            "pass": true,
+            "detail": "does not introduce token-chip-copy"
+          },
+          {
+            "code": "duplicate:search-editor-copy",
+            "pass": true,
+            "detail": "does not introduce search-editor-copy"
+          },
+          {
+            "code": "duplicate:search-editor",
+            "pass": true,
+            "detail": "declares 0 competing native search editors"
+          },
+          {
+            "code": "layout:scroll-owners",
+            "pass": true,
+            "detail": "declares 0; maximum 0"
+          },
+          {
+            "code": "layout:single-inset-owner",
+            "pass": true,
+            "detail": "each element has at most one semantic inset owner"
+          },
+          {
+            "code": "css:public-boundary",
+            "pass": true,
+            "detail": "does not reach through a Kerf component root"
+          },
+          {
+            "code": "css:semantic-spacing",
+            "pass": true,
+            "detail": "uses semantic layout spacing rather than one-off lengths"
+          },
+          {
+            "code": "a11y:named-buttons",
+            "pass": true,
+            "detail": "native buttons have text or an accessible name"
+          }
+        ]
+      }
+    },
+    {
+      "caseId": "missing-recurring-concept",
+      "condition": "revised-recipes-catalog",
+      "sessionId": "/root/astra_v2_revised_clean",
+      "requestOrdinal": 7,
+      "promptSha256": "3d2cc6235003ea621c9f1713d0efaa6173198188d796ad64eba4d04fc30197a6",
+      "contextSha256": "b3c7e4cf215ac83afc9f014df81f0547cc629b504657da9bc19eeed34061eb98",
+      "responsePath": "ai-regressions/results/2026-09-13-v2/astra-1/revised-recipes-catalog/missing-recurring-concept.json",
+      "responseSha256": "ad5a8bb8e96a1280934fefd1eca7d8dc7044210cba010af675a2dae2eec0a63a",
+      "score": {
+        "caseId": "missing-recurring-concept",
+        "pass": false,
+        "dimensions": {
+          "reuse": true,
+          "wiring": true,
+          "layout": false,
+          "accessibility": true,
+          "escalation": true
+        },
+        "checks": [
+          {
+            "code": "source:parse",
+            "pass": true,
+            "detail": "TypeScript and TSX parse without syntax errors"
+          },
+          {
+            "code": "import:@kerfjs/ui/layout.css",
+            "pass": true,
+            "detail": "imports @kerfjs/ui/layout.css"
+          },
+          {
+            "code": "component:layout",
+            "pass": true,
+            "detail": "uses layout through an imported invocation, not a copied class name"
+          },
+          {
+            "code": "class:kui-control-cluster",
+            "pass": true,
+            "detail": "uses semantic class kui-control-cluster"
+          },
+          {
+            "code": "duplicate:pretend-kerf-command-palette",
+            "pass": true,
+            "detail": "does not introduce pretend-kerf-command-palette"
+          },
+          {
+            "code": "layout:scroll-owners",
+            "pass": false,
+            "detail": "declares 1; maximum 0"
+          },
+          {
+            "code": "layout:single-inset-owner",
+            "pass": true,
+            "detail": "each element has at most one semantic inset owner"
+          },
+          {
+            "code": "css:public-boundary",
+            "pass": true,
+            "detail": "does not reach through a Kerf component root"
+          },
+          {
+            "code": "css:semantic-spacing",
+            "pass": true,
+            "detail": "uses semantic layout spacing rather than one-off lengths"
+          },
+          {
+            "code": "a11y:named-buttons",
+            "pass": true,
+            "detail": "native buttons have text or an accessible name"
+          },
+          {
+            "code": "follow-up:missing-concept",
+            "pass": true,
+            "detail": "recurring missing concepts are proposed upstream explicitly"
+          }
+        ]
+      }
+    }
+  ],
+  "summary": [
+    {
+      "condition": "none",
+      "staticHardPasses": 0,
+      "totalCases": 7,
+      "dimensions": {
+        "reuse": {
+          "passes": 0,
+          "applicable": 7
+        },
+        "wiring": {
+          "passes": 0,
+          "applicable": 4
+        },
+        "layout": {
+          "passes": 2,
+          "applicable": 7
+        },
+        "accessibility": {
+          "passes": 6,
+          "applicable": 7
+        },
+        "escalation": {
+          "passes": 1,
+          "applicable": 1
+        }
+      }
+    },
+    {
+      "condition": "current-guidance",
+      "staticHardPasses": 1,
+      "totalCases": 7,
+      "dimensions": {
+        "reuse": {
+          "passes": 4,
+          "applicable": 7
+        },
+        "wiring": {
+          "passes": 0,
+          "applicable": 4
+        },
+        "layout": {
+          "passes": 3,
+          "applicable": 7
+        },
+        "accessibility": {
+          "passes": 7,
+          "applicable": 7
+        },
+        "escalation": {
+          "passes": 1,
+          "applicable": 1
+        }
+      }
+    },
+    {
+      "condition": "revised-recipes-catalog",
+      "staticHardPasses": 6,
+      "totalCases": 7,
+      "dimensions": {
+        "reuse": {
+          "passes": 7,
+          "applicable": 7
+        },
+        "wiring": {
+          "passes": 4,
+          "applicable": 4
+        },
+        "layout": {
+          "passes": 6,
+          "applicable": 7
+        },
+        "accessibility": {
+          "passes": 7,
+          "applicable": 7
+        },
+        "escalation": {
+          "passes": 1,
+          "applicable": 1
+        }
+      }
+    }
+  ]
+}

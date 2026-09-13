@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "caseId": "application-shell",
+  "responseSha256": "5f3df84df7e0d47b416cb80854610c9b4fd2765cc419b39ef5d4ab2fb1abaef3",
+  "compilerOptionsSha256": "5a894821bf7692bd7e2cfb94da6ecc902ade4562dd11f33be49e8c507135ec9a",
+  "typescriptVersion": "6.0.3",
+  "packages": [
+    {
+      "name": "@kerfjs/ui",
+      "version": "4.4.1",
+      "declarationSetSha256": "fa4b755aa92b142c042baa837ae25f4dd2e638a456f6862a3c87991353c66c75"
+    },
+    {
+      "name": "kerfjs",
+      "version": "4.4.1",
+      "declarationSetSha256": "6d0687d54c33813e12189b5d4dafe85947b0461f1630fa6028bc57febfa61fe0"
+    }
+  ],
+  "compiledFiles": 1,
+  "passed": false,
+  "diagnostics": [
+    {
+      "code": 2724,
+      "file": "response/ApplicationShell.tsx",
+      "line": 6,
+      "column": 27,
+      "message": "'\"@kerfjs/ui/resizable-region\"' has no exported member named 'wireResizableRegions'. Did you mean 'ResizableRegion'?"
+    },
+    {
+      "code": 2322,
+      "file": "response/ApplicationShell.tsx",
+      "line": 25,
+      "column": 15,
+      "message": "Type '{ children: SafeHtml[]; ref: RefObject<HTMLDivElement | null>; className: string; }' is not assignable to type 'KerfBaseAttrs'.\n  Property 'ref' does not exist on type 'KerfBaseAttrs'."
+    },
+    {
+      "code": 2559,
+      "file": "response/ApplicationShell.tsx",
+      "line": 27,
+      "column": 6,
+      "message": "Type '{ children: SafeHtml[]; }' has no properties in common with type 'ToolbarProps'."
+    },
+    {
+      "code": 2322,
+      "file": "response/ApplicationShell.tsx",
+      "line": 32,
+      "column": 78,
+      "message": "Type '{ label: string; selected: boolean; onClick: () => void; }' is not assignable to type 'MenuItemProps'.\n  Property 'onClick' does not exist on type 'MenuItemProps'."
+    },
+    {
+      "code": 2322,
+      "file": "response/ApplicationShell.tsx",
+      "line": 33,
+      "column": 78,
+      "message": "Type '{ label: string; selected: boolean; onClick: () => void; }' is not assignable to type 'MenuItemProps'.\n  Property 'onClick' does not exist on type 'MenuItemProps'."
+    },
+    {
+      "code": 2322,
+      "file": "response/ApplicationShell.tsx",
+      "line": 37,
+      "column": 78,
+      "message": "Type '{ label: string; selected: boolean; onClick: () => void; }' is not assignable to type 'MenuItemProps'.\n  Property 'onClick' does not exist on type 'MenuItemProps'."
+    },
+    {
+      "code": 2322,
+      "file": "response/ApplicationShell.tsx",
+      "line": 44,
+      "column": 24,
+      "message": "Type '{ children: SafeHtml; className: string; size: number; minSize: number; maxSize: number; onSizeChange: (width: number) => void; \"aria-label\": string; controls: string; }' is not assignable to type 'ResizableRegionProps'.\n  Property 'className' does not exist on type 'ResizableRegionProps'."
+    }
+  ]
+}

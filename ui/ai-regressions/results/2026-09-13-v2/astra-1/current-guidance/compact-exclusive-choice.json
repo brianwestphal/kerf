@@ -1,0 +1,6 @@
+{
+  "caseId": "compact-exclusive-choice",
+  "files": {
+    "WorkspaceViewChoice.tsx": "import { SegmentedControl } from '@kerfjs/ui/segmented-control';\nimport { Toolbar } from '@kerfjs/ui/toolbar';\nimport '@kerfjs/ui/layout.css';\n\nexport type WorkspaceView = 'board' | 'list' | 'timeline';\nexport type WorkspaceAction = { type: 'workspace.view.set'; value: WorkspaceView };\nconst options = [\n  { value: 'board', label: 'Board' },\n  { value: 'list', label: 'List' },\n  { value: 'timeline', label: 'Timeline' },\n];\nexport function WorkspaceViewChoice({ value, dispatch }: {\n  value: WorkspaceView;\n  dispatch: (action: WorkspaceAction) => void;\n}) {\n  return <div className=\"kui-layout\">\n    <Toolbar>\n      <SegmentedControl aria-label=\"Workspace view\" options={options} value={value}\n        onChange={(next: string) => {\n          if ((next === 'board' || next === 'list' || next === 'timeline') && next !== value)\n            dispatch({ type: 'workspace.view.set', value: next });\n        }} />\n    </Toolbar>\n  </div>;\n}\n// Use the primitive's exclusive-selection and keyboard behavior; these choices\n// change application presentation, so they are not tabpanel navigation.\n// The supplied context does not include declarations: confirm options/onChange\n// names against the installed public API before integration.\n"
+  }
+}

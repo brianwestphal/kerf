@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "caseId": "workspace-states",
+  "responseSha256": "ac8cf13e0fe238a960c79dffbf4897b61fe04e127ff71b8a3d71a78765f1b92d",
+  "compilerOptionsSha256": "5a894821bf7692bd7e2cfb94da6ecc902ade4562dd11f33be49e8c507135ec9a",
+  "typescriptVersion": "6.0.3",
+  "packages": [
+    {
+      "name": "@kerfjs/ui",
+      "version": "4.4.1",
+      "declarationSetSha256": "fa4b755aa92b142c042baa837ae25f4dd2e638a456f6862a3c87991353c66c75"
+    },
+    {
+      "name": "kerfjs",
+      "version": "4.4.1",
+      "declarationSetSha256": "6d0687d54c33813e12189b5d4dafe85947b0461f1630fa6028bc57febfa61fe0"
+    }
+  ],
+  "compiledFiles": 1,
+  "passed": false,
+  "diagnostics": [
+    {
+      "code": 2322,
+      "file": "response/ListWorkspace.tsx",
+      "line": 8,
+      "column": 122,
+      "message": "Type '{ children: string; type: \"button\"; onClick: () => void; }' is not assignable to type 'HTMLButtonAttrs'.\n  Property 'onClick' does not exist on type 'HTMLButtonAttrs'."
+    },
+    {
+      "code": 2322,
+      "file": "response/ListWorkspace.tsx",
+      "line": 10,
+      "column": 259,
+      "message": "Type '{ children: string; type: \"button\"; disabled: boolean; onClick: () => void; }' is not assignable to type 'HTMLButtonAttrs'.\n  Property 'onClick' does not exist on type 'HTMLButtonAttrs'."
+    },
+    {
+      "code": 2322,
+      "file": "response/ListWorkspace.tsx",
+      "line": 12,
+      "column": 92,
+      "message": "Type '{ children: string; onClick: () => void; }' is not assignable to type 'HTMLButtonAttrs'.\n  Property 'onClick' does not exist on type 'HTMLButtonAttrs'."
+    },
+    {
+      "code": 18047,
+      "file": "response/ListWorkspace.tsx",
+      "line": 12,
+      "column": 146,
+      "message": "'state.items' is possibly 'null'."
+    },
+    {
+      "code": 18047,
+      "file": "response/ListWorkspace.tsx",
+      "line": 12,
+      "column": 278,
+      "message": "'state.items' is possibly 'null'."
+    },
+    {
+      "code": 2322,
+      "file": "response/ListWorkspace.tsx",
+      "line": 12,
+      "column": 306,
+      "message": "Type '{ children: SafeHtml; key: string; }' is not assignable to type 'HTMLLiAttrs'.\n  Property 'key' does not exist on type 'HTMLLiAttrs'."
+    },
+    {
+      "code": 2322,
+      "file": "response/ListWorkspace.tsx",
+      "line": 12,
+      "column": 342,
+      "message": "Type '{ children: string; type: \"button\"; onClick: () => void; }' is not assignable to type 'HTMLButtonAttrs'.\n  Property 'onClick' does not exist on type 'HTMLButtonAttrs'."
+    }
+  ]
+}
