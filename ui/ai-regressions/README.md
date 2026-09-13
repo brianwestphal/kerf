@@ -89,6 +89,8 @@ npm run ai:regressions:compile -- \
 
 The opt-in probe accepts only relative `.ts`, `.tsx`, `.d.ts`, and `.css`
 response paths, compiles the code in an in-memory host with fixed options, and
+activates the shipped `@kerfjs/ui/webawesome` JSX declaration boundary for the
+catalog-supported `wa-*` elements without registering or executing them. It
 records normalized diagnostics plus hashes for the raw response, compiler
 options, TypeScript version, exact package versions, and their emitted
 declaration sets. Its schema is `compile-evidence.schema.json`. This sidecar is
@@ -116,7 +118,10 @@ generated code. The opt-in compile probe covers only public type compatibility;
 a later runner may add Playwright geometry, keyboard, contrast, reduced-motion,
 and screenshot evidence. It must record the
 exact model version and settings, prompt/context/source/scorer revisions and
-hashes, and raw-output hash. Paid or nondeterministic generation must never be
+hashes, and raw-output hash. The live Web Awesome declarations are generated
+to `ai/webawesome-jsx-signatures-v1.md`; the older suite-v2 signature document
+and context snapshot remain immutable so checked-in measurements replay.
+Paid or nondeterministic generation must never be
 part of push or pull-request CI, and canned fixtures must never be described as
 measured model improvement.
 

@@ -86,9 +86,14 @@ Use the package's optional theme entry when the app renders free Web Awesome
 components alongside Kerf primitives:
 
 ```ts
+import type {} from '@kerfjs/ui/webawesome';
 import '@kerfjs/ui/webawesome.css';
 import '@awesome.me/webawesome/dist/components/button/button.js';
 ```
+
+The type-only package import activates Kerf JSX declarations for the supported
+`wa-*` catalog without registering anything. Keep registration tree-shakeable
+by importing only the Web Awesome component modules the application renders.
 
 The one CSS import includes Web Awesome's base styles and applies the same
 Hot Sheet 2-aligned semantic palette, focus treatment, form geometry, panels,

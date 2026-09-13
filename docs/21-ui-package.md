@@ -74,9 +74,15 @@ For an app that also uses Web Awesome's free component set, one optional import
 provides Web Awesome's base stylesheet plus Kerf's Hot Sheet 2-aligned theme:
 
 ```ts
+import type {} from '@kerfjs/ui/webawesome';
 import '@kerfjs/ui/webawesome.css';
 import '@awesome.me/webawesome/dist/components/button/button.js';
 ```
+
+The type-only package subpath supplies Kerf JSX declarations for every
+catalog-supported Web Awesome element without emitting code or registering an
+element. Its tag set is checked against both the catalog and Web Awesome's
+installed custom-elements manifest.
 
 The theme uses Web Awesome's public semantic variables for surfaces, text,
 brand and status ramps, focus, form geometry, panels, tooltips, radii, and

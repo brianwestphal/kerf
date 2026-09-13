@@ -5,11 +5,12 @@ import { fileURLToPath } from 'node:url';
 import ts from 'typescript';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
-const [artifactSource, schemaSource, packageSource, indexSource, manifestSource, selectionGuide, readme, llms] = await Promise.all([
+const [artifactSource, schemaSource, packageSource, indexSource, webAwesomeTypesSource, manifestSource, selectionGuide, readme, llms] = await Promise.all([
   readFile(resolve(root, 'ai/component-catalog.json'), 'utf8'),
   readFile(resolve(root, 'ai/component-catalog.schema.json'), 'utf8'),
   readFile(resolve(root, 'package.json'), 'utf8'),
   readFile(resolve(root, 'src/index.ts'), 'utf8'),
+  readFile(resolve(root, 'src/webawesome.ts'), 'utf8'),
   readFile(resolve(root, 'node_modules/@awesome.me/webawesome/dist/custom-elements.json'), 'utf8'),
   readFile(resolve(root, 'docs/component-selection.md'), 'utf8'),
   readFile(resolve(root, 'README.md'), 'utf8'),
@@ -144,6 +145,14 @@ const manifestTags = manifestElements.map(({ tag }) => tag).sort();
 const webAwesomeEntries = entries.filter((entry) => entry.source === 'webawesome');
 const catalogTags = webAwesomeEntries.map((entry) => entry.customElement).sort();
 if (JSON.stringify(manifestTags) !== JSON.stringify(catalogTags)) fail('Web Awesome entries must exactly match the installed custom-elements manifest');
+const declaredTags = [...webAwesomeTypesSource.matchAll(/^\s+'(wa-[^']+)':/gm)].map((match) => match[1]).sort();
+if (new Set(declaredTags).size !== declaredTags.length) fail('Web Awesome JSX declarations must not contain duplicate tags');
+if (JSON.stringify(declaredTags) !== JSON.stringify(catalogTags)) fail('Web Awesome JSX declarations must exactly match the supported catalog');
+const typesSubpath = packageSubpath('@kerfjs/ui/webawesome');
+const typesExport = packageJson.exports[typesSubpath];
+if (!typesExport || typeof typesExport !== 'object' || typesExport.types !== './dist/webawesome.d.ts' || typesExport.import !== './dist/webawesome.js') {
+  fail('Web Awesome JSX declarations must be exported from the side-effect-free @kerfjs/ui/webawesome subpath');
+}
 for (const entry of webAwesomeEntries) {
   const manifestEntry = manifestElements.find(({ tag }) => tag === entry.customElement);
   const expected = manifestEntry && `@awesome.me/webawesome/dist/${manifestEntry.module}`;
@@ -184,5 +193,5 @@ if (failures.length > 0) {
   for (const failure of failures) console.error(`- ${failure}`);
   process.exitCode = 1;
 } else {
-  console.log(`[check-component-catalog] OK — ${entries.length} entries, ${runtimeExports.length} public values, ${browserImports.length} browser subpaths, and ${manifestTags.length} Web Awesome elements are synchronized.`);
+  console.log(`[check-component-catalog] OK — ${entries.length} entries, ${runtimeExports.length} public values, ${browserImports.length} browser subpaths, and ${manifestTags.length} Web Awesome elements/declarations are synchronized.`);
 }

@@ -108,10 +108,13 @@ subpaths and semantic layout owners. Preserve the included primitives and
 replace only application copy, state, permissions, persistence, and transport.
 
 When the app uses Web Awesome's broader free component set, import
-`@kerfjs/ui/webawesome.css` once. That CSS-only entry includes Web Awesome's
-base stylesheet and the Hot Sheet 2-aligned Kerf theme but registers no custom
-elements. Continue importing only the individual Web Awesome component modules
-the app renders, and override public `--wa-*` values afterward when needed.
+types with `import type {} from '@kerfjs/ui/webawesome'` and import
+`@kerfjs/ui/webawesome.css` once. The first is a side-effect-free Kerf JSX
+declaration boundary for all 70 catalog-supported `wa-*` elements. The CSS-only
+entry includes Web Awesome's base stylesheet and the Hot Sheet 2-aligned Kerf
+theme but registers no custom elements. Continue importing only the individual
+Web Awesome component modules the app renders, and override public `--wa-*`
+values afterward when needed.
 
 The default semantic ramps deliberately match Hot Sheet 2 and Web Awesome.
 Override `--kui-color-*` globally or component properties such as

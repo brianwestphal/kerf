@@ -121,6 +121,10 @@
       "types": "./dist/select-register.d.ts",
       "import": "./dist/select-register.js"
     },
+    "./webawesome": {
+      "types": "./dist/webawesome.d.ts",
+      "import": "./dist/webawesome.js"
+    },
     "./state-banner": {
       "types": "./dist/state-banner.d.ts",
       "browser": "./dist/browser/state-banner.js",
@@ -202,8 +206,9 @@
     "test": "npm run test:unit && npm run test:bundle",
     "test:unit": "vitest run tests/unit --coverage",
     "test:bundle": "npm run build && vitest run tests/bundle",
+    "test:consumer-types": "npm run build && node node_modules/typescript7/bin/tsc -p tests/consumer-types/webawesome/tsconfig.json",
     "test:e2e": "npm run demo:build && playwright test",
-    "check": "npm run check:catalog && npm run check:recipes && npm run check:guidance && npm run check:ai-regressions && npm run lint && npm run typecheck && npm test && npm run check:ai-signatures && npm run demo:build && npm pack --dry-run",
+    "check": "npm run check:catalog && npm run check:recipes && npm run check:guidance && npm run check:ai-regressions && npm run lint && npm run typecheck && npm test && npm run test:consumer-types && npm run check:ai-signatures && npm run demo:build && npm pack --dry-run",
     "prepublishOnly": "npm run check"
   },
   "peerDependencies": {

@@ -106,7 +106,8 @@ forks the package anatomy and spacing contract.
 ## Web Awesome overlap policy
 
 Web Awesome catalog coverage means supported and themed, not preferred. Import
-individual component modules and the CSS-only `@kerfjs/ui/webawesome.css` theme.
+`@kerfjs/ui/webawesome` for Kerf JSX types, individual component modules for
+registration, and the CSS-only `@kerfjs/ui/webawesome.css` theme.
 
 | Web Awesome choice | Kerf decision |
 | --- | --- |

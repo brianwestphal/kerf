@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 const outputPath = resolve(root, 'ai/public-api-signatures-v1.md');
+const webAwesomeOutputPath = resolve(root, 'ai/webawesome-jsx-signatures-v1.md');
 const check = process.argv.includes('--check');
 const entries = [
   ['@kerfjs/ui/toolbar', 'dist/toolbar.d.ts'],
@@ -36,11 +37,25 @@ const body = `# Public API signatures for the UI authoring corpus\n\n`+
   `the seven-task corpus. It is interface evidence, not an implementation or runtime guarantee.\n\n`+
   `${sections.join('\n\n')}\n`;
 const digest = createHash('sha256').update(body).digest('hex');
+const webAwesomeDeclaration = await readFile(resolve(root, 'dist/webawesome.d.ts'), 'utf8');
+const webAwesomeBody = `# Web Awesome JSX signatures for the UI authoring corpus\n\n`+
+  `Generated from the emitted \`@kerfjs/ui@${uiPackage.version}\` declaration boundary. `+
+  `Import \`@kerfjs/ui/webawesome\` for type effects when authoring direct \`wa-*\` JSX. `+
+  `The module emits no runtime behavior and does not register custom elements.\n\n`+
+  `\`\`\`ts\n${webAwesomeDeclaration.trim()}\n\`\`\`\n`;
+const webAwesomeDigest = createHash('sha256').update(webAwesomeBody).digest('hex');
 if (check) {
-  const existing = await readFile(outputPath, 'utf8');
+  const [existing, existingWebAwesome] = await Promise.all([
+    readFile(outputPath, 'utf8'),
+    readFile(webAwesomeOutputPath, 'utf8'),
+  ]);
   if (existing !== body) throw new Error('ai/public-api-signatures-v1.md is stale; run npm run ai:signatures:sync');
-  console.log(`[sync-ai-public-signatures] OK — 15 pinned declaration subpaths (${digest})`);
+  if (existingWebAwesome !== webAwesomeBody) throw new Error('ai/webawesome-jsx-signatures-v1.md is stale; run npm run ai:signatures:sync');
+  console.log(`[sync-ai-public-signatures] OK — ${entries.length} pinned API subpaths (${digest}) and Web Awesome JSX declarations (${webAwesomeDigest})`);
 } else {
-  await writeFile(outputPath, body);
-  console.log(`[sync-ai-public-signatures] wrote ai/public-api-signatures-v1.md (${digest})`);
+  await Promise.all([
+    writeFile(outputPath, body),
+    writeFile(webAwesomeOutputPath, webAwesomeBody),
+  ]);
+  console.log(`[sync-ai-public-signatures] wrote API (${digest}) and Web Awesome JSX (${webAwesomeDigest}) signature contexts`);
 }

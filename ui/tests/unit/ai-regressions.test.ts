@@ -67,7 +67,8 @@ describe('local AI regression foundation', () => {
           `declare const root: HTMLElement;\n`+
           `const stop = wireResizableRegions(root, { onCommit: () => undefined });\n`+
           `const field = <TokenSearchField id="search" label="Search" />;\n`+
-          `stop(); void field;\n`,
+          `const dialog = <wa-dialog label="Confirm"><wa-button appearance="accent">Save</wa-button></wa-dialog>;\n`+
+          `stop(); void field; void dialog;\n`,
         'app.css': '.app { display: block; }\n',
       },
     };

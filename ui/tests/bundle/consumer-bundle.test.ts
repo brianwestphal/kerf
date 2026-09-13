@@ -164,6 +164,14 @@ describe('consumer bundle boundaries', () => {
     expect(buttonInputs).not.toContain('@awesome.me/webawesome/dist/components/checkbox/checkbox.js');
   });
 
+  it('ships Web Awesome JSX declarations without registration side effects', async () => {
+    const result = await bundle("import '@kerfjs/ui/webawesome'; console.log('typed');");
+    const inputs = Object.keys(result.metafile!.inputs).join('\n');
+    expect(inputs).toContain('dist/webawesome.js');
+    expect(inputs).not.toContain('@awesome.me/webawesome');
+    expect(output(result, '.js')).not.toContain('customElements.define');
+  });
+
   it('keeps the manual layout CSS subpath self-sufficient', async () => {
     const result = await bundle("import '@kerfjs/ui/layout.css';");
     const inputs = Object.keys(result.metafile!.inputs).join('\n');
@@ -182,6 +190,7 @@ describe('consumer bundle boundaries', () => {
     expect(pkg.exports['./toolbar']).toMatchObject({ browser: './dist/browser/toolbar.js', import: './dist/toolbar.js' });
     expect(pkg.exports['./unstyled']).toBeDefined();
     expect(pkg.exports['./webawesome.css']).toBe('./src/webawesome.css');
+    expect(pkg.exports['./webawesome']).toMatchObject({ types: './dist/webawesome.d.ts', import: './dist/webawesome.js' });
     expect(pkg.exports['./select/register']).toBeDefined();
     expect(pkg.exports['./tab-bar']).toBeDefined();
     expect(pkg.exports['./segmented-control']).toBeDefined();

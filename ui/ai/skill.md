@@ -1,13 +1,14 @@
 ---
 name: kerf-ui
 description: Build interfaces with kerfjs and the @kerfjs/ui production component package. Use whenever code imports @kerfjs/ui or a task asks for Kerf UI components.
-kerf-ui-skill-version: 1.13.0
+kerf-ui-skill-version: 1.14.0
 ---
 
 # Building with @kerfjs/ui
 
 Read `../docs/component-selection.md` first, then `./component-catalog.json`,
-`./public-api-signatures-v1.md`, `../docs/recipes.md`, `../README.md`,
+`./public-api-signatures-v1.md`, `./webawesome-jsx-signatures-v1.md`,
+`../docs/recipes.md`, `../README.md`,
 `../docs/component-contract.md`, and `../docs/accessibility.md` before changing
 a consuming interface. Use the signature snapshot for exact props, callbacks,
 return values, and supported import paths; do not infer them from examples.
@@ -47,7 +48,7 @@ Hard rules:
 3. Keep state, product copy, persistence, and domain mappings in the application. Do not add product-specific actions or fields to a generic component.
 4. Wire `data-action` hooks from one stable root with `delegate()` or `delegateActions()` and retain disposers.
 5. Use the opinionated `--kui-color-*` semantic ramps and component-level override properties. Override tokens at the narrowest useful scope; do not hard-code appearance-specific colors or replace private descendant rules.
-6. `Select` is pure until the app explicitly imports `@kerfjs/ui/select/register`; do not import Web Awesome's full registration bundle. When an app uses Web Awesome components, import the CSS-only `@kerfjs/ui/webawesome.css` theme once and keep importing individual Web Awesome component modules so their JavaScript remains tree-shakeable. Pass icon-bearing `choices` and `renderSelected` content normally: `Select` preserves its slotted option icons across Kerf rerenders and keys selected content by the controlled value, so app wrappers must not add competing morph-control attributes.
+6. `Select` is pure until the app explicitly imports `@kerfjs/ui/select/register`; do not import Web Awesome's full registration bundle. When an app writes direct `wa-*` JSX, add `import type {} from '@kerfjs/ui/webawesome'` for the catalog-supported intrinsic-element declarations, import the CSS-only `@kerfjs/ui/webawesome.css` theme once, and keep importing individual Web Awesome component modules so their JavaScript remains tree-shakeable. The type boundary emits no code and registers nothing. Pass icon-bearing `choices` and `renderSelected` content normally: `Select` preserves its slotted option icons across Kerf rerenders and keys selected content by the controlled value, so app wrappers must not add competing morph-control attributes.
 7. Decorative icons are hidden; controls are named; focus is visible; state never relies on color alone; reduced motion and increased contrast remain usable.
 8. `ResizableRegion` uses `wireResizableRegions()` for Arrow, Shift+Arrow, Home/End, and pointer behavior. The app owns size persistence.
 9. Use controlled `SegmentedControl` for a small exclusive choice set. Select `appearance="toolbar"` when nesting it inside `ToolbarControlGroup`; use rounded or pill shapes for standalone contexts. Handle its action, update `value`, keep meaningful choice labels, and preserve every enabled native button in sequential Tab order.
@@ -69,6 +70,7 @@ Common mistakes:
 | `role="menuitem"` on one button | Use the native button, or implement the complete ARIA menu widget |
 | Test only a custom-element attribute | Assert live property, emitted event, focus, and rendered output |
 | Import all Web Awesome components | Import only `@kerfjs/ui/select/register` for `Select`, or individual Web Awesome modules for other controls; `webawesome.css` registers no JavaScript |
+| Write `wa-*` JSX without activating its types | Add `import type {} from '@kerfjs/ui/webawesome'`; registration and theme imports remain separate |
 | Maintain a root list of component styles | Import each visual component from its JS subpath; its reachable CSS follows automatically |
 | Add demo-only markup for a production state | Add the state to the production component, then render that export in the catalog |
 | Choose a listed ecosystem component by default | Apply the component-selection guidance above; catalog coverage means supported and themed, not preferred |

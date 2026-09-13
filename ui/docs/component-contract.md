@@ -84,6 +84,8 @@ effects.
 `@kerfjs/ui/webawesome.css` is a separate, optional CSS boundary. It imports
 Web Awesome's public base stylesheet and overrides its semantic theme layer to
 match the Kerf/Hot Sheet 2 system. It never imports component JavaScript.
+`import type {} from '@kerfjs/ui/webawesome'` is the matching side-effect-free
+Kerf JSX declaration boundary for every catalog-supported `wa-*` tag.
 Consumers register only the individual Web Awesome modules they render and can
 override `--wa-*` values after the theme import. The shared `--wa-*` values feed
 both Web Awesome controls and Kerf's `--kui-*` foundation aliases, preventing a

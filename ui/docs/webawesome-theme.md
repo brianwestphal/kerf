@@ -4,10 +4,17 @@
 free components and the Kerf/Hot Sheet 2 design system.
 
 ```ts
+import type {} from '@kerfjs/ui/webawesome';
 import '@kerfjs/ui/webawesome.css';
 import '@awesome.me/webawesome/dist/components/button/button.js';
 import '@awesome.me/webawesome/dist/components/input/input.js';
 ```
+
+The type-only package import augments `kerfjs/jsx-runtime` with the 70
+catalog-supported `wa-*` elements. It has no runtime side effects. The catalog
+gate keeps the declaration tags aligned with Web Awesome's installed custom
+elements manifest, while individual component imports remain the only
+registration boundary.
 
 The CSS entry includes Web Awesome's native, utility, palette, and default-theme
 styles, then overrides the public semantic contract in

@@ -91,7 +91,8 @@ and responsive priority.
 
 - Import `@kerfjs/ui/layout.css`; use exactly one inset and scroll owner for each
   real boundary.
-- Import only individual Web Awesome registration modules. Theme them with
+- For direct `wa-*` JSX, import types from `@kerfjs/ui/webawesome`. Import only
+  individual Web Awesome registration modules and theme them with
   `@kerfjs/ui/webawesome.css`.
 - Customize public variables/classes at the composition boundary. Do not copy
   included component markup or style private descendants.

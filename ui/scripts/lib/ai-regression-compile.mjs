@@ -64,8 +64,11 @@ export async function compileAiRegressionResponse(root, response, responseText =
     if (codeExtension.test(name)) virtualFiles.set(resolve(virtualRoot, name), source);
   }
   if (!virtualFiles.size) throw new Error('Response contains no .ts, .tsx, or .d.ts files to compile');
+  const compiledFiles = virtualFiles.size;
   const ambientPath = resolve(virtualRoot, 'response-assets.d.ts');
   virtualFiles.set(ambientPath, "declare module '*.css';\n");
+  const webAwesomeTypesPath = resolve(virtualRoot, 'response-webawesome-types.d.ts');
+  virtualFiles.set(webAwesomeTypesPath, "import type {} from '@kerfjs/ui/webawesome';\n");
   const compilerOptions = {
     target: ts.ScriptTarget.ES2022,
     module: ts.ModuleKind.ESNext,
@@ -107,6 +110,7 @@ export async function compileAiRegressionResponse(root, response, responseText =
       kerfjs: ['node_modules/kerfjs/dist/index.d.ts'],
       'kerfjs/*': ['node_modules/kerfjs/dist/*.d.ts'],
     },
+    environmentImports: ['@kerfjs/ui/webawesome'],
     ignoreDeprecations: '6.0', types: [],
   };
   return {
@@ -116,7 +120,7 @@ export async function compileAiRegressionResponse(root, response, responseText =
     compilerOptionsSha256: sha256(JSON.stringify(serializedOptions)),
     typescriptVersion: ts.version,
     packages: await declarationSet(root),
-    compiledFiles: virtualFiles.size - 1,
+    compiledFiles,
     passed: diagnostics.length === 0,
     diagnostics,
   };

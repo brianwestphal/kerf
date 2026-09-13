@@ -19,6 +19,7 @@ const entries = [
   'segmented-control',
   'token-search-field',
   'select-register',
+  'webawesome',
   'state-banner',
   'empty-state',
   'dialog-header',
@@ -26,7 +27,7 @@ const entries = [
 ];
 
 export default defineConfig({
-  entry: entries.map((entry) => `src/${entry}.${entry === 'index' || entry === 'select-register' || entry.startsWith('wire-') ? 'ts' : 'tsx'}`),
+  entry: entries.map((entry) => `src/${entry}.${entry === 'index' || entry === 'select-register' || entry === 'webawesome' || entry.startsWith('wire-') ? 'ts' : 'tsx'}`),
   format: ['esm'],
   outDir: 'dist',
   target: 'es2022',

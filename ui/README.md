@@ -73,13 +73,18 @@ For code generation, pair catalog selection guidance with the checked-in
 [`public-api-signatures-v1.md`](./ai/public-api-signatures-v1.md) declaration
 snapshot. It is generated from the emitted `@kerfjs/ui` declarations and the
 installed `kerfjs/actions` declaration, so callback names, props, return values,
-and accepted import paths do not have to be inferred from examples.
+and accepted import paths do not have to be inferred from examples. Direct
+Web Awesome JSX has its own generated
+[`webawesome-jsx-signatures-v1.md`](./ai/webawesome-jsx-signatures-v1.md)
+context so adding the declaration boundary does not mutate a frozen measured
+regression suite.
 
 `npm run catalog:sync` deterministically projects the fields used by the UX
 catalog into `ux-demo/catalog.generated.ts`. Do not edit that generated file.
 `npm run check:catalog` rejects stale generated output, exports and package
-paths, Web Awesome manifest drift, invalid relationships, broken links, or a
-missing AI-guidance entry. Prose remains authored where design nuance matters.
+paths, Web Awesome manifest/declaration drift, invalid relationships, broken
+links, or a missing AI-guidance entry. Prose remains authored where design
+nuance matters.
 
 Import components from their explicit JavaScript subpaths. CSS-aware browser
 bundlers such as Vite, webpack, and esbuild follow each subpath's `browser`
@@ -147,10 +152,16 @@ Apps using Web Awesome's free components can opt into the same visual universe
 with one CSS import:
 
 ```ts
+import type {} from '@kerfjs/ui/webawesome';
 import '@kerfjs/ui/webawesome.css';
 import '@awesome.me/webawesome/dist/components/button/button.js';
 import '@awesome.me/webawesome/dist/components/input/input.js';
 ```
+
+The type-only `@kerfjs/ui/webawesome` import adds Kerf JSX intrinsic-element
+declarations for the same 70 elements tracked by the catalog. It emits no
+runtime code and registers nothing; keep importing only the individual Web
+Awesome modules the application renders.
 
 `webawesome.css` includes Web Awesome's native/base theme and then applies the
 Hot Sheet 2 palette, surfaces, status colors, focus treatment, form geometry,

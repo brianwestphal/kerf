@@ -1,6 +1,14 @@
 import type { KerfCustomElement } from 'kerfjs/jsx-runtime';
 
+/**
+ * Opt-in Kerf JSX declarations for the Web Awesome elements supported by the
+ * @kerfjs/ui catalog. Import this module for type effects only; component
+ * registration remains an explicit application concern.
+ */
+
 declare module 'kerfjs/jsx-runtime' {
+  // Module augmentation requires the namespace form expected by the JSX runtime.
+  // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace JSX {
     interface IntrinsicElements {
       'wa-accordion': KerfCustomElement;
