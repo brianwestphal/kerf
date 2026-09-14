@@ -1,11 +1,42 @@
+import { existsSync, readFileSync } from 'node:fs';
+import { cwd } from 'node:process';
+import { pathToFileURL } from 'node:url';
+
 import { describe, expect, it } from 'vitest';
 
-import { LEGACY_REDIRECTS } from '../../site/site.config.mjs';
+interface SiteConfig {
+  redirects?: Record<string, string>;
+}
 
 describe('site config', () => {
-  it('defines one normalized legacy redirect for the renamed raw-sanitize example', () => {
-    expect(LEGACY_REDIRECTS).toEqual({
-      '/examples/basics/09-raw-sanitise/': '/kerf/examples/basics/09-raw-sanitize/',
-    });
+  it('defines one normalized legacy redirect for the renamed raw-sanitize example', async () => {
+    const configUrl = pathToFileURL(`${cwd()}/site/astro.config.mjs`).href;
+    const { default: config } = (await import(configUrl)) as { default: SiteConfig };
+    const redirects = Object.entries(config.redirects ?? {});
+    const legacyRedirects = redirects.filter(
+      ([from]) => from.replace(/\/$/, '') === '/examples/basics/09-raw-sanitise',
+    );
+
+    expect(legacyRedirects).toEqual([
+      ['/examples/basics/09-raw-sanitise', '/kerf/examples/basics/09-raw-sanitize/'],
+    ]);
+  });
+
+  it('keeps the public site on Astro and does not publish the in-progress UI package', () => {
+    const sitePackage = JSON.parse(readFileSync(`${cwd()}/site/package.json`, 'utf8')) as {
+      dependencies: Record<string, string>;
+    };
+    const astroConfig = readFileSync(`${cwd()}/site/astro.config.mjs`, 'utf8');
+    const installPolicy = readFileSync(
+      `${cwd()}/site/scripts/check-install-script-policy.mjs`,
+      'utf8',
+    );
+
+    expect(sitePackage.dependencies).toHaveProperty('astro');
+    expect(sitePackage.dependencies).toHaveProperty('@astrojs/starlight');
+    expect(sitePackage.dependencies).not.toHaveProperty('@kerfjs/ui');
+    expect(astroConfig).not.toContain("slug: 'docs/ui-package'");
+    expect(existsSync(`${cwd()}/site/src/content/docs/docs/ui-package.md`)).toBe(false);
+    expect(installPolicy).toContain("path.startsWith('node_modules/') && entry.hasInstallScript");
   });
 });

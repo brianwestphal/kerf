@@ -1,0 +1,18 @@
+---
+title: 7 · data-morph-skip
+description: Embed a library-owned subtree that survives every re-render.
+---
+
+import { Code } from '@astrojs/starlight/components';
+import LiveExample from '../../../../components/examples/basics/07-morph-skip.astro';
+import source from '../../../../examples/basics/07-morph-skip/main.tsx?raw';
+
+Some elements are owned by something other than kerf — Chart.js canvases, Monaco editors, third-party widgets. The diff must not recurse into them. `data-morph-skip` is the contract: any element with that attribute (any value, even empty) and its entire subtree are preserved verbatim across re-renders.
+
+**What to look at:** the `<canvas>` is mounted *once* outside of kerf and runs its own `requestAnimationFrame` loop. The surrounding counter re-renders on every click, but the canvas isn't even visited by the diff — its imperative drawing continues uninterrupted.
+
+<LiveExample />
+
+<Code lang="tsx" code={source} title="src/main.tsx" />
+
+If you remove `data-morph-skip`, every click re-runs the diff over the canvas — clobbering whatever the imperative `tick()` drew.

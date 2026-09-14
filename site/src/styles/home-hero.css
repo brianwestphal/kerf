@@ -1,0 +1,37 @@
+/* Homepage hero refinements (KF-543).
+ *
+ * The H1 now leads with the value proposition ("Reactive UI that touches only
+ * the bytes that changed"); these rules restore "Introducing Kerf" as a small
+ * eyebrow above it, right-size the logo so it stops out-weighing the headline,
+ * and tighten the hero's vertical rhythm so the proof below (the code teaser,
+ * the wayfinding cards) sits closer to the first screenful.
+ *
+ * Selectors are prefixed with `:root` purely to out-specify Starlight's own
+ * `.hero:where(...)` rules without depending on its per-build astro hash. The
+ * `.hero` element only exists on the splash homepage, so these are page-scoped
+ * in practice. */
+
+/* Eyebrow above the value-first H1. */
+:root .hero h1[data-page-title]::before {
+  content: 'Introducing Kerf';
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: var(--sl-text-sm);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--sl-color-text-accent);
+}
+
+/* Right-size the logo (was min(100%, 25rem)). */
+:root .hero > img,
+:root .hero > .hero-html {
+  width: min(100%, 16rem);
+}
+
+/* Tighten the hero's vertical padding (was clamp(2.5rem, …, 10rem)) so the
+ * value prop, the "It works like this" code, and "Where to go next" land in
+ * or near the first screenful instead of below a tall empty band. */
+:root .hero {
+  padding-block: clamp(1.5rem, calc(1rem + 4vmin), 4.5rem);
+}

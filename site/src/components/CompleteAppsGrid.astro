@@ -1,0 +1,101 @@
+---
+/**
+ * The complete-apps index card grid. One card per app: animated preview
+ * thumbnail, name (single link to its page), a one-line "demonstrates"
+ * summary, and Run-live / Source actions. Replaces the former table +
+ * stacked-previews double-listing so each app appears exactly once.
+ *
+ * Alt text is preserved verbatim from the previous per-thumbnail markdown.
+ */
+const SOURCE_BASE = 'https://github.com/brianwestphal/kerf/tree/main/site/src/examples/complete';
+
+interface App {
+  slug: string;
+  title: string;
+  blurb: string;
+  alt: string;
+}
+
+const apps: App[] = [
+  {
+    slug: 'todomvc',
+    title: 'TodoMVC',
+    blurb: 'defineStore, each, delegate + delegateCapture, and a localStorage round-trip via effect.',
+    alt: 'Animated preview: adding three todos and toggling one complete',
+  },
+  {
+    slug: 'markdown-editor',
+    title: 'Live Markdown editor',
+    blurb: 'computed memoized render, raw() + DOMPurify, data-morph-skip on the editor pane.',
+    alt: 'Animated preview: editing the Markdown source and the sanitized preview updating live',
+  },
+  {
+    slug: 'kanban',
+    title: 'Mini Kanban',
+    blurb: 'Keyed each across multiple parents, delegateCapture, and drag with data-morph-skip.',
+    alt: 'Animated preview: dragging cards across columns, with the per-column counts updating',
+  },
+  {
+    slug: 'chat',
+    title: 'Chat UI',
+    blurb: 'Streaming one signal write per chunk, a per-chunk each memo key, Tier 1 delegate() throughout.',
+    alt: 'Animated preview: sending a prompt and watching the bot reply stream in token-by-token',
+  },
+  {
+    slug: 'dashboard',
+    title: 'Realtime dashboard',
+    blurb: 'each at scale (500 rows), batch, a data-morph-skip chart canvas, effect for WS lifecycle.',
+    alt: 'Animated preview: the live ticker table updating at 30 Hz with a sparkline in the header',
+  },
+  {
+    slug: 'row-selector',
+    title: 'Row selector',
+    blurb: 'Fine-grained signal bindings — select with a bound class + detail pane, no render re-run or reconcile.',
+    alt: 'Animated preview: clicking rows in a host list; the highlight and detail pane follow while the "list renders" counter stays at 1',
+  },
+  {
+    slug: 'live-poll',
+    title: 'Live poll (no build step)',
+    blurb: 'The html tagged template + an importmap — a complete app served as authored source, mounted once, forever.',
+    alt: 'Animated preview: voting in a poll; counts pop and bars slide while the "renders" counter stays at 1',
+  },
+  {
+    slug: 'virtual-list',
+    title: 'Virtual list',
+    blurb: 'bindList viewport virtualization (10,000 rows), debouncedSignal search, confirm() + toast().',
+    alt: 'Animated preview: scrolling a 10,000-row virtualized list, filtering to one row, then deleting it via a confirm dialog and toast',
+  },
+  {
+    slug: 'router',
+    title: 'Router',
+    blurb: 'kerfjs/router — the "postcard router": :param routes, a keyed outlet(), link interception, real Back/Forward.',
+    alt: 'Animated preview: navigating a routed app in a fake browser window; the address bar updates and the outlet swaps with no reloads',
+  },
+];
+---
+
+<div class="app-grid not-content">
+  {
+    apps.map((app) => (
+      <article class="app-card">
+        <a class="app-card__thumb" href={`/kerf/examples/complete/${app.slug}/`}>
+          <img src={`/kerf/demos/${app.slug}.svg`} alt={app.alt} loading="lazy" />
+        </a>
+        <div class="app-card__body">
+          <h3 class="app-card__title">
+            <a href={`/kerf/examples/complete/${app.slug}/`}>{app.title}</a>
+          </h3>
+          <p class="app-card__blurb">{app.blurb}</p>
+          <div class="app-cta app-cta--sm">
+            <a class="app-cta__run" href={`/kerf/run/${app.slug}/`}>
+              ▶ Run live
+            </a>
+            <a class="app-cta__source" href={`${SOURCE_BASE}/${app.slug}`} target="_blank" rel="noopener">
+              Source
+            </a>
+          </div>
+        </div>
+      </article>
+    ))
+  }
+</div>
