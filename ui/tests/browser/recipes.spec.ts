@@ -51,6 +51,25 @@ test('keeps recipe geometry responsive at narrow, intermediate, and 200% zoom la
     if (id === 'recipe-app-shell') {
       await expect(recipe.locator('.recipe-shell__nav-region')).toHaveCSS('display', 'none');
       await expect(recipe.locator('.recipe-shell__inspector-region')).toHaveCSS('display', 'none');
+      const navigation = recipe.getByRole('button', { name: 'Show navigation' });
+      const content = recipe.getByRole('button', { name: 'Show content' });
+      const inspector = recipe.getByRole('button', { name: 'Show inspector' });
+      await navigation.focus();
+      await navigation.press('Enter');
+      await expect(navigation).toBeFocused();
+      await expect(navigation).toHaveAttribute('aria-pressed', 'true');
+      await expect(recipe.locator('.recipe-shell__nav-region')).toBeVisible();
+      await recipe.getByRole('button', { name: 'Projects with a deliberately wrapping title' }).click();
+      await content.focus();
+      await content.press('Enter');
+      await expect(content).toBeFocused();
+      await expect(recipe.getByRole('heading', { name: 'Active projects' })).toBeVisible();
+      await inspector.focus();
+      await inspector.press('Enter');
+      await expect(inspector).toBeFocused();
+      await expect(inspector).toHaveAttribute('aria-pressed', 'true');
+      await expect(recipe.locator('.recipe-shell__inspector-region')).toBeVisible();
+      await expect(recipe.locator('[data-component="value-table"][aria-label="Selected task"]')).toBeVisible();
     }
     if (id === 'recipe-compact-toolbar') await expectToolbarZonesNotToOverlap(recipe);
     if (id === 'recipe-master-detail-dialog') {
@@ -80,6 +99,14 @@ test('keeps recipe geometry responsive at narrow, intermediate, and 200% zoom la
     const recipe = page.locator(`[data-recipe="${id}"]`);
     await expect(recipe).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
+    if (id === 'recipe-app-shell') {
+      const navigation = recipe.getByRole('button', { name: 'Show navigation' });
+      await expect(navigation).toBeVisible();
+      await navigation.click();
+      await expect(recipe.locator('.recipe-shell__nav-region')).toBeVisible();
+      await recipe.getByRole('button', { name: 'Show inspector' }).click();
+      await expect(recipe.locator('.recipe-shell__inspector-region')).toBeVisible();
+    }
     if (id === 'recipe-compact-toolbar') await expectToolbarZonesNotToOverlap(recipe);
     if (browserName === 'chromium') await recipe.screenshot({ path: `test-results/${id}-zoom-200.png` });
   }

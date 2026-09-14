@@ -57,6 +57,14 @@
   min-width: 0;
   min-height: 0;
 }
+.recipe-shell__toolbar-actions {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+}
+.recipe-shell__responsive-controls {
+  display: none;
+}
 .recipe-shell__nav,
 .recipe-shell__inspector {
   min-height: 0;
@@ -262,6 +270,33 @@
   .recipe-shell__inspector-region {
     display: none;
   }
+  .recipe-shell__responsive-controls {
+    display: inline-flex;
+  }
+  .recipe-shell[data-responsive-pane="inspector"] .recipe-shell__nav-region,
+  .recipe-shell[data-responsive-pane="inspector"] .recipe-shell__main {
+    display: none;
+  }
+  .recipe-shell[data-responsive-pane="inspector"]
+    .recipe-shell__inspector-region {
+    display: flex;
+    min-width: 0;
+    flex: 1;
+  }
+  .recipe-shell[data-responsive-pane="inspector"]
+    .recipe-shell__inspector-region
+    .kui-resizable-region {
+    width: 100%;
+    flex: 1;
+  }
+  .recipe-shell[data-responsive-pane="inspector"]
+    .recipe-shell__inspector-region
+    .kui-resizable-region__handle {
+    display: none;
+  }
+  .recipe-shell__responsive-controls [data-recipe-command="show-navigation"] {
+    display: none;
+  }
   .recipe-shell__cards,
   .recipe-compact-toolbar__guide {
     grid-template-columns: 1fr 1fr;
@@ -302,6 +337,30 @@
 @container (max-width: 28rem) {
   .recipe-shell__nav-region {
     display: none;
+  }
+  .recipe-shell[data-responsive-pane="navigation"] .recipe-shell__main,
+  .recipe-shell[data-responsive-pane="navigation"]
+    .recipe-shell__inspector-region {
+    display: none;
+  }
+  .recipe-shell[data-responsive-pane="navigation"] .recipe-shell__nav-region {
+    display: flex;
+    min-width: 0;
+    flex: 1;
+  }
+  .recipe-shell[data-responsive-pane="navigation"]
+    .recipe-shell__nav-region
+    .kui-resizable-region {
+    width: 100%;
+    flex: 1;
+  }
+  .recipe-shell[data-responsive-pane="navigation"]
+    .recipe-shell__nav-region
+    .kui-resizable-region__handle {
+    display: none;
+  }
+  .recipe-shell__responsive-controls [data-recipe-command="show-navigation"] {
+    display: grid;
   }
   .recipe-shell__cards,
   .recipe-compact-toolbar__guide {
