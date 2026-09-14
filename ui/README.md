@@ -289,3 +289,12 @@ than default patterns. The detailed rationale lives in the theme contract.
 - [AI guide](./ai/skill.md)
 
 Run `npm run dev` from this directory for the category-grouped master/detail catalog. Every public visual component has a focused route; all 70 free Web Awesome 3.12 components have focused routes under the collapsible ecosystem section. One grouped `Related components` selector contains derived `Uses` / `Used by` navigation across both sets. Run `npm run check` for static/unit/bundle gates and `npm run test:e2e` for the real-browser suite.
+
+Run `npm run format:css` after editing styles. The normal `npm run check` gate
+uses Prettier to reject unformatted CSS in `src/` and `ux-demo/`.
+
+For dimensions that should scale with the root font size, author pixels with
+`remify()`: `gap: remify(17px)` builds to `gap: 1.0625rem` using a fixed 16px
+baseline. Keep intentional 1px borders in pixels and contextual `em` values
+explicit. `npm run build` emits standard CSS to `dist/styles`; `npm run dev`
+applies the same transform directly to source styles and hot-reloads edits.

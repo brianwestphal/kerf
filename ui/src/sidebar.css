@@ -1,10 +1,32 @@
 .kui-sidebar {
-  --_kui-sidebar-highlight-gutter: var(--kui-sidebar-highlight-gutter, var(--kui-sidebar-gutter, .625rem));
-  --_kui-sidebar-content-inset: var(--kui-sidebar-content-inset, var(--kui-sidebar-row-padding-inline, .625rem));
-  --_kui-sidebar-icon-slot-size: var(--kui-sidebar-icon-slot-size, var(--kui-sidebar-icon-column-width, 1.5rem));
-  --_kui-sidebar-column-gap: calc(var(--kui-sidebar-label-inset, calc(var(--_kui-sidebar-content-inset) + var(--_kui-sidebar-icon-slot-size) + var(--kui-sidebar-column-gap, .625rem))) - var(--_kui-sidebar-content-inset) - var(--_kui-sidebar-icon-slot-size));
-  --_kui-sidebar-action-target-size: var(--kui-sidebar-action-target-size, 2.75rem);
-  --_kui-sidebar-row-min-size: var(--kui-sidebar-row-min-size, 2.75rem);
+  --_kui-sidebar-highlight-gutter: var(
+    --kui-sidebar-highlight-gutter,
+    var(--kui-sidebar-gutter, remify(10px))
+  );
+  --_kui-sidebar-content-inset: var(
+    --kui-sidebar-content-inset,
+    var(--kui-sidebar-row-padding-inline, remify(10px))
+  );
+  --_kui-sidebar-icon-slot-size: var(
+    --kui-sidebar-icon-slot-size,
+    var(--kui-sidebar-icon-column-width, remify(24px))
+  );
+  --_kui-sidebar-column-gap: calc(
+    var(
+        --kui-sidebar-label-inset,
+        calc(
+          var(--_kui-sidebar-content-inset) +
+            var(--_kui-sidebar-icon-slot-size) +
+            var(--kui-sidebar-column-gap, remify(10px))
+        )
+      ) -
+      var(--_kui-sidebar-content-inset) - var(--_kui-sidebar-icon-slot-size)
+  );
+  --_kui-sidebar-action-target-size: var(
+    --kui-sidebar-action-target-size,
+    remify(44px)
+  );
+  --_kui-sidebar-row-min-size: var(--kui-sidebar-row-min-size, remify(44px));
   padding-inline: var(--_kui-sidebar-highlight-gutter);
 }
 
@@ -48,7 +70,7 @@
 }
 
 .kui-sidebar .kui-menu-header:not(.kui-menu-header--toggle) button {
-  border-radius: var(--kui-radius-m, .375rem);
+  border-radius: var(--kui-radius-m, remify(6px));
 }
 
 .kui-sidebar .kui-menu-header :is(button, .kui-menu-header__action-layer) svg {
@@ -59,49 +81,79 @@
 .kui-sidebar-section {
   display: grid;
   min-width: 0;
-  gap: var(--kui-space-2xs, .25rem);
+  gap: var(--kui-space-2xs, remify(4px));
 }
 
 .kui-sidebar-surface {
   min-width: 0;
-  padding: var(--kui-space-s, .75rem) calc(var(--_kui-sidebar-content-inset) - var(--kui-sidebar-surface-border-width, 1px));
-  border: var(--kui-sidebar-surface-border-width, 1px) solid var(--kui-color-border, currentColor);
-  border-radius: var(--kui-radius-m, .375rem);
+  padding: var(--kui-space-s, remify(12px))
+    calc(
+      var(--_kui-sidebar-content-inset) -
+        var(--kui-sidebar-surface-border-width, 1px)
+    );
+  border: var(--kui-sidebar-surface-border-width, 1px) solid
+    var(--kui-color-border, currentColor);
+  border-radius: var(--kui-radius-m, remify(6px));
   background: var(--kui-color-surface-raised, Canvas);
 }
 
 .kui-toolbar.kui-sidebar-toolbar {
-  --_kui-sidebar-highlight-gutter: var(--kui-sidebar-highlight-gutter, var(--kui-sidebar-gutter, .625rem));
-  --_kui-sidebar-content-inset: var(--kui-sidebar-content-inset, var(--kui-sidebar-row-padding-inline, .625rem));
-  --_kui-sidebar-icon-slot-size: var(--kui-sidebar-icon-slot-size, var(--kui-sidebar-icon-column-width, 1.5rem));
-  --_kui-sidebar-action-target-size: var(--kui-sidebar-action-target-size, 2.75rem);
+  --_kui-sidebar-highlight-gutter: var(
+    --kui-sidebar-highlight-gutter,
+    var(--kui-sidebar-gutter, remify(10px))
+  );
+  --_kui-sidebar-content-inset: var(
+    --kui-sidebar-content-inset,
+    var(--kui-sidebar-row-padding-inline, remify(10px))
+  );
+  --_kui-sidebar-icon-slot-size: var(
+    --kui-sidebar-icon-slot-size,
+    var(--kui-sidebar-icon-column-width, remify(24px))
+  );
+  --_kui-sidebar-action-target-size: var(
+    --kui-sidebar-action-target-size,
+    remify(44px)
+  );
   height: auto;
   min-height: var(--_kui-sidebar-action-target-size);
   padding-block: 0;
-  padding-inline: calc(var(--_kui-sidebar-highlight-gutter) + var(--_kui-sidebar-content-inset));
+  padding-inline: calc(
+    var(--_kui-sidebar-highlight-gutter) + var(--_kui-sidebar-content-inset)
+  );
 }
 
-.kui-sidebar-toolbar :is(.kui-toolbar__leading, .kui-toolbar__trailing) > .kui-toolbar-control-group[data-single="true"][data-appearance="borderless"] {
+.kui-sidebar-toolbar
+  :is(.kui-toolbar__leading, .kui-toolbar__trailing)
+  > .kui-toolbar-control-group[data-single="true"][data-appearance="borderless"] {
   position: relative;
   width: var(--_kui-sidebar-action-target-size);
   height: var(--_kui-sidebar-action-target-size);
   padding: 0;
 }
 
-.kui-sidebar-toolbar .kui-toolbar__leading > .kui-toolbar-control-group[data-single="true"][data-appearance="borderless"] {
+.kui-sidebar-toolbar
+  .kui-toolbar__leading
+  > .kui-toolbar-control-group[data-single="true"][data-appearance="borderless"] {
   inset-inline-start: calc(-1 * var(--_kui-sidebar-content-inset));
 }
 
-.kui-sidebar-toolbar .kui-toolbar__trailing > .kui-toolbar-control-group[data-single="true"][data-appearance="borderless"] {
+.kui-sidebar-toolbar
+  .kui-toolbar__trailing
+  > .kui-toolbar-control-group[data-single="true"][data-appearance="borderless"] {
   inset-inline-end: calc(-1 * var(--_kui-sidebar-content-inset));
 }
 
-.kui-sidebar-toolbar .kui-toolbar-control-group[data-single="true"][data-appearance="borderless"] > button {
+.kui-sidebar-toolbar
+  .kui-toolbar-control-group[data-single="true"][data-appearance="borderless"]
+  > button {
   width: 100%;
   height: 100%;
 }
 
-.kui-sidebar-toolbar .kui-toolbar-control-group[data-single="true"][data-appearance="borderless"] > button svg {
+.kui-sidebar-toolbar
+  .kui-toolbar-control-group[data-single="true"][data-appearance="borderless"]
+  > button
+  svg {
   width: var(--_kui-sidebar-icon-slot-size);
   height: var(--_kui-sidebar-icon-slot-size);
 }

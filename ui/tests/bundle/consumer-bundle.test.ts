@@ -67,11 +67,13 @@ describe('consumer bundle boundaries', () => {
     const inputs = Object.keys(result.metafile!.inputs).join('\n');
     const css = output(result, '.css');
     expect(inputs).toContain('dist/browser/toolbar.js');
+    expect(inputs).toContain('dist/styles/toolbar.css');
     expect(css).toContain('.kui-toolbar');
     expect(css).toContain('--kui-color-text');
     expect(css).not.toContain('.kui-tab-bar');
     expect(css).not.toContain('.kui-state-banner');
     expect(css).not.toContain('.kui-menu-item');
+    expect(css).not.toContain('remify(');
   });
 
   it('keeps SegmentedControl CSS reachable without retaining unrelated controls', async () => {
@@ -147,7 +149,7 @@ describe('consumer bundle boundaries', () => {
     const themed = await bundle("import '@kerfjs/ui/webawesome.css';");
     const inputs = Object.keys(themed.metafile!.inputs).join('\n');
     const css = output(themed, '.css');
-    expect(inputs).toContain('src/webawesome.css');
+    expect(inputs).toContain('dist/styles/webawesome.css');
     expect(inputs).toContain('@awesome.me/webawesome/dist/styles/themes/default.css');
     expect(css).toContain('@layer wa-theme-overrides');
     expect(css).toContain('--wa-color-brand-fill-loud: light-dark(#0088ff, #64d2ff)');
@@ -176,31 +178,45 @@ describe('consumer bundle boundaries', () => {
     const result = await bundle("import '@kerfjs/ui/layout.css';");
     const inputs = Object.keys(result.metafile!.inputs).join('\n');
     const css = output(result, '.css');
-    expect(inputs).toContain('src/layout.css');
-    expect(inputs).not.toContain('src/foundation.css');
+    expect(inputs).toContain('dist/styles/layout.css');
+    expect(inputs).not.toContain('dist/styles/foundation.css');
     expect(css).toContain('.kui-page-gutter');
     expect(css).toContain('var(--kui-layout-page-gutter, var(--kui-space-xl, 2rem))');
-    expect(css).toContain('var(--kui-layout-control-gap, var(--kui-space-xs, .5rem))');
+    expect(css).toContain('var(--kui-layout-control-gap, var(--kui-space-xs, 0.5rem))');
   });
 
   it('declares only style delivery and custom-element registration as side effects', async () => {
-    const pkg = JSON.parse(await readFile(new URL('../../package.json', import.meta.url), 'utf8')) as { sideEffects: string[]; exports: Record<string, unknown> };
+    const pkg = JSON.parse(await readFile(new URL('../../package.json', import.meta.url), 'utf8')) as {
+      sideEffects: string[];
+      exports: Record<string, unknown>;
+      files: string[];
+    };
     expect(pkg.sideEffects).toEqual(['**/*.css', './dist/browser/*.js', './dist/select-register.js']);
     expect(pkg.exports['.']).toMatchObject({ import: './dist/index.js' });
     expect(pkg.exports['./toolbar']).toMatchObject({ browser: './dist/browser/toolbar.js', import: './dist/toolbar.js' });
     expect(pkg.exports['./unstyled']).toBeDefined();
-    expect(pkg.exports['./webawesome.css']).toBe('./src/webawesome.css');
+    expect(pkg.exports['./webawesome.css']).toBe('./dist/styles/webawesome.css');
     expect(pkg.exports['./webawesome']).toMatchObject({ types: './dist/webawesome.d.ts', import: './dist/webawesome.js' });
     expect(pkg.exports['./select/register']).toBeDefined();
     expect(pkg.exports['./tab-bar']).toBeDefined();
     expect(pkg.exports['./segmented-control']).toBeDefined();
     expect(pkg.exports['./token-search-field']).toBeDefined();
     expect(pkg.exports['./wire-tab-bars']).toBeDefined();
-    expect(pkg.exports['./toolbar.css']).toBe('./src/toolbar.css');
-    expect(pkg.exports['./sidebar.css']).toBe('./src/sidebar.css');
-    expect(pkg.exports['./layout.css']).toBe('./src/layout.css');
-    expect(pkg.exports['./tab-bar.css']).toBe('./src/tab-bar.css');
-    expect(pkg.exports['./segmented-control.css']).toBe('./src/segmented-control.css');
-    expect(pkg.exports['./token-search-field.css']).toBe('./src/token-search-field.css');
+    expect(pkg.exports['./toolbar.css']).toBe('./dist/styles/toolbar.css');
+    expect(pkg.exports['./sidebar.css']).toBe('./dist/styles/sidebar.css');
+    expect(pkg.exports['./layout.css']).toBe('./dist/styles/layout.css');
+    expect(pkg.exports['./tab-bar.css']).toBe('./dist/styles/tab-bar.css');
+    expect(pkg.exports['./segmented-control.css']).toBe('./dist/styles/segmented-control.css');
+    expect(pkg.exports['./token-search-field.css']).toBe('./dist/styles/token-search-field.css');
+    expect(pkg.files).not.toContain('src/*.css');
+  });
+
+  it('publishes compiled rem CSS without the authoring function', async () => {
+    const source = await readFile(new URL('../../src/toolbar-control-group.css', import.meta.url), 'utf8');
+    const built = await readFile(new URL('../../dist/styles/toolbar-control-group.css', import.meta.url), 'utf8');
+
+    expect(source).toContain('remify(40.4px)');
+    expect(built).toContain('2.525rem');
+    expect(built).not.toContain('remify(');
   });
 });

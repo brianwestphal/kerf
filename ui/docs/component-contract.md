@@ -72,7 +72,7 @@ responsive and compact reductions.
 
 Every component has an explicit JS and CSS subpath. In CSS-aware browser builds,
 the JS component subpath resolves to a generated wrapper that imports the
-foundation, the component stylesheet, and styles for its reachable UI
+foundation, the compiled component stylesheet from `dist/styles`, and styles for its reachable UI
 subcomponents. The source graph derives those transitive styles at build time;
 an application root never maintains that list. Unused component subpaths and
 their CSS remain unreachable. The root barrel and `@kerfjs/ui/unstyled` stay
@@ -85,6 +85,13 @@ helpers such as `wireResizableRegions` and `wireTabBars` attach listeners only
 when called and return disposers. CSS, the generated wrappers that make it
 reachable, and the registration module are the package's only declared side
 effects.
+
+Package source styles express root-scaled geometry with `remify(<px>)`; the
+build converts it against the 16px authoring baseline and exposes only ordinary
+`rem` CSS. Literal pixels remain for intentional hairlines, and `em` remains
+explicit when a value is relative to its component's current font size. The UX
+catalog applies the same transform to source CSS under Vite so `npm run dev`
+retains hot module replacement.
 
 `@kerfjs/ui/webawesome.css` is a separate, optional CSS boundary. It imports
 Web Awesome's public base stylesheet and overrides its semantic theme layer to

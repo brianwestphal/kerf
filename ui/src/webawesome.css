@@ -6,7 +6,7 @@
  * used by Hot Sheet 2. Component JavaScript remains independently importable
  * and tree-shakeable.
  */
-@import '@awesome.me/webawesome/dist/styles/webawesome.css';
+@import "@awesome.me/webawesome/dist/styles/webawesome.css";
 
 @layer wa-theme-overrides {
   :where(:root),
@@ -33,15 +33,38 @@
     --wa-color-text-quiet: light-dark(#6e6e73, #aeaeb2);
     --wa-color-text-link: var(--wa-color-brand-on-quiet);
 
-    --wa-color-overlay-modal: light-dark(rgb(29 29 31 / .34), rgb(0 0 0 / .6));
-    --wa-color-overlay-inline: color-mix(in srgb, var(--wa-color-neutral-fill-normal) 25%, transparent);
-    --wa-color-shadow: light-dark(rgb(0 0 0 / .14), rgb(0 0 0 / .5));
+    --wa-color-overlay-modal: light-dark(
+      rgb(29 29 31 / 0.34),
+      rgb(0 0 0 / 0.6)
+    );
+    --wa-color-overlay-inline: color-mix(
+      in srgb,
+      var(--wa-color-neutral-fill-normal) 25%,
+      transparent
+    );
+    --wa-color-shadow: light-dark(rgb(0 0 0 / 0.14), rgb(0 0 0 / 0.5));
     --wa-color-focus: light-dark(#007aff, #64d2ff);
     --wa-color-brand-fill-loud: light-dark(#0088ff, #64d2ff);
-    --wa-color-brand-fill-quiet: color-mix(in srgb, var(--wa-color-brand-fill-loud) 8%, var(--wa-color-surface-default));
-    --wa-color-brand-fill-normal: color-mix(in srgb, var(--wa-color-brand-fill-loud) 16%, var(--wa-color-surface-default));
-    --wa-color-brand-border-quiet: color-mix(in srgb, var(--wa-color-brand-fill-loud) 35%, var(--wa-color-surface-default));
-    --wa-color-brand-border-normal: color-mix(in srgb, var(--wa-color-brand-fill-loud) 58%, var(--wa-color-surface-default));
+    --wa-color-brand-fill-quiet: color-mix(
+      in srgb,
+      var(--wa-color-brand-fill-loud) 8%,
+      var(--wa-color-surface-default)
+    );
+    --wa-color-brand-fill-normal: color-mix(
+      in srgb,
+      var(--wa-color-brand-fill-loud) 16%,
+      var(--wa-color-surface-default)
+    );
+    --wa-color-brand-border-quiet: color-mix(
+      in srgb,
+      var(--wa-color-brand-fill-loud) 35%,
+      var(--wa-color-surface-default)
+    );
+    --wa-color-brand-border-normal: color-mix(
+      in srgb,
+      var(--wa-color-brand-fill-loud) 58%,
+      var(--wa-color-surface-default)
+    );
     --wa-color-brand-border-loud: var(--wa-color-brand-fill-loud);
     --wa-color-brand-on-quiet: light-dark(#1e6ef4, #8acbff);
     --wa-color-brand-on-normal: var(--wa-color-brand-on-quiet);
@@ -58,31 +81,91 @@
     --wa-color-neutral-on-loud: var(--wa-color-surface-default);
 
     --wa-color-success-fill-loud: #34c759;
-    --wa-color-success-fill-quiet: color-mix(in srgb, var(--wa-color-success-fill-loud) 14%, var(--wa-color-surface-default));
-    --wa-color-success-fill-normal: color-mix(in srgb, var(--wa-color-success-fill-loud) 72%, var(--wa-color-surface-default));
-    --wa-color-success-border-quiet: color-mix(in srgb, var(--wa-color-success-fill-loud) 32%, var(--wa-color-surface-default));
-    --wa-color-success-border-normal: color-mix(in srgb, var(--wa-color-success-fill-loud) 50%, var(--wa-color-surface-default));
-    --wa-color-success-border-loud: color-mix(in srgb, var(--wa-color-success-fill-loud) 78%, var(--wa-color-neutral-on-normal));
+    --wa-color-success-fill-quiet: color-mix(
+      in srgb,
+      var(--wa-color-success-fill-loud) 14%,
+      var(--wa-color-surface-default)
+    );
+    --wa-color-success-fill-normal: color-mix(
+      in srgb,
+      var(--wa-color-success-fill-loud) 72%,
+      var(--wa-color-surface-default)
+    );
+    --wa-color-success-border-quiet: color-mix(
+      in srgb,
+      var(--wa-color-success-fill-loud) 32%,
+      var(--wa-color-surface-default)
+    );
+    --wa-color-success-border-normal: color-mix(
+      in srgb,
+      var(--wa-color-success-fill-loud) 50%,
+      var(--wa-color-surface-default)
+    );
+    --wa-color-success-border-loud: color-mix(
+      in srgb,
+      var(--wa-color-success-fill-loud) 78%,
+      var(--wa-color-neutral-on-normal)
+    );
     --wa-color-success-on-quiet: light-dark(#008932, #63e685);
     --wa-color-success-on-normal: light-dark(#006d28, #8cea9f);
     --wa-color-success-on-loud: #fff;
 
     --wa-color-warning-fill-loud: #ffcc00;
-    --wa-color-warning-fill-quiet: color-mix(in srgb, var(--wa-color-warning-fill-loud) 9%, var(--wa-color-surface-default));
-    --wa-color-warning-fill-normal: color-mix(in srgb, var(--wa-color-warning-fill-loud) 22%, var(--wa-color-surface-default));
-    --wa-color-warning-border-quiet: color-mix(in srgb, var(--wa-color-warning-fill-loud) 35%, var(--wa-color-surface-default));
-    --wa-color-warning-border-normal: color-mix(in srgb, var(--wa-color-warning-fill-loud) 58%, var(--wa-color-neutral-on-normal));
-    --wa-color-warning-border-loud: color-mix(in srgb, var(--wa-color-warning-fill-loud) 78%, var(--wa-color-neutral-on-normal));
+    --wa-color-warning-fill-quiet: color-mix(
+      in srgb,
+      var(--wa-color-warning-fill-loud) 9%,
+      var(--wa-color-surface-default)
+    );
+    --wa-color-warning-fill-normal: color-mix(
+      in srgb,
+      var(--wa-color-warning-fill-loud) 22%,
+      var(--wa-color-surface-default)
+    );
+    --wa-color-warning-border-quiet: color-mix(
+      in srgb,
+      var(--wa-color-warning-fill-loud) 35%,
+      var(--wa-color-surface-default)
+    );
+    --wa-color-warning-border-normal: color-mix(
+      in srgb,
+      var(--wa-color-warning-fill-loud) 58%,
+      var(--wa-color-neutral-on-normal)
+    );
+    --wa-color-warning-border-loud: color-mix(
+      in srgb,
+      var(--wa-color-warning-fill-loud) 78%,
+      var(--wa-color-neutral-on-normal)
+    );
     --wa-color-warning-on-quiet: light-dark(#a16a00, #ffd84a);
     --wa-color-warning-on-normal: light-dark(#5f3f00, #ffe27a);
     --wa-color-warning-on-loud: #1d1d1f;
 
     --wa-color-danger-fill-loud: #ff383c;
-    --wa-color-danger-fill-quiet: color-mix(in srgb, var(--wa-color-danger-fill-loud) 7%, var(--wa-color-surface-default));
-    --wa-color-danger-fill-normal: color-mix(in srgb, var(--wa-color-danger-fill-loud) 14%, var(--wa-color-surface-default));
-    --wa-color-danger-border-quiet: color-mix(in srgb, var(--wa-color-danger-fill-loud) 32%, var(--wa-color-surface-default));
-    --wa-color-danger-border-normal: color-mix(in srgb, var(--wa-color-danger-fill-loud) 50%, var(--wa-color-surface-default));
-    --wa-color-danger-border-loud: color-mix(in srgb, var(--wa-color-danger-fill-loud) 78%, var(--wa-color-neutral-on-normal));
+    --wa-color-danger-fill-quiet: color-mix(
+      in srgb,
+      var(--wa-color-danger-fill-loud) 7%,
+      var(--wa-color-surface-default)
+    );
+    --wa-color-danger-fill-normal: color-mix(
+      in srgb,
+      var(--wa-color-danger-fill-loud) 14%,
+      var(--wa-color-surface-default)
+    );
+    --wa-color-danger-border-quiet: color-mix(
+      in srgb,
+      var(--wa-color-danger-fill-loud) 32%,
+      var(--wa-color-surface-default)
+    );
+    --wa-color-danger-border-normal: color-mix(
+      in srgb,
+      var(--wa-color-danger-fill-loud) 50%,
+      var(--wa-color-surface-default)
+    );
+    --wa-color-danger-border-loud: color-mix(
+      in srgb,
+      var(--wa-color-danger-fill-loud) 78%,
+      var(--wa-color-neutral-on-normal)
+    );
     --wa-color-danger-on-quiet: light-dark(#c20b20, #ff696c);
     --wa-color-danger-on-normal: light-dark(#8e0717, #ff8a8c);
     --wa-color-danger-on-loud: #fff;
@@ -101,10 +184,10 @@
     --kui-wa-carousel-dot-hit-size: 20px;
     --kui-wa-carousel-control-size: 28px;
     --kui-wa-carousel-icon-size: 16px;
-    --kui-disclosure-icon-scale: .5;
-    --wa-shadow-s: 0 1px 3px rgb(0 0 0 / .14);
-    --wa-shadow-m: 0 .35rem 1rem rgb(0 0 0 / .11);
-    --wa-shadow-l: 0 .75rem 2rem rgb(0 0 0 / .09);
+    --kui-disclosure-icon-scale: 0.5;
+    --wa-shadow-s: 0 1px 3px rgb(0 0 0 / 0.14);
+    --wa-shadow-m: 0 remify(5.6px) remify(16px) rgb(0 0 0 / 0.11);
+    --wa-shadow-l: 0 remify(12px) remify(32px) rgb(0 0 0 / 0.09);
   }
 
   :where(:root),
@@ -129,7 +212,10 @@
     box-sizing: border-box;
     width: var(--kui-wa-carousel-control-size);
     height: var(--kui-wa-carousel-control-size);
-    padding: calc((var(--kui-wa-carousel-control-size) - var(--kui-wa-carousel-icon-size)) / 2);
+    padding: calc(
+      (var(--kui-wa-carousel-control-size) - var(--kui-wa-carousel-icon-size)) /
+        2
+    );
     font-size: var(--kui-wa-carousel-icon-size);
   }
 
@@ -142,7 +228,11 @@
     height: var(--kui-wa-carousel-dot-hit-size);
     color: var(--wa-color-neutral-fill-normal);
     background-color: transparent;
-    background-image: radial-gradient(circle, currentcolor 0 calc(var(--kui-wa-carousel-dot-size) / 2), transparent calc(var(--kui-wa-carousel-dot-size) / 2 + .5px));
+    background-image: radial-gradient(
+      circle,
+      currentcolor 0 calc(var(--kui-wa-carousel-dot-size) / 2),
+      transparent calc(var(--kui-wa-carousel-dot-size) / 2 + 0.5px)
+    );
     transform: none;
   }
 

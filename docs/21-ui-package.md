@@ -35,7 +35,10 @@ import { Toolbar } from '@kerfjs/ui/toolbar';
 ```
 
 Every component has an ESM/type subpath and every stylesheet has an explicit CSS
-subpath. A CSS-aware browser bundler resolves the component subpath's `browser`
+subpath backed by compiled `dist/styles/` output. Source styles use the
+pixel-first `remify(<px>)` convention described in [§22](./22-ui-css-authoring.md),
+while consumers receive ordinary `rem` CSS. A CSS-aware browser bundler resolves
+the component subpath's `browser`
 condition to a generated wrapper that imports the foundation, that component's
 CSS, and CSS for the UI subcomponents reachable from its source imports. The
 package derives this graph during its build, so application roots neither list

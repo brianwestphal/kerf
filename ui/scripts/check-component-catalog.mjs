@@ -179,7 +179,9 @@ for (const entry of entries.filter((candidate) => candidate.source === 'kerf')) 
   const cssImport = entry.delivery.manualCssImport;
   if (!cssImport) continue;
   const target = packageJson.exports[packageSubpath(cssImport)];
-  const css = await readFile(resolve(root, target), 'utf8');
+  const file = cssImport.slice('@kerfjs/ui/'.length);
+  if (target !== `./dist/styles/${file}`) fail(`${entry.id} has stale generated CSS export ${String(target)}`);
+  const css = await readFile(resolve(root, 'src', file), 'utf8');
   for (const className of entry.publicClasses ?? []) {
     if (!css.includes(`.${className}`)) fail(`${entry.id} names missing public class ${className}`);
   }

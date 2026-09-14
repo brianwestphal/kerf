@@ -7,12 +7,12 @@
   --kui-segmented-selected-foreground: var(--kui-color-brand-on-quiet);
   --kui-segmented-selected-border: transparent;
   --kui-segmented-selected-shadow: var(--kui-shadow-s);
-  --kui-segmented-radius: .55rem;
-  --kui-segmented-item-radius: .4rem;
+  --kui-segmented-radius: remify(8.8px);
+  --kui-segmented-item-radius: remify(6.4px);
 
   display: inline-flex;
   max-width: 100%;
-  padding: .2rem;
+  padding: remify(3.2px);
   overflow-x: auto;
   box-sizing: border-box;
   border: 1px solid transparent;
@@ -35,14 +35,29 @@
 
 .kui-segmented-control[data-appearance="toolbar"] {
   --kui-segmented-background: transparent;
-  --kui-segmented-foreground: var(--kui-toolbar-control-color, var(--kui-color-neutral-on-quiet));
-  --kui-segmented-hover-background: var(--kui-toolbar-control-hover-background, var(--kui-color-surface));
-  --kui-segmented-selected-background: var(--kui-toolbar-control-selected-background, var(--kui-color-surface));
-  --kui-segmented-selected-foreground: var(--kui-toolbar-control-selected-color, var(--kui-color-brand-on-quiet));
-  --kui-segmented-selected-shadow: var(--kui-toolbar-control-selected-shadow, var(--kui-shadow-s));
+  --kui-segmented-foreground: var(
+    --kui-toolbar-control-color,
+    var(--kui-color-neutral-on-quiet)
+  );
+  --kui-segmented-hover-background: var(
+    --kui-toolbar-control-hover-background,
+    var(--kui-color-surface)
+  );
+  --kui-segmented-selected-background: var(
+    --kui-toolbar-control-selected-background,
+    var(--kui-color-surface)
+  );
+  --kui-segmented-selected-foreground: var(
+    --kui-toolbar-control-selected-color,
+    var(--kui-color-brand-on-quiet)
+  );
+  --kui-segmented-selected-shadow: var(
+    --kui-toolbar-control-selected-shadow,
+    var(--kui-shadow-s)
+  );
   padding: 0;
   overflow: visible;
-  gap: .15rem;
+  gap: remify(2.4px);
 }
 
 .kui-segmented-control[data-shape="pill"] {
@@ -61,9 +76,9 @@
   -webkit-appearance: none;
   appearance: none;
   display: inline-flex;
-  min-width: 2.25rem;
-  min-height: 2.25rem;
-  padding: .45rem .7rem;
+  min-width: remify(36px);
+  min-height: remify(36px);
+  padding: remify(7.2px) remify(11.2px);
   box-sizing: border-box;
   border: 1px solid transparent;
   border-radius: var(--kui-segmented-item-radius);
@@ -71,7 +86,7 @@
   background: transparent;
   align-items: center;
   justify-content: center;
-  gap: .35rem;
+  gap: remify(5.6px);
   font: inherit;
   font-size: var(--kui-font-xs);
   font-weight: var(--kui-font-weight-semibold);
@@ -81,9 +96,9 @@
 }
 
 .kui-segmented-control[data-size="small"] .kui-segmented-control__item {
-  min-width: 2rem;
-  min-height: 2rem;
-  padding: .35rem;
+  min-width: remify(32px);
+  min-height: remify(32px);
+  padding: remify(5.6px);
   font-size: var(--kui-font-2xs);
 }
 
@@ -110,19 +125,19 @@
 }
 
 .kui-segmented-control__item:disabled {
-  opacity: .45;
+  opacity: 0.45;
   cursor: not-allowed;
 }
 
 .kui-segmented-control__item svg {
-  width: .9rem;
-  height: .9rem;
+  width: remify(14.4px);
+  height: remify(14.4px);
   flex: 0 0 auto;
 }
 
 .kui-segmented-control[data-size="small"] .kui-segmented-control__item svg {
-  width: 1rem;
-  height: 1rem;
+  width: remify(16px);
+  height: remify(16px);
 }
 
 @media (forced-colors: active) {

@@ -11,7 +11,15 @@ const limits = {
 };
 
 const javascript = (await readdir(assetsDir)).filter((name) => name.endsWith('.js'));
+const stylesheets = (await readdir(assetsDir)).filter((name) => name.endsWith('.css'));
 if (javascript.length < 2) throw new Error('UX demo must emit multiple JavaScript chunks');
+
+for (const name of stylesheets) {
+  const css = await readFile(new URL(`../dist-demo/assets/${name}`, import.meta.url), 'utf8');
+  if (css.includes('remify(')) {
+    throw new Error(`UX demo stylesheet ${name} still contains remify() authoring syntax`);
+  }
+}
 
 const sizes = await Promise.all(javascript.map(async (name) => ({
   name,

@@ -7,8 +7,8 @@
   display: grid;
   width: 100%;
   min-width: 0;
-  min-height: 2.5rem;
-  padding: .25rem .5rem;
+  min-height: remify(40px);
+  padding: remify(4px) remify(8px);
   box-sizing: border-box;
   border: 1px solid var(--kui-token-search-border);
   border-radius: var(--kui-radius-pill);
@@ -16,23 +16,24 @@
   background: var(--kui-token-search-background);
   grid-template-columns: auto minmax(0, 1fr) auto auto;
   align-items: start;
-  gap: .4rem;
+  gap: remify(6.4px);
 }
 
 .kui-token-search:focus-within {
   border-color: var(--kui-color-focus);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--kui-color-focus) 22%, transparent);
+  box-shadow: 0 0 0 3px
+    color-mix(in srgb, var(--kui-color-focus) 22%, transparent);
 }
 
 .kui-token-search[data-disabled="true"] {
-  opacity: .55;
+  opacity: 0.55;
 }
 
 .kui-token-search__leading {
   display: inline-flex;
-  width: 1rem;
-  height: 1rem;
-  margin-block-start: .45rem;
+  width: remify(16px);
+  height: remify(16px);
+  margin-block-start: remify(7.2px);
   color: var(--kui-color-text-quiet);
 }
 
@@ -42,9 +43,9 @@
 }
 
 .kui-token-search__editor {
-  min-width: 5rem;
-  min-height: 1.75rem;
-  padding-block: .25rem 0;
+  min-width: remify(80px);
+  min-height: remify(28px);
+  padding-block: remify(4px) 0;
   outline: 0;
   caret-color: var(--kui-color-accent-text);
   font-size: var(--kui-font-s);
@@ -62,9 +63,9 @@
 
 .kui-token-search__token {
   display: inline-flex;
-  min-height: 1.45rem;
-  margin-inline: .125rem;
-  padding-inline-start: .45rem;
+  min-height: remify(23.2px);
+  margin-inline: remify(2px);
+  padding-inline-start: remify(7.2px);
   border-radius: var(--kui-radius-pill);
   color: var(--kui-token-search-token-foreground);
   background: var(--kui-token-search-token-background);
@@ -73,7 +74,7 @@
   white-space: nowrap;
   vertical-align: middle;
   align-items: center;
-  gap: .1rem;
+  gap: remify(1.6px);
 }
 
 .kui-token-search__token button,
@@ -90,12 +91,12 @@
 }
 
 .kui-token-search__token-edit {
-  min-height: 1.45rem;
+  min-height: remify(23.2px);
 }
 
 .kui-token-search__token-remove {
-  width: 1.35rem;
-  height: 1.35rem;
+  width: remify(21.6px);
+  height: remify(21.6px);
   border-radius: var(--kui-radius-pill) !important;
 }
 
@@ -117,21 +118,21 @@
 }
 
 .kui-token-search__token svg {
-  width: .7rem;
-  height: .7rem;
+  width: remify(11.2px);
+  height: remify(11.2px);
 }
 
 .kui-token-search__clear,
 .kui-token-search__trailing {
-  width: 1.5rem;
-  min-height: 1.75rem;
+  width: remify(24px);
+  min-height: remify(28px);
   color: var(--kui-color-text-quiet);
 }
 
 .kui-token-search__clear svg,
 .kui-token-search__trailing svg {
-  width: .85rem;
-  height: .85rem;
+  width: remify(13.6px);
+  height: remify(13.6px);
 }
 
 @media (forced-colors: active) {

@@ -1,27 +1,60 @@
 /* Semantic application-layout roles. Apply .kui-layout at the composition root. */
 .kui-layout--compact {
-  --kui-layout-page-gutter: var(--kui-space-m, 1rem);
-  --kui-layout-pane-inset: var(--kui-space-s, .75rem);
-  --kui-layout-section-gap: var(--kui-space-m, 1rem);
-  --kui-layout-surface-inset: var(--kui-space-s, .75rem);
-  --kui-layout-dialog-inset: var(--kui-space-m, 1rem);
+  --kui-layout-page-gutter: var(--kui-space-m, remify(16px));
+  --kui-layout-pane-inset: var(--kui-space-s, remify(12px));
+  --kui-layout-section-gap: var(--kui-space-m, remify(16px));
+  --kui-layout-surface-inset: var(--kui-space-s, remify(12px));
+  --kui-layout-dialog-inset: var(--kui-space-m, remify(16px));
 }
 
-.kui-page-gutter { padding: var(--kui-layout-page-gutter, var(--kui-space-xl, 2rem)); }
-.kui-pane-body { min-width: 0; min-height: 0; padding: var(--kui-layout-pane-inset, var(--kui-space-m, 1rem)); }
-.kui-section-stack { display: grid; min-width: 0; gap: var(--kui-layout-section-gap, var(--kui-space-l, 1.5rem)); }
-.kui-control-cluster { display: flex; min-width: 0; flex-wrap: wrap; align-items: center; gap: var(--kui-layout-control-gap, var(--kui-space-xs, .5rem)); }
-.kui-inline-metadata { display: flex; min-width: 0; flex-wrap: wrap; align-items: baseline; gap: var(--kui-layout-metadata-gap, var(--kui-space-2xs, .25rem)); }
-.kui-surface-body { min-width: 0; padding: var(--kui-layout-surface-inset, var(--kui-space-m, 1rem)); }
-.kui-dialog-body { min-width: 0; padding: var(--kui-layout-dialog-inset, var(--kui-space-l, 1.5rem)); }
-.kui-scroll-owner { min-width: 0; min-height: 0; overflow: auto; overscroll-behavior: contain; }
+.kui-page-gutter {
+  padding: var(--kui-layout-page-gutter, var(--kui-space-xl, remify(32px)));
+}
+.kui-pane-body {
+  min-width: 0;
+  min-height: 0;
+  padding: var(--kui-layout-pane-inset, var(--kui-space-m, remify(16px)));
+}
+.kui-section-stack {
+  display: grid;
+  min-width: 0;
+  gap: var(--kui-layout-section-gap, var(--kui-space-l, remify(24px)));
+}
+.kui-control-cluster {
+  display: flex;
+  min-width: 0;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--kui-layout-control-gap, var(--kui-space-xs, remify(8px)));
+}
+.kui-inline-metadata {
+  display: flex;
+  min-width: 0;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--kui-layout-metadata-gap, var(--kui-space-2xs, remify(4px)));
+}
+.kui-surface-body {
+  min-width: 0;
+  padding: var(--kui-layout-surface-inset, var(--kui-space-m, remify(16px)));
+}
+.kui-dialog-body {
+  min-width: 0;
+  padding: var(--kui-layout-dialog-inset, var(--kui-space-l, remify(24px)));
+}
+.kui-scroll-owner {
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+}
 
-@media (max-width: 48rem) {
+@media (max-width: remify(768px)) {
   .kui-layout:not(.kui-layout--fixed-density) {
-    --kui-layout-page-gutter: var(--kui-space-m, 1rem);
-    --kui-layout-pane-inset: var(--kui-space-s, .75rem);
-    --kui-layout-section-gap: var(--kui-space-m, 1rem);
-    --kui-layout-surface-inset: var(--kui-space-s, .75rem);
-    --kui-layout-dialog-inset: var(--kui-space-m, 1rem);
+    --kui-layout-page-gutter: var(--kui-space-m, remify(16px));
+    --kui-layout-pane-inset: var(--kui-space-s, remify(12px));
+    --kui-layout-section-gap: var(--kui-space-m, remify(16px));
+    --kui-layout-surface-inset: var(--kui-space-s, remify(12px));
+    --kui-layout-dialog-inset: var(--kui-space-m, remify(16px));
   }
 }

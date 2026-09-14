@@ -48,7 +48,7 @@ async function reachableStyles(moduleName, seen = new Set()) {
 
 for (const component of components) {
   const imports = ['foundation', ...await reachableStyles(component)]
-    .map((style) => `import '../../src/${style}.css';`)
+    .map((style) => `import '../styles/${style}.css';`)
     .join('\n');
   await writeFile(
     new URL(`${component}.js`, browserDirectory),
