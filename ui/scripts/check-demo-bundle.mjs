@@ -5,8 +5,8 @@ import { fileURLToPath } from 'node:url';
 const assetsDir = fileURLToPath(new URL('../dist-demo/assets/', import.meta.url));
 const limits = {
   largestJavaScriptGzip: 150_000,
-  // Lazy recipe controllers plus first-class collapsible/submit search-field
-  // behavior keep the base catalog and largest Web Awesome chunk unchanged.
+  // Keep intentional local-demo interactions lazy while guarding against
+  // accidental aggregate growth or collapsing the Web Awesome split point.
   totalJavaScriptGzip: 245_750,
 };
 
