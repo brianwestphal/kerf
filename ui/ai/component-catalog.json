@@ -720,14 +720,17 @@
       "category": "Structure",
       "kind": "component",
       "source": "kerf",
-      "description": "Semantic key/value rows with inset separators.",
-      "uses": [],
-      "purpose": "Semantic key/value rows with inset separators.",
+      "description": "Key/value rows with optional icons.",
+      "uses": [
+        "lucide-icon"
+      ],
+      "purpose": "Key/value rows with optional icons and aligned separators.",
       "publicExports": [
-        "ValueTable"
+        "ValueTable",
+        "ValueTableRow"
       ],
       "useWhen": [
-        "Present read-only label/value facts as a semantic definition list."
+        "Present read-only label/value facts as a semantic definition list, optionally with a 24px leading icon."
       ],
       "avoidWhen": [
         "Do not use for editable fields or row/column tabular data."
@@ -739,11 +742,11 @@
         "empty policy"
       ],
       "variants": [
-        "labeled",
-        "unlabeled"
+        "icon rows",
+        "iconless rows"
       ],
       "accessibility": [
-        "Supply dt/dd children and a label when context does not name the list."
+        "Name ValueTable with its label; ValueTableRow supplies dt/dd semantics, and row icons stay decorative unless meaning requires an accessible label."
       ],
       "delivery": {
         "browserImport": "@kerfjs/ui/value-table",
@@ -754,7 +757,10 @@
       },
       "wiring": [],
       "publicClasses": [
-        "kui-value-table"
+        "kui-value-table",
+        "kui-value-table__row",
+        "kui-value-table__icon",
+        "kui-value-table__label"
       ],
       "publicTokens": [
         "--kui-color-border",
@@ -762,10 +768,13 @@
         "--kui-color-text",
         "--kui-color-text-quiet",
         "--kui-font-weight-semibold",
+        "--kui-layout-inline-margin",
+        "--kui-layout-item-gap",
+        "--kui-layout-item-padding",
         "--kui-space-2xs",
-        "--kui-space-m",
         "--kui-value-table-background",
-        "--kui-value-table-border"
+        "--kui-value-table-border",
+        "--kui-value-table-icon-size"
       ],
       "links": {
         "catalogRoute": "?component=value-table",

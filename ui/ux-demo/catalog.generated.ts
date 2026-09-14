@@ -181,8 +181,10 @@ export const generatedKerfCatalog = [
     "category": "Structure",
     "kind": "component",
     "source": "kerf",
-    "description": "Semantic key/value rows with inset separators.",
-    "uses": []
+    "description": "Key/value rows with optional icons and aligned separators.",
+    "uses": [
+      "lucide-icon"
+    ]
   },
   {
     "id": "menu",

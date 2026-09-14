@@ -18,7 +18,7 @@ import { TabBar } from '../../src/tab-bar.js';
 import { Toolbar } from '../../src/toolbar.js';
 import { ToolbarControlGroup } from '../../src/toolbar-control-group.js';
 import { ToolbarText } from '../../src/toolbar-text.js';
-import { ValueTable } from '../../src/value-table.js';
+import { ValueTable, ValueTableRow } from '../../src/value-table.js';
 
 const asHtml = (value: unknown) => String(value);
 const icon = LucideIcon({ icon: Circle, name: 'circle' });
@@ -102,9 +102,16 @@ describe('production UI primitives', () => {
     expect(dialog).toContain('data-has-icon="true"');
     expect(dialog).toContain('<h2 id="details-title">Details</h2><p id="details-summary">Current state</p>');
     expect(asHtml(DialogHeader({ title: 'Plain', titleId: 'plain-title', summary: 'Summary' }))).toContain('data-has-icon="false"');
-    const values = asHtml(ValueTable({ label: 'Metadata', className: 'dense', children: <div><dt>Version</dt><dd>4</dd></div> }));
+    const plainRow = ValueTableRow({ label: 'Version', value: '4' });
+    const iconRow = asHtml(ValueTableRow({ label: 'Runtime', value: 'Kerf', icon, className: 'featured' }));
+    const values = asHtml(ValueTable({ label: 'Metadata', className: 'dense', children: plainRow }));
     expect(values).toContain('class="kui-value-table dense"');
     expect(values).toContain('aria-label="Metadata"');
+    expect(asHtml(plainRow)).toContain('data-has-icon="false"');
+    expect(asHtml(plainRow)).not.toContain('kui-value-table__icon');
+    expect(iconRow).toContain('class="kui-value-table__row featured" data-has-icon="true"');
+    expect(iconRow).toContain('class="kui-value-table__icon"');
+    expect(iconRow).toContain('<span class="kui-value-table__label">Runtime</span>');
   });
 
   it('renders labeled or decorative progress and generic feedback', () => {

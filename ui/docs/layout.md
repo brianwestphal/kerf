@@ -51,8 +51,11 @@ changing its geometry by setting `--kui-content-item-border` and
 | Explicit scroll owner outside a pane | `.kui-scroll-owner` | `overflow: auto` |
 
 The component layer applies the same contract to `Toolbar`, `MenuHeader`,
-`MenuItem`, `PageHeader`, `DialogHeader`, `StateBanner`, `ValueTable`, tabs,
-and form controls. Most interactive rows and toolbar groups are 44px tall.
+`MenuItem`, `PageHeader`, `DialogHeader`, `StateBanner`, `ValueTable`,
+`ValueTableRow`, tabs, and form controls. A value-table row separator starts at
+the row's 8px content inset, or at 40px when the row contains its 24px leading
+icon and 8px gap, and always ends 8px from the right edge. Most interactive rows
+and toolbar groups are 44px tall.
 Toolbar groups reserve a real 1px outer border around a 42px inner area, even
 when their border and background are transparent.
 

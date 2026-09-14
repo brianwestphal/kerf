@@ -102,6 +102,35 @@ test('routes the generated application-layout composition at wide and narrow siz
   if (browserName === 'chromium') await page.screenshot({ path: 'test-results/component-catalog-layout-narrow.png', fullPage: true });
 });
 
+test('aligns ValueTable separators with icon-bearing and iconless row content', async ({ page, browserName }) => {
+  await page.setViewportSize({ width: 1100, height: 760 });
+  await page.goto('/?component=value-table');
+  const demo = page.locator('[data-demo="value-table"]');
+  const rows = demo.locator('.kui-value-table__row');
+  await expect(rows).toHaveCount(3);
+
+  const geometry = await rows.evaluateAll((elements) => elements.slice(1).map((element) => {
+    const row = element as HTMLElement;
+    const rowRect = row.getBoundingClientRect();
+    const separator = window.getComputedStyle(row, '::before');
+    const icon = row.querySelector<HTMLElement>('.kui-value-table__icon');
+    const label = row.querySelector<HTMLElement>('.kui-value-table__label')!;
+    return {
+      hasIcon: row.dataset.hasIcon,
+      separatorLeft: Number.parseFloat(separator.left),
+      separatorRight: Number.parseFloat(separator.right),
+      iconWidth: icon?.getBoundingClientRect().width ?? 0,
+      labelInset: label.getBoundingClientRect().left - rowRect.left,
+    };
+  }));
+
+  expect(geometry).toEqual([
+    { hasIcon: 'true', separatorLeft: 40, separatorRight: 8, iconWidth: 24, labelInset: 40 },
+    { hasIcon: 'false', separatorLeft: 8, separatorRight: 8, iconWidth: 0, labelInset: 8 },
+  ]);
+  if (browserName === 'chromium') await page.screenshot({ path: 'test-results/value-table-separator-insets.png', fullPage: true });
+});
+
 test('edits, removes, and clears controlled token search content', async ({ page, browserName }) => {
   await page.setViewportSize({ width: 1100, height: 760 });
   await page.goto('/?component=token-search-field');

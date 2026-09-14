@@ -58,6 +58,13 @@ optional badge from its optional 44px action. Do not add padding to pane shells,
 double child-owned geometry with wrapper insets, or create competing scroll
 owners. The [layout contract](./layout.md) lists the public roles and tokens.
 
+`ValueTable` composes typed `ValueTableRow` entries. A row owns its `dt`/`dd`
+semantics and may receive a leading `SafeHtml` icon. Separators follow the
+content they introduce: 8px from either edge for an iconless row, or 40px from
+the left edge (8px padding + 24px icon + 8px gap) and 8px from the right edge
+for an icon-bearing row. Applications own the values, formatting, and whether
+an icon is decorative or meaningfully labeled.
+
 ## Imports and side effects
 
 Every component has an explicit JS and CSS subpath. In CSS-aware browser builds,
@@ -104,7 +111,7 @@ their own morph-control attributes.
 
 ## Extracted versus application-specific
 
-The package set is intentionally domain-neutral: icon rendering, toolbar primitives, controlled segmented choices, a controlled token-chip search field with DOM read/caret helpers, menu rows/headers, resizable regions and wiring, controlled reorderable tab bars, headers, loading, select, banners, empty states, dialog headers, and value tables.
+The package set is intentionally domain-neutral: icon rendering, toolbar primitives, controlled segmented choices, a controlled token-chip search field with DOM read/caret helpers, menu rows/headers, resizable regions and wiring, controlled reorderable tab bars, headers, loading, select, banners, empty states, dialog headers, and typed value-table rows.
 
 Keep product adapters outside the package: connection-state maps, ticket empty-state copy, project/terminal/chat tab actions, saved pane sizes, provider or repository models, and application-specific palettes. An adapter may compose these primitives, map product state into their props, and override semantic CSS variables.
 

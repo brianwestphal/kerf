@@ -33,6 +33,7 @@ Quick routing:
 | Status or absent content | `StateBanner` or `EmptyState` | Web Awesome callouts suit ecosystem content; toasts are transient and never the only record of important state. |
 | Adjustable or static columns | `ResizableRegion` or CSS grid | Use the component only for a user-operable controlled separator. |
 | Structured or ordinary search | `TokenSearchField` or an input | Use token search only when text and ordered filter chips form one editor. |
+| Key/value facts | `ValueTable` with `ValueTableRow` | Use rows with `icon` only when the optional 24px leading visual adds context. |
 | Command search | Command-palette production recipe | No runtime component is exported; the app owns ranking, permissions, history, and dispatch. |
 
 For a complete shell, sidebar, workspace header, master-detail dialog, composer
@@ -61,6 +62,7 @@ Hard rules:
 15. Build sidebars, main areas, inspectors, and dialogs from `@kerfjs/ui/layout.css`: an unpadded `.kui-pane`, optional `.kui-pane__toolbar`, one scrolling `.kui-pane__content`, and optional `.kui-pane__footer`. Add `.kui-content` for 24px major vertical separation and `.kui-content-item` for a child-owned 8px inline margin, 1px transparent-or-visible border, 8px padding, and 12px radius. Use the pill modifier for 22px. Do not pad pane shells or duplicate item geometry in wrappers.
 16. Wrap every toolbar item, including dormant text, in `ToolbarControlGroup`. A group remains 44px outside (`calc(2px + remify(42px))`) when its border/background are transparent; use 8px between groups and inside items. Split dormant and interactive regions: `MenuHeader` keeps its label and optional `badge` together, with an independent 44px action unless disclosure mode makes the title cluster the button. Let panes relocate at narrow widths instead of shrinking targets.
 17. When a recurring concept has no matching export, look for a production recipe before building custom markup. The command-palette recipe owns modal/search/result semantics, keyboard selection, empty state, and focus restoration without claiming a runtime export. Its application adapter owns ranking, history, permissions, availability, actions, and copy; use the smaller `../docs/examples/command-palette-adapter.tsx` only when the complete modal composition is unnecessary.
+18. Compose `ValueTable` from typed `ValueTableRow` entries instead of handwritten `dt`/`dd` wrappers. Pass `icon` for the optional 24px leading visual; the row owns the 8px iconless or 40px icon-bearing separator start and the common 8px right inset.
 
 Common mistakes:
 
@@ -79,3 +81,4 @@ Common mistakes:
 | Put bare text or controls directly in a toolbar slot | Wrap every item in `ToolbarControlGroup`, using `appearance="borderless"` for transparent chrome |
 | Let the document, pane, and list all scroll | Keep fixed chrome outside one `.kui-pane__content` scroll owner per pane |
 | Invent an `@kerfjs/ui` command-palette export | Copy the production recipe and keep ranking, history, permissions, and dispatch application-owned |
+| Handwrite `ValueTable` row wrappers or compensate their separators | Compose `ValueTableRow`; its optional icon hook and separator geometry are public contract |

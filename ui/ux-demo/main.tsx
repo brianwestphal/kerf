@@ -21,7 +21,7 @@ import { readTokenSearchField, TokenSearchField, type TokenSearchToken } from '@
 import { Toolbar } from '@kerfjs/ui/toolbar';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
-import { ValueTable } from '@kerfjs/ui/value-table';
+import { ValueTable, ValueTableRow } from '@kerfjs/ui/value-table';
 import { wireResizableRegions } from '@kerfjs/ui/wire-resizable-regions';
 import { reorderTabs, wireTabBars } from '@kerfjs/ui/wire-tab-bars';
 import { batch, delegate, delegateCapture, mount, signal } from 'kerfjs';
@@ -314,7 +314,7 @@ function HeadersDemo() {
     <PageHeader title="UI foundations" action={button('New pattern', 'log-add')} />
     <div class="demo-dialog">
       <DialogHeader title="Package details" titleId="package-title" summary="Production-backed primitives with explicit contracts." summaryId="package-summary" icon={icon(Wrench, 'wrench')} actions={button('Done', 'log-done')} />
-      <div class="demo-dialog__body kui-content"><ValueTable label="Package metadata"><div><dt>Package</dt><dd>@kerfjs/ui</dd></div><div><dt>Rendering</dt><dd>Kerf SafeHtml</dd></div><div><dt>Styles</dt><dd>Explicit CSS subpaths</dd></div></ValueTable></div>
+      <div class="demo-dialog__body kui-content"><ValueTable label="Package metadata"><ValueTableRow label="Package" value="@kerfjs/ui" /><ValueTableRow label="Rendering" value="Kerf SafeHtml" /><ValueTableRow label="Styles" value="Explicit CSS subpaths" /></ValueTable></div>
     </div>
   </div>;
 }
@@ -328,7 +328,7 @@ function DialogHeaderDemo() {
 }
 
 function ValueTableDemo() {
-  return <div class="demo-value-table" data-demo="value-table"><ValueTable label="Package metadata"><div><dt>Package</dt><dd>@kerfjs/ui</dd></div><div><dt>Rendering</dt><dd>Kerf SafeHtml</dd></div><div><dt>Styles</dt><dd>Explicit CSS subpaths</dd></div></ValueTable></div>;
+  return <div class="demo-value-table" data-demo="value-table"><ValueTable label="Package metadata"><ValueTableRow label="Package" value="@kerfjs/ui" /><ValueTableRow label="Rendering" value="Kerf SafeHtml" icon={icon(Wrench, 'wrench')} /><ValueTableRow label="Styles" value="Explicit CSS subpaths" /></ValueTable></div>;
 }
 
 function ResizeDemo() {

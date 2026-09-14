@@ -142,14 +142,22 @@ export { PageHeader, type PageHeaderProps };
 ```ts
 import { SafeHtml } from 'kerfjs';
 
+interface ValueTableRowProps {
+    label: string | SafeHtml;
+    value: string | SafeHtml;
+    icon?: SafeHtml;
+    className?: string;
+}
+declare function ValueTableRow({ label, value, icon, className }: ValueTableRowProps): SafeHtml;
+
 interface ValueTableProps {
     label: string;
     className?: string;
-    children: SafeHtml | SafeHtml[];
+    children: SafeHtml | readonly SafeHtml[];
 }
 declare function ValueTable({ label, className, children }: ValueTableProps): SafeHtml;
 
-export { ValueTable, type ValueTableProps };
+export { ValueTable, type ValueTableProps, ValueTableRow, type ValueTableRowProps };
 ```
 
 ## `@kerfjs/ui/resizable-region`

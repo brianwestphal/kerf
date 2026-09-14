@@ -108,7 +108,7 @@ instead of retaining stale content.
 | Toolbars | `Toolbar`, `ToolbarControlGroup`, `ToolbarText` | Leading/center/trailing structure and grouped controls |
 | Menus | `MenuItem`, `MenuHeader` | Navigation/action rows and section headings; no domain commands |
 | Tabs | `AppTab`, `TabBar`, `wireTabBars`, `reorderTabs` | Controlled tab/close markup, fixed rails, horizontal overflow, edge autoscroll, pointer/keyboard reorder, and focus restoration; the app owns state and persistence |
-| Layout | `PageHeader`, `DialogHeader`, `ValueTable` | Page/dialog hierarchy and semantic definition lists |
+| Layout | `PageHeader`, `DialogHeader`, `ValueTable`, `ValueTableRow` | Page/dialog hierarchy and typed semantic definition-list rows, with optional leading icons |
 | Resize | `ResizableRegion`, `wireResizableRegions` | Pointer-captured resize plus arrows, Shift acceleration, Home, and End |
 | Choice controls | `SegmentedControl`, `Select` | Controlled exclusive buttons with toolbar/rounded/pill presentation; grouped Web Awesome popup choices with optional Lucide icons |
 | Search | `TokenSearchField`, `readTokenSearchField`, `placeTokenSearchCaret` | DOM-owned free text plus controlled ordered atomic filter chips; optional animated standalone or toolbar-group collapse; DOM reading and caret restoration without application query grammar |

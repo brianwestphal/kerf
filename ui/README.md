@@ -58,7 +58,7 @@ Components return Kerf `SafeHtml`. They do not own application state or attach t
 | `StateBanner` | `@kerfjs/ui/state-banner` | `@kerfjs/ui/state-banner.css` |
 | `EmptyState` | `@kerfjs/ui/empty-state` | `@kerfjs/ui/empty-state.css` |
 | `DialogHeader` | `@kerfjs/ui/dialog-header` | `@kerfjs/ui/dialog-header.css` |
-| `ValueTable` | `@kerfjs/ui/value-table` | `@kerfjs/ui/value-table.css` |
+| `ValueTable`, `ValueTableRow` | `@kerfjs/ui/value-table` | `@kerfjs/ui/value-table.css` |
 
 ## Machine-readable catalog
 

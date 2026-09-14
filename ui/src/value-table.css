@@ -1,6 +1,7 @@
 .kui-value-table {
   --kui-value-table-background: var(--kui-color-surface-lowered);
   --kui-value-table-border: var(--kui-color-border);
+  --_kui-value-table-icon-size: var(--kui-value-table-icon-size, remify(24px));
   display: grid;
   margin-block: 0;
   margin-inline: var(--kui-layout-inline-margin, remify(8px));
@@ -9,7 +10,11 @@
   border-radius: var(--kui-layout-rounded-radius, calc(1px + remify(11px)));
   background: var(--kui-value-table-background);
 }
-.kui-value-table > div {
+.kui-value-table__row {
+  --_kui-value-table-separator-start: var(
+    --kui-layout-item-padding,
+    remify(8px)
+  );
   position: relative;
   display: grid;
   min-height: remify(40.8px);
@@ -19,18 +24,43 @@
   align-items: center;
   gap: var(--kui-layout-item-gap, remify(8px));
 }
-.kui-value-table > div + div::before {
+.kui-value-table__row[data-has-icon="true"] {
+  --_kui-value-table-separator-start: calc(
+    var(--kui-layout-item-padding, remify(8px)) +
+      var(--_kui-value-table-icon-size) +
+      var(--kui-layout-item-gap, remify(8px))
+  );
+}
+.kui-value-table__row + .kui-value-table__row::before {
   position: absolute;
   top: 0;
-  right: var(--kui-space-m);
-  left: var(--kui-space-m);
+  right: var(--kui-layout-item-padding, remify(8px));
+  left: var(--_kui-value-table-separator-start);
   border-top: 1px solid var(--kui-value-table-border);
   content: "";
 }
-.kui-value-table dt {
+.kui-value-table__row dt {
+  display: flex;
+  min-width: 0;
   color: var(--kui-color-text-quiet);
+  align-items: center;
+  gap: var(--kui-layout-item-gap, remify(8px));
 }
-.kui-value-table dd {
+.kui-value-table__icon {
+  display: grid;
+  width: var(--_kui-value-table-icon-size);
+  height: var(--_kui-value-table-icon-size);
+  flex: none;
+  place-items: center;
+}
+.kui-value-table__icon svg {
+  width: 100%;
+  height: 100%;
+}
+.kui-value-table__label {
+  min-width: 0;
+}
+.kui-value-table__row dd {
   display: flex;
   min-width: 0;
   margin: 0;
