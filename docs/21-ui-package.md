@@ -282,7 +282,9 @@ use their recorded stricter descendant rule so their hashes, scores, and
 findings remain unchanged; the current oracle accepts public-class-to-public-
 class composition selectors while rejecting private anatomy.
 Suite-v2 overrides separately accept equivalent supported resize and delegated
-action import paths. An opt-in, non-executing TypeScript probe records separate
+action import paths. MenuHeader count scoring covers canonical JSX and equivalent
+direct object-literal calls, including statically invalid numeric counts. An
+opt-in, non-executing TypeScript probe records separate
 schema-described compile evidence against fixed compiler options and hashed
 emitted declarations; it never treats a structural score as a successful
 compile. Live or paid runs, browser probes, and bounded visual review remain

@@ -1,0 +1,6 @@
+{
+  "caseId": "menu-header-count-contract",
+  "files": {
+    "app.tsx": "import { MenuHeader } from '@kerfjs/ui/menu-header';\nexport const negative = MenuHeader({ label: \"Invalid negative\", count: -1, countLabel: \"Invalid count\" });\nexport const fractional = <MenuHeader label=\"Invalid fraction\" count={1.5} countLabel=\"Invalid count\" />;\nexport const unsafe = MenuHeader({ label: \"Invalid unsafe integer\", count: 9007199254740992, countLabel: \"Invalid count\" });\n"
+  }
+}

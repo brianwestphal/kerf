@@ -129,13 +129,16 @@ describe('local AI regression foundation', () => {
   });
 
   it('compiles and scores semantic MenuHeader counts while rejecting each ambiguous composition', async () => {
-    const [catalog, valid, competing, missingLabel, numericBadge, labelCount] = await Promise.all([
+    const [catalog, valid, competing, missingLabel, numericBadge, labelCount, directValid, directInvalid, invalidLiteral] = await Promise.all([
       readJson('ai/component-catalog.json'),
       readJson('ai-regressions/fixtures/responses/menu-header-count-valid.json'),
       readJson('ai-regressions/fixtures/responses/menu-header-count-invalid.json'),
       readJson('ai-regressions/fixtures/responses/menu-header-count-missing-label.json'),
       readJson('ai-regressions/fixtures/responses/menu-header-count-numeric-badge.json'),
       readJson('ai-regressions/fixtures/responses/menu-header-count-in-label.json'),
+      readJson('ai-regressions/fixtures/responses/menu-header-count-direct-valid.json'),
+      readJson('ai-regressions/fixtures/responses/menu-header-count-direct-invalid.json'),
+      readJson('ai-regressions/fixtures/responses/menu-header-count-invalid-literal.json'),
     ]);
     const validResult = await compileAiRegressionResponse(root, valid);
     const competingResult = await compileAiRegressionResponse(root, competing);
@@ -162,6 +165,14 @@ describe('local AI regression foundation', () => {
       [missingLabel, ['a11y:menu-header-count-label']],
       [numericBadge, ['duplicate:menu-header-numeric-badge']],
       [labelCount, ['duplicate:menu-header-label-count']],
+      [directValid, []],
+      [directInvalid, [
+        'a11y:menu-header-count-label',
+        'duplicate:menu-header-count-badge',
+        'duplicate:menu-header-numeric-badge',
+        'duplicate:menu-header-label-count',
+      ]],
+      [invalidLiteral, ['a11y:menu-header-count-value']],
     ] as const;
     for (const [fixture, failedCodes] of expected) {
       const result = scoreAiRegression(definition, fixture, catalog);
@@ -170,6 +181,19 @@ describe('local AI regression foundation', () => {
     }
     const historical = scoreAiRegression(definition, numericBadge, catalog, { legacyPublicBoundary: true });
     expect(historical.checks.some(({ code }) => code === 'duplicate:menu-header-numeric-badge')).toBe(false);
+  });
+
+  it('compiles direct MenuHeader calls and invalid numeric literals without executing them', async () => {
+    const [directValid, invalidLiteral] = await Promise.all([
+      readJson('ai-regressions/fixtures/responses/menu-header-count-direct-valid.json'),
+      readJson('ai-regressions/fixtures/responses/menu-header-count-invalid-literal.json'),
+    ]);
+    const [directValidResult, invalidLiteralResult] = await Promise.all([
+      compileAiRegressionResponse(root, directValid),
+      compileAiRegressionResponse(root, invalidLiteral),
+    ]);
+    expect(directValidResult.passed).toBe(true);
+    expect(invalidLiteralResult.passed).toBe(true);
   });
 
   it('rejects response paths that could escape the compile sandbox', async () => {

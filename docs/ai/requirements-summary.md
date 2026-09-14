@@ -20,9 +20,10 @@ Seven neutral tasks keep prompts separate from private structural oracles; a
 frozen pre-recipe context and the live revised catalog/recipe context assemble
 with content hashes. AST-aware scoring requires actual imported invocations and
 retained wiring, then checks layout ownership, public CSS boundaries,
-accessibility, and missing-concept escalation against adversarial fixtures in
-the normal UI gate. No model runs in CI, and fixture results are explicitly
-inferred rather than measured evidence.
+accessibility, MenuHeader count semantics across JSX and direct object-literal
+calls, statically invalid counts, and missing-concept escalation against
+adversarial fixtures in the normal UI gate. No model runs in CI, and fixture
+results are explicitly inferred rather than measured evidence.
 
 Synthesized view of every numbered doc in `docs/`, with status markers. Read this for a quick "what does kerf do" overview without opening every file.
 

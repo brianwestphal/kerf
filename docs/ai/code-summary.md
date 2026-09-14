@@ -22,7 +22,9 @@ foundation: seven neutral prompt fixtures, schema-described private oracles,
 three reproducible context conditions (including frozen suite-v1 pre-recipe and
 revised-context snapshots), and adversarial response fixtures. The scorer under
 `ui/scripts/lib/ai-regression-*.mjs` uses the TypeScript AST plus CSS/layout
-analysis so copied class names cannot impersonate component reuse;
+analysis so copied class names cannot impersonate component reuse; MenuHeader
+count checks cover both JSX and equivalent direct object-literal calls, while
+rejecting statically invalid numeric counts;
 `check-ai-regressions.mjs` runs without a model in the normal UI gate, while
 `prepare-ai-regression.mjs` emits hashed provider-neutral opt-in requests.
 `ui/ai/public-api-signatures-v1.md` snapshots corpus-facing emitted declarations;

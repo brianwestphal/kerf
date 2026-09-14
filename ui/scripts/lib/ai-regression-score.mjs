@@ -33,6 +33,56 @@ function staticJsxText(node) {
   return '';
 }
 
+function unwrapExpression(node) {
+  let current = node;
+  while (current && (ts.isParenthesizedExpression(current)
+      || ts.isAsExpression(current)
+      || ts.isSatisfiesExpression(current)
+      || ts.isTypeAssertionExpression(current)
+      || ts.isNonNullExpression(current))) current = current.expression;
+  return current;
+}
+
+function objectPropertyName(property, file) {
+  if (!property.name) return null;
+  if (ts.isIdentifier(property.name) || ts.isStringLiteral(property.name) || ts.isNumericLiteral(property.name)) return property.name.text;
+  return property.name.getText(file);
+}
+
+function objectProperty(node, name, file) {
+  const expression = unwrapExpression(node);
+  if (!expression || !ts.isObjectLiteralExpression(expression)) return null;
+  return expression.properties.find((property) => objectPropertyName(property, file) === name) ?? null;
+}
+
+function propertyValue(property) {
+  if (!property) return null;
+  if (ts.isJsxAttribute(property)) return property.initializer;
+  if (ts.isPropertyAssignment(property)) return property.initializer;
+  return null;
+}
+
+function staticStringValue(property) {
+  let value = propertyValue(property);
+  if (value && ts.isJsxExpression(value)) value = value.expression;
+  value = unwrapExpression(value);
+  return value && (ts.isStringLiteral(value) || ts.isNoSubstitutionTemplateLiteral(value)) ? value.text : null;
+}
+
+function staticNumberValue(property) {
+  let value = propertyValue(property);
+  if (value && ts.isJsxExpression(value)) value = value.expression;
+  value = unwrapExpression(value);
+  let sign = 1;
+  if (value && ts.isPrefixUnaryExpression(value)
+      && (value.operator === ts.SyntaxKind.PlusToken || value.operator === ts.SyntaxKind.MinusToken)) {
+    sign = value.operator === ts.SyntaxKind.MinusToken ? -1 : 1;
+    value = unwrapExpression(value.operand);
+  }
+  if (!value || !ts.isNumericLiteral(value)) return null;
+  return sign * Number(value.text);
+}
+
 function jsxAttribute(node, name, file) {
   return node.attributes.properties.find((property) => ts.isJsxAttribute(property) && property.name.getText(file) === name);
 }
@@ -60,6 +110,7 @@ function analyzeTypeScript(files) {
   const menuHeaderCountViolations = {
     competingBadge: [],
     concatenatedLabel: [],
+    invalidCount: [],
     missingCountLabel: [],
     numericBadge: [],
   };
@@ -82,6 +133,24 @@ function analyzeTypeScript(files) {
       }
     }
 
+    function inspectMenuHeader(properties, location) {
+      const count = properties('count');
+      const countLabel = properties('countLabel');
+      const badge = properties('badge');
+      const label = staticStringValue(properties('label'));
+      const literalCount = staticNumberValue(count);
+      if (count && !countLabel) menuHeaderCountViolations.missingCountLabel.push(location);
+      if (count && badge) menuHeaderCountViolations.competingBadge.push(location);
+      if (literalCount !== null && (!Number.isSafeInteger(literalCount) || literalCount < 0)) {
+        menuHeaderCountViolations.invalidCount.push(location);
+      }
+      if (badge) {
+        const badgeText = staticJsxText(propertyValue(badge)).trim();
+        if (/^\d+(?:[.,]\d+)?$/.test(badgeText)) menuHeaderCountViolations.numericBadge.push(location);
+      }
+      if (label && /\(\s*\d+\s*\)\s*$/.test(label)) menuHeaderCountViolations.concatenatedLabel.push(location);
+    }
+
     function visit(node) {
       if (ts.isCallExpression(node) && ts.isIdentifier(node.expression)) {
         const binding = bindings.get(node.expression.text);
@@ -90,6 +159,10 @@ function analyzeTypeScript(files) {
         const captured = ts.isVariableDeclaration(node.parent) || (ts.isBinaryExpression(node.parent) && node.parent.right === node);
         const key = `${binding.specifier}:${binding.imported}`;
         calls.set(key, (calls.get(key) ?? false) || captured);
+        if (binding.imported === 'MenuHeader' && binding.specifier.startsWith('@kerfjs/ui') && node.arguments[0]) {
+          const location = `${name}:${file.getLineAndCharacterOfPosition(node.pos).line + 1}`;
+          inspectMenuHeader((property) => objectProperty(node.arguments[0], property, file), location);
+        }
       }
       if (ts.isJsxOpeningElement(node) || ts.isJsxSelfClosingElement(node)) {
         const tag = node.tagName.getText(file);
@@ -98,17 +171,7 @@ function analyzeTypeScript(files) {
         if (/^[A-Z]/.test(tag) && binding) invoked.add(binding.imported);
         if (binding?.imported === 'MenuHeader' && binding.specifier.startsWith('@kerfjs/ui')) {
           const location = `${name}:${file.getLineAndCharacterOfPosition(node.pos).line + 1}`;
-          const count = jsxAttribute(node, 'count', file);
-          const countLabel = jsxAttribute(node, 'countLabel', file);
-          const badge = jsxAttribute(node, 'badge', file);
-          const label = staticAttribute(node, 'label', file);
-          if (count && !countLabel) menuHeaderCountViolations.missingCountLabel.push(location);
-          if (count && badge) menuHeaderCountViolations.competingBadge.push(location);
-          if (badge && ts.isJsxAttribute(badge) && badge.initializer) {
-            const badgeText = staticJsxText(badge.initializer).trim();
-            if (/^\d+(?:[.,]\d+)?$/.test(badgeText)) menuHeaderCountViolations.numericBadge.push(location);
-          }
-          if (label && /\(\s*\d+\s*\)\s*$/.test(label)) menuHeaderCountViolations.concatenatedLabel.push(location);
+          inspectMenuHeader((property) => jsxAttribute(node, property, file), location);
         }
         const classes = node.attributes.properties
           .filter(ts.isJsxAttribute)
@@ -339,6 +402,9 @@ export function scoreAiRegression(caseDefinition, response, catalog, options = {
     addCheck(checks, 'duplicate:menu-header-count-badge', countViolations.competingBadge.length === 0, countViolations.competingBadge.length
       ? `MenuHeader mixes count and badge at ${countViolations.competingBadge.join(', ')}`
       : 'MenuHeader count and legacy badge slots remain mutually exclusive');
+    addCheck(checks, 'a11y:menu-header-count-value', countViolations.invalidCount.length === 0, countViolations.invalidCount.length
+      ? `MenuHeader uses a statically invalid count at ${countViolations.invalidCount.join(', ')}`
+      : 'statically known MenuHeader counts are non-negative safe integers');
     addCheck(checks, 'duplicate:menu-header-numeric-badge', countViolations.numericBadge.length === 0, countViolations.numericBadge.length
       ? `MenuHeader uses a numeric badge at ${countViolations.numericBadge.join(', ')}`
       : 'section quantities use MenuHeader count rather than badge');

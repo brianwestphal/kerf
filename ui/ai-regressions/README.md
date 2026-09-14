@@ -110,8 +110,14 @@ also checks disposer/result capture, supported-but-not-preferred substitutions,
 semantic layout classes, one inset owner per element, bounded scroll owners,
 hard-coded spacing, CSS against the catalog's exact `publicClasses` boundary,
 named native buttons, and explicit upstream escalation for a recurring missing
-concept. Public-class-to-public-class selectors are accepted; descendant tags,
-ids, attribute-only targets, and unlisted classes are rejected.
+concept. `MenuHeader` count rules inspect both JSX attributes and equivalent
+direct calls whose props are an object literal: they reject a count without its
+localized label, count/badge competition, numeric badges, label-concatenated
+counts, and statically invalid count literals. Dynamic prop objects and count
+expressions are deliberately left to the compile probe and runtime normalization
+instead of being guessed structurally. Public-class-to-public-class selectors
+are accepted; descendant tags, ids, attribute-only targets, and unlisted classes
+are rejected.
 Results keep reuse, wiring, layout, accessibility, and escalation separate;
 there is no weighted composite.
 
