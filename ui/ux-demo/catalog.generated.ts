@@ -195,6 +195,7 @@ export const generatedKerfCatalog = [
     "description": "Compose navigation with the same pane, content stack, item, and toolbar geometry used throughout the application.",
     "uses": [
       "menu-header",
+      "menu-action-row",
       "menu-item"
     ]
   },
@@ -205,6 +206,17 @@ export const generatedKerfCatalog = [
     "kind": "component",
     "source": "kerf",
     "description": "Split dormant title and badge content from an optional 44px action, or render the title cluster as a disclosure button.",
+    "uses": [
+      "lucide-icon"
+    ]
+  },
+  {
+    "id": "menu-action-row",
+    "name": "MenuActionRow",
+    "category": "Navigation",
+    "kind": "component",
+    "source": "kerf",
+    "description": "Keep a selectable primary row action and an independently named trailing action as sibling native controls inside one noninteractive visual row.",
     "uses": [
       "lucide-icon"
     ]

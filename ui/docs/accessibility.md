@@ -6,13 +6,27 @@ These are normative contracts for package components and consuming applications.
 
 - All controls have accessible names and visible `:focus-visible` treatment.
 - Decorative `LucideIcon` output is `aria-hidden`; pass `label` only when the SVG itself conveys meaning.
-- `MenuItem` uses native button Enter/Space behavior. `selected` maps to `aria-current="page"`; `pressed` maps to `aria-pressed`. Its `rootAttributes` slot accepts only application `data-*` metadata and deliberately cannot emit `role="menuitem"` in isolation—a true ARIA menu must own arrow, Home/End, Escape, and focus behavior as one widget.
+- `MenuItem` uses native button Enter/Space behavior. `selected` maps to `aria-current="page"`; `pressed` maps to `aria-pressed`. Its `trailing` content is dormant and must not contain controls. Its `rootAttributes` slot accepts only application `data-*` metadata and deliberately cannot emit `role="menuitem"` in isolation—a true ARIA menu must own arrow, Home/End, Escape, and focus behavior as one widget.
 - `MenuHeader` owns action naming, disabled state, and disclosure `aria-expanded`. Its narrow `triggerAttributes` slot may describe a native popover relationship with `popoverTarget`, `popoverTargetAction`, `aria-controls`, and `aria-haspopup`; the application owns the target surface and its focus/dismissal behavior.
 - In any `.kui-pane`, menu rows, `MenuHeader` actions, and toolbar groups keep a minimum 44px target in both dimensions. Their icons are centered inside that target; do not reduce the target to the visible icon.
 - `LoadingSpinner` is either labeled (`role="img"`) or hidden. Its rotation stops for reduced motion.
 - `StateBanner` defaults to polite `role="status"`; use `urgency="alert"` only for an attention-requiring failure.
 - `EmptyState` reports busy state through `aria-busy` and never relies on an illustration as its label.
 - `Select` follows the Web Awesome host's standard `input`/`change` events. Application tests verify the live `value`, focus, and events—not attributes alone. Its decorative option icons and value-dependent selected content remain present after controlled rerenders, so the visible choice does not silently lose its non-text cue.
+
+## MenuActionRow
+
+`MenuActionRow` renders a noninteractive visual root containing primary and
+trailing native buttons as siblings. The primary comes first in DOM and Tab
+order and alone receives `aria-current` or `aria-pressed`; the trailing button
+has its own required accessible name and disabled state. Both controls carry
+the row's item id for application delegation, while the root deliberately has
+no action or role. `label`, `icon`, and `trailingActionIcon` are dormant visual
+content and must not contain buttons, links, interactive roles, or other
+controls. A trailing click, double click, context menu, Enter, or Space
+must never activate the primary control. The application owns controlled
+selection and the lifecycle, focus, and dismissal policy of any related
+popover or context menu.
 
 ## ResizableRegion
 

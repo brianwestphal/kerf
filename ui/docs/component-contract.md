@@ -26,10 +26,11 @@ remains authored rather than generated.
 - A reusable component never owns per-instance mutable module state.
 - Consumers style through `--kui-*` semantic tokens and public component classes. Foundation tokens provide opinionated neutral, brand/info, success, warning, and danger fill/border/foreground roles. Stateful components expose local override variables; prefer an equivalent prop or token before writing a selector.
 
-`MenuItem.rootAttributes` and `MenuHeader.rootAttributes` accept application-owned
-`data-*` metadata without adding product fields to the shared API. A
-`MenuHeader` action or disclosure may additionally receive
-`triggerAttributes` for `data-*`, native popover target/action attributes, and
+`MenuItem.rootAttributes`, `MenuActionRow.rootAttributes`, and
+`MenuHeader.rootAttributes` accept application-owned `data-*` metadata without
+adding product fields to the shared API. A `MenuActionRow` trailing action uses
+`trailingActionAttributes`, and a `MenuHeader` action/disclosure uses
+`triggerAttributes`, for `data-*`, native popover target/action attributes, and
 the corresponding `aria-controls`/`aria-haspopup` relationship. These slots do
 not accept roles or component-owned action, selection, disclosure, accessible
 name, disabled, or icon fields. Extension objects are filtered at runtime,
@@ -37,6 +38,12 @@ including case-insensitive rejection of protected `data-*` names, and the
 component writes its protected attributes after the accepted metadata. Typed,
 structurally widened, and JavaScript callers therefore cannot replace its
 contract.
+
+`MenuItem.trailing`, `MenuActionRow.label`, `MenuActionRow.icon`, and
+`MenuActionRow.trailingActionIcon` are dormant SafeHtml slots. They must not
+contain controls. When a row needs an independently interactive trailing
+region, `MenuActionRow` owns the noninteractive root and the two sibling native
+buttons; the application owns their delegated behavior and controlled state.
 
 ### Public CSS anatomy
 

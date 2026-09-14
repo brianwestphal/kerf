@@ -1,0 +1,154 @@
+.kui-menu-action-row {
+  --kui-menu-action-row-color: var(--kui-color-neutral-on-normal);
+  --kui-menu-action-row-border: transparent;
+  --kui-menu-action-row-background: transparent;
+  --kui-menu-action-row-hover-border: var(--kui-color-neutral-border-normal);
+  --kui-menu-action-row-hover-background: var(--kui-color-neutral-fill-quiet);
+  --kui-menu-action-row-selected-color: var(--kui-color-brand-on-quiet);
+  --kui-menu-action-row-selected-border: var(--kui-color-brand-border-quiet);
+  --kui-menu-action-row-selected-background: var(--kui-color-brand-fill-normal);
+  --kui-menu-action-row-trailing-hover-background: var(
+    --kui-color-neutral-fill-normal
+  );
+  display: flex;
+  width: calc(100% - (2 * var(--kui-layout-inline-margin, remify(8px))));
+  min-height: remify(44px);
+  margin-inline: var(--kui-layout-inline-margin, remify(8px));
+  border-radius: var(--kui-layout-rounded-radius, calc(1px + remify(11px)));
+  color: var(--kui-menu-action-row-color);
+  background: var(--kui-menu-action-row-background);
+  box-shadow: inset 0 0 0 1px var(--kui-menu-action-row-border);
+  align-items: stretch;
+}
+
+.kui-menu-action-row:has(.kui-menu-action-row__primary:hover) {
+  --kui-menu-action-row-border: var(--kui-menu-action-row-hover-border);
+  --kui-menu-action-row-background: var(--kui-menu-action-row-hover-background);
+}
+
+.kui-menu-action-row[data-selected="true"],
+.kui-menu-action-row[data-pressed="true"] {
+  --kui-menu-action-row-border: var(--kui-menu-action-row-selected-border);
+  --kui-menu-action-row-background: var(
+    --kui-menu-action-row-selected-background
+  );
+  color: var(--kui-menu-action-row-selected-color);
+  font-weight: 650;
+}
+
+.kui-menu-action-row:has(.kui-menu-action-row__primary:focus-visible) {
+  outline: var(--kui-focus-ring);
+  outline-offset: 1px;
+}
+
+.kui-menu-action-row__primary,
+.kui-menu-action-row__trailing-action {
+  height: auto !important;
+  min-height: remify(44px);
+  padding: 0;
+  border: 0;
+  appearance: none;
+  color: inherit;
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+}
+
+.kui-menu-action-row__primary {
+  position: relative;
+  display: block;
+  flex: 1 1 auto;
+  min-width: remify(44px);
+  padding: var(--kui-layout-item-padding, remify(8px));
+  padding-inline-start: calc(1px + var(--kui-layout-item-padding, remify(8px)));
+  text-align: start;
+}
+
+.kui-menu-action-row__primary:focus-visible {
+  outline: none;
+}
+
+.kui-menu-action-row__primary:disabled,
+.kui-menu-action-row__trailing-action:disabled {
+  cursor: not-allowed;
+  opacity: 0.58;
+}
+
+.kui-menu-action-row__icon {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-start: calc(1px + var(--kui-layout-item-padding, remify(8px)));
+  display: grid;
+  width: remify(24px);
+  height: remify(24px);
+  color: currentColor;
+  transform: translateY(-50%);
+  place-items: center;
+}
+
+.kui-menu-action-row__icon svg {
+  display: block;
+  width: remify(24px);
+  height: remify(24px);
+}
+
+.kui-menu-action-row__label {
+  display: grid;
+  min-width: 0;
+  min-height: calc(
+    remify(44px) - (2 * var(--kui-layout-item-padding, remify(8px)))
+  );
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  align-items: center;
+}
+
+.kui-menu-action-row[data-has-icon="true"] .kui-menu-action-row__label {
+  margin-inline-start: calc(
+    remify(24px) + var(--kui-layout-item-gap, remify(8px))
+  );
+}
+
+.kui-menu-action-row[data-multiline="true"] .kui-menu-action-row__label {
+  display: block;
+  overflow: visible;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+.kui-menu-action-row__trailing-action {
+  display: grid;
+  width: remify(44px);
+  min-width: remify(44px);
+  border-radius: var(--kui-radius-pill);
+  place-items: center;
+}
+
+.kui-menu-action-row__trailing-action:hover:not(:disabled) {
+  background: var(--kui-menu-action-row-trailing-hover-background);
+}
+
+.kui-menu-action-row__trailing-action:focus-visible {
+  outline: var(--kui-focus-ring);
+  outline-offset: -2px;
+}
+
+.kui-menu-action-row__trailing-action > svg {
+  width: remify(16px);
+  height: remify(16px);
+}
+
+@media (forced-colors: active) {
+  .kui-menu-action-row {
+    --kui-menu-action-row-border: ButtonText;
+    outline: 1px solid ButtonText;
+    outline-offset: -1px;
+  }
+
+  .kui-menu-action-row[data-selected="true"],
+  .kui-menu-action-row[data-pressed="true"] {
+    --kui-menu-action-row-selected-color: HighlightText;
+    --kui-menu-action-row-selected-background: Highlight;
+  }
+}

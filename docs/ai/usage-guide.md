@@ -54,6 +54,7 @@ npm install @kerfjs/ui
 
 ```ts
 import { AppTab } from '@kerfjs/ui/app-tab';
+import { MenuActionRow } from '@kerfjs/ui/menu-action-row';
 import { SegmentedControl } from '@kerfjs/ui/segmented-control';
 import { StateBanner } from '@kerfjs/ui/state-banner';
 import { TabBar } from '@kerfjs/ui/tab-bar';
@@ -62,7 +63,7 @@ import { wireTabBars } from '@kerfjs/ui/wire-tab-bars';
 ```
 
 The surface covers `LucideIcon`; toolbars and controlled segmented choices;
-menu rows/headers; controlled, reorderable, horizontally scrolling app tab bars;
+menu rows/headers, including sibling primary/trailing row actions; controlled, reorderable, horizontally scrolling app tab bars;
 page/dialog headers and value tables; resizable regions; a Web Awesome Select;
 and banner/empty/loading states. Prefer explicit visual-component subpaths: a
 CSS-aware browser bundler selects their generated styled wrappers, including
@@ -74,12 +75,19 @@ custom pipelines. App overrides belong later in the cascade or on a scoped
 `--kui-*` owner.
 
 Menu adapters may pass product event/drop metadata through the typed
-`rootAttributes` `data-*` slot instead of copying MenuItem/MenuHeader markup.
-`MenuHeader.triggerAttributes` is the narrow exception for native popover
-target/action and `aria-controls`/`aria-haspopup` relationships. Do not pass
+`rootAttributes` `data-*` slot on MenuItem, MenuHeader, and MenuActionRow instead
+of copying their markup. `MenuHeader.triggerAttributes` and
+`MenuActionRow.trailingActionAttributes` are the narrow exceptions for native
+popover target/action and `aria-controls`/`aria-haspopup` relationships. Do not pass
 roles or override the component's action, selection, disclosure, accessible
 name, disabled, or icon contract; a complete ARIA menu remains application
 widget work.
+`MenuItem.trailing` is dormant content. When the trailing region must be a
+separate native control, use `MenuActionRow`; its noninteractive root contains
+primary and trailing sibling buttons with independent action, name, disabled,
+focus, and click ownership while the application controls selection and any
+popover or context-menu lifecycle. Its `label`, `icon`, and
+`trailingActionIcon` SafeHtml slots are dormant and must not contain controls.
 
 Prefer an equivalent component prop or semantic token before writing an
 anatomy selector. When composition-specific layout still needs one, the

@@ -64,6 +64,11 @@
       "browser": "./dist/browser/toolbar-text.js",
       "import": "./dist/toolbar-text.js"
     },
+    "./menu-action-row": {
+      "types": "./dist/menu-action-row.d.ts",
+      "browser": "./dist/browser/menu-action-row.js",
+      "import": "./dist/menu-action-row.js"
+    },
     "./menu-item": {
       "types": "./dist/menu-item.d.ts",
       "browser": "./dist/browser/menu-item.js",
@@ -167,6 +172,7 @@
     "./toolbar.css": "./dist/styles/toolbar.css",
     "./toolbar-control-group.css": "./dist/styles/toolbar-control-group.css",
     "./toolbar-text.css": "./dist/styles/toolbar-text.css",
+    "./menu-action-row.css": "./dist/styles/menu-action-row.css",
     "./menu-item.css": "./dist/styles/menu-item.css",
     "./menu-header.css": "./dist/styles/menu-header.css",
     "./resizable-region.css": "./dist/styles/resizable-region.css",

@@ -1,4 +1,4 @@
-<!-- kerf-skill-version: 1.19.0 -->
+<!-- kerf-skill-version: 1.20.0 -->
 # kerf.cursorrules — rules for building apps with kerf
 #
 # Drop this file into your project as `.cursorrules` (Cursor will pick it
@@ -28,11 +28,15 @@ the complete layer is intentional. Reuse these primitives before creating
 parallel local ones; keep domain state, commands, routing, and tab/menu policy
 in the app.
 
-Use MenuItem/MenuHeader `rootAttributes` only for application `data-*`
-metadata. MenuHeader `triggerAttributes` additionally supports native popover
-target/action and `aria-controls`/`aria-haspopup`. Do not use either slot to
-override action, selection, disclosure, naming, disabled, icon, or role
+Use MenuItem/MenuActionRow/MenuHeader `rootAttributes` only for application
+`data-*` metadata. MenuActionRow `trailingActionAttributes` and MenuHeader
+`triggerAttributes` additionally support native popover target/action and
+`aria-controls`/`aria-haspopup`. Do not use these slots to override action,
+item identity, selection, disclosure, naming, disabled, icon, or role
 semantics; one `role="menuitem"` does not make a complete menu widget.
+`MenuItem.trailing` is dormant. Use `MenuActionRow` for sibling primary and
+trailing native buttons, and keep its `label`, `icon`, and
+`trailingActionIcon` SafeHtml slots free of controls.
 
 Wire emitted `data-action` hooks at the mount root and retain disposers.
 `wireResizableRegions()` and `wireTabBars()` are eventful helpers and return

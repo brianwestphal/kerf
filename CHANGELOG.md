@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Added `MenuActionRow`, a full-width navigation row with sibling primary and trailing native-button actions, independent names and disabled states, controlled selection semantics, safe metadata/popover extension slots, and responsive 44px targets. `MenuItem.trailing` is now explicitly documented as dormant content.
 - Added safe typed MenuItem/MenuHeader extension slots for application `data-*` metadata and native popover trigger relationships while protecting component-owned action, selection, disclosure, accessible-name, disabled, icon, and native-button semantics.
 - Fixed keyboard deletion of a controlled `TokenSearchField` chip so `wireTokenSearchFields` restores focus and the text-relative caret after the application rerenders the editor.
 - Aligned `@kerfjs/ui` CSS guidance and AI regression scoring with the catalog's exact public anatomy: documented public-class composition selectors are supported, private tag/id/attribute/unlisted-class descendants remain rejected, and historical measured runs replay under their recorded stricter oracle.

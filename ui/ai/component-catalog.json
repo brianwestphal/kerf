@@ -791,12 +791,13 @@
       "description": "Navigation rows and section headers composed as ordinary content items inside a pane.",
       "uses": [
         "menu-header",
+        "menu-action-row",
         "menu-item"
       ],
       "purpose": "Compose navigation with the same pane, content stack, item, and toolbar geometry used throughout the application.",
       "publicExports": [],
       "useWhen": [
-        "Compose navigation sections in a .kui-content stack, using MenuHeader and MenuItem children plus optional .kui-content-item surfaces."
+        "Compose navigation sections in a .kui-content stack, using MenuHeader, MenuItem, and MenuActionRow children plus optional .kui-content-item surfaces."
       ],
       "avoidWhen": [
         "Do not add sidebar-specific wrapper padding or use the pattern for unrelated inline controls."
@@ -922,6 +923,101 @@
       }
     },
     {
+      "id": "menu-action-row",
+      "name": "MenuActionRow",
+      "category": "Navigation",
+      "kind": "component",
+      "source": "kerf",
+      "description": "Full-width navigation rows with sibling primary and trailing native-button actions.",
+      "uses": [
+        "lucide-icon"
+      ],
+      "purpose": "Keep a selectable primary row action and an independently named trailing action as sibling native controls inside one noninteractive visual row.",
+      "publicExports": [
+        "MenuActionRow"
+      ],
+      "useWhen": [
+        "A navigation or item row needs both a primary selectable action and an independently focusable trailing action."
+      ],
+      "avoidWhen": [
+        "Use MenuItem when trailing content is dormant metadata; use AppTab only for tablist semantics and ToolbarControlGroup only for toolbar controls."
+      ],
+      "alternatives": [
+        {
+          "id": "menu-item",
+          "relationship": "nearest",
+          "when": "Trailing content is noninteractive."
+        },
+        {
+          "id": "tabs",
+          "relationship": "semantic alternative",
+          "when": "The primary control selects a tabpanel inside TabBar."
+        }
+      ],
+      "appOwns": [
+        "routing",
+        "selection",
+        "action handling",
+        "domain data attributes",
+        "popover or context-menu policy"
+      ],
+      "variants": [
+        "selected",
+        "pressed",
+        "disabled primary",
+        "disabled trailing action",
+        "multiline"
+      ],
+      "accessibility": [
+        "The noninteractive root contains two sibling native buttons in primary-then-trailing focus order; each button has its own action, item identity, accessible name, and disabled state.",
+        "Selection semantics are exposed only by the primary button; label, icon, and trailingActionIcon are dormant SafeHtml and must not contain interactive descendants; never place an interactive descendant in MenuItem.trailing."
+      ],
+      "delivery": {
+        "browserImport": "@kerfjs/ui/menu-action-row",
+        "manualCssImport": "@kerfjs/ui/menu-action-row.css",
+        "sideEffects": [
+          "browser-condition-css"
+        ]
+      },
+      "wiring": [],
+      "publicClasses": [
+        "kui-menu-action-row",
+        "kui-menu-action-row__icon",
+        "kui-menu-action-row__label",
+        "kui-menu-action-row__primary",
+        "kui-menu-action-row__trailing-action"
+      ],
+      "publicTokens": [
+        "--kui-color-brand-border-quiet",
+        "--kui-color-brand-fill-normal",
+        "--kui-color-brand-on-quiet",
+        "--kui-color-neutral-border-normal",
+        "--kui-color-neutral-fill-normal",
+        "--kui-color-neutral-fill-quiet",
+        "--kui-color-neutral-on-normal",
+        "--kui-focus-ring",
+        "--kui-layout-inline-margin",
+        "--kui-layout-item-gap",
+        "--kui-layout-item-padding",
+        "--kui-layout-rounded-radius",
+        "--kui-radius-pill",
+        "--kui-menu-action-row-background",
+        "--kui-menu-action-row-border",
+        "--kui-menu-action-row-color",
+        "--kui-menu-action-row-hover-background",
+        "--kui-menu-action-row-hover-border",
+        "--kui-menu-action-row-selected-background",
+        "--kui-menu-action-row-selected-border",
+        "--kui-menu-action-row-selected-color",
+        "--kui-menu-action-row-trailing-hover-background"
+      ],
+      "links": {
+        "catalogRoute": "?component=menu-action-row",
+        "documentation": "docs/component-selection.md",
+        "recipe": "docs/component-selection.md#problem-to-component-matrix"
+      }
+    },
+    {
       "id": "menu-item",
       "name": "MenuItem",
       "category": "Navigation",
@@ -939,9 +1035,15 @@
         "Render a selectable, disabled, trailing, or multiline sidebar/navigation action row."
       ],
       "avoidWhen": [
-        "Do not use for an ordinary inline link, form button, or isolated ARIA menuitem."
+        "Do not use for an ordinary inline link, form button, isolated ARIA menuitem, or an interactive trailing action; use MenuActionRow for sibling row actions."
       ],
-      "alternatives": [],
+      "alternatives": [
+        {
+          "id": "menu-action-row",
+          "relationship": "nearest",
+          "when": "The trailing region must be independently interactive."
+        }
+      ],
       "appOwns": [
         "routing",
         "selection",
@@ -957,7 +1059,7 @@
         "multiline"
       ],
       "accessibility": [
-        "Uses native button activation; selected maps to aria-current and pressed to aria-pressed; rootAttributes cannot add role=menuitem or replace owned ARIA."
+        "Uses native button activation; selected maps to aria-current and pressed to aria-pressed; rootAttributes cannot add role=menuitem or replace owned ARIA; trailing is dormant content and must not contain controls."
       ],
       "delivery": {
         "browserImport": "@kerfjs/ui/menu-item",

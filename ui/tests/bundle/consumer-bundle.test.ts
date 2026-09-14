@@ -102,6 +102,20 @@ describe('consumer bundle boundaries', () => {
     expect(inputs).not.toContain('@awesome.me/webawesome');
   });
 
+  it('keeps MenuActionRow CSS isolated from other row and tab components', async () => {
+    const result = await bundle("import { MenuActionRow } from '@kerfjs/ui/menu-action-row'; console.log(MenuActionRow);");
+    const inputs = Object.keys(result.metafile!.inputs).join('\n');
+    const css = output(result, '.css');
+    expect(inputs).toContain('dist/browser/menu-action-row.js');
+    expect(inputs).toContain('dist/styles/menu-action-row.css');
+    expect(css).toContain('.kui-menu-action-row');
+    expect(css).toContain('--kui-color-text');
+    expect(css).not.toContain('.kui-menu-item');
+    expect(css).not.toContain('.kui-app-tab');
+    expect(css).not.toContain('remify(');
+    expect(inputs).not.toContain('@awesome.me/webawesome');
+  });
+
   it('keeps the TabBar component and opt-in wiring free of Web Awesome registration', async () => {
     const result = await bundle("import { TabBar } from '@kerfjs/ui/tab-bar'; import { reorderTabs, wireTabBars } from '@kerfjs/ui/wire-tab-bars'; console.log(TabBar, reorderTabs, wireTabBars); ");
     const inputs = Object.keys(result.metafile!.inputs).join('\n');
@@ -196,6 +210,7 @@ describe('consumer bundle boundaries', () => {
     expect(pkg.sideEffects).toEqual(['**/*.css', './dist/browser/*.js', './dist/select-register.js']);
     expect(pkg.exports['.']).toMatchObject({ import: './dist/index.js' });
     expect(pkg.exports['./toolbar']).toMatchObject({ browser: './dist/browser/toolbar.js', import: './dist/toolbar.js' });
+    expect(pkg.exports['./menu-action-row']).toMatchObject({ browser: './dist/browser/menu-action-row.js', import: './dist/menu-action-row.js' });
     expect(pkg.exports['./unstyled']).toBeDefined();
     expect(pkg.exports['./webawesome.css']).toBe('./dist/styles/webawesome.css');
     expect(pkg.exports['./webawesome']).toMatchObject({ types: './dist/webawesome.d.ts', import: './dist/webawesome.js' });
@@ -205,6 +220,7 @@ describe('consumer bundle boundaries', () => {
     expect(pkg.exports['./token-search-field']).toBeDefined();
     expect(pkg.exports['./wire-tab-bars']).toBeDefined();
     expect(pkg.exports['./toolbar.css']).toBe('./dist/styles/toolbar.css');
+    expect(pkg.exports['./menu-action-row.css']).toBe('./dist/styles/menu-action-row.css');
     expect(pkg.exports['./sidebar.css']).toBeUndefined();
     expect(pkg.exports['./layout.css']).toBe('./dist/styles/layout.css');
     expect(pkg.exports['./tab-bar.css']).toBe('./dist/styles/tab-bar.css');

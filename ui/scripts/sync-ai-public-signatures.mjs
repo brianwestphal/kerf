@@ -13,6 +13,7 @@ const entries = [
   ['@kerfjs/ui/toolbar-text', 'dist/toolbar-text.d.ts'],
   ['@kerfjs/ui/toolbar-control-group', 'dist/toolbar-control-group.d.ts'],
   ['@kerfjs/ui/menu-header', 'dist/menu-header.d.ts'],
+  ['@kerfjs/ui/menu-action-row', 'dist/menu-action-row.d.ts'],
   ['@kerfjs/ui/menu-item', 'dist/menu-item.d.ts'],
   ['@kerfjs/ui/page-header', 'dist/page-header.d.ts'],
   ['@kerfjs/ui/value-table', 'dist/value-table.d.ts'],

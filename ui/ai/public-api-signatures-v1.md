@@ -111,6 +111,61 @@ declare function MenuHeader({ label, badge, action, actionLabel, actionIcon, act
 export { MenuHeader, type MenuHeaderProps };
 ```
 
+## `@kerfjs/ui/menu-action-row`
+
+```ts
+import { SafeHtml } from 'kerfjs';
+
+type MenuActionRowRootAttributes = Readonly<Record<`data-${string}`, string | undefined> & {
+    'data-component'?: never;
+    'data-action'?: never;
+    'data-item-id'?: never;
+    'data-has-icon'?: never;
+    'data-multiline'?: never;
+    'data-state'?: never;
+    'data-selected'?: never;
+    'data-pressed'?: never;
+}>;
+type MenuActionRowTrailingAttributes = Readonly<Record<`data-${string}`, string | undefined> & {
+    'data-component'?: never;
+    'data-action'?: never;
+    'data-item-id'?: never;
+    popoverTarget?: string;
+    popoverTargetAction?: 'toggle' | 'show' | 'hide';
+    'aria-controls'?: string;
+    'aria-haspopup'?: 'dialog' | 'menu' | 'listbox' | 'tree' | 'grid' | 'true';
+}>;
+interface MenuActionRowProps {
+    /** Visible dormant content for the primary button. Must not contain interactive descendants. */
+    label: string | SafeHtml;
+    /** Decorative dormant content for the primary button. Must not contain interactive descendants. */
+    icon?: SafeHtml;
+    action: string;
+    itemId?: string;
+    selected?: boolean;
+    pressed?: boolean;
+    accessibleLabel?: string;
+    title?: string;
+    multiline?: boolean;
+    state?: string;
+    disabled?: boolean;
+    tabIndex?: number;
+    trailingAction: string;
+    trailingActionLabel: string;
+    /** Decorative dormant content for the trailing button. Must not contain interactive descendants. */
+    trailingActionIcon: SafeHtml;
+    trailingActionDisabled?: boolean;
+    trailingActionTitle?: string;
+    className?: string;
+    style?: string;
+    rootAttributes?: MenuActionRowRootAttributes;
+    trailingActionAttributes?: MenuActionRowTrailingAttributes;
+}
+declare function MenuActionRow({ label, icon, action, itemId, selected, pressed, accessibleLabel, title, multiline, state, disabled, tabIndex, trailingAction, trailingActionLabel, trailingActionIcon, trailingActionDisabled, trailingActionTitle, className, style, rootAttributes, trailingActionAttributes }: MenuActionRowProps): SafeHtml;
+
+export { MenuActionRow, type MenuActionRowProps };
+```
+
 ## `@kerfjs/ui/menu-item`
 
 ```ts

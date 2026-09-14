@@ -7,6 +7,7 @@ import { DisclosureArrow } from '../../src/disclosure-arrow.js';
 import { EmptyState } from '../../src/empty-state.js';
 import { LoadingSpinner } from '../../src/loading-spinner.js';
 import { LucideIcon } from '../../src/lucide-icon.js';
+import { MenuActionRow } from '../../src/menu-action-row.js';
 import { MenuHeader } from '../../src/menu-header.js';
 import { MenuItem } from '../../src/menu-item.js';
 import { PageHeader } from '../../src/page-header.js';
@@ -194,6 +195,108 @@ describe('production UI primitives', () => {
     expect(trigger?.getAttribute('aria-label')).toBe('Add workspace');
     expect(trigger?.getAttribute('role')).toBeNull();
     expect(trigger?.disabled).toBe(false);
+  });
+
+  it('renders sibling primary and trailing menu actions without nesting controls', () => {
+    const widenedRootAttributes = {
+      'data-file-kind': 'source',
+      'data-Action': 'injected-root-action',
+      role: 'menuitem',
+    };
+    const widenedTrailingAttributes = {
+      'data-menu-source': 'repository',
+      'data-Action': 'injected-trailing-action',
+      popoverTarget: 'file-actions',
+      popoverTargetAction: 'toggle' as const,
+      'aria-controls': 'file-actions',
+      'aria-haspopup': 'menu' as const,
+      role: 'menuitem',
+      'aria-label': 'Injected label',
+      disabled: 'disabled',
+    };
+    const html = asHtml(MenuActionRow({
+      label: <span>src/main.ts</span>,
+      icon,
+      action: 'select-file',
+      itemId: 'src/main.ts',
+      pressed: true,
+      accessibleLabel: 'Select src/main.ts',
+      multiline: true,
+      state: 'modified',
+      trailingAction: 'open-file-actions',
+      trailingActionLabel: 'Actions for src/main.ts',
+      trailingActionIcon: icon,
+      rootAttributes: widenedRootAttributes,
+      trailingActionAttributes: widenedTrailingAttributes,
+    }));
+
+    expect(html).toContain('data-component="menu-action-row"');
+    expect(html).toContain('data-file-kind="source"');
+    expect(html).toContain('data-menu-source="repository"');
+    expect(html).not.toContain('injected-root-action');
+    expect(html).not.toContain('injected-trailing-action');
+    expect(html).not.toContain('Injected label');
+    expect(html).not.toContain('role="menuitem"');
+
+    document.body.innerHTML = html;
+    const root = document.body.querySelector<HTMLElement>('[data-component="menu-action-row"]');
+    const controls = root?.querySelectorAll<HTMLButtonElement>(':scope > button');
+    const primary = controls?.[0];
+    const trailing = controls?.[1];
+    expect(root?.tagName).toBe('DIV');
+    expect(root?.getAttribute('role')).toBeNull();
+    expect(root?.getAttribute('data-action')).toBeNull();
+    expect(root?.dataset.pressed).toBe('true');
+    expect(root?.dataset.state).toBe('modified');
+    expect(controls).toHaveLength(2);
+    expect(primary?.querySelector('button, a, [role="button"]')).toBeNull();
+    expect(trailing?.querySelector('button, a, [role="button"]')).toBeNull();
+    expect(primary?.dataset.action).toBe('select-file');
+    expect(primary?.dataset.itemId).toBe('src/main.ts');
+    expect(primary?.getAttribute('aria-label')).toBe('Select src/main.ts');
+    expect(primary?.getAttribute('aria-pressed')).toBe('true');
+    expect(primary?.getAttribute('aria-current')).toBeNull();
+    expect(trailing?.dataset.action).toBe('open-file-actions');
+    expect(trailing?.dataset.itemId).toBe('src/main.ts');
+    expect(trailing?.getAttribute('aria-label')).toBe('Actions for src/main.ts');
+    expect(trailing?.getAttribute('popovertarget')).toBe('file-actions');
+    expect(trailing?.getAttribute('popovertargetaction')).toBe('toggle');
+    expect(trailing?.getAttribute('aria-controls')).toBe('file-actions');
+    expect(trailing?.getAttribute('aria-haspopup')).toBe('menu');
+    expect(trailing?.getAttribute('role')).toBeNull();
+    expect(trailing?.disabled).toBe(false);
+
+    const independentlyDisabled = asHtml(MenuActionRow({
+      label: 'Unavailable primary',
+      action: 'select-disabled',
+      disabled: true,
+      trailingAction: 'available-actions',
+      trailingActionLabel: 'Available actions',
+      trailingActionIcon: icon,
+    }));
+    document.body.innerHTML = independentlyDisabled;
+    const disabledControls = document.body.querySelectorAll<HTMLButtonElement>('[data-component="menu-action-row"] > button');
+    expect(disabledControls[0]?.disabled).toBe(true);
+    expect(disabledControls[1]?.disabled).toBe(false);
+
+    const disabledTrailing = asHtml(MenuActionRow({
+      label: 'Available primary',
+      action: 'select-available',
+      selected: true,
+      trailingAction: 'disabled-actions',
+      trailingActionLabel: 'Disabled actions',
+      trailingActionIcon: icon,
+      trailingActionDisabled: true,
+      trailingActionTitle: 'Actions unavailable',
+    }));
+    expect(disabledTrailing).toContain('data-selected="true"');
+    expect(disabledTrailing).toContain('aria-current="page"');
+    expect(disabledTrailing).toContain('title="Actions unavailable" disabled');
+
+    // @ts-expect-error The noninteractive row root cannot own delegated actions.
+    MenuActionRow({ label: 'Unsafe', action: 'safe', trailingAction: 'more', trailingActionLabel: 'More', trailingActionIcon: icon, rootAttributes: { 'data-action': 'unsafe' } });
+    // @ts-expect-error The trailing action's accessible name is component-owned.
+    MenuActionRow({ label: 'Unsafe', action: 'safe', trailingAction: 'more', trailingActionLabel: 'More', trailingActionIcon: icon, trailingActionAttributes: { 'aria-label': 'unsafe' } });
   });
 
   it('renders generalized tabs with roving tabindex and optional close affordances', () => {

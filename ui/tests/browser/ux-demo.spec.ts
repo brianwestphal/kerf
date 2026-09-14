@@ -916,6 +916,237 @@ test('preserves menu extension metadata without surrendering native semantics', 
   }
 });
 
+test('keeps MenuActionRow primary and trailing controls independent across interaction and layout states', async ({ page, browserName }) => {
+  await page.setViewportSize({ width: 1100, height: 760 });
+  await page.goto('/?component=menu-action-row');
+  const demo = page.locator('[data-demo="menu-action-row"]');
+  const selectedRow = demo.locator('[data-demo-action-row="selected"]');
+  const primary = selectedRow.getByRole('button', { name: 'Select src/main.ts' });
+  const trailing = selectedRow.getByRole('button', { name: 'Actions for src/main.ts' });
+  const pressedRow = demo.locator('[data-demo-action-row="multiline"]');
+  const pressedPrimary = pressedRow.getByRole('button', { name: 'Select long file' });
+
+  await expect(selectedRow.locator(':scope > button')).toHaveCount(2);
+  await expect(selectedRow).not.toHaveAttribute('role');
+  await expect(selectedRow).not.toHaveAttribute('data-action');
+  await expect(primary).toHaveAttribute('data-action', 'select-menu-action-row');
+  await expect(trailing).toHaveAttribute('data-action', 'open-menu-action-row-actions');
+  await expect(primary).toHaveAttribute('data-item-id', 'src/main.ts');
+  await expect(trailing).toHaveAttribute('data-item-id', 'src/main.ts');
+  await expect(selectedRow).toHaveAttribute('data-selected', 'true');
+  await expect(selectedRow).not.toHaveAttribute('data-pressed');
+  await expect(primary).toHaveAttribute('aria-current', 'page');
+  await expect(primary).not.toHaveAttribute('aria-pressed');
+  await expect(trailing).not.toHaveAttribute('aria-pressed');
+  await expect(pressedRow).toHaveAttribute('data-selected', 'false');
+  await expect(pressedRow).toHaveAttribute('data-pressed', 'false');
+  await expect(pressedPrimary).not.toHaveAttribute('aria-current');
+  await expect(pressedPrimary).toHaveAttribute('aria-pressed', 'false');
+  await expect(primary.locator('button, a, [role="button"]')).toHaveCount(0);
+  await expect(trailing.locator('button, a, [role="button"]')).toHaveCount(0);
+
+  await primary.focus();
+  await expect(primary).toBeFocused();
+  if (browserName === 'chromium') await page.screenshot({ path: 'test-results/menu-action-row-primary-focus-wide.png', fullPage: true });
+  expect(await selectedRow.locator(':scope > button').evaluateAll((buttons) => buttons.map((button) => ({ name: button.getAttribute('aria-label'), tabIndex: (button as HTMLButtonElement).tabIndex })))).toEqual([
+    { name: 'Select src/main.ts', tabIndex: 0 },
+    { name: 'Actions for src/main.ts', tabIndex: 0 },
+  ]);
+  if (browserName === 'webkit') await trailing.focus();
+  else await page.keyboard.press('Tab');
+  await expect(trailing).toBeFocused();
+  if (browserName === 'chromium') await page.screenshot({ path: 'test-results/menu-action-row-trailing-focus-wide.png', fullPage: true });
+
+  await primary.press('Enter');
+  await expect(page.locator('.catalog-log')).toHaveText('src/main.ts selected');
+  await primary.press('Space');
+  await expect(page.locator('.catalog-log')).toHaveText('src/main.ts selected');
+  await expect(selectedRow).toHaveAttribute('data-selected', 'true');
+
+  const popover = page.locator('#menu-action-row-popover');
+  await trailing.press('Enter');
+  await expect(page.locator('.catalog-log')).toHaveText('Actions requested for src/main.ts');
+  await expect(selectedRow).toHaveAttribute('data-selected', 'true');
+  await expect.poll(() => popover.evaluate((element) => element.matches(':popover-open'))).toBe(true);
+  await page.keyboard.press('Escape');
+  await trailing.press('Space');
+  await expect(page.locator('.catalog-log')).toHaveText('Actions requested for src/main.ts');
+  await expect(selectedRow).toHaveAttribute('data-selected', 'true');
+  await expect.poll(() => popover.evaluate((element) => element.matches(':popover-open'))).toBe(true);
+  await page.keyboard.press('Escape');
+  await trailing.click();
+  await expect(page.locator('.catalog-log')).toHaveText('Actions requested for src/main.ts');
+  await expect(selectedRow).toHaveAttribute('data-selected', 'true');
+  await page.keyboard.press('Escape');
+
+  await trailing.dispatchEvent('dblclick');
+  await expect(page.locator('.catalog-log')).toHaveText('Actions requested for src/main.ts');
+  await trailing.dispatchEvent('contextmenu');
+  await expect(page.locator('.catalog-log')).toHaveText('Actions requested for src/main.ts');
+  await primary.dispatchEvent('dblclick');
+  await expect(page.locator('.catalog-log')).toHaveText('Double-clicked src/main.ts primary');
+  await primary.dispatchEvent('contextmenu');
+  await expect(page.locator('.catalog-log')).toHaveText('Context menu for src/main.ts primary');
+
+  await pressedPrimary.click();
+  await expect(page.locator('.catalog-log')).toHaveText('long-file pressed');
+  await expect(pressedRow).toHaveAttribute('data-pressed', 'true');
+  await expect(pressedPrimary).toHaveAttribute('aria-pressed', 'true');
+  await expect(selectedRow).toHaveAttribute('data-selected', 'true');
+  const pressedTrailing = pressedRow.getByRole('button', { name: 'Actions for long file' });
+  await pressedTrailing.click();
+  await expect(page.locator('.catalog-log')).toHaveText('Actions requested for long-file');
+  await expect(pressedRow).toHaveAttribute('data-pressed', 'true');
+  await expect(selectedRow).toHaveAttribute('data-selected', 'true');
+
+  const disabledPrimary = demo.locator('[data-demo-action-row="disabled-primary"]');
+  await expect(disabledPrimary.locator('.kui-menu-action-row__primary')).toBeDisabled();
+  const availableTrailing = disabledPrimary.getByRole('button', { name: 'Actions for unavailable primary' });
+  await expect(availableTrailing).toBeEnabled();
+  await availableTrailing.click();
+  await expect(page.locator('.catalog-log')).toHaveText('Actions requested for disabled-primary');
+
+  const disabledTrailing = demo.locator('[data-demo-action-row="disabled-trailing"]');
+  const availablePrimary = disabledTrailing.getByRole('button', { name: 'Unavailable trailing action' });
+  await expect(availablePrimary).toBeEnabled();
+  await expect(disabledTrailing.getByRole('button', { name: 'Unavailable actions' })).toBeDisabled();
+  await availablePrimary.click();
+  await expect(page.locator('.catalog-log')).toHaveText('disabled-trailing selected');
+  await expect(disabledTrailing).toHaveAttribute('data-selected', 'true');
+  await expect(availablePrimary).toHaveAttribute('aria-current', 'page');
+  await expect(pressedRow).toHaveAttribute('data-pressed', 'true');
+
+  await pressedPrimary.click();
+  await expect(pressedRow).toHaveAttribute('data-pressed', 'false');
+  const resolveMenuActionRowColors = () => pressedRow.evaluate((element) => {
+    const resolveBackground = (property: string) => {
+      const probe = document.createElement('span');
+      probe.style.backgroundColor = `var(${property})`;
+      element.append(probe);
+      const color = window.getComputedStyle(probe).backgroundColor;
+      probe.remove();
+      return color;
+    };
+    return {
+      trailingHover: resolveBackground('--kui-menu-action-row-trailing-hover-background'),
+      neutralFill: resolveBackground('--kui-color-neutral-fill-normal'),
+    };
+  });
+  const lightColors = await resolveMenuActionRowColors();
+  expect(lightColors.trailingHover).toBe(lightColors.neutralFill);
+  const themeButton = page.locator('[data-action="toggle-theme"]');
+  await themeButton.click();
+  const darkColors = await resolveMenuActionRowColors();
+  expect(darkColors.trailingHover).toBe(darkColors.neutralFill);
+  expect(darkColors.trailingHover).not.toBe(lightColors.trailingHover);
+  await pressedTrailing.hover();
+  await expect.poll(() => pressedTrailing.evaluate((element) => window.getComputedStyle(element).backgroundColor)).toBe(darkColors.trailingHover);
+  if (browserName === 'chromium') await page.screenshot({ path: 'test-results/menu-action-row-dark-hover-wide.png', fullPage: true });
+  await themeButton.click();
+  await page.mouse.move(0, 0);
+
+  const geometry = () => demo.evaluate((node) => {
+    const row = node.querySelector<HTMLElement>('[data-demo-action-row="selected"]')!;
+    const parent = row.parentElement!;
+    const primaryControl = row.querySelector<HTMLElement>(':scope > .kui-menu-action-row__primary')!;
+    const trailingControl = row.querySelector<HTMLElement>(':scope > .kui-menu-action-row__trailing-action')!;
+    const icon = row.querySelector<HTMLElement>('.kui-menu-action-row__icon')!;
+    const multilineRow = node.querySelector<HTMLElement>('[data-demo-action-row="multiline"]')!;
+    const multilinePrimary = multilineRow.querySelector<HTMLElement>(':scope > .kui-menu-action-row__primary')!;
+    const multilineTrailing = multilineRow.querySelector<HTMLElement>(':scope > .kui-menu-action-row__trailing-action')!;
+    const longLabel = multilineRow.querySelector<HTMLElement>('.kui-menu-action-row__label')!;
+    const rowBox = row.getBoundingClientRect();
+    const parentBox = parent.getBoundingClientRect();
+    const primaryBox = primaryControl.getBoundingClientRect();
+    const trailingBox = trailingControl.getBoundingClientRect();
+    const iconBox = icon.getBoundingClientRect();
+    const multilineRowBox = multilineRow.getBoundingClientRect();
+    const multilinePrimaryBox = multilinePrimary.getBoundingClientRect();
+    const multilineTrailingBox = multilineTrailing.getBoundingClientRect();
+    const longLabelBox = longLabel.getBoundingClientRect();
+    const parentStyle = window.getComputedStyle(parent);
+    const direction = window.getComputedStyle(row).direction;
+    const parentContentStart = direction === 'rtl'
+      ? parentBox.right - parseFloat(parentStyle.borderRightWidth) - parseFloat(parentStyle.paddingRight)
+      : parentBox.left + parseFloat(parentStyle.borderLeftWidth) + parseFloat(parentStyle.paddingLeft);
+    const rowStart = direction === 'rtl' ? parentContentStart - rowBox.right : rowBox.left - parentContentStart;
+    const iconStart = direction === 'rtl' ? rowBox.right - iconBox.right : iconBox.left - rowBox.left;
+    const controlsOverlap = Math.max(0, Math.min(primaryBox.right, trailingBox.right) - Math.max(primaryBox.left, trailingBox.left));
+    return {
+      rowStart,
+      iconStart,
+      rowHeight: rowBox.height,
+      primaryWidth: primaryBox.width,
+      primaryHeight: primaryBox.height,
+      trailingWidth: trailingBox.width,
+      trailingHeight: trailingBox.height,
+      controlsOverlap,
+      longLabelOverflow: longLabel.scrollWidth - longLabel.clientWidth,
+      longLabelVerticalOverflow: longLabel.scrollHeight - longLabel.clientHeight,
+      multilinePrimaryVerticalOverflow: multilinePrimary.scrollHeight - multilinePrimary.clientHeight,
+      multilineRowVerticalOverflow: multilineRow.scrollHeight - multilineRow.clientHeight,
+      longLabelTopInset: longLabelBox.top - multilinePrimaryBox.top,
+      longLabelBottomInset: multilinePrimaryBox.bottom - longLabelBox.bottom,
+      multilinePrimaryTopInset: multilinePrimaryBox.top - multilineRowBox.top,
+      multilinePrimaryBottomInset: multilineRowBox.bottom - multilinePrimaryBox.bottom,
+      multilineTrailingTopInset: multilineTrailingBox.top - multilineRowBox.top,
+      multilineTrailingBottomInset: multilineRowBox.bottom - multilineTrailingBox.bottom,
+      multilineRowHeight: multilineRowBox.height,
+      multilinePrimaryHeight: multilinePrimaryBox.height,
+      multilineTrailingHeight: multilineTrailingBox.height,
+      horizontalOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+    };
+  });
+  const near = (name: string, actual: number, expected: number) => expect(Math.abs(actual - expected), `${name}: ${actual}`).toBeLessThanOrEqual(1);
+  const expectGeometry = (actual: Awaited<ReturnType<typeof geometry>>, scale: number) => {
+    near('rowStart', actual.rowStart, 8 * scale);
+    near('iconStart', actual.iconStart, 1 + 8 * scale);
+    expect(actual.rowHeight).toBeGreaterThanOrEqual(44 * scale);
+    expect(actual.primaryWidth).toBeGreaterThanOrEqual(44 * scale);
+    expect(actual.primaryHeight).toBeGreaterThanOrEqual(44 * scale);
+    expect(actual.trailingWidth).toBeGreaterThanOrEqual(44 * scale);
+    expect(actual.trailingHeight).toBeGreaterThanOrEqual(44 * scale);
+    expect(actual.controlsOverlap).toBe(0);
+    expect(actual.longLabelOverflow).toBeLessThanOrEqual(1);
+    expect(actual.longLabelVerticalOverflow).toBeLessThanOrEqual(1);
+    expect(actual.multilinePrimaryVerticalOverflow).toBeLessThanOrEqual(1);
+    expect(actual.multilineRowVerticalOverflow).toBeLessThanOrEqual(1);
+    expect(actual.longLabelTopInset).toBeGreaterThanOrEqual(-1);
+    expect(actual.longLabelBottomInset).toBeGreaterThanOrEqual(-1);
+    expect(actual.multilinePrimaryTopInset).toBeGreaterThanOrEqual(-1);
+    expect(actual.multilinePrimaryBottomInset).toBeGreaterThanOrEqual(-1);
+    expect(actual.multilineTrailingTopInset).toBeGreaterThanOrEqual(-1);
+    expect(actual.multilineTrailingBottomInset).toBeGreaterThanOrEqual(-1);
+    near('multiline primary stretch', actual.multilinePrimaryHeight, actual.multilineRowHeight);
+    near('multiline trailing stretch', actual.multilineTrailingHeight, actual.multilineRowHeight);
+    expect(actual.horizontalOverflow).toBeLessThanOrEqual(1);
+  };
+
+  expectGeometry(await geometry(), 1);
+  await demo.evaluate((node) => node.setAttribute('dir', 'rtl'));
+  expectGeometry(await geometry(), 1);
+  if (browserName === 'chromium') await page.screenshot({ path: 'test-results/menu-action-row-rtl-wide.png', fullPage: true });
+  await demo.evaluate((node) => node.removeAttribute('dir'));
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await demo.scrollIntoViewIfNeeded();
+  expectGeometry(await geometry(), 1);
+  if (browserName === 'chromium') await page.screenshot({ path: 'test-results/menu-action-row-narrow.png', fullPage: true });
+
+  await page.setViewportSize({ width: 720, height: 900 });
+  await page.locator('html').evaluate((element) => { element.style.fontSize = '200%'; });
+  await demo.scrollIntoViewIfNeeded();
+  expectGeometry(await geometry(), 2);
+  if (browserName === 'chromium') await page.screenshot({ path: 'test-results/menu-action-row-zoom-200.png', fullPage: true });
+  if (browserName === 'chromium') {
+    await page.emulateMedia({ forcedColors: 'active' });
+    await expect(selectedRow).toHaveCSS('outline-style', 'solid');
+    await expect(selectedRow).toHaveCSS('outline-width', '1px');
+    await page.screenshot({ path: 'test-results/menu-action-row-forced-colors.png', fullPage: true });
+    await page.emulateMedia({ forcedColors: 'none' });
+  }
+});
+
 test('matches shared menu, content-item, and toolbar geometry', async ({ page, browserName }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/?component=menu');

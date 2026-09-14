@@ -22,6 +22,7 @@ npm install kerfjs @kerfjs/ui
 ```tsx
 import { MenuItem } from '@kerfjs/ui/menu-item';
 import { MenuHeader } from '@kerfjs/ui/menu-header';
+import { MenuActionRow } from '@kerfjs/ui/menu-action-row';
 import { Toolbar } from '@kerfjs/ui/toolbar';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
@@ -47,6 +48,14 @@ mount(root, () => <>
       selected
       rootAttributes={{ 'data-command-color': 'blue', 'data-drop-status': 'ready' }}
     />
+    <MenuActionRow
+      action="open-file"
+      itemId="src/main.ts"
+      label="src/main.ts"
+      trailingAction="open-file-actions"
+      trailingActionLabel="Actions for src/main.ts"
+      trailingActionIcon={moreIcon}
+    />
     <div id="workspace-actions" popover="auto">Application-owned actions</div>
   </section>
 </>);
@@ -54,14 +63,19 @@ mount(root, () => <>
 
 Components return Kerf `SafeHtml`. They do not own application state or attach transient listeners. Actions are stable `data-action` hooks; the application wires them once with `delegate()` or `delegateActions()` and retains the disposer.
 
-`MenuItem.rootAttributes` and `MenuHeader.rootAttributes` carry typed
-application `data-*` metadata without teaching the package domain fields.
-`MenuHeader.triggerAttributes` additionally supports native popover target and
-relationship attributes. Roles and component-owned action, selection,
+`MenuItem.rootAttributes`, `MenuHeader.rootAttributes`, and
+`MenuActionRow.rootAttributes` carry typed application `data-*` metadata without
+teaching the package domain fields. `MenuHeader.triggerAttributes` and
+`MenuActionRow.trailingActionAttributes` additionally support native popover
+target and relationship attributes. Roles and component-owned action, selection,
 disclosure, naming, disabled, and icon semantics remain protected props; an
 isolated `role="menuitem"` is not an extension shortcut.
 The slots are also filtered at runtime, so structurally widened objects and
 JavaScript callers cannot bypass those protections with case-variant names.
+`MenuItem.trailing` is dormant metadata. Use `MenuActionRow` when a row needs
+sibling primary and trailing native-button actions with independent names,
+disabled states, focus, and click ownership. Its `label`, `icon`, and
+`trailingActionIcon` slots are dormant content and must not contain controls.
 
 ## Component subpaths
 
@@ -72,6 +86,7 @@ JavaScript callers cannot bypass those protections with case-variant names.
 | `Toolbar` | `@kerfjs/ui/toolbar` | `@kerfjs/ui/toolbar.css` |
 | `ToolbarControlGroup` | `@kerfjs/ui/toolbar-control-group` | `@kerfjs/ui/toolbar-control-group.css` |
 | `ToolbarText` | `@kerfjs/ui/toolbar-text` | `@kerfjs/ui/toolbar-text.css` |
+| `MenuActionRow` | `@kerfjs/ui/menu-action-row` | `@kerfjs/ui/menu-action-row.css` |
 | `MenuItem` | `@kerfjs/ui/menu-item` | `@kerfjs/ui/menu-item.css` |
 | `MenuHeader` | `@kerfjs/ui/menu-header` | `@kerfjs/ui/menu-header.css` |
 | Pane, content, and navigation composition | — | `@kerfjs/ui/layout.css` |

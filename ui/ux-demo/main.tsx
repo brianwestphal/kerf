@@ -9,6 +9,7 @@ import { DisclosureArrow } from '@kerfjs/ui/disclosure-arrow';
 import { EmptyState } from '@kerfjs/ui/empty-state';
 import { LoadingSpinner } from '@kerfjs/ui/loading-spinner';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
+import { MenuActionRow } from '@kerfjs/ui/menu-action-row';
 import { MenuHeader } from '@kerfjs/ui/menu-header';
 import { MenuItem } from '@kerfjs/ui/menu-item';
 import { PageHeader } from '@kerfjs/ui/page-header';
@@ -64,6 +65,8 @@ const bannerTone = signal<'neutral' | 'info' | 'success' | 'warning' | 'danger'>
 const toolbarChoice = signal<'list' | 'columns' | 'settings'>('list');
 const toolbarFindQuery = signal('');
 const toolbarFindOpen = signal(false);
+const menuActionCurrent = signal('src/main.ts');
+const menuActionPressed = signal(false);
 const inspectorSection = signal<'summary' | 'activity' | 'files'>('summary');
 const displayDensity = signal<'compact' | 'comfortable' | 'roomy'>('comfortable');
 const actionLog = signal('Catalog ready');
@@ -287,6 +290,48 @@ function MenuHeaderDemo() {
   </div>;
 }
 
+function MenuActionRowDemo() {
+  return <div class="demo-menu demo-variant-stack" data-demo="menu-action-row">
+    <div>
+      <MenuActionRow
+        label="src/main.ts"
+        icon={icon(Folder, 'folder')}
+        action="select-menu-action-row"
+        itemId="src/main.ts"
+        selected={menuActionCurrent.value === 'src/main.ts'}
+        accessibleLabel="Select src/main.ts"
+        trailingAction="open-menu-action-row-actions"
+        trailingActionLabel="Actions for src/main.ts"
+        trailingActionIcon={icon(MoreHorizontal, 'more-horizontal')}
+        rootAttributes={{ 'data-demo-action-row': 'selected' }}
+        trailingActionAttributes={{ popoverTarget: 'menu-action-row-popover', popoverTargetAction: 'toggle', 'aria-controls': 'menu-action-row-popover', 'aria-haspopup': 'dialog', 'data-demo-trailing-action': 'selected' }}
+      />
+    </div>
+    <div>
+      <MenuActionRow
+        label="packages/application/src/components/a-long-file-name-that-wraps-at-narrow-width.tsx"
+        icon={icon(Folder, 'folder')}
+        action="toggle-menu-action-row"
+        itemId="long-file"
+        pressed={menuActionPressed.value}
+        accessibleLabel="Select long file"
+        multiline
+        trailingAction="open-menu-action-row-actions"
+        trailingActionLabel="Actions for long file"
+        trailingActionIcon={icon(MoreHorizontal, 'more-horizontal')}
+        rootAttributes={{ 'data-demo-action-row': 'multiline' }}
+      />
+    </div>
+    <div>
+      <MenuActionRow label="Unavailable primary" action="select-menu-action-row" itemId="disabled-primary" selected={menuActionCurrent.value === 'disabled-primary'} disabled trailingAction="open-menu-action-row-actions" trailingActionLabel="Actions for unavailable primary" trailingActionIcon={icon(MoreHorizontal, 'more-horizontal')} rootAttributes={{ 'data-demo-action-row': 'disabled-primary' }} />
+    </div>
+    <div>
+      <MenuActionRow label="Unavailable trailing action" action="select-menu-action-row" itemId="disabled-trailing" selected={menuActionCurrent.value === 'disabled-trailing'} trailingAction="open-menu-action-row-actions" trailingActionLabel="Unavailable actions" trailingActionIcon={icon(MoreHorizontal, 'more-horizontal')} trailingActionDisabled trailingActionTitle="Actions unavailable" rootAttributes={{ 'data-demo-action-row': 'disabled-trailing' }} />
+    </div>
+    <div id="menu-action-row-popover" class="demo-menu-popover" popover="auto" role="dialog" aria-label="File actions"><button type="button" data-action="log-more">Open details</button></div>
+  </div>;
+}
+
 function MenuItemDemo() {
   return <div class="demo-menu" data-demo="menu-item">
     <MenuItem action="log-inbox" itemId="selected" label="Selected item" icon={icon(Inbox, 'inbox')} trailing={<span>12</span>} selected rootAttributes={{ 'data-demo-drop-status': 'ready' }} />
@@ -408,6 +453,7 @@ const demos: Record<Exclude<KerfCatalogId, RecipeId>, () => ReturnType<typeof To
   'toolbar-text': ToolbarTextDemo,
   menu: MenuDemo,
   'menu-header': MenuHeaderDemo,
+  'menu-action-row': MenuActionRowDemo,
   'menu-item': MenuItemDemo,
   tabs: TabsDemo,
   'tab-bar': TabBarDemo,
@@ -670,6 +716,9 @@ const stopActions = delegateActions(app, 'click', {
   'log-drafts': () => { actionLog.value = 'Drafts selected'; },
   'log-tools': () => { actionLog.value = 'Tools toggled'; },
   'log-settings': () => { actionLog.value = 'Settings selected'; },
+  'select-menu-action-row': (_event, element) => { const itemId = (element as HTMLElement).dataset.itemId ?? ''; menuActionCurrent.value = itemId; actionLog.value = `${itemId} selected`; },
+  'toggle-menu-action-row': (_event, element) => { const itemId = (element as HTMLElement).dataset.itemId ?? ''; menuActionPressed.value = !menuActionPressed.value; actionLog.value = `${itemId} ${menuActionPressed.value ? 'pressed' : 'not pressed'}`; },
+  'open-menu-action-row-actions': (_event, element) => { actionLog.value = `Actions requested for ${(element as HTMLElement).dataset.itemId ?? 'row'}`; },
   'log-done': () => { actionLog.value = 'Done'; },
   'sort-recent': () => { actionLog.value = 'Sorted by recently updated'; },
   'sort-priority': () => { actionLog.value = 'Sorted by priority'; },
@@ -741,6 +790,13 @@ const stopMenuItemDrop = delegate(app, 'drop', '[data-demo-drop-status="over"]',
   event.preventDefault();
   actionLog.value = `Dropped on ${(element as HTMLElement).dataset.itemId ?? 'menu item'}`;
 });
+const stopMenuActionRowDoubleClick = delegate(app, 'dblclick', '[data-component="menu-action-row"] > [data-action="select-menu-action-row"]', (_event, element) => {
+  actionLog.value = `Double-clicked ${(element as HTMLElement).dataset.itemId ?? 'row'} primary`;
+});
+const stopMenuActionRowContextMenu = delegate(app, 'contextmenu', '[data-component="menu-action-row"] > [data-action="select-menu-action-row"]', (event, element) => {
+  event.preventDefault();
+  actionLog.value = `Context menu for ${(element as HTMLElement).dataset.itemId ?? 'row'} primary`;
+});
 const stopRelationships = delegate(app, 'change', '[name="related-component"]', (_event, element) => {
   const value = (element as HTMLElement & { value?: string }).value;
   if (value) selectDemo(value);
@@ -789,4 +845,4 @@ const stopResizeObserver = delegate(app, 'wa-resize', 'wa-resize-observer', (eve
 });
 const stopTabBars = wireTabBars(app, { onReorder: ({ barId, sourceId, targetId, position, source }) => { tabBarTabs.value = reorderTabs(tabBarTabs.value, (tab) => tab.id, sourceId, targetId, position); actionLog.value = `${source === 'pointer' ? 'Dragged' : 'Moved'} ${sourceId} ${position} ${targetId} in ${barId}`; } });
 
-window.addEventListener('pagehide', () => { stopActions(); stopResize(); stopSelect(); stopRecipeChanges(); stopRecipeInputs(); stopRecipeKeys(); stopRecipeShownDialogs(); stopRecipeDialogs(); stopTokenSearch(); stopToolbarFind(); stopTokenSearchSubmits(); stopToolbarFindClearPointer(); stopToolbarFindFocus(); stopMenuItemDragOver(); stopMenuItemDrop(); stopRelationships(); stopAnimationSelects(); stopAnimationRanges(); stopAnimationEvents.forEach((dispose) => dispose()); stopIntersectionObserver(); stopMutationObserver(); stopResizeObserver(); stopTabBars(); }, { once: true });
+window.addEventListener('pagehide', () => { stopActions(); stopResize(); stopSelect(); stopRecipeChanges(); stopRecipeInputs(); stopRecipeKeys(); stopRecipeShownDialogs(); stopRecipeDialogs(); stopTokenSearch(); stopToolbarFind(); stopTokenSearchSubmits(); stopToolbarFindClearPointer(); stopToolbarFindFocus(); stopMenuItemDragOver(); stopMenuItemDrop(); stopMenuActionRowDoubleClick(); stopMenuActionRowContextMenu(); stopRelationships(); stopAnimationSelects(); stopAnimationRanges(); stopAnimationEvents.forEach((dispose) => dispose()); stopIntersectionObserver(); stopMutationObserver(); stopResizeObserver(); stopTabBars(); }, { once: true });
