@@ -114,6 +114,21 @@ test('edits, removes, and clears controlled token search content', async ({ page
   await expect(disabled.locator('button')).toHaveCount(2);
   await expect(disabled.locator('button').first()).toBeDisabled();
   await expect(disabled.locator('button').last()).toBeDisabled();
+  const tokenGeometry = await editor.evaluate((element) => {
+    const token = element.querySelector<HTMLElement>('[data-component="token-search-token"]')!;
+    const text = element.querySelector<HTMLElement>('[data-token-search-text]')!;
+    const tokenRect = token.getBoundingClientRect();
+    const textRange = document.createRange();
+    textRange.selectNodeContents(text);
+    const textRect = textRange.getBoundingClientRect();
+    return {
+      editorLineHeight: Number.parseFloat(window.getComputedStyle(element).lineHeight),
+      tokenHeight: tokenRect.height,
+      centerDelta: Math.abs((tokenRect.top + tokenRect.height / 2) - (textRect.top + textRect.height / 2)),
+    };
+  });
+  expect(tokenGeometry.tokenHeight).toBeLessThanOrEqual(tokenGeometry.editorLineHeight);
+  expect(tokenGeometry.centerDelta).toBeLessThan(2);
   if (browserName === 'chromium') await page.screenshot({ path: 'test-results/token-search-field-light-wide.png', fullPage: true });
 
   await demo.getByRole('button', { name: 'Remove client tag' }).click();

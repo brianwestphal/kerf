@@ -67,7 +67,7 @@
 
 .kui-token-search__token {
   display: inline-flex;
-  min-height: remify(23.2px);
+  height: 1.5em;
   margin-inline: remify(2px);
   padding-inline-start: remify(7.2px);
   border-radius: var(--kui-radius-pill);
@@ -95,12 +95,12 @@
 }
 
 .kui-token-search__token-edit {
-  min-height: remify(23.2px);
+  height: 100%;
 }
 
 .kui-token-search__token-remove {
-  width: remify(21.6px);
-  height: remify(21.6px);
+  width: 1.5em;
+  height: 1.5em;
   border-radius: var(--kui-radius-pill) !important;
 }
 
