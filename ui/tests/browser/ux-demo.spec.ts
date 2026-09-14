@@ -226,11 +226,12 @@ test('renders an interactive responsive find field inside a toolbar', async ({ p
   await expect(field).toHaveAttribute('data-expanded', 'false');
   await expect(group).toHaveCSS('transition-property', 'width, background-color, border-color');
   await expect(group).toHaveCSS('transition-duration', '0.25s, 0.2s, 0.2s');
-  const collapsedIconInset = await field.evaluate((element) => {
+  const collapsedIconGeometry = await field.evaluate((element) => {
     const fieldRect = element.getBoundingClientRect();
     const iconRect = element.querySelector('svg')!.getBoundingClientRect();
-    return iconRect.left + iconRect.width / 2 - fieldRect.left;
+    return { inset: iconRect.left + iconRect.width / 2 - fieldRect.left, center: fieldRect.width / 2 };
   });
+  expect(collapsedIconGeometry.inset).toBeCloseTo(collapsedIconGeometry.center, 1);
   await group.evaluate((element) => element.addEventListener('transitionrun', (event) => {
     if ((event as TransitionEvent).propertyName === 'width') element.setAttribute('data-width-transition-seen', 'true');
   }));
@@ -251,7 +252,7 @@ test('renders an interactive responsive find field inside a toolbar', async ({ p
     const iconRect = element.querySelector('.kui-token-search__leading svg')!.getBoundingClientRect();
     return iconRect.left + iconRect.width / 2 - fieldRect.left;
   });
-  expect(Math.abs(expandedIconInset - collapsedIconInset)).toBeLessThan(0.5);
+  expect(Math.abs(expandedIconInset - collapsedIconGeometry.inset)).toBeLessThan(0.5);
   const trailingCenterBeforeInput = await field.locator('.kui-token-search__trailing').evaluate((element) => {
     const rect = element.getBoundingClientRect();
     return rect.left + rect.width / 2;

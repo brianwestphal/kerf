@@ -180,15 +180,13 @@
   display: grid;
   width: 100%;
   height: 100%;
-  padding: 0 remify(7px);
+  padding: 0;
   border: 0;
   border-radius: inherit;
   color: var(--kui-color-text-quiet);
   background: transparent;
   cursor: pointer;
-  align-items: center;
-  justify-content: start;
-  justify-items: start;
+  place-items: center;
 }
 
 .kui-token-search__expand:hover {
@@ -203,6 +201,11 @@
 .kui-token-search__expand svg {
   width: remify(16px);
   height: remify(16px);
+}
+
+.kui-token-search[data-collapsible="true"][data-expanded="true"]
+  .kui-token-search__leading {
+  margin-inline-start: remify(6px);
 }
 
 .kui-toolbar-control-group:has(> .kui-token-search[data-collapsible="true"]) {
@@ -253,7 +256,7 @@
 .kui-toolbar-control-group
   > .kui-token-search[data-collapsible="true"][data-expanded="false"]
   .kui-token-search__expand {
-  padding-inline: remify(6px);
+  padding-inline: 0;
 }
 
 .kui-toolbar-control-group:has(
