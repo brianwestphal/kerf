@@ -192,7 +192,7 @@ function ToolbarControlGroupDemo() {
       { value: 'settings', label: 'Settings view', content: icon(Settings, 'settings') },
     ]} /></ToolbarControlGroup></div>
     <div><h3>Popup menu</h3><ToolbarControlGroup single>
-      <wa-dropdown placement="bottom-start"><wa-button slot="trigger" appearance="plain" with-caret aria-label="Sort tickets">{icon(ArrowDownAZ, 'arrow-down-a-z')}</wa-button><wa-dropdown-item data-action="sort-recent">Recently updated</wa-dropdown-item><wa-dropdown-item data-action="sort-priority">Priority</wa-dropdown-item></wa-dropdown>
+      <wa-dropdown placement="bottom-start" data-morph-skip-children><wa-button slot="trigger" appearance="plain" with-caret aria-label="Sort tickets">{icon(ArrowDownAZ, 'arrow-down-a-z')}</wa-button><wa-dropdown-item data-action="sort-recent">Recently updated</wa-dropdown-item><wa-dropdown-item data-action="sort-priority">Priority</wa-dropdown-item></wa-dropdown>
     </ToolbarControlGroup></div>
     <div><h3>Button group</h3><ToolbarControlGroup label="View actions">
       <wa-button appearance="plain" aria-label="Favorite view" data-action="log-favorite">{icon(Star, 'star')}</wa-button>
@@ -452,7 +452,7 @@ function Stage() {
     }
     return controller.render();
   }
-  const needsWebAwesome = selected.source === 'webawesome' || selected.id === 'webawesome-theme';
+  const needsWebAwesome = selected.source === 'webawesome' || selected.id === 'webawesome-theme' || selected.id === 'toolbar-control-group';
   if (needsWebAwesome && !webAwesomeReady.value) {
     void ensureWebAwesomeDemos();
     return <LoadingSpinner label={`Loading ${selected.name} preview`} />;

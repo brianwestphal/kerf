@@ -883,6 +883,7 @@ test('matches shared menu, content-item, and toolbar geometry', async ({ page, b
 
   await page.goto('/?component=toolbar-control-group');
   const demo = page.getByRole('region', { name: 'ToolbarControlGroup demo' });
+  await expect.poll(() => page.evaluate(() => customElements.get('wa-dropdown') !== undefined)).toBe(true);
   await expect(demo.getByRole('heading', { level: 3 })).toHaveText([
     'Segmented choices', 'Popup menu', 'Button group', 'Single button', 'Borderless group',
     'Push button, resting', 'Push button, pressed', 'Dark group',
@@ -894,10 +895,23 @@ test('matches shared menu, content-item, and toolbar geometry', async ({ page, b
   await demo.getByRole('button', { name: 'Columns view' }).click();
   await expect(demo.getByRole('button', { name: 'Columns view' })).toHaveAttribute('aria-pressed', 'true');
   await expect(demo.getByRole('button', { name: 'Columns view' })).toHaveCSS('color', 'rgb(30, 110, 244)');
+  const dropdown = demo.locator('wa-dropdown');
+  const dropdownItems = dropdown.locator('wa-dropdown-item');
+  await expect(dropdown).toHaveAttribute('data-morph-skip-children', '');
+  await expect(dropdownItems).toHaveCount(2);
+  const originalFirstItem = await dropdownItems.first().elementHandle();
+  const originalLastItem = await dropdownItems.last().elementHandle();
+  expect(originalFirstItem).not.toBeNull();
+  expect(originalLastItem).not.toBeNull();
+  await expect(dropdownItems.first()).toBeHidden();
   await demo.locator('wa-button[aria-label="Sort tickets"]').click();
-  await expect(demo.getByText('Recently updated', { exact: true })).toBeVisible();
-  await demo.getByText('Priority', { exact: true }).click();
+  await expect(dropdownItems.first()).toBeVisible();
+  await dropdownItems.filter({ hasText: 'Priority' }).click();
   await expect(page.locator('.catalog-log')).toHaveText('Sorted by priority');
+  await expect(dropdownItems.first()).toBeHidden();
+  expect(await dropdownItems.first().evaluate((node, original) => node === original, originalFirstItem)).toBe(true);
+  expect(await dropdownItems.last().evaluate((node, original) => node === original, originalLastItem)).toBe(true);
+  await expect.poll(() => dropdownItems.evaluateAll((items) => items.every((item) => item.shadowRoot !== null))).toBe(true);
   await expect(demo.getByRole('button', { name: 'Pressed comparison' }).locator('..')).toHaveCSS('background-color', 'rgb(72, 72, 74)');
   await expect(demo.getByRole('group', { name: 'Dark navigation' })).toHaveCSS('border-color', 'rgb(53, 53, 54)');
   if (browserName === 'chromium') await page.screenshot({ path: 'test-results/toolbar-control-groups-wide.png', fullPage: true });
