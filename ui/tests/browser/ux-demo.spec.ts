@@ -94,23 +94,71 @@ test('loads component-reachable package CSS through browser subpaths', async ({ 
   await expect(page.locator('[data-component="empty-state"] .kui-loading-spinner')).toHaveCSS('display', 'block');
 });
 
-test('rotates the first-class disclosure arrow through configurable directions', async ({ page, browserName }) => {
+test('sizes and rotates the first-class disclosure arrow while Select keeps its independent half scale', async ({ page, browserName }) => {
   await page.setViewportSize({ width: 1100, height: 760 });
   await page.goto('/?component=disclosure-arrow');
   const demo = page.locator('[data-demo="disclosure-arrow"]');
   const button = demo.getByRole('button');
   const arrow = button.locator('[data-component="disclosure-arrow"]');
+  const arrowSize = () => arrow.evaluate((element) => {
+    const bounds = element.getBoundingClientRect();
+    return { width: bounds.width, height: bounds.height };
+  });
 
   await expect(arrow).toHaveAttribute('data-open', 'false');
   await expect(arrow).toHaveAttribute('data-direction', 'right');
   await expect(arrow).toHaveCSS('transform', 'matrix(1, 0, 0, 1, 0, 0)');
+  expect(await arrowSize()).toEqual({ width: 18, height: 18 });
+  if (browserName === 'chromium') await button.screenshot({ path: 'test-results/disclosure-arrow-default-18px.png' });
+
+  await arrow.evaluate((element) => { (element as HTMLElement).style.setProperty('--kui-disclosure-arrow-size', '2rem'); });
+  expect(await arrowSize()).toEqual({ width: 32, height: 32 });
+  await arrow.evaluate((element) => { (element as HTMLElement).style.removeProperty('--kui-disclosure-arrow-size'); });
+  expect(await arrowSize()).toEqual({ width: 18, height: 18 });
+
   await button.click();
   await expect(button).toHaveAttribute('aria-expanded', 'true');
   await expect(arrow).toHaveAttribute('data-open', 'true');
   await expect(arrow).toHaveAttribute('data-direction', 'down');
   await expect.poll(async () => arrow.evaluate((element) => window.getComputedStyle(element).transform)).toBe('matrix(0, 1, -1, 0, 0, 0)');
   await expect(demo.locator('[data-lucide="arrow-down-a-z"]')).toBeVisible();
-  if (browserName === 'chromium') await page.screenshot({ path: 'test-results/disclosure-arrow-open.png', fullPage: true });
+  if (browserName === 'chromium') await button.screenshot({ path: 'test-results/disclosure-arrow-open.png' });
+
+  await button.click();
+  await expect(button).toHaveAttribute('aria-expanded', 'false');
+  await expect.poll(async () => arrow.evaluate((element) => window.getComputedStyle(element).transform)).toBe('matrix(1, 0, 0, 1, 0, 0)');
+
+  await page.setViewportSize({ width: 1600, height: 900 });
+  await page.locator('html').evaluate((element) => { element.style.fontSize = '200%'; });
+  expect(await arrowSize()).toEqual({ width: 36, height: 36 });
+  if (browserName === 'chromium') await button.screenshot({ path: 'test-results/disclosure-arrow-default-zoom-200.png' });
+
+  await page.setViewportSize({ width: 1100, height: 760 });
+  await page.goto('/?component=select');
+  const select = page.locator('[data-demo="select"] wa-select').first();
+  const selectDisclosure = () => select.evaluate((element) => {
+    const icon = element.shadowRoot?.querySelector<HTMLElement>('[part~="expand-icon"]');
+    const bounds = icon?.getBoundingClientRect();
+    return icon ? {
+      height: bounds!.height,
+      transform: window.getComputedStyle(icon).transform,
+      token: window.getComputedStyle(element).getPropertyValue('--kui-disclosure-icon-scale').trim(),
+      width: bounds!.width,
+    } : null;
+  });
+  const selectDisclosureAt100 = await selectDisclosure();
+  expect(selectDisclosureAt100?.token).toBe('0.5');
+  expect(selectDisclosureAt100?.transform).toMatch(/^matrix\(0\.5, 0, 0, 0\.5,/);
+  expect(selectDisclosureAt100?.width).toBeCloseTo(10, 4);
+  expect(selectDisclosureAt100?.height).toBeCloseTo(8, 4);
+
+  await page.locator('html').evaluate((element) => { element.style.fontSize = '200%'; });
+  const selectDisclosureAt200 = await selectDisclosure();
+  expect(selectDisclosureAt200?.token).toBe('0.5');
+  expect(selectDisclosureAt200?.transform).toMatch(/^matrix\(0\.5, 0, 0, 0\.5,/);
+  expect(selectDisclosureAt200?.width).toBeCloseTo(selectDisclosureAt100!.width * 2, 4);
+  expect(selectDisclosureAt200?.height).toBeCloseTo(selectDisclosureAt100!.height * 2, 4);
+  if (browserName === 'chromium') await select.screenshot({ path: 'test-results/select-disclosure-half-scale-zoom-200.png' });
 });
 
 test('applies shared pane and content-item geometry across responsive and 200% zoom layouts', async ({ page, browserName }) => {

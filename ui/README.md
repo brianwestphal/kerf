@@ -107,6 +107,12 @@ disabled states, focus, and click ownership. Its `label`, `icon`, and
 | `DialogHeader` | `@kerfjs/ui/dialog-header` | `@kerfjs/ui/dialog-header.css` |
 | `ValueTable`, `ValueTableRow` | `@kerfjs/ui/value-table` | `@kerfjs/ui/value-table.css` |
 
+`DisclosureArrow` defaults to an 18px root-scaled decorative visual. Override
+`--kui-disclosure-arrow-size` at the narrowest useful scope when a consumer
+needs another size; the owning control still supplies interaction, naming, and
+expanded state. Kerf `Select` retains its independent Web Awesome expand-glyph
+scale of `.5` through `--kui-disclosure-icon-scale`.
+
 ## Machine-readable catalog
 
 AI tools can retrieve the shipped [`ai/component-catalog.json`](./ai/component-catalog.json)

@@ -68,6 +68,12 @@ an unlisted implementation class. Selectors such as `.kui-state-banner span`,
 private structure. If no prop, token, or cataloged class expresses a recurring
 need, request a supported hook instead of inferring one from rendered markup.
 
+`DisclosureArrow` uses an 18px root-scaled visual by default. Override
+`--kui-disclosure-arrow-size` on the component or its containing scope when a
+consumer needs another size. Kerf `Select` uses a separate Web Awesome expand
+glyph contract, `--kui-disclosure-icon-scale: .5`; changing one contract does
+not implicitly change the other.
+
 `StateBanner` exposes instance-level `--kui-state-banner-background`,
 `--kui-state-banner-border`, `--kui-state-banner-foreground`,
 `--kui-state-banner-detail`, and action background variables. Its five built-in

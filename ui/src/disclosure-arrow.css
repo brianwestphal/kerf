@@ -1,7 +1,7 @@
 .kui-disclosure-arrow {
   display: inline-flex;
-  width: var(--kui-disclosure-arrow-size, 1em);
-  height: var(--kui-disclosure-arrow-size, 1em);
+  width: var(--kui-disclosure-arrow-size, remify(18px));
+  height: var(--kui-disclosure-arrow-size, remify(18px));
   flex: none;
   align-items: center;
   justify-content: center;

@@ -463,6 +463,11 @@ wire-owned drag/drop markers case-insensitively. `AppTab.closeIcon` and
 moving interaction or lifecycle ownership out of their existing controls and
 disposer-returning wiring.
 
+`DisclosureArrow` ships an 18px root-scaled default through compiled
+`remify(18px)` CSS and retains `--kui-disclosure-arrow-size` for scoped consumer
+overrides. Kerf `Select` keeps its independent Web Awesome expand-glyph scale
+at `--kui-disclosure-icon-scale: .5`.
+
 ## Where to look for X
 
 | If you're touching... | look in |

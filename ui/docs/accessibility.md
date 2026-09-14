@@ -13,6 +13,7 @@ These are normative contracts for package components and consuming applications.
 - `StateBanner` defaults to polite `role="status"`; use `urgency="alert"` only for an attention-requiring failure.
 - `EmptyState` reports busy state through `aria-busy` and never relies on an illustration as its label.
 - `Select` follows the Web Awesome host's standard `input`/`change` events. Application tests verify the live `value`, focus, and events—not attributes alone. Its decorative option icons and value-dependent selected content remain present after controlled rerenders, so the visible choice does not silently lose its non-text cue.
+- `DisclosureArrow` is an 18px root-scaled decorative visual by default, not an interaction target. Its owning control supplies the accessible name, interaction, and expanded state; consumers may override `--kui-disclosure-arrow-size` without changing that ownership.
 
 ## MenuActionRow
 

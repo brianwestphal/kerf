@@ -61,11 +61,11 @@
       "category": "Foundation",
       "kind": "component",
       "source": "kerf",
-      "description": "Animated open and closed disclosure indicator with configurable directions and icon content.",
+      "description": "Root-scaled 18px animated open and closed disclosure indicator with configurable directions and icon content.",
       "uses": [
         "lucide-icon"
       ],
-      "purpose": "Indicate whether a disclosure control is open while preserving one shared rotation behavior.",
+      "purpose": "Indicate whether a disclosure control is open with an overridable 18px root-scaled visual and one shared rotation behavior.",
       "publicExports": [
         "DisclosureArrow"
       ],

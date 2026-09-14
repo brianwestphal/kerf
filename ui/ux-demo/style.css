@@ -610,9 +610,6 @@ button {
 .demo-disclosure-grid > button {
   cursor: pointer;
 }
-.demo-disclosure-grid .kui-disclosure-arrow {
-  --kui-disclosure-arrow-size: remify(24px);
-}
 .demo-spinner-grid article {
   min-height: remify(160px);
 }

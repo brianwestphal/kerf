@@ -5,7 +5,7 @@ import remifyCss, { transformRemifyValue } from '../../scripts/remify-css.mjs';
 
 describe('remify CSS authoring transform', () => {
   it('converts integer, fractional, negative, and zero pixel literals exactly', () => {
-    expect(transformRemifyValue('remify(17px) remify(40.4px) remify(-2px) remify(0px)')).toBe('1.0625rem 2.525rem -0.125rem 0rem');
+    expect(transformRemifyValue('remify(17px) remify(18px) remify(40.4px) remify(-2px) remify(0px)')).toBe('1.0625rem 1.125rem 2.525rem -0.125rem 0rem');
   });
 
   it('converts declarations and at-rule parameters through PostCSS', async () => {

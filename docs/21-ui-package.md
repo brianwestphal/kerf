@@ -55,6 +55,12 @@ defaults for neutral, brand/info, success, warning, and danger roles. Stateful
 components expose scoped custom properties, so an application may override the
 complete theme, one semantic tone, or one instance.
 
+`DisclosureArrow` has an 18px root-scaled default and exposes
+`--kui-disclosure-arrow-size` for a scoped consumer override. Kerf `Select`
+uses a separate Web Awesome expand-glyph contract with
+`--kui-disclosure-icon-scale: .5`, so its half-scale treatment remains
+independent of the shared arrow's box size.
+
 `layout.css` is the shared structural composition for navigation rails, main
 areas, inspectors, and dialogs. An unpadded `.kui-pane` contains an optional
 toolbar, one scrolling `.kui-pane__content`, and an optional footer.

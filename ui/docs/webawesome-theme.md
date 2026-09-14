@@ -60,6 +60,11 @@ chevrons keep the same visual weight. The Accordion and Details components
 retain their own rotation behavior because scaling uses `transform` while
 their open state uses the independent `rotate` property.
 
+That scale applies to each Web Awesome component's intrinsic glyph and is
+independent of Kerf `DisclosureArrow`, whose default box is 18px relative to
+the root font size and whose consumer override is
+`--kui-disclosure-arrow-size`.
+
 Tooltip and Popover use arrowless floating surfaces by default, matching Hot
 Sheet 2. The theme sets Web Awesome's public `--wa-tooltip-arrow-size` token to
 `0px` and maps each popover's public `--arrow-size` property from

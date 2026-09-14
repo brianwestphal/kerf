@@ -252,9 +252,16 @@ describe('consumer bundle boundaries', () => {
   it('publishes compiled rem CSS without the authoring function', async () => {
     const source = await readFile(new URL('../../src/toolbar-control-group.css', import.meta.url), 'utf8');
     const built = await readFile(new URL('../../dist/styles/toolbar-control-group.css', import.meta.url), 'utf8');
+    const disclosureSource = await readFile(new URL('../../src/disclosure-arrow.css', import.meta.url), 'utf8');
+    const disclosureBuilt = await readFile(new URL('../../dist/styles/disclosure-arrow.css', import.meta.url), 'utf8');
+    const selectBuilt = await readFile(new URL('../../dist/styles/select.css', import.meta.url), 'utf8');
 
     expect(source).toContain('remify(40px)');
     expect(built).toContain('2.5rem');
     expect(built).not.toContain('remify(');
+    expect(disclosureSource).toContain('var(--kui-disclosure-arrow-size, remify(18px))');
+    expect(disclosureBuilt).toContain('var(--kui-disclosure-arrow-size, 1.125rem)');
+    expect(disclosureBuilt).not.toContain('remify(');
+    expect(selectBuilt).toContain('scale(var(--kui-disclosure-icon-scale, 0.5))');
   });
 });
