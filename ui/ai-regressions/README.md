@@ -108,8 +108,10 @@ The scorer derives imports and component/helper invocations from the TypeScript
 AST. Copying a public class name does not receive component-reuse credit. It
 also checks disposer/result capture, supported-but-not-preferred substitutions,
 semantic layout classes, one inset owner per element, bounded scroll owners,
-hard-coded spacing, selectors that reach through a Kerf root, named native
-buttons, and explicit upstream escalation for a recurring missing concept.
+hard-coded spacing, CSS against the catalog's exact `publicClasses` boundary,
+named native buttons, and explicit upstream escalation for a recurring missing
+concept. Public-class-to-public-class selectors are accepted; descendant tags,
+ids, attribute-only targets, and unlisted classes are rejected.
 Results keep reuse, wiring, layout, accessibility, and escalation separate;
 there is no weighted composite.
 
@@ -121,6 +123,9 @@ exact model version and settings, prompt/context/source/scorer revisions and
 hashes, and raw-output hash. The live Web Awesome declarations are generated
 to `ai/webawesome-jsx-signatures-v1.md`; the older suite-v2 signature document
 and context snapshot remain immutable so checked-in measurements replay.
+Historical manifests also replay with the stricter public-boundary rule whose
+hash they recorded; their saved scores and findings are not relabeled by the
+corrected current oracle.
 Paid or nondeterministic generation must never be
 part of push or pull-request CI, and canned fixtures must never be described as
 measured model improvement.

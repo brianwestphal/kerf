@@ -11,4 +11,8 @@ export interface AiRegressionScore {
   checks: AiRegressionCheck[];
 }
 
-export function scoreAiRegression(caseDefinition: Record<string, unknown>, response: Record<string, unknown>, catalog: { entries: Array<Record<string, unknown>> }): AiRegressionScore;
+export interface AiRegressionScoreOptions {
+  legacyPublicBoundary?: boolean;
+}
+
+export function scoreAiRegression(caseDefinition: Record<string, unknown>, response: Record<string, unknown>, catalog: { entries: Array<Record<string, unknown>> }, options?: AiRegressionScoreOptions): AiRegressionScore;

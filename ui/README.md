@@ -189,6 +189,10 @@ foreground roles through `--kui-color-*`; stateful components also expose
 component variables such as `--kui-state-banner-background`. Override the
 foundation for an application theme, a tone variable for one semantic state, or
 a component variable on one instance without replacing component selectors.
+Prefer an equivalent prop or token. When composition-specific layout still
+needs a selector, the component catalog's `publicClasses` arrays define the
+exact stable anatomy: public-class-to-public-class selectors are supported;
+descendant tag, id, attribute-only, and unlisted-class selectors are not.
 
 `StateBanner` has opinionated `neutral`, `info`, `success`, `warning`, and
 `danger` palettes. Override an individual banner with

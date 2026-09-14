@@ -9,6 +9,7 @@ const selectionPath = resolve(root, 'docs/component-selection.md');
 const missingConceptPath = resolve(root, 'docs/examples/command-palette-adapter.tsx');
 const requiredDocs = [
   selectionPath,
+  resolve(root, 'docs/component-contract.md'),
   resolve(root, 'ai/skill.md'),
   resolve(root, 'README.md'),
   resolve(root, 'llms.txt'),
@@ -87,6 +88,13 @@ const layoutGuidance = `${selection}\n${await readFile(resolve(root, 'ai/skill.m
 for (const phrase of ['24px', '8px', '44px', 'content item']) {
   if (!layoutGuidance.includes(phrase)) fail(`layout decision guidance is missing the canonical ${phrase} contract`);
 }
+for (const phrase of ['publicClasses', 'public-class-to-public-class', 'descendant tag']) {
+  if (!layoutGuidance.includes(phrase)) fail(`CSS decision guidance is missing the ${phrase} boundary`);
+}
+
+const demoSource = await readFile(resolve(root, 'ux-demo/main.tsx'), 'utf8');
+const catalogRows = demoSource.match(/<MenuItem action="select-demo"[^>]+multiline \/>/g) ?? [];
+if (catalogRows.length !== 2) fail('catalog navigation must use the MenuItem multiline prop instead of descendant CSS overrides');
 
 const missingConceptSource = ts.createSourceFile('command-palette-adapter.tsx', missingConcept, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
 if (missingConceptSource.parseDiagnostics.length) fail('command-palette adapter example must parse as TSX');

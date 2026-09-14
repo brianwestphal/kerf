@@ -7,7 +7,7 @@ decision procedure.
 
 1. Search the [Kerf UX catalog](./ux-demo.md) and the supported Web Awesome set.
 2. Reuse a primitive when its purpose, anatomy, state, and interaction match.
-3. Compose primitives for recurring layout, using public props, classes, and tokens rather than restyling private descendants.
+3. Compose primitives for recurring layout. Prefer public props and tokens; when a composition needs a selector, target only classes listed in the catalog's `publicClasses` contract.
 4. Add a thin application adapter for product copy, domain mapping, actions, routing, persistence, permissions, and transport.
 5. Use custom markup only when the semantic contract differs. If the pattern recurs across products, open an upstream component or recipe request.
 

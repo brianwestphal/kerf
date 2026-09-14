@@ -9,12 +9,12 @@ const recompute = (checks) => ({
 });
 
 /** Score suite-v2 wiring as equivalent public alternatives without changing the frozen v1 oracle. */
-export function scoreAiRegressionV2(caseDefinition, response, catalog) {
+export function scoreAiRegressionV2(caseDefinition, response, catalog, options = {}) {
   const { requiredWiringAny = [], ...baseDefinition } = caseDefinition;
-  const base = scoreAiRegression({ ...baseDefinition, requiredWiring: [] }, response, catalog);
+  const base = scoreAiRegression({ ...baseDefinition, requiredWiring: [] }, response, catalog, options);
   const wiringChecks = requiredWiringAny.map((requirement) => {
     const attempts = requirement.options.map((option) => {
-      const result = scoreAiRegression({ ...baseDefinition, requiredWiring: [option] }, response, catalog);
+      const result = scoreAiRegression({ ...baseDefinition, requiredWiring: [option] }, response, catalog, options);
       return { option, check: result.checks.find(({ code }) => code === `wiring:${option.name}`) };
     });
     const accepted = attempts.find(({ check }) => check?.pass);

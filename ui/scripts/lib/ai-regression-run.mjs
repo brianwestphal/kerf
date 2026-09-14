@@ -17,6 +17,13 @@ const dimensionChecks = {
   accessibility: /^a11y:/,
   escalation: /^follow-up:/,
 };
+// Checked-in measured manifests used the pre-public-anatomy boundary. Replay
+// that branch with the exact hashes they recorded instead of relabeling old
+// scores under the current catalog-aware oracle.
+export const historicalScorerSha256 = {
+  1: '3abcb4b450067d744c5756b43fbefe2ced9bd35c0c34d3f9b83e18dc659e1768',
+  2: '109bf8fba2a93036874b43b21b3235d18792b17bc292876b67df4aa6b87a27be',
+};
 
 function validateResponse(response, responsePath) {
   if (!response || typeof response !== 'object' || Array.isArray(response)
@@ -73,7 +80,8 @@ export async function buildAiRegressionRun(root, options) {
       if (response.caseId !== testCase.id) throw new Error(`${responsePath} declares caseId ${response.caseId}`);
       const promptText = (await read(root, `ai-regressions/${testCase.prompt}`)).trim();
       const caseDefinition = v2 ? { ...testCase, ...overrides?.cases?.[testCase.id] } : testCase;
-      const score = v2 ? scoreAiRegressionV2(caseDefinition, response, catalog) : scoreAiRegression(caseDefinition, response, catalog);
+      const scoreOptions = options.legacyPublicBoundary ? { legacyPublicBoundary: true } : undefined;
+      const score = v2 ? scoreAiRegressionV2(caseDefinition, response, catalog, scoreOptions) : scoreAiRegression(caseDefinition, response, catalog, scoreOptions);
       results.push({ caseId: testCase.id, condition: condition.id, sessionId: options.conditionSessions[condition.id], requestOrdinal: requestIndex + 1, promptSha256: sha256(promptText), contextSha256: context.sha256, responsePath, responseSha256: sha256(responseText), score });
     }
   }
@@ -96,7 +104,7 @@ export async function buildAiRegressionRun(root, options) {
     executor: { provider: options.provider, model: options.model, modelVersion: options.modelVersion, settings: options.settings, isolationUnit: 'condition', conditionSessions: options.conditionSessions },
   };
   const commonHarness = {
-    baseRevision: options.baseRevision, corpusSha256: sha256(corpusText), conditionsSha256: sha256(conditionsText), catalogSha256: sha256(catalogText), scorerSha256: sha256(v2 ? `${baseScorerText}\0${scorerText}` : scorerText),
+    baseRevision: options.baseRevision, corpusSha256: sha256(corpusText), conditionsSha256: sha256(conditionsText), catalogSha256: sha256(catalogText), scorerSha256: options.legacyPublicBoundary ? historicalScorerSha256[suiteVersion] : sha256(v2 ? `${baseScorerText}\0${scorerText}` : scorerText),
     catalogSchemaSha256: sha256(catalogSchemaText), corpusSchemaSha256: sha256(corpusSchemaText), conditionsSchemaSha256: sha256(conditionsSchemaText), responseSchemaSha256: sha256(responseSchemaText), runSchemaSha256: sha256(runSchemaText), typescriptVersion: ts.version,
   };
   if (v2) return {

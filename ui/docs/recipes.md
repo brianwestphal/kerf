@@ -106,7 +106,9 @@ This is a production recipe, not an `@kerfjs/ui` command-palette export.
 - For direct `wa-*` JSX, import types from `@kerfjs/ui/webawesome`. Import only
   individual Web Awesome registration modules and theme them with
   `@kerfjs/ui/webawesome.css`.
-- Customize public variables/classes at the composition boundary. Do not copy
-  included component markup or style private descendants.
+- Prefer public props and variables at the composition boundary. When a recipe
+  needs responsive topology, join only classes listed in the catalog's
+  `publicClasses`; do not copy component markup or select descendants by tag,
+  id, attribute alone, or an unlisted implementation class.
 - Start from the copyable mount adapter, or reproduce its complete boundary:
   wire stable `data-action` hooks once and retain every disposer.

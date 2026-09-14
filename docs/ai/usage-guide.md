@@ -73,6 +73,12 @@ the complete layer is intentional. Manual CSS subpaths remain available for
 custom pipelines. App overrides belong later in the cascade or on a scoped
 `--kui-*` owner.
 
+Prefer an equivalent component prop or semantic token before writing an
+anatomy selector. When composition-specific layout still needs one, the
+machine catalog's `publicClasses` arrays are the exact supported boundary:
+public classes may be joined, but descendant tags, ids, attribute-only targets,
+and unlisted `kui-` classes are private.
+
 For application spacing, import `@kerfjs/ui/layout.css`, put `.kui-layout` on
 the composition root, and choose exactly one semantic owner for each page
 gutter, pane/surface/dialog body, section stack, control cluster, metadata row,

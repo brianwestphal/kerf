@@ -1,7 +1,7 @@
 ---
 name: kerf-ui
 description: Build interfaces with kerfjs and the @kerfjs/ui production component package. Use whenever code imports @kerfjs/ui or a task asks for Kerf UI components.
-kerf-ui-skill-version: 1.18.0
+kerf-ui-skill-version: 1.19.0
 ---
 
 # Building with @kerfjs/ui
@@ -19,7 +19,7 @@ Choose from the need, not from visual resemblance:
 
 1. Search the Kerf catalog and preferred Web Awesome subset.
 2. Reuse a primitive when purpose, anatomy, state, and interaction match.
-3. Compose primitives for recurring layout without restyling private descendants.
+3. Compose primitives for recurring layout. Prefer public props and tokens; use only cataloged `publicClasses` when composition-specific CSS needs a selector.
 4. Add a thin application adapter for copy, domain mapping, actions, routing, persistence, permissions, and transport.
 5. Build custom markup only when the semantic contract differs; if it recurs across products, open an upstream component or recipe request.
 
@@ -49,7 +49,7 @@ Hard rules:
 2. Components return Kerf `SafeHtml`. Never pass DOM nodes as children or use inline JSX event handlers.
 3. Keep state, product copy, persistence, and domain mappings in the application. Do not add product-specific actions or fields to a generic component.
 4. Wire `data-action` hooks from one stable root with `delegate()` or `delegateActions()` and retain disposers.
-5. Use the opinionated `--kui-color-*` semantic ramps and component-level override properties. Override tokens at the narrowest useful scope; do not hard-code appearance-specific colors or replace private descendant rules.
+5. Use the opinionated `--kui-color-*` semantic ramps and component-level override properties. Override tokens at the narrowest useful scope and prefer equivalent props/tokens. Public-class-to-public-class selectors are supported when every Kerf class appears in the catalog entry's `publicClasses`; never target descendant tags, ids, attribute-only anatomy, or unlisted implementation classes.
 6. `Select` is pure until the app explicitly imports `@kerfjs/ui/select/register`; do not import Web Awesome's full registration bundle. When an app writes direct `wa-*` JSX, add `import type {} from '@kerfjs/ui/webawesome'` for the catalog-supported intrinsic-element declarations, import the CSS-only `@kerfjs/ui/webawesome.css` theme once, and keep importing individual Web Awesome component modules so their JavaScript remains tree-shakeable. The type boundary emits no code and registers nothing. Pass icon-bearing `choices` and `renderSelected` content normally: `Select` preserves its slotted option icons across Kerf rerenders and keys selected content by the controlled value, so app wrappers must not add competing morph-control attributes.
 7. Decorative icons are hidden; controls are named; focus is visible; state never relies on color alone; reduced motion and increased contrast remain usable.
 8. `ResizableRegion` uses `wireResizableRegions()` for Arrow, Shift+Arrow, Home/End, and pointer behavior. The app owns size persistence.

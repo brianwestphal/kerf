@@ -9,7 +9,7 @@ primitive only when purpose, anatomy, state, and interaction match. Compose
 public primitives for recurring layout; add a thin application adapter for
 product state and policy; use custom markup when the semantic contract differs.
 Recurring cross-product custom patterns belong in an upstream component or
-recipe request, not in duplicated markup or private-descendant CSS.
+recipe request, not in duplicated markup or selectors for undocumented anatomy.
 
 The shipped [`component-catalog.json`](../ai/component-catalog.json) is the
 canonical machine-readable inventory. Its facts are projected into the UX
@@ -24,7 +24,23 @@ remains authored rather than generated.
 - Applications own signals/stores, product copy, domain-state mapping, persistence, routing, permissions, and transport.
 - Actions are `data-action` strings. Wire them at a stable root with `delegate()` or `delegateActions()` and retain the disposer.
 - A reusable component never owns per-instance mutable module state.
-- Consumers style through `--kui-*` semantic tokens and public component classes. Foundation tokens provide opinionated neutral, brand/info, success, warning, and danger fill/border/foreground roles. Stateful components expose local override variables; do not target private descendants when a documented variant or token exists.
+- Consumers style through `--kui-*` semantic tokens and public component classes. Foundation tokens provide opinionated neutral, brand/info, success, warning, and danger fill/border/foreground roles. Stateful components expose local override variables; prefer an equivalent prop or token before writing a selector.
+
+### Public CSS anatomy
+
+The `publicClasses` array on each entry in
+[`component-catalog.json`](../ai/component-catalog.json) is the exact supported
+anatomy boundary. A scoped selector may join documented public classes, such as
+`.workspace .kui-toolbar .kui-toolbar__trailing`, when composition-specific
+layout cannot be expressed by a prop or token. A class being public does not
+make copied component markup an invocation or transfer state and accessibility
+ownership to the application.
+
+Do not select a component's descendant by element name, id, attribute alone, or
+an unlisted implementation class. Selectors such as `.kui-state-banner span`,
+`.kui-menu-item [data-state]`, and `.kui-menu-item .local-label` depend on
+private structure. If no prop, token, or cataloged class expresses a recurring
+need, request a supported hook instead of inferring one from rendered markup.
 
 `StateBanner` exposes instance-level `--kui-state-banner-background`,
 `--kui-state-banner-border`, `--kui-state-banner-foreground`,

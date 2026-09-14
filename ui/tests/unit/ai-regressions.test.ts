@@ -40,7 +40,7 @@ describe('local AI regression foundation', () => {
     }
   });
 
-  it('accepts equivalent public wiring imports without changing the frozen v1 scorer', async () => {
+  it('accepts equivalent public wiring imports while the base scorer keeps its exact-import boundary', async () => {
     const [corpus, overrides, catalog, resize, delegation] = await Promise.all([
       readJson('ai-regressions/corpus.json'),
       readJson('ai-regressions/corpus-v2-overrides.json'),
@@ -56,6 +56,37 @@ describe('local AI regression foundation', () => {
     }
     const frozen = scoreAiRegression(corpus.cases[0], resize, catalog);
     expect(frozen.checks.find(({ code }: { code: string }) => code === 'wiring:wireResizableRegions')?.pass).toBe(false);
+  });
+
+  it('allows cataloged public-class anatomy and rejects private class or tag descendants', async () => {
+    const [corpus, catalog, publicOverride, privateClass, privateTag, privateNamespacedClass] = await Promise.all([
+      readJson('ai-regressions/corpus.json'),
+      readJson('ai/component-catalog.json'),
+      readJson('ai-regressions/fixtures/responses/public-anatomy-override.json'),
+      readJson('ai-regressions/fixtures/responses/private-class-descendant.json'),
+      readJson('ai-regressions/fixtures/responses/private-tag-descendant.json'),
+      readJson('ai-regressions/fixtures/responses/private-namespaced-class.json'),
+    ]);
+    const definition = corpus.cases.find(({ id }: { id: string }) => id === 'compact-exclusive-choice');
+    const publicResult = scoreAiRegression(definition, publicOverride, catalog);
+    expect(publicResult.checks.find(({ code }: { code: string }) => code === 'css:public-boundary')?.pass).toBe(true);
+    const withStyles = (styles: string) => ({ ...publicOverride, files: { ...publicOverride.files, 'styles.css': styles } });
+    const publicRelational = withStyles('.workspace-choice .kui-segmented-control:has(.kui-segmented-control__item) { color: inherit; }');
+    expect(scoreAiRegression(definition, publicRelational, catalog).checks.find(({ code }: { code: string }) => code === 'css:public-boundary')?.pass).toBe(true);
+    const privateRelational = withStyles('.workspace-choice .kui-segmented-control:has(button) { color: inherit; }');
+    expect(scoreAiRegression(definition, privateRelational, catalog).checks.find(({ code }: { code: string }) => code === 'css:public-boundary')?.pass).toBe(false);
+    const nestedPrivateRelational = withStyles('.workspace-choice .kui-segmented-control:has(:is(button)) { color: inherit; }');
+    expect(scoreAiRegression(definition, nestedPrivateRelational, catalog).checks.find(({ code }: { code: string }) => code === 'css:public-boundary')?.pass).toBe(false);
+    const privateSiblingDescendant = withStyles('.workspace-choice .kui-segmented-control .kui-segmented-control__item + button { color: inherit; }');
+    expect(scoreAiRegression(definition, privateSiblingDescendant, catalog).checks.find(({ code }: { code: string }) => code === 'css:public-boundary')?.pass).toBe(false);
+    const publicRelationalList = withStyles('.workspace-choice .kui-segmented-control:has(.kui-segmented-control__item, .kui-segmented-control__item:hover) { color: inherit; }');
+    expect(scoreAiRegression(definition, publicRelationalList, catalog).checks.find(({ code }: { code: string }) => code === 'css:public-boundary')?.pass).toBe(true);
+    const negatedPrivateRelational = withStyles('.workspace-choice .kui-segmented-control:has(:not(.kui-segmented-control__item)) { color: inherit; }');
+    expect(scoreAiRegression(definition, negatedPrivateRelational, catalog).checks.find(({ code }: { code: string }) => code === 'css:public-boundary')?.pass).toBe(false);
+    for (const response of [privateClass, privateTag, privateNamespacedClass]) {
+      const result = scoreAiRegression(definition, response, catalog);
+      expect(result.checks.find(({ code }: { code: string }) => code === 'css:public-boundary')?.pass).toBe(false);
+    }
   });
 
   it('records deterministic opt-in compile evidence against the published signatures', async () => {

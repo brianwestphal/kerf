@@ -194,11 +194,18 @@ browser/CSS/registration paths, relationships, Web Awesome's installed custom
 elements manifest, AI coverage, renderer routes, public CSS hooks, and links.
 The package's JavaScript and side-effect boundaries do not change.
 
+Each catalog entry's `publicClasses` array is the exact stable CSS-anatomy
+boundary. Applications should prefer an equivalent component prop or semantic
+token; composition-specific selectors may join cataloged public classes, but
+must not depend on descendant tags, ids, attribute-only targets, or unlisted
+implementation classes.
+
 ## 21.6 Production composition recipes
 
-Seven task-oriented recipes bridge primitives and product adapters: a resizable
+Eight task-oriented recipes bridge primitives and product adapters: a resizable
 application shell, navigation sidebar, workspace header, master-detail dialog,
-composer form, list-state lifecycle, and compact mixed-control toolbar. They
+composer form, list-state lifecycle, compact mixed-control toolbar, and command
+palette. They
 are lazy catalog modules rather than new runtime exports. Each uses public
 component subpaths plus `layout.css`, declares what the recipe
 owns versus application policy, and has a stable `?component=recipe-*` route.
@@ -212,11 +219,11 @@ zoom.
 The shipped reference source includes a catalog-independent mount adapter that
 connects a recipe controller to one stable root with `delegateActions`, form
 and dialog delegates, `wireResizableRegions({ onCommit })`, and one idempotent
-aggregate disposer. A separate typed application-local command-palette example
-shows the missing-concept boundary: it reuses `layout.css`, content items, and
-a related-control cluster without claiming a nonexistent UI export, while the
-application retains ranking, history, shortcuts, focus policy, actions, and
-copy and proposes recurring semantics upstream.
+aggregate disposer. The command-palette recipe and smaller typed
+application-local example show the missing-runtime-export boundary: they reuse
+`layout.css`, content items, and a related-control cluster without claiming a
+nonexistent UI component, while the application retains ranking, history,
+shortcuts, focus policy, actions, and copy.
 
 ## 21.7 Local AI regression foundation
 
@@ -226,11 +233,15 @@ application shell, compact exclusive choice, navigation composition, workspace
 states, master-detail dialog, tokenized search, and a recurring concept the
 package does not provide. Their private oracles check actual AST-proven imports
 and invocations, required wiring capture, semantic layout classes and owners,
-public CSS boundaries, accessibility, and honest upstream escalation.
+the catalog's exact public-class CSS boundary, accessibility, and honest
+upstream escalation.
 
 The deterministic package gate validates the corpus and condition schemas,
 freezes the pre-recipe baseline and the exact suite-v1 revised context, and
-replays pinned passing and adversarial responses without changing their scorer.
+replays pinned passing and adversarial responses. Historical measured manifests
+use their recorded stricter descendant rule so their hashes, scores, and
+findings remain unchanged; the current oracle accepts public-class-to-public-
+class composition selectors while rejecting private anatomy.
 Suite-v2 overrides separately accept equivalent supported resize and delegated
 action import paths. An opt-in, non-executing TypeScript probe records separate
 schema-described compile evidence against fixed compiler options and hashed

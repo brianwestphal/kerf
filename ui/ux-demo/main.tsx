@@ -505,7 +505,7 @@ mount(app, () => {
         {catalogSections.map((section) => <section class="catalog-group">
           <MenuHeader label={section.category} />
           <div class="catalog-group__items">
-            {section.entries.map((entry) => <MenuItem action="select-demo" itemId={entry.id} label={entry.name} selected={selectedDemo.value === entry.id} title={entry.description} />)}
+            {section.entries.map((entry) => <MenuItem action="select-demo" itemId={entry.id} label={entry.name} selected={selectedDemo.value === entry.id} title={entry.description} multiline />)}
           </div>
         </section>)}
         <section class="catalog-group catalog-group--ecosystem">
@@ -514,7 +514,7 @@ mount(app, () => {
             {webAwesomeCatalogSections.map((section) => <section class="catalog-ecosystem__group">
               <h3>{section.category}</h3>
               <div class="catalog-group__items">
-                {section.entries.map((entry) => <MenuItem action="select-demo" itemId={entry.id} label={entry.name} selected={selectedDemo.value === entry.id} title={entry.description} />)}
+                {section.entries.map((entry) => <MenuItem action="select-demo" itemId={entry.id} label={entry.name} selected={selectedDemo.value === entry.id} title={entry.description} multiline />)}
               </div>
             </section>)}
           </div>}

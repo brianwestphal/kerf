@@ -106,12 +106,139 @@ function analyzeTypeScript(files) {
   return { imports, invoked, tags, classSets, calls, unnamedButtons, syntaxErrors, nativeButtons, nativeButtonsInNav, nativeSearchEditors };
 }
 
-function analyzeCss(files) {
+function selectorCompounds(selector) {
+  const compounds = [];
+  let current = '';
+  let parentheses = 0;
+  let brackets = 0;
+  const flush = () => {
+    if (current) compounds.push(current);
+    current = '';
+  };
+  for (const character of selector.trim()) {
+    if (character === '(') parentheses += 1;
+    else if (character === ')') parentheses = Math.max(0, parentheses - 1);
+    else if (character === '[') brackets += 1;
+    else if (character === ']') brackets = Math.max(0, brackets - 1);
+    if (parentheses === 0 && brackets === 0 && (character === '>' || /\s/.test(character))) flush();
+    else current += character;
+  }
+  flush();
+  return compounds;
+}
+
+function splitSelectorList(selectorList) {
+  const selectors = [];
+  let start = 0;
+  let depth = 0;
+  for (let index = 0; index < selectorList.length; index += 1) {
+    const character = selectorList[index];
+    if (character === '(' || character === '[') depth += 1;
+    else if (character === ')' || character === ']') depth = Math.max(0, depth - 1);
+    else if (character === ',' && depth === 0) {
+      selectors.push(selectorList.slice(start, index));
+      start = index + 1;
+    }
+  }
+  selectors.push(selectorList.slice(start));
+  return selectors;
+}
+
+function isPublicClassTarget(compound, publicClasses) {
+  const kuiClasses = [...compound.matchAll(/\.(kui-[\w-]+)/gi)].map((match) => match[1]);
+  if (kuiClasses.length === 0 || kuiClasses.some((className) => !publicClasses.has(className))) return false;
+  const structuralRemainder = compound
+    .replace(/\[[^\]]*\]/g, '')
+    .replace(/::?[\w-]+(?:\([^)]*\))?/g, '')
+    .replace(/\.[\w-]+/g, '')
+    .replace(/#[\w-]+/g, '');
+  return structuralRemainder.length === 0 && !compound.includes('#');
+}
+
+function splitSiblingSegments(selector) {
+  const segments = [];
+  let start = 0;
+  let parentheses = 0;
+  let brackets = 0;
+  for (let index = 0; index < selector.length; index += 1) {
+    const character = selector[index];
+    if (character === '(') parentheses += 1;
+    else if (character === ')') parentheses = Math.max(0, parentheses - 1);
+    else if (character === '[') brackets += 1;
+    else if (character === ']') brackets = Math.max(0, brackets - 1);
+    else if (parentheses === 0 && brackets === 0 && (character === '+' || character === '~')) {
+      segments.push(selector.slice(start, index));
+      start = index + 1;
+    }
+  }
+  segments.push(selector.slice(start));
+  return segments;
+}
+
+function reachesPrivateDescendant(selector, publicClasses) {
+  let insideKerfDescendants = false;
+  return splitSiblingSegments(selector).some((siblingSegment) => {
+    const compounds = selectorCompounds(siblingSegment);
+    if (insideKerfDescendants && compounds.some((compound) => !isPublicClassTarget(compound, publicClasses))) return true;
+    const firstKerf = compounds.findIndex((compound) => /\.kui-[\w-]+/i.test(compound));
+    if (firstKerf < 0) return false;
+    if ([...compounds[firstKerf].matchAll(/\.(kui-[\w-]+)/gi)].some((match) => !publicClasses.has(match[1]))) return true;
+    const descendants = compounds.slice(firstKerf + 1);
+    if (descendants.some((compound) => !isPublicClassTarget(compound, publicClasses))) return true;
+    insideKerfDescendants ||= descendants.length > 0;
+    return false;
+  });
+}
+
+function functionalPseudoArguments(selector, name) {
+  const argumentsList = [];
+  const marker = `:${name.toLowerCase()}(`;
+  const normalized = selector.toLowerCase();
+  let searchFrom = 0;
+  while (searchFrom < selector.length) {
+    const start = normalized.indexOf(marker, searchFrom);
+    if (start < 0) break;
+    let depth = 1;
+    let index = start + marker.length;
+    for (; index < selector.length && depth > 0; index += 1) {
+      if (selector[index] === '(') depth += 1;
+      else if (selector[index] === ')') depth -= 1;
+    }
+    if (depth !== 0) return [...argumentsList, ''];
+    argumentsList.push(selector.slice(start + marker.length, index - 1));
+    searchFrom = index;
+  }
+  return argumentsList;
+}
+
+function hasPrivateRelationalTarget(selector, publicClasses) {
+  return functionalPseudoArguments(selector, 'has').some((argument) => {
+    if (/:not\s*\(/i.test(argument)) return true;
+    let expanded = argument;
+    let previous;
+    do {
+      previous = expanded;
+      expanded = expanded.replace(/:(?:is|where|not)\(([^()]*)\)/gi, '$1');
+    } while (expanded !== previous);
+    return splitSelectorList(expanded).some((relativeSelector) => {
+      const compounds = selectorCompounds(relativeSelector);
+      return compounds.length === 0 || compounds.some((compound) => !isPublicClassTarget(compound, publicClasses));
+    });
+  });
+}
+
+function analyzeCss(files, catalog, options) {
   const css = Object.entries(files).filter(([name]) => name.endsWith('.css')).map(([, source]) => source).join('\n');
+  const publicClasses = new Set(catalog.entries.flatMap((entry) => entry.publicClasses ?? []));
   const privateSelectors = [];
   for (const match of css.matchAll(/([^{}]+)\{/g)) {
-    const selector = match[1].trim();
-    if (/\.kui-[\w-]+\s+(?:\.[\w-]+|#[\w-]+|\[[^\]]+\]|[a-z][\w-]*)/i.test(selector)) privateSelectors.push(selector);
+    for (const selector of splitSelectorList(match[1]).map((part) => part.trim()).filter(Boolean)) {
+      const namespacedClassesArePublic = [...selector.matchAll(/\.(kui-[\w-]+)/gi)].every((classMatch) => publicClasses.has(classMatch[1]));
+      const violatesBoundary = options?.legacyPublicBoundary
+        ? /\.kui-[\w-]+\s+(?:\.[\w-]+|#[\w-]+|\[[^\]]+\]|[a-z][\w-]*)/i.test(selector)
+        : !namespacedClassesArePublic || reachesPrivateDescendant(selector, publicClasses) || hasPrivateRelationalTarget(selector, publicClasses);
+      if (violatesBoundary) privateSelectors.push(selector);
+    }
   }
   const hardcodedSpacing = [...css.matchAll(/(?:margin|padding|gap|inset(?:-inline|-block)?)[^:]*:\s*([^;}]*\b(?:\d*\.\d+|[1-9]\d*)(?:px|rem)\b[^;}]*)/gi)].map((match) => match[0].trim());
   return { privateSelectors, hardcodedSpacing };
@@ -123,11 +250,11 @@ function componentIsUsed(entry, analysis) {
   return Boolean(primaryExport && analysis.invoked.has(primaryExport));
 }
 
-export function scoreAiRegression(caseDefinition, response, catalog) {
+export function scoreAiRegression(caseDefinition, response, catalog, options = {}) {
   const files = response?.files && typeof response.files === 'object' ? response.files : {};
   const source = Object.values(files).join('\n');
   const analysis = analyzeTypeScript(files);
-  const css = analyzeCss(files);
+  const css = analyzeCss(files, catalog, options);
   const entries = new Map(catalog.entries.map((entry) => [entry.id, entry]));
   const checks = [];
 
@@ -179,7 +306,9 @@ export function scoreAiRegression(caseDefinition, response, catalog) {
   addCheck(checks, 'layout:single-inset-owner', stackedOwners.length === 0, 'each element has at most one semantic inset owner');
   addCheck(checks, 'css:public-boundary', css.privateSelectors.length === 0, css.privateSelectors.length
     ? `private descendant selectors: ${css.privateSelectors.join(', ')}`
-    : 'does not reach through a Kerf component root');
+    : options.legacyPublicBoundary
+      ? 'does not reach through a Kerf component root'
+      : 'uses cataloged public classes and does not target private Kerf descendants');
   addCheck(checks, 'css:semantic-spacing', !caseDefinition.forbidHardcodedSpacing || css.hardcodedSpacing.length === 0, css.hardcodedSpacing.length
     ? `hard-coded spacing: ${css.hardcodedSpacing.join(', ')}`
     : 'uses semantic layout spacing rather than one-off lengths');

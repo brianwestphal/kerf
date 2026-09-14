@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Aligned `@kerfjs/ui` CSS guidance and AI regression scoring with the catalog's exact public anatomy: documented public-class composition selectors are supported, private tag/id/attribute/unlisted-class descendants remain rejected, and historical measured runs replay under their recorded stricter oracle.
 - Added typed `ValueTableRow` composition with a first-class optional icon hook. Value-table separators now align 8px from both edges for iconless rows and 40px from the left plus 8px from the right for rows with a 24px leading icon.
 - Added first-class collapsible `TokenSearchField` support: an empty closed field becomes one iconic search action, controlled activation animates to the complete searchbox, and text or tokens keep it expanded after blur. It works standalone or when composed inside `ToolbarControlGroup`; the UX demo demonstrates that common toolbar composition at wide and narrow sizes.
 - Restored the public documentation site to its Astro + Starlight implementation while the Kerf UI redesign is reconsidered, and removed the in-progress `@kerfjs/ui` page and promotional links from public navigation.

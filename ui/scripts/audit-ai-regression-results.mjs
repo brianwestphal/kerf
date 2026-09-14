@@ -3,7 +3,7 @@ import { readdir, readFile } from 'node:fs/promises';
 import { dirname, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { buildAiRegressionRun } from './lib/ai-regression-run.mjs';
+import { buildAiRegressionRun, historicalScorerSha256 } from './lib/ai-regression-run.mjs';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 const entries = await readdir(resolve(root, 'ai-regressions/results'), { recursive: true, withFileTypes: true });
@@ -47,6 +47,7 @@ for (const runPath of runPaths) {
     catalogText,
     corpusText,
     publicApiSignaturesText,
+    legacyPublicBoundary: recorded.harness.scorerSha256 === historicalScorerSha256[recorded.schemaVersion],
   });
   if (JSON.stringify(recorded) !== JSON.stringify(rebuilt)) throw new Error(`${relative(root, runPath)} does not replay exactly; regenerate it with ai:regressions:record`);
   if (recorded.results.length !== 21) throw new Error(`${relative(root, runPath)} must contain 3 conditions × 7 cases`);

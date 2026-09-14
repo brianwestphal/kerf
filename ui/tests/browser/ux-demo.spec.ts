@@ -76,6 +76,7 @@ test('applies shared pane and content-item geometry across responsive and 200% z
     });
     expect(geometry).toMatchObject({ panePadding: 0, contentGap: 24 * layout.scale, itemMargin: 8 * layout.scale, itemPadding: 8 * layout.scale, itemBorder: 1, itemRadius: 1 + 11 * layout.scale, scrollOwners: 1, sidebarOverflow: 'auto' });
     expect(geometry.horizontalOverflow).toBeLessThanOrEqual(1);
+    await expect(page.locator('.catalog-group__items [data-component="menu-item"]').first()).toHaveAttribute('data-multiline', 'true');
 
     if (browserName === 'chromium') await page.screenshot({ path: `test-results/layout-${layout.name}.png`, fullPage: true });
   }
