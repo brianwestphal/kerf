@@ -170,6 +170,65 @@ test('routes the generated application-layout composition at wide and narrow siz
   if (browserName === 'chromium') await page.screenshot({ path: 'test-results/component-catalog-layout-narrow.png', fullPage: true });
 });
 
+test('keeps the header-composition dialog on the shared inline gutter', async ({ page, browserName }) => {
+  const cases = [
+    { name: 'wide', width: 1440, height: 900, rootFontSize: '', direction: 'ltr', scale: 1 },
+    { name: 'narrow', width: 390, height: 844, rootFontSize: '', direction: 'ltr', scale: 1 },
+    { name: 'rtl', width: 1100, height: 760, rootFontSize: '', direction: 'rtl', scale: 1 },
+    { name: 'zoom-200', width: 720, height: 900, rootFontSize: '200%', direction: 'ltr', scale: 2 },
+  ] as const;
+
+  for (const layout of cases) {
+    await page.setViewportSize({ width: layout.width, height: layout.height });
+    await page.goto('/?component=headers');
+    await page.locator('html').evaluate((element, settings) => {
+      (element as HTMLElement).dir = settings.direction;
+      element.style.fontSize = settings.rootFontSize;
+    }, layout);
+
+    const geometry = await page.locator('[data-demo="headers"]').evaluate((demo) => {
+      const frame = demo.getBoundingClientRect();
+      const pageHeader = demo.querySelector<HTMLElement>('[data-component="page-header"]')!;
+      const dialog = demo.querySelector<HTMLElement>('.demo-dialog')!;
+      const pageHeaderRect = pageHeader.getBoundingClientRect();
+      const dialogRect = dialog.getBoundingClientRect();
+      const dialogStyle = window.getComputedStyle(dialog);
+      return {
+        frameLeft: frame.left,
+        frameRight: frame.right,
+        pageHeaderLeft: pageHeaderRect.left,
+        pageHeaderRight: pageHeaderRect.right,
+        dialogLeft: dialogRect.left,
+        dialogRight: dialogRect.right,
+        marginBlockStart: Number.parseFloat(dialogStyle.marginBlockStart),
+        marginBlockEnd: Number.parseFloat(dialogStyle.marginBlockEnd),
+        marginInlineStart: Number.parseFloat(dialogStyle.marginInlineStart),
+        marginInlineEnd: Number.parseFloat(dialogStyle.marginInlineEnd),
+        documentOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      };
+    });
+
+    expect(geometry).toMatchObject({
+      marginBlockStart: 16 * layout.scale,
+      marginBlockEnd: 16 * layout.scale,
+      marginInlineStart: 8 * layout.scale,
+      marginInlineEnd: 8 * layout.scale,
+    });
+    expect(Math.abs(geometry.dialogLeft - geometry.pageHeaderLeft)).toBeLessThan(0.1);
+    expect(Math.abs(geometry.dialogRight - geometry.pageHeaderRight)).toBeLessThan(0.1);
+    expect(geometry.dialogLeft).toBeGreaterThanOrEqual(geometry.frameLeft);
+    expect(geometry.dialogRight).toBeLessThanOrEqual(geometry.frameRight);
+    expect(geometry.documentOverflow).toBeLessThanOrEqual(1);
+
+    if (browserName === 'chromium') {
+      await page.screenshot({ path: `test-results/header-composition-${layout.name}.png`, fullPage: true });
+      if (layout.name === 'wide') {
+        await page.locator('[data-demo="headers"]').screenshot({ path: 'test-results/header-composition-reference-after.png' });
+      }
+    }
+  }
+});
+
 test('aligns ValueTable separators with icon-bearing and iconless row content', async ({ page, browserName }) => {
   await page.setViewportSize({ width: 1100, height: 760 });
   await page.goto('/?component=value-table');

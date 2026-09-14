@@ -464,7 +464,8 @@ button {
   font-weight: 650;
 }
 .demo-dialog {
-  margin: remify(16px);
+  margin-block: var(--kui-space-m, remify(16px));
+  margin-inline: var(--kui-layout-inline-margin, remify(8px));
   overflow: hidden;
   border: 1px solid var(--kui-color-border);
   border-radius: var(--kui-radius-m);
