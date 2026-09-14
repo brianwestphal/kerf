@@ -67,12 +67,12 @@ export const createRecipe: RecipeFactory = (announce) => {
     const selected = selectedIndex();
     let index = -1;
     return <section class="kui-recipe recipe-command-palette kui-content" data-recipe="recipe-command-palette">
-      <button class="kui-recipe__button kui-content-item" data-primary="true" type="button" data-action="recipe-action" data-recipe-command="open">Open command palette</button>
-      <p class="kui-recipe__ownership kui-content-item">The recipe owns modal, search, grouped-result, selection, keyboard, and focus anatomy. The app owns command registration, ranking, permissions, recent-history persistence, and dispatch.</p>
+      <button class="kui-recipe__button kui-content-item" data-primary="true" type="button" data-action="recipe-action" data-recipe-command="open">Try command palette</button>
+      <p class="kui-recipe__ownership kui-content-item">Find workspace-wide actions without leaving this task. Copyable recipe; not an @kerfjs/ui runtime export. Your app owns commands, ranking, permissions, history, shortcuts, and dispatch.</p>
       <wa-dialog class="recipe-command-palette__dialog" label="Command palette" without-header open={open.value}>
-        <DialogHeader title="Command palette" titleId="recipe-command-title" summary="Find an available workspace command." summaryId="recipe-command-summary" actions={<button class="kui-recipe__button" type="button" data-action="recipe-action" data-recipe-command="close">Close</button>} />
+        <DialogHeader title="Command palette" titleId="recipe-command-title" summary="Run workspace actions without leaving this task. Copyable recipe; not an @kerfjs/ui runtime export." summaryId="recipe-command-summary" actions={<button class="kui-recipe__button" type="button" data-action="recipe-action" data-recipe-command="close">Close</button>} />
         <div class="recipe-command-palette__body kui-content">
-          <label for="recipe-command-query">Search commands</label>
+          <label for="recipe-command-query">Search actions</label>
           <input id="recipe-command-query" class="recipe-command-palette__search" type="search" value={query.value} autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="true" aria-controls="recipe-command-results" aria-activedescendant={flat.length ? `recipe-command-option-${selected}` : undefined} aria-describedby="recipe-command-help" data-command-query data-recipe-input data-recipe-keydown />
           {flat.length ? <div id="recipe-command-results" class="recipe-command-palette__results" role="listbox" aria-label="Commands">
             {groups.map(({ group, commands: groupCommands }, groupIndex) => <section class="recipe-command-palette__group" role="group" aria-labelledby={`recipe-command-group-${groupIndex}`}>
@@ -83,7 +83,7 @@ export const createRecipe: RecipeFactory = (announce) => {
               })}
             </section>)}
           </div> : <div id="recipe-command-results" class="recipe-command-palette__empty" role="status"><strong>No matching commands</strong><span>Try another word or phrase.</span></div>}
-          <footer class="kui-metadata-row"><p class="recipe-command-palette__status" role="status">{flat.length} commands available</p><p id="recipe-command-help" class="recipe-command-palette__help">Arrow keys move · Enter runs · Escape closes</p></footer>
+          <footer class="kui-metadata-row"><p class="recipe-command-palette__status" role="status">{flat.length} matches</p><p id="recipe-command-help" class="recipe-command-palette__help">Arrow keys move · Enter runs · Escape closes</p></footer>
         </div>
       </wa-dialog>
     </section>;

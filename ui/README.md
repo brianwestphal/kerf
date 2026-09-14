@@ -9,7 +9,10 @@ recipes](./docs/recipes.md). Each has a stable catalog route, runnable state,
 public-subpath source, semantic layout ownership, and explicit application
 customization boundaries. The composer recipe demonstrates one coherent form
 surface with three transparent content sections; only persistent feedback adds
-a nested semantic `StateBanner` surface.
+a nested semantic `StateBanner` surface. The command-palette recipe demonstrates
+a keyboard-first way to find infrequent or workspace-wide actions without
+leaving the current task; application policy and dispatch remain outside the UI
+package.
 
 When no primitive matches, keep policy application-owned while reusing the
 layout vocabulary. The [command-palette recipe](./docs/recipes.md#command-palette)

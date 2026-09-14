@@ -145,6 +145,10 @@ replace only application copy, state, permissions, persistence, and transport.
 For the composer form, preserve one visible form surface, three transparent
 8/1/8 sections with 24px major rhythm, and a conditional `StateBanner` as the
 only nested semantic surface.
+Use the command-palette recipe for infrequent or workspace-wide actions that
+benefit from keyboard-first search without leaving the current task. Keep
+primary actions visible, and keep command registration, ranking, permissions,
+history, shortcut policy, dispatch, and copy in the application.
 
 When the app uses Web Awesome's broader free component set, import
 types with `import type {} from '@kerfjs/ui/webawesome'` and import

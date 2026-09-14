@@ -214,7 +214,8 @@
 }
 .recipe-command-palette__body {
   display: grid;
-  max-height: min(34rem, calc(100dvh - 8rem));
+  min-height: 0;
+  max-height: min(34rem, calc(100dvh - 18rem));
   grid-template-rows: auto auto minmax(0, 1fr) auto;
   gap: var(--kui-layout-item-gap);
   padding-block: var(--kui-layout-item-gap);

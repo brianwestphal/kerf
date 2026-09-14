@@ -100,11 +100,14 @@ and responsive priority.
 
 [Open the recipe](../ux-demo/?component=recipe-command-palette) · [TSX source](../ux-demo/recipes/command-palette.tsx)
 
-Use the copyable composition for a modal search field, grouped results,
-active-result semantics, Arrow/Home/End/Enter behavior, an empty state, and
-focus restoration. The application owns command registration, matching and
-ranking, permissions, persisted recent history, dispatch, and product copy.
-This is a production recipe, not an `@kerfjs/ui` command-palette export.
+Use a command palette when people need a keyboard-first way to find and run
+infrequent or workspace-wide actions without leaving their current task or
+hunting through menus. Keep primary actions visible instead of hiding them here.
+The copyable composition supplies the modal search field, grouped results,
+active-result semantics, Arrow/Home/End/Enter behavior, empty state, and focus
+restoration. The application owns command registration, matching and ranking,
+permissions, persisted recent history, shortcut policy, dispatch, and product
+copy. This is a production recipe, not an `@kerfjs/ui` command-palette export.
 
 ## Rules shared by every recipe
 

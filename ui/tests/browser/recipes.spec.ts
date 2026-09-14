@@ -310,28 +310,75 @@ test('runs dialog focus lifecycle, form validation, and every list transition', 
 });
 
 test('supports command palette search, keyboard selection, empty state, and focus restoration', async ({ page, browserName }) => {
+  await page.setViewportSize({ width: 1100, height: 900 });
   const recipe = await openRecipe(page, 'recipe-command-palette');
-  const launcher = recipe.getByRole('button', { name: 'Open command palette' });
+  const launcher = recipe.getByRole('button', { name: 'Try command palette' });
+  const ownership = recipe.locator('.kui-recipe__ownership');
+  await expect(ownership).toContainText('Find workspace-wide actions without leaving this task.');
+  await expect(ownership).toContainText('Copyable recipe; not an @kerfjs/ui runtime export.');
+  if (browserName === 'chromium') await page.screenshot({ path: 'test-results/command-palette-purpose-launcher-wide.png' });
+
   const dialog = page.locator('wa-dialog.recipe-command-palette__dialog');
   await activateDialogAndWaitForShow(dialog, () => launcher.click());
-  const search = dialog.getByRole('combobox', { name: 'Search commands' });
+  const search = dialog.getByRole('combobox', { name: 'Search actions' });
   await expect(search).toBeFocused();
+  await expect(dialog.locator('#recipe-command-summary')).toContainText('Run workspace actions without leaving this task.');
+  await expect(dialog.locator('#recipe-command-summary')).toContainText('Copyable recipe; not an @kerfjs/ui runtime export.');
   await expect(dialog.getByRole('group', { name: 'Recent commands' })).toBeVisible();
-  if (browserName === 'chromium') await page.screenshot({ path: 'test-results/recipe-command-palette-wide.png' });
+  if (browserName === 'chromium') await page.screenshot({ path: 'test-results/command-palette-purpose-wide-open.png' });
+
+  await search.fill('workspace');
+  await expect(dialog.getByRole('option')).toHaveCount(2);
+  await expect(dialog.getByRole('status').filter({ hasText: '2 matches' })).toBeVisible();
   await search.press('ArrowDown');
   await expect(search).toHaveAttribute('aria-activedescendant', 'recipe-command-option-1');
-  await search.fill('settings');
-  await expect(dialog.getByRole('option', { name: 'Open workspace settings' })).toBeVisible();
   await search.press('Enter');
+  await expect(dialog).toHaveJSProperty('open', false);
+  await expect(launcher).toBeFocused();
+  await expect(page.locator('.catalog-log')).toHaveText('Ran Open workspace settings');
+
+  await activateDialogAndWaitForShow(dialog, () => launcher.click());
+  await expect(dialog.getByRole('group', { name: 'Recent commands' }).getByRole('option', { name: 'Open workspace settings' })).toBeVisible();
+  await dialog.getByRole('button', { name: 'Close' }).click();
   await expect(dialog).toHaveJSProperty('open', false);
   await expect(launcher).toBeFocused();
 
   await page.setViewportSize({ width: 390, height: 844 });
   await activateDialogAndWaitForShow(dialog, () => launcher.click());
+  expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
+  if (browserName === 'chromium') await page.screenshot({ path: 'test-results/command-palette-purpose-narrow-open.png' });
   await search.fill('no such command');
   await expect(dialog.getByRole('status').filter({ hasText: 'No matching commands' })).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
-  if (browserName === 'chromium') await page.screenshot({ path: 'test-results/recipe-command-palette-empty.png' });
+  if (browserName === 'chromium') await page.screenshot({ path: 'test-results/command-palette-purpose-narrow-empty.png' });
+  await page.keyboard.press('Escape');
+  await expect(launcher).toBeFocused();
+
+  await page.setViewportSize({ width: 1100, height: 900 });
+  await page.locator('[data-action="toggle-theme"]').click();
+  await activateDialogAndWaitForShow(dialog, () => launcher.click());
+  if (browserName === 'chromium') await page.screenshot({ path: 'test-results/command-palette-purpose-dark-open.png' });
+  await page.keyboard.press('Escape');
+  await page.locator('[data-action="toggle-theme"]').click();
+
+  await page.setViewportSize({ width: 720, height: 1200 });
+  await page.locator('html').evaluate((element) => { element.style.fontSize = '200%'; });
+  await activateDialogAndWaitForShow(dialog, () => launcher.click());
+  await expect(dialog.locator('#recipe-command-summary')).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
+  const zoomGeometry = await dialog.evaluate((element) => {
+    const panel = element.shadowRoot!.querySelector<HTMLElement>('[part="dialog"]')!.getBoundingClientRect();
+    const footer = element.querySelector<HTMLElement>('.kui-metadata-row')!.getBoundingClientRect();
+    const help = element.querySelector<HTMLElement>('.recipe-command-palette__help')!.getBoundingClientRect();
+    const results = element.querySelector<HTMLElement>('.recipe-command-palette__results')!;
+    return {
+      footerInsideDialog: footer.top >= panel.top && footer.bottom <= panel.bottom,
+      helpInsideViewport: help.top >= 0 && help.bottom <= window.innerHeight,
+      resultsScrollable: results.scrollHeight > results.clientHeight,
+    };
+  });
+  expect(zoomGeometry).toEqual({ footerInsideDialog: true, helpInsideViewport: true, resultsScrollable: true });
+  if (browserName === 'chromium') await page.screenshot({ path: 'test-results/command-palette-purpose-zoom-200-corrected.png' });
   await page.keyboard.press('Escape');
   await expect(launcher).toBeFocused();
 });

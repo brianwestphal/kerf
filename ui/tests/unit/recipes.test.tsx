@@ -144,14 +144,20 @@ describe('production composition recipes', () => {
     const stop = mountRecipe(root, createCommandPalette((message) => announcements.push(message)));
 
     const launcher = root.querySelector<HTMLButtonElement>('[data-recipe-command="open"]')!;
+    expect(root.querySelector('.kui-recipe__ownership')?.textContent).toContain('Find workspace-wide actions without leaving this task.');
+    expect(root.querySelector('.kui-recipe__ownership')?.textContent).toContain('Copyable recipe; not an @kerfjs/ui runtime export.');
     launcher.click();
     const query = root.querySelector<HTMLInputElement>('[data-command-query]')!;
+    expect(root.querySelector('#recipe-command-summary')?.textContent).toContain('Run workspace actions without leaving this task.');
+    expect(root.querySelector('#recipe-command-summary')?.textContent).toContain('Copyable recipe; not an @kerfjs/ui runtime export.');
     expect(query.getAttribute('aria-activedescendant')).toBe('recipe-command-option-0');
     expect(root.textContent).toContain('Recent commands');
 
-    query.value = 'settings';
+    query.value = 'workspace';
     query.dispatchEvent(new InputEvent('input', { bubbles: true }));
-    expect(root.querySelectorAll('[role="option"]')).toHaveLength(1);
+    expect(root.querySelectorAll('[role="option"]')).toHaveLength(2);
+    query.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'ArrowDown' }));
+    expect(query.getAttribute('aria-activedescendant')).toBe('recipe-command-option-1');
     query.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'Enter' }));
     expect(announcements).toContain('Ran Open workspace settings');
 

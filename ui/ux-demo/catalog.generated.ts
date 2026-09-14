@@ -546,7 +546,7 @@ export const generatedKerfCatalog = [
     "category": "Recipes",
     "kind": "recipe",
     "source": "kerf",
-    "description": "A copyable modal command search with grouped results, keyboard selection, empty state, and focus restoration.",
+    "description": "Copyable keyboard-first search for workspace-wide actions without leaving the task.",
     "uses": [
       "dialog-header",
       "wa-dialog",

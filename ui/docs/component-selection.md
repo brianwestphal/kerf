@@ -38,13 +38,16 @@ copyable reference compositions, not new monolithic components.
 
 Kerf UI does not export a command-palette component. Start from the
 [production command-palette recipe](./recipes.md#command-palette) for its modal,
-search, grouped-result, keyboard, empty-state, and focus contract; do not invent
-a package command-palette import or present the recipe as a runtime export.
+search, grouped-result, keyboard, empty-state, and focus contract when people
+need to find infrequent or workspace-wide actions without leaving their current
+task. Keep primary actions visible; do not invent a package command-palette
+import or present the recipe as a runtime export.
 The typed [application adapter example](./examples/command-palette-adapter.tsx)
 imports `@kerfjs/ui/layout.css`, assigns one `.kui-layout` root and one surface
 inset, and groups its related footer commands with `.kui-control-cluster` while
-the application owns ranking, history, shortcuts, focus policy, availability,
-actions, and copy. Use it when the complete modal recipe is unnecessary.
+the application owns ranking, history, shortcut policy, focus policy,
+availability, actions, and copy. Use it when the complete modal recipe is
+unnecessary.
 
 ## Problem-to-component matrix
 
