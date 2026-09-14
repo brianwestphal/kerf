@@ -98,18 +98,34 @@ test('sizes and rotates the first-class disclosure arrow while Select keeps its 
   await page.setViewportSize({ width: 1100, height: 760 });
   await page.goto('/?component=disclosure-arrow');
   const demo = page.locator('[data-demo="disclosure-arrow"]');
-  const button = demo.getByRole('button');
+  const button = demo.locator('[data-action="toggle-disclosure"]');
+  const customButton = demo.locator('[data-action="toggle-custom-disclosure"]');
   const arrow = button.locator('[data-component="disclosure-arrow"]');
+  const customArrow = customButton.locator('[data-component="disclosure-arrow"]');
   const arrowSize = () => arrow.evaluate((element) => {
     const bounds = element.getBoundingClientRect();
     return { width: bounds.width, height: bounds.height };
   });
+  const labelsContained = () => demo.evaluate((element) => [...element.querySelectorAll('button')].every((control) => {
+    const controlBounds = control.getBoundingClientRect();
+    const labelBounds = control.querySelector('span:last-child')!.getBoundingClientRect();
+    return labelBounds.left >= controlBounds.left && labelBounds.right <= controlBounds.right
+      && labelBounds.top >= controlBounds.top && labelBounds.bottom <= controlBounds.bottom;
+  }));
 
   await expect(arrow).toHaveAttribute('data-open', 'false');
   await expect(arrow).toHaveAttribute('data-direction', 'right');
   await expect(arrow).toHaveCSS('transform', 'matrix(1, 0, 0, 1, 0, 0)');
+  await expect(button).toHaveAccessibleName('Default: closed right, open down');
   expect(await arrowSize()).toEqual({ width: 18, height: 18 });
   if (browserName === 'chromium') await button.screenshot({ path: 'test-results/disclosure-arrow-default-18px.png' });
+  await expect(customButton).toHaveAttribute('aria-expanded', 'false');
+  await expect(customButton).toHaveAccessibleName('Replacement: closed left, open up');
+  await expect(customArrow).toHaveAttribute('data-direction', 'left');
+  await expect(customArrow.locator('[data-lucide="arrow-right"]')).toBeVisible();
+  await expect(customArrow).toHaveCSS('transform', 'matrix(-1, 0, 0, -1, 0, 0)');
+  expect(await labelsContained()).toBe(true);
+  if (browserName === 'chromium') await demo.screenshot({ path: 'test-results/disclosure-arrow-replacement-wide.png' });
 
   await arrow.evaluate((element) => { (element as HTMLElement).style.setProperty('--kui-disclosure-arrow-size', '2rem'); });
   expect(await arrowSize()).toEqual({ width: 32, height: 32 });
@@ -121,17 +137,51 @@ test('sizes and rotates the first-class disclosure arrow while Select keeps its 
   await expect(arrow).toHaveAttribute('data-open', 'true');
   await expect(arrow).toHaveAttribute('data-direction', 'down');
   await expect.poll(async () => arrow.evaluate((element) => window.getComputedStyle(element).transform)).toBe('matrix(0, 1, -1, 0, 0, 0)');
-  await expect(demo.locator('[data-lucide="arrow-down-a-z"]')).toBeVisible();
+  await expect(customButton).toHaveAttribute('aria-expanded', 'false');
   if (browserName === 'chromium') await button.screenshot({ path: 'test-results/disclosure-arrow-open.png' });
 
-  await button.click();
-  await expect(button).toHaveAttribute('aria-expanded', 'false');
-  await expect.poll(async () => arrow.evaluate((element) => window.getComputedStyle(element).transform)).toBe('matrix(1, 0, 0, 1, 0, 0)');
+  await customButton.click();
+  await expect(customButton).toHaveAttribute('aria-expanded', 'true');
+  await expect(customButton).toHaveAccessibleName('Replacement: closed left, open up');
+  await expect(customArrow).toHaveAttribute('data-open', 'true');
+  await expect(customArrow).toHaveAttribute('data-direction', 'up');
+  await expect.poll(async () => customArrow.evaluate((element) => window.getComputedStyle(element).transform)).toBe('matrix(0, -1, 1, 0, 0, 0)');
+  await expect(button).toHaveAttribute('aria-expanded', 'true');
+  await expect(page.locator('.catalog-log')).toHaveText('Custom disclosure opened');
 
-  await page.setViewportSize({ width: 1600, height: 900 });
+  await customButton.press('Space');
+  await expect(customButton).toHaveAttribute('aria-expanded', 'false');
+  await expect(button).toHaveAttribute('aria-expanded', 'true');
+  await expect(page.locator('.catalog-log')).toHaveText('Custom disclosure closed');
+  await customButton.press('Enter');
+  await expect(customButton).toHaveAttribute('aria-expanded', 'true');
+  await expect(button).toHaveAttribute('aria-expanded', 'true');
+  await expect(page.locator('.catalog-log')).toHaveText('Custom disclosure opened');
+  await expect.poll(async () => customArrow.evaluate((element) => window.getComputedStyle(element).transform)).toBe('matrix(0, -1, 1, 0, 0, 0)');
+  await expect(customButton).toBeFocused();
+  if (browserName === 'chromium') await demo.screenshot({ path: 'test-results/disclosure-arrow-replacement-focused-open-context.png' });
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  expect(await demo.evaluate((element) => window.getComputedStyle(element).gridTemplateColumns.trim().split(/\s+/))).toHaveLength(1);
+  if (browserName === 'chromium') await demo.screenshot({ path: 'test-results/disclosure-arrow-replacement-narrow-stable.png' });
+
+  await page.setViewportSize({ width: 720, height: 900 });
   await page.locator('html').evaluate((element) => { element.style.fontSize = '200%'; });
   expect(await arrowSize()).toEqual({ width: 36, height: 36 });
-  if (browserName === 'chromium') await button.screenshot({ path: 'test-results/disclosure-arrow-default-zoom-200.png' });
+  const zoomGeometry = await demo.evaluate((element) => ({
+    columns: window.getComputedStyle(element).gridTemplateColumns.trim().split(/\s+/).length,
+    labelsContained: [...element.querySelectorAll('button')].every((control) => {
+      const controlBounds = control.getBoundingClientRect();
+      const labelBounds = control.querySelector('span:last-child')!.getBoundingClientRect();
+      return labelBounds.left >= controlBounds.left && labelBounds.right <= controlBounds.right
+        && labelBounds.top >= controlBounds.top && labelBounds.bottom <= controlBounds.bottom;
+    }),
+  }));
+  expect(zoomGeometry).toEqual({ columns: 1, labelsContained: true });
+  if (browserName === 'chromium') {
+    await button.screenshot({ path: 'test-results/disclosure-arrow-default-zoom-200.png' });
+    await demo.screenshot({ path: 'test-results/disclosure-arrow-replacement-zoom-200.png' });
+  }
 
   await page.setViewportSize({ width: 1100, height: 760 });
   await page.goto('/?component=select');

@@ -28,7 +28,7 @@ import { reorderTabs, wireTabBars } from '@kerfjs/ui/wire-tab-bars';
 import { wireTokenSearchFields } from '@kerfjs/ui/wire-token-search-fields';
 import { batch, delegate, delegateCapture, mount, signal } from 'kerfjs';
 import { delegateActions } from 'kerfjs/actions';
-import { ArrowDownAZ, Bell, Check, ChevronDown, ChevronLeft, ChevronRight, CircleHelp, Columns3, Contrast, Folder, GitCompare, GripVertical, Inbox, List, Moon, MoreHorizontal, PanelLeft, PanelLeftOpen, Pin, Plus, Search, Settings, SlidersHorizontal, Star, Wrench, X, ZapOff } from 'lucide';
+import { ArrowDownAZ, ArrowRight, Bell, Check, ChevronDown, ChevronLeft, ChevronRight, CircleHelp, Columns3, Contrast, Folder, GitCompare, GripVertical, Inbox, List, Moon, MoreHorizontal, PanelLeft, PanelLeftOpen, Pin, Plus, Search, Settings, SlidersHorizontal, Star, Wrench, X, ZapOff } from 'lucide';
 
 import { catalog, catalogEntriesUsing, type CatalogEntry, type CatalogId, catalogRepositoryHref, catalogSections, findCatalogEntry, isCatalogId, type KerfCatalogId, webAwesomeCatalog, type WebAwesomeCatalogId, webAwesomeCatalogSections } from './catalog.js';
 import { isRecipeId, type RecipeId, recipeLoaders } from './recipes/loaders.js';
@@ -56,6 +56,7 @@ const tabBarTabs = signal([
 let nextDemoTabNumber = tabBarTabs.value.length + 1;
 const selectedChoice = signal('balanced');
 const disclosureOpen = signal(false);
+const customDisclosureOpen = signal(false);
 const tokenSearchQuery = signal('NOT  AND parser');
 const tokenSearchTokens = signal<TokenSearchToken[]>([
   { value: 'tag:client', label: 'tag:client', offset: 4, accessibleLabel: 'client tag' },
@@ -102,12 +103,12 @@ function DisclosureArrowDemo() {
   return <div class="demo-disclosure-grid" data-demo="disclosure-arrow">
     <button type="button" data-action="toggle-disclosure" aria-expanded={String(disclosureOpen.value)}>
       <DisclosureArrow open={disclosureOpen.value} />
-      <span>{disclosureOpen.value ? 'Open' : 'Closed'}: right to down</span>
+      <span>Default: closed right, open down</span>
     </button>
-    <div>
-      <DisclosureArrow open openDirection="up" closedDirection="left" icon={icon(ArrowDownAZ, 'arrow-down-a-z')} />
-      <span>Replacement icon, open direction up</span>
-    </div>
+    <button type="button" data-action="toggle-custom-disclosure" aria-expanded={String(customDisclosureOpen.value)}>
+      <DisclosureArrow open={customDisclosureOpen.value} openDirection="up" closedDirection="left" icon={icon(ArrowRight, 'arrow-right')} />
+      <span>Replacement: closed left, open up</span>
+    </button>
   </div>;
 }
 
@@ -612,6 +613,7 @@ if (findCatalogEntry(initialDemo)?.source === 'webawesome') revealSelectedSideba
 
 const stopActions = delegateActions(app, 'click', {
   'toggle-disclosure': () => { disclosureOpen.value = !disclosureOpen.value; actionLog.value = disclosureOpen.value ? 'Disclosure opened' : 'Disclosure closed'; },
+  'toggle-custom-disclosure': () => { customDisclosureOpen.value = !customDisclosureOpen.value; actionLog.value = customDisclosureOpen.value ? 'Custom disclosure opened' : 'Custom disclosure closed'; },
   'select-demo': (_event, element) => {
     const id = element.getAttribute('data-item-id');
     if (id) selectDemo(id);

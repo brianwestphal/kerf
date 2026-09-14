@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Repaired the `DisclosureArrow` UX specimen by replacing its ambiguous sorting glyph with a right-facing arrow, putting both examples in independently controlled native buttons with stable names and `aria-expanded`, and demonstrating custom directions through delegated pointer and keyboard activation across narrow and 200%-zoom layouts.
 - Set `DisclosureArrow` to an 18px root-scaled default, removed the catalog-only 24px enlargement, retained `--kui-disclosure-arrow-size` for scoped consumer overrides, and kept Kerf `Select` on its independent `.5` Web Awesome expand-glyph scale.
 - Added a site-scoped CI dependency audit that includes the complete static-site build tree and fails on high or critical advisories while keeping low/moderate development-tool findings informational.
 - Aligned the UX catalog's header-composition dialog with the shared 8px inline layout gutter while preserving its 16px vertical separation.

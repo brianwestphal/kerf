@@ -593,8 +593,7 @@ button {
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: remify(16px);
 }
-.demo-disclosure-grid > button,
-.demo-disclosure-grid > div {
+.demo-disclosure-grid > button {
   display: flex;
   min-height: remify(96px);
   padding: remify(20px);
@@ -606,9 +605,12 @@ button {
   align-items: center;
   gap: remify(12px);
   text-align: start;
-}
-.demo-disclosure-grid > button {
   cursor: pointer;
+}
+.demo-disclosure-grid > button > span:last-child {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  white-space: normal;
 }
 .demo-spinner-grid article {
   min-height: remify(160px);
@@ -1518,6 +1520,9 @@ button {
   .catalog-relationships__select {
     width: 100%;
   }
+  .demo-disclosure-grid {
+    grid-template-columns: 1fr;
+  }
   .demo-resize-shell {
     overflow-x: auto;
   }
@@ -1554,7 +1559,6 @@ button {
     flex-wrap: wrap;
   }
   .demo-icon-grid,
-  .demo-disclosure-grid,
   .demo-spinner-grid,
   .demo-empty-grid {
     grid-template-columns: 1fr;

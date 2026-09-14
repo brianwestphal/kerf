@@ -111,7 +111,9 @@ disabled states, focus, and click ownership. Its `label`, `icon`, and
 `--kui-disclosure-arrow-size` at the narrowest useful scope when a consumer
 needs another size; the owning control still supplies interaction, naming, and
 expanded state. Kerf `Select` retains its independent Web Awesome expand-glyph
-scale of `.5` through `--kui-disclosure-icon-scale`.
+scale of `.5` through `--kui-disclosure-icon-scale`. Author replacement
+`DisclosureArrow` icon content facing right before its configured direction
+transform is applied.
 
 ## Machine-readable catalog
 

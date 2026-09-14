@@ -61,7 +61,7 @@
       "category": "Foundation",
       "kind": "component",
       "source": "kerf",
-      "description": "Root-scaled 18px animated open and closed disclosure indicator with configurable directions and icon content.",
+      "description": "Root-scaled 18px animated open and closed disclosure indicator with configurable directions and right-oriented replacement icon content.",
       "uses": [
         "lucide-icon"
       ],
@@ -70,7 +70,7 @@
         "DisclosureArrow"
       ],
       "useWhen": [
-        "Add a rotating indicator to a control that owns open and closed state."
+        "Add a rotating indicator to a control that owns open and closed state; author replacement icon content facing right before direction transforms are applied."
       ],
       "avoidWhen": [
         "Do not use the arrow as the interactive control or accessible name by itself."
@@ -88,7 +88,7 @@
         "replacement icon"
       ],
       "accessibility": [
-        "The arrow is decorative; expose expanded state on its owning control."
+        "The arrow is decorative; expose expanded state through aria-expanded on its owning control and keep that control's accessible name stable."
       ],
       "delivery": {
         "browserImport": "@kerfjs/ui/disclosure-arrow",
