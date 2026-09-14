@@ -274,6 +274,8 @@ describe('consumer bundle boundaries', () => {
     const menuHeaderSource = await readFile(new URL('../../src/menu-header.css', import.meta.url), 'utf8');
     const menuHeaderBuilt = await readFile(new URL('../../dist/styles/menu-header.css', import.meta.url), 'utf8');
     const selectBuilt = await readFile(new URL('../../dist/styles/select.css', import.meta.url), 'utf8');
+    const valueTableSource = await readFile(new URL('../../src/value-table.css', import.meta.url), 'utf8');
+    const valueTableBuilt = await readFile(new URL('../../dist/styles/value-table.css', import.meta.url), 'utf8');
 
     expect(source).toContain('remify(40px)');
     expect(built).toContain('2.5rem');
@@ -296,5 +298,8 @@ describe('consumer bundle boundaries', () => {
     expect(menuHeaderBuilt).not.toContain('.kui-menu-header__toggle[aria-expanded');
     expect(menuHeaderBuilt).not.toContain('remify(');
     expect(selectBuilt).toContain('scale(var(--kui-disclosure-icon-scale, 0.5))');
+    expect(valueTableSource).toContain('padding-block: remify(8px)');
+    expect(valueTableBuilt).toContain('padding-block: 0.5rem');
+    expect(valueTableBuilt).not.toContain('remify(');
   });
 });

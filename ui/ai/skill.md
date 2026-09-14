@@ -1,7 +1,7 @@
 ---
 name: kerf-ui
 description: Build interfaces with kerfjs and the @kerfjs/ui production component package. Use whenever code imports @kerfjs/ui or a task asks for Kerf UI components.
-kerf-ui-skill-version: 1.30.0
+kerf-ui-skill-version: 1.31.0
 ---
 
 # Building with @kerfjs/ui
@@ -63,7 +63,7 @@ Hard rules:
 15. Build sidebars, main areas, inspectors, and dialogs from `@kerfjs/ui/layout.css`: an unpadded `.kui-pane`, optional `.kui-pane__toolbar`, one scrolling `.kui-pane__content`, and optional `.kui-pane__footer`. Add `.kui-content` for 24px major vertical separation and `.kui-content-item` for a child-owned 8px inline margin, 1px transparent-or-visible border, 8px padding, and 12px radius. Use the pill modifier for 22px. Do not pad pane shells or duplicate item geometry in wrappers.
 16. Wrap every toolbar item, including dormant text, in `ToolbarControlGroup`. A group remains 44px outside (`calc(2px + remify(42px))`) when its border/background are transparent; use 8px between groups and inside items. Split dormant and interactive regions: `MenuHeader` fills the available inline width and keeps its label and mutually exclusive semantic count or non-count `badge` together, with an independent logical-end 44px action unless disclosure mode makes the title cluster the button. Its action visual defaults to 18px through `--kui-menu-header-action-icon-size`; never shrink the target to match it. Pass every non-negative safe-integer section quantity through `count` with a localized full spoken `countLabel`; never concatenate it into `label` or put a number in `badge`. `MenuItem.trailing` is dormant; use `MenuActionRow` when primary and trailing actions need sibling 44px native buttons. Its `label`, `icon`, and `trailingActionIcon` slots are also dormant and cannot contain controls. Let panes relocate at narrow widths instead of shrinking targets.
 17. When a recurring concept has no matching export or production recipe, keep its semantics in a thin application adapter while reusing the public layout vocabulary. The composer recipe uses one visible form surface, exactly three transparent 8/1/8 content sections, 24px major rhythm, and a conditional StateBanner as its only nested semantic surface; do not turn every section into a card. The application-local `../docs/examples/command-palette-adapter.tsx` is reference source for one such missing concept, not an `@kerfjs/ui` runtime export or catalog recipe. The application owns its registration, ranking, history, permissions, availability, shortcut policy, focus policy, dispatch, and copy. If a missing concept recurs across products, open an upstream component or recipe request.
-18. Compose `ValueTable` from typed `ValueTableRow` entries instead of handwritten `dt`/`dd` wrappers. Pass `icon` for the optional 24px leading visual; the row owns the 8px iconless or 40px icon-bearing separator start and the common 8px right inset.
+18. Compose `ValueTable` from typed `ValueTableRow` entries instead of handwritten `dt`/`dd` wrappers. Pass `icon` for the optional 24px leading visual; the row owns 8px of root-scaled top and bottom padding, the 8px iconless or 40px icon-bearing separator start, and the common 8px right inset.
 
 Common mistakes:
 
@@ -86,4 +86,4 @@ Common mistakes:
 | Put bare text or controls directly in a toolbar slot | Wrap every item in `ToolbarControlGroup`, using `appearance="borderless"` for transparent chrome |
 | Let the document, pane, and list all scroll | Keep fixed chrome outside one `.kui-pane__content` scroll owner per pane |
 | Invent an `@kerfjs/ui` command-palette export | Keep the semantics application-local, reuse public layout vocabulary, and propose recurring behavior upstream |
-| Handwrite `ValueTable` row wrappers or compensate their separators | Compose `ValueTableRow`; its optional icon hook and separator geometry are public contract |
+| Handwrite `ValueTable` row wrappers or compensate their padding or separators | Compose `ValueTableRow`; its root-scaled block padding, optional icon hook, and separator geometry are public contract |

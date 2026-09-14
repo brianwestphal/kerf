@@ -360,33 +360,61 @@ test('keeps the header-composition dialog on the shared inline gutter', async ({
   }
 });
 
-test('aligns ValueTable separators with icon-bearing and iconless row content', async ({ page, browserName }) => {
-  await page.setViewportSize({ width: 1100, height: 760 });
-  await page.goto('/?component=value-table');
-  const demo = page.locator('[data-demo="value-table"]');
-  const rows = demo.locator('.kui-value-table__row');
-  await expect(rows).toHaveCount(3);
+test('keeps ValueTableRow block padding root-scaled and separators aligned', async ({ page, browserName }) => {
+  const layouts = [
+    { name: 'wide', width: 1100, height: 760, fontSize: '100%', scale: 1, inlinePadding: 8 },
+    { name: 'narrow', width: 390, height: 844, fontSize: '100%', scale: 1, inlinePadding: 8 },
+    { name: 'zoom', width: 1100, height: 760, fontSize: '200%', scale: 2, inlinePadding: 8 },
+    { name: 'compact-inline', width: 1100, height: 760, fontSize: '100%', scale: 1, inlinePadding: 4 },
+  ] as const;
 
-  const geometry = await rows.evaluateAll((elements) => elements.slice(1).map((element) => {
-    const row = element as HTMLElement;
-    const rowRect = row.getBoundingClientRect();
-    const separator = window.getComputedStyle(row, '::before');
-    const icon = row.querySelector<HTMLElement>('.kui-value-table__icon');
-    const label = row.querySelector<HTMLElement>('.kui-value-table__label')!;
-    return {
-      hasIcon: row.dataset.hasIcon,
-      separatorLeft: Number.parseFloat(separator.left),
-      separatorRight: Number.parseFloat(separator.right),
-      iconWidth: icon?.getBoundingClientRect().width ?? 0,
-      labelInset: label.getBoundingClientRect().left - rowRect.left,
-    };
-  }));
+  for (const layout of layouts) {
+    await page.setViewportSize({ width: layout.width, height: layout.height });
+    await page.goto('/?component=value-table');
+    await page.locator('html').evaluate((element, fontSize) => { element.style.fontSize = fontSize; }, layout.fontSize);
+    const demo = page.locator('[data-demo="value-table"]');
+    if (layout.name === 'compact-inline') {
+      await demo.evaluate((element) => { (element as HTMLElement).style.setProperty('--kui-layout-item-padding', '.25rem'); });
+    }
+    const rows = demo.locator('.kui-value-table__row');
+    await expect(rows).toHaveCount(3);
 
-  expect(geometry).toEqual([
-    { hasIcon: 'true', separatorLeft: 40, separatorRight: 8, iconWidth: 24, labelInset: 40 },
-    { hasIcon: 'false', separatorLeft: 8, separatorRight: 8, iconWidth: 0, labelInset: 8 },
-  ]);
-  if (browserName === 'chromium') await page.screenshot({ path: 'test-results/value-table-separator-insets.png', fullPage: true });
+    const geometry = await rows.evaluateAll((elements) => elements.map((element) => {
+      const row = element as HTMLElement;
+      const rowRect = row.getBoundingClientRect();
+      const rowStyle = window.getComputedStyle(row);
+      const separator = window.getComputedStyle(row, '::before');
+      const icon = row.querySelector<HTMLElement>('.kui-value-table__icon');
+      const label = row.querySelector<HTMLElement>('.kui-value-table__label')!;
+      return {
+        hasIcon: row.dataset.hasIcon,
+        paddingBlockStart: Number.parseFloat(rowStyle.paddingBlockStart),
+        paddingBlockEnd: Number.parseFloat(rowStyle.paddingBlockEnd),
+        separatorLeft: Number.parseFloat(separator.left),
+        separatorRight: Number.parseFloat(separator.right),
+        iconWidth: icon?.getBoundingClientRect().width ?? 0,
+        labelInset: label.getBoundingClientRect().left - rowRect.left,
+      };
+    }));
+
+    for (const row of geometry) {
+      expect(row.paddingBlockStart).toBeCloseTo(8 * layout.scale, 4);
+      expect(row.paddingBlockEnd).toBeCloseTo(8 * layout.scale, 4);
+    }
+    for (const [index, row] of geometry.slice(1).entries()) {
+      const expected = index === 0
+        ? { separatorLeft: layout.inlinePadding + 32, separatorRight: layout.inlinePadding, iconWidth: 24, labelInset: layout.inlinePadding + 32 }
+        : { separatorLeft: layout.inlinePadding, separatorRight: layout.inlinePadding, iconWidth: 0, labelInset: layout.inlinePadding };
+      expect(row.separatorLeft).toBeCloseTo(expected.separatorLeft * layout.scale, 4);
+      expect(row.separatorRight).toBeCloseTo(expected.separatorRight * layout.scale, 4);
+      expect(row.iconWidth).toBeCloseTo(expected.iconWidth * layout.scale, 4);
+      expect(row.labelInset).toBeCloseTo(expected.labelInset * layout.scale, 4);
+    }
+
+    if (browserName === 'chromium' && layout.name !== 'zoom') {
+      await page.screenshot({ path: `test-results/value-table-padding-${layout.name}.png`, fullPage: true });
+    }
+  }
 });
 
 test('keeps token-search focus and caret when Delete removes a controlled token', async ({ page, browserName }) => {

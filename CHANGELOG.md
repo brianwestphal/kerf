@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Gave every `ValueTableRow` 8px of root-scaled top and bottom padding while preserving its semantic inline inset and icon-aware separator alignment.
 - Fixed the composer-form recipe's Reset action so upgraded Web Awesome input and textarea controls clear their live displayed values together with the controlled Kerf state, while retaining the `Draft reset` announcement.
 - Removed the unsolicited command-palette catalog demo and production recipe while retaining the earlier, independent application-local adapter example for missing-concept guidance.
 - Kept the `ResizableRegion` UX specimen readable by moving committed-width status below the controlled pane at narrow widths, preserving its 200% root-scaled split, and retaining local scroll access to the handle at its maximum size.

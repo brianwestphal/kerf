@@ -118,11 +118,13 @@ double child-owned geometry with wrapper insets, or create competing scroll
 owners. The [layout contract](./layout.md) lists the public roles and tokens.
 
 `ValueTable` composes typed `ValueTableRow` entries. A row owns its `dt`/`dd`
-semantics and may receive a leading `SafeHtml` icon. Separators follow the
-content they introduce: 8px from either edge for an iconless row, or 40px from
-the left edge (8px padding + 24px icon + 8px gap) and 8px from the right edge
-for an icon-bearing row. Applications own the values, formatting, and whether
-an icon is decorative or meaningfully labeled.
+semantics and may receive a leading `SafeHtml` icon. Every row keeps 8px of
+root-scaled padding above and below its content; the shared item-padding token
+continues to own its inline inset. Separators follow the content they introduce:
+8px from either edge for an iconless row, or 40px from the left edge (8px
+padding + 24px icon + 8px gap) and 8px from the right edge for an icon-bearing
+row. Applications own the values, formatting, and whether an icon is decorative
+or meaningfully labeled.
 
 ## Imports and side effects
 
