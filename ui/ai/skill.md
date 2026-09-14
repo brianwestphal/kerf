@@ -1,7 +1,7 @@
 ---
 name: kerf-ui
 description: Build interfaces with kerfjs and the @kerfjs/ui production component package. Use whenever code imports @kerfjs/ui or a task asks for Kerf UI components.
-kerf-ui-skill-version: 1.24.0
+kerf-ui-skill-version: 1.25.0
 ---
 
 # Building with @kerfjs/ui
@@ -61,7 +61,7 @@ Hard rules:
 13. The Web Awesome theme makes Tooltip and Popover arrowless by default. Keep that default unless a pointer materially clarifies the anchor; opt back in with `--wa-tooltip-arrow-size`, `--kui-wa-popover-arrow-size`, or a popover's public `--arrow-size`, and use `without-arrow` when local no-arrow intent should survive theme changes.
 14. Treat the complete Web Awesome catalog as support coverage, not a recommendation list. Consider Popup when it replaces custom anchored positioning. Prefer Kerf `Select` over direct Dropdown/Dropdown Item/Select/Option composition, `SegmentedControl` over Button Group, `TabBar` or `SegmentedControl` over Web Awesome Tabs, `LucideIcon` over Web Awesome Icon, and `ResizableRegion` over Split Panel. Use Tree/Tree Item, Animated Image, and Comparison only for a specific required behavior; avoid Zoomable Frame.
 15. Build sidebars, main areas, inspectors, and dialogs from `@kerfjs/ui/layout.css`: an unpadded `.kui-pane`, optional `.kui-pane__toolbar`, one scrolling `.kui-pane__content`, and optional `.kui-pane__footer`. Add `.kui-content` for 24px major vertical separation and `.kui-content-item` for a child-owned 8px inline margin, 1px transparent-or-visible border, 8px padding, and 12px radius. Use the pill modifier for 22px. Do not pad pane shells or duplicate item geometry in wrappers.
-16. Wrap every toolbar item, including dormant text, in `ToolbarControlGroup`. A group remains 44px outside (`calc(2px + remify(42px))`) when its border/background are transparent; use 8px between groups and inside items. Split dormant and interactive regions: `MenuHeader` keeps its label and optional `badge` together, with an independent 44px action unless disclosure mode makes the title cluster the button. `MenuItem.trailing` is dormant; use `MenuActionRow` when primary and trailing actions need sibling 44px native buttons. Its `label`, `icon`, and `trailingActionIcon` slots are also dormant and cannot contain controls. Let panes relocate at narrow widths instead of shrinking targets.
+16. Wrap every toolbar item, including dormant text, in `ToolbarControlGroup`. A group remains 44px outside (`calc(2px + remify(42px))`) when its border/background are transparent; use 8px between groups and inside items. Split dormant and interactive regions: `MenuHeader` keeps its label and mutually exclusive semantic count or non-count `badge` together, with an independent 44px action unless disclosure mode makes the title cluster the button. Pass every non-negative safe-integer section quantity through `count` with a localized full spoken `countLabel`; never concatenate it into `label` or put a number in `badge`. `MenuItem.trailing` is dormant; use `MenuActionRow` when primary and trailing actions need sibling 44px native buttons. Its `label`, `icon`, and `trailingActionIcon` slots are also dormant and cannot contain controls. Let panes relocate at narrow widths instead of shrinking targets.
 17. When a recurring concept has no matching export, look for a production recipe before building custom markup. The command-palette recipe owns modal/search/result semantics, keyboard selection, empty state, and focus restoration without claiming a runtime export. Its application adapter owns ranking, history, permissions, availability, actions, and copy; use the smaller `../docs/examples/command-palette-adapter.tsx` only when the complete modal composition is unnecessary.
 18. Compose `ValueTable` from typed `ValueTableRow` entries instead of handwritten `dt`/`dd` wrappers. Pass `icon` for the optional 24px leading visual; the row owns the 8px iconless or 40px icon-bearing separator start and the common 8px right inset.
 
@@ -74,6 +74,7 @@ Common mistakes:
 | `role="menuitem"` on one button | Use the native button, or implement the complete ARIA menu widget |
 | Put a button/link/interactive role in `MenuItem.trailing` or a `MenuActionRow` SafeHtml slot | Use `MenuActionRow` for the sibling controls and keep its label/icon slots dormant |
 | Copy MenuItem/MenuHeader markup to add product data or a popover target | Use the typed `rootAttributes`/`triggerAttributes` slots and retain the component's protected semantics |
+| Concatenate a section count into a MenuHeader label or numeric badge | Pass `count={value}` and a localized full phrase such as `countLabel="3 notes"`; reserve `badge` for non-count SafeHtml |
 | Test only a custom-element attribute | Assert live property, emitted event, focus, and rendered output |
 | Import all Web Awesome components | Import only `@kerfjs/ui/select/register` for `Select`, or individual Web Awesome modules for other controls; `webawesome.css` registers no JavaScript |
 | Write `wa-*` JSX without activating its types | Add `import type {} from '@kerfjs/ui/webawesome'`; registration and theme imports remain separate |

@@ -128,6 +128,50 @@ describe('local AI regression foundation', () => {
     expect(result.diagnostics.every(({ file }) => !file || file.startsWith('response/'))).toBe(true);
   });
 
+  it('compiles and scores semantic MenuHeader counts while rejecting each ambiguous composition', async () => {
+    const [catalog, valid, competing, missingLabel, numericBadge, labelCount] = await Promise.all([
+      readJson('ai/component-catalog.json'),
+      readJson('ai-regressions/fixtures/responses/menu-header-count-valid.json'),
+      readJson('ai-regressions/fixtures/responses/menu-header-count-invalid.json'),
+      readJson('ai-regressions/fixtures/responses/menu-header-count-missing-label.json'),
+      readJson('ai-regressions/fixtures/responses/menu-header-count-numeric-badge.json'),
+      readJson('ai-regressions/fixtures/responses/menu-header-count-in-label.json'),
+    ]);
+    const validResult = await compileAiRegressionResponse(root, valid);
+    const competingResult = await compileAiRegressionResponse(root, competing);
+    const missingLabelResult = await compileAiRegressionResponse(root, missingLabel);
+    expect(validResult.passed).toBe(true);
+    expect(competingResult.passed).toBe(false);
+    expect(missingLabelResult.passed).toBe(false);
+
+    const definition = {
+      id: 'menu-header-count-contract',
+      requiredComponentIds: ['menu-header'],
+      requiredImports: ['@kerfjs/ui/menu-header'],
+      requiredClasses: [],
+      requiredWiring: [],
+      forbiddenComponentIds: [],
+      forbiddenPatterns: [],
+      forbidHardcodedSpacing: false,
+      maxScrollOwners: 0,
+      requiresFollowUp: false,
+    };
+    const expected = [
+      [valid, []],
+      [competing, ['duplicate:menu-header-count-badge']],
+      [missingLabel, ['a11y:menu-header-count-label']],
+      [numericBadge, ['duplicate:menu-header-numeric-badge']],
+      [labelCount, ['duplicate:menu-header-label-count']],
+    ] as const;
+    for (const [fixture, failedCodes] of expected) {
+      const result = scoreAiRegression(definition, fixture, catalog);
+      const failed = result.checks.filter(({ pass }) => !pass).map(({ code }) => code);
+      expect(failed, JSON.stringify(fixture)).toEqual(failedCodes);
+    }
+    const historical = scoreAiRegression(definition, numericBadge, catalog, { legacyPublicBoundary: true });
+    expect(historical.checks.some(({ code }) => code === 'duplicate:menu-header-numeric-badge')).toBe(false);
+  });
+
   it('rejects response paths that could escape the compile sandbox', async () => {
     await expect(compileAiRegressionResponse(root, { files: { '../escape.ts': 'export {}' } }))
       .rejects.toThrow('Unsafe or unsupported response file path');

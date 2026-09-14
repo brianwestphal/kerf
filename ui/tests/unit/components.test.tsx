@@ -8,7 +8,7 @@ import { EmptyState } from '../../src/empty-state.js';
 import { LoadingSpinner } from '../../src/loading-spinner.js';
 import { LucideIcon } from '../../src/lucide-icon.js';
 import { MenuActionRow } from '../../src/menu-action-row.js';
-import { MenuHeader } from '../../src/menu-header.js';
+import { MenuHeader, type MenuHeaderProps } from '../../src/menu-header.js';
 import { MenuItem } from '../../src/menu-item.js';
 import { PageHeader } from '../../src/page-header.js';
 import { clampRegionSize, ResizableRegion, resizeRegionFromPointer } from '../../src/resizable-region.js';
@@ -76,17 +76,20 @@ describe('production UI primitives', () => {
     const iconless = asHtml(MenuItem({ label: 'Disabled', action: 'none', disabled: true }));
     expect(iconless).toContain('data-has-icon="false"');
     expect(iconless).toContain('disabled');
-    const toggle = asHtml(MenuHeader({ label: 'Tools', badge: <span>2</span>, action: 'toggle', actionIcon: icon, expanded: false, toggle: true, rootAttributes: { 'data-command-group': 'tools' }, triggerAttributes: { 'aria-controls': 'tools-panel' } }));
+    const toggle = asHtml(MenuHeader({ label: 'Tools', count: 2, countLabel: '2 tools', action: 'toggle', actionIcon: icon, expanded: false, toggle: true, rootAttributes: { 'data-command-group': 'tools' }, triggerAttributes: { 'aria-controls': 'tools-panel' } }));
     expect(toggle).toContain('aria-expanded="false"');
     expect(toggle).toContain('data-command-group="tools"');
     expect(toggle).toContain('aria-controls="tools-panel"');
     expect(toggle).not.toContain('data-action="ignored"');
     expect(toggle).not.toContain('aria-expanded="true"');
-    expect(toggle).toContain('class="kui-menu-header__badge"><span>2</span>');
+    expect(toggle).toContain('aria-label="Tools, 2 tools" aria-expanded="false"');
+    expect(toggle).toContain('class="kui-menu-header__count" aria-hidden="true">2</span>');
+    expect(toggle).toContain('data-has-badge="false" data-has-count="true"');
     expect(toggle).toContain('class="kui-menu-header__action-layer"');
-    const header = asHtml(MenuHeader({ label: 'Workspace', badge: <span>3</span>, action: 'add', actionLabel: 'Add', actionIcon: icon, actionDisabled: true, disabledReason: 'Unavailable', rootAttributes: { 'data-section-id': 'workspace' }, triggerAttributes: { popoverTarget: 'workspace-popover', popoverTargetAction: 'show', 'aria-controls': 'workspace-popover', 'aria-haspopup': 'dialog' } }));
-    expect(header).toContain('<h2 class="kui-menu-header__label">Workspace</h2>');
-    expect(header).toContain('class="kui-menu-header__badge"><span>3</span>');
+    const header = asHtml(MenuHeader({ label: 'Workspace', count: 0, countLabel: '0 workspaces', action: 'add', actionLabel: 'Add', actionIcon: icon, actionDisabled: true, disabledReason: 'Unavailable', rootAttributes: { 'data-section-id': 'workspace' }, triggerAttributes: { popoverTarget: 'workspace-popover', popoverTargetAction: 'show', 'aria-controls': 'workspace-popover', 'aria-haspopup': 'dialog' } }));
+    expect(header).toContain('<h2 class="kui-menu-header__label" aria-label="Workspace, 0 workspaces">Workspace</h2>');
+    expect(header).toContain('class="kui-menu-header__count" aria-hidden="true">0</span>');
+    expect(header).toContain('data-has-badge="false" data-has-count="true"');
     expect(header).toContain('data-section-id="workspace"');
     expect(header).toContain('popoverTarget="workspace-popover" popoverTargetAction="show" aria-controls="workspace-popover" aria-haspopup="dialog"');
     expect(header).toContain('title="Unavailable"');
@@ -95,6 +98,9 @@ describe('production UI primitives', () => {
     expect(header).toContain('aria-label="Add"');
     expect(header).not.toContain('data-action="ignored"');
     expect(header).not.toContain('aria-label="Ignored"');
+    const badge = asHtml(MenuHeader({ label: 'Preview', badge: <span>New</span> }));
+    expect(badge).toContain('data-has-badge="true" data-has-count="false"');
+    expect(badge).toContain('class="kui-menu-header__badge"><span>New</span>');
     expect(asHtml(MenuHeader({ label: 'Enabled', action: 'add', actionLabel: 'Add', actionIcon: icon }))).toContain('title="Add"');
     expect(asHtml(MenuHeader({ label: 'Plain' }))).not.toContain('<button');
     // @ts-expect-error A lone role=menuitem does not provide a complete menu widget.
@@ -109,6 +115,42 @@ describe('production UI primitives', () => {
     MenuHeader({ label: 'Unsafe action', action: 'safe', triggerAttributes: { 'data-action': 'unsafe' } });
     // @ts-expect-error Dormant MenuHeader roots cannot become delegated actions.
     MenuHeader({ label: 'Unsafe root action', rootAttributes: { 'data-action': 'unsafe' } });
+    // @ts-expect-error Count labels are required for counted headers.
+    MenuHeader({ label: 'Missing count label', count: 2 });
+    // @ts-expect-error Count labels cannot be supplied without a count.
+    MenuHeader({ label: 'Orphan count label', countLabel: '2 items' });
+    // @ts-expect-error Count metadata and legacy badge content are mutually exclusive.
+    MenuHeader({ label: 'Competing indicators', count: 2, countLabel: '2 items', badge: <span>New</span> });
+    // @ts-expect-error Legacy badges cannot carry an orphaned count label.
+    MenuHeader({ label: 'Badge with count label', countLabel: '2 items', badge: <span>New</span> });
+    // @ts-expect-error Component-owned count presence cannot be overridden.
+    MenuHeader({ label: 'Unsafe count presence', rootAttributes: { 'data-has-count': 'false' } });
+  });
+
+  it('normalizes MenuHeader counts and keeps widened legacy badges safe', () => {
+    const widened = (props: Record<string, unknown>) => MenuHeader(props as unknown as MenuHeaderProps);
+    const valid = asHtml(widened({
+      label: 'Notes <unsafe>',
+      count: 12,
+      countLabel: '12 "notes" <unsafe>',
+      badge: <span>Legacy</span>,
+    }));
+    expect(valid).toContain('data-has-badge="false" data-has-count="true"');
+    expect(valid).toContain('aria-label="Notes &lt;unsafe&gt;, 12 &quot;notes&quot; &lt;unsafe&gt;"');
+    expect(valid).toContain('>Notes &lt;unsafe&gt;</h2>');
+    expect(valid).toContain('aria-hidden="true">12</span>');
+    expect(valid).not.toContain('Legacy');
+
+    for (const count of [-1, 1.5, Number.NaN, Number.POSITIVE_INFINITY, Number.MAX_SAFE_INTEGER + 1, '4', null]) {
+      const invalid = asHtml(widened({ label: 'Invalid count', count, countLabel: 'invalid', badge: <span>{'<script>alert(1)</script>'}</span> }));
+      expect(invalid, String(count)).toContain('data-has-badge="true" data-has-count="false"');
+      expect(invalid, String(count)).not.toContain('kui-menu-header__count');
+      expect(invalid, String(count)).toContain('&lt;script&gt;alert(1)&lt;/script&gt;');
+      expect(invalid, String(count)).not.toContain('<script>alert(1)</script>');
+    }
+
+    const fallbackLabel = asHtml(widened({ label: 'Attachments', count: 3, countLabel: '' }));
+    expect(fallbackLabel).toContain('aria-label="Attachments, 3"');
   });
 
   it('filters widened menu extension objects before rendering them', () => {
@@ -147,6 +189,8 @@ describe('production UI primitives', () => {
     const widenedHeaderRoot = {
       'data-section-id': 'workspace',
       'data-ACTION': 'case-variant-root-action',
+      'data-HAS-BADGE': 'true',
+      'data-HAS-COUNT': 'true',
       'data-TOGGLE': 'false',
       role: 'menu',
     };
@@ -185,6 +229,8 @@ describe('production UI primitives', () => {
     const trigger = header?.querySelector<HTMLButtonElement>('button');
     expect(header?.getAttribute('data-action')).toBeNull();
     expect(header?.getAttribute('data-toggle')).toBe('false');
+    expect(header?.getAttribute('data-has-badge')).toBe('false');
+    expect(header?.getAttribute('data-has-count')).toBe('false');
     expect(header?.getAttribute('role')).toBeNull();
     expect(trigger?.getAttribute('data-action')).toBe('add');
     expect(trigger?.getAttribute('data-trigger-source')).toBe('catalog');

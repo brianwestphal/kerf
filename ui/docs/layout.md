@@ -70,7 +70,7 @@ when their border and background are transparent.
 4. Keep one scrolling content owner per pane. Toolbar and footer siblings stay
    fixed while the content scrolls.
 5. A split item keeps dormant and interactive regions separate. For example,
-   `MenuHeader` renders its title/badge cluster separately from its optional
+   `MenuHeader` renders its title/count-or-badge cluster separately from its optional
    44px action; disclosure mode makes the title cluster itself the button.
    `MenuActionRow` uses a noninteractive row root around sibling 44px primary
    and trailing buttons. `MenuItem.trailing` remains dormant content.

@@ -71,8 +71,11 @@ geometry, and the pill modifier selects 22px corners.
 
 `ToolbarControlGroup` is the unit of toolbar organization, even for dormant
 text. Groups stay 44px outside (`calc(2px + remify(42px))`) with 8px between
-groups and inside items. `MenuHeader` separates a dormant title/badge cluster
-from its optional 44px action. `MenuActionRow` keeps independently interactive
+groups and inside items. `MenuHeader` separates a dormant title and count-or-
+badge cluster from its optional 44px action. Non-negative safe-integer section
+counts use the required localized `count`/`countLabel` pair and the shared
+neutral pill; non-count `SafeHtml` remains available through the mutually
+exclusive legacy `badge` slot. `MenuActionRow` keeps independently interactive
 primary and trailing 44px controls as sibling buttons inside a noninteractive
 full-width row; `MenuItem.trailing` remains dormant. The layer does not specify product reading width
 or responsive pane placement; consumers adapt public `--kui-layout-*` tokens
@@ -114,7 +117,7 @@ instead of retaining stale content.
 | --- | --- | --- |
 | Icons | `LucideIcon` | Render Lucide icon-node data; decorative by default, labeled on request |
 | Toolbars | `Toolbar`, `ToolbarControlGroup`, `ToolbarText` | Leading/center/trailing structure and grouped controls |
-| Menus | `MenuItem`, `MenuActionRow`, `MenuHeader` | Navigation/action rows, sibling primary/trailing row actions, and section headings, with narrow typed `data-*` and popover-relationship extension slots but no domain commands |
+| Menus | `MenuItem`, `MenuActionRow`, `MenuHeader` | Navigation/action rows, sibling primary/trailing row actions, and section headings with semantic count/countLabel pills, plus narrow typed `data-*` and popover-relationship extension slots but no domain commands |
 | Tabs | `AppTab`, `TabBar`, `wireTabBars`, `reorderTabs` | Controlled tab/close markup with runtime-safe domain metadata and an optional decorative close glyph, fixed rails, horizontal overflow, edge autoscroll, pointer/keyboard reorder, and focus restoration; the app owns state and persistence |
 | Layout | `PageHeader`, `DialogHeader`, `ValueTable`, `ValueTableRow` | Page/dialog hierarchy and typed semantic definition-list rows, with optional leading icons |
 | Resize | `ResizableRegion`, `wireResizableRegions` | Pointer-captured resize plus arrows, Shift acceleration, Home, End, and an optional decorative handle glyph |

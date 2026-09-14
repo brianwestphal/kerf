@@ -266,7 +266,7 @@ function MenuDemo() {
     <div class="kui-pane__toolbar"><Toolbar label="Sidebar toolbar" divider={false} leading={<ToolbarControlGroup appearance="borderless" single><ToolbarText text="Workspace" size="small" /></ToolbarControlGroup>} trailing={<ToolbarControlGroup appearance="borderless" single><button type="button" aria-label="Add workspace" data-action="log-add">{icon(Plus, 'plus')}</button></ToolbarControlGroup>} /></div>
     <div class="demo-menu__content kui-pane__content kui-content" data-content-stack>
       <section>
-        <MenuHeader label="Workspace" badge={<span>3</span>} action="log-add" actionLabel="Add workspace" actionIcon={icon(Plus, 'plus')} />
+        <MenuHeader label="Workspace" count={3} countLabel="3 workspaces" action="log-add" actionLabel="Add workspace" actionIcon={icon(Plus, 'plus')} />
         <MenuItem action="log-inbox" itemId="inbox" label="Inbox" icon={icon(Inbox, 'inbox')} trailing={<span>12</span>} selected />
         <MenuItem action="log-projects" itemId="projects" label="Projects" icon={icon(Folder, 'folder')} trailing={icon(ChevronRight, 'chevron-right')} />
         <MenuItem action="log-drafts" itemId="drafts" label="Drafts without a visible icon" />
@@ -284,10 +284,13 @@ function MenuDemo() {
 
 function MenuHeaderDemo() {
   return <div class="demo-menu demo-variant-stack" data-demo="menu-header">
-    <div><MenuHeader label="Workspace" badge={<span>3</span>} action="log-add" actionLabel="Add workspace" actionIcon={icon(Plus, 'plus')} rootAttributes={{ 'data-demo-section': 'workspace' }} triggerAttributes={{ popoverTarget: 'menu-header-workspace-popover', popoverTargetAction: 'toggle', 'aria-controls': 'menu-header-workspace-popover', 'aria-haspopup': 'dialog', 'data-demo-trigger': 'workspace-action' }} /></div>
+    <div><MenuHeader label="Attachments" count={12} countLabel="12 attachments" action="log-add" actionLabel="Add attachment" actionIcon={icon(Plus, 'plus')} triggerAttributes={{ popoverTarget: 'menu-header-attachments-popover', popoverTargetAction: 'toggle', 'aria-controls': 'menu-header-attachments-popover', 'aria-haspopup': 'dialog' }} /></div>
+    <div><MenuHeader label="Notes" count={0} countLabel="0 notes" /></div>
+    <div><MenuHeader label="Duplicates" count={2} countLabel="2 duplicates" /></div>
+    <div><MenuHeader label="Preview" badge={<span>New</span>} /></div>
     <div><MenuHeader label="Tools" toggle expanded={disclosureOpen.value} action="toggle-disclosure" actionIcon={icon(ChevronDown, 'chevron-down')} /></div>
     <div><MenuHeader label="Unavailable" action="log-add" actionLabel="Unavailable action" actionIcon={icon(Plus, 'plus')} actionDisabled /></div>
-    <div id="menu-header-workspace-popover" class="demo-menu-popover" popover="auto" role="dialog" aria-label="Workspace action details">Application-owned popover content.</div>
+    <div id="menu-header-attachments-popover" class="demo-menu-popover" popover="auto" role="dialog" aria-label="Attachment action details">Application-owned popover content.</div>
   </div>;
 }
 

@@ -237,7 +237,7 @@ export const generatedKerfCatalog = [
     "category": "Navigation",
     "kind": "component",
     "source": "kerf",
-    "description": "Split dormant title and badge content from an optional 44px action, or render the title cluster as a disclosure button.",
+    "description": "Split a dormant title and mutually exclusive semantic count or legacy badge from an optional 44px action, or render that title cluster as a disclosure button.",
     "uses": [
       "lucide-icon"
     ],

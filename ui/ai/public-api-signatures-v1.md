@@ -84,6 +84,7 @@ type MenuHeaderRootAttributes = Readonly<Record<`data-${string}`, string | undef
     'data-component'?: never;
     'data-action'?: never;
     'data-has-badge'?: never;
+    'data-has-count'?: never;
     'data-toggle'?: never;
 }>;
 type MenuHeaderTriggerAttributes = Readonly<Record<`data-${string}`, string | undefined> & {
@@ -93,9 +94,8 @@ type MenuHeaderTriggerAttributes = Readonly<Record<`data-${string}`, string | un
     'aria-controls'?: string;
     'aria-haspopup'?: 'dialog' | 'menu' | 'listbox' | 'tree' | 'grid' | 'true';
 }>;
-interface MenuHeaderProps {
+interface MenuHeaderBaseProps {
     label: string;
-    badge?: SafeHtml;
     action?: string;
     actionLabel?: string;
     actionIcon?: SafeHtml;
@@ -106,7 +106,17 @@ interface MenuHeaderProps {
     rootAttributes?: MenuHeaderRootAttributes;
     triggerAttributes?: MenuHeaderTriggerAttributes;
 }
-declare function MenuHeader({ label, badge, action, actionLabel, actionIcon, actionDisabled, disabledReason, expanded, toggle, rootAttributes, triggerAttributes }: MenuHeaderProps): SafeHtml;
+type MenuHeaderIndicatorProps = {
+    count: number;
+    countLabel: string;
+    badge?: never;
+} | {
+    count?: never;
+    countLabel?: never;
+    badge?: SafeHtml;
+};
+type MenuHeaderProps = MenuHeaderBaseProps & MenuHeaderIndicatorProps;
+declare function MenuHeader({ label, count, countLabel, badge, action, actionLabel, actionIcon, actionDisabled, disabledReason, expanded, toggle, rootAttributes, triggerAttributes }: MenuHeaderProps): SafeHtml;
 
 export { MenuHeader, type MenuHeaderProps };
 ```

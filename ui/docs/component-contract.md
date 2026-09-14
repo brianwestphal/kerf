@@ -102,7 +102,10 @@ changing geometry. `.kui-content-item--pill` selects the 22px radius.
 `ToolbarControlGroup` is the unit of toolbar organization, even for dormant
 text. Each group reserves `calc(2px + remify(42px))`, or 44px, with 8px between
 groups and inside items. `MenuHeader` similarly separates its dormant title and
-optional badge from its optional 44px action. Do not add padding to pane shells,
+optional count or badge from its optional 44px action. Use the mutually
+exclusive `count`/`countLabel` pair for non-negative safe-integer section
+quantities; reserve `badge` for non-count `SafeHtml`. Do not concatenate counts
+into the section label. Do not add padding to pane shells,
 double child-owned geometry with wrapper insets, or create competing scroll
 owners. The [layout contract](./layout.md) lists the public roles and tokens.
 

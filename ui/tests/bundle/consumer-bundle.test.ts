@@ -116,6 +116,20 @@ describe('consumer bundle boundaries', () => {
     expect(inputs).not.toContain('@awesome.me/webawesome');
   });
 
+  it('ships the MenuHeader count contract through its styled browser subpath', async () => {
+    const result = await bundle("import { MenuHeader } from '@kerfjs/ui/menu-header'; console.log(String(MenuHeader({ label: 'Notes', count: 0, countLabel: '0 notes' }))); ");
+    const inputs = Object.keys(result.metafile!.inputs).join('\n');
+    const css = output(result, '.css');
+    expect(inputs).toContain('dist/browser/menu-header.js');
+    expect(inputs).toContain('dist/styles/menu-header.css');
+    expect(css).toContain('.kui-menu-header__count');
+    expect(css).toContain('--kui-color-neutral-fill-quiet');
+    expect(css).not.toContain('.kui-menu-item');
+    expect(css).not.toContain('.kui-menu-action-row');
+    expect(css).not.toContain('remify(');
+    expect(inputs).not.toContain('@awesome.me/webawesome');
+  });
+
   it('keeps the TabBar component and opt-in wiring free of Web Awesome registration', async () => {
     const result = await bundle("import { TabBar } from '@kerfjs/ui/tab-bar'; import { reorderTabs, wireTabBars } from '@kerfjs/ui/wire-tab-bars'; console.log(TabBar, reorderTabs, wireTabBars); ");
     const inputs = Object.keys(result.metafile!.inputs).join('\n');
@@ -254,6 +268,8 @@ describe('consumer bundle boundaries', () => {
     const built = await readFile(new URL('../../dist/styles/toolbar-control-group.css', import.meta.url), 'utf8');
     const disclosureSource = await readFile(new URL('../../src/disclosure-arrow.css', import.meta.url), 'utf8');
     const disclosureBuilt = await readFile(new URL('../../dist/styles/disclosure-arrow.css', import.meta.url), 'utf8');
+    const menuHeaderSource = await readFile(new URL('../../src/menu-header.css', import.meta.url), 'utf8');
+    const menuHeaderBuilt = await readFile(new URL('../../dist/styles/menu-header.css', import.meta.url), 'utf8');
     const selectBuilt = await readFile(new URL('../../dist/styles/select.css', import.meta.url), 'utf8');
 
     expect(source).toContain('remify(40px)');
@@ -262,6 +278,11 @@ describe('consumer bundle boundaries', () => {
     expect(disclosureSource).toContain('var(--kui-disclosure-arrow-size, remify(18px))');
     expect(disclosureBuilt).toContain('var(--kui-disclosure-arrow-size, 1.125rem)');
     expect(disclosureBuilt).not.toContain('remify(');
+    expect(menuHeaderSource).toContain('min-width: remify(21.6px)');
+    expect(menuHeaderBuilt).toContain('min-width: 1.35rem');
+    expect(menuHeaderBuilt).toContain('.kui-menu-header__count');
+    expect(menuHeaderBuilt).toContain('var(--kui-color-neutral-fill-quiet)');
+    expect(menuHeaderBuilt).not.toContain('remify(');
     expect(selectBuilt).toContain('scale(var(--kui-disclosure-icon-scale, 0.5))');
   });
 });

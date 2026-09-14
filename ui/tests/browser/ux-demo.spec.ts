@@ -1083,18 +1083,110 @@ test('catalog routes every production component family and supports its stateful
   }
 });
 
+test('renders MenuHeader counts as accessible neutral pills across scale and theme', async ({ page, browserName }) => {
+  await page.setViewportSize({ width: 1100, height: 760 });
+  await page.goto('/?component=menu-header');
+  const demo = page.locator('[data-demo="menu-header"]');
+  const headerWithHeading = (name: string) => demo.locator('.kui-menu-header').filter({ has: page.getByRole('heading', { name }) });
+  const attachments = headerWithHeading('Attachments, 12 attachments');
+  const count = attachments.locator('.kui-menu-header__count');
+  const notes = headerWithHeading('Notes, 0 notes');
+  const duplicates = headerWithHeading('Duplicates, 2 duplicates');
+  const preview = headerWithHeading('Preview');
+
+  await expect(attachments).toHaveAttribute('data-has-count', 'true');
+  await expect(attachments).toHaveAttribute('data-has-badge', 'false');
+  await expect(attachments.getByRole('heading', { name: 'Attachments, 12 attachments' })).toBeVisible();
+  await expect(attachments.getByRole('button', { name: 'Add attachment' })).toBeVisible();
+  await expect(count).toHaveText('12');
+  await expect(count).toHaveAttribute('aria-hidden', 'true');
+  await expect(notes.getByRole('heading', { name: 'Notes, 0 notes' })).toBeVisible();
+  await expect(notes.locator('.kui-menu-header__count')).toHaveText('0');
+  await expect(duplicates.getByRole('heading', { name: 'Duplicates, 2 duplicates' })).toBeVisible();
+  await expect(duplicates.locator('.kui-menu-header__count')).toHaveText('2');
+  await expect(preview).toHaveAttribute('data-has-count', 'false');
+  await expect(preview).toHaveAttribute('data-has-badge', 'true');
+  await expect(preview.locator('.kui-menu-header__badge')).toHaveText('New');
+
+  const countGeometry = () => count.evaluate((element) => {
+    const bounds = element.getBoundingClientRect();
+    const style = window.getComputedStyle(element);
+    return {
+      background: style.backgroundColor,
+      borderRadius: parseFloat(style.borderRadius),
+      fontSize: parseFloat(style.fontSize),
+      height: bounds.height,
+      width: bounds.width,
+    };
+  });
+  const containment = () => attachments.evaluate((header) => {
+    const root = header.getBoundingClientRect();
+    const title = header.querySelector<HTMLElement>('.kui-menu-header__title')!.getBoundingClientRect();
+    const countBounds = header.querySelector<HTMLElement>('.kui-menu-header__count')!.getBoundingClientRect();
+    const action = header.querySelector<HTMLElement>('.kui-menu-header__action')!.getBoundingClientRect();
+    return {
+      actionAfterCount: action.left >= countBounds.right,
+      countInsideRoot: countBounds.left >= root.left && countBounds.right <= root.right,
+      countInsideTitle: countBounds.left >= title.left && countBounds.right <= title.right,
+      documentOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+    };
+  });
+  const expectContained = async () => expect(await containment()).toEqual({
+    actionAfterCount: true,
+    countInsideRoot: true,
+    countInsideTitle: true,
+    documentOverflow: 0,
+  });
+  const baseline = await countGeometry();
+  expect(baseline.background).not.toBe('rgba(0, 0, 0, 0)');
+  expect(baseline.borderRadius).toBeGreaterThanOrEqual(baseline.height / 2);
+  expect(baseline.width).toBeGreaterThanOrEqual(baseline.height);
+  await expectContained();
+  if (browserName === 'chromium') {
+    await attachments.locator('.kui-menu-header__title').screenshot({ path: 'test-results/menu-header-count-wide.png' });
+  }
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expect(attachments).toBeVisible();
+  await expect(attachments.getByRole('heading', { name: 'Attachments, 12 attachments' })).toBeVisible();
+  await expectContained();
+  if (browserName === 'chromium') {
+    await notes.locator('.kui-menu-header__title').screenshot({ path: 'test-results/menu-header-count-narrow.png' });
+  }
+
+  await page.setViewportSize({ width: 720, height: 900 });
+  await page.locator('html').evaluate((element) => { element.style.fontSize = '200%'; });
+  const scaled = await countGeometry();
+  expect(scaled.height).toBeCloseTo(baseline.height * 2, 1);
+  expect(scaled.fontSize).toBeCloseTo(baseline.fontSize * 2, 1);
+  expect(scaled.width).toBeGreaterThanOrEqual(scaled.height);
+  await expectContained();
+  if (browserName === 'chromium') {
+    await duplicates.locator('.kui-menu-header__title').screenshot({ path: 'test-results/menu-header-count-zoom-200.png' });
+  }
+
+  await page.goto('/?component=menu-header');
+  await page.setViewportSize({ width: 1100, height: 760 });
+  await page.locator('[data-action="toggle-theme"]').click();
+  await expect(count).toBeVisible();
+  expect((await countGeometry()).background).not.toBe('rgba(0, 0, 0, 0)');
+  if (browserName === 'chromium') {
+    await attachments.locator('.kui-menu-header__title').screenshot({ path: 'test-results/menu-header-count-dark.png' });
+  }
+});
+
 test('preserves menu extension metadata without surrendering native semantics', async ({ page, browserName }) => {
   await page.setViewportSize({ width: 1100, height: 760 });
   await page.goto('/?component=menu-header');
   const headerDemo = page.locator('[data-demo="menu-header"]');
-  await expect(headerDemo.locator('[data-demo-section="workspace"]')).toHaveCount(1);
-  const popoverTrigger = headerDemo.locator('[data-demo-trigger="workspace-action"]');
-  await expect(popoverTrigger).toHaveAttribute('popovertarget', 'menu-header-workspace-popover');
+  await expect(headerDemo.getByRole('heading', { name: 'Attachments, 12 attachments' })).toHaveCount(1);
+  const popoverTrigger = headerDemo.getByRole('button', { name: 'Add attachment' });
+  await expect(popoverTrigger).toHaveAttribute('popovertarget', 'menu-header-attachments-popover');
   await expect(popoverTrigger).toHaveAttribute('popovertargetaction', 'toggle');
-  await expect(popoverTrigger).toHaveAttribute('aria-controls', 'menu-header-workspace-popover');
+  await expect(popoverTrigger).toHaveAttribute('aria-controls', 'menu-header-attachments-popover');
   await expect(popoverTrigger).toHaveAttribute('aria-haspopup', 'dialog');
   await popoverTrigger.press('Enter');
-  const popover = page.locator('#menu-header-workspace-popover');
+  const popover = page.locator('#menu-header-attachments-popover');
   await expect.poll(() => popover.evaluate((element) => element.matches(':popover-open'))).toBe(true);
   await expect(page.locator('.catalog-log')).toHaveText('Add action requested');
   if (browserName === 'chromium') {

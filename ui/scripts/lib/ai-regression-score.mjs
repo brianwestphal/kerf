@@ -25,6 +25,18 @@ function staticAttribute(node, name, file) {
   return null;
 }
 
+function staticJsxText(node) {
+  if (ts.isJsxText(node) || ts.isStringLiteral(node) || ts.isNumericLiteral(node) || ts.isNoSubstitutionTemplateLiteral(node)) return node.text;
+  if (ts.isJsxExpression(node)) return node.expression ? staticJsxText(node.expression) : '';
+  if (ts.isJsxElement(node)) return node.children.map(staticJsxText).join('');
+  if (ts.isParenthesizedExpression(node)) return staticJsxText(node.expression);
+  return '';
+}
+
+function jsxAttribute(node, name, file) {
+  return node.attributes.properties.find((property) => ts.isJsxAttribute(property) && property.name.getText(file) === name);
+}
+
 function hasJsxAncestor(node, tagName, file) {
   let current = node.parent;
   while (current) {
@@ -45,6 +57,12 @@ function analyzeTypeScript(files) {
   let nativeButtons = 0;
   let nativeButtonsInNav = 0;
   let nativeSearchEditors = 0;
+  const menuHeaderCountViolations = {
+    competingBadge: [],
+    concatenatedLabel: [],
+    missingCountLabel: [],
+    numericBadge: [],
+  };
 
   for (const [name, source] of Object.entries(files)) {
     if (!/\.[cm]?[jt]sx?$/.test(name)) continue;
@@ -78,6 +96,20 @@ function analyzeTypeScript(files) {
         tags.add(tag);
         const binding = bindings.get(tag);
         if (/^[A-Z]/.test(tag) && binding) invoked.add(binding.imported);
+        if (binding?.imported === 'MenuHeader' && binding.specifier.startsWith('@kerfjs/ui')) {
+          const location = `${name}:${file.getLineAndCharacterOfPosition(node.pos).line + 1}`;
+          const count = jsxAttribute(node, 'count', file);
+          const countLabel = jsxAttribute(node, 'countLabel', file);
+          const badge = jsxAttribute(node, 'badge', file);
+          const label = staticAttribute(node, 'label', file);
+          if (count && !countLabel) menuHeaderCountViolations.missingCountLabel.push(location);
+          if (count && badge) menuHeaderCountViolations.competingBadge.push(location);
+          if (badge && ts.isJsxAttribute(badge) && badge.initializer) {
+            const badgeText = staticJsxText(badge.initializer).trim();
+            if (/^\d+(?:[.,]\d+)?$/.test(badgeText)) menuHeaderCountViolations.numericBadge.push(location);
+          }
+          if (label && /\(\s*\d+\s*\)\s*$/.test(label)) menuHeaderCountViolations.concatenatedLabel.push(location);
+        }
         const classes = node.attributes.properties
           .filter(ts.isJsxAttribute)
           .filter((attribute) => ['class', 'className'].includes(attribute.name.getText(file)))
@@ -103,7 +135,7 @@ function analyzeTypeScript(files) {
     }
     visit(file);
   }
-  return { imports, invoked, tags, classSets, calls, unnamedButtons, syntaxErrors, nativeButtons, nativeButtonsInNav, nativeSearchEditors };
+  return { imports, invoked, tags, classSets, calls, unnamedButtons, syntaxErrors, nativeButtons, nativeButtonsInNav, nativeSearchEditors, menuHeaderCountViolations };
 }
 
 function selectorCompounds(selector) {
@@ -298,6 +330,21 @@ export function scoreAiRegression(caseDefinition, response, catalog, options = {
   }
   if (caseDefinition.id === 'tokenized-search') {
     addCheck(checks, 'duplicate:search-editor', analysis.nativeSearchEditors === 0, `declares ${analysis.nativeSearchEditors} competing native search editors`);
+  }
+  if (!options.legacyPublicBoundary) {
+    const countViolations = analysis.menuHeaderCountViolations;
+    addCheck(checks, 'a11y:menu-header-count-label', countViolations.missingCountLabel.length === 0, countViolations.missingCountLabel.length
+      ? `MenuHeader count is missing countLabel at ${countViolations.missingCountLabel.join(', ')}`
+      : 'every MenuHeader count supplies its localized countLabel');
+    addCheck(checks, 'duplicate:menu-header-count-badge', countViolations.competingBadge.length === 0, countViolations.competingBadge.length
+      ? `MenuHeader mixes count and badge at ${countViolations.competingBadge.join(', ')}`
+      : 'MenuHeader count and legacy badge slots remain mutually exclusive');
+    addCheck(checks, 'duplicate:menu-header-numeric-badge', countViolations.numericBadge.length === 0, countViolations.numericBadge.length
+      ? `MenuHeader uses a numeric badge at ${countViolations.numericBadge.join(', ')}`
+      : 'section quantities use MenuHeader count rather than badge');
+    addCheck(checks, 'duplicate:menu-header-label-count', countViolations.concatenatedLabel.length === 0, countViolations.concatenatedLabel.length
+      ? `MenuHeader concatenates a count into label at ${countViolations.concatenatedLabel.join(', ')}`
+      : 'MenuHeader labels exclude parenthesized section counts');
   }
 
   const scrollOwners = analysis.classSets.filter((classes) => classes.includes('kui-scroll-owner')).length;

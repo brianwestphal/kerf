@@ -43,7 +43,8 @@ One unpadded `.kui-pane` owns toolbar/content/footer structure. Its
 `.kui-content` uses 24px major gaps; `MenuHeader`, `MenuItem`, and other
 `.kui-content-item` children own their 8px margin, 1px border, and 8px padding.
 Rows and footer toolbar groups remain 44px tall. The app owns routes,
-permissions, labels, selection, badge content, and disclosure state.
+permissions, labels, selection, valid section counts and their localized
+`countLabel` phrases, non-count badge content, and disclosure state.
 
 ## Workspace header
 

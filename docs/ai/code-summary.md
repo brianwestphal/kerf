@@ -468,6 +468,12 @@ disposer-returning wiring.
 overrides. Kerf `Select` keeps its independent Web Awesome expand-glyph scale
 at `--kui-disclosure-icon-scale: .5`.
 
+`MenuHeader` exposes mutually exclusive semantic count and legacy badge
+contracts. A non-negative safe-integer `count` requires a localized
+`countLabel`, renders as the standard neutral pill (including zero), and joins
+the semantic heading or disclosure-button accessible name. Runtime-invalid
+counts are omitted; a widened valid count takes precedence over `badge`.
+
 ## Where to look for X
 
 | If you're touching... | look in |

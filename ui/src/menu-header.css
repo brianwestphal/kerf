@@ -62,6 +62,26 @@
   line-height: 1;
 }
 
+.kui-menu-header__count {
+  display: inline-grid;
+  min-width: remify(21.6px);
+  height: remify(21.6px);
+  padding-inline: remify(5.6px);
+  box-sizing: border-box;
+  border-radius: var(--kui-layout-pill-radius, calc(1px + remify(21px)));
+  color: var(--kui-color-neutral-on-quiet);
+  background: var(--kui-color-neutral-fill-quiet);
+  place-items: center;
+  flex: none;
+  font-size: var(
+    --kui-menu-header-count-font-size,
+    var(--wa-font-size-3xs, remify(10px))
+  );
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1;
+}
+
 .kui-menu-header__action,
 .kui-menu-header__action-layer {
   display: grid;

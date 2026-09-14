@@ -175,6 +175,13 @@ and focus transfer.
 `Select` retains an independent `.5` scale for its intrinsic Web Awesome expand
 glyph.
 
+`MenuHeader` now distinguishes semantic section counts from legacy non-count
+badges. A non-negative safe-integer `count` requires a localized `countLabel`,
+renders zero and larger values in one neutral pill treatment, and includes that
+phrase in the heading or disclosure-button accessible name. The two indicator
+APIs are mutually exclusive in TypeScript, and runtime-invalid counts cannot
+emit misleading count markup or override protected presence flags.
+
 `AppTab` now accepts runtime-filtered domain `data-*` metadata while protecting
 component and transient drag/drop attributes case-insensitively; its optional
 close glyph and `ResizableRegion`'s optional handle glyph remain decorative

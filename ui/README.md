@@ -77,6 +77,13 @@ JavaScript callers cannot bypass those protections with case-variant names.
 sibling primary and trailing native-button actions with independent names,
 disabled states, focus, and click ownership. Its `label`, `icon`, and
 `trailingActionIcon` slots are dormant content and must not contain controls.
+For section quantities, pass a non-negative safe-integer `count` together with
+the localized full spoken phrase in `countLabel`, for example
+`count={3} countLabel="3 notes"`. This renders the standard neutral count pill
+and includes the count in the heading or disclosure button's accessible name.
+Do not concatenate a count into `label` or pass a numeric `badge`; the mutually
+exclusive legacy `badge` slot remains available for non-count `SafeHtml` such
+as a `New` marker.
 
 ## Component subpaths
 
@@ -176,7 +183,7 @@ Add `.kui-content` to make its major children a vertical stack with 24px gaps.
   <div class="kui-pane__toolbar"><Toolbar label="Workspace" ... /></div>
   <nav class="kui-pane__content kui-content">
     <section>
-      <MenuHeader label="Workspace" badge={<span>3</span>} />
+      <MenuHeader label="Workspace" count={3} countLabel="3 workspaces" />
       <MenuItem action="open" label="Inbox" icon={inboxIcon} />
       <MenuItem action="open" label="Drafts" />
     </section>
@@ -189,7 +196,8 @@ Ordinary children use `.kui-content-item`: 8px inline margin, a real 1px border
 (transparent by default), 8px padding, and 12px rounded corners. The pill
 modifier uses a 22px radius. A component can expose a transparent border or
 background without changing layout. `MenuHeader` follows the same rule while
-keeping its dormant title/badge cluster separate from its optional 44px action.
+keeping its dormant title and count-or-badge cluster separate from its optional
+44px action.
 
 ## Spacing and application layout
 
