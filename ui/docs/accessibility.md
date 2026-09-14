@@ -65,8 +65,13 @@ and `placeTokenSearchCaret()` to restore a text caret without landing inside a
 chip. Editable text is DOM-owned between token changes; a clear handler empties
 the editor's `textContent` before updating application state. Leading and
 trailing controls share the first text line's fixed vertical center and remain
-there as the editor wraps; application-owned toolbar collapse must move focus
-from its compact search action into the revealed searchbox.
+there as the editor wraps. In `collapsible` mode, the closed state is one named
+iconic search button and the open state is the same named searchbox, whether
+the field stands alone or is composed inside `ToolbarControlGroup`.
+Applications set `expanded` while the field is focused, move focus from the
+trigger into the revealed editor, and clear `expanded` only after focus leaves
+the complete component. Text or tokens keep the field expanded even when that
+transient state is false. Width animation is disabled under reduced motion.
 
 ## Verification matrix
 

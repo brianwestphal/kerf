@@ -111,7 +111,7 @@ instead of retaining stale content.
 | Layout | `PageHeader`, `DialogHeader`, `ValueTable` | Page/dialog hierarchy and semantic definition lists |
 | Resize | `ResizableRegion`, `wireResizableRegions` | Pointer-captured resize plus arrows, Shift acceleration, Home, and End |
 | Choice controls | `SegmentedControl`, `Select` | Controlled exclusive buttons with toolbar/rounded/pill presentation; grouped Web Awesome popup choices with optional Lucide icons |
-| Search | `TokenSearchField`, `readTokenSearchField`, `placeTokenSearchCaret` | DOM-owned free text plus controlled ordered atomic filter chips; DOM reading and caret restoration without application query grammar |
+| Search | `TokenSearchField`, `readTokenSearchField`, `placeTokenSearchCaret` | DOM-owned free text plus controlled ordered atomic filter chips; optional animated standalone or toolbar-group collapse; DOM reading and caret restoration without application query grammar |
 | Feedback | `StateBanner`, `EmptyState`, `LoadingSpinner` | Status/alert, empty/busy, and meaningful/decorative progress states |
 
 ## 21.4 Accessibility contract
@@ -130,8 +130,10 @@ instead of retaining stale content.
   owns parsing, suggestions, result feedback, and state; editable text remains
   DOM-owned between controlled token changes to preserve the caret. Its leading
   icon, first text line, clear action, and trailing slot share a fixed vertical
-  center and remain pinned there as content wraps. Applications own responsive
-  toolbar collapse plus focus transfer into the revealed field.
+  center and remain pinned there as content wraps. Its optional `collapsible`
+  mode owns an animated iconic closed state, works standalone or inside a
+  toolbar group, and keeps populated fields expanded. Applications own the
+  transient focused/open signal and focus transfer into the revealed field.
 - `AppTab` renders `role="tab"`, `aria-selected`, roving `tabindex`, and keyboard
   shortcut metadata. `TabBar` provides the containing list and scroll owner;
   `wireTabBars` provides arrows/Home/End, close activation, pointer reorder,

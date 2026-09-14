@@ -141,6 +141,108 @@
   height: remify(13.6px);
 }
 
+.kui-token-search[data-collapsible="true"] {
+  width: min(var(--kui-token-search-expanded-width, remify(480px)), 100%);
+  max-width: 100%;
+  overflow: hidden;
+  flex: 0 1 var(--kui-token-search-expanded-width, remify(480px));
+  transition:
+    width 0.25s ease,
+    background-color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.kui-token-search[data-collapsible="true"][data-expanded="false"] {
+  width: remify(44px);
+  min-width: remify(44px);
+  height: remify(44px);
+  padding: 1px;
+  grid-template-columns: minmax(0, 1fr);
+  flex: 0 0 auto;
+}
+
+.kui-token-search__expand {
+  appearance: none;
+  display: grid;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: inherit;
+  color: var(--kui-color-text-quiet);
+  background: transparent;
+  cursor: pointer;
+  place-items: center;
+}
+
+.kui-token-search__expand:hover {
+  background: var(--kui-color-surface-lowered);
+}
+
+.kui-token-search__expand:focus-visible {
+  outline: var(--kui-focus-ring);
+  outline-offset: 1px;
+}
+
+.kui-token-search__expand svg {
+  width: remify(16px);
+  height: remify(16px);
+}
+
+.kui-toolbar-control-group:has(> .kui-token-search[data-collapsible="true"]) {
+  width: min(var(--kui-token-search-expanded-width, remify(480px)), 100%);
+  max-width: 100%;
+  height: auto;
+  min-width: 0;
+  overflow: hidden;
+  flex: 0 1 var(--kui-token-search-expanded-width, remify(480px));
+  transition:
+    width 0.25s ease,
+    background-color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.kui-toolbar-control-group[data-expanded="false"]:has(
+    > .kui-token-search[data-collapsible="true"]
+  ) {
+  width: var(--kui-toolbar-group-size, calc(2px + remify(42px)));
+  flex: 0 0 auto;
+}
+
+.kui-toolbar-control-group > .kui-token-search[data-collapsible="true"] {
+  --kui-token-search-line-size: remify(32px);
+
+  min-height: remify(40px);
+  padding: remify(4px) remify(6px);
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.kui-toolbar-control-group
+  > .kui-token-search[data-collapsible="true"][data-expanded="false"] {
+  width: remify(40px);
+  min-width: remify(40px);
+  height: remify(40px);
+  min-height: remify(40px);
+  padding: 0;
+}
+
+.kui-toolbar-control-group:has(
+    > .kui-token-search[data-collapsible="true"]
+  ):focus-within {
+  border-color: var(--kui-color-focus);
+  box-shadow: 0 0 0 3px
+    color-mix(in srgb, var(--kui-color-focus) 22%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kui-token-search[data-collapsible="true"],
+  .kui-toolbar-control-group:has(> .kui-token-search[data-collapsible="true"]) {
+    transition-duration: 0s;
+  }
+}
+
 @media (forced-colors: active) {
   .kui-token-search__token {
     border: 1px solid ButtonText;

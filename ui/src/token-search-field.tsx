@@ -19,6 +19,12 @@ export interface TokenSearchFieldProps {
   tokenPlaceholder?: string;
   disabled?: boolean;
   autofocus?: boolean;
+  /** Allow an empty field to render as one iconic action. */
+  collapsible?: boolean;
+  /** Keep an empty collapsible field open while the application owns focus. */
+  expanded?: boolean;
+  expandAction?: string;
+  expandLabel?: string;
   leading?: SafeHtml;
   trailing?: SafeHtml;
   editAction?: string;
@@ -66,6 +72,10 @@ export function TokenSearchField({
   tokenPlaceholder = 'Add search…',
   disabled = false,
   autofocus = false,
+  collapsible = false,
+  expanded = false,
+  expandAction = 'expand-token-search',
+  expandLabel,
   leading,
   trailing,
   editAction = 'edit-search-token',
@@ -77,30 +87,35 @@ export function TokenSearchField({
 }: TokenSearchFieldProps) {
   const parts = orderedParts(query, tokens);
   const key = `${id}:${tokens.map((token) => token.value).join('|')}`;
-  return <div class={`kui-token-search ${className}`.trim()} data-component="token-search-field" data-token-search-id={id} data-disabled={String(disabled)}>
-    <span class="kui-token-search__leading" aria-hidden="true">{leading ?? <LucideIcon icon={Search} name="search" />}</span>
-    <div
-      {...editorAttributes}
-      class="kui-token-search__editor"
-      data-key={key}
-      data-morph-skip
-      data-token-search-editor={id}
-      data-token-count={tokens.length}
-      data-placeholder={tokens.length ? tokenPlaceholder : placeholder}
-      role="searchbox"
-      aria-label={label}
-      aria-disabled={disabled ? 'true' : undefined}
-      contenteditable={disabled ? 'false' : 'true'}
-      spellcheck="false"
-      autofocus={autofocus}
-    >{parts.map((part) => part.kind === 'text'
-      ? <span data-token-search-text data-empty={String(part.value.length === 0)}>{part.value || (tokens.length ? '\u200b' : '')}</span>
-      : <span class="kui-token-search__token" contenteditable="false" data-component="token-search-token" data-token-value={part.token.value}>
-        <button type="button" class="kui-token-search__token-edit" data-action={editAction} data-token-value={part.token.value} aria-label={`Edit ${part.token.accessibleLabel ?? part.token.label}`} disabled={disabled}>{part.token.label}</button>
-        <button type="button" class="kui-token-search__token-remove" data-action={removeAction} data-token-value={part.token.value} aria-label={`Remove ${part.token.accessibleLabel ?? part.token.label}`} disabled={disabled}><CloseIcon /></button>
-      </span>)}</div>
-    {(query || tokens.length > 0) && <button type="button" class="kui-token-search__clear" data-action={clearAction} aria-label={clearLabel} title={clearLabel} disabled={disabled}><CloseIcon /></button>}
-    {trailing && <span class="kui-token-search__trailing">{trailing}</span>}
+  const resolvedExpanded = !collapsible || expanded || query.length > 0 || tokens.length > 0;
+  return <div class={`kui-token-search ${className}`.trim()} data-component="token-search-field" data-token-search-id={id} data-disabled={String(disabled)} data-collapsible={String(collapsible)} data-expanded={String(resolvedExpanded)}>
+    {!resolvedExpanded
+      ? <button type="button" class="kui-token-search__expand" data-action={expandAction} aria-label={expandLabel ?? label} title={expandLabel ?? label} disabled={disabled}><LucideIcon icon={Search} name="search" /></button>
+      : <>
+        <span class="kui-token-search__leading" aria-hidden="true">{leading ?? <LucideIcon icon={Search} name="search" />}</span>
+        <div
+          {...editorAttributes}
+          class="kui-token-search__editor"
+          data-key={key}
+          data-morph-skip
+          data-token-search-editor={id}
+          data-token-count={tokens.length}
+          data-placeholder={tokens.length ? tokenPlaceholder : placeholder}
+          role="searchbox"
+          aria-label={label}
+          aria-disabled={disabled ? 'true' : undefined}
+          contenteditable={disabled ? 'false' : 'true'}
+          spellcheck="false"
+          autofocus={autofocus}
+        >{parts.map((part) => part.kind === 'text'
+          ? <span data-token-search-text data-empty={String(part.value.length === 0)}>{part.value || (tokens.length ? '\u200b' : '')}</span>
+          : <span class="kui-token-search__token" contenteditable="false" data-component="token-search-token" data-token-value={part.token.value}>
+            <button type="button" class="kui-token-search__token-edit" data-action={editAction} data-token-value={part.token.value} aria-label={`Edit ${part.token.accessibleLabel ?? part.token.label}`} disabled={disabled}>{part.token.label}</button>
+            <button type="button" class="kui-token-search__token-remove" data-action={removeAction} data-token-value={part.token.value} aria-label={`Remove ${part.token.accessibleLabel ?? part.token.label}`} disabled={disabled}><CloseIcon /></button>
+          </span>)}</div>
+        {(query || tokens.length > 0) && <button type="button" class="kui-token-search__clear" data-action={clearAction} aria-label={clearLabel} title={clearLabel} disabled={disabled}><CloseIcon /></button>}
+        {trailing && <span class="kui-token-search__trailing">{trailing}</span>}
+      </>}
   </div>;
 }
 

@@ -234,8 +234,14 @@ after browser input to recover text plus token offsets, and
 Clear actions should empty the editor's `textContent` before clearing app state.
 The leading icon, first text line, clear action, and trailing slot share one
 fixed alignment row; when text wraps, those controls stay pinned to that first
-row instead of recentering against the taller editor. The catalog's Toolbar
-route demonstrates application-owned responsive collapse and focus transfer.
+row instead of recentering against the taller editor.
+Set `collapsible` for the first-class compact presentation: an empty closed
+field renders as one iconic search action, `expanded` reveals the complete
+field, and text or tokens keep it expanded. Width changes animate by default
+and respect reduced-motion preferences. The field works standalone or inside a
+`ToolbarControlGroup`; the application owns the transient focused/open signal,
+focus transfer, and focusout policy. The catalog's Toolbar route demonstrates
+that composition at wide and narrow sizes.
 Override its surface through `--kui-token-search-{background|border}` and its
 chips through `--kui-token-search-token-{background|foreground}`. Override
 `--kui-token-search-line-size` only when the complete first-line geometry must

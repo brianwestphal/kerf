@@ -285,6 +285,12 @@ interface TokenSearchFieldProps {
     tokenPlaceholder?: string;
     disabled?: boolean;
     autofocus?: boolean;
+    /** Allow an empty field to render as one iconic action. */
+    collapsible?: boolean;
+    /** Keep an empty collapsible field open while the application owns focus. */
+    expanded?: boolean;
+    expandAction?: string;
+    expandLabel?: string;
     leading?: SafeHtml;
     trailing?: SafeHtml;
     editAction?: string;
@@ -298,7 +304,7 @@ interface TokenSearchFieldValue {
     query: string;
     tokens: TokenSearchToken[];
 }
-declare function TokenSearchField({ id, label, query, tokens, placeholder, tokenPlaceholder, disabled, autofocus, leading, trailing, editAction, removeAction, clearAction, clearLabel, className, editorAttributes, }: TokenSearchFieldProps): SafeHtml;
+declare function TokenSearchField({ id, label, query, tokens, placeholder, tokenPlaceholder, disabled, autofocus, collapsible, expanded, expandAction, expandLabel, leading, trailing, editAction, removeAction, clearAction, clearLabel, className, editorAttributes, }: TokenSearchFieldProps): SafeHtml;
 /** Read editable text and ordered token offsets from a rendered TokenSearchField editor. */
 declare function readTokenSearchField(editor: HTMLElement, knownTokens?: readonly TokenSearchToken[]): TokenSearchFieldValue;
 /** Focus an editor and place its caret at a text offset, skipping atomic token chips. */

@@ -152,16 +152,45 @@ test('renders an interactive responsive find field inside a toolbar', async ({ p
   await page.goto('/?component=toolbar');
   const toolbar = page.locator('.demo-toolbar-find-row');
   const editor = toolbar.getByRole('searchbox', { name: 'Find in workspace' });
+  const trigger = toolbar.getByRole('button', { name: 'Open find' });
+  const field = toolbar.locator('.demo-toolbar-find-field');
+  const group = toolbar.locator('.demo-toolbar-find');
+  const outsideControl = page.locator('[data-action="toggle-theme"]');
+  await expect(editor).toBeHidden();
+  await expect(trigger).toBeVisible();
+  await expect(field).toHaveAttribute('data-collapsible', 'true');
+  await expect(field).toHaveAttribute('data-expanded', 'false');
+  await expect(group).toHaveCSS('transition-property', 'width, background-color, border-color');
+  await expect(group).toHaveCSS('transition-duration', '0.25s, 0.2s, 0.2s');
+  await group.evaluate((element) => element.addEventListener('transitionrun', (event) => {
+    if ((event as TransitionEvent).propertyName === 'width') element.setAttribute('data-width-transition-seen', 'true');
+  }));
+  if (browserName === 'chromium') await toolbar.screenshot({ path: 'test-results/toolbar-find-wide-collapsed.png' });
+
+  await trigger.click();
+  await expect(group).toHaveAttribute('data-width-transition-seen', 'true');
   await expect(editor).toBeVisible();
-  await expect(toolbar.getByRole('button', { name: 'Open find' })).toBeHidden();
-  await expect(toolbar.locator('[data-component="token-search-field"]')).toHaveCSS('height', '44px');
+  await expect(editor).toBeFocused();
+  await expect(toolbar.locator('.kui-toolbar__leading')).toBeVisible();
+  await expect(toolbar.locator('.kui-toolbar__trailing')).toBeVisible();
+  await expect(group).toHaveCSS('height', '44px');
+  await expect(field).toHaveCSS('height', '40px');
   await editor.pressSequentially('priority');
   await expect(toolbar.getByRole('button', { name: 'Clear search' })).toBeVisible();
+  await outsideControl.focus();
+  await expect(editor).toBeVisible();
+  await expect(trigger).toBeHidden();
   if (browserName === 'chromium') await toolbar.screenshot({ path: 'test-results/toolbar-find-wide.png' });
 
   await page.setViewportSize({ width: 390, height: 844 });
+  await expect(editor).toBeVisible();
+  await expect(toolbar.locator('.kui-toolbar__leading')).toBeHidden();
+  await expect(toolbar.locator('.kui-toolbar__trailing')).toBeHidden();
+  await toolbar.getByRole('button', { name: 'Clear search' }).click();
+  await expect(editor).toBeVisible();
+  await expect(editor).toBeFocused();
+  await outsideControl.focus();
   await expect(editor).toBeHidden();
-  const trigger = toolbar.getByRole('button', { name: 'Open find' });
   await expect(trigger).toBeVisible();
   if (browserName === 'chromium') await toolbar.screenshot({ path: 'test-results/toolbar-find-narrow-collapsed.png' });
 

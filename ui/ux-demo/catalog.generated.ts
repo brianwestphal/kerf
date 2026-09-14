@@ -247,7 +247,7 @@ export const generatedKerfCatalog = [
     "category": "Controls",
     "kind": "component",
     "source": "kerf",
-    "description": "Token-controlled search editor with ordered, editable, removable filter chips.",
+    "description": "Token-controlled, optionally collapsible search editor with ordered, editable, removable filter chips.",
     "uses": [
       "lucide-icon"
     ]

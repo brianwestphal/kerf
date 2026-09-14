@@ -1201,18 +1201,19 @@
       "category": "Controls",
       "kind": "component",
       "source": "kerf",
-      "description": "Token-controlled search editor with ordered, editable, removable filter chips.",
+      "description": "Token-controlled, optionally collapsible search editor with ordered, editable, removable filter chips.",
       "uses": [
         "lucide-icon"
       ],
-      "purpose": "Token-controlled search editor with ordered, editable, removable filter chips.",
+      "purpose": "Token-controlled, optionally collapsible search editor with ordered, editable, removable filter chips.",
       "publicExports": [
         "TokenSearchField",
         "readTokenSearchField",
         "placeTokenSearchCaret"
       ],
       "useWhen": [
-        "Combine DOM-owned free text with ordered editable/removable filter tokens in one searchbox."
+        "Combine DOM-owned free text with ordered editable/removable filter tokens in one searchbox.",
+        "Enable collapsible mode when an empty, unfocused search should reduce to one iconic action, standalone or inside a toolbar group."
       ],
       "avoidWhen": [
         "Do not use for ordinary text input or separately labeled filter controls."
@@ -1228,17 +1229,19 @@
         "suggestions",
         "tokens",
         "query execution",
-        "results"
+        "results",
+        "transient focused/open state and focus transfer"
       ],
       "variants": [
         "tokens",
         "free text",
         "disabled",
-        "toolbar composition"
+        "collapsible standalone or toolbar composition"
       ],
       "accessibility": [
         "Announce result changes when useful and keep tokens atomic during editing.",
-        "Keep leading and trailing controls aligned to the first text line while content wraps."
+        "Keep leading and trailing controls aligned to the first text line while content wraps.",
+        "In collapsible mode, transfer focus from the named trigger into the revealed searchbox and clear expanded only after focus leaves the component."
       ],
       "delivery": {
         "browserImport": "@kerfjs/ui/token-search-field",
@@ -1263,6 +1266,7 @@
         "kui-token-search",
         "kui-token-search__clear",
         "kui-token-search__editor",
+        "kui-token-search__expand",
         "kui-token-search__leading",
         "kui-token-search__token",
         "kui-token-search__token-edit",
@@ -1285,7 +1289,8 @@
         "--kui-token-search-border",
         "--kui-token-search-line-size",
         "--kui-token-search-token-background",
-        "--kui-token-search-token-foreground"
+        "--kui-token-search-token-foreground",
+        "--kui-token-search-expanded-width"
       ],
       "links": {
         "catalogRoute": "?component=token-search-field",

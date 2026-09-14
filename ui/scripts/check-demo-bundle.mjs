@@ -5,9 +5,9 @@ import { fileURLToPath } from 'node:url';
 const assetsDir = fileURLToPath(new URL('../dist-demo/assets/', import.meta.url));
 const limits = {
   largestJavaScriptGzip: 150_000,
-  // Seven independently lazy recipe controllers add ~7.5 kB while keeping the
-  // base catalog and largest Web Awesome chunk unchanged.
-  totalJavaScriptGzip: 245_000,
+  // Lazy recipe controllers plus the first-class collapsible search-field
+  // specimen keep the base catalog and largest Web Awesome chunk unchanged.
+  totalJavaScriptGzip: 245_500,
 };
 
 const javascript = (await readdir(assetsDir)).filter((name) => name.endsWith('.js'));

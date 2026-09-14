@@ -62,6 +62,27 @@ describe('TokenSearchField', () => {
     expect(css).toMatch(/\.kui-token-search__clear,[^}]+height: var\(--kui-token-search-line-size\)[^}]+place-items: center/s);
   });
 
+  it('optionally collapses to an iconic field, stays open with content, and animates standalone or grouped', async () => {
+    const collapsed = asHtml(TokenSearchField({ id: 'find', label: 'Find records', collapsible: true, expandAction: 'open-find' }));
+    expect(collapsed).toContain('data-component="token-search-field" data-token-search-id="find" data-disabled="false" data-collapsible="true" data-expanded="false"');
+    expect(collapsed).toContain('class="kui-token-search__expand" data-action="open-find" aria-label="Find records" title="Find records"');
+    expect(collapsed).not.toContain('role="searchbox"');
+
+    const focused = asHtml(TokenSearchField({ id: 'find', label: 'Find records', collapsible: true, expanded: true }));
+    expect(focused).toContain('data-collapsible="true" data-expanded="true"');
+    expect(focused).toContain('role="searchbox"');
+    expect(focused).not.toContain('data-action="expand-token-search"');
+
+    const populated = asHtml(TokenSearchField({ id: 'find', label: 'Find records', collapsible: true, query: 'priority' }));
+    expect(populated).toContain('data-collapsible="true" data-expanded="true"');
+    expect(populated).toContain('role="searchbox"');
+
+    const css = await readFile(resolve(import.meta.dirname, '../../src/token-search-field.css'), 'utf8');
+    expect(css).toMatch(/\.kui-token-search\[data-collapsible="true"\][^{]*\{[^}]+width 0\.25s ease/s);
+    expect(css).toMatch(/\.kui-toolbar-control-group:has\([\s\S]+\.kui-token-search\[data-collapsible="true"\][\s\S]+width 0\.25s ease/);
+    expect(css).toMatch(/@media \(prefers-reduced-motion: reduce\)[\s\S]+transition-duration: 0s/);
+  });
+
   it('reads browser-edited text and token offsets without chip button text', () => {
     document.body.innerHTML = asHtml(TokenSearchField({ id: 'tickets', label: 'Search tickets', query: 'NOT  AND parser', tokens: [{ value: 'tag:server', label: 'tag:server', offset: 4 }] }));
     const editor = document.querySelector<HTMLElement>('[data-token-search-editor]')!;
