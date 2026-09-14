@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Added a site-scoped CI dependency audit that includes the complete static-site build tree and fails on high or critical advisories while keeping low/moderate development-tool findings informational.
 - Aligned the UX catalog's header-composition dialog with the shared 8px inline layout gutter while preserving its 16px vertical separation.
 - Added visible `View demo source` and `Read guidance` affordances to every UI catalog detail, plus `View component source` for first-party components, backed by deterministic repository-relative paths for the main renderer, individual recipe files, Web Awesome specimens, and canonical browser-import implementations. Web Awesome entries explicitly label local documentation as Kerf integration guidance; all links use deploy-safe GitHub URLs and a responsive accessible layout.
 - Added runtime-safe `AppTab.rootAttributes` for domain `data-*` metadata plus decorative `AppTab.closeIcon` and `ResizableRegion.handleIcon` slots, preserving existing tab and resize wiring ownership while blocking case-folded component/action/drag/drop collisions.

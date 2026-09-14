@@ -67,6 +67,22 @@ install script. Review the package and its lifecycle command before updating
 both the lockfile expectation and `allowScripts`; do not use npm's
 `dangerously-allow-all-scripts` escape hatch.
 
+### 9.3.2 Dependency audit policy
+
+The read-only `site` CI job runs `npm run check:audit` from `site/` immediately
+after its clean install. The command audits the complete site dependency tree,
+including `devDependencies`, because Astro, Starlight, Vite, TypeScript, Sharp,
+and their transitive packages execute as build tooling even though none becomes
+a server dependency in the static Pages artifact. The gate uses
+`--audit-level=high`: high and critical advisories fail CI, while low and
+moderate development-tool findings remain visible in the audit report without
+making the pipeline permanently red.
+
+The audit needs registry access, so it belongs in the networked CI site job and
+is not part of the repository's offline-capable `npm run check` command. Run it
+locally with `cd site && npm run check:audit` when reviewing site dependency
+changes.
+
 ## 9.4 One-time repo setup
 
 GitHub Pages source must be set to **GitHub Actions** in repo settings (`Settings → Pages → Source: GitHub Actions`). The workflow cannot enable Pages itself — that toggle is configured manually once.
@@ -108,3 +124,4 @@ Update this doc whenever:
 - The Pages workflow is renamed, restructured, or replaced.
 - A third build is added under the same Pages deploy.
 - The repo moves to a new owner or name (the Pages URL changes accordingly).
+- The site's audit severity or dependency-scope policy changes.

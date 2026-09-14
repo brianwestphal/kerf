@@ -19,7 +19,8 @@
     "start": "npm run dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "check:audit": "npm audit --include=dev --audit-level=high"
   },
   "dependencies": {
     "@astrojs/starlight": "^0.42.0",

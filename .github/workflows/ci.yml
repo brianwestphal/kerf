@@ -70,6 +70,9 @@ jobs:
       - run: npm run build
       - run: npm ci
         working-directory: site
+      - name: Audit all site build dependencies (high and critical)
+        working-directory: site
+        run: npm run --silent check:audit
       - name: Build site and reject route-collision warnings
         working-directory: site
         run: |

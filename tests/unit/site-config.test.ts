@@ -39,4 +39,22 @@ describe('site config', () => {
     expect(existsSync(`${cwd()}/site/src/content/docs/docs/ui-package.md`)).toBe(false);
     expect(installPolicy).toContain("path.startsWith('node_modules/') && entry.hasInstallScript");
   });
+
+  it('gates the complete site build tree on high and critical dependency advisories', () => {
+    const sitePackage = JSON.parse(readFileSync(`${cwd()}/site/package.json`, 'utf8')) as {
+      scripts: Record<string, string>;
+    };
+    const ciWorkflow = readFileSync(`${cwd()}/.github/workflows/ci.yml`, 'utf8');
+
+    expect(sitePackage.scripts['check:audit']).toBe(
+      'npm audit --include=dev --audit-level=high',
+    );
+    expect(ciWorkflow).toContain(
+      [
+        '- name: Audit all site build dependencies (high and critical)',
+        '        working-directory: site',
+        '        run: npm run --silent check:audit',
+      ].join('\n'),
+    );
+  });
 });
