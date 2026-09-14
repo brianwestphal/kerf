@@ -30,21 +30,20 @@ specific dispatch; either way, wire once at a stable root and retain disposal.
 
 [Open the recipe](../ux-demo/?component=recipe-app-shell) · [TSX source](../ux-demo/recipes/app-shell.tsx) · [shared CSS](../ux-demo/recipes/recipes.css)
 
-Use `Toolbar`, the sidebar composition, controlled `ResizableRegion` panes, and
-one `.kui-scroll-owner` per pane. The recipe owns the shell topology; the app
-owns routing, responsive pane visibility, sizes, persistence, and data. Adapt
-only public `--kui-layout-*`, `--kui-sidebar-*`, and component variables.
+Use `Toolbar`, controlled `ResizableRegion` panes, and one
+`.kui-pane__content` scroll owner per pane. The recipe owns the shell topology;
+the app owns routing, responsive pane visibility, sizes, persistence, and data.
+Adapt only public `--kui-layout-*` and component variables.
 
 ## Navigation sidebar
 
 [Open the recipe](../ux-demo/?component=recipe-navigation-sidebar) · [TSX source](../ux-demo/recipes/navigation-sidebar.tsx)
 
-One `.kui-sidebar` owns the 10px interaction and 20px content rails across
-headers, icon-bearing and iconless rows, and surfaces. Icon rows use the shared
-24px slot plus 10px gap; rows remain at least 44px tall. The footer `Toolbar`
-uses `.kui-sidebar-toolbar`, keeping its text on the content rail and its
-standalone actions in centered 44px targets. The app owns routes, permissions,
-labels, selection, and disclosure state.
+One unpadded `.kui-pane` owns toolbar/content/footer structure. Its
+`.kui-content` uses 24px major gaps; `MenuHeader`, `MenuItem`, and other
+`.kui-content-item` children own their 8px margin, 1px border, and 8px padding.
+Rows and footer toolbar groups remain 44px tall. The app owns routes,
+permissions, labels, selection, badge content, and disclosure state.
 
 ## Workspace header
 
@@ -102,8 +101,8 @@ This is a production recipe, not an `@kerfjs/ui` command-palette export.
 
 ## Rules shared by every recipe
 
-- Import `@kerfjs/ui/layout.css`; use exactly one inset and scroll owner for each
-  real boundary.
+- Import `@kerfjs/ui/layout.css`; keep every pane unpadded and use exactly one
+  `.kui-pane__content` scroll owner for each real boundary.
 - For direct `wa-*` JSX, import types from `@kerfjs/ui/webawesome`. Import only
   individual Web Awesome registration modules and theme them with
   `@kerfjs/ui/webawesome.css`.

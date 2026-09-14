@@ -4,23 +4,29 @@
   --kui-toolbar-control-color: var(--kui-color-neutral-on-quiet);
   --kui-toolbar-control-hover-background: var(--kui-color-surface);
   --kui-toolbar-control-selected-background: var(--kui-color-surface);
+  --kui-toolbar-control-selected-border: var(--kui-color-neutral-border-normal);
   --kui-toolbar-control-selected-color: var(--kui-color-brand-on-quiet);
   --kui-toolbar-control-selected-shadow: var(--kui-shadow-s);
   --kui-toolbar-control-pressed-background: var(--kui-color-neutral-fill-loud);
   --kui-toolbar-control-pressed-border: var(--kui-color-neutral-border-loud);
   --kui-toolbar-control-pressed-color: var(--kui-color-neutral-on-loud);
   display: inline-flex;
-  height: remify(40.4px);
-  padding: remify(3.2px);
+  height: var(--kui-toolbar-group-size, calc(2px + remify(42px)));
+  min-width: var(--kui-toolbar-group-size, calc(2px + remify(42px)));
+  padding: 1px;
   box-sizing: border-box;
   border: 1px solid var(--kui-toolbar-control-border);
-  border-radius: var(--kui-radius-pill);
+  border-radius: var(
+    --kui-toolbar-group-radius,
+    var(--kui-layout-pill-radius, calc(1px + remify(21px)))
+  );
   color: var(--kui-toolbar-control-color);
   background: var(--kui-toolbar-control-background);
   align-items: center;
   flex: 0 0 auto;
-  gap: remify(2.4px);
+  gap: 0;
 }
+
 .kui-toolbar-control-group[data-tone="dark"] {
   --kui-toolbar-control-background: color-mix(
     in srgb,
@@ -35,95 +41,111 @@
     transparent
   );
 }
+
 .kui-toolbar-control-group[data-appearance="borderless"] {
   border-color: transparent;
   background: transparent;
 }
+
+.kui-toolbar-control-group > :is(button, wa-button, wa-dropdown) {
+  flex: 0 0 auto;
+}
+
 .kui-toolbar-control-group > button {
-  border: 0;
+  appearance: none;
+  display: grid;
+  min-width: remify(40px);
+  height: remify(40px);
+  padding: 0 var(--kui-layout-item-padding, remify(8px));
+  box-sizing: border-box;
+  border: 1px solid transparent;
+  border-radius: var(
+    --kui-toolbar-item-radius,
+    var(--kui-layout-pill-radius, calc(1px + remify(21px)))
+  );
+  color: inherit;
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+  place-items: center;
 }
-.kui-toolbar-control-group > wa-button {
-  min-width: remify(32px);
-  height: remify(32px);
+
+.kui-toolbar-control-group > button:hover {
+  border-color: var(--kui-toolbar-control-border);
+  background: var(--kui-toolbar-control-hover-background);
 }
-.kui-toolbar-control-group wa-button {
-  display: inline-flex;
-  line-height: 0;
-  align-items: center;
-  justify-content: center;
-}
+
+.kui-toolbar-control-group > button svg,
 .kui-toolbar-control-group wa-button > svg {
   display: block;
   width: remify(16px);
   height: remify(16px);
 }
-.kui-toolbar-control-group[data-single="true"] > wa-dropdown {
-  width: remify(48px);
-  min-width: remify(48px);
-  height: remify(32px);
+
+.kui-toolbar-control-group > wa-button,
+.kui-toolbar-control-group > wa-dropdown,
+.kui-toolbar-control-group > wa-dropdown > wa-button,
+.kui-toolbar-control-group > wa-dropdown > wa-button::part(base) {
+  min-width: remify(40px);
+  height: remify(40px);
 }
-.kui-toolbar-control-group[data-single="true"] > wa-dropdown > wa-button {
-  width: remify(48px);
-  height: remify(32px);
-}
+
+.kui-toolbar-control-group[data-single="true"] > wa-dropdown,
+.kui-toolbar-control-group[data-single="true"] > wa-dropdown > wa-button,
 .kui-toolbar-control-group[data-single="true"]
   > wa-dropdown
   > wa-button::part(base) {
   width: remify(48px);
-  height: remify(32px);
 }
+
+.kui-toolbar-control-group wa-button {
+  display: inline-flex;
+  line-height: 0;
+  align-items: center;
+  justify-content: center;
+  --wa-color-fill-quiet: transparent;
+}
+
 .kui-toolbar-control-group wa-button::part(base) {
-  border: 0;
+  min-height: remify(40px);
+  box-sizing: border-box;
+  border: 1px solid transparent;
+  border-radius: var(
+    --kui-toolbar-item-radius,
+    var(--kui-layout-pill-radius, calc(1px + remify(21px)))
+  );
 }
+
+.kui-toolbar-control-group wa-button:hover::part(base) {
+  border-color: var(--kui-toolbar-control-border);
+  background: var(--kui-toolbar-control-hover-background);
+}
+
 .kui-toolbar-control-group[data-single="true"]:has(
     > :is(button, wa-button, wa-dropdown)
   ):hover {
   background: var(--kui-toolbar-control-hover-background);
 }
-.kui-toolbar-control-group[data-single="true"] wa-button {
-  --wa-color-fill-quiet: transparent;
-}
-.kui-toolbar-control-group[data-single="false"] wa-button {
-  width: remify(32px);
-  height: remify(32px);
-  border-radius: var(--kui-radius-pill);
-  --wa-color-fill-quiet: transparent;
-}
-.kui-toolbar-control-group[data-single="false"] wa-button:hover {
-  background: var(--kui-toolbar-control-hover-background);
-}
-.kui-toolbar-control-group[data-single="true"] wa-button:hover::part(base),
-.kui-toolbar-control-group[data-single="false"] wa-button:hover::part(base) {
+
+.kui-toolbar-control-group[data-single="true"] > :is(button, wa-button):hover,
+.kui-toolbar-control-group[data-single="true"] wa-button:hover::part(base) {
+  border-color: transparent;
   background: transparent;
 }
-.kui-toolbar-control-group > button {
-  display: grid;
-  min-width: remify(32px);
-  height: remify(32px);
-  padding: 0;
-  border-radius: var(--kui-radius-pill);
-  color: var(--kui-toolbar-control-color);
-  background: transparent;
-  cursor: pointer;
-  place-items: center;
-}
-.kui-toolbar-control-group > button:hover {
-  background: var(--kui-toolbar-control-hover-background);
-}
+
 .kui-toolbar-control-group[data-single="false"]
   > :is(button, wa-button)[aria-pressed="true"] {
+  border-color: var(--kui-toolbar-control-selected-border);
   color: var(--kui-toolbar-control-selected-color);
   background: var(--kui-toolbar-control-selected-background);
   box-shadow: var(--kui-toolbar-control-selected-shadow);
 }
+
 .kui-toolbar-control-group > :is(button, wa-button):focus-visible {
   outline: var(--kui-focus-ring);
   outline-offset: 1px;
 }
-.kui-toolbar-control-group > button svg {
-  width: remify(16px);
-  height: remify(16px);
-}
+
 .kui-toolbar-control-group[data-button-appearance="push"][data-single="true"]:has(
     > :is(button, wa-button)[aria-pressed="true"]
   ) {
@@ -132,16 +154,8 @@
   color: var(--kui-toolbar-control-pressed-color);
   background: var(--kui-toolbar-control-pressed-background);
 }
+
 .kui-toolbar-control-group[data-button-appearance="push"][data-single="true"]
   > :is(button, wa-button)[aria-pressed="true"] {
   color: var(--kui-toolbar-control-pressed-color);
-}
-.kui-toolbar-control-group[data-button-appearance="push"][data-single="true"]:has(
-    > :is(button, wa-button)[aria-pressed="true"]
-  ):hover {
-  background: var(--kui-toolbar-control-pressed-background);
-}
-.kui-toolbar-control-group[data-button-appearance="push"][data-single="true"]
-  > :is(button, wa-button)[aria-pressed="true"]:hover {
-  background: transparent;
 }

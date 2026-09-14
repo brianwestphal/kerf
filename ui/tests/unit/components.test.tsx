@@ -48,11 +48,13 @@ describe('production UI primitives', () => {
     const iconless = asHtml(MenuItem({ label: 'Disabled', action: 'none', disabled: true }));
     expect(iconless).toContain('data-has-icon="false"');
     expect(iconless).toContain('disabled');
-    const toggle = asHtml(MenuHeader({ label: 'Tools', action: 'toggle', actionIcon: icon, expanded: false, toggle: true }));
+    const toggle = asHtml(MenuHeader({ label: 'Tools', badge: <span>2</span>, action: 'toggle', actionIcon: icon, expanded: false, toggle: true }));
     expect(toggle).toContain('aria-expanded="false"');
+    expect(toggle).toContain('class="kui-menu-header__badge"><span>2</span>');
     expect(toggle).toContain('class="kui-menu-header__action-layer"');
-    const header = asHtml(MenuHeader({ label: 'Workspace', action: 'add', actionLabel: 'Add', actionIcon: icon, actionDisabled: true, disabledReason: 'Unavailable' }));
-    expect(header).toContain('<h2>Workspace</h2>');
+    const header = asHtml(MenuHeader({ label: 'Workspace', badge: <span>3</span>, action: 'add', actionLabel: 'Add', actionIcon: icon, actionDisabled: true, disabledReason: 'Unavailable' }));
+    expect(header).toContain('<h2 class="kui-menu-header__label">Workspace</h2>');
+    expect(header).toContain('class="kui-menu-header__badge"><span>3</span>');
     expect(header).toContain('title="Unavailable" disabled');
     expect(asHtml(MenuHeader({ label: 'Enabled', action: 'add', actionLabel: 'Add', actionIcon: icon }))).toContain('title="Add"');
     expect(asHtml(MenuHeader({ label: 'Plain' }))).not.toContain('<button');

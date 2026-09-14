@@ -48,13 +48,14 @@ button {
   position: sticky;
   top: 0;
   height: 100vh;
-  padding: var(--kui-space-l) var(--kui-space-m) var(--kui-space-xl);
+  padding: 0;
   border-inline-end: 1px solid var(--kui-color-border);
   background: var(--kui-color-surface);
 }
 .catalog-brand {
   display: grid;
-  padding: 0 var(--kui-sidebar-row-padding-inline) var(--kui-space-l);
+  margin: var(--kui-layout-inline-margin);
+  padding: var(--kui-layout-item-padding);
   grid-template-columns: remify(40px) minmax(0, 1fr);
   align-items: center;
   gap: var(--kui-space-s);
@@ -140,15 +141,16 @@ button {
   min-width: 0;
   min-height: 100vh;
   flex-direction: column;
+  padding-block: var(--kui-layout-item-gap);
 }
 .catalog-header {
   display: flex;
   width: 100%;
   max-width: var(--catalog-content-measure, remify(1120px));
-  margin: 0 auto var(--kui-layout-section-gap);
+  margin-inline: auto;
   align-items: flex-start;
   justify-content: space-between;
-  gap: var(--kui-layout-section-gap);
+  gap: var(--kui-layout-content-gap);
 }
 .catalog-header > div:first-child {
   min-width: 0;
@@ -211,21 +213,20 @@ button {
   width: 100%;
   max-width: var(--catalog-content-measure, remify(1120px));
   min-height: remify(480px);
-  margin: auto;
-  border: 1px solid var(--kui-color-border);
-  border-radius: var(--kui-radius-l);
-  background: var(--kui-color-surface);
+  margin-inline: auto;
+  --kui-content-item-border: var(--kui-color-border);
+  --kui-content-item-background: var(--kui-color-surface);
   box-shadow: var(--kui-shadow-l);
   align-content: center;
-  gap: var(--kui-layout-section-gap);
+  gap: var(--kui-layout-content-gap);
 }
 .catalog-canvas {
   display: grid;
   width: 100%;
   min-width: 0;
   min-height: remify(288px);
-  border: 1px solid var(--kui-color-border-quiet);
-  border-radius: var(--kui-radius-m);
+  --kui-content-item-border: var(--kui-color-border-quiet);
+  --kui-content-item-background: var(--kui-color-surface-lowered);
   background-color: var(--kui-color-surface-lowered);
   background-image:
     linear-gradient(
@@ -273,7 +274,7 @@ button {
   display: flex;
   width: 100%;
   max-width: var(--catalog-content-measure, remify(1120px));
-  margin: var(--kui-layout-section-gap) auto 0;
+  margin-inline: auto;
   justify-content: flex-end;
 }
 .catalog-relationships__select {
@@ -328,22 +329,17 @@ button {
   background: var(--kui-color-surface);
   box-shadow: var(--kui-shadow-s);
 }
-.demo-menu > .kui-sidebar {
-  display: grid;
-  padding-block: remify(12px);
-  gap: remify(2.4px);
+.demo-menu__content {
+  max-height: remify(448px);
 }
-.demo-menu .kui-sidebar-section {
-  margin-block-start: remify(10.4px);
-}
-.demo-menu .kui-sidebar-surface strong,
-.demo-menu .kui-sidebar-surface p {
+.demo-menu .kui-content-item strong,
+.demo-menu .kui-content-item p {
   margin: 0;
 }
-.demo-menu .kui-sidebar-surface strong {
+.demo-menu .kui-content-item strong {
   font-size: var(--kui-font-s);
 }
-.demo-menu .kui-sidebar-surface p {
+.demo-menu .kui-content-item p {
   margin-block-start: remify(3.2px);
   color: var(--kui-color-text-quiet);
   font-size: var(--kui-font-xs);
@@ -416,9 +412,8 @@ button {
   width: min(100%, remify(736px));
 }
 .demo-layout__surface {
-  border: 1px solid var(--kui-color-border);
-  border-radius: var(--kui-radius-l);
-  background: var(--kui-color-surface);
+  --kui-content-item-border: var(--kui-color-border);
+  --kui-content-item-background: var(--kui-color-surface);
 }
 .demo-layout__surface p {
   margin: var(--kui-layout-metadata-gap) 0 0;
@@ -1357,12 +1352,13 @@ button {
     position: static;
     width: 100%;
     height: auto;
-    padding: var(--kui-space-m);
+    padding: 0;
     border-inline-end: 0;
     border-bottom: 1px solid var(--kui-color-border);
   }
   .catalog-brand {
-    padding: 0 0 var(--kui-space-m);
+    margin: var(--kui-layout-inline-margin);
+    padding: var(--kui-layout-item-padding);
   }
   .catalog-sidebar nav {
     display: grid;

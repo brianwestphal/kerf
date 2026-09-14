@@ -1,16 +1,19 @@
 .kui-page-header {
-  --kui-page-header-background: var(--kui-color-surface);
-  --kui-page-header-border: var(--kui-color-border);
+  --kui-page-header-background: transparent;
+  --kui-page-header-border: transparent;
   --kui-page-header-foreground: var(--kui-color-text);
   display: flex;
-  min-height: remify(66.4px);
-  padding: remify(12px) remify(16px);
-  border-bottom: 1px solid var(--kui-page-header-border);
+  min-height: remify(44px);
+  margin-inline: var(--kui-layout-inline-margin, remify(8px));
+  padding: var(--kui-layout-item-padding, remify(8px));
+  box-sizing: border-box;
+  border: 1px solid var(--kui-page-header-border);
+  border-radius: var(--kui-layout-rounded-radius, calc(1px + remify(11px)));
   color: var(--kui-page-header-foreground);
   background: var(--kui-page-header-background);
   align-items: center;
   justify-content: space-between;
-  gap: var(--kui-space-m);
+  gap: var(--kui-layout-item-gap, remify(8px));
 }
 .kui-page-header h1 {
   margin: 0;

@@ -30,14 +30,16 @@
     var(--kui-color-surface)
   );
   display: grid;
-  min-height: remify(41.6px);
-  padding: remify(7.2px) remify(12px);
+  min-height: remify(44px);
+  margin-inline: var(--kui-layout-inline-margin, remify(8px));
+  padding: var(--kui-layout-item-padding, remify(8px));
   border: 1px solid var(--_kui-state-banner-border);
+  border-radius: var(--kui-layout-rounded-radius, calc(1px + remify(11px)));
   color: var(--_kui-state-banner-foreground);
   background: var(--_kui-state-banner-background);
   grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
-  gap: remify(9.6px);
+  gap: var(--kui-layout-item-gap, remify(8px));
 }
 .kui-state-banner[data-tone="info"] {
   --_kui-state-banner-background: var(
@@ -128,7 +130,7 @@
   display: flex;
   min-width: 0;
   align-items: baseline;
-  gap: var(--kui-space-xs);
+  gap: var(--kui-layout-item-gap, remify(8px));
 }
 .kui-state-banner__copy strong {
   font-size: var(--kui-font-xs);

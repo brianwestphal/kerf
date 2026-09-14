@@ -22,10 +22,11 @@ npm install kerfjs @kerfjs/ui
 ```tsx
 import { MenuItem } from '@kerfjs/ui/menu-item';
 import { Toolbar } from '@kerfjs/ui/toolbar';
+import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
 
 mount(root, () => <>
-  <Toolbar label="Document" leading={<ToolbarText text="Notes" />} />
+  <Toolbar label="Document" leading={<ToolbarControlGroup appearance="borderless" single><ToolbarText text="Notes" /></ToolbarControlGroup>} />
   <MenuItem action="open-notes" label="Notes" selected />
 </>);
 ```
@@ -42,8 +43,7 @@ Components return Kerf `SafeHtml`. They do not own application state or attach t
 | `ToolbarText` | `@kerfjs/ui/toolbar-text` | `@kerfjs/ui/toolbar-text.css` |
 | `MenuItem` | `@kerfjs/ui/menu-item` | `@kerfjs/ui/menu-item.css` |
 | `MenuHeader` | `@kerfjs/ui/menu-header` | `@kerfjs/ui/menu-header.css` |
-| Sidebar composition | — | `@kerfjs/ui/sidebar.css` |
-| Application layout composition | — | `@kerfjs/ui/layout.css` |
+| Pane, content, and navigation composition | — | `@kerfjs/ui/layout.css` |
 | `ResizableRegion` | `@kerfjs/ui/resizable-region` | `@kerfjs/ui/resizable-region.css` |
 | `wireResizableRegions` | `@kerfjs/ui/wire-resizable-regions` | — |
 | `AppTab` | `@kerfjs/ui/app-tab` | `@kerfjs/ui/app-tab.css` |
@@ -105,53 +105,42 @@ entry for a browser build with a custom styling pipeline. The exported
 delivery. Load application overrides after package styles, or scope `--kui-*`
 variables directly on a component instance.
 
-## Sidebar alignment
+## Pane and content geometry
 
-Import `@kerfjs/ui/sidebar.css` and put menu sections inside `.kui-sidebar`.
-The composition establishes a 10px outer interaction/highlight rail and a 20px
-content rail. Iconless rows, section labels, surface content, and toolbar text
-start on the content rail. Icon rows add a 24px icon slot and 10px gap, so their
-labels start 54px from the sidebar edge. Rows and standalone header or toolbar
-actions remain at least 44px tall; action icons stay 24px and centered in that
-target. Use `.kui-sidebar-surface` for bordered or filled content whose border
-begins on the interaction rail, and `.kui-sidebar-toolbar` for a header or
-footer toolbar that joins the same rails.
+Import `@kerfjs/ui/layout.css` and use the same structural vocabulary for a
+sidebar, main area, inspector, or dialog. `.kui-pane` is unpadded and contains
+an optional toolbar, one scrolling `.kui-pane__content`, and an optional footer.
+Add `.kui-content` to make its major children a vertical stack with 24px gaps.
 
 ```tsx
-<aside class="kui-sidebar">
-  <section class="kui-sidebar-section">
-    <MenuHeader label="Workspace" />
-    <MenuItem action="open" label="Inbox" icon={inboxIcon} />
-    <MenuItem action="open" label="Drafts" />
-    <div class="kui-sidebar-surface">Workspace details</div>
-  </section>
+<aside class="kui-pane">
+  <div class="kui-pane__toolbar"><Toolbar label="Workspace" ... /></div>
+  <nav class="kui-pane__content kui-content">
+    <section>
+      <MenuHeader label="Workspace" badge={<span>3</span>} />
+      <MenuItem action="open" label="Inbox" icon={inboxIcon} />
+      <MenuItem action="open" label="Drafts" />
+    </section>
+    <div class="kui-content-item">Workspace details</div>
+  </nav>
 </aside>
 ```
 
-Do not add padding to both the sidebar and each section, indent a panel until
-its border matches the content rail, or repair either mistake with a negative
-margin. Override `--kui-sidebar-highlight-gutter`,
-`--kui-sidebar-content-inset`, `--kui-sidebar-icon-slot-size`,
-`--kui-sidebar-column-gap`, `--kui-sidebar-action-target-size`, and
-`--kui-sidebar-row-min-size` together at the composition boundary when a
-product needs different geometry. The older gutter, row-padding, icon-column,
-and label-inset names remain compatibility fallbacks. Break the rails only for
-a full-bleed surface or a genuinely different navigation hierarchy.
+Ordinary children use `.kui-content-item`: 8px inline margin, a real 1px border
+(transparent by default), 8px padding, and 12px rounded corners. The pill
+modifier uses a 22px radius. A component can expose a transparent border or
+background without changing layout. `MenuHeader` follows the same rule while
+keeping its dormant title/badge cluster separate from its optional 44px action.
 
 ## Spacing and application layout
 
-Import `@kerfjs/ui/layout.css` and put `.kui-layout` on the composition root.
-Semantic roles then identify the one owner for page gutters, pane and surface
-insets, section stacks, control clusters, inline metadata, dialog bodies, and
-pane scrolling. The defaults use the existing `--kui-space-*` scale and reduce
-one step below `48rem`; `.kui-layout--compact` applies that density explicitly.
-The manual subpath carries standalone fallbacks when foundation CSS is delivered
-separately.
-
-Do not stack two inset classes on one boundary, wrap a `Toolbar` or header in
-competing padding, or give a pane more than one `.kui-scroll-owner`. Reading
-width and centering remain explicit application decisions. See the complete
-[layout decision table](./docs/layout.md) for correct and incorrect examples.
+Use 24px only for major vertical separation; use 8px inside content items and
+between toolbar groups. Toolbar groups are 44px outside (`2px + 42px`) and keep
+that geometry when their border/background are transparent. Wrap text and other
+dormant toolbar content in a `ToolbarControlGroup` too. Do not pad the pane
+itself, add competing wrapper insets, or give it more than one scroll owner.
+Reading width and responsive pane placement remain application decisions. See
+the complete [layout contract](./docs/layout.md).
 
 ## Web Awesome theme
 

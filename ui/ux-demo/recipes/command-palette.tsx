@@ -66,12 +66,12 @@ export const createRecipe: RecipeFactory = (announce) => {
     const flat = groups.flatMap((group) => group.commands);
     const selected = selectedIndex();
     let index = -1;
-    return <section class="kui-recipe recipe-command-palette kui-layout" data-recipe="recipe-command-palette">
-      <button class="kui-recipe__button" data-primary="true" type="button" data-action="recipe-action" data-recipe-command="open">Open command palette</button>
-      <p class="kui-recipe__ownership">The recipe owns modal, search, grouped-result, selection, keyboard, and focus anatomy. The app owns command registration, ranking, permissions, recent-history persistence, and dispatch.</p>
+    return <section class="kui-recipe recipe-command-palette kui-content" data-recipe="recipe-command-palette">
+      <button class="kui-recipe__button kui-content-item" data-primary="true" type="button" data-action="recipe-action" data-recipe-command="open">Open command palette</button>
+      <p class="kui-recipe__ownership kui-content-item">The recipe owns modal, search, grouped-result, selection, keyboard, and focus anatomy. The app owns command registration, ranking, permissions, recent-history persistence, and dispatch.</p>
       <wa-dialog class="recipe-command-palette__dialog" label="Command palette" without-header open={open.value}>
         <DialogHeader title="Command palette" titleId="recipe-command-title" summary="Find an available workspace command." summaryId="recipe-command-summary" actions={<button class="kui-recipe__button" type="button" data-action="recipe-action" data-recipe-command="close">Close</button>} />
-        <div class="recipe-command-palette__body kui-dialog-body">
+        <div class="recipe-command-palette__body kui-content">
           <label for="recipe-command-query">Search commands</label>
           <input id="recipe-command-query" class="recipe-command-palette__search" type="search" value={query.value} autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="true" aria-controls="recipe-command-results" aria-activedescendant={flat.length ? `recipe-command-option-${selected}` : undefined} aria-describedby="recipe-command-help" data-command-query data-recipe-input data-recipe-keydown />
           {flat.length ? <div id="recipe-command-results" class="recipe-command-palette__results" role="listbox" aria-label="Commands">

@@ -1,21 +1,28 @@
 .kui-segmented-control {
   --kui-segmented-background: var(--kui-color-neutral-fill-normal);
-  --kui-segmented-border: var(--kui-color-neutral-border-normal);
+  --kui-segmented-border: transparent;
   --kui-segmented-foreground: var(--kui-color-neutral-on-quiet);
   --kui-segmented-hover-background: var(--kui-color-surface);
+  --kui-segmented-hover-border: var(--kui-color-neutral-border-normal);
   --kui-segmented-selected-background: var(--kui-color-surface);
   --kui-segmented-selected-foreground: var(--kui-color-brand-on-quiet);
-  --kui-segmented-selected-border: transparent;
+  --kui-segmented-selected-border: var(--kui-color-neutral-border-normal);
   --kui-segmented-selected-shadow: var(--kui-shadow-s);
-  --kui-segmented-radius: remify(8.8px);
-  --kui-segmented-item-radius: remify(6.4px);
-
+  --kui-segmented-radius: var(
+    --kui-layout-rounded-radius,
+    calc(1px + remify(11px))
+  );
+  --kui-segmented-item-radius: var(
+    --kui-layout-rounded-radius,
+    calc(1px + remify(11px))
+  );
   display: inline-flex;
   max-width: 100%;
-  padding: remify(3.2px);
+  min-height: var(--kui-toolbar-group-size, calc(2px + remify(42px)));
+  padding: 1px;
   overflow-x: auto;
   box-sizing: border-box;
-  border: 1px solid transparent;
+  border: 1px solid var(--kui-segmented-border);
   border-radius: var(--kui-segmented-radius);
   color: var(--kui-segmented-foreground);
   background: var(--kui-segmented-background);
@@ -29,8 +36,8 @@
 }
 
 .kui-segmented-control[data-appearance="outlined"] {
+  --kui-segmented-border: var(--kui-color-neutral-border-normal);
   --kui-segmented-background: var(--kui-color-surface);
-  border-color: var(--kui-segmented-border);
 }
 
 .kui-segmented-control[data-appearance="toolbar"] {
@@ -43,6 +50,10 @@
     --kui-toolbar-control-hover-background,
     var(--kui-color-surface)
   );
+  --kui-segmented-hover-border: var(
+    --kui-toolbar-control-border,
+    var(--kui-color-neutral-border-normal)
+  );
   --kui-segmented-selected-background: var(
     --kui-toolbar-control-selected-background,
     var(--kui-color-surface)
@@ -51,18 +62,30 @@
     --kui-toolbar-control-selected-color,
     var(--kui-color-brand-on-quiet)
   );
+  --kui-segmented-selected-border: var(
+    --kui-toolbar-control-selected-border,
+    var(--kui-color-neutral-border-normal)
+  );
   --kui-segmented-selected-shadow: var(
     --kui-toolbar-control-selected-shadow,
     var(--kui-shadow-s)
   );
+  min-height: remify(40px);
   padding: 0;
   overflow: visible;
-  gap: remify(2.4px);
+  border: 0;
+  border-radius: 0;
 }
 
 .kui-segmented-control[data-shape="pill"] {
-  --kui-segmented-radius: var(--kui-radius-pill);
-  --kui-segmented-item-radius: var(--kui-radius-pill);
+  --kui-segmented-radius: var(
+    --kui-layout-pill-radius,
+    calc(1px + remify(21px))
+  );
+  --kui-segmented-item-radius: var(
+    --kui-layout-pill-radius,
+    calc(1px + remify(21px))
+  );
 }
 
 .kui-segmented-control[data-layout="equal"] {
@@ -73,12 +96,11 @@
 }
 
 .kui-segmented-control__item {
-  -webkit-appearance: none;
   appearance: none;
   display: inline-flex;
-  min-width: remify(36px);
-  min-height: remify(36px);
-  padding: remify(7.2px) remify(11.2px);
+  min-width: remify(40px);
+  min-height: remify(40px);
+  padding: remify(7px) var(--kui-layout-item-padding, remify(8px));
   box-sizing: border-box;
   border: 1px solid transparent;
   border-radius: var(--kui-segmented-item-radius);
@@ -86,7 +108,7 @@
   background: transparent;
   align-items: center;
   justify-content: center;
-  gap: remify(5.6px);
+  gap: var(--kui-layout-item-gap, remify(8px));
   font: inherit;
   font-size: var(--kui-font-xs);
   font-weight: var(--kui-font-weight-semibold);
@@ -96,9 +118,7 @@
 }
 
 .kui-segmented-control[data-size="small"] .kui-segmented-control__item {
-  min-width: remify(32px);
-  min-height: remify(32px);
-  padding: remify(5.6px);
+  padding-inline: remify(7px);
   font-size: var(--kui-font-2xs);
 }
 
@@ -108,6 +128,7 @@
 }
 
 .kui-segmented-control__item:hover:not(:disabled) {
+  border-color: var(--kui-segmented-hover-border);
   background: var(--kui-segmented-hover-background);
 }
 
@@ -130,14 +151,9 @@
 }
 
 .kui-segmented-control__item svg {
-  width: remify(14.4px);
-  height: remify(14.4px);
-  flex: 0 0 auto;
-}
-
-.kui-segmented-control[data-size="small"] .kui-segmented-control__item svg {
   width: remify(16px);
   height: remify(16px);
+  flex: 0 0 auto;
 }
 
 @media (forced-colors: active) {

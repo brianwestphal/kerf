@@ -27,46 +27,41 @@ test('loads component-reachable package CSS through browser subpaths', async ({ 
   await expect(page.locator('[data-component="empty-state"] .kui-loading-spinner')).toHaveCSS('display', 'block');
 });
 
-test('applies one semantic layout owner across responsive and 200% zoom layouts', async ({ page, browserName }) => {
+test('applies shared pane and content-item geometry across responsive and 200% zoom layouts', async ({ page, browserName }) => {
   const cases = [
-    { name: 'wide', width: 1440, height: 900, rootFontSize: '', expected: { page: 32, pane: 16, surface: 16, dialog: 24 } },
-    { name: 'intermediate', width: 900, height: 900, rootFontSize: '', expected: { page: 32, pane: 16, surface: 16, dialog: 24 } },
-    { name: 'narrow', width: 390, height: 844, rootFontSize: '', expected: { page: 16, pane: 12, surface: 12, dialog: 16 } },
-    { name: 'zoom-200', width: 720, height: 900, rootFontSize: '200%', expected: { page: 32, pane: 24, surface: 24, dialog: 32 } },
+    { name: 'wide', width: 1440, height: 900, rootFontSize: '', scale: 1 },
+    { name: 'intermediate', width: 900, height: 900, rootFontSize: '', scale: 1 },
+    { name: 'narrow', width: 390, height: 844, rootFontSize: '', scale: 1 },
+    { name: 'zoom-200', width: 720, height: 900, rootFontSize: '200%', scale: 2 },
   ] as const;
 
   for (const layout of cases) {
     await page.setViewportSize({ width: layout.width, height: layout.height });
-    await page.goto('/?component=headers');
+    await page.goto('/?component=layout');
     if (layout.rootFontSize) await page.locator('html').evaluate((element, size) => { element.style.fontSize = size; }, layout.rootFontSize);
     if (layout.name === 'intermediate' || layout.name === 'zoom-200') await page.locator('[data-action="toggle-theme"]').click();
 
     const geometry = await page.evaluate(() => {
       const number = (selector: string, property: string) => parseFloat(window.getComputedStyle(document.querySelector(selector)!).getPropertyValue(property));
-      const sidebar = document.querySelector<HTMLElement>('.catalog-sidebar')!;
       return {
-        page: number('.catalog-detail', 'padding-left'),
-        surface: number('.catalog-stage', 'padding-left'),
-        pane: number('.catalog-canvas', 'padding-left'),
-        dialog: number('.demo-dialog__body', 'padding-left'),
-        scrollOwners: document.querySelectorAll('.catalog-sidebar.kui-scroll-owner').length,
-        sidebarOverflow: window.getComputedStyle(sidebar).overflowY,
+        panePadding: number('.demo-layout', 'padding-left'),
+        contentGap: number('.demo-layout .kui-content', 'row-gap'),
+        itemMargin: number('.demo-layout .kui-content-item', 'margin-left'),
+        itemPadding: number('.demo-layout .kui-content-item', 'padding-left'),
+        itemBorder: number('.demo-layout .kui-content-item', 'border-left-width'),
+        itemRadius: number('.demo-layout .kui-content-item', 'border-top-left-radius'),
+        scrollOwners: document.querySelectorAll('.catalog-sidebar .kui-pane__content').length,
+        sidebarOverflow: window.getComputedStyle(document.querySelector<HTMLElement>('.catalog-sidebar .kui-pane__content')!).overflowY,
         horizontalOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
       };
     });
-    expect(geometry).toMatchObject({ ...layout.expected, scrollOwners: 1, sidebarOverflow: 'auto' });
+    expect(geometry).toMatchObject({ panePadding: 0, contentGap: 24 * layout.scale, itemMargin: 8 * layout.scale, itemPadding: 8 * layout.scale, itemBorder: 1, itemRadius: 1 + 11 * layout.scale, scrollOwners: 1, sidebarOverflow: 'auto' });
     expect(geometry.horizontalOverflow).toBeLessThanOrEqual(1);
 
     if (browserName === 'chromium') await page.screenshot({ path: `test-results/layout-${layout.name}.png`, fullPage: true });
   }
-
-  await page.setViewportSize({ width: 1440, height: 900 });
-  await page.goto('/?component=headers');
-  await page.locator('.kui-layout').evaluate((element) => element.classList.add('kui-layout--compact'));
-  await expect.poll(() => page.locator('.catalog-detail').evaluate((element) => parseFloat(window.getComputedStyle(element).paddingLeft))).toBe(16);
-  await expect.poll(() => page.locator('.catalog-canvas').evaluate((element) => parseFloat(window.getComputedStyle(element).paddingLeft))).toBe(12);
-  await expect(page.locator('.catalog-stage')).toHaveClass(/kui-surface-body/);
-  await expect(page.locator('.catalog-stage')).not.toHaveClass(/kui-pane-body|kui-dialog-body/);
+  await expect(page.locator('.demo-layout')).toHaveClass(/kui-pane/);
+  await expect(page.locator('.demo-layout .kui-pane__content')).toHaveClass(/kui-content/);
 });
 
 test('routes the generated application-layout composition at wide and narrow sizes', async ({ page, browserName }) => {
@@ -75,15 +70,15 @@ test('routes the generated application-layout composition at wide and narrow siz
   const demo = page.locator('[data-demo="layout"]');
   await expect(demo).toBeVisible();
   await expect(page.locator('[data-item-id="layout"]')).toHaveAttribute('aria-current', 'page');
-  const wideGutter = Number.parseFloat(await demo.evaluate((element) => window.getComputedStyle(element).paddingInlineStart));
+  const wideGap = Number.parseFloat(await demo.locator('.kui-content').evaluate((element) => window.getComputedStyle(element).rowGap));
   await demo.getByRole('button', { name: 'Primary action' }).click();
   await expect(page.locator('.catalog-log')).toHaveText('Add action requested');
   if (browserName === 'chromium') await page.screenshot({ path: 'test-results/component-catalog-layout-wide.png', fullPage: true });
 
   await page.setViewportSize({ width: 390, height: 844 });
   await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
-  const narrowGutter = Number.parseFloat(await demo.evaluate((element) => window.getComputedStyle(element).paddingInlineStart));
-  expect(narrowGutter).toBeLessThan(wideGutter);
+  const narrowGap = Number.parseFloat(await demo.locator('.kui-content').evaluate((element) => window.getComputedStyle(element).rowGap));
+  expect(narrowGap).toBe(wideGap);
   await expect(demo.getByRole('button', { name: 'Secondary action' })).toBeVisible();
   if (browserName === 'chromium') await page.screenshot({ path: 'test-results/component-catalog-layout-narrow.png', fullPage: true });
 });
@@ -629,13 +624,13 @@ test('catalog routes every production component family and supports its stateful
   }
 });
 
-test('matches Hot Sheet menu and toolbar control geometry', async ({ page, browserName }) => {
+test('matches shared menu, content-item, and toolbar geometry', async ({ page, browserName }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/?component=menu');
   const menu = page.locator('[data-demo="menu"]');
-  const sidebarRails = () => menu.evaluate((node) => {
-    const sidebar = node.querySelector<HTMLElement>('[data-sidebar-rails]')!.getBoundingClientRect();
-    const toolbar = node.querySelector<HTMLElement>('.kui-sidebar-toolbar')!.getBoundingClientRect();
+  const paneGeometry = () => menu.evaluate((node) => {
+    const content = node.querySelector<HTMLElement>('[data-content-stack]')!.getBoundingClientRect();
+    const toolbar = node.querySelector<HTMLElement>('.kui-pane__footer .kui-toolbar')!.getBoundingClientRect();
     const direction = window.getComputedStyle(node).direction;
     const start = (container: DOMRect, item: DOMRect) => direction === 'rtl' ? container.right - item.right : item.left - container.left;
     const end = (container: DOMRect, item: DOMRect) => direction === 'rtl' ? item.left - container.left : container.right - item.right;
@@ -645,49 +640,57 @@ test('matches Hot Sheet menu and toolbar control geometry', async ({ page, brows
     const rowIcon = node.querySelector<HTMLElement>('[data-item-id="projects"] .kui-menu-item__icon')!.getBoundingClientRect();
     const trailing = node.querySelector<HTMLElement>('[data-item-id="projects"] .kui-menu-item__trailing')!.getBoundingClientRect();
     const iconlessLabel = node.querySelector<HTMLElement>('[data-item-id="drafts"] .kui-menu-item__label')!.getBoundingClientRect();
-    const sectionLabel = node.querySelector<HTMLElement>('.kui-sidebar-section .kui-menu-header h2')!.getBoundingClientRect();
-    const surface = node.querySelector<HTMLElement>('[data-sidebar-surface]')!.getBoundingClientRect();
-    const surfaceLabel = node.querySelector<HTMLElement>('[data-sidebar-surface] strong')!.getBoundingClientRect();
+    const sectionLabel = node.querySelector<HTMLElement>('.kui-menu-header h2')!.getBoundingClientRect();
+    const surfaceElement = node.querySelector<HTMLElement>('[data-content-item]')!;
+    const surface = surfaceElement.getBoundingClientRect();
+    const surfaceLabel = node.querySelector<HTMLElement>('[data-content-item] strong')!.getBoundingClientRect();
     const toggleLayer = node.querySelector<HTMLElement>('.kui-menu-header__action-layer')!.getBoundingClientRect();
-    const toolbarText = node.querySelector<HTMLElement>('.kui-sidebar-toolbar .kui-toolbar-text')!.getBoundingClientRect();
-    const toolbarAction = node.querySelector<HTMLElement>('.kui-sidebar-toolbar .kui-toolbar-control-group')!.getBoundingClientRect();
+    const toolbarText = node.querySelector<HTMLElement>('.kui-pane__footer .kui-toolbar-text')!.getBoundingClientRect();
+    const toolbarAction = node.querySelector<HTMLElement>('.kui-pane__footer .kui-toolbar__trailing .kui-toolbar-control-group')!.getBoundingClientRect();
     return {
-      rowStart: start(sidebar, row), rowEnd: end(sidebar, row), rowHeight: row.height,
-      plainStart: start(sidebar, iconlessLabel), sectionStart: start(sidebar, sectionLabel),
-      surfaceStart: start(sidebar, surface), surfaceContentStart: start(sidebar, surfaceLabel),
-      iconStart: start(sidebar, rowIcon), iconWidth: rowIcon.width, iconLabelStart: start(sidebar, rowLabel),
-      trailingEnd: end(sidebar, trailing),
-      headerActionEnd: end(sidebar, action), headerActionWidth: action.width, headerActionHeight: action.height,
-      toggleActionEnd: end(sidebar, toggleLayer), toggleActionWidth: toggleLayer.width, toggleActionHeight: toggleLayer.height,
+      contentGap: parseFloat(window.getComputedStyle(node.querySelector('[data-content-stack]')!).rowGap),
+      rowStart: start(content, row), rowEnd: end(content, row), rowHeight: row.height,
+      plainStart: start(content, iconlessLabel), sectionStart: start(content, sectionLabel),
+      surfaceStart: start(content, surface), surfaceContentStart: start(content, surfaceLabel), surfacePadding: parseFloat(window.getComputedStyle(surfaceElement).paddingLeft), surfaceBorder: parseFloat(window.getComputedStyle(surfaceElement).borderLeftWidth),
+      iconStart: start(content, rowIcon), iconWidth: rowIcon.width, iconLabelStart: start(content, rowLabel),
+      trailingEnd: end(content, trailing),
+      headerActionEnd: end(content, action), headerActionWidth: action.width, headerActionHeight: action.height,
+      toggleLayerWidth: toggleLayer.width, toggleLayerHeight: toggleLayer.height,
       toolbarTextStart: start(toolbar, toolbarText), toolbarActionEnd: end(toolbar, toolbarAction), toolbarActionWidth: toolbarAction.width, toolbarActionHeight: toolbarAction.height,
     };
   });
   const near = (name: string, actual: number, expected: number) => expect(Math.abs(actual - expected), `${name}: ${actual}`).toBeLessThanOrEqual(1);
-  const expectSidebarRails = (rails: Awaited<ReturnType<typeof sidebarRails>>) => {
-    for (const name of ['rowStart', 'rowEnd', 'surfaceStart', 'headerActionEnd', 'toggleActionEnd', 'toolbarActionEnd'] as const) near(name, rails[name], 10);
-    for (const name of ['plainStart', 'sectionStart', 'surfaceContentStart', 'iconStart', 'trailingEnd', 'toolbarTextStart'] as const) near(name, rails[name], 20);
-    near('iconLabelStart', rails.iconLabelStart, 54);
-    near('iconWidth', rails.iconWidth, 24);
-    for (const name of ['headerActionWidth', 'headerActionHeight', 'toggleActionWidth', 'toggleActionHeight', 'toolbarActionWidth', 'toolbarActionHeight'] as const) near(name, rails[name], 44);
-    expect(rails.rowHeight).toBeGreaterThanOrEqual(44);
+  const expectPaneGeometry = (geometry: Awaited<ReturnType<typeof paneGeometry>>) => {
+    near('contentGap', geometry.contentGap, 24);
+    for (const name of ['rowStart', 'rowEnd', 'surfaceStart', 'headerActionEnd', 'toolbarActionEnd'] as const) near(name, geometry[name], 8);
+    for (const name of ['plainStart', 'sectionStart', 'surfaceContentStart', 'iconStart', 'trailingEnd'] as const) near(name, geometry[name], 17);
+    near('toolbarTextStart', geometry.toolbarTextStart, 10);
+    near('iconLabelStart', geometry.iconLabelStart, 49);
+    near('iconWidth', geometry.iconWidth, 24);
+    near('surfacePadding', geometry.surfacePadding, 8);
+    near('surfaceBorder', geometry.surfaceBorder, 1);
+    for (const name of ['headerActionWidth', 'headerActionHeight', 'toolbarActionWidth', 'toolbarActionHeight'] as const) near(name, geometry[name], 44);
+    near('toggleLayerWidth', geometry.toggleLayerWidth, 24);
+    near('toggleLayerHeight', geometry.toggleLayerHeight, 24);
+    expect(geometry.rowHeight).toBeGreaterThanOrEqual(44);
   };
-  const baseline = await sidebarRails();
-  expectSidebarRails(baseline);
+  const baseline = await paneGeometry();
+  expectPaneGeometry(baseline);
   await menu.locator('[data-item-id="projects"]').hover();
-  expect(await sidebarRails()).toEqual(baseline);
+  expect(await paneGeometry()).toEqual(baseline);
   await menu.locator('[data-item-id="drafts"]').focus();
-  expect(await sidebarRails()).toEqual(baseline);
+  expect(await paneGeometry()).toEqual(baseline);
   if (browserName === 'chromium') {
-    await menu.screenshot({ path: 'test-results/sidebar-content-alignment-wide.png' });
+    await menu.screenshot({ path: 'test-results/pane-content-geometry-wide.png' });
     await page.locator('[data-relationships-for="menu"]').screenshot({ path: 'test-results/related-components-selector-wide.png' });
     await page.setViewportSize({ width: 390, height: 844 });
-    expectSidebarRails(await sidebarRails());
-    await menu.screenshot({ path: 'test-results/sidebar-content-alignment-narrow.png' });
+    expectPaneGeometry(await paneGeometry());
+    await menu.screenshot({ path: 'test-results/pane-content-geometry-narrow.png' });
     await page.locator('[data-relationships-for="menu"]').screenshot({ path: 'test-results/related-components-selector-narrow.png' });
     await page.setViewportSize({ width: 1440, height: 900 });
   }
   await menu.evaluate((node) => node.setAttribute('dir', 'rtl'));
-  expectSidebarRails(await sidebarRails());
+  expectPaneGeometry(await paneGeometry());
   await menu.evaluate((node) => node.removeAttribute('dir'));
 
   await page.goto('/?component=toolbar-control-group');
@@ -782,7 +785,8 @@ test('renders controlled toolbar, rounded, and pill SegmentedControl variants', 
 
   const radii = await Promise.all([rounded, pill].map((control) => control.evaluate((node) => parseFloat(window.getComputedStyle(node).borderRadius))));
   expect(radii[0]).toBeLessThan(20);
-  expect(radii[1]).toBeGreaterThan(100);
+  expect(radii[1]).toBeGreaterThanOrEqual(21);
+  expect(radii[1]).toBeLessThanOrEqual(23);
   const widths = await rounded.getByRole('button').evaluateAll((buttons) => buttons.map((button) => button.getBoundingClientRect().width));
   expect(Math.max(...widths) - Math.min(...widths)).toBeLessThanOrEqual(1);
 

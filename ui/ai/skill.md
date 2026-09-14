@@ -1,7 +1,7 @@
 ---
 name: kerf-ui
 description: Build interfaces with kerfjs and the @kerfjs/ui production component package. Use whenever code imports @kerfjs/ui or a task asks for Kerf UI components.
-kerf-ui-skill-version: 1.16.0
+kerf-ui-skill-version: 1.17.0
 ---
 
 # Building with @kerfjs/ui
@@ -58,8 +58,8 @@ Hard rules:
 12. Demo work uses public production component subpaths and their browser-selected CSS. Give every public visual component its own category-grouped catalog route; list themed third-party components under a clearly labeled collapsible ecosystem section, with a focused route for each. Declare direct `uses` relationships so `Used by` stays derivable, and theme shell chrome through the same semantic tokens as the stage instead of drawing a substitute.
 13. The Web Awesome theme makes Tooltip and Popover arrowless by default. Keep that default unless a pointer materially clarifies the anchor; opt back in with `--wa-tooltip-arrow-size`, `--kui-wa-popover-arrow-size`, or a popover's public `--arrow-size`, and use `without-arrow` when local no-arrow intent should survive theme changes.
 14. Treat the complete Web Awesome catalog as support coverage, not a recommendation list. Consider Popup when it replaces custom anchored positioning. Prefer Kerf `Select` over direct Dropdown/Dropdown Item/Select/Option composition, `SegmentedControl` over Button Group, `TabBar` or `SegmentedControl` over Web Awesome Tabs, `LucideIcon` over Web Awesome Icon, and `ResizableRegion` over Split Panel. Use Tree/Tree Item, Animated Image, and Comparison only for a specific required behavior; avoid Zoomable Frame.
-15. Build navigation sidebars with one `.kui-sidebar` owner: a 10px interaction/highlight rail, a nested 20px content rail, 24px icon slots plus 10px gap, and 44px row/action targets. Iconless rows, section labels, surface content, and `.kui-sidebar-toolbar` text start on the content rail; icon labels start at 54px. Keep surface borders on the interaction rail and 24px action icons centered in their full targets. Do not stack wrapper padding, align text to a decorative border, shrink targets to icon size, or compensate with negative margins. Import `@kerfjs/ui/sidebar.css` when using component subpaths; override the canonical `--kui-sidebar-*` tokens only at the shared composition boundary.
-16. Build application spacing from `@kerfjs/ui/layout.css`. Put `.kui-layout` on the composition root and assign exactly one semantic owner to each page gutter, pane or surface body, section stack, control cluster, metadata row, dialog body, and scroll region. Keep toolbar/header chrome outside body insets. Let controls wrap or relocate at narrow widths instead of shrinking hit targets. Do not invent one-off offsets, unrelated centered max-widths, doubled padding, or competing scroll containers; adapt `--kui-layout-*` at the composition boundary.
+15. Build sidebars, main areas, inspectors, and dialogs from `@kerfjs/ui/layout.css`: an unpadded `.kui-pane`, optional `.kui-pane__toolbar`, one scrolling `.kui-pane__content`, and optional `.kui-pane__footer`. Add `.kui-content` for 24px major vertical separation and `.kui-content-item` for a child-owned 8px inline margin, 1px transparent-or-visible border, 8px padding, and 12px radius. Use the pill modifier for 22px. Do not pad pane shells or duplicate item geometry in wrappers.
+16. Wrap every toolbar item, including dormant text, in `ToolbarControlGroup`. A group remains 44px outside (`calc(2px + remify(42px))`) when its border/background are transparent; use 8px between groups and inside items. Split dormant and interactive regions: `MenuHeader` keeps its label and optional `badge` together, with an independent 44px action unless disclosure mode makes the title cluster the button. Let panes relocate at narrow widths instead of shrinking targets.
 17. When a recurring concept has no matching export, look for a production recipe before building custom markup. The command-palette recipe owns modal/search/result semantics, keyboard selection, empty state, and focus restoration without claiming a runtime export. Its application adapter owns ranking, history, permissions, availability, actions, and copy; use the smaller `../docs/examples/command-palette-adapter.tsx` only when the complete modal composition is unnecessary.
 
 Common mistakes:
@@ -75,7 +75,7 @@ Common mistakes:
 | Maintain a root list of component styles | Import each visual component from its JS subpath; its reachable CSS follows automatically |
 | Add demo-only markup for a production state | Add the state to the production component, then render that export in the catalog |
 | Choose a listed ecosystem component by default | Apply the component-selection guidance above; catalog coverage means supported and themed, not preferred |
-| Indent a sidebar panel until its border matches header text | Keep the surface flush to `.kui-sidebar` and use `.kui-sidebar-surface` to align its contents |
-| Pad a page, pane, and nested card independently | Import `layout.css` and choose the single semantic inset owner for each real boundary |
-| Let the document, pane, and list all scroll | Keep fixed chrome outside one `.kui-scroll-owner` per pane |
+| Add sidebar-specific wrapper padding | Use the unpadded `.kui-pane`; let `MenuHeader`, `MenuItem`, and `.kui-content-item` own their 8/1/8 geometry |
+| Put bare text or controls directly in a toolbar slot | Wrap every item in `ToolbarControlGroup`, using `appearance="borderless"` for transparent chrome |
+| Let the document, pane, and list all scroll | Keep fixed chrome outside one `.kui-pane__content` scroll owner per pane |
 | Invent an `@kerfjs/ui` command-palette export | Copy the production recipe and keep ranking, history, permissions, and dispatch application-owned |

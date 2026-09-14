@@ -59,9 +59,7 @@
 }
 .recipe-shell__nav,
 .recipe-shell__inspector {
-  display: grid;
   min-height: 0;
-  grid-template-rows: auto minmax(0, 1fr);
   background: var(--kui-color-surface);
 }
 .recipe-shell__nav-list,
@@ -80,12 +78,11 @@
 .recipe-shell__cards {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--kui-layout-section-gap);
+  gap: var(--kui-layout-content-gap);
 }
 .recipe-shell__card {
-  border: 1px solid var(--kui-color-border-quiet);
-  border-radius: var(--kui-radius-m);
-  background: var(--kui-color-surface);
+  --kui-content-item-border: var(--kui-color-border-quiet);
+  --kui-content-item-background: var(--kui-color-surface);
 }
 
 .recipe-sidebar {
@@ -103,8 +100,7 @@
 }
 
 .recipe-header {
-  display: grid;
-  gap: var(--kui-layout-section-gap);
+  min-height: 20rem;
 }
 .recipe-header__context {
   margin: 0;
@@ -124,6 +120,7 @@
 }
 .recipe-master-detail__detail {
   min-width: 0;
+  padding-block: var(--kui-layout-item-gap);
 }
 .recipe-dialog {
   --spacing: 0;
@@ -131,13 +128,13 @@
 }
 
 .recipe-form {
-  display: grid;
   width: min(38rem, 100%);
   margin-inline: auto;
+  padding-block: var(--kui-layout-item-gap);
 }
 .recipe-form__fields {
   display: grid;
-  gap: var(--kui-layout-section-gap);
+  gap: var(--kui-layout-item-gap);
 }
 .recipe-form__error {
   margin: 0;
@@ -155,13 +152,17 @@
 }
 .recipe-list__items {
   display: grid;
-  margin: 0;
-  padding: 0;
+  margin: 0 var(--kui-layout-inline-margin);
+  padding: var(--kui-layout-item-padding);
+  border: var(--kui-layout-item-border-width) solid
+    var(--kui-color-border-quiet);
+  border-radius: var(--kui-layout-rounded-radius);
+  background: var(--kui-color-surface);
   list-style: none;
 }
 .recipe-list__items li {
   display: grid;
-  padding-block: var(--kui-space-s);
+  padding: var(--kui-layout-item-padding);
   border-block-end: 1px solid var(--kui-color-border-quiet);
   gap: var(--kui-layout-metadata-gap);
 }
@@ -170,8 +171,9 @@
 }
 
 .recipe-compact-toolbar {
-  display: grid;
-  gap: var(--kui-layout-section-gap);
+  display: flex;
+  flex-direction: column;
+  gap: var(--kui-layout-content-gap);
 }
 .recipe-compact-toolbar__guide {
   display: grid;
@@ -179,9 +181,10 @@
   gap: var(--kui-layout-control-gap);
 }
 .recipe-compact-toolbar__guide > div {
-  padding: var(--kui-layout-pane-inset);
-  border: 1px solid var(--kui-color-border-quiet);
-  border-radius: var(--kui-radius-m);
+  padding: var(--kui-layout-item-padding);
+  border: var(--kui-layout-item-border-width) solid
+    var(--kui-color-border-quiet);
+  border-radius: var(--kui-layout-rounded-radius);
 }
 .recipe-compact-toolbar__guide strong,
 .recipe-compact-toolbar__guide span {
@@ -189,8 +192,7 @@
 }
 
 .recipe-command-palette {
-  display: grid;
-  gap: var(--kui-layout-section-gap);
+  min-height: 16rem;
 }
 .recipe-command-palette__dialog {
   --spacing: 0;
@@ -200,13 +202,15 @@
   display: grid;
   max-height: min(34rem, calc(100dvh - 8rem));
   grid-template-rows: auto auto minmax(0, 1fr) auto;
-  gap: var(--kui-layout-control-gap);
+  gap: var(--kui-layout-item-gap);
+  padding-block: var(--kui-layout-item-gap);
 }
 .recipe-command-palette__search {
-  width: 100%;
+  width: calc(100% - 2 * var(--kui-layout-inline-margin));
   min-height: 2.75rem;
   box-sizing: border-box;
-  padding: var(--kui-space-s);
+  margin-inline: var(--kui-layout-inline-margin);
+  padding: var(--kui-layout-item-padding);
   border: 1px solid var(--kui-color-border);
   border-radius: var(--kui-radius-m);
   color: var(--kui-color-text);
@@ -219,6 +223,7 @@
 }
 .recipe-command-palette__results {
   min-height: 8rem;
+  margin-inline: var(--kui-layout-inline-margin);
   overflow: auto;
 }
 .recipe-command-palette__group + .recipe-command-palette__group {
@@ -250,6 +255,7 @@
   min-height: 8rem;
   place-content: center;
   text-align: center;
+  margin-inline: var(--kui-layout-inline-margin);
 }
 
 @container (max-width: 44rem) {
@@ -271,7 +277,7 @@
     height: auto;
     grid-template-columns: minmax(0, 1fr);
     grid-template-areas: "leading" "center" "trailing";
-    row-gap: var(--kui-layout-control-gap);
+    row-gap: var(--kui-toolbar-gap);
   }
   .recipe-compact-toolbar .kui-toolbar__leading {
     grid-area: leading;

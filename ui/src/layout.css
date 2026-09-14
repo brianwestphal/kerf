@@ -1,60 +1,73 @@
-/* Semantic application-layout roles. Apply .kui-layout at the composition root. */
-.kui-layout--compact {
-  --kui-layout-page-gutter: var(--kui-space-m, remify(16px));
-  --kui-layout-pane-inset: var(--kui-space-s, remify(12px));
-  --kui-layout-section-gap: var(--kui-space-m, remify(16px));
-  --kui-layout-surface-inset: var(--kui-space-s, remify(12px));
-  --kui-layout-dialog-inset: var(--kui-space-m, remify(16px));
-}
-
-.kui-page-gutter {
-  padding: var(--kui-layout-page-gutter, var(--kui-space-xl, remify(32px)));
-}
-.kui-pane-body {
-  min-width: 0;
-  min-height: 0;
-  padding: var(--kui-layout-pane-inset, var(--kui-space-m, remify(16px)));
-}
-.kui-section-stack {
+/* Shared application geometry: unpadded panes containing toolbars and content. */
+.kui-pane {
   display: grid;
   min-width: 0;
-  gap: var(--kui-layout-section-gap, var(--kui-space-l, remify(24px)));
+  min-height: 0;
+  padding: 0;
+  grid-template-rows: auto minmax(0, 1fr) auto;
 }
+
+.kui-pane__toolbar,
+.kui-pane__footer {
+  min-width: 0;
+}
+
+.kui-pane__content {
+  min-width: 0;
+  min-height: 0;
+  padding: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+
+.kui-content {
+  display: flex;
+  min-width: 0;
+  padding: 0;
+  flex-direction: column;
+  gap: var(--kui-layout-content-gap, remify(24px));
+}
+
+.kui-content-item {
+  min-width: 0;
+  margin-inline: var(--kui-layout-inline-margin, remify(8px));
+  padding: var(--kui-layout-item-padding, remify(8px));
+  box-sizing: border-box;
+  border: var(--kui-layout-item-border-width, 1px) solid
+    var(--kui-content-item-border, transparent);
+  border-radius: var(
+    --kui-content-item-radius,
+    var(--kui-layout-rounded-radius, calc(1px + remify(11px)))
+  );
+  background: var(--kui-content-item-background, transparent);
+}
+
+.kui-content-item--pill {
+  --kui-content-item-radius: var(
+    --kui-layout-pill-radius,
+    calc(1px + remify(21px))
+  );
+}
+
 .kui-control-cluster {
   display: flex;
   min-width: 0;
   flex-wrap: wrap;
   align-items: center;
-  gap: var(--kui-layout-control-gap, var(--kui-space-xs, remify(8px)));
+  gap: var(--kui-layout-control-gap, remify(8px));
 }
+
 .kui-inline-metadata {
   display: flex;
   min-width: 0;
   flex-wrap: wrap;
   align-items: baseline;
-  gap: var(--kui-layout-metadata-gap, var(--kui-space-2xs, remify(4px)));
+  gap: var(--kui-layout-metadata-gap, remify(4px));
 }
-.kui-surface-body {
-  min-width: 0;
-  padding: var(--kui-layout-surface-inset, var(--kui-space-m, remify(16px)));
-}
-.kui-dialog-body {
-  min-width: 0;
-  padding: var(--kui-layout-dialog-inset, var(--kui-space-l, remify(24px)));
-}
+
 .kui-scroll-owner {
   min-width: 0;
   min-height: 0;
   overflow: auto;
   overscroll-behavior: contain;
-}
-
-@media (max-width: remify(768px)) {
-  .kui-layout:not(.kui-layout--fixed-density) {
-    --kui-layout-page-gutter: var(--kui-space-m, remify(16px));
-    --kui-layout-pane-inset: var(--kui-space-s, remify(12px));
-    --kui-layout-section-gap: var(--kui-space-m, remify(16px));
-    --kui-layout-surface-inset: var(--kui-space-s, remify(12px));
-    --kui-layout-dialog-inset: var(--kui-space-m, remify(16px));
-  }
 }

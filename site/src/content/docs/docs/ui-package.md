@@ -45,13 +45,13 @@ list loading/empty/stale/error/populated states, and a compact toolbar that
 distinguishes grouped actions, segmented choices, Select, and ordinary buttons.
 Each has a stable UX-catalog route and names what the recipe owns versus the
 application adapter. They use public component subpaths and semantic
-`layout.css`/`sidebar.css` roles rather than copied component markup or private
+`layout.css` roles rather than copied component markup or private
 descendant styling.
 
 The package does not currently export a command palette. Its typed
 [application-local adapter example](https://github.com/brianwestphal/kerf/blob/main/ui/docs/examples/command-palette-adapter.tsx)
-shows how a genuinely custom concept can still reuse `layout.css`, one layout
-root and inset owner, and `.kui-control-cluster` without pretending the
+shows how a genuinely custom concept can still reuse `layout.css`, a content
+stack and content items, and `.kui-control-cluster` without pretending the
 semantics are package-owned. Ranking, history, keyboard and focus policy,
 availability, actions, and copy remain application concerns; the recurring
 concept is tracked for upstream consideration.
@@ -62,9 +62,10 @@ npm install kerfjs @kerfjs/ui
 
 ```tsx
 import { Toolbar } from '@kerfjs/ui/toolbar';
+import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
 
-const header = <Toolbar leading={<ToolbarText text="Library" />} />;
+const header = <Toolbar leading={<ToolbarControlGroup appearance="borderless" single><ToolbarText text="Library" /></ToolbarControlGroup>} />;
 ```
 
 Prefer explicit component subpaths such as `@kerfjs/ui/toolbar`. CSS-aware
@@ -123,32 +124,27 @@ neutral, brand/info, success, warning, and danger palette. Override the global
 semantic tokens, a tone variable, or a component property such as
 `--kui-state-banner-background` without replacing component selectors.
 
-For a navigation rail, import `@kerfjs/ui/sidebar.css` and use
-`.kui-sidebar`, `.kui-sidebar-section`, `.kui-sidebar-surface`, and
-`.kui-sidebar-toolbar`. The composition owns a 10px interaction rail, a nested
-20px content rail, 24px icon slots with a 10px gap, and 44px row/action targets.
-Iconless rows, section labels, surface content, and toolbar text start at 20px;
-icon labels start at 54px. Keep decorative borders on the interaction rail and
-24px icons centered in their full targets. Avoid nested wrapper padding,
-border-aligned text, shrunken targets, and compensating negative margins;
-change the shared `--kui-sidebar-*` tokens at the composition boundary instead.
+For a navigation pane, import `@kerfjs/ui/layout.css`. Use an unpadded
+`.kui-pane` with optional toolbar, one scrolling `.kui-pane__content`, and
+optional footer. Add `.kui-content` for 24px major vertical separation.
+`MenuHeader`, `MenuItem`, and `.kui-content-item` children own their 8px inline
+margin, real 1px border, 8px padding, and 12px corners. Borders and backgrounds
+may be transparent without changing geometry; use the pill modifier for 22px.
 
 ## Application spacing and scroll ownership
 
-Import `@kerfjs/ui/layout.css`, put `.kui-layout` on the composition root, and
-choose one semantic owner for each real boundary:
+Import `@kerfjs/ui/layout.css` and choose the structural role for each boundary:
 
-- `.kui-page-gutter` for the page edge;
-- `.kui-pane-body`, `.kui-surface-body`, or `.kui-dialog-body` for one body inset;
-- `.kui-section-stack`, `.kui-control-cluster`, or `.kui-inline-metadata` for the appropriate relationship;
-- `.kui-scroll-owner` for the one scrolling region inside a pane.
+- `.kui-pane` for unpadded toolbar/content/footer structure;
+- `.kui-pane__content` for the one scrolling region inside a pane;
+- `.kui-content` for 24px major vertical separation;
+- `.kui-content-item`, `.kui-control-cluster`, or `.kui-inline-metadata` for the appropriate child relationship.
 
-The `--kui-layout-*` variables derive from the existing spacing scale and the
-larger roles reduce one step below `48rem`, including when browser zoom reduces
-the CSS viewport. Do not combine body-inset classes on one element, add wrapper
-padding around toolbar or header chrome, or let the document, pane, and list
-compete for scrolling. Reading width and centering remain explicit application
-decisions.
+Toolbar items, including dormant text, belong in `ToolbarControlGroup`; each
+group remains 44px outside even when its chrome is transparent. Do not pad pane
+shells, add wrapper insets around child-owned geometry, or let the document,
+pane, and list compete for scrolling. Reading width and responsive placement
+remain explicit application decisions.
 
 ## Web Awesome Select
 

@@ -63,6 +63,7 @@ import { SafeHtml } from 'kerfjs';
 
 interface MenuHeaderProps {
     label: string;
+    badge?: SafeHtml;
     action?: string;
     actionLabel?: string;
     actionIcon?: SafeHtml;
@@ -71,7 +72,7 @@ interface MenuHeaderProps {
     expanded?: boolean;
     toggle?: boolean;
 }
-declare function MenuHeader({ label, action, actionLabel, actionIcon, actionDisabled, disabledReason, expanded, toggle }: MenuHeaderProps): SafeHtml;
+declare function MenuHeader({ label, badge, action, actionLabel, actionIcon, actionDisabled, disabledReason, expanded, toggle }: MenuHeaderProps): SafeHtml;
 
 export { MenuHeader, type MenuHeaderProps };
 ```

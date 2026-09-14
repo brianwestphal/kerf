@@ -27,7 +27,7 @@ for (const entry of recipes) {
   if (!loaders.includes(`'${entry.id}': () => import('./${stem}.js')`)) fail(`${entry.id} is not a literal dynamic import`);
   if (!source.includes(`data-recipe="${entry.id}"`)) fail(`${entry.id} source is missing its stable marker`);
   if (!source.includes("@kerfjs/ui/layout.css")) fail(`${entry.id} must import the semantic layout layer`);
-  if (entry.id === 'recipe-navigation-sidebar' && !source.includes('className="kui-sidebar-toolbar"')) fail('recipe-navigation-sidebar must place its footer toolbar on the shared sidebar rails');
+  if (entry.id === 'recipe-navigation-sidebar' && !source.includes('kui-pane__footer')) fail('recipe-navigation-sidebar must place its footer toolbar in the shared pane footer');
   for (const match of source.matchAll(/from '(@kerfjs\/ui(?:\/[a-z0-9-]+)?)'|import '(@kerfjs\/ui(?:\/[a-z0-9./-]+)?)'/g)) {
     const specifier = match[1] ?? match[2];
     if (!(packageSubpath(specifier) in packageJson.exports)) fail(`${entry.id} imports stale package subpath ${specifier}`);

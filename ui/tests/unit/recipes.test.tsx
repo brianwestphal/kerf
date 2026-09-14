@@ -27,7 +27,7 @@ describe('production composition recipes', () => {
 
   it('keeps one scroll owner for each application-shell pane and updates controlled resize state', () => {
     const recipe = createAppShell(() => {});
-    expect(html(recipe.render()).match(/kui-scroll-owner/g)).toHaveLength(3);
+    expect(html(recipe.render()).match(/kui-pane__content/g)).toHaveLength(3);
     recipe.resize?.('recipe-navigation', 288);
     expect(html(recipe.render())).toContain('--kui-resizable-region-size:288px');
   });
@@ -43,7 +43,7 @@ describe('production composition recipes', () => {
 
   it('controls sidebar disclosure, dialog selection, form validation, and toolbar choices', () => {
     const sidebar = createNavigationSidebar(() => {});
-    const toggle = target(); toggle.className = 'kui-menu-header--toggle';
+    const toggle = target(); toggle.className = 'kui-menu-header__toggle';
     sidebar.action('', toggle);
     expect(html(sidebar.render())).not.toContain('Design system rollout');
 
@@ -96,7 +96,8 @@ describe('production composition recipes', () => {
       onRun: ({ id }) => runs.push(id),
     });
 
-    expect(root.querySelector('.kui-layout.kui-surface-body')).not.toBeNull();
+    expect(root.querySelector('.kui-content')).not.toBeNull();
+    expect(root.querySelector('.kui-content-item')).not.toBeNull();
     expect(root.querySelector('.kui-control-cluster')).not.toBeNull();
     const query = root.querySelector<HTMLInputElement>('[data-command-query]')!;
     query.value = 'publish';

@@ -2,20 +2,22 @@
   --kui-value-table-background: var(--kui-color-surface-lowered);
   --kui-value-table-border: var(--kui-color-border);
   display: grid;
-  margin: 0;
+  margin-block: 0;
+  margin-inline: var(--kui-layout-inline-margin, remify(8px));
   overflow: hidden;
-  border-radius: var(--kui-radius-m);
+  border: 1px solid var(--kui-value-table-border);
+  border-radius: var(--kui-layout-rounded-radius, calc(1px + remify(11px)));
   background: var(--kui-value-table-background);
 }
 .kui-value-table > div {
   position: relative;
   display: grid;
   min-height: remify(40.8px);
-  padding: var(--kui-space-xs) var(--kui-space-m);
+  padding: var(--kui-layout-item-padding, remify(8px));
   box-sizing: border-box;
   grid-template-columns: minmax(remify(96px), auto) minmax(0, 1fr);
   align-items: center;
-  gap: var(--kui-space-m);
+  gap: var(--kui-layout-item-gap, remify(8px));
 }
 .kui-value-table > div + div::before {
   position: absolute;

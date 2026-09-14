@@ -2,15 +2,21 @@
   --kui-empty-state-foreground: var(--kui-color-neutral-on-quiet);
   --kui-empty-state-title: var(--kui-color-text);
   display: grid;
-  width: min(100%, remify(448px));
+  width: min(
+    calc(100% - (2 * var(--kui-layout-inline-margin, remify(8px)))),
+    remify(448px)
+  );
   min-height: remify(192px);
   margin: auto;
   padding: var(--kui-space-xl);
   box-sizing: border-box;
+  border: 1px solid var(--kui-empty-state-border, transparent);
+  border-radius: var(--kui-layout-rounded-radius, calc(1px + remify(11px)));
   color: var(--kui-empty-state-foreground);
+  background: var(--kui-empty-state-background, transparent);
   place-items: center;
   place-content: center;
-  gap: var(--kui-space-xs);
+  gap: var(--kui-layout-item-gap, remify(8px));
   text-align: center;
 }
 .kui-empty-state__icon {

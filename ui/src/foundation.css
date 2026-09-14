@@ -30,26 +30,24 @@
   --kui-space-m: var(--wa-space-m, remify(16px));
   --kui-space-l: var(--wa-space-l, remify(24px));
   --kui-space-xl: var(--wa-space-xl, remify(32px));
-  --kui-layout-page-gutter: var(--kui-space-xl);
-  --kui-layout-pane-inset: var(--kui-space-m);
-  --kui-layout-section-gap: var(--kui-space-l);
+  --kui-layout-inline-margin: var(--kui-space-xs);
+  --kui-layout-item-border-width: 1px;
+  --kui-layout-item-padding: var(--kui-space-xs);
+  --kui-layout-item-gap: var(--kui-space-xs);
+  --kui-layout-content-gap: var(--kui-space-l);
   --kui-layout-control-gap: var(--kui-space-xs);
   --kui-layout-metadata-gap: var(--kui-space-2xs);
-  --kui-layout-surface-inset: var(--kui-space-m);
-  --kui-layout-dialog-inset: var(--kui-space-l);
+  --kui-layout-rounded-radius: calc(1px + remify(11px));
+  --kui-layout-pill-radius: calc(1px + remify(21px));
+  --kui-toolbar-group-inner-size: remify(42px);
+  --kui-toolbar-group-size: calc(2px + var(--kui-toolbar-group-inner-size));
+  --kui-toolbar-gap: var(--kui-layout-item-gap);
   --kui-radius-s: var(--wa-border-radius-s, remify(3px));
   --kui-radius-m: var(--wa-border-radius-m, remify(6px));
   --kui-radius-l: var(--wa-border-radius-l, remify(12px));
   --kui-radius-circle: var(--wa-border-radius-circle, 50%);
   --kui-radius-pill: var(--wa-border-radius-pill, 999px);
   --kui-disclosure-icon-scale: 0.5;
-  /* Legacy sidebar names remain defaults/fallbacks for the public rail tokens. */
-  --kui-sidebar-gutter: remify(10px);
-  --kui-sidebar-row-padding-inline: remify(10px);
-  --kui-sidebar-icon-column-width: remify(24px);
-  --kui-sidebar-column-gap: remify(10px);
-  --kui-sidebar-surface-border-width: 1px;
-
   /* macOS Tahoe light semantics used by Hot Sheet 2, with a compatible dark extension. */
   --kui-color-surface: var(
     --wa-color-surface-default,

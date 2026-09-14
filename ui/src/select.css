@@ -1,6 +1,7 @@
 .kui-select::part(combobox) {
-  min-height: remify(40px);
-  padding-inline: remify(8.8px) remify(7.2px);
+  min-height: remify(44px);
+  padding-inline: var(--kui-layout-item-padding, remify(8px));
+  border-radius: var(--kui-layout-rounded-radius, calc(1px + remify(11px)));
   gap: 0;
 }
 .kui-select::part(display-input) {

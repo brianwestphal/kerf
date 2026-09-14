@@ -121,7 +121,7 @@ export function renderSearch() {
         <section class="kerf-search-panel" aria-label="Search documentation">
           <Toolbar
             label="Search controls"
-            leading={<ToolbarText text="Search the docs" size="large" />}
+            leading={<ToolbarControlGroup appearance="borderless" single><ToolbarText text="Search the docs" size="large" /></ToolbarControlGroup>}
             trailing={<ToolbarControlGroup label="Close search" appearance="borderless" single><button type="button" class="kerf-search-close" data-action="close-search">Close</button></ToolbarControlGroup>}
           />
           <label class="kerf-search-field">

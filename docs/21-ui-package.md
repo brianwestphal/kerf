@@ -55,24 +55,20 @@ defaults for neutral, brand/info, success, warning, and danger roles. Stateful
 components expose scoped custom properties, so an application may override the
 complete theme, one semantic tone, or one instance.
 
-`sidebar.css` is the package's layout composition for navigation rails. Its
-`.kui-sidebar` class establishes a 10px interaction rail and nested 20px content
-rail for `MenuHeader`, `MenuItem`, surfaces, and sidebar toolbars. Iconless
-content starts at 20px; icon rows use a 24px slot and 10px gap, placing labels
-at 54px. Rows and standalone header/toolbar actions remain at least 44px while
-24px icons stay centered. `.kui-sidebar-surface` puts its border on the outer
-rail and `.kui-sidebar-section` adds grouping without another inset. Consumers
-adapt the canonical `--kui-sidebar-*` tokens instead of wrapper padding,
-negative margins, shrunken targets, or duplicated numeric offsets.
+`layout.css` is the shared structural composition for navigation rails, main
+areas, inspectors, and dialogs. An unpadded `.kui-pane` contains an optional
+toolbar, one scrolling `.kui-pane__content`, and an optional footer.
+`.kui-content` uses 24px major vertical separation. Each
+`.kui-content-item` owns 8px inline margin, a real 1px border, 8px padding, and
+12px corners; border/background can remain transparent without changing
+geometry, and the pill modifier selects 22px corners.
 
-`layout.css` is the application-level spacing composition. Seven semantic
-variables map the existing spacing scale to page gutters, pane insets, section
-rhythm, control clusters, inline metadata, surface bodies, and dialog bodies.
-The matching `.kui-*` classes give each boundary one owner, while
-`.kui-scroll-owner` establishes the single overflow region within a pane.
-`.kui-layout` reduces the large roles by one scale step below `48rem`, and
-`.kui-layout--compact` opts into that density at any width. The layer does not
-specify a product shell, reading width, or component-internal geometry.
+`ToolbarControlGroup` is the unit of toolbar organization, even for dormant
+text. Groups stay 44px outside (`calc(2px + remify(42px))`) with 8px between
+groups and inside items. `MenuHeader` separates a dormant title/badge cluster
+from its optional 44px action. The layer does not specify product reading width
+or responsive pane placement; consumers adapt public `--kui-layout-*` tokens
+instead of adding wrapper padding, negative margins, or duplicated offsets.
 
 For an app that also uses Web Awesome's free component set, one optional import
 provides Web Awesome's base stylesheet plus Kerf's Hot Sheet 2-aligned theme:
@@ -198,7 +194,7 @@ Seven task-oriented recipes bridge primitives and product adapters: a resizable
 application shell, navigation sidebar, workspace header, master-detail dialog,
 composer form, list-state lifecycle, and compact mixed-control toolbar. They
 are lazy catalog modules rather than new runtime exports. Each uses public
-component subpaths plus `layout.css`/`sidebar.css`, declares what the recipe
+component subpaths plus `layout.css`, declares what the recipe
 owns versus application policy, and has a stable `?component=recipe-*` route.
 `ui/docs/recipes.md` is the copyable guide; canonical recipe facts live beside
 component facts in `ui/ai/component-catalog.json` and project into the typed
@@ -211,7 +207,7 @@ The shipped reference source includes a catalog-independent mount adapter that
 connects a recipe controller to one stable root with `delegateActions`, form
 and dialog delegates, `wireResizableRegions({ onCommit })`, and one idempotent
 aggregate disposer. A separate typed application-local command-palette example
-shows the missing-concept boundary: it reuses `layout.css`, one inset owner, and
+shows the missing-concept boundary: it reuses `layout.css`, content items, and
 a related-control cluster without claiming a nonexistent UI export, while the
 application retains ranking, history, shortcuts, focus policy, actions, and
 copy and proposes recurring semantics upstream.

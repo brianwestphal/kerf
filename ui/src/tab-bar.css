@@ -1,37 +1,45 @@
 .kui-tab-bar {
-  --kui-tab-bar-background: var(--kui-color-surface-lowered);
-  --kui-tab-bar-border: var(--kui-color-border);
+  --kui-tab-bar-background: transparent;
+  --kui-tab-bar-border: transparent;
   display: flex;
-  min-width: 0;
   width: 100%;
-  height: remify(52px);
-  padding: remify(5.6px) remify(7.2px);
+  min-width: 0;
+  min-height: calc(
+    var(--kui-toolbar-group-size, calc(2px + remify(42px))) +
+      (2 * var(--kui-toolbar-gap, remify(8px)))
+  );
+  padding: var(--kui-toolbar-gap, remify(8px));
   box-sizing: border-box;
-  border-bottom: 1px solid var(--kui-tab-bar-border);
-  background: var(--kui-tab-bar-background);
+  background: transparent;
   align-items: center;
-  gap: remify(5.6px);
+  gap: var(--kui-toolbar-gap, remify(8px));
 }
+
 .kui-tab-bar__tabs {
   display: flex;
   min-width: 0;
-  height: 100%;
-  margin: calc(var(--kui-space-2xs) * -1);
-  padding: var(--kui-space-2xs);
+  height: var(--kui-toolbar-group-size, calc(2px + remify(42px)));
+  padding: 1px;
   overflow-x: auto;
+  box-sizing: border-box;
+  border: 1px solid var(--kui-tab-bar-border);
+  border-radius: var(--kui-layout-pill-radius, calc(1px + remify(21px)));
+  background: var(--kui-tab-bar-background);
   scrollbar-width: none;
   align-items: center;
   flex: 1 1 auto;
-  gap: remify(3.2px);
+  gap: 0;
   overscroll-behavior-inline: contain;
 }
+
 .kui-tab-bar__tabs::-webkit-scrollbar {
   display: none;
 }
+
 .kui-tab-bar__leading,
 .kui-tab-bar__trailing {
   display: flex;
-  height: 100%;
+  min-height: var(--kui-toolbar-group-size, calc(2px + remify(42px)));
   align-items: center;
   flex: none;
 }

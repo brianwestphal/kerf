@@ -95,7 +95,7 @@ export const generatedKerfCatalog = [
     "category": "Foundation",
     "kind": "composition",
     "source": "kerf",
-    "description": "Semantic spacing, wrapping, and scroll-owner roles for application layout boundaries.",
+    "description": "Provide one reusable pane, toolbar, content stack, and content-item geometry across sidebars, main areas, and dialogs.",
     "uses": []
   },
   {
@@ -179,7 +179,7 @@ export const generatedKerfCatalog = [
     "category": "Navigation",
     "kind": "composition",
     "source": "kerf",
-    "description": "Navigation rows, section headers, surfaces, and footer actions on shared interaction and content rails.",
+    "description": "Compose navigation with the same pane, content stack, item, and toolbar geometry used throughout the application.",
     "uses": [
       "menu-header",
       "menu-item"
@@ -191,7 +191,7 @@ export const generatedKerfCatalog = [
     "category": "Navigation",
     "kind": "component",
     "source": "kerf",
-    "description": "Section headings with optional action and disclosure states.",
+    "description": "Split dormant title and badge content from an optional 44px action, or render the title cluster as a disclosure button.",
     "uses": [
       "lucide-icon"
     ]
@@ -344,7 +344,7 @@ export const generatedKerfCatalog = [
     "category": "Recipes",
     "kind": "recipe",
     "source": "kerf",
-    "description": "Aligned navigation sections with icon and iconless rows, a surface block, disclosure, and footer actions.",
+    "description": "Navigation sections with icon and iconless rows, a content-item surface, disclosure, and pane footer actions.",
     "uses": [
       "menu-header",
       "menu-item",

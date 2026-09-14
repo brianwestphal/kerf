@@ -2,8 +2,10 @@
   display: inline-flex;
   min-width: 0;
   max-width: 100%;
-  height: remify(40.4px);
+  height: remify(40px);
+  padding-inline: var(--kui-layout-item-padding, remify(8px));
   overflow: hidden;
+  box-sizing: border-box;
   color: var(--kui-color-neutral-on-quiet);
   font-weight: 650;
   line-height: 1;
@@ -11,13 +13,16 @@
   white-space: nowrap;
   align-items: center;
 }
+
 .kui-toolbar-text[data-size="large"] {
   font-size: var(--kui-font-m);
   letter-spacing: -0.015em;
 }
+
 .kui-toolbar-text[data-size="default"] {
   font-size: var(--kui-font-s);
 }
+
 .kui-toolbar-text[data-size="small"] {
   font-family: var(--kui-font-mono);
   font-size: var(--kui-font-xs);

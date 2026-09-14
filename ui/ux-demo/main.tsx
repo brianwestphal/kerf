@@ -1,6 +1,5 @@
 import '@kerfjs/ui/select/register';
 import '@kerfjs/ui/layout.css';
-import '@kerfjs/ui/sidebar.css';
 import '@kerfjs/ui/webawesome.css';
 import './style.css';
 
@@ -156,11 +155,11 @@ function ToolbarDemo() {
   return <div class="demo-frame" data-demo="toolbar">
     <Toolbar
       label="Document controls"
-      leading={<ToolbarText text="Component library" size="large" />}
-      center={<span class="demo-center-copy">Saved just now</span>}
+      leading={<ToolbarControlGroup appearance="borderless" single><ToolbarText text="Component library" size="large" /></ToolbarControlGroup>}
+      center={<ToolbarControlGroup appearance="borderless" single><span class="demo-center-copy">Saved just now</span></ToolbarControlGroup>}
       trailing={<ToolbarControlGroup label="View controls" buttonAppearance="push"><button type="button" aria-label="Toggle inspector" aria-pressed="true">{icon(SlidersHorizontal, 'sliders-horizontal')}</button><button type="button" aria-label="Settings">{icon(Settings, 'settings')}</button></ToolbarControlGroup>}
     />
-    <Toolbar label="Compact toolbar" divider={false} leading={<ToolbarText text="Borderless" size="small" />} trailing={<ToolbarControlGroup appearance="borderless" single>{button('Add', 'log-add')}</ToolbarControlGroup>} />
+    <Toolbar label="Compact toolbar" divider={false} leading={<ToolbarControlGroup appearance="borderless" single><ToolbarText text="Borderless" size="small" /></ToolbarControlGroup>} trailing={<ToolbarControlGroup appearance="borderless" single>{button('Add', 'log-add')}</ToolbarControlGroup>} />
   </div>;
 }
 
@@ -238,27 +237,29 @@ function ToolbarTextDemo() {
 }
 
 function MenuDemo() {
-  return <div class="demo-menu" data-demo="menu">
-    <div class="kui-sidebar" data-sidebar-rails>
-      <MenuHeader label="Workspace" action="log-add" actionLabel="Add workspace" actionIcon={icon(Plus, 'plus')} />
-      <MenuItem action="log-inbox" itemId="inbox" label="Inbox" icon={icon(Inbox, 'inbox')} trailing={<span>12</span>} selected />
-      <MenuItem action="log-projects" itemId="projects" label="Projects" icon={icon(Folder, 'folder')} trailing={icon(ChevronRight, 'chevron-right')} />
-      <MenuItem action="log-drafts" itemId="drafts" label="Drafts without a visible icon" />
-      <MenuHeader label="Tools" toggle expanded action="log-tools" actionIcon={icon(ChevronDown, 'chevron-down')} />
-      <MenuItem action="log-settings" label="A multiline item demonstrates content that wraps without clipping" icon={icon(Wrench, 'wrench')} multiline />
-      <MenuItem action="disabled" label="Unavailable" icon={icon(CircleHelp, 'circle-help')} disabled />
-      <section class="kui-sidebar-section">
-        <MenuHeader label="Details" />
-        <div class="kui-sidebar-surface" data-sidebar-surface><strong>Shared content rail</strong><p>The border stays on the highlight rail.</p></div>
+  return <div class="demo-menu kui-pane" data-demo="menu">
+    <div class="kui-pane__toolbar"><Toolbar label="Sidebar toolbar" divider={false} leading={<ToolbarControlGroup appearance="borderless" single><ToolbarText text="Workspace" size="small" /></ToolbarControlGroup>} trailing={<ToolbarControlGroup appearance="borderless" single><button type="button" aria-label="Add workspace" data-action="log-add">{icon(Plus, 'plus')}</button></ToolbarControlGroup>} /></div>
+    <div class="demo-menu__content kui-pane__content kui-content" data-content-stack>
+      <section>
+        <MenuHeader label="Workspace" badge={<span>3</span>} action="log-add" actionLabel="Add workspace" actionIcon={icon(Plus, 'plus')} />
+        <MenuItem action="log-inbox" itemId="inbox" label="Inbox" icon={icon(Inbox, 'inbox')} trailing={<span>12</span>} selected />
+        <MenuItem action="log-projects" itemId="projects" label="Projects" icon={icon(Folder, 'folder')} trailing={icon(ChevronRight, 'chevron-right')} />
+        <MenuItem action="log-drafts" itemId="drafts" label="Drafts without a visible icon" />
+      </section>
+      <section>
+        <MenuHeader label="Tools" toggle expanded action="log-tools" actionIcon={icon(ChevronDown, 'chevron-down')} />
+        <MenuItem action="log-settings" label="A multiline item demonstrates content that wraps without clipping" icon={icon(Wrench, 'wrench')} multiline />
+        <MenuItem action="disabled" label="Unavailable" icon={icon(CircleHelp, 'circle-help')} disabled />
+        <div class="kui-content-item" data-content-item><strong>Shared item geometry</strong><p>The child owns its margin, border, and padding.</p></div>
       </section>
     </div>
-    <Toolbar className="kui-sidebar-toolbar" label="Sidebar footer" divider={false} leading={<ToolbarText text="Workspace" size="small" />} trailing={<ToolbarControlGroup appearance="borderless" single><button type="button" aria-label="Sidebar settings" data-action="log-settings">{icon(Settings, 'settings')}</button></ToolbarControlGroup>} />
+    <div class="kui-pane__footer"><Toolbar label="Sidebar footer" divider={false} leading={<ToolbarControlGroup appearance="borderless" single><ToolbarText text="Ready" size="small" /></ToolbarControlGroup>} trailing={<ToolbarControlGroup appearance="borderless" single><button type="button" aria-label="Sidebar settings" data-action="log-settings">{icon(Settings, 'settings')}</button></ToolbarControlGroup>} /></div>
   </div>;
 }
 
 function MenuHeaderDemo() {
   return <div class="demo-menu demo-variant-stack" data-demo="menu-header">
-    <div><MenuHeader label="Workspace" action="log-add" actionLabel="Add workspace" actionIcon={icon(Plus, 'plus')} /></div>
+    <div><MenuHeader label="Workspace" badge={<span>3</span>} action="log-add" actionLabel="Add workspace" actionIcon={icon(Plus, 'plus')} /></div>
     <div><MenuHeader label="Expanded tools" toggle expanded action="log-tools" actionIcon={icon(ChevronDown, 'chevron-down')} /></div>
     <div><MenuHeader label="Collapsed tools" toggle action="log-tools" actionIcon={icon(ChevronDown, 'chevron-down')} /></div>
   </div>;
@@ -293,7 +294,7 @@ function HeadersDemo() {
     <PageHeader title="UI foundations" action={button('New pattern', 'log-add')} />
     <div class="demo-dialog">
       <DialogHeader title="Package details" titleId="package-title" summary="Production-backed primitives with explicit contracts." summaryId="package-summary" icon={icon(Wrench, 'wrench')} actions={button('Done', 'log-done')} />
-      <div class="demo-dialog__body kui-dialog-body"><ValueTable label="Package metadata"><div><dt>Package</dt><dd>@kerfjs/ui</dd></div><div><dt>Rendering</dt><dd>Kerf SafeHtml</dd></div><div><dt>Styles</dt><dd>Explicit CSS subpaths</dd></div></ValueTable></div>
+      <div class="demo-dialog__body kui-content"><ValueTable label="Package metadata"><div><dt>Package</dt><dd>@kerfjs/ui</dd></div><div><dt>Rendering</dt><dd>Kerf SafeHtml</dd></div><div><dt>Styles</dt><dd>Explicit CSS subpaths</dd></div></ValueTable></div>
     </div>
   </div>;
 }
@@ -312,8 +313,8 @@ function ValueTableDemo() {
 
 function ResizeDemo() {
   return <div class="demo-resize-shell" data-demo="resize">
-    <ResizableRegion id="catalog-panel" label="Catalog panel" size={regionSize.value} min={180} max={420}><div class="demo-resize-panel kui-pane-body"><strong>Resizable panel</strong><span>Use the handle with a pointer, arrow keys, Home, or End.</span></div></ResizableRegion>
-    <div class="demo-resize-content kui-pane-body"><span>Committed width</span><strong data-region-size>{regionSize.value}px</strong></div>
+    <ResizableRegion id="catalog-panel" label="Catalog panel" size={regionSize.value} min={180} max={420}><div class="demo-resize-panel kui-content-item"><strong>Resizable panel</strong><span>Use the handle with a pointer, arrow keys, Home, or End.</span></div></ResizableRegion>
+    <div class="demo-resize-content kui-content-item"><span>Committed width</span><strong data-region-size>{regionSize.value}px</strong></div>
   </div>;
 }
 
@@ -361,14 +362,12 @@ function LoadingSpinnerDemo() {
 }
 
 function LayoutDemo() {
-  return <div class="demo-layout kui-page-gutter" data-demo="layout">
-    <section class="kui-section-stack">
-      <PageHeader title="Semantic layout" action={button('New item', 'log-add')} />
-      <div class="demo-layout__surface kui-surface-body kui-section-stack">
-        <div><strong>One owner per boundary</strong><p>Page, surface, section, controls, metadata, and scrolling each have a named role.</p></div>
-        <div class="kui-control-cluster">{button('Primary action', 'log-add')}{button('Secondary action', 'log-more')}</div>
-        <div class="kui-inline-metadata"><span>Responsive density</span><span>·</span><span>Shared spacing scale</span></div>
-      </div>
+  return <div class="demo-layout kui-pane" data-demo="layout">
+    <PageHeader title="Semantic layout" action={button('New item', 'log-add')} />
+    <section class="kui-pane__content kui-content">
+      <div class="demo-layout__surface kui-content-item"><strong>One owner per item</strong><p>Each content child owns its margin, border, background, padding, and radius.</p></div>
+      <div class="kui-control-cluster kui-content-item">{button('Primary action', 'log-add')}{button('Secondary action', 'log-more')}</div>
+      <div class="kui-inline-metadata kui-content-item"><span>24px major rhythm</span><span>·</span><span>8px internal rhythm</span></div>
     </section>
   </div>;
 }
@@ -472,13 +471,13 @@ function revealSelectedSidebarItem(id: CatalogId, block: ScrollLogicalPosition =
 
 mount(app, () => {
   const selected = findCatalogEntry(selectedDemo.value)!;
-  return <main class="catalog-shell kui-layout">
-    <aside class="catalog-sidebar kui-scroll-owner" aria-label="Component catalog">
+  return <main class="catalog-shell">
+    <aside class="catalog-sidebar kui-pane" aria-label="Component catalog">
       <header class="catalog-brand">
         <span class="catalog-mark" aria-hidden="true">K</span>
         <div><p class="catalog-eyebrow">Kerf</p><h1>UI components</h1><p>Production catalog</p></div>
       </header>
-      <nav>
+      <nav class="kui-pane__content kui-content">
         {catalogSections.map((section) => <section class="catalog-group">
           <MenuHeader label={section.category} />
           <div class="catalog-group__items">
@@ -498,8 +497,8 @@ mount(app, () => {
         </section>
       </nav>
     </aside>
-    <article class="catalog-detail kui-page-gutter">
-      <header class="catalog-header">
+    <article class="catalog-detail kui-content">
+      <header class="catalog-header kui-content-item">
         <div><p class="catalog-eyebrow">{selected.source === 'webawesome' ? `Web Awesome · ${selected.category}` : selected.category}</p><h2>{selected.name}</h2><p>{selected.description}</p></div>
         <div class="catalog-settings" role="group" aria-label="Catalog display settings">
           <button type="button" data-action="toggle-theme" aria-pressed={String(darkTheme.value)}>{icon(Moon, 'moon')}<span>Dark</span></button>
@@ -507,9 +506,9 @@ mount(app, () => {
           <button type="button" data-action="toggle-motion" aria-pressed={String(reducedMotion.value)}>{icon(ZapOff, 'zap-off')}<span>Reduce motion</span></button>
         </div>
       </header>
-      <section class="catalog-stage kui-surface-body" aria-label={`${selected.name} preview`}>
-        <div class="catalog-canvas kui-pane-body"><Stage /></div>
-        <footer class="catalog-stage__footer"><output class="catalog-log" aria-live="polite">{actionLog.value}</output><span>{selected.source === 'webawesome' ? 'Web Awesome component · Kerf theme' : selected.kind === 'component' ? 'Kerf first-class component · production CSS' : 'Kerf composition · production CSS'}</span></footer>
+      <section class="catalog-stage kui-content-item" aria-label={`${selected.name} preview`}>
+        <div class="catalog-canvas kui-content-item"><Stage /></div>
+        <footer class="catalog-stage__footer kui-content-item"><output class="catalog-log" aria-live="polite">{actionLog.value}</output><span>{selected.source === 'webawesome' ? 'Web Awesome component · Kerf theme' : selected.kind === 'component' ? 'Kerf first-class component · production CSS' : 'Kerf composition · production CSS'}</span></footer>
       </section>
       <DemoRelationships entry={selected} />
     </article>

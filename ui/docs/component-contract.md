@@ -43,30 +43,20 @@ separator with a compact grip that appears on hover or keyboard focus. Override
 `--kui-resizable-region-handle-active-color` on a region when its containing
 surface needs a different contrast level.
 
-`.kui-sidebar` owns a 10px interaction/highlight rail and a nested 20px content
-rail. Iconless rows, section labels, surface contents, and sidebar-toolbar text
-start at 20px. Icon rows reserve a 24px slot plus a 10px gap, placing their
-labels at 54px. Rows and standalone header/toolbar actions are at least 44px;
-their 24px icons are centered without moving the visible content rail.
-`.kui-sidebar-surface` puts its decorative border on the 10px rail, and
-`.kui-sidebar-section` groups content without another inset. Use
-`.kui-sidebar-toolbar` for a header or footer toolbar on the same rails. The
-canonical controls are `--kui-sidebar-highlight-gutter`,
-`--kui-sidebar-content-inset`, `--kui-sidebar-icon-slot-size`,
-`--kui-sidebar-column-gap`, `--kui-sidebar-action-target-size`,
-`--kui-sidebar-row-min-size`, and `--kui-sidebar-surface-border-width`; the
-older gutter, row-padding, icon-column, and label-inset tokens are fallbacks.
-Import `@kerfjs/ui/sidebar.css` when using explicit component subpaths; the
-complete `styles.css` layer already includes it.
+`@kerfjs/ui/layout.css` defines one structural model for sidebars, main areas,
+inspectors, and dialogs. `.kui-pane` is unpadded and contains an optional
+toolbar, one scrolling `.kui-pane__content`, and an optional footer.
+`.kui-content` gives major children 24px vertical separation.
+`.kui-content-item` gives one child 8px inline margin, a real 1px border,
+8px padding, and 12px corners; border and background may be transparent without
+changing geometry. `.kui-content-item--pill` selects the 22px radius.
 
-`@kerfjs/ui/layout.css` adds application-level spacing roles without creating
-an application shell. Put `.kui-layout` at the composition root, then give each
-boundary one owner: `.kui-page-gutter`, `.kui-pane-body`,
-`.kui-section-stack`, `.kui-control-cluster`, `.kui-inline-metadata`,
-`.kui-surface-body`, `.kui-dialog-body`, or `.kui-scroll-owner`. Do not combine
-two inset owners on one element or place wrapper padding around component-owned
-header and toolbar chrome. The [layout contract](./layout.md) defines the
-responsive and compact reductions.
+`ToolbarControlGroup` is the unit of toolbar organization, even for dormant
+text. Each group reserves `calc(2px + remify(42px))`, or 44px, with 8px between
+groups and inside items. `MenuHeader` similarly separates its dormant title and
+optional badge from its optional 44px action. Do not add padding to pane shells,
+double child-owned geometry with wrapper insets, or create competing scroll
+owners. The [layout contract](./layout.md) lists the public roles and tokens.
 
 ## Imports and side effects
 

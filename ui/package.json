@@ -159,7 +159,6 @@
     "./toolbar-text.css": "./dist/styles/toolbar-text.css",
     "./menu-item.css": "./dist/styles/menu-item.css",
     "./menu-header.css": "./dist/styles/menu-header.css",
-    "./sidebar.css": "./dist/styles/sidebar.css",
     "./resizable-region.css": "./dist/styles/resizable-region.css",
     "./app-tab.css": "./dist/styles/app-tab.css",
     "./tab-bar.css": "./dist/styles/tab-bar.css",

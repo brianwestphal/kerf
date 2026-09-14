@@ -17,17 +17,17 @@ export const createRecipe: RecipeFactory = (announce) => {
   const body = signal('The tablet layout now keeps navigation, content, and inspector focus order aligned.');
   const audience = signal('team');
   const status = signal<'idle' | 'error' | 'saved'>('idle');
-  const render = () => <form class="kui-recipe recipe-form kui-recipe__surface kui-page-gutter kui-layout kui-section-stack" data-recipe="recipe-composer-form" noValidate>
-    <div><h2>Publish workspace update</h2><p class="kui-recipe__muted">Share a concise, actionable update with collaborators.</p></div>
+  const render = () => <form class="kui-recipe recipe-form kui-recipe__surface kui-content" data-recipe="recipe-composer-form" noValidate>
+    <div class="kui-content-item"><h2>Publish workspace update</h2><p class="kui-recipe__muted">Share a concise, actionable update with collaborators.</p></div>
     {status.value === 'error' && <StateBanner title="Add a title before publishing" detail="The update body and audience are preserved." tone="danger" urgency="alert" />}
     {status.value === 'saved' && <StateBanner title="Update published" detail="The team audience can now read it." tone="success" />}
-    <div class="recipe-form__fields">
+    <div class="recipe-form__fields kui-content-item">
       <wa-input name="recipe-title" label="Update title" hint="Summarize the outcome in one line." required value={title.value}></wa-input>
       <wa-textarea name="recipe-body" label="Details" hint="Include decisions, owners, and the next checkpoint." rows="5" maxlength="400" with-count value={body.value}></wa-textarea>
       <Select name="recipe-audience" value={audience.value} label="Audience" choices={[{ value: 'team', label: 'Workspace team' }, { value: 'reviewers', label: 'Reviewers' }, { value: 'organization', label: 'Entire organization' }]} />
     </div>
-    <div class="kui-control-cluster"><wa-button appearance="outlined" data-action="recipe-action" data-recipe-command="reset">Reset</wa-button><wa-button variant="brand" appearance="accent" data-action="recipe-action" data-recipe-command="submit">Publish update</wa-button></div>
-    <p class="kui-recipe__ownership">The recipe owns field, message, and action rhythm. The app owns validation rules, draft persistence, permissions, and transport.</p>
+    <div class="kui-control-cluster kui-content-item"><wa-button appearance="outlined" data-action="recipe-action" data-recipe-command="reset">Reset</wa-button><wa-button variant="brand" appearance="accent" data-action="recipe-action" data-recipe-command="submit">Publish update</wa-button></div>
+    <p class="kui-recipe__ownership kui-content-item">The recipe owns field, message, and action rhythm. The app owns validation rules, draft persistence, permissions, and transport.</p>
   </form>;
   return {
     render,

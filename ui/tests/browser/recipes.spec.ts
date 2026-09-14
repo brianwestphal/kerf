@@ -64,7 +64,7 @@ test('keeps recipe geometry responsive at narrow, intermediate, and 200% zoom la
 
   await page.setViewportSize({ width: 900, height: 900 });
   const intermediateShell = await openRecipe(page, 'recipe-app-shell');
-  expect(await intermediateShell.locator('.kui-scroll-owner').count()).toBe(3);
+  expect(await intermediateShell.locator('.kui-pane__content').count()).toBe(3);
   expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
   const intermediateDialogRecipe = await openRecipe(page, 'recipe-master-detail-dialog');
   const intermediateDialog = page.locator('wa-dialog.recipe-dialog');
@@ -87,7 +87,7 @@ test('keeps recipe geometry responsive at narrow, intermediate, and 200% zoom la
 
 test('supports keyboard shell/sidebar controls and controlled toolbar interactions', async ({ page }) => {
   const shell = await openRecipe(page, 'recipe-app-shell');
-  expect(await shell.locator('.kui-scroll-owner').count()).toBe(3);
+  expect(await shell.locator('.kui-pane__content').count()).toBe(3);
   const separator = shell.getByRole('separator', { name: 'Resize Navigation' });
   await separator.focus();
   await separator.press('ArrowRight');
@@ -97,22 +97,22 @@ test('supports keyboard shell/sidebar controls and controlled toolbar interactio
 
   const sidebar = await openRecipe(page, 'recipe-navigation-sidebar');
   const sidebarGeometry = () => sidebar.evaluate((node) => {
-    const body = node.querySelector<HTMLElement>('.kui-sidebar')!.getBoundingClientRect();
+    const body = node.querySelector<HTMLElement>('.kui-pane__content')!.getBoundingClientRect();
     const icon = node.querySelector<HTMLElement>('[data-item-id="inbox"] .kui-menu-item__icon')!.getBoundingClientRect();
     const iconLabel = node.querySelector<HTMLElement>('[data-item-id="inbox"] .kui-menu-item__label')!.getBoundingClientRect();
     const plainLabel = node.querySelector<HTMLElement>('[data-item-id="drafts"] .kui-menu-item__label')!.getBoundingClientRect();
-    const surfaceContent = node.querySelector<HTMLElement>('.kui-sidebar-surface strong')!.getBoundingClientRect();
-    const footerActions = [...node.querySelectorAll<HTMLElement>('.kui-sidebar-toolbar .kui-toolbar-control-group')].map((element) => element.getBoundingClientRect());
+    const surfaceContent = node.querySelector<HTMLElement>('.kui-content-item strong')!.getBoundingClientRect();
+    const footerActions = [...node.querySelectorAll<HTMLElement>('.kui-pane__footer .kui-toolbar-control-group')].map((element) => element.getBoundingClientRect());
     return { iconStart: icon.left - body.left, iconWidth: icon.width, iconLabelStart: iconLabel.left - body.left, plainStart: plainLabel.left - body.left, surfaceStart: surfaceContent.left - body.left, footerTargets: footerActions.map(({ width, height }) => [width, height]) };
   });
-  expect(await sidebarGeometry()).toEqual({ iconStart: 20, iconWidth: 24, iconLabelStart: 54, plainStart: 20, surfaceStart: 20, footerTargets: [[44, 44], [44, 44]] });
+  expect(await sidebarGeometry()).toEqual({ iconStart: 17, iconWidth: 24, iconLabelStart: 49, plainStart: 17, surfaceStart: 17, footerTargets: [[44, 44], [44, 44]] });
   const projects = sidebar.getByRole('button', { name: 'Projects' });
   await projects.focus();
   await projects.press('Enter');
   await expect(projects).toHaveAttribute('aria-expanded', 'false');
   await projects.press('Enter');
   await expect(projects).toHaveAttribute('aria-expanded', 'true');
-  expect(await sidebarGeometry()).toEqual({ iconStart: 20, iconWidth: 24, iconLabelStart: 54, plainStart: 20, surfaceStart: 20, footerTargets: [[44, 44], [44, 44]] });
+  expect(await sidebarGeometry()).toEqual({ iconStart: 17, iconWidth: 24, iconLabelStart: 49, plainStart: 17, surfaceStart: 17, footerTargets: [[44, 44], [44, 44]] });
   const drafts = sidebar.getByRole('button', { name: 'Drafts without an icon' });
   await drafts.click();
   await expect(drafts).toHaveAttribute('aria-current', 'page');

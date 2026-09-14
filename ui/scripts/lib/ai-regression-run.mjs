@@ -38,12 +38,16 @@ export async function buildAiRegressionRun(root, options) {
   const scorerPath = v2 ? 'scripts/lib/ai-regression-score-v2.mjs' : 'scripts/lib/ai-regression-score.mjs';
   const runSchemaPath = v2 ? 'ai-regressions/run-v2.schema.json' : 'ai-regressions/run.schema.json';
   const paths = ['ai-regressions/corpus.json', conditionsPath, 'ai/component-catalog.json', scorerPath, 'ai/component-catalog.schema.json', 'ai-regressions/corpus.schema.json', conditionsSchemaPath, 'ai-regressions/response.schema.json', runSchemaPath];
-  const [corpusText, conditionsText, catalogText, scorerText, catalogSchemaText, corpusSchemaText, conditionsSchemaText, responseSchemaText, runSchemaText] = await Promise.all(paths.map((path) => path === 'ai/component-catalog.json' && options.catalogText !== undefined ? Promise.resolve(options.catalogText) : read(root, path)));
+  const [corpusText, conditionsText, catalogText, scorerText, catalogSchemaText, corpusSchemaText, conditionsSchemaText, responseSchemaText, runSchemaText] = await Promise.all(paths.map((path) => {
+    if (path === 'ai-regressions/corpus.json' && options.corpusText !== undefined) return Promise.resolve(options.corpusText);
+    if (path === 'ai/component-catalog.json' && options.catalogText !== undefined) return Promise.resolve(options.catalogText);
+    return read(root, path);
+  }));
   const [suiteText, overridesText, publicApiSignaturesText, baseScorerText] = v2
     ? await Promise.all([
       read(root, 'ai-regressions/suite-v2.json'),
       read(root, 'ai-regressions/corpus-v2-overrides.json'),
-      read(root, 'ai/public-api-signatures-v1.md'),
+      options.publicApiSignaturesText !== undefined ? Promise.resolve(options.publicApiSignaturesText) : read(root, 'ai/public-api-signatures-v1.md'),
       read(root, 'scripts/lib/ai-regression-score.mjs'),
     ])
     : [null, null, null, null];

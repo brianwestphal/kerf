@@ -2,76 +2,131 @@
   --kui-menu-header-color: var(--kui-color-neutral-on-quiet);
   --kui-menu-header-hover-background: var(--kui-color-neutral-border-quiet);
   display: flex;
-  width: 100%;
-  min-height: remify(28.8px);
-  padding: remify(3.2px) var(--kui-sidebar-row-padding-inline);
-  border: 0;
+  width: auto;
+  min-width: 0;
+  min-height: remify(44px);
+  margin-inline: var(--kui-layout-inline-margin, remify(8px));
+  padding: 0;
   box-sizing: border-box;
   color: var(--kui-menu-header-color);
   background: transparent;
-  align-items: center;
-  justify-content: space-between;
-  font: inherit;
+  align-items: stretch;
+  gap: var(--kui-layout-item-gap, remify(8px));
 }
-.kui-menu-header h2,
-.kui-menu-header > span {
+
+.kui-menu-header__title,
+.kui-menu-header__action {
+  box-sizing: border-box;
+  border: 1px solid transparent;
+  border-radius: var(--kui-layout-rounded-radius, calc(1px + remify(11px)));
+  color: inherit;
+  background: transparent;
+}
+
+.kui-menu-header__title {
+  display: flex;
+  min-width: 0;
+  min-height: remify(44px);
+  padding: var(--kui-layout-item-padding, remify(8px));
+  align-items: center;
+  flex: 1 1 auto;
+  gap: var(--kui-layout-item-gap, remify(8px));
+  font: inherit;
+  text-align: start;
+}
+
+.kui-menu-header__label {
+  min-width: 0;
   margin: 0;
+  overflow: hidden;
   font-size: var(--kui-font-xs);
   font-weight: 650;
   letter-spacing: 0.04em;
+  text-overflow: ellipsis;
   text-transform: uppercase;
+  white-space: nowrap;
 }
-.kui-menu-header button,
-.kui-menu-header--toggle {
-  cursor: pointer;
-}
-.kui-menu-header button {
-  display: grid;
-  width: remify(31.2px);
-  height: remify(26.4px);
-  padding: 0;
-  border: 0;
-  border-radius: remify(5.6px);
-  color: inherit;
-  background: transparent;
-  place-items: center;
-}
-.kui-menu-header:not(.kui-menu-header--toggle) button {
-  margin-inline-end: calc(-1 * var(--kui-sidebar-row-padding-inline));
-}
-.kui-menu-header button:hover,
-.kui-menu-header--toggle:hover {
-  background: var(--kui-menu-header-hover-background);
-}
-.kui-menu-header button:focus-visible,
-.kui-menu-header--toggle:focus-visible {
-  outline: var(--kui-focus-ring);
-  outline-offset: 1px;
-}
-.kui-menu-header button:disabled {
-  cursor: not-allowed;
-  opacity: 0.48;
-}
-.kui-menu-header button:disabled:hover {
-  background: transparent;
-}
-.kui-menu-header svg {
-  width: remify(13.6px);
-  height: remify(13.6px);
+
+.kui-menu-header__badge {
+  display: inline-flex;
+  min-height: remify(24px);
+  padding-inline: var(--kui-layout-item-padding, remify(8px));
+  box-sizing: border-box;
+  border: 1px solid transparent;
+  border-radius: var(--kui-layout-pill-radius, calc(1px + remify(21px)));
+  color: var(--kui-color-neutral-on-quiet);
+  background: var(--kui-color-neutral-fill-quiet);
+  align-items: center;
   flex: none;
+  font-size: var(--kui-font-xs);
+  line-height: 1;
 }
+
+.kui-menu-header__action,
 .kui-menu-header__action-layer {
   display: grid;
   place-items: center;
 }
-.kui-menu-header--toggle svg {
+
+.kui-menu-header__action {
+  appearance: none;
+  width: remify(44px);
+  height: remify(44px);
+  padding: var(--kui-layout-item-padding, remify(8px));
+  cursor: pointer;
+  flex: none;
+}
+
+.kui-menu-header__toggle {
+  appearance: none;
+  width: 100%;
+  cursor: pointer;
+}
+
+.kui-menu-header__action-layer {
+  width: remify(24px);
+  height: remify(24px);
+  margin-inline-start: auto;
+  flex: none;
+}
+
+.kui-menu-header__action:hover,
+.kui-menu-header__toggle:hover {
+  border-color: var(--kui-color-neutral-border-normal);
+  background: var(--kui-menu-header-hover-background);
+}
+
+.kui-menu-header__action:focus-visible,
+.kui-menu-header__toggle:focus-visible {
+  outline: var(--kui-focus-ring);
+  outline-offset: 1px;
+}
+
+.kui-menu-header__action:disabled {
+  cursor: not-allowed;
+  opacity: 0.48;
+}
+
+.kui-menu-header__action:disabled:hover {
+  border-color: transparent;
+  background: transparent;
+}
+
+.kui-menu-header svg {
+  width: remify(24px);
+  height: remify(24px);
+}
+
+.kui-menu-header__toggle svg {
   transition: transform 0.18s ease;
 }
-.kui-menu-header--toggle[aria-expanded="false"] svg {
+
+.kui-menu-header__toggle[aria-expanded="false"] svg {
   transform: rotate(-90deg);
 }
+
 @media (prefers-reduced-motion: reduce) {
-  .kui-menu-header--toggle svg {
+  .kui-menu-header__toggle svg {
     transition: none;
   }
 }

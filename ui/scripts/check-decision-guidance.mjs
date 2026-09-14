@@ -72,30 +72,29 @@ for (const phrase of requiredPhrases) {
   if (!selection.includes(phrase)) fail(`component-selection.md is missing required decision guidance: ${phrase}`);
 }
 
-const sidebarEntry = componentCatalog.entries.find((entry) => entry.id === 'menu');
-for (const className of ['kui-sidebar', 'kui-sidebar-surface', 'kui-sidebar-toolbar']) {
-  if (!sidebarEntry?.publicClasses.includes(className)) fail(`sidebar catalog entry is missing public class ${className}`);
+const menuEntry = componentCatalog.entries.find((entry) => entry.id === 'menu');
+for (const className of ['kui-pane', 'kui-content', 'kui-content-item']) {
+  if (!menuEntry?.publicClasses.includes(className)) fail(`menu catalog entry is missing public class ${className}`);
 }
 for (const token of [
-  '--kui-sidebar-highlight-gutter',
-  '--kui-sidebar-content-inset',
-  '--kui-sidebar-icon-slot-size',
-  '--kui-sidebar-action-target-size',
-  '--kui-sidebar-row-min-size',
+  '--kui-layout-content-gap',
+  '--kui-layout-inline-margin',
+  '--kui-layout-item-padding',
+  '--kui-layout-rounded-radius',
 ]) {
-  if (!sidebarEntry?.publicTokens.includes(token)) fail(`sidebar catalog entry is missing public token ${token}`);
+  if (!menuEntry?.publicTokens.includes(token)) fail(`menu catalog entry is missing public token ${token}`);
 }
-const sidebarGuidance = `${selection}\n${await readFile(resolve(root, 'ai/skill.md'), 'utf8')}\n${await readFile(resolve(root, 'README.md'), 'utf8')}`;
-for (const phrase of ['10px interaction', '20px content', '24px icon', '44px']) {
-  if (!sidebarGuidance.includes(phrase)) fail(`sidebar decision guidance is missing the canonical ${phrase} contract`);
+const layoutGuidance = `${selection}\n${await readFile(resolve(root, 'ai/skill.md'), 'utf8')}\n${await readFile(resolve(root, 'README.md'), 'utf8')}`;
+for (const phrase of ['24px', '8px', '44px', 'content item']) {
+  if (!layoutGuidance.includes(phrase)) fail(`layout decision guidance is missing the canonical ${phrase} contract`);
 }
 
 const missingConceptSource = ts.createSourceFile('command-palette-adapter.tsx', missingConcept, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
 if (missingConceptSource.parseDiagnostics.length) fail('command-palette adapter example must parse as TSX');
 for (const required of [
   "import '@kerfjs/ui/layout.css'",
-  'class="app-command-palette kui-layout kui-surface-body kui-section-stack"',
-  'class="kui-control-cluster"',
+  'class="app-command-palette kui-content"',
+  'class="kui-control-cluster kui-content-item"',
   'delegateActions(',
   'mount(',
   'not an @kerfjs/ui export',
@@ -103,8 +102,8 @@ for (const required of [
 ]) {
   if (!missingConcept.includes(required)) fail(`command-palette adapter example is missing ${required}`);
 }
-const insetOwners = missingConcept.match(/\bkui-(?:page-gutter|pane-body|surface-body|dialog-body)\b/g) ?? [];
-if (insetOwners.length !== 1) fail('command-palette adapter example must use exactly one semantic inset owner');
+const contentItems = missingConcept.match(/\bkui-content-item\b/g) ?? [];
+if (contentItems.length < 4) fail('command-palette adapter example must give each ordinary content child shared item geometry');
 if (/from ['"]@kerfjs\/ui\/command-palette/.test(missingConcept)) fail('command-palette adapter must not invent a package export');
 
 const importPattern = /`(@kerfjs\/ui(?:\/[a-z0-9./*-]+)?)`/g;

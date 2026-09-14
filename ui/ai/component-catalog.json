@@ -183,15 +183,15 @@
       "category": "Foundation",
       "kind": "composition",
       "source": "kerf",
-      "description": "Semantic spacing, wrapping, and scroll-owner roles for application layout boundaries.",
+      "description": "Unpadded panes, 24px content stacks, and self-contained 8/1/8 content items for application layout boundaries.",
       "uses": [],
-      "purpose": "Semantic spacing, wrapping, and scroll-owner roles for application layout boundaries.",
+      "purpose": "Provide one reusable pane, toolbar, content stack, and content-item geometry across sidebars, main areas, and dialogs.",
       "publicExports": [],
       "useWhen": [
-        "Assign one semantic spacing and scroll owner to each real application layout boundary."
+        "Build sidebars, main areas, or dialogs from an unpadded pane with optional toolbar/footer and one content stack."
       ],
       "avoidWhen": [
-        "Do not stack inset roles, wrap component-owned chrome in competing padding, or invent unrelated centered measures."
+        "Do not pad the pane itself or add wrapper insets around children that already own content-item geometry."
       ],
       "alternatives": [],
       "appOwns": [
@@ -200,12 +200,13 @@
         "responsive relocation"
       ],
       "variants": [
-        "responsive",
-        "compact",
-        "fixed density"
+        "toolbar + content",
+        "toolbar + content + footer",
+        "rounded content item",
+        "pill content item"
       ],
       "accessibility": [
-        "Keep reading and focus order coherent when controls wrap or relocate."
+        "Keep reading and focus order coherent when controls wrap or panes relocate, and preserve one scroll owner per pane."
       ],
       "delivery": {
         "manualCssImport": "@kerfjs/ui/layout.css",
@@ -215,37 +216,31 @@
       },
       "wiring": [],
       "publicClasses": [
+        "kui-content",
+        "kui-content-item",
+        "kui-content-item--pill",
         "kui-control-cluster",
-        "kui-dialog-body",
         "kui-inline-metadata",
-        "kui-layout",
-        "kui-layout--compact",
-        "kui-layout--fixed-density",
-        "kui-page-gutter",
-        "kui-pane-body",
-        "kui-scroll-owner",
-        "kui-section-stack",
-        "kui-surface-body"
+        "kui-pane",
+        "kui-pane__content",
+        "kui-pane__footer",
+        "kui-pane__toolbar",
+        "kui-scroll-owner"
       ],
       "publicTokens": [
         "--kui-layout-control-gap",
-        "--kui-layout-dialog-inset",
+        "--kui-layout-content-gap",
+        "--kui-layout-inline-margin",
+        "--kui-layout-item-border-width",
+        "--kui-layout-item-padding",
         "--kui-layout-metadata-gap",
-        "--kui-layout-page-gutter",
-        "--kui-layout-pane-inset",
-        "--kui-layout-section-gap",
-        "--kui-layout-surface-inset",
-        "--kui-space-2xs",
-        "--kui-space-l",
-        "--kui-space-m",
-        "--kui-space-s",
-        "--kui-space-xl",
-        "--kui-space-xs"
+        "--kui-layout-pill-radius",
+        "--kui-layout-rounded-radius"
       ],
       "links": {
         "catalogRoute": "?component=layout",
         "documentation": "docs/component-selection.md",
-        "recipe": "docs/layout.md#decision-table"
+        "recipe": "docs/layout.md#public-roles-and-tokens"
       }
     },
     {
@@ -308,7 +303,6 @@
       ],
       "publicTokens": [
         "--kui-color-border",
-        "--kui-color-surface",
         "--kui-font-sans"
       ],
       "links": {
@@ -383,7 +377,6 @@
         "--kui-color-neutral-on-quiet",
         "--kui-color-surface",
         "--kui-focus-ring",
-        "--kui-radius-pill",
         "--kui-shadow-s",
         "--kui-toolbar-control-background",
         "--kui-toolbar-control-border",
@@ -575,15 +568,12 @@
         "kui-page-header__action"
       ],
       "publicTokens": [
-        "--kui-color-border",
-        "--kui-color-surface",
         "--kui-color-text",
         "--kui-font-2xl",
         "--kui-font-l",
         "--kui-page-header-background",
         "--kui-page-header-border",
-        "--kui-page-header-foreground",
-        "--kui-space-m"
+        "--kui-page-header-foreground"
       ],
       "links": {
         "catalogRoute": "?component=page-header",
@@ -651,7 +641,6 @@
         "kui-dialog-header__icon"
       ],
       "publicTokens": [
-        "--kui-color-border",
         "--kui-color-brand-fill-quiet",
         "--kui-color-brand-on-quiet",
         "--kui-color-text",
@@ -661,10 +650,7 @@
         "--kui-dialog-header-icon-foreground",
         "--kui-font-l",
         "--kui-radius-circle",
-        "--kui-space-2xs",
-        "--kui-space-l",
-        "--kui-space-m",
-        "--kui-space-xs"
+        "--kui-space-2xs"
       ],
       "links": {
         "catalogRoute": "?component=dialog-header",
@@ -720,10 +706,8 @@
         "--kui-color-text",
         "--kui-color-text-quiet",
         "--kui-font-weight-semibold",
-        "--kui-radius-m",
         "--kui-space-2xs",
         "--kui-space-m",
-        "--kui-space-xs",
         "--kui-value-table-background",
         "--kui-value-table-border"
       ],
@@ -739,18 +723,18 @@
       "category": "Navigation",
       "kind": "composition",
       "source": "kerf",
-      "description": "Navigation rows, section headers, surfaces, and footer actions on shared interaction and content rails.",
+      "description": "Navigation rows and section headers composed as ordinary content items inside a pane.",
       "uses": [
         "menu-header",
         "menu-item"
       ],
-      "purpose": "Navigation rows, section headers, surfaces, and footer actions on shared interaction and content rails.",
+      "purpose": "Compose navigation with the same pane, content stack, item, and toolbar geometry used throughout the application.",
       "publicExports": [],
       "useWhen": [
-        "Compose a sidebar on a 10px highlight rail and nested 20px content rail, with 24px icon slots and scoped 44px action targets."
+        "Compose navigation sections in a .kui-content stack, using MenuHeader and MenuItem children plus optional .kui-content-item surfaces."
       ],
       "avoidWhen": [
-        "Do not stack wrapper padding, align text to borders, or use the pattern for unrelated inline controls."
+        "Do not add sidebar-specific wrapper padding or use the pattern for unrelated inline controls."
       ],
       "alternatives": [],
       "appOwns": [
@@ -762,47 +746,29 @@
         "section",
         "icon rows",
         "iconless rows",
-        "surface",
-        "sidebar toolbar"
+        "content item",
+        "pane toolbar or footer"
       ],
       "accessibility": [
         "Use native links for link navigation, retain MenuItem button semantics for actions, and keep standalone header and toolbar actions at least 44px square."
       ],
       "delivery": {
-        "manualCssImport": "@kerfjs/ui/sidebar.css",
+        "manualCssImport": "@kerfjs/ui/layout.css",
         "sideEffects": [
           "css"
         ]
       },
       "wiring": [],
       "publicClasses": [
-        "kui-menu-header",
-        "kui-menu-item",
-        "kui-menu-item__icon",
-        "kui-menu-item__label",
-        "kui-menu-item__trailing",
-        "kui-sidebar",
-        "kui-sidebar-section",
-        "kui-sidebar-surface",
-        "kui-sidebar-toolbar"
+        "kui-content",
+        "kui-content-item",
+        "kui-pane"
       ],
       "publicTokens": [
-        "--kui-color-border",
-        "--kui-color-surface-raised",
-        "--kui-radius-m",
-        "--kui-sidebar-column-gap",
-        "--kui-sidebar-action-target-size",
-        "--kui-sidebar-content-inset",
-        "--kui-sidebar-gutter",
-        "--kui-sidebar-highlight-gutter",
-        "--kui-sidebar-icon-column-width",
-        "--kui-sidebar-icon-slot-size",
-        "--kui-sidebar-label-inset",
-        "--kui-sidebar-row-min-size",
-        "--kui-sidebar-row-padding-inline",
-        "--kui-sidebar-surface-border-width",
-        "--kui-space-2xs",
-        "--kui-space-s"
+        "--kui-layout-content-gap",
+        "--kui-layout-inline-margin",
+        "--kui-layout-item-padding",
+        "--kui-layout-rounded-radius"
       ],
       "links": {
         "catalogRoute": "?component=menu",
@@ -816,11 +782,11 @@
       "category": "Navigation",
       "kind": "component",
       "source": "kerf",
-      "description": "Section headings with optional action and disclosure states.",
+      "description": "Section headings with optional badge, separate action, and disclosure states.",
       "uses": [
         "lucide-icon"
       ],
-      "purpose": "Section headings with optional action and disclosure states.",
+      "purpose": "Split dormant title and badge content from an optional 44px action, or render the title cluster as a disclosure button.",
       "publicExports": [
         "MenuHeader"
       ],
@@ -847,6 +813,7 @@
       ],
       "variants": [
         "heading",
+        "badge",
         "action",
         "toggle"
       ],
@@ -863,8 +830,12 @@
       "wiring": [],
       "publicClasses": [
         "kui-menu-header",
-        "kui-menu-header--toggle",
-        "kui-menu-header__action-layer"
+        "kui-menu-header__action",
+        "kui-menu-header__action-layer",
+        "kui-menu-header__badge",
+        "kui-menu-header__label",
+        "kui-menu-header__title",
+        "kui-menu-header__toggle"
       ],
       "publicTokens": [
         "--kui-color-neutral-border-quiet",
@@ -872,8 +843,10 @@
         "--kui-focus-ring",
         "--kui-font-xs",
         "--kui-menu-header-color",
-        "--kui-menu-header-hover-background",
-        "--kui-sidebar-row-padding-inline"
+        "--kui-layout-inline-margin",
+        "--kui-layout-item-gap",
+        "--kui-layout-item-padding",
+        "--kui-menu-header-hover-background"
       ],
       "links": {
         "catalogRoute": "?component=menu-header",
@@ -943,10 +916,10 @@
         "--kui-menu-item-hover-background",
         "--kui-menu-item-selected-background",
         "--kui-menu-item-selected-color",
-        "--kui-sidebar-column-gap",
-        "--kui-sidebar-icon-column-width",
-        "--kui-sidebar-row-padding-inline",
-        "--kui-space-xs"
+        "--kui-layout-inline-margin",
+        "--kui-layout-item-gap",
+        "--kui-layout-item-padding",
+        "--kui-layout-rounded-radius"
       ],
       "links": {
         "catalogRoute": "?component=menu-item",
@@ -1029,7 +1002,6 @@
         "--kui-radius-pill",
         "--kui-shadow-s",
         "--kui-space-2xs",
-        "--kui-space-s",
         "--kui-space-xs"
       ],
       "links": {
@@ -1117,9 +1089,6 @@
         "kui-tab-bar__trailing"
       ],
       "publicTokens": [
-        "--kui-color-border",
-        "--kui-color-surface-lowered",
-        "--kui-space-2xs",
         "--kui-tab-bar-background",
         "--kui-tab-bar-border"
       ],
@@ -1203,7 +1172,6 @@
         "--kui-font-2xs",
         "--kui-font-weight-semibold",
         "--kui-font-xs",
-        "--kui-radius-pill",
         "--kui-segmented-background",
         "--kui-segmented-border",
         "--kui-segmented-foreground",
@@ -1653,7 +1621,6 @@
         "--kui-font-2xs",
         "--kui-font-xs",
         "--kui-radius-pill",
-        "--kui-space-xs",
         "--kui-state-banner-action-background",
         "--kui-state-banner-action-hover-background",
         "--kui-state-banner-background",
@@ -4196,9 +4163,9 @@
       "category": "Recipes",
       "kind": "recipe",
       "source": "kerf",
-      "purpose": "Aligned navigation sections with icon and iconless rows, a surface block, disclosure, and footer actions.",
+      "purpose": "Navigation sections with icon and iconless rows, a content-item surface, disclosure, and pane footer actions.",
       "uses": ["menu-header", "menu-item", "toolbar", "toolbar-control-group"],
-      "useWhen": ["A workspace sidebar needs a 10px interaction rail, a 20px content rail, 24px icon slots, and 44px row and utility-action targets."],
+      "useWhen": ["A workspace sidebar needs the shared toolbar/content/footer pane model, 24px major section rhythm, and 44px row and utility-action targets."],
       "avoidWhen": ["Use ordinary links when menu selection, section, and sidebar anatomy do not apply."],
       "appOwns": ["information architecture", "routing", "permissions", "disclosure state"],
       "accessibility": ["Native buttons retain names, current state, sequential focus, and disclosure state; rows and standalone footer actions remain at least 44px tall."],

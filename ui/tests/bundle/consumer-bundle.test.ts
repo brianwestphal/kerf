@@ -180,9 +180,10 @@ describe('consumer bundle boundaries', () => {
     const css = output(result, '.css');
     expect(inputs).toContain('dist/styles/layout.css');
     expect(inputs).not.toContain('dist/styles/foundation.css');
-    expect(css).toContain('.kui-page-gutter');
-    expect(css).toContain('var(--kui-layout-page-gutter, var(--kui-space-xl, 2rem))');
-    expect(css).toContain('var(--kui-layout-control-gap, var(--kui-space-xs, 0.5rem))');
+    expect(css).toContain('.kui-pane__content');
+    expect(css).toContain('.kui-content-item--pill');
+    expect(css).toContain('var(--kui-layout-content-gap, 1.5rem)');
+    expect(css).toContain('var(--kui-layout-inline-margin, 0.5rem)');
   });
 
   it('declares only style delivery and custom-element registration as side effects', async () => {
@@ -203,7 +204,7 @@ describe('consumer bundle boundaries', () => {
     expect(pkg.exports['./token-search-field']).toBeDefined();
     expect(pkg.exports['./wire-tab-bars']).toBeDefined();
     expect(pkg.exports['./toolbar.css']).toBe('./dist/styles/toolbar.css');
-    expect(pkg.exports['./sidebar.css']).toBe('./dist/styles/sidebar.css');
+    expect(pkg.exports['./sidebar.css']).toBeUndefined();
     expect(pkg.exports['./layout.css']).toBe('./dist/styles/layout.css');
     expect(pkg.exports['./tab-bar.css']).toBe('./dist/styles/tab-bar.css');
     expect(pkg.exports['./segmented-control.css']).toBe('./dist/styles/segmented-control.css');
@@ -215,8 +216,8 @@ describe('consumer bundle boundaries', () => {
     const source = await readFile(new URL('../../src/toolbar-control-group.css', import.meta.url), 'utf8');
     const built = await readFile(new URL('../../dist/styles/toolbar-control-group.css', import.meta.url), 'utf8');
 
-    expect(source).toContain('remify(40.4px)');
-    expect(built).toContain('2.525rem');
+    expect(source).toContain('remify(40px)');
+    expect(built).toContain('2.5rem');
     expect(built).not.toContain('remify(');
   });
 });

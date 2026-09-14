@@ -1,15 +1,17 @@
 .kui-dialog-header {
-  --kui-dialog-header-border: var(--kui-color-border);
+  --kui-dialog-header-border: transparent;
   --kui-dialog-header-icon-background: var(--kui-color-brand-fill-quiet);
   --kui-dialog-header-icon-foreground: var(--kui-color-brand-on-quiet);
   display: grid;
-  min-height: remify(78.4px);
-  padding: var(--kui-space-m) var(--kui-space-l);
+  min-height: remify(44px);
+  margin-inline: var(--kui-layout-inline-margin, remify(8px));
+  padding: var(--kui-layout-item-padding, remify(8px));
   box-sizing: border-box;
-  border-bottom: 1px solid var(--kui-dialog-header-border);
+  border: 1px solid var(--kui-dialog-header-border);
+  border-radius: var(--kui-layout-rounded-radius, calc(1px + remify(11px)));
   grid-template-columns: remify(32px) minmax(0, 1fr) auto;
   align-items: start;
-  gap: var(--kui-space-m);
+  gap: var(--kui-layout-item-gap, remify(8px));
 }
 .kui-dialog-header[data-has-icon="false"] {
   grid-template-columns: minmax(0, 1fr) auto;
@@ -46,5 +48,5 @@
 .kui-dialog-header__actions {
   display: flex;
   align-items: center;
-  gap: var(--kui-space-xs);
+  gap: var(--kui-layout-item-gap, remify(8px));
 }
