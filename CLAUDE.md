@@ -236,7 +236,7 @@ Hot Sheet is local-only, so a bare `KF-NN` reference can't be looked up by anyon
 - ✅ `// KF-103 row contract: exactly one top-level element per each() row` — code comment with self-contained summary; the number is provenance.
 - ❌ `(KF-103)` — bare blame marker, unlookable; drop it or expand it.
 - ❌ Any `KF-NN` anywhere under `site/src/content/docs/**` or in any source doc the sync map publishes (run `node scripts/check-doc-site-tickets.mjs` if unsure — it prints every offender with its line).
-- ❌ "See `.hotsheet/worklist.md`" — `.hotsheet/` is local-only; never link to it in user-facing docs.
+- ❌ "See `.hotsheet2/worklist.md`" — `.hotsheet2/` is local-only; never link to it in user-facing docs.
 
 The same rule applies to commit messages — `git log` is a public-facing surface for any open-source consumer. Use `KF-NN: <short title>` shape so the title makes the commit understandable without a ticket lookup.
 
@@ -415,7 +415,7 @@ When the user gives you work directly (not via the Hot Sheet channel or events),
 - Create via the Hot Sheet API (prefer the `hotsheet_*` MCP tools), mark Up Next, then work through them: set status `started` → implement → set `completed` with notes.
 - **Always create follow-up tickets** for incomplete work (unfinished steps, open design questions, known gaps, designed-but-unbuilt features). If it's not in a ticket, it's forgotten.
 - **Incomplete-work checklist** — before marking a ticket `completed`, file follow-ups for any: (1) UI placeholder text ("coming soon"), (2) TODO/FIXME comments, (3) documented-but-unimplemented requirements, (4) empty/stub functions returning mock data.
-- **Use FEEDBACK NEEDED before deferring or asking about follow-ups.** When about to (a) defer a ticket needing more work, (b) ask whether to file follow-ups, or (c) close with a question buried in notes — DON'T. Leave the ticket `started`, add a `FEEDBACK NEEDED:` note (per `.hotsheet/worklist.md`), signal channel done, and wait. It's the only reliable way to surface a question.
+- **Use FEEDBACK NEEDED before deferring or asking about follow-ups.** When about to (a) defer a ticket needing more work, (b) ask whether to file follow-ups, or (c) close with a question buried in notes — DON'T. Leave the ticket `started`, add a `FEEDBACK NEEDED:` note (per `.hotsheet2/worklist.md`), signal channel done, and wait. It's the only reliable way to surface a question.
 <!-- hotsheet:end section=ticket-driven-work -->
 
 <!-- hotsheet:begin section=testing-philosophy v=2 -->

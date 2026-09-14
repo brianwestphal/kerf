@@ -71,7 +71,7 @@ base tag and HEAD.
      / the "next" number is a label. State it's derived from the diff, not commit prose.
    - **Honest size:** the area-by-area split from the script, and the **product-only** +/-
      total called out separately from the raw total (which is inflated by docs, `site/`,
-     generated `ai/`/`assets`, and `.claude`/`.agents`/`.cursor`/`.hotsheet` scaffolding —
+     generated `ai/`/`assets`, and `.claude`/`.agents`/`.cursor`/`.hotsheet2` scaffolding —
      never present the raw number as engineering effort). Note the single biggest bucket.
    - **Baseline note:** one line on what already shipped at the base (so nothing
      pre-existing reads as new).

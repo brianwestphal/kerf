@@ -9,7 +9,7 @@ This skill is the kerf-specific equivalent of Hot Sheet's stock `/hotsheet` skil
 
 ## Workflow
 
-1. Read `.hotsheet/worklist.md` for the current Up Next list. (Skip the channel server's Up Next semantics — kerf doesn't run a Claude channel.)
+1. Read `.hotsheet2/worklist.md` for the current Up Next list. (Skip the channel server's Up Next semantics — kerf doesn't run a Claude channel.)
 2. For each ticket in priority order:
    - Mark it `started` via the Hot Sheet API.
    - Implement the work, following the conventions in `CLAUDE.md`.
@@ -32,4 +32,4 @@ If you finish exploring a ticket and the right answer is unclear, leave it `star
 
 - Public exports + behaviour: `docs/8-api-reference.md`
 - Architecture overview: `docs/1-overview.md`
-- Hot Sheet API for ticket updates: `.hotsheet/worklist.md` documents the curl commands.
+- Hot Sheet API for ticket updates: `.hotsheet2/worklist.md` documents the curl commands.
