@@ -5,7 +5,7 @@ const packageLock = JSON.parse(await readFile(new URL('../package-lock.json', im
 
 const expectedPolicy = {
   esbuild: true,
-  sharp: true,
+  fsevents: true,
   'file:../..': false,
 };
 const actualPolicy = packageJson.allowScripts ?? {};
@@ -13,7 +13,7 @@ if (JSON.stringify(actualPolicy) !== JSON.stringify(expectedPolicy)) {
   throw new Error(`site allowScripts must be ${JSON.stringify(expectedPolicy)}`);
 }
 
-const expectedInstallers = ['esbuild@0.27.7', 'sharp@0.33.5', 'sharp@0.34.5'];
+const expectedInstallers = ['esbuild@0.28.2', 'fsevents@2.3.3'];
 const installers = Object.entries(packageLock.packages)
   // The root package has this preinstall script by definition; only audit
   // dependency installers that npm may execute after the policy check.
