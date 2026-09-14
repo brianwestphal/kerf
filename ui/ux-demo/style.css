@@ -297,6 +297,43 @@ button {
 .demo-frame {
   gap: 0;
 }
+.demo-toolbar-find-row .kui-toolbar__center {
+  justify-content: stretch;
+}
+.demo-toolbar-find {
+  min-width: remify(192px);
+  flex: 1 1 auto;
+}
+.kui-toolbar.demo-toolbar-find-row--open {
+  grid-template-columns: minmax(0, 1fr);
+}
+.demo-toolbar-find-row--open .kui-toolbar__center {
+  width: 100%;
+  grid-column: 1;
+}
+.demo-toolbar-find-row--open
+  :is(.kui-toolbar__leading, .kui-toolbar__trailing) {
+  display: none;
+}
+.demo-toolbar-find-row .demo-toolbar-find-trigger {
+  display: none;
+}
+@container kui-toolbar (max-width: remify(672px)) {
+  .demo-toolbar-find-row:not(.demo-toolbar-find-row--open) .demo-toolbar-find {
+    display: none;
+  }
+  .demo-toolbar-find-row:not(.demo-toolbar-find-row--open)
+    .demo-toolbar-find-trigger {
+    display: inline-flex;
+  }
+  .demo-toolbar-find-row:not(.demo-toolbar-find-row--open)
+    .kui-toolbar__center {
+    justify-content: flex-end;
+  }
+  .demo-toolbar-find-row--open .demo-toolbar-find {
+    min-width: 0;
+  }
+}
 .demo-feedback,
 .demo-control-stack {
   padding: remify(16px);

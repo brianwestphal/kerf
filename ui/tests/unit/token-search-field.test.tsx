@@ -1,3 +1,6 @@
+import { readFile } from 'node:fs/promises';
+import { resolve } from 'node:path';
+
 import { CircleHelp } from 'lucide';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -49,6 +52,14 @@ describe('TokenSearchField', () => {
     expect(html).toContain('<span>Filter</span>');
     expect(html).toContain('data-lucide="help"');
     expect(asHtml(TokenSearchField({ id: 'empty', label: 'Search', placeholder: 'Find records' }))).toContain('data-placeholder="Find records"');
+  });
+
+  it('pins leading, first-line, clear, and trailing content to one fixed alignment slot', async () => {
+    const css = await readFile(resolve(import.meta.dirname, '../../src/token-search-field.css'), 'utf8');
+    expect(css).toContain('--kui-token-search-line-size: remify(34px)');
+    expect(css).toMatch(/\.kui-token-search__leading[^}]+var\(--kui-token-search-line-size\)[^}]+remify\(16px\)/s);
+    expect(css).toMatch(/\.kui-token-search__editor[^}]+min-height: var\(--kui-token-search-line-size\)[^}]+1\.35em/s);
+    expect(css).toMatch(/\.kui-token-search__clear,[^}]+height: var\(--kui-token-search-line-size\)[^}]+place-items: center/s);
   });
 
   it('reads browser-edited text and token offsets without chip button text', () => {

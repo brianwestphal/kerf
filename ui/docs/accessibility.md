@@ -63,7 +63,10 @@ changes separately when that feedback is useful. Use `readTokenSearchField()`
 to ignore the chip buttons' visible text when reading browser-edited content,
 and `placeTokenSearchCaret()` to restore a text caret without landing inside a
 chip. Editable text is DOM-owned between token changes; a clear handler empties
-the editor's `textContent` before updating application state.
+the editor's `textContent` before updating application state. Leading and
+trailing controls share the first text line's fixed vertical center and remain
+there as the editor wraps; application-owned toolbar collapse must move focus
+from its compact search action into the revealed searchbox.
 
 ## Verification matrix
 

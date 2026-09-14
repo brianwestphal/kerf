@@ -58,6 +58,8 @@ const tokenSearchTokens = signal<TokenSearchToken[]>([
 ]);
 const bannerTone = signal<'neutral' | 'info' | 'success' | 'warning' | 'danger'>('info');
 const toolbarChoice = signal<'list' | 'columns' | 'settings'>('list');
+const toolbarFindQuery = signal('');
+const toolbarFindOpen = signal(false);
 const inspectorSection = signal<'summary' | 'activity' | 'files'>('summary');
 const displayDensity = signal<'compact' | 'comfortable' | 'roomy'>('comfortable');
 const actionLog = signal('Catalog ready');
@@ -155,8 +157,9 @@ function ToolbarDemo() {
   return <div class="demo-frame" data-demo="toolbar">
     <Toolbar
       label="Document controls"
+      className={`demo-toolbar-find-row${toolbarFindOpen.value ? ' demo-toolbar-find-row--open' : ''}`}
       leading={<ToolbarControlGroup appearance="borderless" single><ToolbarText text="Component library" size="large" /></ToolbarControlGroup>}
-      center={<ToolbarControlGroup appearance="borderless" single><span class="demo-center-copy">Saved just now</span></ToolbarControlGroup>}
+      center={<><TokenSearchField id="toolbar-find" label="Find in workspace" query={toolbarFindQuery.value} placeholder="Find in workspace" className="demo-toolbar-find" clearAction="clear-toolbar-find" editorAttributes={{ 'data-demo-toolbar-find': 'true' }} trailing={icon(CircleHelp, 'circle-help')} /><ToolbarControlGroup className="demo-toolbar-find-trigger" single><button type="button" data-action="open-toolbar-find" aria-label="Open find">{icon(Search, 'search')}</button></ToolbarControlGroup></>}
       trailing={<ToolbarControlGroup label="View controls" buttonAppearance="push"><button type="button" aria-label="Toggle inspector" aria-pressed="true">{icon(SlidersHorizontal, 'sliders-horizontal')}</button><button type="button" aria-label="Settings">{icon(Settings, 'settings')}</button></ToolbarControlGroup>}
     />
     <Toolbar label="Compact toolbar" divider={false} leading={<ToolbarControlGroup appearance="borderless" single><ToolbarText text="Borderless" size="small" /></ToolbarControlGroup>} trailing={<ToolbarControlGroup appearance="borderless" single>{button('Add', 'log-add')}</ToolbarControlGroup>} />
@@ -616,6 +619,17 @@ const stopActions = delegateActions(app, 'click', {
     });
     actionLog.value = 'Search cleared';
   },
+  'open-toolbar-find': () => {
+    toolbarFindOpen.value = true;
+    actionLog.value = 'Find opened';
+    window.requestAnimationFrame(() => document.querySelector<HTMLElement>('[data-demo-toolbar-find="true"]')?.focus());
+  },
+  'clear-toolbar-find': (_event, element) => {
+    const editor = element.closest('[data-component="token-search-field"]')?.querySelector<HTMLElement>('[data-token-search-editor]');
+    if (editor) editor.textContent = '';
+    toolbarFindQuery.value = '';
+    actionLog.value = 'Find cleared';
+  },
   'cycle-tone': () => { const tones = ['neutral', 'info', 'success', 'warning', 'danger'] as const; bannerTone.value = tones[(tones.indexOf(bannerTone.value) + 1) % tones.length]!; actionLog.value = `Banner tone: ${bannerTone.value}`; },
   'toggle-theme': () => { darkTheme.value = !darkTheme.value; document.documentElement.classList.toggle('demo-dark', darkTheme.value); actionLog.value = darkTheme.value ? 'Dark theme on' : 'Dark theme off'; },
   'toggle-contrast': () => { increasedContrast.value = !increasedContrast.value; document.documentElement.classList.toggle('demo-contrast', increasedContrast.value); actionLog.value = increasedContrast.value ? 'Increased contrast on' : 'Increased contrast off'; },
@@ -670,6 +684,9 @@ const stopTokenSearch = delegate(app, 'input', '[data-demo-token-search="true"]'
   const value = readTokenSearchField(element as HTMLElement, tokenSearchTokens.value);
   tokenSearchQuery.value = value.query;
   tokenSearchTokens.value = value.tokens;
+});
+const stopToolbarFind = delegate(app, 'input', '[data-demo-toolbar-find="true"]', (_event, element) => {
+  toolbarFindQuery.value = readTokenSearchField(element as HTMLElement).query;
 });
 const stopRelationships = delegate(app, 'change', '[name="related-component"]', (_event, element) => {
   const value = (element as HTMLElement & { value?: string }).value;
@@ -739,4 +756,4 @@ const stopTabs = delegate<HTMLButtonElement>(app, 'keydown', '[data-demo="tabs"]
 });
 const stopTabBars = wireTabBars(app, { onReorder: ({ barId, sourceId, targetId, position, source }) => { tabBarTabs.value = reorderTabs(tabBarTabs.value, (tab) => tab.id, sourceId, targetId, position); actionLog.value = `${source === 'pointer' ? 'Dragged' : 'Moved'} ${sourceId} ${position} ${targetId} in ${barId}`; } });
 
-window.addEventListener('pagehide', () => { stopActions(); stopResize(); stopSelect(); stopRecipeChanges(); stopRecipeInputs(); stopRecipeKeys(); stopRecipeShownDialogs(); stopRecipeDialogs(); stopTokenSearch(); stopRelationships(); stopAnimationSelects(); stopAnimationRanges(); stopAnimationEvents.forEach((dispose) => dispose()); stopIntersectionObserver(); stopMutationObserver(); stopResizeObserver(); stopTabs(); stopTabBars(); }, { once: true });
+window.addEventListener('pagehide', () => { stopActions(); stopResize(); stopSelect(); stopRecipeChanges(); stopRecipeInputs(); stopRecipeKeys(); stopRecipeShownDialogs(); stopRecipeDialogs(); stopTokenSearch(); stopToolbarFind(); stopRelationships(); stopAnimationSelects(); stopAnimationRanges(); stopAnimationEvents.forEach((dispose) => dispose()); stopIntersectionObserver(); stopMutationObserver(); stopResizeObserver(); stopTabs(); stopTabBars(); }, { once: true });

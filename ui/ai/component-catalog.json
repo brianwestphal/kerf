@@ -1233,10 +1233,12 @@
       "variants": [
         "tokens",
         "free text",
-        "disabled"
+        "disabled",
+        "toolbar composition"
       ],
       "accessibility": [
-        "Announce result changes when useful and keep tokens atomic during editing."
+        "Announce result changes when useful and keep tokens atomic during editing.",
+        "Keep leading and trailing controls aligned to the first text line while content wraps."
       ],
       "delivery": {
         "browserImport": "@kerfjs/ui/token-search-field",
@@ -1281,6 +1283,7 @@
         "--kui-radius-pill",
         "--kui-token-search-background",
         "--kui-token-search-border",
+        "--kui-token-search-line-size",
         "--kui-token-search-token-background",
         "--kui-token-search-token-foreground"
       ],

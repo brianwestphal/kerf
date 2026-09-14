@@ -232,8 +232,14 @@ parsing, suggestions, query execution, and state. Use `readTokenSearchField()`
 after browser input to recover text plus token offsets, and
 `placeTokenSearchCaret()` when restoring focus after a controlled update.
 Clear actions should empty the editor's `textContent` before clearing app state.
+The leading icon, first text line, clear action, and trailing slot share one
+fixed alignment row; when text wraps, those controls stay pinned to that first
+row instead of recentering against the taller editor. The catalog's Toolbar
+route demonstrates application-owned responsive collapse and focus transfer.
 Override its surface through `--kui-token-search-{background|border}` and its
-chips through `--kui-token-search-token-{background|foreground}`.
+chips through `--kui-token-search-token-{background|foreground}`. Override
+`--kui-token-search-line-size` only when the complete first-line geometry must
+change together.
 
 `TabBar` is controlled: pass ordered `AppTab` children, then wire its keyboard
 and same-bar drag behavior with `wireTabBars(root, { onReorder })`. During a

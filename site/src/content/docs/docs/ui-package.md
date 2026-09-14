@@ -110,10 +110,17 @@ appearance boundaries.
 - `MenuItem`, `MenuHeader`; `AppTab`, controlled `TabBar`, `wireTabBars`, `reorderTabs`
 - `PageHeader`, `DialogHeader`, `ValueTable`
 - `ResizableRegion` with `wireResizableRegions`
-- `SegmentedControl`, `Select`; `StateBanner`, `EmptyState`, `LoadingSpinner`
+- `SegmentedControl`, `Select`, `TokenSearchField`; `StateBanner`, `EmptyState`, `LoadingSpinner`
 
 The components expose slots and stable `kui-` classes rather than domain data or
 commands. Applications retain state, routing, menu policy, and tab-list policy.
+
+`TokenSearchField` keeps DOM-owned editable text and controlled filter chips in
+one named searchbox. Its leading icon, first text line, clear action, and
+trailing slot share one fixed vertical center and remain pinned there when text
+wraps. The application owns parsing and result feedback; when it collapses the
+field inside a narrow toolbar, it also owns moving focus into the revealed
+searchbox.
 
 `SegmentedControl` provides controlled exclusive choices in a toolbar, rounded
 rectangle, or pill. It renders native pressed buttons, keeps every enabled

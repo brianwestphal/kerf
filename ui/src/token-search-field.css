@@ -3,6 +3,7 @@
   --kui-token-search-border: var(--kui-color-border);
   --kui-token-search-token-background: var(--kui-color-accent);
   --kui-token-search-token-foreground: var(--kui-color-accent-text);
+  --kui-token-search-line-size: remify(34px);
 
   display: grid;
   width: 100%;
@@ -33,7 +34,9 @@
   display: inline-flex;
   width: remify(16px);
   height: remify(16px);
-  margin-block-start: remify(7.2px);
+  margin-block-start: calc(
+    (var(--kui-token-search-line-size) - remify(16px)) / 2
+  );
   color: var(--kui-color-text-quiet);
 }
 
@@ -44,8 +47,9 @@
 
 .kui-token-search__editor {
   min-width: remify(80px);
-  min-height: remify(28px);
-  padding-block: remify(4px) 0;
+  min-height: var(--kui-token-search-line-size);
+  padding-block: calc((var(--kui-token-search-line-size) - 1.35em) / 2) 0;
+  box-sizing: border-box;
   outline: 0;
   caret-color: var(--kui-color-accent-text);
   font-size: var(--kui-font-s);
@@ -124,9 +128,11 @@
 
 .kui-token-search__clear,
 .kui-token-search__trailing {
+  display: inline-grid;
   width: remify(24px);
-  min-height: remify(28px);
+  height: var(--kui-token-search-line-size);
   color: var(--kui-color-text-quiet);
+  place-items: center;
 }
 
 .kui-token-search__clear svg,

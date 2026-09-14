@@ -110,10 +110,67 @@ test('edits, removes, and clears controlled token search content', async ({ page
   await expect(editor).toHaveText('');
   await expect(editor).toHaveAttribute('data-placeholder', 'Search');
 
+  await editor.pressSequentially('hello');
+  const alignment = () => demo.locator('[data-component="token-search-field"]').first().evaluate((field) => {
+    const fieldRect = field.getBoundingClientRect();
+    const leadingRect = field.querySelector<HTMLElement>('.kui-token-search__leading')!.getBoundingClientRect();
+    const editorElement = field.querySelector<HTMLElement>('.kui-token-search__editor')!;
+    const editorRect = editorElement.getBoundingClientRect();
+    const editorStyle = window.getComputedStyle(editorElement);
+    const clearRect = field.querySelector<HTMLElement>('.kui-token-search__clear')!.getBoundingClientRect();
+    return {
+      height: fieldRect.height,
+      leadingCenter: leadingRect.top + leadingRect.height / 2 - fieldRect.top,
+      firstLineCenter: editorRect.top + parseFloat(editorStyle.paddingBlockStart) + parseFloat(editorStyle.lineHeight) / 2 - fieldRect.top,
+      clearCenter: clearRect.top + clearRect.height / 2 - fieldRect.top,
+    };
+  });
+  const singleLine = await alignment();
+  expect(singleLine.height).toBe(44);
+  expect(Math.abs(singleLine.leadingCenter - singleLine.height / 2)).toBeLessThan(0.1);
+  expect(Math.abs(singleLine.firstLineCenter - singleLine.height / 2)).toBeLessThan(0.1);
+  expect(Math.abs(singleLine.clearCenter - singleLine.height / 2)).toBeLessThan(0.1);
+  await page.mouse.move(0, 0);
+  if (browserName === 'chromium') await demo.locator('article').first().screenshot({ path: 'test-results/token-search-field-alignment-single-line-wide.png' });
+
+  await editor.pressSequentially(' across a deliberately long second line that proves the first-line controls stay pinned while editable content wraps naturally through the available width');
+  const multiline = await alignment();
+  expect(multiline.height).toBeGreaterThan(singleLine.height);
+  expect(multiline.leadingCenter).toBeCloseTo(singleLine.leadingCenter, 1);
+  expect(multiline.firstLineCenter).toBeCloseTo(singleLine.firstLineCenter, 1);
+  expect(multiline.clearCenter).toBeCloseTo(singleLine.clearCenter, 1);
+  if (browserName === 'chromium') await demo.locator('article').first().screenshot({ path: 'test-results/token-search-field-alignment-multiline-wide.png' });
+
   await page.reload();
   await page.locator('[data-action="toggle-theme"]').click();
   await page.setViewportSize({ width: 390, height: 844 });
   if (browserName === 'chromium') await page.screenshot({ path: 'test-results/token-search-field-dark-narrow.png', fullPage: true });
+});
+
+test('renders an interactive responsive find field inside a toolbar', async ({ page, browserName }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/?component=toolbar');
+  const toolbar = page.locator('.demo-toolbar-find-row');
+  const editor = toolbar.getByRole('searchbox', { name: 'Find in workspace' });
+  await expect(editor).toBeVisible();
+  await expect(toolbar.getByRole('button', { name: 'Open find' })).toBeHidden();
+  await expect(toolbar.locator('[data-component="token-search-field"]')).toHaveCSS('height', '44px');
+  await editor.pressSequentially('priority');
+  await expect(toolbar.getByRole('button', { name: 'Clear search' })).toBeVisible();
+  if (browserName === 'chromium') await toolbar.screenshot({ path: 'test-results/toolbar-find-wide.png' });
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expect(editor).toBeHidden();
+  const trigger = toolbar.getByRole('button', { name: 'Open find' });
+  await expect(trigger).toBeVisible();
+  if (browserName === 'chromium') await toolbar.screenshot({ path: 'test-results/toolbar-find-narrow-collapsed.png' });
+
+  await trigger.click();
+  await expect(editor).toBeVisible();
+  await expect(editor).toBeFocused();
+  await expect(toolbar.locator('.kui-toolbar__leading')).toBeHidden();
+  await expect(toolbar.locator('.kui-toolbar__trailing')).toBeHidden();
+  if (browserName === 'chromium') await toolbar.screenshot({ path: 'test-results/toolbar-find-narrow-open.png' });
 });
 
 test('themes representative free Web Awesome families with overridable semantic tokens', async ({ page, browserName }) => {
