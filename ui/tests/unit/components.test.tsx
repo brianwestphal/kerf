@@ -60,22 +60,140 @@ describe('production UI primitives', () => {
   });
 
   it('renders menu navigation, toggle, action, disabled, and multiline states', () => {
-    const item = asHtml(MenuItem({ label: 'Projects', icon, trailing: icon, selected: true, action: 'open', itemId: 'projects', className: 'project', style: 'color:blue', pressed: false, accessibleLabel: 'Open projects', title: 'Projects', multiline: true, state: 'ready', tabIndex: -1 }));
-    expect(item).toContain('data-action="open" data-item-id="projects" data-has-icon="true" data-multiline="true" data-state="ready"');
-    expect(item).toContain('aria-label="Open projects" aria-current="page" aria-pressed="false"');
+    const item = asHtml(MenuItem({ label: 'Projects', icon, trailing: icon, selected: true, action: 'open', itemId: 'projects', className: 'project', style: 'color:blue', pressed: false, accessibleLabel: 'Open projects', title: 'Projects', multiline: true, state: 'ready', tabIndex: -1, rootAttributes: { 'data-command-color': '#123456', 'data-optional': undefined } }));
+    expect(item).toContain('data-action="open"');
+    expect(item).toContain('data-item-id="projects"');
+    expect(item).toContain('data-has-icon="true"');
+    expect(item).toContain('data-multiline="true"');
+    expect(item).toContain('data-state="ready"');
+    expect(item).toContain('data-command-color="#123456"');
+    expect(item).not.toContain('data-action="ignored"');
+    expect(item).not.toContain('data-optional');
+    expect(item).toContain('aria-label="Open projects"');
+    expect(item).toContain('aria-current="page"');
+    expect(item).toContain('aria-pressed="false"');
     const iconless = asHtml(MenuItem({ label: 'Disabled', action: 'none', disabled: true }));
     expect(iconless).toContain('data-has-icon="false"');
     expect(iconless).toContain('disabled');
-    const toggle = asHtml(MenuHeader({ label: 'Tools', badge: <span>2</span>, action: 'toggle', actionIcon: icon, expanded: false, toggle: true }));
+    const toggle = asHtml(MenuHeader({ label: 'Tools', badge: <span>2</span>, action: 'toggle', actionIcon: icon, expanded: false, toggle: true, rootAttributes: { 'data-command-group': 'tools' }, triggerAttributes: { 'aria-controls': 'tools-panel' } }));
     expect(toggle).toContain('aria-expanded="false"');
+    expect(toggle).toContain('data-command-group="tools"');
+    expect(toggle).toContain('aria-controls="tools-panel"');
+    expect(toggle).not.toContain('data-action="ignored"');
+    expect(toggle).not.toContain('aria-expanded="true"');
     expect(toggle).toContain('class="kui-menu-header__badge"><span>2</span>');
     expect(toggle).toContain('class="kui-menu-header__action-layer"');
-    const header = asHtml(MenuHeader({ label: 'Workspace', badge: <span>3</span>, action: 'add', actionLabel: 'Add', actionIcon: icon, actionDisabled: true, disabledReason: 'Unavailable' }));
+    const header = asHtml(MenuHeader({ label: 'Workspace', badge: <span>3</span>, action: 'add', actionLabel: 'Add', actionIcon: icon, actionDisabled: true, disabledReason: 'Unavailable', rootAttributes: { 'data-section-id': 'workspace' }, triggerAttributes: { popoverTarget: 'workspace-popover', popoverTargetAction: 'show', 'aria-controls': 'workspace-popover', 'aria-haspopup': 'dialog' } }));
     expect(header).toContain('<h2 class="kui-menu-header__label">Workspace</h2>');
     expect(header).toContain('class="kui-menu-header__badge"><span>3</span>');
-    expect(header).toContain('title="Unavailable" disabled');
+    expect(header).toContain('data-section-id="workspace"');
+    expect(header).toContain('popoverTarget="workspace-popover" popoverTargetAction="show" aria-controls="workspace-popover" aria-haspopup="dialog"');
+    expect(header).toContain('title="Unavailable"');
+    expect(header).toContain(' disabled');
+    expect(header).toContain('data-action="add"');
+    expect(header).toContain('aria-label="Add"');
+    expect(header).not.toContain('data-action="ignored"');
+    expect(header).not.toContain('aria-label="Ignored"');
     expect(asHtml(MenuHeader({ label: 'Enabled', action: 'add', actionLabel: 'Add', actionIcon: icon }))).toContain('title="Add"');
     expect(asHtml(MenuHeader({ label: 'Plain' }))).not.toContain('<button');
+    // @ts-expect-error A lone role=menuitem does not provide a complete menu widget.
+    MenuItem({ label: 'Unsafe menu role', action: 'unsafe', rootAttributes: { role: 'menuitem' } });
+    // @ts-expect-error Selection semantics remain owned by MenuItem props.
+    MenuItem({ label: 'Unsafe selection', action: 'unsafe', rootAttributes: { 'aria-current': 'false' } });
+    // @ts-expect-error Action dispatch remains owned by MenuItem.action.
+    MenuItem({ label: 'Unsafe action', action: 'safe', rootAttributes: { 'data-action': 'unsafe' } });
+    // @ts-expect-error Disclosure state remains owned by MenuHeader.expanded.
+    MenuHeader({ label: 'Unsafe disclosure', toggle: true, triggerAttributes: { 'aria-expanded': 'true' } });
+    // @ts-expect-error Action dispatch remains owned by MenuHeader.action.
+    MenuHeader({ label: 'Unsafe action', action: 'safe', triggerAttributes: { 'data-action': 'unsafe' } });
+    // @ts-expect-error Dormant MenuHeader roots cannot become delegated actions.
+    MenuHeader({ label: 'Unsafe root action', rootAttributes: { 'data-action': 'unsafe' } });
+  });
+
+  it('filters widened menu extension objects before rendering them', () => {
+    const widenedItemRoot = {
+      'data-command-color': '#123456',
+      'data-Action': 'case-variant-action',
+      'data-ITEM-ID': 'case-variant-item',
+      'data-': 'malformed',
+      'data-optional': undefined,
+      role: 'menuitem',
+      'aria-current': 'false',
+      disabled: 'disabled',
+    };
+    const itemHtml = asHtml(MenuItem({
+      label: 'Projects',
+      action: 'open',
+      itemId: 'projects',
+      selected: true,
+      rootAttributes: widenedItemRoot,
+    }));
+
+    expect(itemHtml).toContain('data-command-color="#123456"');
+    expect(itemHtml).not.toContain('case-variant-action');
+    expect(itemHtml).not.toContain('case-variant-item');
+    expect(itemHtml).not.toContain('role="menuitem"');
+    expect(itemHtml).not.toContain('data-="malformed"');
+    document.body.innerHTML = itemHtml;
+    const item = document.body.querySelector<HTMLButtonElement>('[data-component="menu-item"]');
+    expect(item?.getAttribute('data-action')).toBe('open');
+    expect(item?.getAttribute('data-item-id')).toBe('projects');
+    expect(item?.getAttribute('data-command-color')).toBe('#123456');
+    expect(item?.getAttribute('role')).toBeNull();
+    expect(item?.getAttribute('aria-current')).toBe('page');
+    expect(item?.disabled).toBe(false);
+
+    const widenedHeaderRoot = {
+      'data-section-id': 'workspace',
+      'data-ACTION': 'case-variant-root-action',
+      'data-TOGGLE': 'false',
+      role: 'menu',
+    };
+    const widenedTrigger = {
+      'data-trigger-source': 'catalog',
+      'data-Action': 'case-variant-trigger-action',
+      popoverTarget: 'workspace-popover',
+      popoverTargetAction: 'show' as const,
+      'aria-controls': 'workspace-popover',
+      'aria-haspopup': 'dialog' as const,
+      role: 'menuitem',
+      'aria-label': 'Injected label',
+      'aria-expanded': 'true',
+      disabled: 'disabled',
+    };
+    const headerHtml = asHtml(MenuHeader({
+      label: 'Workspace',
+      action: 'add',
+      actionLabel: 'Add workspace',
+      actionIcon: icon,
+      rootAttributes: widenedHeaderRoot,
+      triggerAttributes: widenedTrigger,
+    }));
+
+    expect(headerHtml).toContain('data-section-id="workspace"');
+    expect(headerHtml).toContain('data-trigger-source="catalog"');
+    expect(headerHtml).toContain('popoverTarget="workspace-popover"');
+    expect(headerHtml).toContain('popoverTargetAction="show"');
+    expect(headerHtml).not.toContain('case-variant-root-action');
+    expect(headerHtml).not.toContain('case-variant-trigger-action');
+    expect(headerHtml).not.toContain('role="menu"');
+    expect(headerHtml).not.toContain('role="menuitem"');
+    expect(headerHtml).not.toContain('Injected label');
+    document.body.innerHTML = headerHtml;
+    const header = document.body.querySelector<HTMLElement>('[data-component="menu-header"]');
+    const trigger = header?.querySelector<HTMLButtonElement>('button');
+    expect(header?.getAttribute('data-action')).toBeNull();
+    expect(header?.getAttribute('data-toggle')).toBe('false');
+    expect(header?.getAttribute('role')).toBeNull();
+    expect(trigger?.getAttribute('data-action')).toBe('add');
+    expect(trigger?.getAttribute('data-trigger-source')).toBe('catalog');
+    expect(trigger?.getAttribute('popovertarget')).toBe('workspace-popover');
+    expect(trigger?.getAttribute('popovertargetaction')).toBe('show');
+    expect(trigger?.getAttribute('aria-controls')).toBe('workspace-popover');
+    expect(trigger?.getAttribute('aria-haspopup')).toBe('dialog');
+    expect(trigger?.getAttribute('aria-label')).toBe('Add workspace');
+    expect(trigger?.getAttribute('role')).toBeNull();
+    expect(trigger?.disabled).toBe(false);
   });
 
   it('renders generalized tabs with roving tabindex and optional close affordances', () => {

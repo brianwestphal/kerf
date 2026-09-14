@@ -853,6 +853,69 @@ test('catalog routes every production component family and supports its stateful
   }
 });
 
+test('preserves menu extension metadata without surrendering native semantics', async ({ page, browserName }) => {
+  await page.setViewportSize({ width: 1100, height: 760 });
+  await page.goto('/?component=menu-header');
+  const headerDemo = page.locator('[data-demo="menu-header"]');
+  await expect(headerDemo.locator('[data-demo-section="workspace"]')).toHaveCount(1);
+  const popoverTrigger = headerDemo.locator('[data-demo-trigger="workspace-action"]');
+  await expect(popoverTrigger).toHaveAttribute('popovertarget', 'menu-header-workspace-popover');
+  await expect(popoverTrigger).toHaveAttribute('popovertargetaction', 'toggle');
+  await expect(popoverTrigger).toHaveAttribute('aria-controls', 'menu-header-workspace-popover');
+  await expect(popoverTrigger).toHaveAttribute('aria-haspopup', 'dialog');
+  await popoverTrigger.press('Enter');
+  const popover = page.locator('#menu-header-workspace-popover');
+  await expect.poll(() => popover.evaluate((element) => element.matches(':popover-open'))).toBe(true);
+  await expect(page.locator('.catalog-log')).toHaveText('Add action requested');
+  if (browserName === 'chromium') {
+    await page.screenshot({ path: 'test-results/menu-header-popover-wide.png', fullPage: true });
+    await page.setViewportSize({ width: 390, height: 844 });
+    await headerDemo.scrollIntoViewIfNeeded();
+    await page.screenshot({ path: 'test-results/menu-header-popover-narrow.png' });
+    await page.setViewportSize({ width: 1100, height: 760 });
+  }
+  await page.keyboard.press('Escape');
+  await expect.poll(() => popover.evaluate((element) => element.matches(':popover-open'))).toBe(false);
+
+  const toggle = headerDemo.getByRole('button', { name: 'Tools' });
+  await expect(toggle).toHaveAttribute('aria-expanded', 'false');
+  await toggle.press('Space');
+  await expect(headerDemo.getByRole('button', { name: 'Tools' })).toHaveAttribute('aria-expanded', 'true');
+  await expect(page.locator('.catalog-log')).toHaveText('Disclosure opened');
+  const disabled = headerDemo.getByRole('button', { name: 'Unavailable action' });
+  await expect(disabled).toBeDisabled();
+  expect(await disabled.evaluate((button) => {
+    let activations = 0;
+    button.addEventListener('click', () => { activations += 1; }, { once: true });
+    (button as HTMLButtonElement).click();
+    return activations;
+  })).toBe(0);
+  await expect(page.locator('.catalog-log')).toHaveText('Disclosure opened');
+  await expect.poll(() => popover.evaluate((element) => element.matches(':popover-open'))).toBe(false);
+  await expect.poll(() => popover.evaluate((element) => window.getComputedStyle(element).display)).toBe('none');
+  if (browserName === 'chromium') await page.screenshot({ path: 'test-results/menu-header-disclosure-disabled-wide.png', fullPage: true });
+
+  await page.goto('/?component=menu-item');
+  const row = page.locator('[data-demo="menu-item"] [data-item-id="selected"]');
+  await expect(row).toHaveAttribute('data-demo-drop-status', 'ready');
+  await expect(row).toHaveAttribute('data-action', 'log-inbox');
+  await row.press('Enter');
+  await expect(page.locator('.catalog-log')).toHaveText('Inbox selected');
+  await row.press('Space');
+  await expect(page.locator('.catalog-log')).toHaveText('Inbox selected');
+  await row.dispatchEvent('dragover');
+  await expect(row).toHaveAttribute('data-demo-drop-status', 'over');
+  await expect(page.locator('.catalog-log')).toHaveText('Drop target ready');
+  if (browserName === 'chromium') await page.screenshot({ path: 'test-results/menu-item-drop-feedback-wide.png', fullPage: true });
+  await row.dispatchEvent('drop');
+  await expect(page.locator('.catalog-log')).toHaveText('Dropped on selected');
+  await expect(row).toHaveAttribute('data-demo-drop-status', 'ready');
+  if (browserName === 'chromium') {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.screenshot({ path: 'test-results/menu-item-extension-narrow.png', fullPage: true });
+  }
+});
+
 test('matches shared menu, content-item, and toolbar geometry', async ({ page, browserName }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/?component=menu');

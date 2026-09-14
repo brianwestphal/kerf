@@ -136,6 +136,26 @@ button {
   padding-inline-start: remify(16px);
 }
 
+.demo-menu-popover {
+  max-width: remify(320px);
+  padding: var(--kui-space-m);
+  border: 1px solid var(--kui-color-border);
+  border-radius: var(--kui-radius-m);
+  color: var(--kui-color-text);
+  background: var(--kui-color-surface);
+  box-shadow: var(--kui-shadow-l);
+  font: inherit;
+}
+
+.demo-menu-popover:not(:popover-open) {
+  display: none;
+}
+
+.kui-menu-item[data-demo-drop-status="over"] {
+  outline: var(--kui-focus-ring);
+  outline-offset: -3px;
+}
+
 .catalog-detail {
   display: flex;
   min-width: 0;

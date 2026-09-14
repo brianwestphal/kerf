@@ -847,7 +847,7 @@
       "category": "Navigation",
       "kind": "component",
       "source": "kerf",
-      "description": "Section headings with optional badge, separate action, and disclosure states.",
+      "description": "Section headings with optional badge, separate action, disclosure states, and protected native-popover trigger metadata.",
       "uses": [
         "lucide-icon"
       ],
@@ -874,7 +874,9 @@
       "appOwns": [
         "section organization",
         "expanded state",
-        "action policy"
+        "action policy",
+        "domain data attributes",
+        "popover target behavior"
       ],
       "variants": [
         "heading",
@@ -883,7 +885,7 @@
         "toggle"
       ],
       "accessibility": [
-        "The application controls and updates disclosure state."
+        "The application controls and updates disclosure state; triggerAttributes can describe a popover relationship but cannot replace the owned accessible name or expanded state."
       ],
       "delivery": {
         "browserImport": "@kerfjs/ui/menu-header",
@@ -925,7 +927,7 @@
       "category": "Navigation",
       "kind": "component",
       "source": "kerf",
-      "description": "Selectable, disabled, trailing, and multiline navigation rows.",
+      "description": "Selectable, disabled, trailing, and multiline native-button navigation rows with protected domain metadata hooks.",
       "uses": [
         "lucide-icon"
       ],
@@ -944,7 +946,8 @@
         "routing",
         "selection",
         "permissions",
-        "action handling"
+        "action handling",
+        "domain data attributes"
       ],
       "variants": [
         "selected",
@@ -954,7 +957,7 @@
         "multiline"
       ],
       "accessibility": [
-        "Uses native button activation; selected maps to aria-current and pressed to aria-pressed."
+        "Uses native button activation; selected maps to aria-current and pressed to aria-pressed; rootAttributes cannot add role=menuitem or replace owned ARIA."
       ],
       "delivery": {
         "browserImport": "@kerfjs/ui/menu-item",

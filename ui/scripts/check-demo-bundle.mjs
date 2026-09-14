@@ -7,7 +7,7 @@ const limits = {
   largestJavaScriptGzip: 150_000,
   // Keep intentional local-demo interactions lazy while guarding against
   // accidental aggregate growth or collapsing the Web Awesome split point.
-  totalJavaScriptGzip: 246_500,
+  totalJavaScriptGzip: 247_000,
 };
 
 const javascript = (await readdir(assetsDir)).filter((name) => name.endsWith('.js'));

@@ -1,7 +1,7 @@
 ---
 name: kerf-ui
 description: Build interfaces with kerfjs and the @kerfjs/ui production component package. Use whenever code imports @kerfjs/ui or a task asks for Kerf UI components.
-kerf-ui-skill-version: 1.19.0
+kerf-ui-skill-version: 1.20.0
 ---
 
 # Building with @kerfjs/ui
@@ -47,7 +47,7 @@ Hard rules:
 
 1. Import visual components from explicit JavaScript subpaths. In CSS-aware browser builds each subpath brings in its own reachable CSS, including UI subcomponents, while unrelated CSS remains out. The root barrel and `@kerfjs/ui/unstyled` are CSS-free; pair the root barrel with `styles.css` only when the complete layer is intentional. Manual CSS subpaths remain available for custom pipelines.
 2. Components return Kerf `SafeHtml`. Never pass DOM nodes as children or use inline JSX event handlers.
-3. Keep state, product copy, persistence, and domain mappings in the application. Do not add product-specific actions or fields to a generic component.
+3. Keep state, product copy, persistence, and domain mappings in the application. Do not add product-specific actions or fields to a generic component. Put MenuItem/MenuHeader domain `data-*` metadata in `rootAttributes`; use MenuHeader `triggerAttributes` only for domain `data-*` or native popover target/action and `aria-controls`/`aria-haspopup`. These slots do not replace component-owned action, selection, disclosure, naming, disabled, icon, or role semantics.
 4. Wire `data-action` hooks from one stable root with `delegate()` or `delegateActions()` and retain disposers.
 5. Use the opinionated `--kui-color-*` semantic ramps and component-level override properties. Override tokens at the narrowest useful scope and prefer equivalent props/tokens. Public-class-to-public-class selectors are supported when every Kerf class appears in the catalog entry's `publicClasses`; never target descendant tags, ids, attribute-only anatomy, or unlisted implementation classes.
 6. `Select` is pure until the app explicitly imports `@kerfjs/ui/select/register`; do not import Web Awesome's full registration bundle. When an app writes direct `wa-*` JSX, add `import type {} from '@kerfjs/ui/webawesome'` for the catalog-supported intrinsic-element declarations, import the CSS-only `@kerfjs/ui/webawesome.css` theme once, and keep importing individual Web Awesome component modules so their JavaScript remains tree-shakeable. The type boundary emits no code and registers nothing. Pass icon-bearing `choices` and `renderSelected` content normally: `Select` preserves its slotted option icons across Kerf rerenders and keys selected content by the controlled value, so app wrappers must not add competing morph-control attributes.
@@ -71,6 +71,7 @@ Common mistakes:
 | Hard-coded project/transport action in a component | Pass a semantic `data-action` string from an application adapter |
 | Per-instance signal at module scope | Create state in the application or a factory and pass it in |
 | `role="menuitem"` on one button | Use the native button, or implement the complete ARIA menu widget |
+| Copy MenuItem/MenuHeader markup to add product data or a popover target | Use the typed `rootAttributes`/`triggerAttributes` slots and retain the component's protected semantics |
 | Test only a custom-element attribute | Assert live property, emitted event, focus, and rendered output |
 | Import all Web Awesome components | Import only `@kerfjs/ui/select/register` for `Select`, or individual Web Awesome modules for other controls; `webawesome.css` registers no JavaScript |
 | Write `wa-*` JSX without activating its types | Add `import type {} from '@kerfjs/ui/webawesome'`; registration and theme imports remain separate |

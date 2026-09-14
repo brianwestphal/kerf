@@ -80,6 +80,19 @@ export { ToolbarControlGroup, type ToolbarControlGroupProps };
 ```ts
 import { SafeHtml } from 'kerfjs';
 
+type MenuHeaderRootAttributes = Readonly<Record<`data-${string}`, string | undefined> & {
+    'data-component'?: never;
+    'data-action'?: never;
+    'data-has-badge'?: never;
+    'data-toggle'?: never;
+}>;
+type MenuHeaderTriggerAttributes = Readonly<Record<`data-${string}`, string | undefined> & {
+    'data-action'?: never;
+    popoverTarget?: string;
+    popoverTargetAction?: 'toggle' | 'show' | 'hide';
+    'aria-controls'?: string;
+    'aria-haspopup'?: 'dialog' | 'menu' | 'listbox' | 'tree' | 'grid' | 'true';
+}>;
 interface MenuHeaderProps {
     label: string;
     badge?: SafeHtml;
@@ -90,8 +103,10 @@ interface MenuHeaderProps {
     disabledReason?: string;
     expanded?: boolean;
     toggle?: boolean;
+    rootAttributes?: MenuHeaderRootAttributes;
+    triggerAttributes?: MenuHeaderTriggerAttributes;
 }
-declare function MenuHeader({ label, badge, action, actionLabel, actionIcon, actionDisabled, disabledReason, expanded, toggle }: MenuHeaderProps): SafeHtml;
+declare function MenuHeader({ label, badge, action, actionLabel, actionIcon, actionDisabled, disabledReason, expanded, toggle, rootAttributes, triggerAttributes }: MenuHeaderProps): SafeHtml;
 
 export { MenuHeader, type MenuHeaderProps };
 ```
@@ -101,6 +116,14 @@ export { MenuHeader, type MenuHeaderProps };
 ```ts
 import { SafeHtml } from 'kerfjs';
 
+type MenuItemRootAttributes = Readonly<Record<`data-${string}`, string | undefined> & {
+    'data-component'?: never;
+    'data-action'?: never;
+    'data-item-id'?: never;
+    'data-has-icon'?: never;
+    'data-multiline'?: never;
+    'data-state'?: never;
+}>;
 interface MenuItemProps {
     label: string | SafeHtml;
     icon?: SafeHtml;
@@ -117,8 +140,9 @@ interface MenuItemProps {
     state?: string;
     disabled?: boolean;
     tabIndex?: number;
+    rootAttributes?: MenuItemRootAttributes;
 }
-declare function MenuItem({ label, icon, trailing, selected, action, itemId, className, style, pressed, accessibleLabel, title, multiline, state, disabled, tabIndex }: MenuItemProps): SafeHtml;
+declare function MenuItem({ label, icon, trailing, selected, action, itemId, className, style, pressed, accessibleLabel, title, multiline, state, disabled, tabIndex, rootAttributes }: MenuItemProps): SafeHtml;
 
 export { MenuItem, type MenuItemProps };
 ```

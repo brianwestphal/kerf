@@ -73,6 +73,14 @@ the complete layer is intentional. Manual CSS subpaths remain available for
 custom pipelines. App overrides belong later in the cascade or on a scoped
 `--kui-*` owner.
 
+Menu adapters may pass product event/drop metadata through the typed
+`rootAttributes` `data-*` slot instead of copying MenuItem/MenuHeader markup.
+`MenuHeader.triggerAttributes` is the narrow exception for native popover
+target/action and `aria-controls`/`aria-haspopup` relationships. Do not pass
+roles or override the component's action, selection, disclosure, accessible
+name, disabled, or icon contract; a complete ARIA menu remains application
+widget work.
+
 Prefer an equivalent component prop or semantic token before writing an
 anatomy selector. When composition-specific layout still needs one, the
 machine catalog's `publicClasses` arrays are the exact supported boundary:

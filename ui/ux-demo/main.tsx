@@ -280,15 +280,16 @@ function MenuDemo() {
 
 function MenuHeaderDemo() {
   return <div class="demo-menu demo-variant-stack" data-demo="menu-header">
-    <div><MenuHeader label="Workspace" badge={<span>3</span>} action="log-add" actionLabel="Add workspace" actionIcon={icon(Plus, 'plus')} /></div>
-    <div><MenuHeader label="Expanded tools" toggle expanded action="log-tools" actionIcon={icon(ChevronDown, 'chevron-down')} /></div>
-    <div><MenuHeader label="Collapsed tools" toggle action="log-tools" actionIcon={icon(ChevronDown, 'chevron-down')} /></div>
+    <div><MenuHeader label="Workspace" badge={<span>3</span>} action="log-add" actionLabel="Add workspace" actionIcon={icon(Plus, 'plus')} rootAttributes={{ 'data-demo-section': 'workspace' }} triggerAttributes={{ popoverTarget: 'menu-header-workspace-popover', popoverTargetAction: 'toggle', 'aria-controls': 'menu-header-workspace-popover', 'aria-haspopup': 'dialog', 'data-demo-trigger': 'workspace-action' }} /></div>
+    <div><MenuHeader label="Tools" toggle expanded={disclosureOpen.value} action="toggle-disclosure" actionIcon={icon(ChevronDown, 'chevron-down')} /></div>
+    <div><MenuHeader label="Unavailable" action="log-add" actionLabel="Unavailable action" actionIcon={icon(Plus, 'plus')} actionDisabled /></div>
+    <div id="menu-header-workspace-popover" class="demo-menu-popover" popover="auto" role="dialog" aria-label="Workspace action details">Application-owned popover content.</div>
   </div>;
 }
 
 function MenuItemDemo() {
   return <div class="demo-menu" data-demo="menu-item">
-    <MenuItem action="log-inbox" itemId="selected" label="Selected item" icon={icon(Inbox, 'inbox')} trailing={<span>12</span>} selected />
+    <MenuItem action="log-inbox" itemId="selected" label="Selected item" icon={icon(Inbox, 'inbox')} trailing={<span>12</span>} selected rootAttributes={{ 'data-demo-drop-status': 'ready' }} />
     <MenuItem action="log-projects" itemId="default" label="Default item" icon={icon(Folder, 'folder')} />
     <MenuItem action="log-settings" itemId="multiline" label="A multiline item demonstrates content that wraps without clipping" icon={icon(Wrench, 'wrench')} multiline />
     <MenuItem action="disabled" itemId="disabled" label="Unavailable item" icon={icon(CircleHelp, 'circle-help')} disabled />
@@ -731,6 +732,15 @@ const stopToolbarFindFocus = delegate(app, 'focusout', '[data-demo-toolbar-find=
     if (!field?.matches(':focus-within')) toolbarFindOpen.value = false;
   });
 });
+const stopMenuItemDragOver = delegate(app, 'dragover', '[data-demo-drop-status="ready"]', (event, element) => {
+  event.preventDefault();
+  (element as HTMLElement).dataset.demoDropStatus = 'over';
+  app.querySelector<HTMLOutputElement>('.catalog-log')?.replaceChildren('Drop target ready');
+});
+const stopMenuItemDrop = delegate(app, 'drop', '[data-demo-drop-status="over"]', (event, element) => {
+  event.preventDefault();
+  actionLog.value = `Dropped on ${(element as HTMLElement).dataset.itemId ?? 'menu item'}`;
+});
 const stopRelationships = delegate(app, 'change', '[name="related-component"]', (_event, element) => {
   const value = (element as HTMLElement & { value?: string }).value;
   if (value) selectDemo(value);
@@ -779,4 +789,4 @@ const stopResizeObserver = delegate(app, 'wa-resize', 'wa-resize-observer', (eve
 });
 const stopTabBars = wireTabBars(app, { onReorder: ({ barId, sourceId, targetId, position, source }) => { tabBarTabs.value = reorderTabs(tabBarTabs.value, (tab) => tab.id, sourceId, targetId, position); actionLog.value = `${source === 'pointer' ? 'Dragged' : 'Moved'} ${sourceId} ${position} ${targetId} in ${barId}`; } });
 
-window.addEventListener('pagehide', () => { stopActions(); stopResize(); stopSelect(); stopRecipeChanges(); stopRecipeInputs(); stopRecipeKeys(); stopRecipeShownDialogs(); stopRecipeDialogs(); stopTokenSearch(); stopToolbarFind(); stopTokenSearchSubmits(); stopToolbarFindClearPointer(); stopToolbarFindFocus(); stopRelationships(); stopAnimationSelects(); stopAnimationRanges(); stopAnimationEvents.forEach((dispose) => dispose()); stopIntersectionObserver(); stopMutationObserver(); stopResizeObserver(); stopTabBars(); }, { once: true });
+window.addEventListener('pagehide', () => { stopActions(); stopResize(); stopSelect(); stopRecipeChanges(); stopRecipeInputs(); stopRecipeKeys(); stopRecipeShownDialogs(); stopRecipeDialogs(); stopTokenSearch(); stopToolbarFind(); stopTokenSearchSubmits(); stopToolbarFindClearPointer(); stopToolbarFindFocus(); stopMenuItemDragOver(); stopMenuItemDrop(); stopRelationships(); stopAnimationSelects(); stopAnimationRanges(); stopAnimationEvents.forEach((dispose) => dispose()); stopIntersectionObserver(); stopMutationObserver(); stopResizeObserver(); stopTabBars(); }, { once: true });

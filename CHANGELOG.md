@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Added safe typed MenuItem/MenuHeader extension slots for application `data-*` metadata and native popover trigger relationships while protecting component-owned action, selection, disclosure, accessible-name, disabled, icon, and native-button semantics.
 - Fixed keyboard deletion of a controlled `TokenSearchField` chip so `wireTokenSearchFields` restores focus and the text-relative caret after the application rerenders the editor.
 - Aligned `@kerfjs/ui` CSS guidance and AI regression scoring with the catalog's exact public anatomy: documented public-class composition selectors are supported, private tag/id/attribute/unlisted-class descendants remain rejected, and historical measured runs replay under their recorded stricter oracle.
 - Added typed `ValueTableRow` composition with a first-class optional icon hook. Value-table separators now align 8px from both edges for iconless rows and 40px from the left plus 8px from the right for rows with a 24px leading icon.

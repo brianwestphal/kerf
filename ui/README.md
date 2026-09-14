@@ -21,17 +21,47 @@ npm install kerfjs @kerfjs/ui
 
 ```tsx
 import { MenuItem } from '@kerfjs/ui/menu-item';
+import { MenuHeader } from '@kerfjs/ui/menu-header';
 import { Toolbar } from '@kerfjs/ui/toolbar';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
 
 mount(root, () => <>
   <Toolbar label="Document" leading={<ToolbarControlGroup appearance="borderless" single><ToolbarText text="Notes" /></ToolbarControlGroup>} />
-  <MenuItem action="open-notes" label="Notes" selected />
+  <section>
+    <MenuHeader
+      label="Workspace"
+      action="show-workspace-actions"
+      actionLabel="Workspace actions"
+      rootAttributes={{ 'data-section-id': 'workspace' }}
+      triggerAttributes={{
+        popoverTarget: 'workspace-actions',
+        popoverTargetAction: 'toggle',
+        'aria-controls': 'workspace-actions',
+        'aria-haspopup': 'dialog',
+      }}
+    />
+    <MenuItem
+      action="open-notes"
+      label="Notes"
+      selected
+      rootAttributes={{ 'data-command-color': 'blue', 'data-drop-status': 'ready' }}
+    />
+    <div id="workspace-actions" popover="auto">Application-owned actions</div>
+  </section>
 </>);
 ```
 
 Components return Kerf `SafeHtml`. They do not own application state or attach transient listeners. Actions are stable `data-action` hooks; the application wires them once with `delegate()` or `delegateActions()` and retains the disposer.
+
+`MenuItem.rootAttributes` and `MenuHeader.rootAttributes` carry typed
+application `data-*` metadata without teaching the package domain fields.
+`MenuHeader.triggerAttributes` additionally supports native popover target and
+relationship attributes. Roles and component-owned action, selection,
+disclosure, naming, disabled, and icon semantics remain protected props; an
+isolated `role="menuitem"` is not an extension shortcut.
+The slots are also filtered at runtime, so structurally widened objects and
+JavaScript callers cannot bypass those protections with case-variant names.
 
 ## Component subpaths
 

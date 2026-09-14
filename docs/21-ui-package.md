@@ -106,7 +106,7 @@ instead of retaining stale content.
 | --- | --- | --- |
 | Icons | `LucideIcon` | Render Lucide icon-node data; decorative by default, labeled on request |
 | Toolbars | `Toolbar`, `ToolbarControlGroup`, `ToolbarText` | Leading/center/trailing structure and grouped controls |
-| Menus | `MenuItem`, `MenuHeader` | Navigation/action rows and section headings; no domain commands |
+| Menus | `MenuItem`, `MenuHeader` | Navigation/action rows and section headings, with narrow typed `data-*` and popover-relationship extension slots but no domain commands |
 | Tabs | `AppTab`, `TabBar`, `wireTabBars`, `reorderTabs` | Controlled tab/close markup, fixed rails, horizontal overflow, edge autoscroll, pointer/keyboard reorder, and focus restoration; the app owns state and persistence |
 | Layout | `PageHeader`, `DialogHeader`, `ValueTable`, `ValueTableRow` | Page/dialog hierarchy and typed semantic definition-list rows, with optional leading icons |
 | Resize | `ResizableRegion`, `wireResizableRegions` | Pointer-captured resize plus arrows, Shift acceleration, Home, and End |
@@ -144,7 +144,11 @@ instead of retaining stale content.
   selection, panels, routing, close policy, and persistence.
 - A `MenuItem` is a native button, not an isolated `role="menuitem"`; callers
   should add a full menu widget only when they also implement its complete
-  keyboard model.
+  keyboard model. Menu row/header `rootAttributes` accept only domain `data-*`
+  metadata. `MenuHeader.triggerAttributes` additionally accepts native popover
+  target/action and `aria-controls`/`aria-haspopup`; action, selection,
+  disclosure, accessible-name, disabled, and icon semantics remain component
+  owned.
 - Reduced-motion and forced-color preferences have explicit CSS paths.
 
 ## 21.5 Catalog and verification
