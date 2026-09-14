@@ -196,6 +196,10 @@ SegmentedControl variants, editable, disabled, single-line, and multiline
 TokenSearchField states, all StateBanner tones
 plus a scoped palette override, reorderable overflowing tabs, light and dark
 themes, contrast, motion, selection, resize, and feedback states.
+The focused resize specimen stacks its committed-width status below the
+controlled region when narrow, remains readable at 200% root scaling, and does
+not change the component's minimum, maximum, or application-owned size; locally
+scrolling the resize specimen keeps an oversized pane's handle reachable.
 Unit coverage uses the root repository thresholds. Consumer bundles prove
 component-reachable and transitive CSS, root/SSR isolation, JavaScript
 tree-shaking, peer externalization, and opt-in custom-element registration.

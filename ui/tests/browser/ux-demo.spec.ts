@@ -1761,10 +1761,43 @@ test('matches shared menu, content-item, and toolbar geometry', async ({ page, b
 test('renders the Hot Sheet split treatment on ResizableRegion', async ({ page, browserName }) => {
   await page.setViewportSize({ width: 1100, height: 760 });
   await page.goto('/?component=resize');
+  const shell = page.locator('[data-demo="resize"]');
   const region = page.locator('[data-component="resizable-region"]');
   const handle = region.locator('[data-kui-resize-handle]');
   const iconLayer = handle.locator('.kui-resizable-region__handle-icon');
   const grip = iconLayer.locator('svg');
+  const size = page.locator('[data-region-size]');
+  const responsiveGeometry = () => shell.evaluate((element) => {
+    const regionElement = element.querySelector<HTMLElement>('[data-component="resizable-region"]')!;
+    const panelElement = element.querySelector<HTMLElement>('.demo-resize-panel')!;
+    const committedElement = element.querySelector<HTMLElement>('.demo-resize-content')!;
+    const handleElement = element.querySelector<HTMLElement>('[data-kui-resize-handle]')!;
+    const shellRect = element.getBoundingClientRect();
+    const regionRect = regionElement.getBoundingClientRect();
+    const committedRect = committedElement.getBoundingClientRect();
+    const handleRect = handleElement.getBoundingClientRect();
+    const contains = (outer: DOMRect, inner: DOMRect) => inner.left >= outer.left - 1
+      && inner.right <= outer.right + 1
+      && inner.top >= outer.top - 1
+      && inner.bottom <= outer.bottom + 1;
+    const textFits = (container: HTMLElement) => {
+      const containerRect = container.getBoundingClientRect();
+      return [...container.querySelectorAll<HTMLElement>('strong, span')]
+        .every((child) => contains(containerRect, child.getBoundingClientRect()));
+    };
+    return {
+      committedBelowRegion: committedRect.top >= regionRect.bottom - 1,
+      committedFitsShell: contains(shellRect, committedRect),
+      committedUsesRow: Math.abs(committedRect.width + (2 * parseFloat(window.getComputedStyle(committedElement).marginInlineStart)) - element.clientWidth) <= 1,
+      documentOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      handleInsideShell: contains(shellRect, handleRect),
+      panelTextFits: textFits(panelElement),
+      committedTextFits: textFits(committedElement),
+      panesDoNotOverlap: committedRect.left >= regionRect.right - 1 || committedRect.top >= regionRect.bottom - 1,
+      shellClientWidth: element.clientWidth,
+      shellScrollWidth: element.scrollWidth,
+    };
+  });
   await expect(iconLayer).toHaveAttribute('aria-hidden', 'true');
   await expect(grip).toHaveAttribute('data-lucide', 'custom-resize-handle');
   await expect(grip).toHaveAttribute('aria-hidden', 'true');
@@ -1780,18 +1813,18 @@ test('renders the Hot Sheet split treatment on ResizableRegion', async ({ page, 
   await expect(iconLayer).toHaveCSS('opacity', '1');
   await handle.focus();
   await handle.press('End');
-  await expect(page.locator('[data-region-size]')).toHaveText('420px');
+  await expect(size).toHaveText('420px');
   await handle.press('Home');
-  await expect(page.locator('[data-region-size]')).toHaveText('180px');
+  await expect(size).toHaveText('180px');
   await handle.press('ArrowRight');
-  await expect(page.locator('[data-region-size]')).toHaveText('196px');
+  await expect(size).toHaveText('196px');
   const handleBounds = await handle.boundingBox();
   expect(handleBounds).not.toBeNull();
   await page.mouse.move(handleBounds!.x + handleBounds!.width / 2, handleBounds!.y + handleBounds!.height / 2);
   await page.mouse.down();
   await page.mouse.move(handleBounds!.x + handleBounds!.width / 2 + 40, handleBounds!.y + handleBounds!.height / 2);
   await page.mouse.up();
-  await expect(page.locator('[data-region-size]')).toHaveText('236px');
+  await expect(size).toHaveText('236px');
 
   await region.evaluate((element) => element.style.setProperty('--kui-resizable-region-separator-color', '#7540a8'));
   await expect.poll(() => handle.evaluate((element) => window.getComputedStyle(element, '::before').backgroundColor)).toBe('rgb(117, 64, 168)');
@@ -1799,19 +1832,80 @@ test('renders the Hot Sheet split treatment on ResizableRegion', async ({ page, 
   if (browserName === 'chromium') {
     await handle.hover();
     await page.screenshot({ path: 'test-results/resizable-region-custom-handle-light-wide.png', fullPage: true });
-    await page.locator('[data-action="toggle-theme"]').click();
-    await handle.hover();
-    await page.screenshot({ path: 'test-results/resizable-region-custom-handle-dark-wide.png', fullPage: true });
-    await page.setViewportSize({ width: 390, height: 844 });
-    await handle.hover();
-    await page.screenshot({ path: 'test-results/resizable-region-custom-handle-dark-narrow.png', fullPage: true });
-    await page.setViewportSize({ width: 640, height: 720 });
-    await page.locator('html').evaluate((element) => { element.style.fontSize = '200%'; });
-    await handle.hover();
-    await expect(iconLayer).toHaveCSS('opacity', '1');
-    expect(await page.locator('body').evaluate((element) => element.scrollWidth <= element.clientWidth)).toBe(true);
-    await page.screenshot({ path: 'test-results/resizable-region-custom-handle-200-percent.png', fullPage: true });
   }
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await handle.hover();
+  const lightNarrow = await responsiveGeometry();
+  expect(lightNarrow).toMatchObject({
+    committedBelowRegion: true,
+    committedFitsShell: true,
+    committedUsesRow: true,
+    committedTextFits: true,
+    documentOverflow: 0,
+    handleInsideShell: true,
+    panelTextFits: true,
+    panesDoNotOverlap: true,
+  });
+  expect(lightNarrow.shellScrollWidth).toBeLessThanOrEqual(lightNarrow.shellClientWidth + 1);
+  if (browserName === 'chromium') await page.screenshot({ path: 'test-results/resizable-region-layout-light-narrow.png', fullPage: true });
+
+  await page.locator('[data-action="toggle-theme"]').click();
+  await handle.hover();
+  expect(await responsiveGeometry()).toMatchObject({
+    committedBelowRegion: true,
+    committedFitsShell: true,
+    committedTextFits: true,
+    documentOverflow: 0,
+    handleInsideShell: true,
+    panelTextFits: true,
+    panesDoNotOverlap: true,
+  });
+  if (browserName === 'chromium') await page.screenshot({ path: 'test-results/resizable-region-layout-dark-narrow.png', fullPage: true });
+
+  await handle.focus();
+  await handle.press('End');
+  await expect(size).toHaveText('420px');
+  const maxScroll = await shell.evaluate((element) => {
+    element.scrollLeft = element.scrollWidth - element.clientWidth;
+    const shellRect = element.getBoundingClientRect();
+    const handleRect = element.querySelector<HTMLElement>('[data-kui-resize-handle]')!.getBoundingClientRect();
+    return {
+      handleInsideShell: handleRect.left >= shellRect.left - 1 && handleRect.right <= shellRect.right + 1,
+      scrollLeft: element.scrollLeft,
+      scrollWidth: element.scrollWidth,
+      clientWidth: element.clientWidth,
+    };
+  });
+  expect(maxScroll.scrollWidth).toBeGreaterThan(maxScroll.clientWidth);
+  expect(maxScroll.scrollLeft).toBeGreaterThan(0);
+  expect(maxScroll.handleInsideShell).toBe(true);
+  await expect(handle).toBeFocused();
+  if (browserName === 'chromium') {
+    await expect(iconLayer).toHaveCSS('opacity', '1');
+    await page.screenshot({ path: 'test-results/resizable-region-layout-max-scroll-narrow.png', fullPage: true });
+  }
+
+  await handle.press('Home');
+  for (let index = 0; index < 6; index += 1) await handle.press('ArrowRight');
+  await expect(size).toHaveText('276px');
+  await shell.evaluate((element) => { element.scrollLeft = 0; });
+  await page.locator('[data-action="toggle-theme"]').click();
+  await page.setViewportSize({ width: 640, height: 720 });
+  await page.locator('html').evaluate((element) => { element.style.fontSize = '200%'; });
+  await handle.hover();
+  const zoomed = await responsiveGeometry();
+  expect(zoomed).toMatchObject({
+    committedFitsShell: true,
+    committedTextFits: true,
+    documentOverflow: 0,
+    handleInsideShell: true,
+    panelTextFits: true,
+    panesDoNotOverlap: true,
+  });
+  expect(zoomed.shellScrollWidth).toBeLessThanOrEqual(zoomed.shellClientWidth + 1);
+  await expect(iconLayer).toHaveCSS('opacity', '1');
+  if (browserName === 'chromium') await page.screenshot({ path: 'test-results/resizable-region-layout-zoom-200.png', fullPage: true });
 });
 
 test('keeps AppTab extension metadata and replacement close icons inside the shared tab lifecycle', async ({ page, browserName }) => {

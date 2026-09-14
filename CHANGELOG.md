@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Kept the `ResizableRegion` UX specimen readable by moving committed-width status below the controlled pane at narrow widths, preserving its 200% root-scaled split, and retaining local scroll access to the handle at its maximum size.
 - Clarified the command-palette recipe as a keyboard-first way to find infrequent or workspace-wide actions without leaving the current task, while keeping primary actions visible and command policy application-owned.
 - Reworked the composer-form recipe into one coherent visible form surface with exactly three transparent 8/1/8 content sections, 24px major rhythm, and a conditional `StateBanner` as its only nested semantic surface.
 - Made `MenuHeader` fill its available inline width, align separate actions at the logical end in both LTR and RTL, and use an overridable 18px visible action glyph without shrinking the 44px target.

@@ -1526,6 +1526,10 @@ button {
   .demo-resize-shell {
     overflow-x: auto;
   }
+  .demo-resize-content {
+    min-width: 0;
+    flex: 1;
+  }
   .webawesome-theme-demo__forms,
   .webawesome-theme-demo__columns {
     grid-template-columns: 1fr;
@@ -1539,6 +1543,17 @@ button {
 }
 
 @media (max-width: remify(480px)) {
+  .demo-resize-shell {
+    min-height: 0;
+    flex-wrap: wrap;
+  }
+  .demo-resize-shell > .kui-resizable-region[data-axis="horizontal"] {
+    height: remify(176px);
+  }
+  .demo-resize-content {
+    min-height: remify(96px);
+    flex: 1 0 calc(100% - (2 * var(--kui-layout-inline-margin, remify(8px))));
+  }
   .catalog-resources {
     grid-template-columns: minmax(0, 1fr);
   }
