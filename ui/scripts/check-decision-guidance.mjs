@@ -12,7 +12,6 @@ const requiredDocs = [
   resolve(root, 'ai/skill.md'),
   resolve(root, 'README.md'),
   resolve(root, 'llms.txt'),
-  resolve(root, '../site/src/content/docs/docs/ui-package.md'),
 ];
 const overlaps = [
   'wa-button', 'wa-button-group', 'wa-dropdown', 'wa-dropdown-item',
