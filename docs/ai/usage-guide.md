@@ -86,6 +86,10 @@ For counted navigation sections, pass `MenuHeader` both a non-negative safe-
 integer `count` and the localized full spoken `countLabel`, for example
 `count={3} countLabel="3 notes"`. Do not concatenate the number into `label` or
 put numeric content in the legacy `badge` SafeHtml slot.
+When `MenuHeader` is a real disclosure, pass controlled `toggle` and `expanded`
+and reveal matching content. Omitting `actionIcon` supplies the production 18px
+`DisclosureArrow`; a custom icon replaces it. Do not put disclosure chevrons on
+ordinary navigation rows.
 AppTab additionally protects tab identity plus transient drag/drop markers at
 runtime. Its `closeIcon` and ResizableRegion's `handleIcon` replace decorative,
 noninteractive content only; the existing named controls and wiring retain

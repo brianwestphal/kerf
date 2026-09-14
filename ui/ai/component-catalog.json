@@ -794,13 +794,14 @@
         "menu-action-row",
         "menu-item"
       ],
-      "purpose": "Compose navigation with the same pane, content stack, item, and toolbar geometry used throughout the application.",
+      "purpose": "Compose navigation with the same pane, content stack, item, and toolbar geometry used throughout the application, including a controlled MenuHeader disclosure only when it reveals real content.",
       "publicExports": [],
       "useWhen": [
         "Compose navigation sections in a .kui-content stack, using MenuHeader, MenuItem, and MenuActionRow children plus optional .kui-content-item surfaces."
       ],
       "avoidWhen": [
-        "Do not add sidebar-specific wrapper padding or use the pattern for unrelated inline controls."
+        "Do not add sidebar-specific wrapper padding or use the pattern for unrelated inline controls.",
+        "Do not place a disclosure chevron on navigation that does not expand content."
       ],
       "alternatives": [],
       "appOwns": [
@@ -816,7 +817,8 @@
         "pane toolbar or footer"
       ],
       "accessibility": [
-        "Use native links for link navigation, retain MenuItem button semantics for actions, and keep standalone header and toolbar actions at least 44px square."
+        "Use native links for link navigation, retain MenuItem button semantics for actions, and keep standalone header and toolbar actions at least 44px square.",
+        "A MenuHeader disclosure controls real content, keeps a stable accessible name and aria-expanded state, and uses the production DisclosureArrow visual."
       ],
       "delivery": {
         "manualCssImport": "@kerfjs/ui/layout.css",
@@ -850,14 +852,15 @@
       "source": "kerf",
       "description": "Section headings with a semantic neutral count pill or non-count badge, separate action, disclosure states, and protected native-popover trigger metadata.",
       "uses": [
-        "lucide-icon"
+        "lucide-icon",
+        "disclosure-arrow"
       ],
-      "purpose": "Split a dormant title and mutually exclusive semantic count or legacy badge from an optional 44px action, or render that title cluster as a disclosure button.",
+      "purpose": "Split a dormant title and mutually exclusive semantic count or legacy badge from an optional 44px action, or render that title cluster as a disclosure button with a default production DisclosureArrow.",
       "publicExports": [
         "MenuHeader"
       ],
       "useWhen": [
-        "Label a navigation section with an optional semantic count, non-count badge, action, or disclosure state."
+        "Label a navigation section with an optional semantic count, non-count badge, action, or disclosure state; toggle mode supplies an 18px DisclosureArrow unless actionIcon replaces it."
       ],
       "avoidWhen": [
         "Do not concatenate a section count into label or pass numeric content through badge; use count with its required localized countLabel.",
@@ -891,7 +894,7 @@
       ],
       "accessibility": [
         "A valid count is hidden as duplicate visual text and its required localized countLabel joins the owned heading or disclosure-button accessible name; zero remains visible.",
-        "The application controls and updates disclosure state; triggerAttributes can describe a popover relationship but cannot replace the owned accessible name or expanded state."
+        "The application controls and updates disclosure state and the revealed content; the default DisclosureArrow mirrors expanded while the button name stays stable. triggerAttributes can describe the controlled relationship but cannot replace the owned accessible name or expanded state."
       ],
       "delivery": {
         "browserImport": "@kerfjs/ui/menu-header",

@@ -222,7 +222,7 @@ export const generatedKerfCatalog = [
     "category": "Navigation",
     "kind": "composition",
     "source": "kerf",
-    "description": "Compose navigation with the same pane, content stack, item, and toolbar geometry used throughout the application.",
+    "description": "Compose navigation with the same pane, content stack, item, and toolbar geometry used throughout the application, including a controlled MenuHeader disclosure only when it reveals real content.",
     "uses": [
       "menu-header",
       "menu-action-row",
@@ -237,9 +237,10 @@ export const generatedKerfCatalog = [
     "category": "Navigation",
     "kind": "component",
     "source": "kerf",
-    "description": "Split a dormant title and mutually exclusive semantic count or legacy badge from an optional 44px action, or render that title cluster as a disclosure button.",
+    "description": "Split a dormant title and mutually exclusive semantic count or legacy badge from an optional 44px action, or render that title cluster as a disclosure button with a default production DisclosureArrow.",
     "uses": [
-      "lucide-icon"
+      "lucide-icon",
+      "disclosure-arrow"
     ],
     "demoSource": "ui/ux-demo/main.tsx",
     "componentSource": "ui/src/menu-header.tsx",

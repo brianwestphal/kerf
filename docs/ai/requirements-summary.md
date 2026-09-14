@@ -180,7 +180,10 @@ badges. A non-negative safe-integer `count` requires a localized `countLabel`,
 renders zero and larger values in one neutral pill treatment, and includes that
 phrase in the heading or disclosure-button accessible name. The two indicator
 APIs are mutually exclusive in TypeScript, and runtime-invalid counts cannot
-emit misleading count markup or override protected presence flags.
+emit misleading count markup or override protected presence flags. Toggle mode
+supplies one production 18px `DisclosureArrow` when no custom `actionIcon` is
+given; its controlled expanded state reveals real content, retains a stable
+accessible name, and avoids false chevrons on ordinary navigation.
 
 `AppTab` now accepts runtime-filtered domain `data-*` metadata while protecting
 component and transient drag/drop attributes case-insensitively; its optional

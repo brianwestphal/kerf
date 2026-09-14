@@ -473,6 +473,9 @@ contracts. A non-negative safe-integer `count` requires a localized
 `countLabel`, renders as the standard neutral pill (including zero), and joins
 the semantic heading or disclosure-button accessible name. Runtime-invalid
 counts are omitted; a widened valid count takes precedence over `badge`.
+Toggle mode imports and renders one production `DisclosureArrow` by default,
+tracks its direction from `expanded`, and preserves `actionIcon` as a complete
+replacement. Menu composition keeps non-disclosing navigation chevron-free.
 
 ## Where to look for X
 

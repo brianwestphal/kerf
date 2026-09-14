@@ -122,6 +122,12 @@ scale of `.5` through `--kui-disclosure-icon-scale`. Author replacement
 `DisclosureArrow` icon content facing right before its configured direction
 transform is applied.
 
+`MenuHeader` supplies that production `DisclosureArrow` automatically when
+`toggle` is true and `actionIcon` is omitted. Keep `expanded` synchronized with
+real controlled content and preserve the button's stable label; ordinary
+navigation must not display a disclosure arrow. A custom `actionIcon` remains
+an escape hatch and replaces the default arrow entirely.
+
 ## Machine-readable catalog
 
 AI tools can retrieve the shipped [`ai/component-catalog.json`](./ai/component-catalog.json)

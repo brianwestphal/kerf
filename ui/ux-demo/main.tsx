@@ -28,7 +28,7 @@ import { reorderTabs, wireTabBars } from '@kerfjs/ui/wire-tab-bars';
 import { wireTokenSearchFields } from '@kerfjs/ui/wire-token-search-fields';
 import { batch, delegate, delegateCapture, mount, signal } from 'kerfjs';
 import { delegateActions } from 'kerfjs/actions';
-import { ArrowDownAZ, ArrowRight, Bell, Check, ChevronDown, ChevronLeft, ChevronRight, CircleHelp, Columns3, Contrast, Folder, GitCompare, GripVertical, Inbox, List, Moon, MoreHorizontal, PanelLeft, PanelLeftOpen, Pin, Plus, Search, Settings, SlidersHorizontal, Star, Wrench, X, ZapOff } from 'lucide';
+import { ArrowDownAZ, ArrowRight, Bell, Check, ChevronLeft, ChevronRight, CircleHelp, Columns3, Contrast, Folder, GitCompare, GripVertical, Inbox, List, Moon, MoreHorizontal, PanelLeft, PanelLeftOpen, Pin, Plus, Search, Settings, SlidersHorizontal, Star, Wrench, X, ZapOff } from 'lucide';
 
 import { catalog, catalogEntriesUsing, type CatalogEntry, type CatalogId, catalogRepositoryHref, catalogSections, findCatalogEntry, isCatalogId, type KerfCatalogId, webAwesomeCatalog, type WebAwesomeCatalogId, webAwesomeCatalogSections } from './catalog.js';
 import { isRecipeId, type RecipeId, recipeLoaders } from './recipes/loaders.js';
@@ -57,6 +57,7 @@ let nextDemoTabNumber = tabBarTabs.value.length + 1;
 const selectedChoice = signal('balanced');
 const disclosureOpen = signal(false);
 const customDisclosureOpen = signal(false);
+const menuToolsOpen = signal(true);
 const tokenSearchQuery = signal('NOT  AND parser');
 const tokenSearchTokens = signal<TokenSearchToken[]>([
   { value: 'tag:client', label: 'tag:client', offset: 4, accessibleLabel: 'client tag' },
@@ -268,14 +269,16 @@ function MenuDemo() {
       <section>
         <MenuHeader label="Workspace" count={3} countLabel="3 workspaces" action="log-add" actionLabel="Add workspace" actionIcon={icon(Plus, 'plus')} />
         <MenuItem action="log-inbox" itemId="inbox" label="Inbox" icon={icon(Inbox, 'inbox')} trailing={<span>12</span>} selected />
-        <MenuItem action="log-projects" itemId="projects" label="Projects" icon={icon(Folder, 'folder')} trailing={icon(ChevronRight, 'chevron-right')} />
+        <MenuItem action="log-projects" itemId="projects" label="Projects" icon={icon(Folder, 'folder')} />
         <MenuItem action="log-drafts" itemId="drafts" label="Drafts without a visible icon" />
       </section>
       <section>
-        <MenuHeader label="Tools" toggle expanded action="log-tools" actionIcon={icon(ChevronDown, 'chevron-down')} />
-        <MenuItem action="log-settings" label="A multiline item demonstrates content that wraps without clipping" icon={icon(Wrench, 'wrench')} multiline />
-        <MenuItem action="disabled" label="Unavailable" icon={icon(CircleHelp, 'circle-help')} disabled />
-        <div class="kui-content-item" data-content-item><strong>Shared item geometry</strong><p>The child owns its margin, border, and padding.</p></div>
+        <MenuHeader label="Tools" toggle expanded={menuToolsOpen.value} action="toggle-menu-tools" triggerAttributes={{ 'aria-controls': 'menu-tools-content' }} />
+        <div id="menu-tools-content" hidden={!menuToolsOpen.value}>
+          <MenuItem action="log-settings" label="A multiline item demonstrates content that wraps without clipping" icon={icon(Wrench, 'wrench')} multiline />
+          <MenuItem action="disabled" label="Unavailable" icon={icon(CircleHelp, 'circle-help')} disabled />
+          <div class="kui-content-item" data-content-item><strong>Shared item geometry</strong><p>The child owns its margin, border, and padding.</p></div>
+        </div>
       </section>
     </div>
     <div class="kui-pane__footer"><Toolbar label="Sidebar footer" divider={false} leading={<ToolbarControlGroup appearance="borderless" single><ToolbarText text="Ready" size="small" /></ToolbarControlGroup>} trailing={<ToolbarControlGroup appearance="borderless" single><button type="button" aria-label="Sidebar settings" data-action="log-settings">{icon(Settings, 'settings')}</button></ToolbarControlGroup>} /></div>
@@ -288,7 +291,7 @@ function MenuHeaderDemo() {
     <div><MenuHeader label="Notes" count={0} countLabel="0 notes" /></div>
     <div><MenuHeader label="Duplicates" count={2} countLabel="2 duplicates" /></div>
     <div><MenuHeader label="Preview" badge={<span>New</span>} /></div>
-    <div><MenuHeader label="Tools" toggle expanded={disclosureOpen.value} action="toggle-disclosure" actionIcon={icon(ChevronDown, 'chevron-down')} /></div>
+    <div><MenuHeader label="Tools" toggle expanded={disclosureOpen.value} action="toggle-disclosure" /></div>
     <div><MenuHeader label="Unavailable" action="log-add" actionLabel="Unavailable action" actionIcon={icon(Plus, 'plus')} actionDisabled /></div>
     <div id="menu-header-attachments-popover" class="demo-menu-popover" popover="auto" role="dialog" aria-label="Attachment action details">Application-owned popover content.</div>
   </div>;
@@ -568,7 +571,7 @@ mount(app, () => {
           </div>
         </section>)}
         <section class="catalog-group catalog-group--ecosystem">
-          <MenuHeader label={`Web Awesome (${webAwesomeCatalog.length})`} toggle action="toggle-webawesome-catalog" expanded={webAwesomeExpanded.value} actionIcon={icon(ChevronDown, 'chevron-down')} />
+          <MenuHeader label="Web Awesome" count={webAwesomeCatalog.length} countLabel={`${webAwesomeCatalog.length} Web Awesome components`} toggle action="toggle-webawesome-catalog" expanded={webAwesomeExpanded.value} />
           {webAwesomeExpanded.value && <div class="catalog-ecosystem" data-webawesome-catalog>
             {webAwesomeCatalogSections.map((section) => <section class="catalog-ecosystem__group">
               <h3>{section.category}</h3>
@@ -616,6 +619,7 @@ if (findCatalogEntry(initialDemo)?.source === 'webawesome') revealSelectedSideba
 
 const stopActions = delegateActions(app, 'click', {
   'toggle-disclosure': () => { disclosureOpen.value = !disclosureOpen.value; actionLog.value = disclosureOpen.value ? 'Disclosure opened' : 'Disclosure closed'; },
+  'toggle-menu-tools': () => { menuToolsOpen.value = !menuToolsOpen.value; actionLog.value = menuToolsOpen.value ? 'Tools opened' : 'Tools closed'; },
   'toggle-custom-disclosure': () => { customDisclosureOpen.value = !customDisclosureOpen.value; actionLog.value = customDisclosureOpen.value ? 'Custom disclosure opened' : 'Custom disclosure closed'; },
   'select-demo': (_event, element) => {
     const id = element.getAttribute('data-item-id');
@@ -741,7 +745,6 @@ const stopActions = delegateActions(app, 'click', {
   'log-inbox': () => { actionLog.value = 'Inbox selected'; },
   'log-projects': () => { actionLog.value = 'Projects selected'; },
   'log-drafts': () => { actionLog.value = 'Drafts selected'; },
-  'log-tools': () => { actionLog.value = 'Tools toggled'; },
   'log-settings': () => { actionLog.value = 'Settings selected'; },
   'select-menu-action-row': (_event, element) => { const itemId = (element as HTMLElement).dataset.itemId ?? ''; menuActionCurrent.value = itemId; actionLog.value = `${itemId} selected`; },
   'toggle-menu-action-row': (_event, element) => { const itemId = (element as HTMLElement).dataset.itemId ?? ''; menuActionPressed.value = !menuActionPressed.value; actionLog.value = `${itemId} ${menuActionPressed.value ? 'pressed' : 'not pressed'}`; },

@@ -964,7 +964,8 @@ test('catalog routes every production component family and supports its stateful
   await page.goto('/');
   await expect(page.locator('.catalog-sidebar [data-component="menu-header"]')).toHaveCount(catalogSections.length + 1);
   await expect(page.locator('.catalog-sidebar [data-component="menu-item"]')).toHaveCount(kerfCatalog.length);
-  const ecosystemToggle = page.getByRole('button', { name: `Web Awesome (${webAwesomeCatalog.length})` });
+  const ecosystemToggle = page.getByRole('button', { name: `Web Awesome, ${webAwesomeCatalog.length} Web Awesome components` });
+  await expect(ecosystemToggle.locator('.kui-menu-header__count')).toHaveText(String(webAwesomeCatalog.length));
   await expect(ecosystemToggle).toHaveAttribute('aria-expanded', 'false');
   await ecosystemToggle.click();
   await expect(ecosystemToggle).toHaveAttribute('aria-expanded', 'true');
@@ -1469,6 +1470,79 @@ test('keeps MenuActionRow primary and trailing controls independent across inter
   }
 });
 
+test('composes one truthful production disclosure in the menu', async ({ page, browserName }) => {
+  await page.setViewportSize({ width: 1100, height: 820 });
+  await page.goto('/?component=menu');
+  const menu = page.locator('[data-demo="menu"]');
+  const toggle = menu.getByRole('button', { name: 'Tools' });
+  const panel = menu.locator('#menu-tools-content');
+  const arrow = toggle.locator('[data-component="disclosure-arrow"]');
+  const arrowGeometry = () => arrow.evaluate((element) => {
+    const bounds = element.getBoundingClientRect();
+    const owner = element.closest('button')!.getBoundingClientRect();
+    const style = window.getComputedStyle(element);
+    const transform = new DOMMatrixReadOnly(style.transform);
+    return {
+      height: bounds.height,
+      insideOwner: bounds.left >= owner.left && bounds.right <= owner.right && bounds.top >= owner.top && bounds.bottom <= owner.bottom,
+      transform: [transform.a, transform.b, transform.c, transform.d].map((value) => Math.round(value)),
+      transitionDuration: style.transitionDuration,
+      width: bounds.width,
+    };
+  });
+
+  await expect(menu.locator('[data-component="disclosure-arrow"]')).toHaveCount(1);
+  await expect(menu.locator('[data-item-id="projects"] .kui-menu-item__trailing')).toHaveCount(0);
+  await expect(toggle).toHaveAttribute('aria-expanded', 'true');
+  await expect(toggle).toHaveAttribute('aria-controls', 'menu-tools-content');
+  await expect(arrow).toHaveAttribute('data-open', 'true');
+  await expect(arrow).toHaveAttribute('data-direction', 'down');
+  await expect(panel).toBeVisible();
+  const openGeometry = await arrowGeometry();
+  expect(openGeometry).toMatchObject({ height: 18, insideOwner: true, transform: [0, 1, -1, 0], width: 18 });
+  expect(openGeometry.transitionDuration).not.toBe('0s');
+  const originalArrow = await arrow.elementHandle();
+  if (!originalArrow) throw new Error('Expected the menu disclosure arrow to be attached');
+  if (browserName === 'chromium') await menu.screenshot({ path: 'test-results/menu-disclosure-wide-open.png' });
+
+  await toggle.press('Enter');
+  await expect(menu.getByRole('button', { name: 'Tools' })).toHaveAttribute('aria-expanded', 'false');
+  await expect(arrow).toHaveAttribute('data-open', 'false');
+  await expect(arrow).toHaveAttribute('data-direction', 'right');
+  await expect(panel).toBeHidden();
+  await expect(page.locator('.catalog-log')).toHaveText('Tools closed');
+  expect(await arrow.evaluate((node, original) => node === original, originalArrow)).toBe(true);
+  await expect.poll(async () => (await arrowGeometry()).transform).toEqual([1, 0, 0, 1]);
+  expect(await arrowGeometry()).toMatchObject({ height: 18, insideOwner: true, width: 18 });
+  if (browserName === 'chromium') await menu.screenshot({ path: 'test-results/menu-disclosure-wide-closed.png' });
+
+  await toggle.press('Space');
+  await expect(menu.getByRole('button', { name: 'Tools' })).toHaveAttribute('aria-expanded', 'true');
+  await expect(arrow).toHaveAttribute('data-open', 'true');
+  await expect(panel).toBeVisible();
+  await expect(page.locator('.catalog-log')).toHaveText('Tools opened');
+  await expect.poll(async () => (await arrowGeometry()).transform).toEqual([0, 1, -1, 0]);
+
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  expect(parseFloat((await arrowGeometry()).transitionDuration)).toBeLessThanOrEqual(0.001);
+  await menu.evaluate((element) => element.setAttribute('dir', 'rtl'));
+  expect((await arrowGeometry()).insideOwner).toBe(true);
+  await menu.evaluate((element) => element.removeAttribute('dir'));
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expect(toggle).toBeVisible();
+  expect((await arrowGeometry()).insideOwner).toBe(true);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
+  if (browserName === 'chromium') await menu.screenshot({ path: 'test-results/menu-disclosure-narrow-open.png' });
+
+  await page.setViewportSize({ width: 720, height: 960 });
+  await page.locator('html').evaluate((element) => { element.style.fontSize = '200%'; });
+  expect(await arrowGeometry()).toMatchObject({ height: 36, insideOwner: true, transform: [0, 1, -1, 0], width: 36 });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
+  if (browserName === 'chromium') await menu.screenshot({ path: 'test-results/menu-disclosure-zoom-200.png' });
+});
+
 test('matches shared menu, content-item, and toolbar geometry', async ({ page, browserName }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/?component=menu');
@@ -1483,7 +1557,7 @@ test('matches shared menu, content-item, and toolbar geometry', async ({ page, b
     const row = node.querySelector<HTMLElement>('[data-item-id="projects"]')!.getBoundingClientRect();
     const rowLabel = node.querySelector<HTMLElement>('[data-item-id="projects"] .kui-menu-item__label')!.getBoundingClientRect();
     const rowIcon = node.querySelector<HTMLElement>('[data-item-id="projects"] .kui-menu-item__icon')!.getBoundingClientRect();
-    const trailing = node.querySelector<HTMLElement>('[data-item-id="projects"] .kui-menu-item__trailing')!.getBoundingClientRect();
+    const trailing = node.querySelector<HTMLElement>('[data-item-id="inbox"] .kui-menu-item__trailing')!.getBoundingClientRect();
     const iconlessLabel = node.querySelector<HTMLElement>('[data-item-id="drafts"] .kui-menu-item__label')!.getBoundingClientRect();
     const sectionLabel = node.querySelector<HTMLElement>('.kui-menu-header h2')!.getBoundingClientRect();
     const surfaceElement = node.querySelector<HTMLElement>('[data-content-item]')!;

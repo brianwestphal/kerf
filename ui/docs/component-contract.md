@@ -74,6 +74,11 @@ consumer needs another size. Kerf `Select` uses a separate Web Awesome expand
 glyph contract, `--kui-disclosure-icon-scale: .5`; changing one contract does
 not implicitly change the other.
 
+In `MenuHeader` toggle mode, omitting `actionIcon` composes the production
+`DisclosureArrow` and derives its visual direction from `expanded`. The app
+must update that controlled state and reveal or hide real content. Passing a
+custom `actionIcon` replaces the default rather than layering or rotating both.
+
 `StateBanner` exposes instance-level `--kui-state-banner-background`,
 `--kui-state-banner-border`, `--kui-state-banner-foreground`,
 `--kui-state-banner-detail`, and action background variables. Its five built-in

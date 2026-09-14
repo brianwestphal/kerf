@@ -44,7 +44,9 @@ One unpadded `.kui-pane` owns toolbar/content/footer structure. Its
 `.kui-content-item` children own their 8px margin, 1px border, and 8px padding.
 Rows and footer toolbar groups remain 44px tall. The app owns routes,
 permissions, labels, selection, valid section counts and their localized
-`countLabel` phrases, non-count badge content, and disclosure state.
+`countLabel` phrases, non-count badge content, disclosure state, and revealed
+content. A toggled `MenuHeader` supplies the production `DisclosureArrow` when
+no custom `actionIcon` is needed; ordinary navigation rows stay chevron-free.
 
 ## Workspace header
 

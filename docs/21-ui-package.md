@@ -60,6 +60,10 @@ complete theme, one semantic tone, or one instance.
 uses a separate Web Awesome expand-glyph contract with
 `--kui-disclosure-icon-scale: .5`, so its half-scale treatment remains
 independent of the shared arrow's box size.
+`MenuHeader` toggle mode composes that production arrow automatically when no
+custom `actionIcon` is supplied; its controlled `expanded` value must correspond
+to real revealed content, and ordinary navigation does not borrow the
+disclosure affordance.
 
 `layout.css` is the shared structural composition for navigation rails, main
 areas, inspectors, and dialogs. An unpadded `.kui-pane` contains an optional

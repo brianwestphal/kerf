@@ -132,21 +132,8 @@
   background: transparent;
 }
 
-.kui-menu-header svg {
+.kui-menu-header__action > svg,
+.kui-menu-header__action-layer > svg {
   width: remify(24px);
   height: remify(24px);
-}
-
-.kui-menu-header__toggle svg {
-  transition: transform 0.18s ease;
-}
-
-.kui-menu-header__toggle[aria-expanded="false"] svg {
-  transform: rotate(-90deg);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .kui-menu-header__toggle svg {
-    transition: none;
-  }
 }

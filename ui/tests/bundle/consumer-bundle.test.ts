@@ -122,7 +122,10 @@ describe('consumer bundle boundaries', () => {
     const css = output(result, '.css');
     expect(inputs).toContain('dist/browser/menu-header.js');
     expect(inputs).toContain('dist/styles/menu-header.css');
+    expect(inputs).toContain('dist/styles/disclosure-arrow.css');
+    expect(inputs).toContain('dist/styles/lucide-icon.css');
     expect(css).toContain('.kui-menu-header__count');
+    expect(css).toContain('.kui-disclosure-arrow');
     expect(css).toContain('--kui-color-neutral-fill-quiet');
     expect(css).not.toContain('.kui-menu-item');
     expect(css).not.toContain('.kui-menu-action-row');
@@ -282,6 +285,9 @@ describe('consumer bundle boundaries', () => {
     expect(menuHeaderBuilt).toContain('min-width: 1.35rem');
     expect(menuHeaderBuilt).toContain('.kui-menu-header__count');
     expect(menuHeaderBuilt).toContain('var(--kui-color-neutral-fill-quiet)');
+    expect(menuHeaderSource).toContain('.kui-menu-header__action-layer > svg');
+    expect(menuHeaderSource).not.toContain('.kui-menu-header__toggle[aria-expanded');
+    expect(menuHeaderBuilt).not.toContain('.kui-menu-header__toggle[aria-expanded');
     expect(menuHeaderBuilt).not.toContain('remify(');
     expect(selectBuilt).toContain('scale(var(--kui-disclosure-icon-scale, 0.5))');
   });

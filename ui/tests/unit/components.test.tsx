@@ -76,7 +76,7 @@ describe('production UI primitives', () => {
     const iconless = asHtml(MenuItem({ label: 'Disabled', action: 'none', disabled: true }));
     expect(iconless).toContain('data-has-icon="false"');
     expect(iconless).toContain('disabled');
-    const toggle = asHtml(MenuHeader({ label: 'Tools', count: 2, countLabel: '2 tools', action: 'toggle', actionIcon: icon, expanded: false, toggle: true, rootAttributes: { 'data-command-group': 'tools' }, triggerAttributes: { 'aria-controls': 'tools-panel' } }));
+    const toggle = asHtml(MenuHeader({ label: 'Tools', count: 2, countLabel: '2 tools', action: 'toggle', expanded: false, toggle: true, rootAttributes: { 'data-command-group': 'tools' }, triggerAttributes: { 'aria-controls': 'tools-panel' } }));
     expect(toggle).toContain('aria-expanded="false"');
     expect(toggle).toContain('data-command-group="tools"');
     expect(toggle).toContain('aria-controls="tools-panel"');
@@ -86,6 +86,14 @@ describe('production UI primitives', () => {
     expect(toggle).toContain('class="kui-menu-header__count" aria-hidden="true">2</span>');
     expect(toggle).toContain('data-has-badge="false" data-has-count="true"');
     expect(toggle).toContain('class="kui-menu-header__action-layer"');
+    expect(toggle.match(/data-component="disclosure-arrow"/g)).toHaveLength(1);
+    expect(toggle).toContain('data-open="false" data-direction="right" aria-hidden="true"');
+    const openToggle = asHtml(MenuHeader({ label: 'Tools', action: 'toggle', expanded: true, toggle: true }));
+    expect(openToggle).toContain('aria-expanded="true"');
+    expect(openToggle).toContain('data-open="true" data-direction="down" aria-hidden="true"');
+    const customToggle = asHtml(MenuHeader({ label: 'Custom tools', action: 'toggle', actionIcon: <span>Custom</span>, expanded: false, toggle: true }));
+    expect(customToggle).toContain('<span>Custom</span>');
+    expect(customToggle).not.toContain('data-component="disclosure-arrow"');
     const header = asHtml(MenuHeader({ label: 'Workspace', count: 0, countLabel: '0 workspaces', action: 'add', actionLabel: 'Add', actionIcon: icon, actionDisabled: true, disabledReason: 'Unavailable', rootAttributes: { 'data-section-id': 'workspace' }, triggerAttributes: { popoverTarget: 'workspace-popover', popoverTargetAction: 'show', 'aria-controls': 'workspace-popover', 'aria-haspopup': 'dialog' } }));
     expect(header).toContain('<h2 class="kui-menu-header__label" aria-label="Workspace, 0 workspaces">Workspace</h2>');
     expect(header).toContain('class="kui-menu-header__count" aria-hidden="true">0</span>');
