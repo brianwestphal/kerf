@@ -51,6 +51,7 @@ const tabBarTabs = signal([
   { id: 'migration', name: 'Hot Sheet migration' },
   { id: 'examples', name: 'Consumer examples' },
 ]);
+let nextDemoTabNumber = tabBarTabs.value.length + 1;
 const selectedChoice = signal('balanced');
 const disclosureOpen = signal(false);
 const tokenSearchQuery = signal('NOT  AND parser');
@@ -603,7 +604,7 @@ const stopActions = delegateActions(app, 'click', {
   'select-reorder-tab': (_event, element) => { tabBarActive.value = element.getAttribute('data-tab-id') ?? 'components'; actionLog.value = `Selected ${tabBarActive.value}`; },
   'close-tab': (_event, element) => { actionLog.value = `Close requested for ${element.getAttribute('data-tab-id')}`; },
   'close-reorder-tab': (_event, element) => { const id = element.getAttribute('data-tab-id'); if (!id) return; const index = tabBarTabs.value.findIndex((tab) => tab.id === id); tabBarTabs.value = tabBarTabs.value.filter((tab) => tab.id !== id); if (tabBarActive.value === id) tabBarActive.value = tabBarTabs.value[Math.min(index, tabBarTabs.value.length - 1)]?.id ?? ''; actionLog.value = `Closed ${id}`; },
-  'add-demo-tab': () => { const id = `new-${tabBarTabs.value.length + 1}`; tabBarTabs.value = [...tabBarTabs.value, { id, name: `New tab ${tabBarTabs.value.length + 1}` }]; tabBarActive.value = id; actionLog.value = `Added ${id}`; },
+  'add-demo-tab': () => { const tabNumber = nextDemoTabNumber++; const id = `new-${tabNumber}`; tabBarTabs.value = [...tabBarTabs.value, { id, name: `New tab ${tabNumber}` }]; tabBarActive.value = id; actionLog.value = `Added ${id}`; },
   'select-segment-demo': (_event, element) => {
     const value = element.getAttribute('data-segment-value');
     const id = element.closest('[data-segmented-control-id]')?.getAttribute('data-segmented-control-id');

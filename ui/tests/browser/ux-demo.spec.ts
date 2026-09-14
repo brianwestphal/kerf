@@ -997,6 +997,36 @@ test('reorders and horizontally scrolls controlled TabBars', async ({ page, brow
   if (browserName === 'chromium') await page.screenshot({ path: 'test-results/tab-bar-overflow-narrow.png', fullPage: true });
 });
 
+test('keeps added tab IDs unique after another tab closes', async ({ page }) => {
+  await page.goto('/?component=tab-bar');
+  const bar = page.locator('[data-component="tab-bar"]');
+  const add = bar.getByRole('button', { name: 'Add tab' });
+
+  await add.click();
+  const firstAdded = bar.locator('[data-demo-tab-id="new-8"]');
+  await expect(firstAdded).toHaveCount(1);
+  await expect(firstAdded.getByRole('tab')).toHaveAttribute('aria-selected', 'true');
+
+  await bar.getByRole('tab', { name: 'Components' }).press('Backspace');
+  await add.click();
+  const secondAdded = bar.locator('[data-demo-tab-id="new-9"]');
+  await expect(firstAdded).toHaveCount(1);
+  await expect(secondAdded).toHaveCount(1);
+  await expect(secondAdded.getByRole('tab')).toHaveAttribute('aria-selected', 'true');
+
+  const firstAddedTab = firstAdded.getByRole('tab');
+  await firstAddedTab.click();
+  await expect(firstAddedTab).toHaveAttribute('aria-selected', 'true');
+  await firstAddedTab.press('Alt+Shift+ArrowRight');
+  await expect(page.locator('[data-tab-order]')).toContainText('New tab 9 · New tab 8');
+  await expect(firstAddedTab).toBeFocused();
+
+  await firstAddedTab.press('Backspace');
+  await expect(firstAdded).toHaveCount(0);
+  await expect(secondAdded).toHaveCount(1);
+  await expect(secondAdded.getByRole('tab')).toHaveAttribute('aria-selected', 'true');
+});
+
 test('autoscrolls the TabBar while a dragged tab rests near either scroll edge', async ({ page, browserName }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/?component=tab-bar');
