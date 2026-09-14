@@ -7,7 +7,10 @@ export const generatedKerfCatalog = [
     "kind": "component",
     "source": "kerf",
     "description": "Decorative and meaningfully labeled Lucide-compatible icons.",
-    "uses": []
+    "uses": [],
+    "demoSource": "ui/ux-demo/main.tsx",
+    "componentSource": "ui/src/lucide-icon.tsx",
+    "documentation": "ui/docs/component-selection.md"
   },
   {
     "id": "disclosure-arrow",
@@ -18,7 +21,10 @@ export const generatedKerfCatalog = [
     "description": "Indicate whether a disclosure control is open while preserving one shared rotation behavior.",
     "uses": [
       "lucide-icon"
-    ]
+    ],
+    "demoSource": "ui/ux-demo/main.tsx",
+    "componentSource": "ui/src/disclosure-arrow.tsx",
+    "documentation": "ui/docs/component-selection.md"
   },
   {
     "id": "webawesome-theme",
@@ -98,7 +104,9 @@ export const generatedKerfCatalog = [
       "wa-random-content",
       "wa-relative-time",
       "wa-resize-observer"
-    ]
+    ],
+    "demoSource": "ui/ux-demo/main.tsx",
+    "documentation": "ui/docs/component-selection.md"
   },
   {
     "id": "layout",
@@ -107,7 +115,9 @@ export const generatedKerfCatalog = [
     "kind": "composition",
     "source": "kerf",
     "description": "Provide one reusable pane, toolbar, content stack, and content-item geometry across sidebars, main areas, and dialogs.",
-    "uses": []
+    "uses": [],
+    "demoSource": "ui/ux-demo/main.tsx",
+    "documentation": "ui/docs/component-selection.md"
   },
   {
     "id": "toolbar",
@@ -119,7 +129,10 @@ export const generatedKerfCatalog = [
     "uses": [
       "toolbar-text",
       "toolbar-control-group"
-    ]
+    ],
+    "demoSource": "ui/ux-demo/main.tsx",
+    "componentSource": "ui/src/toolbar.tsx",
+    "documentation": "ui/docs/component-selection.md"
   },
   {
     "id": "toolbar-control-group",
@@ -131,7 +144,10 @@ export const generatedKerfCatalog = [
     "uses": [
       "lucide-icon",
       "segmented-control"
-    ]
+    ],
+    "demoSource": "ui/ux-demo/main.tsx",
+    "componentSource": "ui/src/toolbar-control-group.tsx",
+    "documentation": "ui/docs/component-selection.md"
   },
   {
     "id": "toolbar-text",
@@ -140,7 +156,10 @@ export const generatedKerfCatalog = [
     "kind": "component",
     "source": "kerf",
     "description": "Large, default, and compact toolbar identity text.",
-    "uses": []
+    "uses": [],
+    "demoSource": "ui/ux-demo/main.tsx",
+    "componentSource": "ui/src/toolbar-text.tsx",
+    "documentation": "ui/docs/component-selection.md"
   },
   {
     "id": "headers",
@@ -153,7 +172,9 @@ export const generatedKerfCatalog = [
       "page-header",
       "dialog-header",
       "value-table"
-    ]
+    ],
+    "demoSource": "ui/ux-demo/main.tsx",
+    "documentation": "ui/docs/component-selection.md"
   },
   {
     "id": "page-header",
@@ -162,7 +183,10 @@ export const generatedKerfCatalog = [
     "kind": "component",
     "source": "kerf",
     "description": "Page identity with an optional trailing action.",
-    "uses": []
+    "uses": [],
+    "demoSource": "ui/ux-demo/main.tsx",
+    "componentSource": "ui/src/page-header.tsx",
+    "documentation": "ui/docs/component-selection.md"
   },
   {
     "id": "dialog-header",
@@ -173,7 +197,10 @@ export const generatedKerfCatalog = [
     "description": "Dialog title, summary, icon, and action hierarchy.",
     "uses": [
       "lucide-icon"
-    ]
+    ],
+    "demoSource": "ui/ux-demo/main.tsx",
+    "componentSource": "ui/src/dialog-header.tsx",
+    "documentation": "ui/docs/component-selection.md"
   },
   {
     "id": "value-table",
@@ -184,7 +211,10 @@ export const generatedKerfCatalog = [
     "description": "Key/value rows with optional icons and aligned separators.",
     "uses": [
       "lucide-icon"
-    ]
+    ],
+    "demoSource": "ui/ux-demo/main.tsx",
+    "componentSource": "ui/src/value-table.tsx",
+    "documentation": "ui/docs/component-selection.md"
   },
   {
     "id": "menu",
@@ -197,7 +227,9 @@ export const generatedKerfCatalog = [
       "menu-header",
       "menu-action-row",
       "menu-item"
-    ]
+    ],
+    "demoSource": "ui/ux-demo/main.tsx",
+    "documentation": "ui/docs/component-selection.md"
   },
   {
     "id": "menu-header",
@@ -208,7 +240,10 @@ export const generatedKerfCatalog = [
     "description": "Split dormant title and badge content from an optional 44px action, or render the title cluster as a disclosure button.",
     "uses": [
       "lucide-icon"
-    ]
+    ],
+    "demoSource": "ui/ux-demo/main.tsx",
+    "componentSource": "ui/src/menu-header.tsx",
+    "documentation": "ui/docs/component-selection.md"
   },
   {
     "id": "menu-action-row",
@@ -219,7 +254,10 @@ export const generatedKerfCatalog = [
     "description": "Keep a selectable primary row action and an independently named trailing action as sibling native controls inside one noninteractive visual row.",
     "uses": [
       "lucide-icon"
-    ]
+    ],
+    "demoSource": "ui/ux-demo/main.tsx",
+    "componentSource": "ui/src/menu-action-row.tsx",
+    "documentation": "ui/docs/component-selection.md"
   },
   {
     "id": "menu-item",
@@ -230,7 +268,10 @@ export const generatedKerfCatalog = [
     "description": "Selectable, disabled, trailing, and multiline navigation rows.",
     "uses": [
       "lucide-icon"
-    ]
+    ],
+    "demoSource": "ui/ux-demo/main.tsx",
+    "componentSource": "ui/src/menu-item.tsx",
+    "documentation": "ui/docs/component-selection.md"
   },
   {
     "id": "tabs",
@@ -241,7 +282,10 @@ export const generatedKerfCatalog = [
     "description": "Roving-tabindex-ready tabs with protected application metadata and customizable close affordances.",
     "uses": [
       "lucide-icon"
-    ]
+    ],
+    "demoSource": "ui/ux-demo/main.tsx",
+    "componentSource": "ui/src/app-tab.tsx",
+    "documentation": "ui/docs/component-selection.md"
   },
   {
     "id": "tab-bar",
@@ -253,7 +297,10 @@ export const generatedKerfCatalog = [
     "uses": [
       "tabs",
       "toolbar-control-group"
-    ]
+    ],
+    "demoSource": "ui/ux-demo/main.tsx",
+    "componentSource": "ui/src/tab-bar.tsx",
+    "documentation": "ui/docs/component-selection.md"
   },
   {
     "id": "segmented-control",
@@ -264,7 +311,10 @@ export const generatedKerfCatalog = [
     "description": "Controlled exclusive choices in toolbar, rounded-rectangle, and pill presentations.",
     "uses": [
       "lucide-icon"
-    ]
+    ],
+    "demoSource": "ui/ux-demo/main.tsx",
+    "componentSource": "ui/src/segmented-control.tsx",
+    "documentation": "ui/docs/component-selection.md"
   },
   {
     "id": "token-search-field",
@@ -275,7 +325,10 @@ export const generatedKerfCatalog = [
     "description": "Token-controlled, optionally collapsible search editor with ordered, editable, removable filter chips.",
     "uses": [
       "lucide-icon"
-    ]
+    ],
+    "demoSource": "ui/ux-demo/main.tsx",
+    "componentSource": "ui/src/token-search-field.tsx",
+    "documentation": "ui/docs/component-selection.md"
   },
   {
     "id": "resize",
@@ -286,7 +339,10 @@ export const generatedKerfCatalog = [
     "description": "Pointer and keyboard-operable split region with a customizable handle icon.",
     "uses": [
       "lucide-icon"
-    ]
+    ],
+    "demoSource": "ui/ux-demo/main.tsx",
+    "componentSource": "ui/src/resizable-region.tsx",
+    "documentation": "ui/docs/component-selection.md"
   },
   {
     "id": "select",
@@ -299,7 +355,10 @@ export const generatedKerfCatalog = [
       "lucide-icon",
       "wa-select",
       "wa-option"
-    ]
+    ],
+    "demoSource": "ui/ux-demo/main.tsx",
+    "componentSource": "ui/src/select.tsx",
+    "documentation": "ui/docs/component-selection.md"
   },
   {
     "id": "feedback",
@@ -312,7 +371,9 @@ export const generatedKerfCatalog = [
       "state-banner",
       "empty-state",
       "loading-spinner"
-    ]
+    ],
+    "demoSource": "ui/ux-demo/main.tsx",
+    "documentation": "ui/docs/component-selection.md"
   },
   {
     "id": "state-banner",
@@ -323,7 +384,10 @@ export const generatedKerfCatalog = [
     "description": "Polite status and assertive alert feedback with semantic tones.",
     "uses": [
       "lucide-icon"
-    ]
+    ],
+    "demoSource": "ui/ux-demo/main.tsx",
+    "componentSource": "ui/src/state-banner.tsx",
+    "documentation": "ui/docs/component-selection.md"
   },
   {
     "id": "empty-state",
@@ -335,7 +399,10 @@ export const generatedKerfCatalog = [
     "uses": [
       "lucide-icon",
       "loading-spinner"
-    ]
+    ],
+    "demoSource": "ui/ux-demo/main.tsx",
+    "componentSource": "ui/src/empty-state.tsx",
+    "documentation": "ui/docs/component-selection.md"
   },
   {
     "id": "loading-spinner",
@@ -344,7 +411,10 @@ export const generatedKerfCatalog = [
     "kind": "component",
     "source": "kerf",
     "description": "Meaningfully labeled or decorative progress.",
-    "uses": []
+    "uses": [],
+    "demoSource": "ui/ux-demo/main.tsx",
+    "componentSource": "ui/src/loading-spinner.tsx",
+    "documentation": "ui/docs/component-selection.md"
   },
   {
     "id": "recipe-app-shell",
@@ -363,7 +433,9 @@ export const generatedKerfCatalog = [
       "resize",
       "value-table",
       "layout"
-    ]
+    ],
+    "demoSource": "ui/ux-demo/recipes/app-shell.tsx",
+    "documentation": "ui/docs/recipes.md#desktop-application-shell"
   },
   {
     "id": "recipe-navigation-sidebar",
@@ -377,7 +449,9 @@ export const generatedKerfCatalog = [
       "menu-item",
       "toolbar",
       "toolbar-control-group"
-    ]
+    ],
+    "demoSource": "ui/ux-demo/recipes/navigation-sidebar.tsx",
+    "documentation": "ui/docs/recipes.md#navigation-sidebar"
   },
   {
     "id": "recipe-workspace-header",
@@ -390,7 +464,9 @@ export const generatedKerfCatalog = [
       "page-header",
       "state-banner",
       "layout"
-    ]
+    ],
+    "demoSource": "ui/ux-demo/recipes/workspace-header.tsx",
+    "documentation": "ui/docs/recipes.md#workspace-header"
   },
   {
     "id": "recipe-master-detail-dialog",
@@ -406,7 +482,9 @@ export const generatedKerfCatalog = [
       "value-table",
       "wa-dialog",
       "wa-button"
-    ]
+    ],
+    "demoSource": "ui/ux-demo/recipes/master-detail-dialog.tsx",
+    "documentation": "ui/docs/recipes.md#master-detail-dialog"
   },
   {
     "id": "recipe-composer-form",
@@ -422,7 +500,9 @@ export const generatedKerfCatalog = [
       "wa-textarea",
       "wa-button",
       "layout"
-    ]
+    ],
+    "demoSource": "ui/ux-demo/recipes/composer-form.tsx",
+    "documentation": "ui/docs/recipes.md#composer-form"
   },
   {
     "id": "recipe-list-workspace-states",
@@ -437,7 +517,9 @@ export const generatedKerfCatalog = [
       "empty-state",
       "loading-spinner",
       "layout"
-    ]
+    ],
+    "demoSource": "ui/ux-demo/recipes/list-workspace-states.tsx",
+    "documentation": "ui/docs/recipes.md#list-workspace-states"
   },
   {
     "id": "recipe-compact-toolbar",
@@ -453,7 +535,9 @@ export const generatedKerfCatalog = [
       "segmented-control",
       "select",
       "lucide-icon"
-    ]
+    ],
+    "demoSource": "ui/ux-demo/recipes/compact-toolbar.tsx",
+    "documentation": "ui/docs/recipes.md#compact-toolbar-choices-and-actions"
   },
   {
     "id": "recipe-command-palette",
@@ -466,7 +550,9 @@ export const generatedKerfCatalog = [
       "dialog-header",
       "wa-dialog",
       "layout"
-    ]
+    ],
+    "demoSource": "ui/ux-demo/recipes/command-palette.tsx",
+    "documentation": "ui/docs/recipes.md#command-palette"
   }
 ] as const;
 
@@ -481,7 +567,9 @@ export const generatedWebAwesomeCatalog = [
     "uses": [
       "wa-icon",
       "wa-spinner"
-    ]
+    ],
+    "demoSource": "ui/ux-demo/webawesome-demos.tsx",
+    "documentation": "ui/docs/webawesome-theme.md#coverage"
   },
   {
     "id": "wa-button-group",
@@ -492,7 +580,9 @@ export const generatedWebAwesomeCatalog = [
     "description": "Exceptional grouped actions; prefer Kerf SegmentedControl for exclusive choices.",
     "uses": [
       "wa-button"
-    ]
+    ],
+    "demoSource": "ui/ux-demo/webawesome-demos.tsx",
+    "documentation": "ui/docs/webawesome-theme.md#coverage"
   },
   {
     "id": "wa-copy-button",
@@ -504,7 +594,9 @@ export const generatedWebAwesomeCatalog = [
     "uses": [
       "wa-icon",
       "wa-tooltip"
-    ]
+    ],
+    "demoSource": "ui/ux-demo/webawesome-demos.tsx",
+    "documentation": "ui/docs/webawesome-theme.md#coverage"
   },
   {
     "id": "wa-dropdown",
@@ -516,7 +608,9 @@ export const generatedWebAwesomeCatalog = [
     "uses": [
       "wa-dropdown-item",
       "wa-popup"
-    ]
+    ],
+    "demoSource": "ui/ux-demo/webawesome-demos.tsx",
+    "documentation": "ui/docs/webawesome-theme.md#coverage"
   },
   {
     "id": "wa-dropdown-item",
@@ -527,7 +621,9 @@ export const generatedWebAwesomeCatalog = [
     "description": "Action-menu row; prefer Kerf Select options for value selection.",
     "uses": [
       "wa-icon"
-    ]
+    ],
+    "demoSource": "ui/ux-demo/webawesome-demos.tsx",
+    "documentation": "ui/docs/webawesome-theme.md#coverage"
   },
   {
     "id": "wa-checkbox",
@@ -538,7 +634,9 @@ export const generatedWebAwesomeCatalog = [
     "description": "Binary form control with checked, indeterminate, and disabled states.",
     "uses": [
       "wa-icon"
-    ]
+    ],
+    "demoSource": "ui/ux-demo/webawesome-demos.tsx",
+    "documentation": "ui/docs/webawesome-theme.md#coverage"
   },
   {
     "id": "wa-checkbox-group",
@@ -549,7 +647,9 @@ export const generatedWebAwesomeCatalog = [
     "description": "Labels and validates a related set of checkboxes.",
     "uses": [
       "wa-checkbox"
-    ]
+    ],
+    "demoSource": "ui/ux-demo/webawesome-demos.tsx",
+    "documentation": "ui/docs/webawesome-theme.md#coverage"
   },
   {
     "id": "wa-color-picker",
@@ -563,7 +663,9 @@ export const generatedWebAwesomeCatalog = [
       "wa-button-group",
       "wa-input",
       "wa-popup"
-    ]
+    ],
+    "demoSource": "ui/ux-demo/webawesome-demos.tsx",
+    "documentation": "ui/docs/webawesome-theme.md#coverage"
   },
   {
     "id": "wa-input",
@@ -574,7 +676,9 @@ export const generatedWebAwesomeCatalog = [
     "description": "Text input with labels, hints, clear controls, and semantic appearances.",
     "uses": [
       "wa-icon"
-    ]
+    ],
+    "demoSource": "ui/ux-demo/webawesome-demos.tsx",
+    "documentation": "ui/docs/webawesome-theme.md#coverage"
   },
   {
     "id": "wa-known-date",
@@ -583,7 +687,9 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Experimental segmented field for partially or fully known dates.",
-    "uses": []
+    "uses": [],
+    "demoSource": "ui/ux-demo/webawesome-demos.tsx",
+    "documentation": "ui/docs/webawesome-theme.md#coverage"
   },
   {
     "id": "wa-number-input",
@@ -594,7 +700,9 @@ export const generatedWebAwesomeCatalog = [
     "description": "Numeric input with keyboard and stepper controls.",
     "uses": [
       "wa-icon"
-    ]
+    ],
+    "demoSource": "ui/ux-demo/webawesome-demos.tsx",
+    "documentation": "ui/docs/webawesome-theme.md#coverage"
   },
   {
     "id": "wa-option",
@@ -605,7 +713,9 @@ export const generatedWebAwesomeCatalog = [
     "description": "Underlying ecosystem option; prefer choices passed to Kerf Select.",
     "uses": [
       "wa-icon"
-    ]
+    ],
+    "demoSource": "ui/ux-demo/webawesome-demos.tsx",
+    "documentation": "ui/docs/webawesome-theme.md#coverage"
   },
   {
     "id": "wa-otp-input",
@@ -614,7 +724,9 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Experimental segmented one-time-password input.",
-    "uses": []
+    "uses": [],
+    "demoSource": "ui/ux-demo/webawesome-demos.tsx",
+    "documentation": "ui/docs/webawesome-theme.md#coverage"
   },
   {
     "id": "wa-radio",
@@ -625,7 +737,9 @@ export const generatedWebAwesomeCatalog = [
     "description": "Single-choice control used inside a radio group.",
     "uses": [
       "wa-icon"
-    ]
+    ],
+    "demoSource": "ui/ux-demo/webawesome-demos.tsx",
+    "documentation": "ui/docs/webawesome-theme.md#coverage"
   },
   {
     "id": "wa-radio-group",
@@ -636,7 +750,9 @@ export const generatedWebAwesomeCatalog = [
     "description": "Labels and manages a mutually exclusive set of radios.",
     "uses": [
       "wa-radio"
-    ]
+    ],
+    "demoSource": "ui/ux-demo/webawesome-demos.tsx",
+    "documentation": "ui/docs/webawesome-theme.md#coverage"
   },
   {
     "id": "wa-rating",
@@ -647,7 +763,9 @@ export const generatedWebAwesomeCatalog = [
     "description": "Interactive rating control with accessible labeling.",
     "uses": [
       "wa-icon"
-    ]
+    ],
+    "demoSource": "ui/ux-demo/webawesome-demos.tsx",
+    "documentation": "ui/docs/webawesome-theme.md#coverage"
   },
   {
     "id": "wa-select",
@@ -661,7 +779,9 @@ export const generatedWebAwesomeCatalog = [
       "wa-popup",
       "wa-tag",
       "wa-option"
-    ]
+    ],
+    "demoSource": "ui/ux-demo/webawesome-demos.tsx",
+    "documentation": "ui/docs/webawesome-theme.md#coverage"
   },
   {
     "id": "wa-slider",
@@ -672,7 +792,9 @@ export const generatedWebAwesomeCatalog = [
     "description": "Range input with markers and value tooltip support.",
     "uses": [
       "wa-tooltip"
-    ]
+    ],
+    "demoSource": "ui/ux-demo/webawesome-demos.tsx",
+    "documentation": "ui/docs/webawesome-theme.md#coverage"
   },
   {
     "id": "wa-switch",
@@ -681,7 +803,9 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Immediate on/off setting control.",
-    "uses": []
+    "uses": [],
+    "demoSource": "ui/ux-demo/webawesome-demos.tsx",
+    "documentation": "ui/docs/webawesome-theme.md#coverage"
   },
   {
     "id": "wa-textarea",
@@ -690,7 +814,9 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Multiline text field with labels, hints, and resize behavior.",
-    "uses": []
+    "uses": [],
+    "demoSource": "ui/ux-demo/webawesome-demos.tsx",
+    "documentation": "ui/docs/webawesome-theme.md#coverage"
   },
   {
     "id": "wa-time-input",
@@ -702,7 +828,9 @@ export const generatedWebAwesomeCatalog = [
     "uses": [
       "wa-icon",
       "wa-popup"
-    ]
+    ],
+    "demoSource": "ui/ux-demo/webawesome-demos.tsx",
+    "documentation": "ui/docs/webawesome-theme.md#coverage"
   },
   {
     "id": "wa-accordion",
@@ -713,7 +841,9 @@ export const generatedWebAwesomeCatalog = [
     "description": "Coordinates one or more collapsible content sections.",
     "uses": [
       "wa-accordion-item"
-    ]
+    ],
+    "demoSource": "ui/ux-demo/webawesome-demos.tsx",
+    "documentation": "ui/docs/webawesome-theme.md#coverage"
   },
   {
     "id": "wa-accordion-item",
@@ -724,7 +854,9 @@ export const generatedWebAwesomeCatalog = [
     "description": "Experimental labeled disclosure section used by an accordion.",
     "uses": [
       "wa-icon"
-    ]
+    ],
+    "demoSource": "ui/ux-demo/webawesome-demos.tsx",
+    "documentation": "ui/docs/webawesome-theme.md#coverage"
   },
   {
     "id": "wa-card",
@@ -733,7 +865,9 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Groups related content and optional header, media, and footer slots.",
-    "uses": []
+    "uses": [],
+    "demoSource": "ui/ux-demo/webawesome-demos.tsx",
+    "documentation": "ui/docs/webawesome-theme.md#coverage"
   },
   {
     "id": "wa-details",
@@ -744,7 +878,9 @@ export const generatedWebAwesomeCatalog = [
     "description": "Single disclosure panel for secondary information.",
     "uses": [
       "wa-icon"
-    ]
+    ],
+    "demoSource": "ui/ux-demo/webawesome-demos.tsx",
+    "documentation": "ui/docs/webawesome-theme.md#coverage"
   },
   {
     "id": "wa-dialog",
@@ -755,7 +891,9 @@ export const generatedWebAwesomeCatalog = [
     "description": "Modal surface for focused tasks and confirmations.",
     "uses": [
       "wa-button"
-    ]
+    ],
+    "demoSource": "ui/ux-demo/webawesome-demos.tsx",
+    "documentation": "ui/docs/webawesome-theme.md#coverage"
   },
   {
     "id": "wa-divider",
@@ -764,7 +902,9 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Visual separator for related groups of content.",
-    "uses": []
+    "uses": [],
+    "demoSource": "ui/ux-demo/webawesome-demos.tsx",
+    "documentation": "ui/docs/webawesome-theme.md#coverage"
   },
   {
     "id": "wa-drawer",
@@ -775,7 +915,9 @@ export const generatedWebAwesomeCatalog = [
     "description": "Edge-anchored modal surface for navigation or secondary tasks.",
     "uses": [
       "wa-button"
-    ]
+    ],
+    "demoSource": "ui/ux-demo/webawesome-demos.tsx",
+    "documentation": "ui/docs/webawesome-theme.md#coverage"
   },
   {
     "id": "wa-page",
@@ -784,7 +926,9 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Responsive application shell with navigation, banner, and main slots.",
-    "uses": []
+    "uses": [],
+    "demoSource": "ui/ux-demo/webawesome-demos.tsx",
+    "documentation": "ui/docs/webawesome-theme.md#coverage"
   },
   {
     "id": "wa-scroller",
@@ -793,7 +937,9 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Overflow container with accessible scrolling affordances.",
-    "uses": []
+    "uses": [],
+    "demoSource": "ui/ux-demo/webawesome-demos.tsx",
+    "documentation": "ui/docs/webawesome-theme.md#coverage"
   },
   {
     "id": "wa-split-panel",
@@ -802,7 +948,9 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Alternative split API; prefer Kerf ResizableRegion for application panes.",
-    "uses": []
+    "uses": [],
+    "demoSource": "ui/ux-demo/webawesome-demos.tsx",
+    "documentation": "ui/docs/webawesome-theme.md#coverage"
   },
   {
     "id": "wa-breadcrumb",
@@ -814,7 +962,9 @@ export const generatedWebAwesomeCatalog = [
     "uses": [
       "wa-icon",
       "wa-breadcrumb-item"
-    ]
+    ],
+    "demoSource": "ui/ux-demo/webawesome-demos.tsx",
+    "documentation": "ui/docs/webawesome-theme.md#coverage"
   },
   {
     "id": "wa-breadcrumb-item",
@@ -823,7 +973,9 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "One link or current-location item in a breadcrumb.",
-    "uses": []
+    "uses": [],
+    "demoSource": "ui/ux-demo/webawesome-demos.tsx",
+    "documentation": "ui/docs/webawesome-theme.md#coverage"
   },
   {
     "id": "wa-pagination",
@@ -834,7 +986,9 @@ export const generatedWebAwesomeCatalog = [
     "description": "Experimental page navigation for a bounded result set.",
     "uses": [
       "wa-icon"
-    ]
+    ],
+    "demoSource": "ui/ux-demo/webawesome-demos.tsx",
+    "documentation": "ui/docs/webawesome-theme.md#coverage"
   },
   {
     "id": "wa-tab",
@@ -843,7 +997,9 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Ecosystem tab label; prefer Kerf TabBar or SegmentedControl.",
-    "uses": []
+    "uses": [],
+    "demoSource": "ui/ux-demo/webawesome-demos.tsx",
+    "documentation": "ui/docs/webawesome-theme.md#coverage"
   },
   {
     "id": "wa-tab-group",
@@ -856,7 +1012,9 @@ export const generatedWebAwesomeCatalog = [
       "wa-button",
       "wa-tab",
       "wa-tab-panel"
-    ]
+    ],
+    "demoSource": "ui/ux-demo/webawesome-demos.tsx",
+    "documentation": "ui/docs/webawesome-theme.md#coverage"
   },
   {
     "id": "wa-tab-panel",
@@ -865,7 +1023,9 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Ecosystem tab panel; prefer app-owned panels with Kerf navigation.",
-    "uses": []
+    "uses": [],
+    "demoSource": "ui/ux-demo/webawesome-demos.tsx",
+    "documentation": "ui/docs/webawesome-theme.md#coverage"
   },
   {
     "id": "wa-tree",
@@ -876,7 +1036,9 @@ export const generatedWebAwesomeCatalog = [
     "description": "Specialized hierarchy; use only when the product requires tree behavior.",
     "uses": [
       "wa-tree-item"
-    ]
+    ],
+    "demoSource": "ui/ux-demo/webawesome-demos.tsx",
+    "documentation": "ui/docs/webawesome-theme.md#coverage"
   },
   {
     "id": "wa-tree-item",
@@ -889,7 +1051,9 @@ export const generatedWebAwesomeCatalog = [
       "wa-checkbox",
       "wa-icon",
       "wa-spinner"
-    ]
+    ],
+    "demoSource": "ui/ux-demo/webawesome-demos.tsx",
+    "documentation": "ui/docs/webawesome-theme.md#coverage"
   },
   {
     "id": "wa-badge",
@@ -898,7 +1062,9 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Compact status or count label with semantic variants.",
-    "uses": []
+    "uses": [],
+    "demoSource": "ui/ux-demo/webawesome-demos.tsx",
+    "documentation": "ui/docs/webawesome-theme.md#coverage"
   },
   {
     "id": "wa-callout",
@@ -907,7 +1073,9 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Prominent contextual message with semantic variants.",
-    "uses": []
+    "uses": [],
+    "demoSource": "ui/ux-demo/webawesome-demos.tsx",
+    "documentation": "ui/docs/webawesome-theme.md#coverage"
   },
   {
     "id": "wa-progress-bar",
@@ -916,7 +1084,9 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Linear indicator for determinate or indeterminate progress.",
-    "uses": []
+    "uses": [],
+    "demoSource": "ui/ux-demo/webawesome-demos.tsx",
+    "documentation": "ui/docs/webawesome-theme.md#coverage"
   },
   {
     "id": "wa-progress-ring",
@@ -925,7 +1095,9 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Circular indicator for determinate or indeterminate progress.",
-    "uses": []
+    "uses": [],
+    "demoSource": "ui/ux-demo/webawesome-demos.tsx",
+    "documentation": "ui/docs/webawesome-theme.md#coverage"
   },
   {
     "id": "wa-skeleton",
@@ -934,7 +1106,9 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Placeholder shape for content that is still loading.",
-    "uses": []
+    "uses": [],
+    "demoSource": "ui/ux-demo/webawesome-demos.tsx",
+    "documentation": "ui/docs/webawesome-theme.md#coverage"
   },
   {
     "id": "wa-spinner",
@@ -943,7 +1117,9 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Compact indeterminate activity indicator.",
-    "uses": []
+    "uses": [],
+    "demoSource": "ui/ux-demo/webawesome-demos.tsx",
+    "documentation": "ui/docs/webawesome-theme.md#coverage"
   },
   {
     "id": "wa-tag",
@@ -954,7 +1130,9 @@ export const generatedWebAwesomeCatalog = [
     "description": "Compact categorization label with optional removal action.",
     "uses": [
       "wa-button"
-    ]
+    ],
+    "demoSource": "ui/ux-demo/webawesome-demos.tsx",
+    "documentation": "ui/docs/webawesome-theme.md#coverage"
   },
   {
     "id": "wa-toast",
@@ -965,7 +1143,9 @@ export const generatedWebAwesomeCatalog = [
     "description": "Placement-aware stack of transient notifications.",
     "uses": [
       "wa-toast-item"
-    ]
+    ],
+    "demoSource": "ui/ux-demo/webawesome-demos.tsx",
+    "documentation": "ui/docs/webawesome-theme.md#coverage"
   },
   {
     "id": "wa-toast-item",
@@ -977,7 +1157,9 @@ export const generatedWebAwesomeCatalog = [
     "uses": [
       "wa-icon",
       "wa-progress-ring"
-    ]
+    ],
+    "demoSource": "ui/ux-demo/webawesome-demos.tsx",
+    "documentation": "ui/docs/webawesome-theme.md#coverage"
   },
   {
     "id": "wa-tooltip",
@@ -988,7 +1170,9 @@ export const generatedWebAwesomeCatalog = [
     "description": "Brief contextual label anchored to a control.",
     "uses": [
       "wa-popup"
-    ]
+    ],
+    "demoSource": "ui/ux-demo/webawesome-demos.tsx",
+    "documentation": "ui/docs/webawesome-theme.md#coverage"
   },
   {
     "id": "wa-animated-image",
@@ -999,7 +1183,9 @@ export const generatedWebAwesomeCatalog = [
     "description": "Specialized animated media; use only for a concrete product requirement.",
     "uses": [
       "wa-icon"
-    ]
+    ],
+    "demoSource": "ui/ux-demo/webawesome-demos.tsx",
+    "documentation": "ui/docs/webawesome-theme.md#coverage"
   },
   {
     "id": "wa-avatar",
@@ -1010,7 +1196,9 @@ export const generatedWebAwesomeCatalog = [
     "description": "Person or entity image with initials fallback.",
     "uses": [
       "wa-icon"
-    ]
+    ],
+    "demoSource": "ui/ux-demo/webawesome-demos.tsx",
+    "documentation": "ui/docs/webawesome-theme.md#coverage"
   },
   {
     "id": "wa-carousel",
@@ -1022,7 +1210,9 @@ export const generatedWebAwesomeCatalog = [
     "uses": [
       "wa-icon",
       "wa-carousel-item"
-    ]
+    ],
+    "demoSource": "ui/ux-demo/webawesome-demos.tsx",
+    "documentation": "ui/docs/webawesome-theme.md#coverage"
   },
   {
     "id": "wa-carousel-item",
@@ -1031,7 +1221,9 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "One content slide inside a carousel.",
-    "uses": []
+    "uses": [],
+    "demoSource": "ui/ux-demo/webawesome-demos.tsx",
+    "documentation": "ui/docs/webawesome-theme.md#coverage"
   },
   {
     "id": "wa-comparison",
@@ -1042,7 +1234,9 @@ export const generatedWebAwesomeCatalog = [
     "description": "Specialized before-and-after media; use only when specifically required.",
     "uses": [
       "wa-icon"
-    ]
+    ],
+    "demoSource": "ui/ux-demo/webawesome-demos.tsx",
+    "documentation": "ui/docs/webawesome-theme.md#coverage"
   },
   {
     "id": "wa-icon",
@@ -1051,7 +1245,9 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Ecosystem icon renderer; use Kerf LucideIcon in application UI.",
-    "uses": []
+    "uses": [],
+    "demoSource": "ui/ux-demo/webawesome-demos.tsx",
+    "documentation": "ui/docs/webawesome-theme.md#coverage"
   },
   {
     "id": "wa-markdown",
@@ -1060,7 +1256,9 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Experimental renderer for trusted Markdown content.",
-    "uses": []
+    "uses": [],
+    "demoSource": "ui/ux-demo/webawesome-demos.tsx",
+    "documentation": "ui/docs/webawesome-theme.md#coverage"
   },
   {
     "id": "wa-qr-code",
@@ -1069,7 +1267,9 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Scannable QR representation of a supplied value.",
-    "uses": []
+    "uses": [],
+    "demoSource": "ui/ux-demo/webawesome-demos.tsx",
+    "documentation": "ui/docs/webawesome-theme.md#coverage"
   },
   {
     "id": "wa-zoomable-frame",
@@ -1080,7 +1280,9 @@ export const generatedWebAwesomeCatalog = [
     "description": "Avoid for application UI; keep embedded-media behavior application-owned.",
     "uses": [
       "wa-icon"
-    ]
+    ],
+    "demoSource": "ui/ux-demo/webawesome-demos.tsx",
+    "documentation": "ui/docs/webawesome-theme.md#coverage"
   },
   {
     "id": "wa-animation",
@@ -1091,7 +1293,9 @@ export const generatedWebAwesomeCatalog = [
     "description": "Declarative Web Animations API wrapper with preset effects.",
     "uses": [
       "select"
-    ]
+    ],
+    "demoSource": "ui/ux-demo/webawesome-demos.tsx",
+    "documentation": "ui/docs/webawesome-theme.md#coverage"
   },
   {
     "id": "wa-format-bytes",
@@ -1100,7 +1304,9 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Locale-aware byte and bit value formatter.",
-    "uses": []
+    "uses": [],
+    "demoSource": "ui/ux-demo/webawesome-demos.tsx",
+    "documentation": "ui/docs/webawesome-theme.md#coverage"
   },
   {
     "id": "wa-format-date",
@@ -1109,7 +1315,9 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Locale-aware date and time formatter.",
-    "uses": []
+    "uses": [],
+    "demoSource": "ui/ux-demo/webawesome-demos.tsx",
+    "documentation": "ui/docs/webawesome-theme.md#coverage"
   },
   {
     "id": "wa-format-number",
@@ -1118,7 +1326,9 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Locale-aware number, currency, unit, and percentage formatter.",
-    "uses": []
+    "uses": [],
+    "demoSource": "ui/ux-demo/webawesome-demos.tsx",
+    "documentation": "ui/docs/webawesome-theme.md#coverage"
   },
   {
     "id": "wa-include",
@@ -1127,7 +1337,9 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Loads and injects an external HTML fragment.",
-    "uses": []
+    "uses": [],
+    "demoSource": "ui/ux-demo/webawesome-demos.tsx",
+    "documentation": "ui/docs/webawesome-theme.md#coverage"
   },
   {
     "id": "wa-intersection-observer",
@@ -1136,7 +1348,9 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Declaratively emits visibility changes for slotted content.",
-    "uses": []
+    "uses": [],
+    "demoSource": "ui/ux-demo/webawesome-demos.tsx",
+    "documentation": "ui/docs/webawesome-theme.md#coverage"
   },
   {
     "id": "wa-mutation-observer",
@@ -1145,7 +1359,9 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Declaratively emits DOM mutation records for slotted content.",
-    "uses": []
+    "uses": [],
+    "demoSource": "ui/ux-demo/webawesome-demos.tsx",
+    "documentation": "ui/docs/webawesome-theme.md#coverage"
   },
   {
     "id": "wa-popover",
@@ -1156,7 +1372,9 @@ export const generatedWebAwesomeCatalog = [
     "description": "Anchored non-modal surface built on popup positioning.",
     "uses": [
       "wa-popup"
-    ]
+    ],
+    "demoSource": "ui/ux-demo/webawesome-demos.tsx",
+    "documentation": "ui/docs/webawesome-theme.md#coverage"
   },
   {
     "id": "wa-popup",
@@ -1165,7 +1383,9 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Preferred low-level anchored positioning when Tooltip or Popover do not fit.",
-    "uses": []
+    "uses": [],
+    "demoSource": "ui/ux-demo/webawesome-demos.tsx",
+    "documentation": "ui/docs/webawesome-theme.md#coverage"
   },
   {
     "id": "wa-random-content",
@@ -1174,7 +1394,9 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Experimental helper that selects one slotted item at random.",
-    "uses": []
+    "uses": [],
+    "demoSource": "ui/ux-demo/webawesome-demos.tsx",
+    "documentation": "ui/docs/webawesome-theme.md#coverage"
   },
   {
     "id": "wa-relative-time",
@@ -1183,7 +1405,9 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Locale-aware human description of a date relative to now.",
-    "uses": []
+    "uses": [],
+    "demoSource": "ui/ux-demo/webawesome-demos.tsx",
+    "documentation": "ui/docs/webawesome-theme.md#coverage"
   },
   {
     "id": "wa-resize-observer",
@@ -1192,6 +1416,8 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Declaratively emits size changes for slotted content.",
-    "uses": []
+    "uses": [],
+    "demoSource": "ui/ux-demo/webawesome-demos.tsx",
+    "documentation": "ui/docs/webawesome-theme.md#coverage"
   }
 ] as const;

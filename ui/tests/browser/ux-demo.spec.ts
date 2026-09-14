@@ -1,6 +1,73 @@
 import { expect, test } from '@playwright/test';
 
-import { catalog, catalogSections, kerfCatalog, webAwesomeCatalog } from '../../ux-demo/catalog.js';
+import { catalog, catalogRepositoryHref, catalogSections, kerfCatalog, webAwesomeCatalog } from '../../ux-demo/catalog.js';
+
+test('links catalog details to their first-party source and existing guidance', async ({ page, browserName }) => {
+  for (const [id, name, sourcePath, componentPath, documentationPath, guidanceLabel] of [
+    ['toolbar', 'Toolbar', 'ui/ux-demo/main.tsx', 'ui/src/toolbar.tsx', 'ui/docs/component-selection.md', 'Read guidance'],
+    ['recipe-app-shell', 'Desktop application shell', 'ui/ux-demo/recipes/app-shell.tsx', undefined, 'ui/docs/recipes.md#desktop-application-shell', 'Read guidance'],
+    ['wa-button', 'Button', 'ui/ux-demo/webawesome-demos.tsx', undefined, 'ui/docs/webawesome-theme.md#coverage', 'Read Kerf integration guidance'],
+  ] as const) {
+    await page.goto(`/?component=${id}`);
+    const resources = page.getByRole('navigation', { name: `Reference links for ${name}` });
+    const source = resources.getByRole('link', { name: `${name}: View demo source (opens in new tab)` });
+    const componentSource = resources.locator('[data-catalog-resource="component-source"]');
+    const guidance = resources.getByRole('link', { name: `${name}: ${guidanceLabel} (opens in new tab)` });
+    await expect(source).toHaveAttribute('href', catalogRepositoryHref(sourcePath));
+    await expect(guidance).toHaveAttribute('href', catalogRepositoryHref(documentationPath));
+    const links = componentPath ? [source, componentSource, guidance] : [source, guidance];
+    for (const link of links) {
+      await expect(link).toHaveAttribute('target', '_blank');
+      await expect(link).toHaveAttribute('rel', 'noopener noreferrer');
+    }
+    if (componentPath) {
+      await expect(componentSource).toHaveAttribute('href', catalogRepositoryHref(componentPath));
+      await expect(componentSource.locator('code')).toHaveText(componentPath);
+    } else {
+      await expect(componentSource).toHaveCount(0);
+    }
+    await expect(source.locator('code')).toHaveText(sourcePath);
+    await expect(guidance.locator('code')).toHaveText(documentationPath);
+  }
+
+  for (const layout of [
+    { name: 'wide', width: 1440, height: 900, rootFontSize: '' },
+    { name: 'narrow', width: 390, height: 844, rootFontSize: '' },
+    { name: 'zoom-200', width: 720, height: 900, rootFontSize: '200%' },
+  ] as const) {
+    await page.setViewportSize({ width: layout.width, height: layout.height });
+    await page.goto(`/?component=${layout.name === 'zoom-200' ? 'recipe-master-detail-dialog' : 'toolbar'}`);
+    if (layout.rootFontSize) await page.locator('html').evaluate((element, size) => { element.style.fontSize = size; }, layout.rootFontSize);
+    const resources = page.getByRole('navigation', { name: `Reference links for ${layout.name === 'zoom-200' ? 'Master-detail dialog' : 'Toolbar'}` });
+    const source = resources.locator('[data-catalog-resource="source"]');
+    const guidance = resources.locator('[data-catalog-resource="guidance"]');
+    await expect(resources).toBeVisible();
+    await source.focus();
+    await expect(source).toBeFocused();
+    const geometry = await page.evaluate(() => ({
+      documentOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      links: [...document.querySelectorAll<HTMLElement>('.catalog-resource')].map((link) => ({
+        height: link.getBoundingClientRect().height,
+        right: link.getBoundingClientRect().right,
+        viewportWidth: window.innerWidth,
+        pathOverflow: link.querySelector<HTMLElement>('code')!.scrollWidth - link.querySelector<HTMLElement>('code')!.clientWidth,
+        outlineStyle: window.getComputedStyle(link).outlineStyle,
+      })),
+    }));
+    expect(geometry.documentOverflow).toBeLessThanOrEqual(1);
+    expect(geometry.links).toHaveLength(layout.name === 'zoom-200' ? 2 : 3);
+    for (const link of geometry.links) {
+      expect(link.height).toBeGreaterThanOrEqual(44);
+      expect(link.right).toBeLessThanOrEqual(link.viewportWidth + 1);
+      expect(link.pathOverflow).toBeLessThanOrEqual(1);
+    }
+    expect(geometry.links[0].outlineStyle).not.toBe('none');
+    await expect(guidance).toBeVisible();
+    if (browserName === 'chromium') {
+      await page.screenshot({ path: `test-results/catalog-resource-links-${layout.name}.png`, fullPage: true });
+    }
+  }
+});
 
 test('loads the Web Awesome specimen bundle only when a matching route needs it', async ({ page }) => {
   await page.goto('/?component=lucide-icon');

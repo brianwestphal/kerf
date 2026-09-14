@@ -11,6 +11,9 @@ canonical layout ownership for a recurring concept the package does not export.
 `ui/scripts/check-recipes.mjs` keeps those sources,
 canonical `ui/ai/component-catalog.json` facts, package imports, docs, and
 stable catalog routes synchronized.
+The same typed projection derives repository-relative paths for main, recipe,
+Web Awesome, and first-party component source, then pairs them with canonical
+guidance paths in visible, deploy-safe detail links.
 
 `ui/ai-regressions/` is the internal deterministic AI-choice regression
 foundation: seven neutral prompt fixtures, schema-described private oracles,

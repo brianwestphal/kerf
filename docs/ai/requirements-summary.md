@@ -177,6 +177,12 @@ close glyph and `ResizableRegion`'s optional handle glyph remain decorative
 slots, leaving close, reorder, resize, persistence, and disposal ownership on
 the existing controls, wiring, and application state.
 
+The UX catalog detail projects visible, repository-relative `View demo source`
+and existing guidance links for every canonical entry, adds `View component
+source` for first-party components from their browser-import paths, and labels
+Web Awesome documentation as Kerf integration guidance. Absolute GitHub blob
+URLs keep those links deploy-safe without adding a UI runtime export.
+
 ### §22 Pixel-first UI CSS authoring
 
 **Shipped.** `@kerfjs/ui` component and catalog-only styles express scalable dimensions as `remify(<numeric-px-literal>)`, which PostCSS divides by a fixed 16px authoring baseline and emits as standard `rem`. Literal pixels remain appropriate for intentional hairlines, and `em` stays explicit because it is component-font-relative. Package exports and generated browser wrappers point to compiled `ui/dist/styles/` output; component author CSS is excluded from publication, while deliberately shipped copyable recipe source remains ordinary CSS. The UX catalog resolves package imports back to component source and runs the identical transform under Vite, preserving CSS HMR. Unit, bundle, package, and demo checks reject malformed or leaked delivery syntax. See [`docs/22-ui-css-authoring.md`](../22-ui-css-authoring.md).

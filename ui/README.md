@@ -129,7 +129,10 @@ context so adding the declaration boundary does not mutate a frozen measured
 regression suite.
 
 `npm run catalog:sync` deterministically projects the fields used by the UX
-catalog into `ux-demo/catalog.generated.ts`. Do not edit that generated file.
+catalog into `ux-demo/catalog.generated.ts`, including the existing guidance
+path and the first-party source path for each main, recipe, or Web Awesome
+specimen. First-party component entries also derive their implementation path
+from the canonical browser import. Do not edit that generated file.
 `npm run check:catalog` rejects stale generated output, exports and package
 paths, Web Awesome manifest/declaration drift, invalid relationships, broken
 links, or a missing AI-guidance entry. Prose remains authored where design
@@ -353,7 +356,7 @@ than default patterns. The detailed rationale lives in the theme contract.
 - [UX catalog contract](./docs/ux-demo.md)
 - [AI guide](./ai/skill.md)
 
-Run `npm run dev` from this directory for the category-grouped master/detail catalog. Every public visual component has a focused route; all 70 free Web Awesome 3.12 components have focused routes under the collapsible ecosystem section. One grouped `Related components` selector contains derived `Uses` / `Used by` navigation across both sets. Run `npm run check` for static/unit/bundle gates and `npm run test:e2e` for the real-browser suite.
+Run `npm run dev` from this directory for the category-grouped master/detail catalog. Every public visual component has a focused route; all 70 free Web Awesome 3.12 components have focused routes under the collapsible ecosystem section. Every detail visibly links its first-party demo source and existing guidance while showing the repository-relative paths; first-party components also link their implementation source, and Web Awesome entries label local guidance as Kerf integration guidance. One grouped `Related components` selector contains derived `Uses` / `Used by` navigation across both sets. Run `npm run check` for static/unit/bundle gates and `npm run test:e2e` for the real-browser suite.
 
 Run `npm run format:css` after editing styles. The normal `npm run check` gate
 uses Prettier to reject unformatted CSS in `src/` and `ux-demo/`.

@@ -1,9 +1,9 @@
-import { readFile } from 'node:fs/promises';
+import { access, readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 
 import { describe, expect, it } from 'vitest';
 
-import { catalog, catalogCategories, catalogEntriesUsing, catalogSections, findCatalogEntry, isCatalogId, kerfCatalog, webAwesomeCatalog, webAwesomeCatalogSections, webAwesomeCategories } from '../../ux-demo/catalog.js';
+import { catalog, catalogCategories, catalogEntriesUsing, catalogRepositoryBlobUrl, catalogRepositoryHref, catalogSections, findCatalogEntry, isCatalogId, kerfCatalog, webAwesomeCatalog, webAwesomeCatalogSections, webAwesomeCategories } from '../../ux-demo/catalog.js';
 
 describe('UX catalog metadata', () => {
   it('projects the shipped machine-readable catalog without losing decision facts', async () => {
@@ -41,6 +41,38 @@ describe('UX catalog metadata', () => {
     expect(isCatalogId('toolbar')).toBe(true);
     expect(isCatalogId('missing')).toBe(false);
     expect(isCatalogId(null)).toBe(false);
+  });
+
+  it('projects deploy-safe source and guidance links for every catalog route', async () => {
+    expect(findCatalogEntry('toolbar')).toMatchObject({
+      demoSource: 'ui/ux-demo/main.tsx',
+      componentSource: 'ui/src/toolbar.tsx',
+      documentation: 'ui/docs/component-selection.md',
+    });
+    expect(findCatalogEntry('recipe-app-shell')).toMatchObject({
+      demoSource: 'ui/ux-demo/recipes/app-shell.tsx',
+      documentation: 'ui/docs/recipes.md#desktop-application-shell',
+    });
+    expect(findCatalogEntry('wa-button')).toMatchObject({
+      demoSource: 'ui/ux-demo/webawesome-demos.tsx',
+      documentation: 'ui/docs/webawesome-theme.md#coverage',
+    });
+    expect(findCatalogEntry('recipe-app-shell')).not.toHaveProperty('componentSource');
+    expect(findCatalogEntry('wa-button')).not.toHaveProperty('componentSource');
+
+    expect(catalogRepositoryBlobUrl).toBe('https://github.com/brianwestphal/kerf/blob/main/');
+    for (const entry of catalog) {
+      const paths: string[] = [entry.demoSource, entry.documentation];
+      if ('componentSource' in entry) paths.push(entry.componentSource);
+      for (const path of paths) {
+        expect(path).toMatch(/^ui\//);
+        expect(path).not.toMatch(/(?:^|\/)\.\.(?:\/|$)|:\/\//);
+        expect(catalogRepositoryHref(path)).toBe(`${catalogRepositoryBlobUrl}${path}`);
+        await expect(access(resolve(import.meta.dirname, '../../..', path.split('#')[0]))).resolves.toBeUndefined();
+      }
+    }
+    expect(kerfCatalog.filter((entry) => entry.kind === 'component').every((entry) => 'componentSource' in entry && entry.componentSource)).toBe(true);
+    expect(catalog.filter((entry) => entry.kind !== 'component' || entry.source !== 'kerf').every((entry) => !('componentSource' in entry))).toBe(true);
   });
 
   it('groups Kerf and Web Awesome routes once in their respective reading orders', () => {

@@ -30,7 +30,7 @@ import { batch, delegate, delegateCapture, mount, signal } from 'kerfjs';
 import { delegateActions } from 'kerfjs/actions';
 import { ArrowDownAZ, Bell, Check, ChevronDown, ChevronLeft, ChevronRight, CircleHelp, Columns3, Contrast, Folder, GitCompare, GripVertical, Inbox, List, Moon, MoreHorizontal, PanelLeft, PanelLeftOpen, Pin, Plus, Search, Settings, SlidersHorizontal, Star, Wrench, X, ZapOff } from 'lucide';
 
-import { catalog, catalogEntriesUsing, type CatalogEntry, type CatalogId, catalogSections, findCatalogEntry, isCatalogId, type KerfCatalogId, webAwesomeCatalog, type WebAwesomeCatalogId, webAwesomeCatalogSections } from './catalog.js';
+import { catalog, catalogEntriesUsing, type CatalogEntry, type CatalogId, catalogRepositoryHref, catalogSections, findCatalogEntry, isCatalogId, type KerfCatalogId, webAwesomeCatalog, type WebAwesomeCatalogId, webAwesomeCatalogSections } from './catalog.js';
 import { isRecipeId, type RecipeId, recipeLoaders } from './recipes/loaders.js';
 import type { RecipeController } from './recipes/types.js';
 
@@ -578,12 +578,26 @@ mount(app, () => {
     </aside>
     <article class="catalog-detail kui-content">
       <header class="catalog-header kui-content-item">
-        <div><p class="catalog-eyebrow">{selected.source === 'webawesome' ? `Web Awesome · ${selected.category}` : selected.category}</p><h2>{selected.name}</h2><p>{selected.description}</p></div>
+        <div class="catalog-header__summary"><p class="catalog-eyebrow">{selected.source === 'webawesome' ? `Web Awesome · ${selected.category}` : selected.category}</p><h2>{selected.name}</h2><p>{selected.description}</p></div>
         <div class="catalog-settings" role="group" aria-label="Catalog display settings">
           <button type="button" data-action="toggle-theme" aria-pressed={String(darkTheme.value)}>{icon(Moon, 'moon')}<span>Dark</span></button>
           <button type="button" data-action="toggle-contrast" aria-pressed={String(increasedContrast.value)}>{icon(Contrast, 'contrast')}<span>Contrast</span></button>
           <button type="button" data-action="toggle-motion" aria-pressed={String(reducedMotion.value)}>{icon(ZapOff, 'zap-off')}<span>Reduce motion</span></button>
         </div>
+        <nav class="catalog-resources" aria-label={`Reference links for ${selected.name}`}>
+          <a class="catalog-resource" data-catalog-resource="source" href={catalogRepositoryHref(selected.demoSource)} target="_blank" rel="noopener noreferrer" aria-label={`${selected.name}: View demo source (opens in new tab)`}>
+            <strong>View demo source <span aria-hidden="true">↗</span></strong>
+            <code>{selected.demoSource}</code>
+          </a>
+          {selected.componentSource && <a class="catalog-resource" data-catalog-resource="component-source" href={catalogRepositoryHref(selected.componentSource)} target="_blank" rel="noopener noreferrer" aria-label={`${selected.name}: View component source (opens in new tab)`}>
+            <strong>View component source <span aria-hidden="true">↗</span></strong>
+            <code>{selected.componentSource}</code>
+          </a>}
+          <a class="catalog-resource" data-catalog-resource="guidance" href={catalogRepositoryHref(selected.documentation)} target="_blank" rel="noopener noreferrer" aria-label={`${selected.name}: ${selected.source === 'webawesome' ? 'Read Kerf integration guidance' : 'Read guidance'} (opens in new tab)`}>
+            <strong>{selected.source === 'webawesome' ? 'Read Kerf integration guidance' : 'Read guidance'} <span aria-hidden="true">↗</span></strong>
+            <code>{selected.documentation}</code>
+          </a>
+        </nav>
       </header>
       <section class="catalog-stage kui-content-item" aria-label={`${selected.name} preview`}>
         <div class="catalog-canvas kui-content-item"><Stage /></div>

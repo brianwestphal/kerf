@@ -5,9 +5,9 @@ import { fileURLToPath } from 'node:url';
 const assetsDir = fileURLToPath(new URL('../dist-demo/assets/', import.meta.url));
 const limits = {
   largestJavaScriptGzip: 150_000,
-  // Includes the first-class MenuActionRow plus AppTab/ResizableRegion extension
-  // specimens while guarding against accidental growth or loss of the Web Awesome split point.
-  totalJavaScriptGzip: 248_000,
+  // Measured at 248.84 kB after adding typed source/guidance links to every
+  // catalog detail; keep only narrow headroom and preserve the Web Awesome split point.
+  totalJavaScriptGzip: 249_000,
 };
 
 const javascript = (await readdir(assetsDir)).filter((name) => name.endsWith('.js'));

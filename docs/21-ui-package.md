@@ -165,7 +165,12 @@ public visual component through an addressable `?component=` route, retains
 focused composition scenarios, and gives the selected entry one centered
 inspection stage. Catalog metadata declares direct component dependencies; the
 detail view derives one grouped `Uses` / `Used by` selector from that graph and
-omits the relationship footer when neither group exists.
+omits the relationship footer when neither group exists. Each detail also shows
+the repository-relative first-party demo source and existing guidance path as
+deploy-safe absolute GitHub links. First-party component details also link the
+implementation file derived from the canonical browser import; Web Awesome
+entries name the local documentation as Kerf integration guidance. The typed
+projection derives these paths without adding a public runtime export.
 Decorative chrome, Web Awesome controls, and production components share
 semantic theme tokens. All 70 free Web Awesome 3.12 modules have focused routes
 under a distinct collapsible ecosystem section with category subgroups, while a
@@ -182,7 +187,8 @@ tree-shaking, peer externalization, and opt-in custom-element registration.
 Playwright runs the catalog in Chromium, Firefox, and WebKit and captures wide,
 intermediate, narrow, and 200%-zoom review images. Geometry assertions verify
 that the shell's page, preview surface, pane, and dialog each have one semantic
-spacing owner and that the sidebar remains the sole pane scroll owner.
+spacing owner, that source and guidance links wrap without overflow, and that
+the sidebar remains the sole pane scroll owner.
 
 AI-oriented entry points ship with the package at `ui/ai/skill.md` and
 `ui/llms.txt`. They route tools to the component contract, accessibility rules,

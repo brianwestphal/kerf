@@ -15,6 +15,15 @@ export interface CatalogEntry {
   source: 'kerf' | 'webawesome';
   description: string;
   uses?: readonly string[];
+  demoSource: string;
+  componentSource?: string;
+  documentation: string;
+}
+
+export const catalogRepositoryBlobUrl = 'https://github.com/brianwestphal/kerf/blob/main/';
+
+export function catalogRepositoryHref(path: string): string {
+  return `${catalogRepositoryBlobUrl}${path}`;
 }
 
 export const kerfCatalog = generatedKerfCatalog satisfies readonly CatalogEntry[];

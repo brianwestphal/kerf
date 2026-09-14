@@ -164,15 +164,15 @@ button {
   padding-block: var(--kui-layout-item-gap);
 }
 .catalog-header {
-  display: flex;
+  display: grid;
   width: 100%;
   max-width: var(--catalog-content-measure, remify(1120px));
   margin-inline: auto;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: flex-start;
-  justify-content: space-between;
   gap: var(--kui-layout-content-gap);
 }
-.catalog-header > div:first-child {
+.catalog-header__summary {
   min-width: 0;
 }
 .catalog-header h2,
@@ -184,10 +184,47 @@ button {
   font-size: clamp(remify(28.8px), 4vw, remify(42.4px));
   letter-spacing: -0.04em;
 }
-.catalog-header > div:first-child > p:last-child {
+.catalog-header__summary > p:last-child {
   max-width: remify(672px);
   color: var(--kui-color-text-quiet);
   line-height: 1.45;
+}
+.catalog-resources {
+  display: grid;
+  min-width: 0;
+  grid-column: 1 / -1;
+  grid-template-columns: repeat(auto-fit, minmax(remify(240px), 1fr));
+  gap: var(--kui-space-xs);
+}
+.catalog-resource {
+  display: grid;
+  min-width: 0;
+  min-height: remify(44px);
+  padding: remify(8px) remify(12px);
+  border: 1px solid var(--kui-color-border);
+  border-radius: var(--kui-radius-m);
+  color: var(--kui-color-text);
+  background: var(--kui-color-surface);
+  text-decoration: none;
+  align-content: center;
+  gap: remify(2px);
+}
+.catalog-resource:hover {
+  border-color: var(--kui-color-border-loud);
+  background: var(--kui-color-surface-lowered);
+}
+.catalog-resource:focus-visible {
+  outline: var(--kui-focus-ring);
+  outline-offset: 2px;
+}
+.catalog-resource strong {
+  font-size: remify(13.6px);
+}
+.catalog-resource code {
+  min-width: 0;
+  color: var(--kui-color-text-quiet);
+  font-size: remify(11.2px);
+  overflow-wrap: anywhere;
 }
 .catalog-settings {
   display: flex;
@@ -1458,7 +1495,7 @@ button {
     min-height: auto;
   }
   .catalog-header {
-    display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: var(--kui-space-m);
   }
   .catalog-settings button span {
@@ -1499,6 +1536,9 @@ button {
 }
 
 @media (max-width: remify(480px)) {
+  .catalog-resources {
+    grid-template-columns: minmax(0, 1fr);
+  }
   .catalog-settings {
     width: 100%;
     border-radius: var(--kui-radius-m);

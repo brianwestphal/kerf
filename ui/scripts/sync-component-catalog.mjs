@@ -5,6 +5,16 @@ const catalogUrl = new URL('../ai/component-catalog.json', import.meta.url);
 const generatedUrl = new URL('../ux-demo/catalog.generated.ts', import.meta.url);
 const catalog = JSON.parse(await readFile(catalogUrl, 'utf8'));
 
+const demoSource = (entry) => {
+  if (entry.kind === 'recipe') return `ui/ux-demo/recipes/${entry.id.slice('recipe-'.length)}.tsx`;
+  if (entry.source === 'webawesome') return 'ui/ux-demo/webawesome-demos.tsx';
+  return 'ui/ux-demo/main.tsx';
+};
+
+const componentSource = (entry) => entry.source === 'kerf' && entry.kind === 'component'
+  ? `ui/src/${entry.delivery.browserImport.slice('@kerfjs/ui/'.length)}.tsx`
+  : undefined;
+
 const project = (entry) => ({
   id: entry.id,
   name: entry.name,
@@ -13,6 +23,9 @@ const project = (entry) => ({
   source: entry.source,
   description: entry.purpose,
   uses: entry.uses ?? [],
+  demoSource: demoSource(entry),
+  ...(componentSource(entry) ? { componentSource: componentSource(entry) } : {}),
+  documentation: `ui/${entry.links.documentation}`,
 });
 const kerf = catalog.entries.filter((entry) => entry.source === 'kerf').map(project);
 const webAwesome = catalog.entries.filter((entry) => entry.source === 'webawesome').map(project);
