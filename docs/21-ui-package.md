@@ -239,20 +239,15 @@ implementation classes.
 
 ## 21.6 Production composition recipes
 
-Eight task-oriented recipes bridge primitives and product adapters: a resizable
+Seven task-oriented recipes bridge primitives and product adapters: a resizable
 application shell, navigation sidebar, workspace header, master-detail dialog,
-composer form, list-state lifecycle, compact mixed-control toolbar, and command
-palette. They
+composer form, list-state lifecycle, and compact mixed-control toolbar. They
 are lazy catalog modules rather than new runtime exports. Each uses public
 component subpaths plus `layout.css`, declares what the recipe
 owns versus application policy, and has a stable `?component=recipe-*` route.
 The composer reference keeps one visible form surface around three transparent
 8/1/8 content sections with 24px major rhythm; only its conditional
 `StateBanner` adds another semantic surface.
-The command-palette reference explains when the pattern helps: infrequent or
-workspace-wide actions need a keyboard-first search without displacing visible
-primary actions or leaving the current task. The application retains command,
-ranking, permission, shortcut, history, and dispatch policy.
 `ui/docs/recipes.md` is the copyable guide; canonical recipe facts live beside
 component facts in `ui/ai/component-catalog.json` and project into the typed
 catalog. A dedicated drift gate checks sources, imports, loaders, routes, and AI
@@ -263,8 +258,8 @@ zoom.
 The shipped reference source includes a catalog-independent mount adapter that
 connects a recipe controller to one stable root with `delegateActions`, form
 and dialog delegates, `wireResizableRegions({ onCommit })`, and one idempotent
-aggregate disposer. The command-palette recipe and smaller typed
-application-local example show the missing-runtime-export boundary: they reuse
+aggregate disposer. A typed application-local command-palette example shows the
+missing-runtime-export boundary: it reuses
 `layout.css`, content items, and a related-control cluster without claiming a
 nonexistent UI component, while the application retains ranking, history,
 shortcuts, focus policy, actions, and copy.

@@ -13,11 +13,11 @@ const [artifact, packageJson, loaders, docs, selection, skill, llms, adapter] = 
   readFile(resolve(root, 'llms.txt'), 'utf8'),
   readFile(resolve(root, 'ux-demo/recipes/mount-recipe.ts'), 'utf8'),
 ]);
-const expected = ['recipe-app-shell', 'recipe-navigation-sidebar', 'recipe-workspace-header', 'recipe-master-detail-dialog', 'recipe-composer-form', 'recipe-list-workspace-states', 'recipe-compact-toolbar', 'recipe-command-palette'];
+const expected = ['recipe-app-shell', 'recipe-navigation-sidebar', 'recipe-workspace-header', 'recipe-master-detail-dialog', 'recipe-composer-form', 'recipe-list-workspace-states', 'recipe-compact-toolbar'];
 const recipes = artifact.entries.filter((entry) => entry.kind === 'recipe');
 const failures = [];
 const fail = (message) => failures.push(message);
-if (JSON.stringify(recipes.map((entry) => entry.id)) !== JSON.stringify(expected)) fail('canonical catalog must contain the eight recipes in documented order');
+if (JSON.stringify(recipes.map((entry) => entry.id)) !== JSON.stringify(expected)) fail('canonical catalog must contain the seven recipes in documented order');
 const packageSubpath = (specifier) => `.${specifier.slice('@kerfjs/ui'.length)}`;
 for (const entry of recipes) {
   const stem = entry.id.replace(/^recipe-/, '');
@@ -44,4 +44,4 @@ if (!docs.includes('[`mount-recipe.ts`](../ux-demo/recipes/mount-recipe.ts)')) f
 if (!packageJson.files.includes('ux-demo/recipes')) fail('package must deliver recipe source and its mount adapter');
 try { await access(resolve(root, 'ux-demo/recipes/recipes.css')); } catch { fail('shared recipe CSS is missing'); }
 if (failures.length) { console.error('[check-recipes] Recipe catalog drifted:\n'); failures.forEach((failure) => console.error(`- ${failure}`)); process.exitCode = 1; }
-else console.log('[check-recipes] OK — eight lazy production-backed recipes, routes, imports, and guidance are synchronized.');
+else console.log('[check-recipes] OK — seven lazy production-backed recipes, routes, imports, and guidance are synchronized.');

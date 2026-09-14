@@ -29,25 +29,20 @@ application boundary:
 | Composer form | [Catalog](../ux-demo/) · `?component=recipe-composer-form` |
 | List workspace states | [Catalog](../ux-demo/) · `?component=recipe-list-workspace-states` |
 | Compact toolbar choices and actions | [Catalog](../ux-demo/) · `?component=recipe-compact-toolbar` |
-| Command palette | [Catalog](../ux-demo/) · `?component=recipe-command-palette` |
 
 Recipes use public production exports and show ownership boundaries; they are
 copyable reference compositions, not new monolithic components.
 
 ## Missing recurring concepts
 
-Kerf UI does not export a command-palette component. Start from the
-[production command-palette recipe](./recipes.md#command-palette) for its modal,
-search, grouped-result, keyboard, empty-state, and focus contract when people
-need to find infrequent or workspace-wide actions without leaving their current
-task. Keep primary actions visible; do not invent a package command-palette
-import or present the recipe as a runtime export.
+Kerf UI does not export a command-palette component. Do not invent a package
+command-palette import.
 The typed [application adapter example](./examples/command-palette-adapter.tsx)
 imports `@kerfjs/ui/layout.css`, assigns one `.kui-layout` root and one surface
 inset, and groups its related footer commands with `.kui-control-cluster` while
 the application owns ranking, history, shortcut policy, focus policy,
-availability, actions, and copy. Use it when the complete modal recipe is
-unnecessary.
+availability, actions, and copy. If that concept recurs across products, open
+an upstream component or recipe request.
 
 ## Problem-to-component matrix
 

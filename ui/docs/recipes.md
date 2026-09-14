@@ -1,6 +1,6 @@
 # Production composition recipes
 
-These eight reference compositions sit between individual primitives and product
+These seven reference compositions sit between individual primitives and product
 code. Open each stable UX-catalog route to run it, then copy the linked TSX and
 CSS. The examples import public package subpaths, use semantic layout owners,
 and keep state in a per-instance application adapter. They are not new
@@ -9,7 +9,7 @@ monolithic components.
 Copy the recipe source together with the catalog-independent
 [`mount-recipe.ts`](../ux-demo/recipes/mount-recipe.ts) adapter. It mounts the
 controller at one stable application root, uses `delegateActions()` for recipe
-commands, forwards form, keyboard, and dialog lifecycle events, wires resize commits with
+commands, forwards form and dialog lifecycle events, wires resize commits with
 the public `onCommit` callback, retains every disposer, and returns one
 idempotent disposer:
 
@@ -95,19 +95,6 @@ Use `ToolbarControlGroup` for related commands, `SegmentedControl` for a few
 visible exclusive choices, `Select` for a longer value list, and an ordinary
 button for an independent command. The app owns values, actions, persistence,
 and responsive priority.
-
-## Command palette
-
-[Open the recipe](../ux-demo/?component=recipe-command-palette) · [TSX source](../ux-demo/recipes/command-palette.tsx)
-
-Use a command palette when people need a keyboard-first way to find and run
-infrequent or workspace-wide actions without leaving their current task or
-hunting through menus. Keep primary actions visible instead of hiding them here.
-The copyable composition supplies the modal search field, grouped results,
-active-result semantics, Arrow/Home/End/Enter behavior, empty state, and focus
-restoration. The application owns command registration, matching and ranking,
-permissions, persisted recent history, shortcut policy, dispatch, and product
-copy. This is a production recipe, not an `@kerfjs/ui` command-palette export.
 
 ## Rules shared by every recipe
 

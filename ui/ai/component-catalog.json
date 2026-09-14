@@ -4455,21 +4455,6 @@
       "accessibility": ["Each control retains its own native name, pressed/value state, and keyboard contract."],
       "delivery": { "sideEffects": ["lazy-recipe-css", "individual-custom-element-registration"] },
       "links": { "catalogRoute": "?component=recipe-compact-toolbar", "documentation": "docs/recipes.md#compact-toolbar-choices-and-actions", "recipe": "docs/recipes.md#compact-toolbar-choices-and-actions" }
-    },
-    {
-      "id": "recipe-command-palette",
-      "name": "Command palette",
-      "category": "Recipes",
-      "kind": "recipe",
-      "source": "kerf",
-      "purpose": "Copyable keyboard-first search for workspace-wide actions without leaving the task.",
-      "uses": ["dialog-header", "wa-dialog", "layout"],
-      "useWhen": ["For searchable infrequent or workspace-wide actions."],
-      "avoidWhen": ["Keep primary actions visible. This recipe is not an @kerfjs/ui export; policy stays app-owned."],
-      "appOwns": ["command registration", "matching and ranking", "permissions", "recent-history persistence", "shortcut policy", "dispatch", "product copy"],
-      "accessibility": ["The search combobox exposes the active listbox option, supports Arrow/Home/End/Enter, reports empty and result-count states, and restores the invoking control after dismissal."],
-      "delivery": { "sideEffects": ["lazy-recipe-css", "individual-custom-element-registration"] },
-      "links": { "catalogRoute": "?component=recipe-command-palette", "documentation": "docs/recipes.md#command-palette", "recipe": "docs/recipes.md#command-palette" }
     }
   ]
 }

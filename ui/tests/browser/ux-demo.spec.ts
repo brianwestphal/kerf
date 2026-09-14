@@ -2,6 +2,39 @@ import { expect, test } from '@playwright/test';
 
 import { catalog, catalogRepositoryHref, catalogSections, kerfCatalog, webAwesomeCatalog } from '../../ux-demo/catalog.js';
 
+test('omits the removed command-palette recipe and safely falls back from its stale route', async ({ page, browserName }) => {
+  const openRemainingRecipes = async (width: number, height: number) => {
+    await page.setViewportSize({ width, height });
+    await page.goto('/?component=recipe-compact-toolbar');
+    const recipes = page.locator('.catalog-group').filter({ has: page.getByText('Recipes', { exact: true }) });
+    const rows = recipes.locator('[data-component="menu-item"]');
+    await expect(rows).toHaveCount(7);
+    await expect(rows).toHaveText([
+      /Desktop application shell/,
+      /Navigation sidebar/,
+      /Workspace header/,
+      /Master-detail dialog/,
+      /Composer form/,
+      /List workspace states/,
+      /Compact toolbar choices and actions/,
+    ]);
+    await expect(page.locator('[data-item-id="recipe-command-palette"]')).toHaveCount(0);
+    await expect(page.locator('[data-recipe="recipe-command-palette"]')).toHaveCount(0);
+    await rows.last().scrollIntoViewIfNeeded();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
+  };
+
+  await openRemainingRecipes(1100, 900);
+  if (browserName === 'chromium') await page.screenshot({ path: 'test-results/catalog-without-command-palette-wide.png' });
+
+  await page.goto('/?component=recipe-command-palette');
+  await expect(page.locator('[data-demo="lucide-icon"]')).toBeVisible();
+  await expect(page.locator('[data-recipe="recipe-command-palette"]')).toHaveCount(0);
+
+  await openRemainingRecipes(390, 844);
+  if (browserName === 'chromium') await page.screenshot({ path: 'test-results/catalog-without-command-palette-narrow.png' });
+});
+
 test('links catalog details to their first-party source and existing guidance', async ({ page, browserName }) => {
   for (const [id, name, sourcePath, componentPath, documentationPath, guidanceLabel] of [
     ['toolbar', 'Toolbar', 'ui/ux-demo/main.tsx', 'ui/src/toolbar.tsx', 'ui/docs/component-selection.md', 'Read guidance'],

@@ -2,7 +2,6 @@ import { describe, expect, it } from 'vitest';
 
 import { mountCommandPaletteAdapter } from '../../docs/examples/command-palette-adapter.js';
 import { createRecipe as createAppShell } from '../../ux-demo/recipes/app-shell.js';
-import { createRecipe as createCommandPalette } from '../../ux-demo/recipes/command-palette.js';
 import { createRecipe as createCompactToolbar } from '../../ux-demo/recipes/compact-toolbar.js';
 import { createRecipe as createComposerForm } from '../../ux-demo/recipes/composer-form.js';
 import { createRecipe as createListWorkspace } from '../../ux-demo/recipes/list-workspace-states.js';
@@ -20,8 +19,8 @@ const target = (data: Record<string, string> = {}) => {
 
 describe('production composition recipes', () => {
   it('renders every stable recipe marker from a per-instance factory', () => {
-    const factories = [createAppShell, createNavigationSidebar, createWorkspaceHeader, createMasterDetail, createComposerForm, createListWorkspace, createCompactToolbar, createCommandPalette];
-    const ids = ['recipe-app-shell', 'recipe-navigation-sidebar', 'recipe-workspace-header', 'recipe-master-detail-dialog', 'recipe-composer-form', 'recipe-list-workspace-states', 'recipe-compact-toolbar', 'recipe-command-palette'];
+    const factories = [createAppShell, createNavigationSidebar, createWorkspaceHeader, createMasterDetail, createComposerForm, createListWorkspace, createCompactToolbar];
+    const ids = ['recipe-app-shell', 'recipe-navigation-sidebar', 'recipe-workspace-header', 'recipe-master-detail-dialog', 'recipe-composer-form', 'recipe-list-workspace-states', 'recipe-compact-toolbar'];
     factories.forEach((factory, index) => expect(html(factory(() => {}).render())).toContain(`data-recipe="${ids[index]}"`));
   });
 
@@ -134,36 +133,6 @@ describe('production composition recipes', () => {
     stop();
     root.querySelector<HTMLElement>('[data-action="close-palette"]')?.click();
     expect(closes).toBe(1);
-    root.remove();
-  });
-
-  it('runs the command-palette recipe through copyable input and keyboard wiring', () => {
-    const announcements: string[] = [];
-    const root = document.createElement('div');
-    document.body.append(root);
-    const stop = mountRecipe(root, createCommandPalette((message) => announcements.push(message)));
-
-    const launcher = root.querySelector<HTMLButtonElement>('[data-recipe-command="open"]')!;
-    expect(root.querySelector('.kui-recipe__ownership')?.textContent).toContain('Find workspace-wide actions without leaving this task.');
-    expect(root.querySelector('.kui-recipe__ownership')?.textContent).toContain('Copyable recipe; not an @kerfjs/ui runtime export.');
-    launcher.click();
-    const query = root.querySelector<HTMLInputElement>('[data-command-query]')!;
-    expect(root.querySelector('#recipe-command-summary')?.textContent).toContain('Run workspace actions without leaving this task.');
-    expect(root.querySelector('#recipe-command-summary')?.textContent).toContain('Copyable recipe; not an @kerfjs/ui runtime export.');
-    expect(query.getAttribute('aria-activedescendant')).toBe('recipe-command-option-0');
-    expect(root.textContent).toContain('Recent commands');
-
-    query.value = 'workspace';
-    query.dispatchEvent(new InputEvent('input', { bubbles: true }));
-    expect(root.querySelectorAll('[role="option"]')).toHaveLength(2);
-    query.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'ArrowDown' }));
-    expect(query.getAttribute('aria-activedescendant')).toBe('recipe-command-option-1');
-    query.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'Enter' }));
-    expect(announcements).toContain('Ran Open workspace settings');
-
-    root.querySelector('wa-dialog')?.dispatchEvent(new Event('wa-after-hide', { bubbles: true }));
-    expect(launcher).toBe(document.activeElement);
-    stop();
     root.remove();
   });
 

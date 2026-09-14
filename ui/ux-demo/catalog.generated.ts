@@ -539,21 +539,6 @@ export const generatedKerfCatalog = [
     ],
     "demoSource": "ui/ux-demo/recipes/compact-toolbar.tsx",
     "documentation": "ui/docs/recipes.md#compact-toolbar-choices-and-actions"
-  },
-  {
-    "id": "recipe-command-palette",
-    "name": "Command palette",
-    "category": "Recipes",
-    "kind": "recipe",
-    "source": "kerf",
-    "description": "Copyable keyboard-first search for workspace-wide actions without leaving the task.",
-    "uses": [
-      "dialog-header",
-      "wa-dialog",
-      "layout"
-    ],
-    "demoSource": "ui/ux-demo/recipes/command-palette.tsx",
-    "documentation": "ui/docs/recipes.md#command-palette"
   }
 ] as const;
 

@@ -1,8 +1,8 @@
 # Requirements summary — kerf
 
-`@kerfjs/ui` ships eight production-backed reference recipes (application
+`@kerfjs/ui` ships seven production-backed reference recipes (application
 shell, sidebar, workspace header, master-detail dialog, composer form,
-list-state lifecycle, compact toolbar, and command palette). They are lazy catalog compositions,
+list-state lifecycle, and compact toolbar). They are lazy catalog compositions,
 not public monolithic components, with responsive, keyboard, state,
 theme/contrast/motion, zoom, drift, and ownership coverage. Source of truth:
 `docs/21-ui-package.md` and `ui/docs/recipes.md`.
@@ -13,11 +13,6 @@ custom semantics while reusing the canonical layout and control-cluster roles.
 The composer reference uses one visible form surface with exactly three
 transparent 8/1/8 content sections and 24px major rhythm; a conditional
 `StateBanner` is its only nested semantic surface.
-The command-palette reference is the keyboard-first pattern for finding
-infrequent or workspace-wide actions without leaving the current task. Primary
-actions remain visible, while registration, ranking, permissions, recent
-history, shortcut policy, dispatch, and copy remain application-owned.
-
 The UI package also has an internal deterministic AI-regression foundation,
 including frozen versioned contexts, generated public declaration signatures,
 and an opt-in non-executing TypeScript compile-evidence sidecar.
