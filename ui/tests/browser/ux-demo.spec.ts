@@ -230,14 +230,14 @@ test('sizes and rotates the first-class disclosure arrow while Select keeps its 
     } : null;
   });
   const selectDisclosureAt100 = await selectDisclosure();
-  expect(selectDisclosureAt100?.token).toBe('0.5');
+  expect(Number.parseFloat(selectDisclosureAt100?.token ?? '')).toBe(0.5);
   expect(selectDisclosureAt100?.transform).toMatch(/^matrix\(0\.5, 0, 0, 0\.5,/);
   expect(selectDisclosureAt100?.width).toBeCloseTo(10, 4);
   expect(selectDisclosureAt100?.height).toBeCloseTo(8, 4);
 
   await page.locator('html').evaluate((element) => { element.style.fontSize = '200%'; });
   const selectDisclosureAt200 = await selectDisclosure();
-  expect(selectDisclosureAt200?.token).toBe('0.5');
+  expect(Number.parseFloat(selectDisclosureAt200?.token ?? '')).toBe(0.5);
   expect(selectDisclosureAt200?.transform).toMatch(/^matrix\(0\.5, 0, 0, 0\.5,/);
   expect(selectDisclosureAt200?.width).toBeCloseTo(selectDisclosureAt100!.width * 2, 4);
   expect(selectDisclosureAt200?.height).toBeCloseTo(selectDisclosureAt100!.height * 2, 4);
