@@ -238,7 +238,7 @@ export const generatedKerfCatalog = [
     "category": "Navigation",
     "kind": "component",
     "source": "kerf",
-    "description": "Roving-tabindex-ready tabs with optional close affordances.",
+    "description": "Roving-tabindex-ready tabs with protected application metadata and customizable close affordances.",
     "uses": [
       "lucide-icon"
     ]
@@ -283,8 +283,10 @@ export const generatedKerfCatalog = [
     "category": "Controls",
     "kind": "component",
     "source": "kerf",
-    "description": "Pointer and keyboard-operable split region.",
-    "uses": []
+    "description": "Pointer and keyboard-operable split region with a customizable handle icon.",
+    "uses": [
+      "lucide-icon"
+    ]
   },
   {
     "id": "select",

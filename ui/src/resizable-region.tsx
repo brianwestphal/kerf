@@ -13,6 +13,8 @@ export interface ResizableRegionProps {
   edge?: ResizableRegionEdge;
   collapsed?: boolean;
   transitioning?: boolean;
+  /** Decorative dormant content for the separator handle. Must not contain interactive descendants. */
+  handleIcon?: SafeHtml;
   children: SafeHtml | SafeHtml[];
 }
 
@@ -27,14 +29,14 @@ function ResizeGrip({ axis }: { axis: ResizableRegionAxis }) {
   </svg>;
 }
 
-export function ResizableRegion({ id, label, size, min, max, axis = 'horizontal', edge = 'end', collapsed = false, transitioning = false, children }: ResizableRegionProps) {
+export function ResizableRegion({ id, label, size, min, max, axis = 'horizontal', edge = 'end', collapsed = false, transitioning = false, handleIcon, children }: ResizableRegionProps) {
   const expandedSize = clampRegionSize(size, min, max);
   const resolved = collapsed ? 0 : expandedSize;
   const orientation = axis === 'horizontal' ? 'vertical' : 'horizontal';
   return <section class="kui-resizable-region" data-component="resizable-region" data-region-id={id} data-axis={axis} data-edge={edge} data-collapsed={String(collapsed)} data-transitioning={String(transitioning)} style={`--kui-resizable-region-size:${resolved}px;--kui-resizable-region-expanded-size:${expandedSize}px`} aria-label={label}>
     <div class="kui-resizable-region__content">{children}</div>
     <div class="kui-resizable-region__handle" role="separator" tabindex="0" aria-label={`Resize ${label}`} aria-orientation={orientation} aria-valuemin={collapsed ? 0 : min} aria-valuemax={max} aria-valuenow={resolved} data-kui-resize-handle data-region-id={id}>
-      <ResizeGrip axis={axis} />
+      <span class="kui-resizable-region__handle-icon" aria-hidden="true">{handleIcon ?? <ResizeGrip axis={axis} />}</span>
     </div>
   </section>;
 }

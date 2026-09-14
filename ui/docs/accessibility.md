@@ -38,12 +38,17 @@ The handle exposes separator role, orientation, name, minimum, maximum, and curr
 - primary-pointer drag with clamping;
 - preview callbacks while dragging and one commit callback on release.
 
-The application owns persistence and collapsed/expanded policy. Keep the last expanded size outside the component and restore it when reopening.
+The application owns persistence and collapsed/expanded policy. Keep the last expanded size outside the component and restore it when reopening. An optional `handleIcon` replaces only decorative dormant content; it must not contain controls or interactive roles because the separator remains the sole focus and interaction owner.
 
 ## Tabs
 
 `AppTab` renders one controlled tab. `TabBar` supplies the containing tab list,
 fixed leading/trailing regions, and a horizontally scrollable strip.
+`AppTab.rootAttributes` accepts application `data-*` metadata only; runtime
+filtering rejects roles plus case variants of component- or wiring-owned
+action, identity, selection, drag, drop, and component attributes. An optional
+`closeIcon` is decorative dormant content inside the already named close button
+and must not contain interactive descendants.
 `wireTabBars()` adds Left/Right wrapping, Home/End, Delete/Backspace close
 activation, same-bar pointer reordering, `Alt+Shift+ArrowLeft/ArrowRight`
 reordering, focus restoration, scroll-into-view, and pointer-proximity

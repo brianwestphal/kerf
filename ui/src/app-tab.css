@@ -122,9 +122,16 @@
 .kui-app-tab__close:hover {
   color: var(--kui-color-text);
 }
-.kui-app-tab__close svg {
+.kui-app-tab__close-icon {
+  display: grid;
   width: remify(10.2px);
   height: remify(10.2px);
+  pointer-events: none;
+  place-items: center;
+}
+.kui-app-tab__close-icon > svg {
+  width: 100%;
+  height: 100%;
 }
 @media (hover: hover) and (pointer: fine) {
   .kui-app-tab__close {

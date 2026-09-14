@@ -6,8 +6,8 @@
       "source": "kerf.claude-skill.md",
       "bundle": "ai/skill.md",
       "dest": ".claude/skills/kerf-app/SKILL.md",
-      "version": "1.20.0",
-      "sha256": "aa88ccdbf969624bbc6cefadba76ada1f090fae436597a7bab564e24c467287f"
+      "version": "1.21.0",
+      "sha256": "265b747eeb9c3d445c60d66a1109eec42705075b7cd154d107bd79d543c1e7e5"
     },
     {
       "name": "cursorrules",

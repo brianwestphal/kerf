@@ -453,6 +453,12 @@ until `@kerfjs/ui/select/register` is imported. `Select` also owns the morph
 boundary for its upgraded Web Awesome markup: stable skipped option-icon keys
 retain slotted elements across rerenders, while value-keyed custom selected
 content is replaced when the controlled selection changes.
+`AppTab.rootAttributes` uses the shared extension filter to accept only domain
+`data-*` values while protecting component/action/identity/selection and
+wire-owned drag/drop markers case-insensitively. `AppTab.closeIcon` and
+`ResizableRegion.handleIcon` replace decorative SafeHtml content without
+moving interaction or lifecycle ownership out of their existing controls and
+disposer-returning wiring.
 
 ## Where to look for X
 

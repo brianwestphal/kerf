@@ -300,20 +300,55 @@ describe('production UI primitives', () => {
   });
 
   it('renders generalized tabs with roving tabindex and optional close affordances', () => {
-    const selected = asHtml(AppTab({ id: 'first', name: 'First', selected: true, leading: icon, trailing: icon, draggable: true, selectAction: 'pick', closeAction: 'dismiss', className: 'document', rootAttributes: { 'data-project-id': 'project-one', 'data-tab-id': 'ignored' } }));
+    const widenedRootAttributes = {
+      'data-project-id': 'project-one',
+      'data-Tab-Id': 'ignored-case-variant',
+      'data-Action': 'unsafe-root-action',
+      'data-Component': 'unsafe-component',
+      'data-Selected': 'false',
+      'data-Tab-Dragging': 'true',
+      'data-Tab-Drop-Position': 'before',
+      role: 'menuitem',
+    };
+    const selected = asHtml(AppTab({ id: 'first', name: 'First', selected: true, leading: icon, trailing: icon, closeIcon: <span data-custom-close-icon>×</span>, draggable: true, selectAction: 'pick', closeAction: 'dismiss', className: 'document', rootAttributes: widenedRootAttributes }));
     expect(selected).toContain('data-selected="true" draggable="true"');
     expect(selected).toContain('data-project-id="project-one"');
     expect(selected).toContain('data-tab-id="first"');
-    expect(selected).not.toContain('data-tab-id="ignored"');
+    expect(selected).not.toContain('ignored-case-variant');
+    expect(selected).not.toContain('unsafe-root-action');
+    expect(selected).not.toContain('unsafe-component');
+    expect(selected).not.toContain('data-tab-dragging');
+    expect(selected).not.toContain('data-tab-drop-position');
+    expect(selected).not.toContain('role="menuitem"');
     expect(selected).toContain('data-action="dismiss"');
     expect(selected).toContain('role="tab" aria-selected="true" aria-keyshortcuts="Delete Backspace Alt+Shift+ArrowLeft Alt+Shift+ArrowRight" data-action="pick"');
     expect(selected).toContain('tabindex="0"');
+    const host = document.createElement('div');
+    host.innerHTML = selected;
+    const selectedRoot = host.querySelector<HTMLElement>('[data-component="app-tab"]')!;
+    expect(selectedRoot.dataset.tabId).toBe('first');
+    expect(selectedRoot.dataset.selected).toBe('true');
+    expect(selectedRoot.dataset.projectId).toBe('project-one');
+    expect(selectedRoot.hasAttribute('data-action')).toBe(false);
+    expect(selectedRoot.hasAttribute('role')).toBe(false);
+    const closeIcon = selectedRoot.querySelector<HTMLElement>('.kui-app-tab__close-icon')!;
+    expect(closeIcon.getAttribute('aria-hidden')).toBe('true');
+    expect(closeIcon.querySelector('[data-custom-close-icon]')?.textContent).toBe('×');
     const fixed = asHtml(AppTab({ id: 'fixed', name: 'Fixed', closable: false }));
     expect(fixed).toContain('tabindex="-1"');
     expect(fixed).not.toContain('Close Fixed');
     const bar = asHtml(TabBar({ id: 'work', label: 'Open work', leading: icon, trailing: icon, children: [AppTab({ id: 'first', name: 'First', selected: true })] }));
     expect(bar).toContain('data-component="tab-bar" data-tab-bar-id="work" aria-label="Open work"');
     expect(bar).toContain('class="kui-tab-bar__tabs" role="tablist" aria-label="Open work" data-kui-tab-list');
+
+    // @ts-expect-error The noninteractive tab root cannot own delegated actions.
+    AppTab({ id: 'unsafe', name: 'Unsafe', rootAttributes: { 'data-action': 'unsafe' } });
+    // @ts-expect-error Tab identity is component-owned.
+    AppTab({ id: 'unsafe', name: 'Unsafe', rootAttributes: { 'data-tab-id': 'unsafe' } });
+    // @ts-expect-error Drag lifecycle state is wireTabBars-owned.
+    AppTab({ id: 'unsafe', name: 'Unsafe', rootAttributes: { 'data-tab-dragging': 'true' } });
+    // @ts-expect-error Drop lifecycle state is wireTabBars-owned.
+    AppTab({ id: 'unsafe', name: 'Unsafe', rootAttributes: { 'data-tab-drop-position': 'before' } });
   });
 
   it('renders page and dialog hierarchy plus a semantic value table', () => {
@@ -407,9 +442,14 @@ describe('production UI primitives', () => {
     expect(clampRegionSize(31.7, 20, 50)).toBe(32);
     expect(resizeRegionFromPointer(100, 12, 'end')).toBe(112);
     expect(resizeRegionFromPointer(100, 12, 'start')).toBe(88);
-    const horizontal = asHtml(ResizableRegion({ id: 'sidebar', label: 'Sidebar', size: 240, min: 180, max: 400, children: icon }));
+    const horizontal = asHtml(ResizableRegion({ id: 'sidebar', label: 'Sidebar', size: 240, min: 180, max: 400, handleIcon: <span data-custom-handle-icon>⋮</span>, children: icon }));
     expect(horizontal).toContain('data-axis="horizontal" data-edge="end" data-collapsed="false"');
     expect(horizontal).toContain('aria-orientation="vertical" aria-valuemin="180" aria-valuemax="400" aria-valuenow="240"');
+    const host = document.createElement('div');
+    host.innerHTML = horizontal;
+    const handleIcon = host.querySelector<HTMLElement>('.kui-resizable-region__handle-icon')!;
+    expect(handleIcon.getAttribute('aria-hidden')).toBe('true');
+    expect(handleIcon.querySelector('[data-custom-handle-icon]')?.textContent).toBe('⋮');
     const vertical = asHtml(ResizableRegion({ id: 'drawer', label: 'Drawer', size: 220, min: 120, max: 500, axis: 'vertical', edge: 'start', collapsed: true, transitioning: true, children: icon }));
     expect(vertical).toContain('data-axis="vertical" data-edge="start" data-collapsed="true" data-transitioning="true"');
     expect(vertical).toContain('aria-orientation="horizontal"');

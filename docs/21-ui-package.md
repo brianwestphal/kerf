@@ -109,9 +109,9 @@ instead of retaining stale content.
 | Icons | `LucideIcon` | Render Lucide icon-node data; decorative by default, labeled on request |
 | Toolbars | `Toolbar`, `ToolbarControlGroup`, `ToolbarText` | Leading/center/trailing structure and grouped controls |
 | Menus | `MenuItem`, `MenuActionRow`, `MenuHeader` | Navigation/action rows, sibling primary/trailing row actions, and section headings, with narrow typed `data-*` and popover-relationship extension slots but no domain commands |
-| Tabs | `AppTab`, `TabBar`, `wireTabBars`, `reorderTabs` | Controlled tab/close markup, fixed rails, horizontal overflow, edge autoscroll, pointer/keyboard reorder, and focus restoration; the app owns state and persistence |
+| Tabs | `AppTab`, `TabBar`, `wireTabBars`, `reorderTabs` | Controlled tab/close markup with runtime-safe domain metadata and an optional decorative close glyph, fixed rails, horizontal overflow, edge autoscroll, pointer/keyboard reorder, and focus restoration; the app owns state and persistence |
 | Layout | `PageHeader`, `DialogHeader`, `ValueTable`, `ValueTableRow` | Page/dialog hierarchy and typed semantic definition-list rows, with optional leading icons |
-| Resize | `ResizableRegion`, `wireResizableRegions` | Pointer-captured resize plus arrows, Shift acceleration, Home, and End |
+| Resize | `ResizableRegion`, `wireResizableRegions` | Pointer-captured resize plus arrows, Shift acceleration, Home, End, and an optional decorative handle glyph |
 | Choice controls | `SegmentedControl`, `Select` | Controlled exclusive buttons with toolbar/rounded/pill presentation; grouped Web Awesome popup choices with optional Lucide icons |
 | Search | `TokenSearchField`, `readTokenSearchField`, `placeTokenSearchCaret`, `wireTokenSearchFields` | DOM-owned free text plus controlled ordered atomic filter chips; optional animated standalone or toolbar-group collapse; DOM reading, Enter submission, and caret-preserving keyboard deletion without application query grammar |
 | Feedback | `StateBanner`, `EmptyState`, `LoadingSpinner` | Status/alert, empty/busy, and meaningful/decorative progress states |
@@ -123,7 +123,8 @@ instead of retaining stale content.
 - `StateBanner` defaults to polite `status`; callers opt into assertive `alert`
   only for immediate action.
 - `ResizableRegion` renders a focusable ARIA separator with orientation and live
-  min/max/current values. Its wiring returns a disposer.
+  min/max/current values. Its wiring returns a disposer. `handleIcon` replaces
+  dormant decoration only; it does not replace separator semantics or wiring.
 - `SegmentedControl` labels a group of native pressed buttons. Every enabled
   choice stays in sequential Tab order; the app handles its action and owns the
   selected value.
@@ -139,7 +140,10 @@ instead of retaining stale content.
   toolbar group, and keeps populated fields expanded. Applications own the
   transient focused/open signal and focus transfer into the revealed field.
 - `AppTab` renders `role="tab"`, `aria-selected`, roving `tabindex`, and keyboard
-  shortcut metadata. `TabBar` provides the containing list and scroll owner;
+  shortcut metadata. `rootAttributes` accepts runtime-filtered application
+  `data-*` metadata while component- and wiring-owned case variants stay
+  protected. `closeIcon` replaces dormant decoration inside the named close
+  button. `TabBar` provides the containing list and scroll owner;
   `wireTabBars` provides arrows/Home/End, close activation, pointer reorder,
   proximity-based horizontal edge autoscroll, `Alt+Shift+Arrow` reorder, focus
   restoration, and a disposer. The app applies changes and owns order,

@@ -5,8 +5,8 @@ import { fileURLToPath } from 'node:url';
 const assetsDir = fileURLToPath(new URL('../dist-demo/assets/', import.meta.url));
 const limits = {
   largestJavaScriptGzip: 150_000,
-  // Includes the first-class MenuActionRow interaction/geometry specimen while
-  // guarding against accidental aggregate growth or collapsing the Web Awesome split point.
+  // Includes the first-class MenuActionRow plus AppTab/ResizableRegion extension
+  // specimens while guarding against accidental growth or loss of the Web Awesome split point.
   totalJavaScriptGzip: 248_000,
 };
 

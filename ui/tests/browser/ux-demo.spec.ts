@@ -798,6 +798,12 @@ test('catalog routes every production component family and supports its stateful
   await page.locator('.catalog-sidebar [data-item-id="tabs"]').click();
   await expect(page.locator('[data-demo="tabs"] > [data-component="tab-bar"]')).toHaveAttribute('data-tab-bar-id', 'focused-app-tabs');
   await expect(page.locator('[data-demo="tabs"] [data-kui-tab-list]')).toHaveAttribute('aria-label', 'Open documents');
+  const guidelinesRoot = page.locator('[data-demo="tabs"] .kui-app-tab[data-tab-id="guidelines"]');
+  await expect(guidelinesRoot).toHaveAttribute('data-demo-tab-source', 'workspace');
+  await expect(guidelinesRoot).not.toHaveAttribute('data-action');
+  await expect(guidelinesRoot).not.toHaveAttribute('role');
+  await expect(guidelinesRoot.locator('.kui-app-tab__close [data-lucide="custom-tab-close"]')).toHaveAttribute('aria-hidden', 'true');
+  await expect(guidelinesRoot.locator('.kui-app-tab__close-icon')).toHaveAttribute('aria-hidden', 'true');
   await page.locator('[data-action="select-tab"][data-tab-id="guidelines"]').click();
   await expect(page.locator('[data-action="select-tab"][data-tab-id="guidelines"]')).toHaveAttribute('aria-selected', 'true');
   await page.locator('[data-action="select-tab"][data-tab-id="guidelines"]').press('Backspace');
@@ -1260,28 +1266,90 @@ test('renders the Hot Sheet split treatment on ResizableRegion', async ({ page, 
   await page.goto('/?component=resize');
   const region = page.locator('[data-component="resizable-region"]');
   const handle = region.locator('[data-kui-resize-handle]');
-  const grip = handle.locator('svg');
+  const iconLayer = handle.locator('.kui-resizable-region__handle-icon');
+  const grip = iconLayer.locator('svg');
+  await expect(iconLayer).toHaveAttribute('aria-hidden', 'true');
+  await expect(grip).toHaveAttribute('data-lucide', 'custom-resize-handle');
+  await expect(grip).toHaveAttribute('aria-hidden', 'true');
+  await expect(handle).toHaveAttribute('role', 'separator');
+  await expect(handle).toHaveAttribute('aria-label', 'Resize Catalog panel');
   const separator = await handle.evaluate((element) => {
     const style = window.getComputedStyle(element, '::before');
     return { width: style.width, background: style.backgroundColor };
   });
   expect(separator).toEqual({ width: '1px', background: 'rgb(209, 209, 214)' });
-  await expect(grip).toHaveCSS('opacity', '0');
+  await expect(iconLayer).toHaveCSS('opacity', '0');
   await handle.hover();
-  await expect(grip).toHaveCSS('opacity', '1');
+  await expect(iconLayer).toHaveCSS('opacity', '1');
+  await handle.focus();
+  await handle.press('End');
+  await expect(page.locator('[data-region-size]')).toHaveText('420px');
+  await handle.press('Home');
+  await expect(page.locator('[data-region-size]')).toHaveText('180px');
+  await handle.press('ArrowRight');
+  await expect(page.locator('[data-region-size]')).toHaveText('196px');
+  const handleBounds = await handle.boundingBox();
+  expect(handleBounds).not.toBeNull();
+  await page.mouse.move(handleBounds!.x + handleBounds!.width / 2, handleBounds!.y + handleBounds!.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(handleBounds!.x + handleBounds!.width / 2 + 40, handleBounds!.y + handleBounds!.height / 2);
+  await page.mouse.up();
+  await expect(page.locator('[data-region-size]')).toHaveText('236px');
 
   await region.evaluate((element) => element.style.setProperty('--kui-resizable-region-separator-color', '#7540a8'));
   await expect.poll(() => handle.evaluate((element) => window.getComputedStyle(element, '::before').backgroundColor)).toBe('rgb(117, 64, 168)');
   await region.evaluate((element) => element.style.removeProperty('--kui-resizable-region-separator-color'));
   if (browserName === 'chromium') {
     await handle.hover();
-    await page.screenshot({ path: 'test-results/resizable-region-separator-light-wide.png', fullPage: true });
+    await page.screenshot({ path: 'test-results/resizable-region-custom-handle-light-wide.png', fullPage: true });
     await page.locator('[data-action="toggle-theme"]').click();
     await handle.hover();
-    await page.screenshot({ path: 'test-results/resizable-region-separator-dark-wide.png', fullPage: true });
+    await page.screenshot({ path: 'test-results/resizable-region-custom-handle-dark-wide.png', fullPage: true });
     await page.setViewportSize({ width: 390, height: 844 });
     await handle.hover();
-    await page.screenshot({ path: 'test-results/resizable-region-separator-dark-narrow.png', fullPage: true });
+    await page.screenshot({ path: 'test-results/resizable-region-custom-handle-dark-narrow.png', fullPage: true });
+    await page.setViewportSize({ width: 640, height: 720 });
+    await page.locator('html').evaluate((element) => { element.style.fontSize = '200%'; });
+    await handle.hover();
+    await expect(iconLayer).toHaveCSS('opacity', '1');
+    expect(await page.locator('body').evaluate((element) => element.scrollWidth <= element.clientWidth)).toBe(true);
+    await page.screenshot({ path: 'test-results/resizable-region-custom-handle-200-percent.png', fullPage: true });
+  }
+});
+
+test('keeps AppTab extension metadata and replacement close icons inside the shared tab lifecycle', async ({ page, browserName }) => {
+  await page.setViewportSize({ width: 1100, height: 760 });
+  await page.goto('/?component=tabs');
+  const demo = page.locator('[data-demo="tabs"]');
+  const root = demo.locator('.kui-app-tab[data-tab-id="guidelines"]');
+  const tab = root.getByRole('tab', { name: 'Guidelines' });
+  const close = root.getByRole('button', { name: 'Close Guidelines' });
+
+  await expect(root).toHaveAttribute('data-demo-tab-source', 'workspace');
+  await expect(root).toHaveAttribute('data-tab-id', 'guidelines');
+  await expect(root).not.toHaveAttribute('data-action');
+  await expect(root).not.toHaveAttribute('role');
+  await expect(root).not.toHaveAttribute('data-tab-dragging');
+  await expect(root).not.toHaveAttribute('data-tab-drop-position');
+  await expect(close.locator('[data-lucide="custom-tab-close"]')).toHaveAttribute('aria-hidden', 'true');
+  await expect(close.locator('.kui-app-tab__close-icon')).toHaveAttribute('aria-hidden', 'true');
+
+  await tab.click();
+  await expect(tab).toHaveAttribute('aria-selected', 'true');
+  await tab.press('ArrowRight');
+  await expect(demo.getByRole('tab', { name: 'Catalog' })).toHaveAttribute('aria-selected', 'true');
+  await close.click();
+  await expect(page.locator('.catalog-log')).toHaveText('Close requested for guidelines');
+
+  if (browserName === 'chromium') {
+    await tab.focus();
+    await page.screenshot({ path: 'test-results/app-tab-extension-light-wide.png', fullPage: true });
+    await page.locator('[data-action="toggle-theme"]').click();
+    await root.hover();
+    await page.screenshot({ path: 'test-results/app-tab-extension-dark-wide.png', fullPage: true });
+    await page.setViewportSize({ width: 390, height: 844 });
+    await root.hover();
+    await page.screenshot({ path: 'test-results/app-tab-extension-dark-narrow.png', fullPage: true });
   }
 });
 

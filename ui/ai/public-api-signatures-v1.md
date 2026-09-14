@@ -239,6 +239,80 @@ declare function ValueTable({ label, className, children }: ValueTableProps): Sa
 export { ValueTable, type ValueTableProps, ValueTableRow, type ValueTableRowProps };
 ```
 
+## `@kerfjs/ui/app-tab`
+
+```ts
+import { SafeHtml } from 'kerfjs';
+
+type AppTabRootAttributes = Readonly<Record<`data-${string}`, string | undefined> & {
+    'data-component'?: never;
+    'data-action'?: never;
+    'data-tab-id'?: never;
+    'data-selected'?: never;
+    'data-tab-dragging'?: never;
+    'data-tab-drop-position'?: never;
+}>;
+interface AppTabProps {
+    id: string;
+    name: string;
+    selected?: boolean;
+    closable?: boolean;
+    draggable?: boolean;
+    leading?: SafeHtml;
+    trailing?: SafeHtml;
+    /** Decorative dormant content for the close button. Must not contain interactive descendants. */
+    closeIcon?: SafeHtml;
+    selectAction?: string;
+    closeAction?: string;
+    className?: string;
+    rootAttributes?: AppTabRootAttributes;
+}
+declare function AppTab({ id, name, selected, closable, draggable, leading, trailing, closeIcon, selectAction, closeAction, className, rootAttributes }: AppTabProps): SafeHtml;
+
+export { AppTab, type AppTabProps };
+```
+
+## `@kerfjs/ui/tab-bar`
+
+```ts
+import { SafeHtml } from 'kerfjs';
+
+interface TabBarProps {
+    id: string;
+    label: string;
+    children: SafeHtml | readonly SafeHtml[];
+    leading?: SafeHtml;
+    trailing?: SafeHtml;
+    className?: string;
+}
+/** Render a controlled tab strip. The application owns selection, order, and persistence. */
+declare function TabBar({ id, label, children, leading, trailing, className }: TabBarProps): SafeHtml;
+
+export { TabBar, type TabBarProps };
+```
+
+## `@kerfjs/ui/wire-tab-bars`
+
+```ts
+type TabReorderSource = 'pointer' | 'keyboard';
+type TabDropPosition = 'before' | 'after';
+interface TabReorder {
+    barId: string;
+    sourceId: string;
+    targetId: string;
+    position: TabDropPosition;
+    source: TabReorderSource;
+}
+interface WireTabBarsOptions {
+    onReorder: (change: TabReorder) => void;
+}
+declare function reorderTabs<T>(items: readonly T[], getId: (item: T) => string, sourceId: string, targetId: string, position: TabDropPosition): T[];
+/** Wire reordering and keyboard navigation while leaving controlled state in the application. */
+declare function wireTabBars(root: HTMLElement | Document, { onReorder }: WireTabBarsOptions): () => void;
+
+export { type TabDropPosition, type TabReorder, type TabReorderSource, type WireTabBarsOptions, reorderTabs, wireTabBars };
+```
+
 ## `@kerfjs/ui/resizable-region`
 
 ```ts
@@ -256,11 +330,13 @@ interface ResizableRegionProps {
     edge?: ResizableRegionEdge;
     collapsed?: boolean;
     transitioning?: boolean;
+    /** Decorative dormant content for the separator handle. Must not contain interactive descendants. */
+    handleIcon?: SafeHtml;
     children: SafeHtml | SafeHtml[];
 }
 declare const clampRegionSize: (size: number, min: number, max: number) => number;
 declare const resizeRegionFromPointer: (startSize: number, delta: number, edge: ResizableRegionEdge) => number;
-declare function ResizableRegion({ id, label, size, min, max, axis, edge, collapsed, transitioning, children }: ResizableRegionProps): SafeHtml;
+declare function ResizableRegion({ id, label, size, min, max, axis, edge, collapsed, transitioning, handleIcon, children }: ResizableRegionProps): SafeHtml;
 
 export { ResizableRegion, type ResizableRegionAxis, type ResizableRegionEdge, type ResizableRegionProps, clampRegionSize, resizeRegionFromPointer };
 ```

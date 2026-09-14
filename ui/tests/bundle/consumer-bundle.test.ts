@@ -131,6 +131,24 @@ describe('consumer bundle boundaries', () => {
     expect(inputs).not.toContain('@awesome.me/webawesome');
   });
 
+  it('ships AppTab and ResizableRegion from isolated styled browser subpaths', async () => {
+    const tabs = await bundle("import { AppTab } from '@kerfjs/ui/app-tab'; console.log(AppTab);");
+    const tabInputs = Object.keys(tabs.metafile!.inputs).join('\n');
+    const tabCss = output(tabs, '.css');
+    expect(tabInputs).toContain('dist/browser/app-tab.js');
+    expect(tabCss).toContain('.kui-app-tab');
+    expect(tabCss).not.toContain('.kui-tab-bar');
+    expect(tabCss).not.toContain('.kui-resizable-region');
+
+    const resize = await bundle("import { ResizableRegion } from '@kerfjs/ui/resizable-region'; console.log(ResizableRegion);");
+    const resizeInputs = Object.keys(resize.metafile!.inputs).join('\n');
+    const resizeCss = output(resize, '.css');
+    expect(resizeInputs).toContain('dist/browser/resizable-region.js');
+    expect(resizeCss).toContain('.kui-resizable-region');
+    expect(resizeCss).not.toContain('.kui-app-tab');
+    expect(resizeCss).not.toContain('.kui-tab-bar');
+  });
+
   it('follows transitive component styles without retaining unrelated CSS', async () => {
     const result = await bundle("import { EmptyState } from '@kerfjs/ui/empty-state'; console.log(EmptyState); ");
     const inputs = Object.keys(result.metafile!.inputs).join('\n');
@@ -215,6 +233,8 @@ describe('consumer bundle boundaries', () => {
     expect(pkg.exports['./webawesome.css']).toBe('./dist/styles/webawesome.css');
     expect(pkg.exports['./webawesome']).toMatchObject({ types: './dist/webawesome.d.ts', import: './dist/webawesome.js' });
     expect(pkg.exports['./select/register']).toBeDefined();
+    expect(pkg.exports['./app-tab']).toMatchObject({ browser: './dist/browser/app-tab.js', import: './dist/app-tab.js' });
+    expect(pkg.exports['./resizable-region']).toMatchObject({ browser: './dist/browser/resizable-region.js', import: './dist/resizable-region.js' });
     expect(pkg.exports['./tab-bar']).toBeDefined();
     expect(pkg.exports['./segmented-control']).toBeDefined();
     expect(pkg.exports['./token-search-field']).toBeDefined();

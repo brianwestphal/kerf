@@ -1103,11 +1103,11 @@
       "category": "Navigation",
       "kind": "component",
       "source": "kerf",
-      "description": "Roving-tabindex-ready tabs with optional close affordances.",
+      "description": "Roving-tabindex-ready tabs with protected application metadata and customizable close affordances.",
       "uses": [
         "lucide-icon"
       ],
-      "purpose": "Roving-tabindex-ready tabs with optional close affordances.",
+      "purpose": "Roving-tabindex-ready tabs with protected application metadata and customizable close affordances.",
       "publicExports": [
         "AppTab"
       ],
@@ -1127,17 +1127,22 @@
         "tab identity",
         "selection",
         "close policy",
-        "content"
+        "content",
+        "application data attribute values"
       ],
       "variants": [
         "selected",
         "closable",
         "draggable",
         "leading",
-        "trailing"
+        "trailing",
+        "custom close icon",
+        "root metadata"
       ],
       "accessibility": [
-        "Compose in a tablist and pair with an application-owned tabpanel."
+        "Compose in a tablist and pair with an application-owned tabpanel.",
+        "Keep closeIcon decorative and free of interactive descendants; the owning close button supplies its accessible name and interaction.",
+        "Use rootAttributes only for application data-* metadata; component-owned identity, state, action, and role semantics are protected at runtime."
       ],
       "delivery": {
         "browserImport": "@kerfjs/ui/app-tab",
@@ -1150,6 +1155,7 @@
       "publicClasses": [
         "kui-app-tab",
         "kui-app-tab__close",
+        "kui-app-tab__close-icon",
         "kui-app-tab__name",
         "kui-app-tab__select",
         "kui-app-tab__trailing"
@@ -1481,9 +1487,11 @@
       "category": "Controls",
       "kind": "component",
       "source": "kerf",
-      "description": "Pointer and keyboard-operable split region.",
-      "uses": [],
-      "purpose": "Pointer and keyboard-operable split region.",
+      "description": "Pointer and keyboard-operable split region with a customizable handle icon.",
+      "uses": [
+        "lucide-icon"
+      ],
+      "purpose": "Pointer and keyboard-operable split region with a customizable handle icon.",
       "publicExports": [
         "ResizableRegion",
         "clampRegionSize",
@@ -1517,10 +1525,12 @@
         "vertical",
         "start edge",
         "end edge",
-        "collapsed"
+        "collapsed",
+        "custom handle icon"
       ],
       "accessibility": [
-        "Preserve separator naming, value ARIA, and keyboard behavior."
+        "Preserve separator naming, value ARIA, and keyboard behavior.",
+        "Keep handleIcon decorative and free of interactive descendants; the separator owns focus, naming, and pointer/keyboard interaction."
       ],
       "delivery": {
         "browserImport": "@kerfjs/ui/resizable-region",
@@ -1549,7 +1559,8 @@
       "publicClasses": [
         "kui-resizable-region",
         "kui-resizable-region__content",
-        "kui-resizable-region__handle"
+        "kui-resizable-region__handle",
+        "kui-resizable-region__handle-icon"
       ],
       "publicTokens": [
         "--kui-color-border",

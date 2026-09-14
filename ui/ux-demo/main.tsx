@@ -28,7 +28,7 @@ import { reorderTabs, wireTabBars } from '@kerfjs/ui/wire-tab-bars';
 import { wireTokenSearchFields } from '@kerfjs/ui/wire-token-search-fields';
 import { batch, delegate, delegateCapture, mount, signal } from 'kerfjs';
 import { delegateActions } from 'kerfjs/actions';
-import { ArrowDownAZ, Bell, Check, ChevronDown, ChevronLeft, ChevronRight, CircleHelp, Columns3, Contrast, Folder, GitCompare, Inbox, List, Moon, MoreHorizontal, PanelLeft, PanelLeftOpen, Pin, Plus, Search, Settings, SlidersHorizontal, Star, Wrench, ZapOff } from 'lucide';
+import { ArrowDownAZ, Bell, Check, ChevronDown, ChevronLeft, ChevronRight, CircleHelp, Columns3, Contrast, Folder, GitCompare, GripVertical, Inbox, List, Moon, MoreHorizontal, PanelLeft, PanelLeftOpen, Pin, Plus, Search, Settings, SlidersHorizontal, Star, Wrench, X, ZapOff } from 'lucide';
 
 import { catalog, catalogEntriesUsing, type CatalogEntry, type CatalogId, catalogSections, findCatalogEntry, isCatalogId, type KerfCatalogId, webAwesomeCatalog, type WebAwesomeCatalogId, webAwesomeCatalogSections } from './catalog.js';
 import { isRecipeId, type RecipeId, recipeLoaders } from './recipes/loaders.js';
@@ -342,9 +342,17 @@ function MenuItemDemo() {
 }
 
 function TabsDemo() {
+  const extensionAttributes = {
+    'data-demo-tab-source': 'workspace',
+    'data-Action': 'unsafe-root-action',
+    'data-Tab-Id': 'unsafe-tab-id',
+    'data-Tab-Dragging': 'true',
+    'data-Tab-Drop-Position': 'before',
+    role: 'menuitem',
+  };
   return <div class="demo-tabs" data-demo="tabs">
     <TabBar id="focused-app-tabs" label="Open documents">
-      {(['library', 'guidelines', 'catalog'] as const).map((id) => <AppTab id={id} name={id[0]!.toUpperCase() + id.slice(1)} selected={activeTab.value === id} closable={id !== 'library'} leading={id === 'library' ? icon(PanelLeft, 'panel-left') : undefined} />)}
+      {(['library', 'guidelines', 'catalog'] as const).map((id) => <AppTab id={id} name={id[0]!.toUpperCase() + id.slice(1)} selected={activeTab.value === id} closable={id !== 'library'} leading={id === 'library' ? icon(PanelLeft, 'panel-left') : undefined} closeIcon={id === 'guidelines' ? icon(X, 'custom-tab-close') : undefined} rootAttributes={id === 'guidelines' ? extensionAttributes : undefined} />)}
     </TabBar>
   </div>;
 }
@@ -382,7 +390,7 @@ function ValueTableDemo() {
 
 function ResizeDemo() {
   return <div class="demo-resize-shell" data-demo="resize">
-    <ResizableRegion id="catalog-panel" label="Catalog panel" size={regionSize.value} min={180} max={420}><div class="demo-resize-panel kui-content-item"><strong>Resizable panel</strong><span>Use the handle with a pointer, arrow keys, Home, or End.</span></div></ResizableRegion>
+    <ResizableRegion id="catalog-panel" label="Catalog panel" size={regionSize.value} min={180} max={420} handleIcon={icon(GripVertical, 'custom-resize-handle')}><div class="demo-resize-panel kui-content-item"><strong>Resizable panel</strong><span>Use the handle with a pointer, arrow keys, Home, or End.</span></div></ResizableRegion>
     <div class="demo-resize-content kui-content-item"><span>Committed width</span><strong data-region-size>{regionSize.value}px</strong></div>
   </div>;
 }

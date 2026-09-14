@@ -92,13 +92,20 @@
   outline: var(--kui-focus-ring);
   outline-offset: -2px;
 }
-.kui-resizable-region__handle svg {
+.kui-resizable-region__handle-icon {
   position: relative;
+  display: grid;
   width: remify(14.4px);
   height: remify(14.4px);
   opacity: 0;
+  pointer-events: none;
+  place-items: center;
 }
-.kui-resizable-region__handle:hover svg,
-.kui-resizable-region__handle:focus-visible svg {
+.kui-resizable-region__handle-icon > svg {
+  width: 100%;
+  height: 100%;
+}
+.kui-resizable-region__handle:hover .kui-resizable-region__handle-icon,
+.kui-resizable-region__handle:focus-visible .kui-resizable-region__handle-icon {
   opacity: 1;
 }

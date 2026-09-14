@@ -10,9 +10,9 @@ let originalScrollIntoView: typeof Element.prototype.scrollIntoView;
 function bar(id = 'documents') {
   const root = document.createElement('div');
   root.innerHTML = String(TabBar({ id, label: 'Documents', children: [
-    AppTab({ id: 'one', name: 'One', selected: true, draggable: true }),
-    AppTab({ id: 'two', name: 'Two', draggable: true }),
-    AppTab({ id: 'three', name: 'Three', draggable: true }),
+    AppTab({ id: 'one', name: 'One', selected: true, draggable: true, rootAttributes: { 'data-domain-tab': 'one' } }),
+    AppTab({ id: 'two', name: 'Two', draggable: true, rootAttributes: { 'data-domain-tab': 'two' } }),
+    AppTab({ id: 'three', name: 'Three', draggable: true, rootAttributes: { 'data-domain-tab': 'three' } }),
   ] }));
   document.body.append(root);
   roots.push(root);
@@ -82,6 +82,8 @@ describe('TabBar wiring', () => {
     const start = new Event('dragstart', { bubbles: true });
     Object.defineProperty(start, 'dataTransfer', { value: transfer });
     source.dispatchEvent(start);
+    expect(source.dataset.domainTab).toBe('one');
+    expect(source.dataset.tabDragging).toBe('true');
     expect(transfer.effectAllowed).toBe('move');
     expect(transfer.setData).toHaveBeenCalledWith('application/x-kerf-tab', 'documents:one');
     crossBar.dispatchEvent(new Event('dragover', { bubbles: true, cancelable: true }));
@@ -91,6 +93,7 @@ describe('TabBar wiring', () => {
     Object.defineProperty(over, 'dataTransfer', { value: transfer });
     target.dispatchEvent(over);
     expect(target.getAttribute('data-tab-drop-position')).toBe('after');
+    expect(target.dataset.domainTab).toBe('two');
     expect(transfer.dropEffect).toBe('move');
     const third = root.querySelector<HTMLElement>('[data-tab-bar-id="documents"] .kui-app-tab[data-tab-id="three"]')!;
     Object.defineProperty(third, 'getBoundingClientRect', { value: () => ({ left: 0, width: 100, right: 100, top: 0, bottom: 32, height: 32, x: 0, y: 0, toJSON: () => ({}) }) });
@@ -104,6 +107,7 @@ describe('TabBar wiring', () => {
     target.dispatchEvent(drop);
     expect(onReorder).toHaveBeenCalledWith({ barId: 'documents', sourceId: 'one', targetId: 'two', position: 'after', source: 'pointer' });
     expect(root.querySelector('[data-tab-dragging], [data-tab-drop-position]')).toBeNull();
+    expect(source.dataset.domainTab).toBe('one');
     const startBefore = new Event('dragstart', { bubbles: true });
     source.dispatchEvent(startBefore);
     const dropBefore = new Event('drop', { bubbles: true, cancelable: true });
@@ -113,7 +117,16 @@ describe('TabBar wiring', () => {
     source.dispatchEvent(new Event('dragstart', { bubbles: true }));
     crossBar.dispatchEvent(new Event('drop', { bubbles: true, cancelable: true }));
     expect(root.querySelector('[data-tab-dragging], [data-tab-drop-position]')).toBeNull();
+    source.dispatchEvent(new Event('dragstart', { bubbles: true }));
+    const disposeOver = new Event('dragover', { bubbles: true, cancelable: true });
+    Object.defineProperty(disposeOver, 'clientX', { value: 75 });
+    target.dispatchEvent(disposeOver);
+    expect(source.dataset.tabDragging).toBe('true');
+    expect(target.dataset.tabDropPosition).toBe('after');
     stop();
+    expect(root.querySelector('[data-tab-dragging], [data-tab-drop-position]')).toBeNull();
+    expect(source.dataset.domainTab).toBe('one');
+    expect(target.dataset.domainTab).toBe('two');
   });
 
   it('continuously scrolls a dragged tab toward either visible strip edge', () => {

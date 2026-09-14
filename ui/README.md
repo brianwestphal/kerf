@@ -63,8 +63,9 @@ mount(root, () => <>
 
 Components return Kerf `SafeHtml`. They do not own application state or attach transient listeners. Actions are stable `data-action` hooks; the application wires them once with `delegate()` or `delegateActions()` and retains the disposer.
 
-`MenuItem.rootAttributes`, `MenuHeader.rootAttributes`, and
-`MenuActionRow.rootAttributes` carry typed application `data-*` metadata without
+`MenuItem.rootAttributes`, `MenuHeader.rootAttributes`,
+`MenuActionRow.rootAttributes`, and `AppTab.rootAttributes` carry typed
+application `data-*` metadata without
 teaching the package domain fields. `MenuHeader.triggerAttributes` and
 `MenuActionRow.trailingActionAttributes` additionally support native popover
 target and relationship attributes. Roles and component-owned action, selection,
@@ -309,6 +310,11 @@ drag, the scroll strip automatically moves toward either edge with speed based
 on pointer proximity, exposing earlier or later drop targets. Apply the reported
 change with `reorderTabs()` or application-specific state logic. The application
 still owns selection, closing, routing, and persistence.
+Use `AppTab.rootAttributes` for domain `data-*` metadata and `closeIcon` for a
+decorative replacement glyph. The runtime rejects roles and case variants of
+the component- or wiring-owned action, tab identity, selection, drag, drop, and
+component markers. Keep the icon free of interactive descendants; the named
+close button retains all close interaction.
 
 `Select` uses Web Awesome but does not register anything by itself. Install the optional peer, import the shared theme if desired, and explicitly import the registration entry in the application:
 
@@ -328,7 +334,9 @@ For application choices and panes, prefer Kerf's purpose-built primitives:
 `SegmentedControl` over Button Group, `TabBar` or `SegmentedControl` over Web
 Awesome Tabs, `LucideIcon` over Web Awesome Icon, and `ResizableRegion` over
 Split Panel. `ResizableRegion` includes Hot Sheet 2's 1px separator and
-hover/focus grip. Consider Web Awesome Popup when its anchored-positioning
+hover/focus grip. Its optional `handleIcon` replaces only the decorative glyph;
+the component and `wireResizableRegions()` retain separator semantics and
+pointer/keyboard behavior. Consider Web Awesome Popup when its anchored-positioning
 engine removes custom placement code; treat Tree, Animated Image, Comparison,
 Zoomable Frame, and the displaced alternatives above as exceptional rather
 than default patterns. The detailed rationale lives in the theme contract.

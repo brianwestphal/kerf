@@ -75,13 +75,17 @@ custom pipelines. App overrides belong later in the cascade or on a scoped
 `--kui-*` owner.
 
 Menu adapters may pass product event/drop metadata through the typed
-`rootAttributes` `data-*` slot on MenuItem, MenuHeader, and MenuActionRow instead
+`rootAttributes` `data-*` slot on MenuItem, MenuHeader, MenuActionRow, and AppTab instead
 of copying their markup. `MenuHeader.triggerAttributes` and
 `MenuActionRow.trailingActionAttributes` are the narrow exceptions for native
 popover target/action and `aria-controls`/`aria-haspopup` relationships. Do not pass
 roles or override the component's action, selection, disclosure, accessible
 name, disabled, or icon contract; a complete ARIA menu remains application
 widget work.
+AppTab additionally protects tab identity plus transient drag/drop markers at
+runtime. Its `closeIcon` and ResizableRegion's `handleIcon` replace decorative,
+noninteractive content only; the existing named controls and wiring retain
+their lifecycle ownership.
 `MenuItem.trailing` is dormant content. When the trailing region must be a
 separate native control, use `MenuActionRow`; its noninteractive root contains
 primary and trailing sibling buttons with independent action, name, disabled,
