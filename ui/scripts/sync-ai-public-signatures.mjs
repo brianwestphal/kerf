@@ -8,6 +8,7 @@ const outputPath = resolve(root, 'ai/public-api-signatures-v1.md');
 const webAwesomeOutputPath = resolve(root, 'ai/webawesome-jsx-signatures-v1.md');
 const check = process.argv.includes('--check');
 const entries = [
+  ['@kerfjs/ui/disclosure-arrow', 'dist/disclosure-arrow.d.ts'],
   ['@kerfjs/ui/toolbar', 'dist/toolbar.d.ts'],
   ['@kerfjs/ui/toolbar-text', 'dist/toolbar-text.d.ts'],
   ['@kerfjs/ui/toolbar-control-group', 'dist/toolbar-control-group.d.ts'],

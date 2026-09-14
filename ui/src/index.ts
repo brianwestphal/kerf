@@ -1,5 +1,10 @@
 export { AppTab, type AppTabProps } from './app-tab.js';
 export { DialogHeader, type DialogHeaderProps } from './dialog-header.js';
+export {
+  DisclosureArrow,
+  type DisclosureArrowProps,
+  type DisclosureDirection,
+} from './disclosure-arrow.js';
 export { EmptyState, type EmptyStateProps } from './empty-state.js';
 export { LoadingSpinner, type LoadingSpinnerProps } from './loading-spinner.js';
 export { LucideIcon, type LucideIconProps, type LucideNode } from './lucide-icon.js';

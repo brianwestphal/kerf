@@ -56,6 +56,62 @@
       }
     },
     {
+      "id": "disclosure-arrow",
+      "name": "DisclosureArrow",
+      "category": "Foundation",
+      "kind": "component",
+      "source": "kerf",
+      "description": "Animated open and closed disclosure indicator with configurable directions and icon content.",
+      "uses": [
+        "lucide-icon"
+      ],
+      "purpose": "Indicate whether a disclosure control is open while preserving one shared rotation behavior.",
+      "publicExports": [
+        "DisclosureArrow"
+      ],
+      "useWhen": [
+        "Add a rotating indicator to a control that owns open and closed state."
+      ],
+      "avoidWhen": [
+        "Do not use the arrow as the interactive control or accessible name by itself."
+      ],
+      "alternatives": [],
+      "appOwns": [
+        "open state",
+        "interaction",
+        "accessible control label"
+      ],
+      "variants": [
+        "open",
+        "closed",
+        "custom directions",
+        "replacement icon"
+      ],
+      "accessibility": [
+        "The arrow is decorative; expose expanded state on its owning control."
+      ],
+      "delivery": {
+        "browserImport": "@kerfjs/ui/disclosure-arrow",
+        "manualCssImport": "@kerfjs/ui/disclosure-arrow.css",
+        "sideEffects": [
+          "browser-condition-css"
+        ]
+      },
+      "wiring": [],
+      "publicClasses": [
+        "kui-disclosure-arrow"
+      ],
+      "publicTokens": [
+        "--kui-disclosure-arrow-duration",
+        "--kui-disclosure-arrow-size"
+      ],
+      "links": {
+        "catalogRoute": "?component=disclosure-arrow",
+        "documentation": "docs/component-selection.md",
+        "recipe": "docs/component-selection.md#problem-to-component-matrix"
+      }
+    },
+    {
       "id": "webawesome-theme",
       "name": "Web Awesome theme",
       "category": "Foundation",

@@ -1,0 +1,35 @@
+.kui-disclosure-arrow {
+  display: inline-flex;
+  width: var(--kui-disclosure-arrow-size, 1em);
+  height: var(--kui-disclosure-arrow-size, 1em);
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  transform: rotate(0deg);
+  transform-origin: center;
+  transition: transform var(--kui-disclosure-arrow-duration, 0.2s) ease;
+}
+
+.kui-disclosure-arrow[data-direction="down"] {
+  transform: rotate(90deg);
+}
+
+.kui-disclosure-arrow[data-direction="left"] {
+  transform: rotate(180deg);
+}
+
+.kui-disclosure-arrow[data-direction="up"] {
+  transform: rotate(-90deg);
+}
+
+.kui-disclosure-arrow svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kui-disclosure-arrow {
+    transition-duration: 0s;
+  }
+}

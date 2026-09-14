@@ -3,6 +3,7 @@ import { defineConfig } from 'tsup';
 const entries = [
   'index',
   'lucide-icon',
+  'disclosure-arrow',
   'toolbar',
   'toolbar-control-group',
   'toolbar-text',

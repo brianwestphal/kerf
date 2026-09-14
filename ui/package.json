@@ -44,6 +44,11 @@
       "browser": "./dist/browser/lucide-icon.js",
       "import": "./dist/lucide-icon.js"
     },
+    "./disclosure-arrow": {
+      "types": "./dist/disclosure-arrow.d.ts",
+      "browser": "./dist/browser/disclosure-arrow.js",
+      "import": "./dist/disclosure-arrow.js"
+    },
     "./toolbar": {
       "types": "./dist/toolbar.d.ts",
       "browser": "./dist/browser/toolbar.js",
@@ -154,6 +159,7 @@
     "./webawesome.css": "./dist/styles/webawesome.css",
     "./styles.css": "./dist/styles/styles.css",
     "./lucide-icon.css": "./dist/styles/lucide-icon.css",
+    "./disclosure-arrow.css": "./dist/styles/disclosure-arrow.css",
     "./toolbar.css": "./dist/styles/toolbar.css",
     "./toolbar-control-group.css": "./dist/styles/toolbar-control-group.css",
     "./toolbar-text.css": "./dist/styles/toolbar-text.css",

@@ -38,6 +38,7 @@ Components return Kerf `SafeHtml`. They do not own application state or attach t
 | Component | Browser import (includes reachable CSS) | Manual CSS export |
 | --- | --- | --- |
 | `LucideIcon` | `@kerfjs/ui/lucide-icon` | `@kerfjs/ui/lucide-icon.css` |
+| `DisclosureArrow` | `@kerfjs/ui/disclosure-arrow` | `@kerfjs/ui/disclosure-arrow.css` |
 | `Toolbar` | `@kerfjs/ui/toolbar` | `@kerfjs/ui/toolbar.css` |
 | `ToolbarControlGroup` | `@kerfjs/ui/toolbar-control-group` | `@kerfjs/ui/toolbar-control-group.css` |
 | `ToolbarText` | `@kerfjs/ui/toolbar-text` | `@kerfjs/ui/toolbar-text.css` |

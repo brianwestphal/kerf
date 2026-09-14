@@ -529,6 +529,32 @@ button {
   width: remify(24px);
   height: remify(24px);
 }
+.demo-disclosure-grid {
+  display: grid;
+  width: min(remify(544px), 100%);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: remify(16px);
+}
+.demo-disclosure-grid > button,
+.demo-disclosure-grid > div {
+  display: flex;
+  min-height: remify(96px);
+  padding: remify(20px);
+  border: 1px solid var(--kui-color-border);
+  border-radius: var(--kui-radius-m);
+  color: var(--kui-color-text);
+  background: var(--kui-color-surface);
+  font: inherit;
+  align-items: center;
+  gap: remify(12px);
+  text-align: start;
+}
+.demo-disclosure-grid > button {
+  cursor: pointer;
+}
+.demo-disclosure-grid .kui-disclosure-arrow {
+  --kui-disclosure-arrow-size: remify(24px);
+}
 .demo-spinner-grid article {
   min-height: remify(160px);
 }
@@ -1477,6 +1503,7 @@ button {
     flex-wrap: wrap;
   }
   .demo-icon-grid,
+  .demo-disclosure-grid,
   .demo-spinner-grid,
   .demo-empty-grid {
     grid-template-columns: 1fr;

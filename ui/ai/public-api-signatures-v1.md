@@ -2,6 +2,25 @@
 
 Generated from emitted declarations for `@kerfjs/ui@4.4.1` and `kerfjs@4.4.1`. This bounded reference covers only APIs used by the seven-task corpus. It is interface evidence, not an implementation or runtime guarantee.
 
+## `@kerfjs/ui/disclosure-arrow`
+
+```ts
+import { SafeHtml } from 'kerfjs';
+
+type DisclosureDirection = 'up' | 'down' | 'left' | 'right';
+interface DisclosureArrowProps {
+    open: boolean;
+    openDirection?: DisclosureDirection;
+    closedDirection?: DisclosureDirection;
+    /** Replacement icons should use right as their unrotated orientation. */
+    icon?: SafeHtml;
+    className?: string;
+}
+declare function DisclosureArrow({ open, openDirection, closedDirection, icon, className, }: DisclosureArrowProps): SafeHtml;
+
+export { DisclosureArrow, type DisclosureArrowProps, type DisclosureDirection };
+```
+
 ## `@kerfjs/ui/toolbar`
 
 ```ts

@@ -10,6 +10,17 @@ export const generatedKerfCatalog = [
     "uses": []
   },
   {
+    "id": "disclosure-arrow",
+    "name": "DisclosureArrow",
+    "category": "Foundation",
+    "kind": "component",
+    "source": "kerf",
+    "description": "Indicate whether a disclosure control is open while preserving one shared rotation behavior.",
+    "uses": [
+      "lucide-icon"
+    ]
+  },
+  {
     "id": "webawesome-theme",
     "name": "Web Awesome theme",
     "category": "Foundation",

@@ -27,6 +27,25 @@ test('loads component-reachable package CSS through browser subpaths', async ({ 
   await expect(page.locator('[data-component="empty-state"] .kui-loading-spinner')).toHaveCSS('display', 'block');
 });
 
+test('rotates the first-class disclosure arrow through configurable directions', async ({ page, browserName }) => {
+  await page.setViewportSize({ width: 1100, height: 760 });
+  await page.goto('/?component=disclosure-arrow');
+  const demo = page.locator('[data-demo="disclosure-arrow"]');
+  const button = demo.getByRole('button');
+  const arrow = button.locator('[data-component="disclosure-arrow"]');
+
+  await expect(arrow).toHaveAttribute('data-open', 'false');
+  await expect(arrow).toHaveAttribute('data-direction', 'right');
+  await expect(arrow).toHaveCSS('transform', 'matrix(1, 0, 0, 1, 0, 0)');
+  await button.click();
+  await expect(button).toHaveAttribute('aria-expanded', 'true');
+  await expect(arrow).toHaveAttribute('data-open', 'true');
+  await expect(arrow).toHaveAttribute('data-direction', 'down');
+  await expect.poll(async () => arrow.evaluate((element) => window.getComputedStyle(element).transform)).toBe('matrix(0, 1, -1, 0, 0, 0)');
+  await expect(demo.locator('[data-lucide="arrow-down-a-z"]')).toBeVisible();
+  if (browserName === 'chromium') await page.screenshot({ path: 'test-results/disclosure-arrow-open.png', fullPage: true });
+});
+
 test('applies shared pane and content-item geometry across responsive and 200% zoom layouts', async ({ page, browserName }) => {
   const cases = [
     { name: 'wide', width: 1440, height: 900, rootFontSize: '', scale: 1 },

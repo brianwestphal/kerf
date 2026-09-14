@@ -5,6 +5,7 @@ import './style.css';
 
 import { AppTab } from '@kerfjs/ui/app-tab';
 import { DialogHeader } from '@kerfjs/ui/dialog-header';
+import { DisclosureArrow } from '@kerfjs/ui/disclosure-arrow';
 import { EmptyState } from '@kerfjs/ui/empty-state';
 import { LoadingSpinner } from '@kerfjs/ui/loading-spinner';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
@@ -51,6 +52,7 @@ const tabBarTabs = signal([
   { id: 'examples', name: 'Consumer examples' },
 ]);
 const selectedChoice = signal('balanced');
+const disclosureOpen = signal(false);
 const tokenSearchQuery = signal('NOT  AND parser');
 const tokenSearchTokens = signal<TokenSearchToken[]>([
   { value: 'tag:client', label: 'tag:client', offset: 4, accessibleLabel: 'client tag' },
@@ -88,6 +90,19 @@ function LucideIconDemo() {
   return <div class="demo-icon-grid" data-demo="lucide-icon">
     <article><span class="demo-icon-grid__sample">{icon(Wrench, 'wrench')}</span><strong>Decorative</strong><span>Hidden from assistive technology</span></article>
     <article><span class="demo-icon-grid__sample"><LucideIcon icon={Bell} name="notification" label="Notifications ready" /></span><strong>Meaningful</strong><span>Named when the icon carries meaning</span></article>
+  </div>;
+}
+
+function DisclosureArrowDemo() {
+  return <div class="demo-disclosure-grid" data-demo="disclosure-arrow">
+    <button type="button" data-action="toggle-disclosure" aria-expanded={String(disclosureOpen.value)}>
+      <DisclosureArrow open={disclosureOpen.value} />
+      <span>{disclosureOpen.value ? 'Open' : 'Closed'}: right to down</span>
+    </button>
+    <div>
+      <DisclosureArrow open openDirection="up" closedDirection="left" icon={icon(ArrowDownAZ, 'arrow-down-a-z')} />
+      <span>Replacement icon, open direction up</span>
+    </div>
   </div>;
 }
 
@@ -378,6 +393,7 @@ function LayoutDemo() {
 
 const demos: Record<Exclude<KerfCatalogId, RecipeId>, () => ReturnType<typeof ToolbarDemo>> = {
   'lucide-icon': LucideIconDemo,
+  'disclosure-arrow': DisclosureArrowDemo,
   'webawesome-theme': WebAwesomeThemeDemo,
   layout: LayoutDemo,
   toolbar: ToolbarDemo,
@@ -522,6 +538,7 @@ mount(app, () => {
 if (findCatalogEntry(initialDemo)?.source === 'webawesome') revealSelectedSidebarItem(initialDemo, 'center');
 
 const stopActions = delegateActions(app, 'click', {
+  'toggle-disclosure': () => { disclosureOpen.value = !disclosureOpen.value; actionLog.value = disclosureOpen.value ? 'Disclosure opened' : 'Disclosure closed'; },
   'select-demo': (_event, element) => {
     const id = element.getAttribute('data-item-id');
     if (id) selectDemo(id);

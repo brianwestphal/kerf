@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 
 import { AppTab } from '../../src/app-tab.js';
 import { DialogHeader } from '../../src/dialog-header.js';
+import { DisclosureArrow } from '../../src/disclosure-arrow.js';
 import { EmptyState } from '../../src/empty-state.js';
 import { LoadingSpinner } from '../../src/loading-spinner.js';
 import { LucideIcon } from '../../src/lucide-icon.js';
@@ -28,6 +29,23 @@ describe('production UI primitives', () => {
     const labeled = asHtml(LucideIcon({ icon: Circle, name: 'status', className: 'status-icon', label: 'Ready' }));
     expect(labeled).toContain('class="status-icon" data-lucide="status" role="img" aria-label="Ready"');
     expect(labeled).not.toContain('aria-hidden');
+  });
+
+  it('renders a rotating disclosure arrow with configurable state directions and icon', () => {
+    const closed = asHtml(DisclosureArrow({ open: false }));
+    expect(closed).toContain('data-component="disclosure-arrow" data-open="false" data-direction="right" aria-hidden="true"');
+    expect(closed).toContain('data-lucide="chevron-right"');
+
+    const open = asHtml(DisclosureArrow({
+      open: true,
+      openDirection: 'left',
+      closedDirection: 'up',
+      icon: <span>Custom</span>,
+      className: 'custom-arrow',
+    }));
+    expect(open).toContain('class="kui-disclosure-arrow custom-arrow"');
+    expect(open).toContain('data-open="true" data-direction="left"');
+    expect(open).toContain('<span>Custom</span>');
   });
 
   it('composes toolbar slots, groups, and text variants', () => {
