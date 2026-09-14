@@ -493,7 +493,7 @@ export const generatedKerfCatalog = [
     "category": "Recipes",
     "kind": "recipe",
     "source": "kerf",
-    "description": "Label, help, validation, status, and action rhythm for a realistic publishing form.",
+    "description": "One visible publishing-form surface with exactly three transparent 8/1/8 content sections, 24px major rhythm, and a conditional StateBanner as its only nested semantic surface.",
     "uses": [
       "select",
       "state-banner",

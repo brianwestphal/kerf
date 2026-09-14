@@ -7,7 +7,9 @@ Start interface work with the [need-first component selection matrix](./docs/com
 For connective application patterns, use the eight [production composition
 recipes](./docs/recipes.md). Each has a stable catalog route, runnable state,
 public-subpath source, semantic layout ownership, and explicit application
-customization boundaries.
+customization boundaries. The composer recipe demonstrates one coherent form
+surface with three transparent content sections; only persistent feedback adds
+a nested semantic `StateBanner` surface.
 
 When no primitive matches, keep policy application-owned while reusing the
 layout vocabulary. The [command-palette recipe](./docs/recipes.md#command-palette)

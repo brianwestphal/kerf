@@ -112,6 +112,133 @@ test('keeps recipe geometry responsive at narrow, intermediate, and 200% zoom la
   }
 });
 
+test('keeps the composer on one surface with three transparent content sections', async ({ page, browserName }) => {
+  await page.setViewportSize({ width: 1100, height: 1000 });
+  const form = await openRecipe(page, 'recipe-composer-form');
+  const sections = form.locator(':scope > .recipe-form__section');
+
+  const geometry = () => form.evaluate((root) => {
+    const rootBounds = root.getBoundingClientRect();
+    const rootStyle = window.getComputedStyle(root);
+    const sectionGeometry = [...root.querySelectorAll<HTMLElement>(':scope > .recipe-form__section')].map((section) => {
+      const bounds = section.getBoundingClientRect();
+      const style = window.getComputedStyle(section);
+      return {
+        backgroundToken: style.getPropertyValue('--kui-content-item-background').trim(),
+        borderToken: style.getPropertyValue('--kui-content-item-border').trim(),
+        borderWidth: parseFloat(style.borderLeftWidth),
+        gap: parseFloat(style.rowGap),
+        insideRoot: bounds.left >= rootBounds.left && bounds.right <= rootBounds.right,
+        marginEnd: parseFloat(style.marginInlineEnd),
+        marginStart: parseFloat(style.marginInlineStart),
+        paddingEnd: parseFloat(style.paddingInlineEnd),
+        paddingStart: parseFloat(style.paddingInlineStart),
+      };
+    });
+    const footer = root.querySelector<HTMLElement>('.recipe-form__footer')!.getBoundingClientRect();
+    const actions = root.querySelector<HTMLElement>('.recipe-form__actions')!.getBoundingClientRect();
+    const ownership = root.querySelector<HTMLElement>('.recipe-form__footer .kui-recipe__ownership')!.getBoundingClientRect();
+    return {
+      actionsInsideFooter: actions.left >= footer.left && actions.right <= footer.right && actions.top >= footer.top && actions.bottom <= footer.bottom,
+      directGap: parseFloat(rootStyle.rowGap),
+      documentOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      footerContentOverlap: Math.max(0, Math.min(actions.bottom, ownership.bottom) - Math.max(actions.top, ownership.top)),
+      rootBackground: rootStyle.backgroundColor,
+      rootBorderWidth: parseFloat(rootStyle.borderLeftWidth),
+      sectionGeometry,
+    };
+  });
+  const expectLayout = async (scale: number, bannerRole?: 'alert' | 'status') => {
+    await expect(sections).toHaveCount(3);
+    await expect(form.locator(':scope > .kui-content-item')).toHaveCount(3);
+    await expect(form.locator('.recipe-form__section .kui-content-item')).toHaveCount(0);
+    await expect(form.locator(':scope > :not(.recipe-form__section):not([data-component="state-banner"])')).toHaveCount(0);
+    const banner = form.locator(':scope > [data-component="state-banner"]');
+    await expect(banner).toHaveCount(bannerRole ? 1 : 0);
+    if (bannerRole) await expect(banner).toHaveAttribute('role', bannerRole);
+    for (const field of ['wa-input[name="recipe-title"]', 'wa-textarea[name="recipe-body"]', 'wa-select[name="recipe-audience"]']) await expect(form.locator(field)).toBeVisible();
+    await expect(form.getByRole('button', { name: 'Reset' })).toBeVisible();
+    await expect(form.getByRole('button', { name: 'Publish update' })).toBeVisible();
+
+    const measured = await geometry();
+    expect(measured.directGap).toBeCloseTo(24 * scale, 0);
+    expect(measured.rootBorderWidth).toBe(1);
+    expect(measured.rootBackground).not.toBe('rgba(0, 0, 0, 0)');
+    expect(measured.actionsInsideFooter).toBe(true);
+    expect(measured.footerContentOverlap).toBe(0);
+    expect(measured.documentOverflow).toBeLessThanOrEqual(1);
+    for (const section of measured.sectionGeometry) {
+      expect(section).toMatchObject({ backgroundToken: 'transparent', borderToken: 'transparent', borderWidth: 1, insideRoot: true });
+      expect(section.gap).toBeCloseTo(8 * scale, 0);
+      expect(section.marginStart).toBeCloseTo(8 * scale, 0);
+      expect(section.marginEnd).toBeCloseTo(8 * scale, 0);
+      expect(section.paddingStart).toBeCloseTo(8 * scale, 0);
+      expect(section.paddingEnd).toBeCloseTo(8 * scale, 0);
+    }
+  };
+
+  await expectLayout(1);
+  if (browserName === 'chromium') await form.screenshot({ path: 'test-results/composer-layout-wide.png' });
+
+  await page.setViewportSize({ width: 390, height: 1000 });
+  await form.scrollIntoViewIfNeeded();
+  await expectLayout(1);
+  if (browserName === 'chromium') await form.screenshot({ path: 'test-results/composer-layout-narrow.png' });
+
+  await page.setViewportSize({ width: 1100, height: 1000 });
+  await page.locator('[data-action="toggle-theme"]').click();
+  await expectLayout(1);
+  if (browserName === 'chromium') await form.screenshot({ path: 'test-results/composer-layout-dark.png' });
+
+  await page.goto('/?component=recipe-composer-form');
+  await form.getByRole('button', { name: 'Publish update' }).click();
+  await expect(form.getByRole('alert')).toContainText('Add a title');
+  await expectLayout(1, 'alert');
+  if (browserName === 'chromium') await form.screenshot({ path: 'test-results/composer-layout-error.png' });
+
+  await form.locator('wa-input[name="recipe-title"]').evaluate((element: HTMLElement & { value: string }) => { element.value = 'Tablet navigation shipped'; element.dispatchEvent(new Event('input', { bubbles: true, composed: true })); });
+  await form.getByRole('button', { name: 'Publish update' }).click();
+  await expect(form.getByRole('status')).toContainText('Update published');
+  await expectLayout(1, 'status');
+  if (browserName === 'chromium') await form.screenshot({ path: 'test-results/composer-layout-success.png' });
+  await form.getByRole('button', { name: 'Reset' }).click();
+  await expect(form.locator(':scope > [data-component="state-banner"]')).toHaveCount(0);
+  await expect(page.locator('.catalog-log')).toHaveText('Draft reset');
+  await expectLayout(1);
+
+  await page.setViewportSize({ width: 720, height: 1200 });
+  await page.goto('/?component=recipe-composer-form');
+  await page.locator('html').evaluate((element) => { element.style.fontSize = '200%'; });
+  await form.scrollIntoViewIfNeeded();
+  await expectLayout(2);
+  if (browserName === 'chromium') await form.screenshot({ path: 'test-results/composer-layout-zoom-200.png' });
+
+  if (browserName === 'chromium') {
+    await page.setViewportSize({ width: 1100, height: 1000 });
+    await page.goto('/?component=recipe-composer-form');
+    await page.emulateMedia({ forcedColors: 'active' });
+    await form.getByRole('button', { name: 'Publish update' }).click();
+    await expectLayout(1, 'alert');
+    const forcedBoundaries = await form.evaluate((root) => {
+      const banner = root.querySelector<HTMLElement>('[data-component="state-banner"]')!;
+      const rootStyle = window.getComputedStyle(root);
+      const bannerStyle = window.getComputedStyle(banner);
+      return {
+        bannerBorderStyle: bannerStyle.borderStyle,
+        bannerBorderWidth: parseFloat(bannerStyle.borderLeftWidth),
+        rootBorderStyle: rootStyle.borderStyle,
+        rootBorderWidth: parseFloat(rootStyle.borderLeftWidth),
+        sectionBorderColors: [...root.querySelectorAll<HTMLElement>(':scope > .recipe-form__section')].map((section) => window.getComputedStyle(section).borderLeftColor),
+        surfaceColor: rootStyle.backgroundColor,
+      };
+    });
+    expect(forcedBoundaries).toMatchObject({ bannerBorderStyle: 'solid', bannerBorderWidth: 1, rootBorderStyle: 'solid', rootBorderWidth: 1 });
+    expect(forcedBoundaries.sectionBorderColors).toEqual([forcedBoundaries.surfaceColor, forcedBoundaries.surfaceColor, forcedBoundaries.surfaceColor]);
+    await form.screenshot({ path: 'test-results/composer-layout-forced-colors.png' });
+    await page.emulateMedia({ forcedColors: 'none' });
+  }
+});
+
 test('supports keyboard shell/sidebar controls and controlled toolbar interactions', async ({ page }) => {
   const shell = await openRecipe(page, 'recipe-app-shell');
   expect(await shell.locator('.kui-pane__content').count()).toBe(3);

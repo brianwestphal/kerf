@@ -2,9 +2,11 @@
 
 A directory map + reverse index ("where do I look for X?") for Claude Code sessions and other AI assistants. Keep this in sync with `src/` whenever a file is added, removed, or renamed.
 
-The optional `ui/ux-demo/recipes/` directory contains seven literal dynamic
+The optional `ui/ux-demo/recipes/` directory contains eight literal dynamic
 recipe chunks, a shared per-instance controller contract, and semantic
-container-responsive CSS. Its copyable `mount-recipe.ts` adapter owns stable-root
+container-responsive CSS. The composer recipe uses one visible form surface,
+three transparent 8/1/8 content sections, and a conditional StateBanner as its
+only nested semantic surface. Its copyable `mount-recipe.ts` adapter owns stable-root
 delegation, form/dialog forwarding, resize commits, and idempotent disposal.
 The application-local `ui/docs/examples/command-palette-adapter.tsx` demonstrates
 canonical layout ownership for a recurring concept the package does not export.

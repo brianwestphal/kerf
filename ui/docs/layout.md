@@ -37,6 +37,11 @@ Use `.kui-content-item--pill` for the 22px pill radius expressed as
 changing its geometry by setting `--kui-content-item-border` and
 `--kui-content-item-background`.
 
+A visible parent surface does not make every child another visible card. The
+composer recipe keeps its form as the single surface and uses three transparent
+content items for the introduction, fields, and footer. A conditional
+`StateBanner` remains visibly distinct because it communicates semantic status.
+
 ## Public roles and tokens
 
 | Need | Class | Token / default |

@@ -65,6 +65,28 @@ describe('production composition recipes', () => {
     expect(html(toolbar.render())).toContain('data-value="board"');
   });
 
+  it('keeps the composer as one surface with exactly three structural sections', () => {
+    const form = createComposerForm(() => {});
+    const template = document.createElement('template');
+    template.innerHTML = html(form.render());
+    const root = template.content.querySelector<HTMLFormElement>('[data-recipe="recipe-composer-form"]')!;
+    expect(root.classList).toContain('kui-recipe__surface');
+    expect([...root.children].filter((child) => child.classList.contains('recipe-form__section'))).toHaveLength(3);
+    expect([...root.children].filter((child) => child.classList.contains('kui-content-item'))).toHaveLength(3);
+    expect(root.querySelectorAll('.recipe-form__section .kui-content-item')).toHaveLength(0);
+    expect(root.querySelector('[data-component="state-banner"]')).toBeNull();
+    expect(root.querySelector('.recipe-form__footer .recipe-form__actions')).not.toBeNull();
+    expect(root.querySelector('.recipe-form__footer .kui-recipe__ownership')).not.toBeNull();
+
+    form.action('submit', target());
+    template.innerHTML = html(form.render());
+    const errorRoot = template.content.querySelector<HTMLFormElement>('[data-recipe="recipe-composer-form"]')!;
+    const banner = errorRoot.querySelector('[data-component="state-banner"]');
+    expect(banner?.parentElement).toBe(errorRoot);
+    expect(banner?.getAttribute('role')).toBe('alert');
+    expect([...errorRoot.children].filter((child) => child.classList.contains('recipe-form__section'))).toHaveLength(3);
+  });
+
   it('mounts copyable recipe wiring at one stable root and disposes every listener', () => {
     const announcements: string[] = [];
     const root = document.createElement('div');

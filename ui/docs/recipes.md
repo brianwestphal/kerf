@@ -71,8 +71,12 @@ record actions. Do not rebuild the dialog or reach into private shadow parts.
 [Open the recipe](../ux-demo/?component=recipe-composer-form) · [TSX source](../ux-demo/recipes/composer-form.tsx)
 
 Production fields own labels, help, and native focus; semantic layout classes
-own field, message, and action rhythm. The app owns validation, drafts,
-permissions, and transport. Persistent errors use `StateBanner`, not a toast.
+compose one visible form surface from exactly three transparent content items:
+introduction, fields, and a footer containing actions plus ownership guidance.
+The three sections retain 8px margin, 1px transparent border, and 8px padding,
+with 24px between major children and 8px inside each section. The app owns
+validation, drafts, permissions, and transport. Persistent error or success
+feedback is the only nested semantic surface and uses `StateBanner`, not a toast.
 
 ## List workspace states
 

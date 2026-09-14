@@ -140,14 +140,20 @@
   margin-inline: auto;
   padding-block: var(--kui-layout-item-gap);
 }
-.recipe-form__fields {
+.recipe-form__section {
+  --kui-content-item-border: transparent;
+  --kui-content-item-background: transparent;
   display: grid;
   gap: var(--kui-layout-item-gap);
 }
-.recipe-form__error {
+.recipe-form__introduction > :where(h2, p) {
   margin: 0;
-  color: var(--kui-color-danger-text);
-  font-size: var(--kui-font-s);
+}
+.recipe-form__fields {
+  align-content: start;
+}
+.recipe-form__footer {
+  align-content: start;
 }
 
 .recipe-list {
@@ -369,6 +375,12 @@
   .recipe-header .kui-page-header {
     align-items: flex-start;
     flex-direction: column;
+  }
+}
+
+@media (forced-colors: active) {
+  .recipe-form__section {
+    border-color: Canvas;
   }
 }
 
