@@ -497,6 +497,17 @@ test('preserves Select option icons across Kerf rerenders and replaces selected 
   await expect(optionIcons).toHaveCount(3);
   await expect(select.locator('.kui-select__custom-selected [data-lucide="sliders-horizontal"]')).toBeVisible();
   await expect(select.locator('.kui-select__custom-selected')).toHaveAttribute('data-key', 'rendering-balance:balanced:custom-selected');
+  const selectGeometry = await select.evaluate((element) => {
+    const combobox = element.shadowRoot?.querySelector<HTMLElement>('[part~="combobox"]')?.getBoundingClientRect();
+    const arrow = element.shadowRoot?.querySelector<HTMLElement>('[part~="expand-icon"]')?.getBoundingClientRect();
+    const selected = element.querySelector<HTMLElement>('.kui-select__custom-selected')?.getBoundingClientRect();
+    return combobox && arrow && selected ? {
+      arrowTrailingInset: combobox.right - arrow.right,
+      selectedToArrowGap: arrow.left - selected.right,
+    } : null;
+  });
+  expect(selectGeometry?.arrowTrailingInset).toBeLessThan(16);
+  expect(selectGeometry?.selectedToArrowGap).toBeGreaterThan(100);
   await optionIcons.evaluateAll((icons) => icons.forEach((icon, index) => { icon.setAttribute('data-browser-identity', String(index)); }));
 
   await page.locator('[data-action="toggle-theme"]').click();
