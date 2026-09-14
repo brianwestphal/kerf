@@ -77,6 +77,9 @@ The three sections retain 8px margin, 1px transparent border, and 8px padding,
 with 24px between major children and 8px inside each section. The app owns
 validation, drafts, permissions, and transport. Persistent error or success
 feedback is the only nested semantic surface and uses `StateBanner`, not a toast.
+Because upgraded Web Awesome fields retain live value properties, controlled
+resets synchronize both those properties and the rendered value attributes;
+the Reset action also announces `Draft reset` through the catalog live region.
 
 ## List workspace states
 

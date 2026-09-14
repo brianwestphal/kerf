@@ -86,6 +86,40 @@ describe('production composition recipes', () => {
     expect([...errorRoot.children].filter((child) => child.classList.contains('recipe-form__section'))).toHaveLength(3);
   });
 
+  it('resets the composer signals and upgraded field values together', () => {
+    const announcements: string[] = [];
+    const form = document.createElement('div');
+    form.dataset.recipe = 'recipe-composer-form';
+    const title = document.createElement('input');
+    title.name = 'recipe-title';
+    const body = document.createElement('textarea');
+    body.name = 'recipe-body';
+    const reset = document.createElement('button');
+    form.append(title, body, reset);
+    const recipe = createComposerForm((message) => announcements.push(message));
+
+    title.value = 'Tablet navigation shipped';
+    recipe.change?.(title);
+    body.value = 'Updated draft content';
+    recipe.change?.(body);
+    recipe.action('submit', reset);
+    expect(html(recipe.render())).toContain('Update published');
+
+    recipe.action('reset', reset);
+    expect(title.value).toBe('');
+    expect(body.value).toBe('');
+    const resetMarkup = html(recipe.render());
+    expect(resetMarkup).toContain('name="recipe-title"');
+    expect(resetMarkup).toContain('name="recipe-body"');
+    expect(resetMarkup).not.toContain('Updated draft content');
+    expect(resetMarkup).not.toContain('Update published');
+    const template = document.createElement('template');
+    template.innerHTML = resetMarkup;
+    expect(template.content.querySelector('wa-input')?.getAttribute('value')).toBe('');
+    expect(template.content.querySelector('wa-textarea')?.getAttribute('value')).toBe('');
+    expect(announcements.at(-1)).toBe('Draft reset');
+  });
+
   it('mounts copyable recipe wiring at one stable root and disposes every listener', () => {
     const announcements: string[] = [];
     const root = document.createElement('div');

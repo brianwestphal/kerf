@@ -144,7 +144,9 @@ subpaths and semantic layout owners. Preserve the included primitives and
 replace only application copy, state, permissions, persistence, and transport.
 For the composer form, preserve one visible form surface, three transparent
 8/1/8 sections with 24px major rhythm, and a conditional `StateBanner` as the
-only nested semantic surface.
+only nested semantic surface. When resetting upgraded Web Awesome fields,
+synchronize their live `value` properties together with controlled rendered
+attributes so stale draft text does not remain visible.
 When the app uses Web Awesome's broader free component set, import
 types with `import type {} from '@kerfjs/ui/webawesome'` and import
 `@kerfjs/ui/webawesome.css` once. The first is a side-effect-free Kerf JSX

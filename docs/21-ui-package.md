@@ -247,7 +247,9 @@ component subpaths plus `layout.css`, declares what the recipe
 owns versus application policy, and has a stable `?component=recipe-*` route.
 The composer reference keeps one visible form surface around three transparent
 8/1/8 content sections with 24px major rhythm; only its conditional
-`StateBanner` adds another semantic surface.
+`StateBanner` adds another semantic surface. Its controlled Reset synchronizes
+the upgraded Web Awesome fields' live value properties with their rendered
+empty attributes and announces the reset through the catalog live region.
 `ui/docs/recipes.md` is the copyable guide; canonical recipe facts live beside
 component facts in `ui/ai/component-catalog.json` and project into the typed
 catalog. A dedicated drift gate checks sources, imports, loaders, routes, and AI

@@ -12,6 +12,17 @@ import { signal } from 'kerfjs';
 
 import type { RecipeFactory } from './types.js';
 
+type ValueField = HTMLElement & { value: string };
+
+const syncControlledFieldValues = (action: HTMLElement, values: Record<string, string>) => {
+  const form = action.closest<HTMLElement>('[data-recipe="recipe-composer-form"]');
+  if (!form) return;
+  for (const [name, value] of Object.entries(values)) {
+    const field = form.querySelector<ValueField>(`[name="${name}"]`);
+    if (field && field.value !== value) field.value = value;
+  }
+};
+
 export const createRecipe: RecipeFactory = (announce) => {
   const title = signal('');
   const body = signal('The tablet layout now keeps navigation, content, and inspector focus order aligned.');
@@ -30,8 +41,15 @@ export const createRecipe: RecipeFactory = (announce) => {
   </form>;
   return {
     render,
-    action(command) {
-      if (command === 'reset') { title.value = ''; body.value = ''; status.value = 'idle'; announce('Draft reset'); return; }
+    action(command, element) {
+      if (command === 'reset') {
+        title.value = '';
+        body.value = '';
+        status.value = 'idle';
+        syncControlledFieldValues(element, { 'recipe-title': title.value, 'recipe-body': body.value });
+        announce('Draft reset');
+        return;
+      }
       if (command === 'submit') { status.value = title.value.trim() ? 'saved' : 'error'; announce(status.value === 'saved' ? 'Update published' : 'Title required'); }
     },
     change(element) {

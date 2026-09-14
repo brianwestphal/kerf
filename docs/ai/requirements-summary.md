@@ -12,7 +12,9 @@ outside the catalog. A typed application-local command-palette example retains
 custom semantics while reusing the canonical layout and control-cluster roles.
 The composer reference uses one visible form surface with exactly three
 transparent 8/1/8 content sections and 24px major rhythm; a conditional
-`StateBanner` is its only nested semantic surface.
+`StateBanner` is its only nested semantic surface. Its controlled Reset clears
+both upgraded Web Awesome live value properties and rendered value attributes,
+then announces `Draft reset`.
 The UI package also has an internal deterministic AI-regression foundation,
 including frozen versioned contexts, generated public declaration signatures,
 and an opt-in non-executing TypeScript compile-evidence sidecar.

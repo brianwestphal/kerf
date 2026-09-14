@@ -197,6 +197,7 @@ test('keeps the composer on one surface with three transparent content sections'
   if (browserName === 'chromium') await form.screenshot({ path: 'test-results/composer-layout-error.png' });
 
   await form.locator('wa-input[name="recipe-title"]').evaluate((element: HTMLElement & { value: string }) => { element.value = 'Tablet navigation shipped'; element.dispatchEvent(new Event('input', { bubbles: true, composed: true })); });
+  await form.locator('wa-textarea[name="recipe-body"]').evaluate((element: HTMLElement & { value: string }) => { element.value = 'Updated draft content'; element.dispatchEvent(new Event('input', { bubbles: true, composed: true })); });
   await form.getByRole('button', { name: 'Publish update' }).click();
   await expect(form.getByRole('status')).toContainText('Update published');
   await expectLayout(1, 'status');
@@ -204,7 +205,29 @@ test('keeps the composer on one surface with three transparent content sections'
   await form.getByRole('button', { name: 'Reset' }).click();
   await expect(form.locator(':scope > [data-component="state-banner"]')).toHaveCount(0);
   await expect(page.locator('.catalog-log')).toHaveText('Draft reset');
+  const resetValues = await form.evaluate((root) => {
+    const readValue = (selector: string, controlSelector: string) => {
+      const host = root.querySelector<HTMLElement & { value: string }>(selector)!;
+      const control = host.shadowRoot?.querySelector<HTMLInputElement | HTMLTextAreaElement>(controlSelector);
+      return { attribute: host.getAttribute('value'), control: control?.value, property: host.value };
+    };
+    return {
+      body: readValue('wa-textarea[name="recipe-body"]', 'textarea'),
+      title: readValue('wa-input[name="recipe-title"]', 'input'),
+    };
+  });
+  expect(resetValues).toEqual({
+    body: { attribute: '', control: '', property: '' },
+    title: { attribute: '', control: '', property: '' },
+  });
   await expectLayout(1);
+  if (browserName === 'chromium') {
+    await form.screenshot({ path: 'test-results/composer-reset-wide.png' });
+    await page.setViewportSize({ width: 390, height: 1000 });
+    await form.scrollIntoViewIfNeeded();
+    await expectLayout(1);
+    await form.screenshot({ path: 'test-results/composer-reset-narrow.png' });
+  }
 
   await page.setViewportSize({ width: 720, height: 1200 });
   await page.goto('/?component=recipe-composer-form');
