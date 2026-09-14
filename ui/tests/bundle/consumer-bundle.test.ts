@@ -283,6 +283,12 @@ describe('consumer bundle boundaries', () => {
     expect(disclosureBuilt).not.toContain('remify(');
     expect(menuHeaderSource).toContain('min-width: remify(21.6px)');
     expect(menuHeaderBuilt).toContain('min-width: 1.35rem');
+    expect(menuHeaderSource).toContain('width: calc(100% - (2 * var(--kui-layout-inline-margin, remify(8px))))');
+    expect(menuHeaderBuilt).toContain('width: calc(100% - (2 * var(--kui-layout-inline-margin, 0.5rem)))');
+    expect(menuHeaderSource).toContain('--kui-menu-header-action-icon-size,');
+    expect(menuHeaderSource).toContain('remify(18px)');
+    expect(menuHeaderBuilt).toContain('--kui-menu-header-action-icon-size,');
+    expect(menuHeaderBuilt).toContain('1.125rem');
     expect(menuHeaderBuilt).toContain('.kui-menu-header__count');
     expect(menuHeaderBuilt).toContain('var(--kui-color-neutral-fill-quiet)');
     expect(menuHeaderSource).toContain('.kui-menu-header__action-layer > svg');

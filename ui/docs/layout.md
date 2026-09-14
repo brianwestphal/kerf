@@ -71,8 +71,10 @@ when their border and background are transparent.
    fixed while the content scrolls.
 5. A split item keeps dormant and interactive regions separate. For example,
    `MenuHeader` renders its title/count-or-badge cluster separately from its optional
-   44px action; disclosure mode makes the title cluster itself the button and
-   supplies the production `DisclosureArrow` unless `actionIcon` replaces it.
+   logical-end 44px action. The header fills the available inline width and its
+   action glyph defaults to 18px; disclosure mode makes the title cluster itself
+   the button and supplies the production `DisclosureArrow` unless `actionIcon`
+   replaces it.
    `MenuActionRow` uses a noninteractive row root around sibling 44px primary
    and trailing buttons. `MenuItem.trailing` remains dormant content.
 6. Reading width, column placement, and responsive relocation remain application

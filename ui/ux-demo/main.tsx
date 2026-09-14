@@ -291,7 +291,6 @@ function MenuHeaderDemo() {
     <div><MenuHeader label="Notes" count={0} countLabel="0 notes" /></div>
     <div><MenuHeader label="Duplicates" count={2} countLabel="2 duplicates" /></div>
     <div><MenuHeader label="Preview" badge={<span>New</span>} /></div>
-    <div><MenuHeader label="Tools" toggle expanded={disclosureOpen.value} action="toggle-disclosure" /></div>
     <div><MenuHeader label="Unavailable" action="log-add" actionLabel="Unavailable action" actionIcon={icon(Plus, 'plus')} actionDisabled /></div>
     <div id="menu-header-attachments-popover" class="demo-menu-popover" popover="auto" role="dialog" aria-label="Attachment action details">Application-owned popover content.</div>
   </div>;

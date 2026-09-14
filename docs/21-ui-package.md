@@ -63,7 +63,8 @@ independent of the shared arrow's box size.
 `MenuHeader` toggle mode composes that production arrow automatically when no
 custom `actionIcon` is supplied; its controlled `expanded` value must correspond
 to real revealed content, and ordinary navigation does not borrow the
-disclosure affordance.
+disclosure affordance. The header fills its available inline width and keeps a
+separate 44px action at the logical end with an 18px visible glyph.
 
 `layout.css` is the shared structural composition for navigation rails, main
 areas, inspectors, and dialogs. An unpadded `.kui-pane` contains an optional
@@ -75,8 +76,9 @@ geometry, and the pill modifier selects 22px corners.
 
 `ToolbarControlGroup` is the unit of toolbar organization, even for dormant
 text. Groups stay 44px outside (`calc(2px + remify(42px))`) with 8px between
-groups and inside items. `MenuHeader` separates a dormant title and count-or-
-badge cluster from its optional 44px action. Non-negative safe-integer section
+groups and inside items. `MenuHeader` fills the available inline width and
+separates a dormant title and count-or-badge cluster from its optional
+logical-end 44px action with an 18px visual. Non-negative safe-integer section
 counts use the required localized `count`/`countLabel` pair and the shared
 neutral pill; non-count `SafeHtml` remains available through the mutually
 exclusive legacy `badge` slot. `MenuActionRow` keeps independently interactive

@@ -850,12 +850,12 @@
       "category": "Navigation",
       "kind": "component",
       "source": "kerf",
-      "description": "Section headings with a semantic neutral count pill or non-count badge, separate action, disclosure states, and protected native-popover trigger metadata.",
+      "description": "Full-width section headings with a semantic neutral count pill or non-count badge, a logical-end action, disclosure states, and protected native-popover trigger metadata.",
       "uses": [
         "lucide-icon",
         "disclosure-arrow"
       ],
-      "purpose": "Split a dormant title and mutually exclusive semantic count or legacy badge from an optional 44px action, or render that title cluster as a disclosure button with a default production DisclosureArrow.",
+      "purpose": "Fill the available section width while splitting a dormant title and mutually exclusive semantic count or legacy badge from an optional logical-end 44px action with an 18px visual, or render that title cluster as a disclosure button with a default production DisclosureArrow.",
       "publicExports": [
         "MenuHeader"
       ],
@@ -920,6 +920,7 @@
         "--kui-color-neutral-on-quiet",
         "--kui-focus-ring",
         "--kui-font-xs",
+        "--kui-menu-header-action-icon-size",
         "--kui-menu-header-color",
         "--kui-layout-inline-margin",
         "--kui-layout-item-gap",

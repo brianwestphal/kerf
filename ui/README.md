@@ -126,7 +126,10 @@ transform is applied.
 `toggle` is true and `actionIcon` is omitted. Keep `expanded` synchronized with
 real controlled content and preserve the button's stable label; ordinary
 navigation must not display a disclosure arrow. A custom `actionIcon` remains
-an escape hatch and replaces the default arrow entirely.
+an escape hatch and replaces the default arrow entirely. The header fills its
+available inline width, keeping a separate action at the logical end in a 44px
+target. Its visible action glyph defaults to 18px through
+`--kui-menu-header-action-icon-size`.
 
 ## Machine-readable catalog
 

@@ -237,7 +237,7 @@ export const generatedKerfCatalog = [
     "category": "Navigation",
     "kind": "component",
     "source": "kerf",
-    "description": "Split a dormant title and mutually exclusive semantic count or legacy badge from an optional 44px action, or render that title cluster as a disclosure button with a default production DisclosureArrow.",
+    "description": "Fill the available section width while splitting a dormant title and mutually exclusive semantic count or legacy badge from an optional logical-end 44px action with an 18px visual, or render that title cluster as a disclosure button with a default production DisclosureArrow.",
     "uses": [
       "lucide-icon",
       "disclosure-arrow"

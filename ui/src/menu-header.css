@@ -1,8 +1,12 @@
 .kui-menu-header {
   --kui-menu-header-color: var(--kui-color-neutral-on-quiet);
   --kui-menu-header-hover-background: var(--kui-color-neutral-border-quiet);
+  --_kui-menu-header-action-icon-size: var(
+    --kui-menu-header-action-icon-size,
+    remify(18px)
+  );
   display: flex;
-  width: auto;
+  width: calc(100% - (2 * var(--kui-layout-inline-margin, remify(8px))));
   min-width: 0;
   min-height: remify(44px);
   margin-inline: var(--kui-layout-inline-margin, remify(8px));
@@ -134,6 +138,6 @@
 
 .kui-menu-header__action > svg,
 .kui-menu-header__action-layer > svg {
-  width: remify(24px);
-  height: remify(24px);
+  width: var(--_kui-menu-header-action-icon-size);
+  height: var(--_kui-menu-header-action-icon-size);
 }

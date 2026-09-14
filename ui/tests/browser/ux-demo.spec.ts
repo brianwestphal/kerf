@@ -1176,6 +1176,117 @@ test('renders MenuHeader counts as accessible neutral pills across scale and the
   }
 });
 
+test('fills MenuHeader rows and keeps 18px action visuals at the logical end', async ({ page, browserName }) => {
+  await page.setViewportSize({ width: 1100, height: 900 });
+  await page.goto('/?component=menu-header');
+  const demo = page.locator('[data-demo="menu-header"]');
+  const headers = demo.locator('.kui-menu-header');
+  const attachments = demo.locator('.kui-menu-header').filter({ has: page.getByRole('heading', { name: 'Attachments, 12 attachments' }) });
+  const unavailable = demo.locator('.kui-menu-header').filter({ has: page.getByRole('button', { name: 'Unavailable action' }) });
+
+  const geometry = (header: typeof attachments) => header.evaluate((root) => {
+    const wrapper = root.parentElement!;
+    const wrapperBounds = wrapper.getBoundingClientRect();
+    const wrapperStyle = window.getComputedStyle(wrapper);
+    const rootBounds = root.getBoundingClientRect();
+    const titleBounds = root.querySelector<HTMLElement>('.kui-menu-header__title')!.getBoundingClientRect();
+    const action = root.querySelector<HTMLElement>('.kui-menu-header__action');
+    const actionBounds = action?.getBoundingClientRect();
+    const visual = root.querySelector<HTMLElement>('.kui-menu-header__action > svg, [data-component="disclosure-arrow"]');
+    const visualBounds = visual?.getBoundingClientRect();
+    const direction = window.getComputedStyle(root).direction;
+    const contentLeft = wrapperBounds.left + parseFloat(wrapperStyle.borderLeftWidth) + parseFloat(wrapperStyle.paddingLeft);
+    const contentRight = wrapperBounds.right - parseFloat(wrapperStyle.borderRightWidth) - parseFloat(wrapperStyle.paddingRight);
+    const logicalStart = (left: number, right: number) => direction === 'rtl' ? contentRight - right : left - contentLeft;
+    const logicalEnd = (left: number, right: number) => direction === 'rtl' ? left - contentLeft : contentRight - right;
+    const rootLogicalEnd = (bounds: DOMRect) => direction === 'rtl' ? bounds.left - rootBounds.left : rootBounds.right - bounds.right;
+    return {
+      actionHeight: actionBounds?.height,
+      actionLogicalEnd: actionBounds && rootLogicalEnd(actionBounds),
+      actionWidth: actionBounds?.width,
+      documentOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      rootEnd: logicalEnd(rootBounds.left, rootBounds.right),
+      rootStart: logicalStart(rootBounds.left, rootBounds.right),
+      titleActionOverlap: actionBounds ? Math.max(0, Math.min(titleBounds.right, actionBounds.right) - Math.max(titleBounds.left, actionBounds.left)) : 0,
+      visualHeight: visualBounds?.height,
+      visualInsideAction: actionBounds && visualBounds
+        ? visualBounds.left >= actionBounds.left && visualBounds.right <= actionBounds.right && visualBounds.top >= actionBounds.top && visualBounds.bottom <= actionBounds.bottom
+        : undefined,
+      visualCenterDelta: actionBounds && visualBounds
+        ? Math.abs((visualBounds.left + visualBounds.width / 2) - (actionBounds.left + actionBounds.width / 2))
+        : undefined,
+      visualWidth: visualBounds?.width,
+    };
+  });
+  const rootGeometry = () => headers.evaluateAll((roots) => roots.map((root) => {
+    const wrapper = root.parentElement!;
+    const wrapperBounds = wrapper.getBoundingClientRect();
+    const wrapperStyle = window.getComputedStyle(wrapper);
+    const rootBounds = root.getBoundingClientRect();
+    const direction = window.getComputedStyle(root).direction;
+    const contentLeft = wrapperBounds.left + parseFloat(wrapperStyle.borderLeftWidth) + parseFloat(wrapperStyle.paddingLeft);
+    const contentRight = wrapperBounds.right - parseFloat(wrapperStyle.borderRightWidth) - parseFloat(wrapperStyle.paddingRight);
+    return {
+      end: direction === 'rtl' ? rootBounds.left - contentLeft : contentRight - rootBounds.right,
+      start: direction === 'rtl' ? contentRight - rootBounds.right : rootBounds.left - contentLeft,
+    };
+  }));
+  const expectLayout = async (scale: number) => {
+    for (const root of await rootGeometry()) {
+      expect(root.start).toBeCloseTo(8 * scale, 0);
+      expect(root.end).toBeCloseTo(8 * scale, 0);
+    }
+    const attachmentGeometry = await geometry(attachments);
+    const unavailableGeometry = await geometry(unavailable);
+    for (const measured of [attachmentGeometry, unavailableGeometry]) {
+      expect(measured.rootStart).toBeCloseTo(8 * scale, 0);
+      expect(measured.rootEnd).toBeCloseTo(8 * scale, 0);
+      expect(measured.visualWidth).toBeCloseTo(18 * scale, 0);
+      expect(measured.visualHeight).toBeCloseTo(18 * scale, 0);
+      expect(measured.documentOverflow).toBeLessThanOrEqual(1);
+    }
+    for (const measured of [attachmentGeometry, unavailableGeometry]) {
+      expect(measured.actionWidth).toBeCloseTo(44 * scale, 0);
+      expect(measured.actionHeight).toBeCloseTo(44 * scale, 0);
+      expect(measured.actionLogicalEnd).toBeCloseTo(0, 0);
+      expect(measured.titleActionOverlap).toBe(0);
+      expect(measured.visualInsideAction).toBe(true);
+      expect(measured.visualCenterDelta).toBeLessThanOrEqual(1);
+    }
+  };
+
+  await expect(demo.locator('.kui-menu-header[data-toggle="true"]')).toHaveCount(0);
+
+  await expectLayout(1);
+  await attachments.evaluate((element) => element.style.setProperty('--kui-menu-header-action-icon-size', '20px'));
+  expect(await geometry(attachments)).toMatchObject({ actionHeight: 44, actionWidth: 44, visualHeight: 20, visualWidth: 20 });
+  await attachments.evaluate((element) => element.style.removeProperty('--kui-menu-header-action-icon-size'));
+  await expectLayout(1);
+  if (browserName === 'chromium') await demo.screenshot({ path: 'test-results/menu-header-layout-wide.png' });
+
+  await page.setViewportSize({ width: 390, height: 900 });
+  await demo.scrollIntoViewIfNeeded();
+  await expectLayout(1);
+  if (browserName === 'chromium') await demo.screenshot({ path: 'test-results/menu-header-layout-narrow.png' });
+
+  await page.setViewportSize({ width: 1100, height: 900 });
+  await page.locator('[data-action="toggle-theme"]').click();
+  await expectLayout(1);
+  if (browserName === 'chromium') await demo.screenshot({ path: 'test-results/menu-header-layout-dark.png' });
+
+  await page.locator('[data-action="toggle-theme"]').click();
+  await demo.evaluate((element) => element.setAttribute('dir', 'rtl'));
+  await expectLayout(1);
+  if (browserName === 'chromium') await demo.screenshot({ path: 'test-results/menu-header-layout-rtl.png' });
+  await demo.evaluate((element) => element.removeAttribute('dir'));
+
+  await page.setViewportSize({ width: 720, height: 1100 });
+  await page.locator('html').evaluate((element) => { element.style.fontSize = '200%'; });
+  await demo.scrollIntoViewIfNeeded();
+  await expectLayout(2);
+  if (browserName === 'chromium') await demo.screenshot({ path: 'test-results/menu-header-layout-zoom-200.png' });
+});
+
 test('preserves menu extension metadata without surrendering native semantics', async ({ page, browserName }) => {
   await page.setViewportSize({ width: 1100, height: 760 });
   await page.goto('/?component=menu-header');
@@ -1200,11 +1311,7 @@ test('preserves menu extension metadata without surrendering native semantics', 
   await page.keyboard.press('Escape');
   await expect.poll(() => popover.evaluate((element) => element.matches(':popover-open'))).toBe(false);
 
-  const toggle = headerDemo.getByRole('button', { name: 'Tools' });
-  await expect(toggle).toHaveAttribute('aria-expanded', 'false');
-  await toggle.press('Space');
-  await expect(headerDemo.getByRole('button', { name: 'Tools' })).toHaveAttribute('aria-expanded', 'true');
-  await expect(page.locator('.catalog-log')).toHaveText('Disclosure opened');
+  await expect(headerDemo.locator('.kui-menu-header[data-toggle="true"]')).toHaveCount(0);
   const disabled = headerDemo.getByRole('button', { name: 'Unavailable action' });
   await expect(disabled).toBeDisabled();
   expect(await disabled.evaluate((button) => {
@@ -1213,10 +1320,10 @@ test('preserves menu extension metadata without surrendering native semantics', 
     (button as HTMLButtonElement).click();
     return activations;
   })).toBe(0);
-  await expect(page.locator('.catalog-log')).toHaveText('Disclosure opened');
+  await expect(page.locator('.catalog-log')).toHaveText('Add action requested');
   await expect.poll(() => popover.evaluate((element) => element.matches(':popover-open'))).toBe(false);
   await expect.poll(() => popover.evaluate((element) => window.getComputedStyle(element).display)).toBe('none');
-  if (browserName === 'chromium') await page.screenshot({ path: 'test-results/menu-header-disclosure-disabled-wide.png', fullPage: true });
+  if (browserName === 'chromium') await page.screenshot({ path: 'test-results/menu-header-disabled-action-wide.png', fullPage: true });
 
   await page.goto('/?component=menu-item');
   const row = page.locator('[data-demo="menu-item"] [data-item-id="selected"]');
