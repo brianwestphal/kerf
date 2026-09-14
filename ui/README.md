@@ -238,8 +238,10 @@ parsing, suggestions, query execution, and state. Use `readTokenSearchField()`
 after browser input to recover text plus token offsets, and
 `placeTokenSearchCaret()` when restoring focus after a controlled update.
 Call `wireTokenSearchFields()` once at a stable root to make Enter submit through
-`onSubmit` without inserting a contenteditable line break. Text still wraps
-visually when it reaches the field edge.
+`onSubmit` without inserting a contenteditable line break and to preserve focus
+plus the text-relative caret when keyboard deletion of a chip causes controlled
+rendering to replace the editor. Text still wraps visually when it reaches the
+field edge.
 Clear actions should empty the editor's `textContent` before clearing app state.
 The leading icon, first text line, clear action, and trailing slot share one
 fixed alignment row; when text wraps, those controls stay pinned to that first

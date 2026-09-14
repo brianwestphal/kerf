@@ -350,7 +350,7 @@ interface TokenSearchSubmit {
 interface WireTokenSearchFieldsOptions {
     onSubmit: (submission: TokenSearchSubmit) => void;
 }
-/** Keep TokenSearchField visually wrapping while Enter submits instead of inserting a line break. */
+/** Keep TokenSearchField wrapping, submit Enter, and preserve its caret across controlled token deletion. */
 declare function wireTokenSearchFields(root: HTMLElement, { onSubmit }: WireTokenSearchFieldsOptions): () => void;
 
 export { type TokenSearchSubmit, type WireTokenSearchFieldsOptions, wireTokenSearchFields };

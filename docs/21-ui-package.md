@@ -111,7 +111,7 @@ instead of retaining stale content.
 | Layout | `PageHeader`, `DialogHeader`, `ValueTable`, `ValueTableRow` | Page/dialog hierarchy and typed semantic definition-list rows, with optional leading icons |
 | Resize | `ResizableRegion`, `wireResizableRegions` | Pointer-captured resize plus arrows, Shift acceleration, Home, and End |
 | Choice controls | `SegmentedControl`, `Select` | Controlled exclusive buttons with toolbar/rounded/pill presentation; grouped Web Awesome popup choices with optional Lucide icons |
-| Search | `TokenSearchField`, `readTokenSearchField`, `placeTokenSearchCaret` | DOM-owned free text plus controlled ordered atomic filter chips; optional animated standalone or toolbar-group collapse; DOM reading and caret restoration without application query grammar |
+| Search | `TokenSearchField`, `readTokenSearchField`, `placeTokenSearchCaret`, `wireTokenSearchFields` | DOM-owned free text plus controlled ordered atomic filter chips; optional animated standalone or toolbar-group collapse; DOM reading, Enter submission, and caret-preserving keyboard deletion without application query grammar |
 | Feedback | `StateBanner`, `EmptyState`, `LoadingSpinner` | Status/alert, empty/busy, and meaningful/decorative progress states |
 
 ## 21.4 Accessibility contract
@@ -128,7 +128,9 @@ instead of retaining stale content.
 - `TokenSearchField` exposes a named contenteditable searchbox, atomic chips
   with named edit/remove buttons, and a named clear action. The application
   owns parsing, suggestions, result feedback, and state; editable text remains
-  DOM-owned between controlled token changes to preserve the caret. Its leading
+  DOM-owned between controlled token changes to preserve the caret.
+  `wireTokenSearchFields` restores focus and the text-relative caret when
+  keyboard chip deletion causes controlled rendering to replace the editor. Its leading
   icon, first text line, clear action, and trailing slot share a fixed vertical
   center and remain pinned there as content wraps. Its optional `collapsible`
   mode owns an animated iconic closed state, works standalone or inside a

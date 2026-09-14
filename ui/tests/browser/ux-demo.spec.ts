@@ -132,6 +132,45 @@ test('aligns ValueTable separators with icon-bearing and iconless row content', 
   if (browserName === 'chromium') await page.screenshot({ path: 'test-results/value-table-separator-insets.png', fullPage: true });
 });
 
+test('keeps token-search focus and caret when Delete removes a controlled token', async ({ page, browserName }) => {
+  await page.setViewportSize({ width: 1100, height: 760 });
+  await page.goto('/?component=token-search-field');
+  const demo = page.locator('[data-demo="token-search-field"]');
+  const editor = demo.getByRole('searchbox', { name: 'Search tickets' });
+  await editor.evaluate((element) => {
+    const text = element.querySelector('[data-token-search-text]')!.firstChild!;
+    const range = document.createRange();
+    range.setStart(text, 4);
+    range.collapse(true);
+    const selection = document.getSelection()!;
+    selection.removeAllRanges();
+    selection.addRange(range);
+    (element as HTMLElement).focus();
+  });
+
+  await page.keyboard.press('Delete');
+
+  await expect(editor).toBeFocused();
+  await expect(editor.locator('[data-component="token-search-token"]')).toHaveCount(1);
+  await expect(editor.locator('[data-component="token-search-token"][data-token-value="tag:client"]')).toHaveCount(0);
+  await expect(editor.locator('[data-component="token-search-token"][data-token-value="is:active"]')).toHaveCount(1);
+  expect(await editor.evaluate((element) => {
+    const selection = document.getSelection()!;
+    const caret = selection.getRangeAt(0);
+    const prefix = document.createRange();
+    prefix.selectNodeContents(element);
+    prefix.setEnd(caret.startContainer, caret.startOffset);
+    const clone = document.createElement('div');
+    clone.append(prefix.cloneContents());
+    clone.querySelectorAll('[data-component="token-search-token"]').forEach((token) => token.remove());
+    return (clone.textContent ?? '').replaceAll('\u200b', '').length;
+  })).toBe(4);
+  await page.keyboard.type('owner ');
+  await expect(editor).toContainText('NOT owner is:active AND parser');
+  await expect(demo.locator('output')).toContainText('1 filters · NOT owner  AND parser');
+  if (browserName === 'chromium') await demo.locator('article').first().screenshot({ path: 'test-results/token-search-field-delete-caret.png' });
+});
+
 test('edits, removes, and clears controlled token search content', async ({ page, browserName }) => {
   await page.setViewportSize({ width: 1100, height: 760 });
   await page.goto('/?component=token-search-field');
