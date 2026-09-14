@@ -340,6 +340,22 @@ declare function placeTokenSearchCaret(editor: HTMLElement, offset?: number): vo
 export { TokenSearchField, type TokenSearchFieldProps, type TokenSearchFieldValue, type TokenSearchToken, placeTokenSearchCaret, readTokenSearchField };
 ```
 
+## `@kerfjs/ui/wire-token-search-fields`
+
+```ts
+interface TokenSearchSubmit {
+    id: string;
+    editor: HTMLElement;
+}
+interface WireTokenSearchFieldsOptions {
+    onSubmit: (submission: TokenSearchSubmit) => void;
+}
+/** Keep TokenSearchField visually wrapping while Enter submits instead of inserting a line break. */
+declare function wireTokenSearchFields(root: HTMLElement, { onSubmit }: WireTokenSearchFieldsOptions): () => void;
+
+export { type TokenSearchSubmit, type WireTokenSearchFieldsOptions, wireTokenSearchFields };
+```
+
 ## `kerfjs/actions`
 
 ```ts

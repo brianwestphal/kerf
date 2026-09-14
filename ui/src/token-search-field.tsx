@@ -88,7 +88,7 @@ export function TokenSearchField({
   const parts = orderedParts(query, tokens);
   const key = `${id}:${tokens.map((token) => token.value).join('|')}`;
   const resolvedExpanded = !collapsible || expanded || query.length > 0 || tokens.length > 0;
-  return <div class={`kui-token-search ${className}`.trim()} data-component="token-search-field" data-token-search-id={id} data-disabled={String(disabled)} data-collapsible={String(collapsible)} data-expanded={String(resolvedExpanded)}>
+  return <div class={`kui-token-search ${className}`.trim()} data-component="token-search-field" data-token-search-id={id} data-disabled={String(disabled)} data-collapsible={String(collapsible)} data-expanded={String(resolvedExpanded)} data-has-trailing={String(Boolean(trailing))}>
     {!resolvedExpanded
       ? <button type="button" class="kui-token-search__expand" data-action={expandAction} aria-label={expandLabel ?? label} title={expandLabel ?? label} disabled={disabled}><LucideIcon icon={Search} name="search" /></button>
       : <>

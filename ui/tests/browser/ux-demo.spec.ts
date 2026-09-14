@@ -225,6 +225,11 @@ test('renders an interactive responsive find field inside a toolbar', async ({ p
   await expect(field).toHaveAttribute('data-expanded', 'false');
   await expect(group).toHaveCSS('transition-property', 'width, background-color, border-color');
   await expect(group).toHaveCSS('transition-duration', '0.25s, 0.2s, 0.2s');
+  const collapsedIconInset = await field.evaluate((element) => {
+    const fieldRect = element.getBoundingClientRect();
+    const iconRect = element.querySelector('svg')!.getBoundingClientRect();
+    return iconRect.left + iconRect.width / 2 - fieldRect.left;
+  });
   await group.evaluate((element) => element.addEventListener('transitionrun', (event) => {
     if ((event as TransitionEvent).propertyName === 'width') element.setAttribute('data-width-transition-seen', 'true');
   }));
@@ -238,8 +243,28 @@ test('renders an interactive responsive find field inside a toolbar', async ({ p
   await expect(toolbar.locator('.kui-toolbar__trailing')).toBeVisible();
   await expect(group).toHaveCSS('height', '44px');
   await expect(field).toHaveCSS('height', '40px');
+  await expect(field).toHaveCSS('background-color', 'rgb(255, 255, 255)');
+  expect(await group.evaluate((element) => window.getComputedStyle(element).boxShadow)).not.toBe('none');
+  const expandedIconInset = await field.evaluate((element) => {
+    const fieldRect = element.getBoundingClientRect();
+    const iconRect = element.querySelector('.kui-token-search__leading svg')!.getBoundingClientRect();
+    return iconRect.left + iconRect.width / 2 - fieldRect.left;
+  });
+  expect(Math.abs(expandedIconInset - collapsedIconInset)).toBeLessThan(0.5);
+  const trailingCenterBeforeInput = await field.locator('.kui-token-search__trailing').evaluate((element) => {
+    const rect = element.getBoundingClientRect();
+    return rect.left + rect.width / 2;
+  });
   await editor.pressSequentially('priority');
   await expect(toolbar.getByRole('button', { name: 'Clear search' })).toBeVisible();
+  const trailingCenterAfterInput = await field.locator('.kui-token-search__trailing').evaluate((element) => {
+    const rect = element.getBoundingClientRect();
+    return rect.left + rect.width / 2;
+  });
+  expect(Math.abs(trailingCenterAfterInput - trailingCenterBeforeInput)).toBeLessThan(0.5);
+  await editor.press('Enter');
+  await expect(page.locator('.catalog-log')).toHaveText('Find submitted');
+  await expect(editor.locator('br, div')).toHaveCount(0);
   await outsideControl.focus();
   await expect(editor).toBeVisible();
   await expect(trigger).toBeHidden();

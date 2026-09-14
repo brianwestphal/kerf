@@ -28,6 +28,7 @@ describe('UX catalog metadata', () => {
     expect(artifact.entries.every((entry) => entry.links.catalogRoute === `?component=${entry.id}` && entry.links.documentation && entry.links.recipe)).toBe(true);
     expect(artifact.entries.find(({ id }) => id === 'tab-bar')?.publicExports).toEqual(['TabBar', 'wireTabBars', 'reorderTabs']);
     expect(artifact.entries.find(({ id }) => id === 'resize')?.publicExports).toEqual(['ResizableRegion', 'clampRegionSize', 'resizeRegionFromPointer', 'wireResizableRegions']);
+    expect(artifact.entries.find(({ id }) => id === 'token-search-field')?.publicExports).toEqual(['TokenSearchField', 'readTokenSearchField', 'placeTokenSearchCaret', 'wireTokenSearchFields']);
     expect(artifact.entries.find(({ id }) => id === 'select')?.delivery.registrationImport).toBe('@kerfjs/ui/select/register');
     expect(artifact.entries.find(({ id }) => id === 'wa-button')?.delivery.registrationImport).toBe('@awesome.me/webawesome/dist/components/button/button.js');
   });

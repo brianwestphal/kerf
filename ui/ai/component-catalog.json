@@ -1274,7 +1274,8 @@
       "publicExports": [
         "TokenSearchField",
         "readTokenSearchField",
-        "placeTokenSearchCaret"
+        "placeTokenSearchCaret",
+        "wireTokenSearchFields"
       ],
       "useWhen": [
         "Combine DOM-owned free text with ordered editable/removable filter tokens in one searchbox.",
@@ -1306,6 +1307,7 @@
       "accessibility": [
         "Announce result changes when useful and keep tokens atomic during editing.",
         "Keep leading and trailing controls aligned to the first text line while content wraps.",
+        "Wire Enter to submit without inserting a contenteditable line break; visual wrapping remains available.",
         "In collapsible mode, transfer focus from the named trigger into the revealed searchbox and clear expanded only after focus leaves the component."
       ],
       "delivery": {
@@ -1325,6 +1327,11 @@
           "export": "placeTokenSearchCaret",
           "import": "@kerfjs/ui/token-search-field",
           "required": false
+        },
+        {
+          "export": "wireTokenSearchFields",
+          "import": "@kerfjs/ui/wire-token-search-fields",
+          "required": true
         }
       ],
       "publicClasses": [
@@ -1342,7 +1349,7 @@
         "--kui-color-accent",
         "--kui-color-accent-text",
         "--kui-color-border",
-        "--kui-color-focus",
+        "--kui-color-text-link",
         "--kui-color-surface",
         "--kui-color-text",
         "--kui-color-text-quiet",

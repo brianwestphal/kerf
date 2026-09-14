@@ -19,6 +19,7 @@ const entries = [
   'select',
   'segmented-control',
   'token-search-field',
+  'wire-token-search-fields',
   'select-register',
   'webawesome',
   'state-banner',

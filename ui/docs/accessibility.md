@@ -62,7 +62,9 @@ application owns query parsing and must announce result-count or loading
 changes separately when that feedback is useful. Use `readTokenSearchField()`
 to ignore the chip buttons' visible text when reading browser-edited content,
 and `placeTokenSearchCaret()` to restore a text caret without landing inside a
-chip. Editable text is DOM-owned between token changes; a clear handler empties
+chip. Call `wireTokenSearchFields()` once at a stable root so Enter submits
+without inserting a contenteditable line break; the editor still wraps text
+visually at its inline edge. Editable text is DOM-owned between token changes; a clear handler empties
 the editor's `textContent` before updating application state. Leading and
 trailing controls share the first text line's fixed vertical center and remain
 there as the editor wraps. In `collapsible` mode, the closed state is one named

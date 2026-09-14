@@ -21,9 +21,9 @@
 }
 
 .kui-token-search:focus-within {
-  border-color: var(--kui-color-focus);
+  border-color: var(--kui-color-text-link);
   box-shadow: 0 0 0 3px
-    color-mix(in srgb, var(--kui-color-focus) 22%, transparent);
+    color-mix(in srgb, var(--kui-color-text-link) 22%, transparent);
 }
 
 .kui-token-search[data-disabled="true"] {
@@ -32,6 +32,7 @@
 
 .kui-token-search__leading {
   display: inline-flex;
+  grid-column: 1;
   width: remify(16px);
   height: remify(16px);
   margin-block-start: calc(
@@ -46,6 +47,7 @@
 }
 
 .kui-token-search__editor {
+  grid-column: 2;
   min-width: remify(80px);
   min-height: var(--kui-token-search-line-size);
   padding-block: calc((var(--kui-token-search-line-size) - 1.35em) / 2) 0;
@@ -135,6 +137,18 @@
   place-items: center;
 }
 
+.kui-token-search__clear {
+  grid-column: 3;
+}
+
+.kui-token-search__trailing {
+  grid-column: 4;
+}
+
+.kui-token-search[data-has-trailing="false"] .kui-token-search__clear {
+  grid-column: 4;
+}
+
 .kui-token-search__clear svg,
 .kui-token-search__trailing svg {
   width: remify(13.6px);
@@ -166,13 +180,15 @@
   display: grid;
   width: 100%;
   height: 100%;
-  padding: 0;
+  padding: 0 remify(7px);
   border: 0;
   border-radius: inherit;
   color: var(--kui-color-text-quiet);
   background: transparent;
   cursor: pointer;
-  place-items: center;
+  align-items: center;
+  justify-content: start;
+  justify-items: start;
 }
 
 .kui-token-search__expand:hover {
@@ -220,6 +236,12 @@
 }
 
 .kui-toolbar-control-group
+  > .kui-token-search[data-collapsible="true"]:focus-within {
+  border-color: var(--kui-color-focus);
+  background: var(--kui-token-search-background);
+}
+
+.kui-toolbar-control-group
   > .kui-token-search[data-collapsible="true"][data-expanded="false"] {
   width: remify(40px);
   min-width: remify(40px);
@@ -228,12 +250,18 @@
   padding: 0;
 }
 
+.kui-toolbar-control-group
+  > .kui-token-search[data-collapsible="true"][data-expanded="false"]
+  .kui-token-search__expand {
+  padding-inline: remify(6px);
+}
+
 .kui-toolbar-control-group:has(
     > .kui-token-search[data-collapsible="true"]
   ):focus-within {
-  border-color: var(--kui-color-focus);
+  border-color: var(--kui-color-text-link);
   box-shadow: 0 0 0 3px
-    color-mix(in srgb, var(--kui-color-focus) 22%, transparent);
+    color-mix(in srgb, var(--kui-color-text-link) 22%, transparent);
 }
 
 @media (prefers-reduced-motion: reduce) {

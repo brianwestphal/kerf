@@ -24,6 +24,7 @@ import { ToolbarText } from '@kerfjs/ui/toolbar-text';
 import { ValueTable, ValueTableRow } from '@kerfjs/ui/value-table';
 import { wireResizableRegions } from '@kerfjs/ui/wire-resizable-regions';
 import { reorderTabs, wireTabBars } from '@kerfjs/ui/wire-tab-bars';
+import { wireTokenSearchFields } from '@kerfjs/ui/wire-token-search-fields';
 import { batch, delegate, delegateCapture, mount, signal } from 'kerfjs';
 import { delegateActions } from 'kerfjs/actions';
 import { ArrowDownAZ, Bell, Check, ChevronDown, ChevronLeft, ChevronRight, CircleHelp, Columns3, Contrast, Folder, GitCompare, Inbox, List, Moon, MoreHorizontal, PanelLeft, PanelLeftOpen, Pin, Plus, Search, Settings, SlidersHorizontal, Star, Wrench, ZapOff } from 'lucide';
@@ -714,6 +715,9 @@ const stopTokenSearch = delegate(app, 'input', '[data-demo-token-search="true"]'
 const stopToolbarFind = delegate(app, 'input', '[data-demo-toolbar-find="true"]', (_event, element) => {
   toolbarFindQuery.value = readTokenSearchField(element as HTMLElement).query;
 });
+const stopTokenSearchSubmits = wireTokenSearchFields(app, { onSubmit: ({ id }) => {
+  actionLog.value = id === 'toolbar-find' ? 'Find submitted' : 'Search submitted';
+} });
 const stopToolbarFindClearPointer = delegate(app, 'mousedown', '[data-action="clear-toolbar-find"]', (event) => {
   event.preventDefault();
 });
@@ -793,4 +797,4 @@ const stopTabs = delegate<HTMLButtonElement>(app, 'keydown', '[data-demo="tabs"]
 });
 const stopTabBars = wireTabBars(app, { onReorder: ({ barId, sourceId, targetId, position, source }) => { tabBarTabs.value = reorderTabs(tabBarTabs.value, (tab) => tab.id, sourceId, targetId, position); actionLog.value = `${source === 'pointer' ? 'Dragged' : 'Moved'} ${sourceId} ${position} ${targetId} in ${barId}`; } });
 
-window.addEventListener('pagehide', () => { stopActions(); stopResize(); stopSelect(); stopRecipeChanges(); stopRecipeInputs(); stopRecipeKeys(); stopRecipeShownDialogs(); stopRecipeDialogs(); stopTokenSearch(); stopToolbarFind(); stopToolbarFindClearPointer(); stopToolbarFindFocus(); stopRelationships(); stopAnimationSelects(); stopAnimationRanges(); stopAnimationEvents.forEach((dispose) => dispose()); stopIntersectionObserver(); stopMutationObserver(); stopResizeObserver(); stopTabs(); stopTabBars(); }, { once: true });
+window.addEventListener('pagehide', () => { stopActions(); stopResize(); stopSelect(); stopRecipeChanges(); stopRecipeInputs(); stopRecipeKeys(); stopRecipeShownDialogs(); stopRecipeDialogs(); stopTokenSearch(); stopToolbarFind(); stopTokenSearchSubmits(); stopToolbarFindClearPointer(); stopToolbarFindFocus(); stopRelationships(); stopAnimationSelects(); stopAnimationRanges(); stopAnimationEvents.forEach((dispose) => dispose()); stopIntersectionObserver(); stopMutationObserver(); stopResizeObserver(); stopTabs(); stopTabBars(); }, { once: true });

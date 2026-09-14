@@ -122,6 +122,10 @@
       "browser": "./dist/browser/token-search-field.js",
       "import": "./dist/token-search-field.js"
     },
+    "./wire-token-search-fields": {
+      "types": "./dist/wire-token-search-fields.d.ts",
+      "import": "./dist/wire-token-search-fields.js"
+    },
     "./select/register": {
       "types": "./dist/select-register.d.ts",
       "import": "./dist/select-register.js"

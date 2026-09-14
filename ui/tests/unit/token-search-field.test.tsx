@@ -20,6 +20,7 @@ describe('TokenSearchField', () => {
     const html = asHtml(TokenSearchField({ id: 'tickets', label: 'Search tickets', query: 'NOT  AND parser', tokens, autofocus: true, editorAttributes: { 'data-workspace-search': 'true' } }));
     expect(html).toContain('data-component="token-search-field" data-token-search-id="tickets" data-disabled="false"');
     expect(html).toContain('data-workspace-search="true" class="kui-token-search__editor"');
+    expect(html).toContain('data-has-trailing="false"');
     expect(html).toContain('role="searchbox" aria-label="Search tickets" contenteditable="true" spellcheck="false" autofocus');
     expect(html).toMatch(/data-token-value="is:active".*NOT .*data-token-value="tag:server".* AND parser/s);
     expect(html).toContain('aria-label="Edit server tag"');
@@ -51,6 +52,7 @@ describe('TokenSearchField', () => {
     expect(html).toContain('data-action="clear-filter" aria-label="Clear saved query"');
     expect(html).toContain('<span>Filter</span>');
     expect(html).toContain('data-lucide="help"');
+    expect(html).toContain('data-has-trailing="true"');
     expect(asHtml(TokenSearchField({ id: 'empty', label: 'Search', placeholder: 'Find records' }))).toContain('data-placeholder="Find records"');
   });
 

@@ -55,6 +55,7 @@ Components return Kerf `SafeHtml`. They do not own application state or attach t
 | `Select` | `@kerfjs/ui/select` | `@kerfjs/ui/select.css` |
 | `SegmentedControl` | `@kerfjs/ui/segmented-control` | `@kerfjs/ui/segmented-control.css` |
 | `TokenSearchField`, `readTokenSearchField`, `placeTokenSearchCaret` | `@kerfjs/ui/token-search-field` | `@kerfjs/ui/token-search-field.css` |
+| `wireTokenSearchFields` | `@kerfjs/ui/wire-token-search-fields` | — |
 | `StateBanner` | `@kerfjs/ui/state-banner` | `@kerfjs/ui/state-banner.css` |
 | `EmptyState` | `@kerfjs/ui/empty-state` | `@kerfjs/ui/empty-state.css` |
 | `DialogHeader` | `@kerfjs/ui/dialog-header` | `@kerfjs/ui/dialog-header.css` |
@@ -232,6 +233,9 @@ expose stable edit/remove actions and remain atomic during editing; the app owns
 parsing, suggestions, query execution, and state. Use `readTokenSearchField()`
 after browser input to recover text plus token offsets, and
 `placeTokenSearchCaret()` when restoring focus after a controlled update.
+Call `wireTokenSearchFields()` once at a stable root to make Enter submit through
+`onSubmit` without inserting a contenteditable line break. Text still wraps
+visually when it reaches the field edge.
 Clear actions should empty the editor's `textContent` before clearing app state.
 The leading icon, first text line, clear action, and trailing slot share one
 fixed alignment row; when text wraps, those controls stay pinned to that first
