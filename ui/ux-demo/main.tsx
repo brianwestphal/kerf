@@ -296,8 +296,10 @@ function MenuItemDemo() {
 }
 
 function TabsDemo() {
-  return <div class="demo-tabs" data-demo="tabs" role="tablist" aria-label="Open documents">
-    {(['library', 'guidelines', 'catalog'] as const).map((id) => <AppTab id={id} name={id[0]!.toUpperCase() + id.slice(1)} selected={activeTab.value === id} closable={id !== 'library'} leading={id === 'library' ? icon(PanelLeft, 'panel-left') : undefined} />)}
+  return <div class="demo-tabs" data-demo="tabs">
+    <TabBar id="focused-app-tabs" label="Open documents">
+      {(['library', 'guidelines', 'catalog'] as const).map((id) => <AppTab id={id} name={id[0]!.toUpperCase() + id.slice(1)} selected={activeTab.value === id} closable={id !== 'library'} leading={id === 'library' ? icon(PanelLeft, 'panel-left') : undefined} />)}
+    </TabBar>
   </div>;
 }
 
@@ -775,26 +777,6 @@ const stopResizeObserver = delegate(app, 'wa-resize', 'wa-resize-observer', (eve
   if (!entry || !output) return;
   output.textContent = `Observed width · ${Math.round(entry.contentRect.width)}px`;
 });
-const stopTabs = delegate<HTMLButtonElement>(app, 'keydown', '[data-demo="tabs"] [role="tab"]', (event, element) => {
-  const keyboardEvent = event as KeyboardEvent;
-  if (keyboardEvent.key === 'Delete' || keyboardEvent.key === 'Backspace') {
-    element.closest('[data-component="app-tab"]')?.querySelector<HTMLButtonElement>('[data-action="close-tab"]')?.click();
-    keyboardEvent.preventDefault();
-    return;
-  }
-  const tabs = [...(element.closest('[role="tablist"]')?.querySelectorAll<HTMLButtonElement>('[role="tab"]') ?? [])];
-  const current = tabs.indexOf(element);
-  if (current < 0 || tabs.length === 0) return;
-  let next: number;
-  if (keyboardEvent.key === 'ArrowRight') next = (current + 1) % tabs.length;
-  else if (keyboardEvent.key === 'ArrowLeft') next = (current - 1 + tabs.length) % tabs.length;
-  else if (keyboardEvent.key === 'Home') next = 0;
-  else if (keyboardEvent.key === 'End') next = tabs.length - 1;
-  else return;
-  keyboardEvent.preventDefault();
-  tabs[next]?.focus();
-  tabs[next]?.click();
-});
 const stopTabBars = wireTabBars(app, { onReorder: ({ barId, sourceId, targetId, position, source }) => { tabBarTabs.value = reorderTabs(tabBarTabs.value, (tab) => tab.id, sourceId, targetId, position); actionLog.value = `${source === 'pointer' ? 'Dragged' : 'Moved'} ${sourceId} ${position} ${targetId} in ${barId}`; } });
 
-window.addEventListener('pagehide', () => { stopActions(); stopResize(); stopSelect(); stopRecipeChanges(); stopRecipeInputs(); stopRecipeKeys(); stopRecipeShownDialogs(); stopRecipeDialogs(); stopTokenSearch(); stopToolbarFind(); stopTokenSearchSubmits(); stopToolbarFindClearPointer(); stopToolbarFindFocus(); stopRelationships(); stopAnimationSelects(); stopAnimationRanges(); stopAnimationEvents.forEach((dispose) => dispose()); stopIntersectionObserver(); stopMutationObserver(); stopResizeObserver(); stopTabs(); stopTabBars(); }, { once: true });
+window.addEventListener('pagehide', () => { stopActions(); stopResize(); stopSelect(); stopRecipeChanges(); stopRecipeInputs(); stopRecipeKeys(); stopRecipeShownDialogs(); stopRecipeDialogs(); stopTokenSearch(); stopToolbarFind(); stopTokenSearchSubmits(); stopToolbarFindClearPointer(); stopToolbarFindFocus(); stopRelationships(); stopAnimationSelects(); stopAnimationRanges(); stopAnimationEvents.forEach((dispose) => dispose()); stopIntersectionObserver(); stopMutationObserver(); stopResizeObserver(); stopTabBars(); }, { once: true });

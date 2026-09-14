@@ -755,6 +755,8 @@ test('catalog routes every production component family and supports its stateful
   await expect(page.locator('html')).toHaveClass(/demo-reduced-motion/);
 
   await page.locator('.catalog-sidebar [data-item-id="tabs"]').click();
+  await expect(page.locator('[data-demo="tabs"] > [data-component="tab-bar"]')).toHaveAttribute('data-tab-bar-id', 'focused-app-tabs');
+  await expect(page.locator('[data-demo="tabs"] [data-kui-tab-list]')).toHaveAttribute('aria-label', 'Open documents');
   await page.locator('[data-action="select-tab"][data-tab-id="guidelines"]').click();
   await expect(page.locator('[data-action="select-tab"][data-tab-id="guidelines"]')).toHaveAttribute('aria-selected', 'true');
   await page.locator('[data-action="select-tab"][data-tab-id="guidelines"]').press('Backspace');
@@ -763,6 +765,7 @@ test('catalog routes every production component family and supports its stateful
   await expect(page.locator('[data-action="select-tab"][data-tab-id="catalog"]')).toHaveAttribute('aria-selected', 'true');
   await page.locator('[data-action="select-tab"][data-tab-id="catalog"]').press('Home');
   await expect(page.locator('[data-action="select-tab"][data-tab-id="library"]')).toHaveAttribute('aria-selected', 'true');
+  if (browserName === 'chromium') await page.locator('[data-demo="tabs"]').screenshot({ path: 'test-results/app-tab-shared-tab-bar.png' });
 
   await page.locator('.catalog-sidebar [data-item-id="feedback"]').click();
   await page.locator('[data-action="cycle-tone"]').click();
