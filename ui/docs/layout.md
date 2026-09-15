@@ -73,6 +73,30 @@ borderless group in a top toolbar, its direct action children are wrapped in a
 contained group, and its optional subtitle is a separate row aligned below the
 title. The icon visual is 24px inside a 34px circular background.
 
+## Spacing scale
+
+Spacing is not a free choice. The official scale is five canonical steps, each
+expressing exactly one relationship — pick the step by **how connected two
+elements are**, not by eye. Every scalable value is `remify`-authored against the
+fixed 16px baseline, so it delivers as `rem`.
+
+| Value | Token | Relationship — when to use |
+| --- | --- | --- |
+| 0px | `--kui-space-none` | No separation. The elements read as a single unit (a control and its own affordance, adjacent `MenuItem` rows). |
+| 4px | `--kui-space-2xs` | Very minor. Still one connected cluster, but readability or aesthetics demand a hair of air (inline metadata, an icon beside its label). |
+| 8px | `--kui-space-xs` | Standard. Between elements **within a group** — the content-item padding/gutter, gaps between toolbar controls in a group. |
+| 16px | `--kui-space-m` | Minor. Between **homogeneous groups** — two lists, two sibling sections of the same kind. |
+| 24px | `--kui-space-l` | Major. Between **heterogeneous groups** — the `.kui-content` rhythm between major, differing regions. |
+
+The two relationships that get confused most are 8px vs 24px: 8px is *inside* a
+group, 24px is *between* major, differing regions. 16px sits between them for
+same-kind groups.
+
+`--kui-space-s` (12px) and `--kui-space-xl` (32px) exist but are **off the
+canonical rhythm** — reach for them only as a deliberate exception, never as a
+default step. Prefer the five canonical tokens so spacing stays legible and
+consistent across every surface.
+
 ## Ownership rules
 
 1. Do not pad a sidebar, main area, dialog, or `.kui-pane` shell. Children own

@@ -80,6 +80,13 @@ foregrounds compatible with Hot Sheet 2 and Web Awesome. Consumers may replace
 the global palette, one semantic role, or one component instance through
 documented custom properties without rewriting component CSS.
 
+Spacing is likewise a finite, semantic scale, not a free measurement. Five
+canonical steps — 0, 4, 8, 16, and 24px, each a `--kui-space-*` token — map to a
+single relationship apiece, chosen by how connected two elements are: no
+separation, very minor air, standard within a group, between homogeneous groups,
+and major between heterogeneous groups. Off-scale values (12px, 32px) are
+deliberate exceptions. See [`layout.md`](layout.md) "Spacing scale".
+
 ### Responsive design reprioritizes
 
 Protect primary content, readable type, recognizable icons, and usable targets. Relocate secondary information before compressing it below a usable scale. Keep one clear scroll owner per region and test narrow, wide, zoomed, and intermediate layouts.

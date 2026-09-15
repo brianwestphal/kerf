@@ -24,6 +24,19 @@
   --kui-font-l: var(--wa-font-size-l, 20px);
   --kui-font-2xl: var(--wa-font-size-2xl, 32px);
   --kui-font-weight-semibold: var(--wa-font-weight-semibold, 650);
+  /* Official spacing scale (see docs/layout.md "Spacing scale"). Five canonical
+     steps, each expressing one relationship — pick by how connected the elements
+     are, not by eye:
+       0px  --kui-space-none  no separation (elements read as one unit)
+       4px  --kui-space-2xs   very minor — connected, but readability/aesthetics
+                              demand a hair of air
+       8px  --kui-space-xs    standard — between elements within a group
+       16px --kui-space-m     minor — between homogeneous groups
+       24px --kui-space-l     major — between heterogeneous groups
+     --kui-space-s (12px) and --kui-space-xl (32px) are off the canonical rhythm;
+     reach for them only as deliberate exceptions, not as default steps. All
+     scalable values are remify-authored against the fixed 16px baseline. */
+  --kui-space-none: 0;
   --kui-space-2xs: var(--wa-space-2xs, remify(4px));
   --kui-space-xs: var(--wa-space-xs, remify(8px));
   --kui-space-s: var(--wa-space-s, remify(12px));

@@ -1,7 +1,7 @@
 ---
 name: kerf-ui
 description: Build interfaces with kerfjs and the @kerfjs/ui production component package. Use whenever code imports @kerfjs/ui or a task asks for Kerf UI components.
-kerf-ui-skill-version: 1.32.0
+kerf-ui-skill-version: 1.33.0
 ---
 
 # Building with @kerfjs/ui
@@ -66,6 +66,7 @@ Hard rules:
 17. When a recurring concept has no matching export or production recipe, keep its semantics in a thin application adapter while reusing the public layout vocabulary. The composer recipe uses one visible form surface, `DialogHeader` title/summary ids, shared 8px field/action gutters, 24px major rhythm, and a conditional StateBanner as its only nested semantic surface; do not turn every section into a card or double-inset intrinsically bordered controls. The application-local `../docs/examples/command-palette-adapter.tsx` is reference source for one such missing concept, not an `@kerfjs/ui` runtime export or catalog recipe. The application owns its registration, ranking, history, permissions, availability, shortcut policy, focus policy, dispatch, and copy. If a missing concept recurs across products, open an upstream component or recipe request.
 18. Compose `ValueTable` from typed `ValueTableRow` entries instead of handwritten `dt`/`dd` wrappers. Pass `icon` for the optional 24px leading visual; the row owns 8px of root-scaled top and bottom padding, the 8px iconless or 40px icon-bearing separator start, and the common 8px right inset.
 19. Use `DialogHeader` for dialog hierarchy, not a custom heading row. Its real top `Toolbar` puts the optional 24px icon in a 34px circular background and the first title line in a borderless `ToolbarControlGroup`, centered against the automatic action `ToolbarControlGroup`; pass action children directly and add a localized `actionsLabel` when that group needs a name. Its optional `summary`/`summaryId` row stays below the title. The app owns modal behavior, focus, dismissal, command policy, and action handling.
+20. Space with the official five-step scale, picked by how connected two elements are — not by eye. `0` `--kui-space-none` = no separation (one unit); `4px` `--kui-space-2xs` = very minor air on a connected cluster; `8px` `--kui-space-xs` = standard, between elements within a group; `16px` `--kui-space-m` = minor, between homogeneous groups; `24px` `--kui-space-l` = major, between heterogeneous groups (the `.kui-content` rhythm). The 8px-vs-24px distinction is inside-a-group vs between-major-differing-regions. `--kui-space-s` (12px) and `--kui-space-xl` (32px) are off-scale exceptions; prefer the five canonical remify-authored tokens. See `docs/layout.md` "Spacing scale".
 
 Common mistakes:
 
