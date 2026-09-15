@@ -98,6 +98,8 @@ KF-103 enforces "exactly one top-level element per row" with row-precise diagnos
 
 Its public `list.ts` entry now delegates keyed row ownership to `list-row-controller.ts` and all window/content-visibility height and scheduling behavior to `list-virtualization-controller.ts`. Snapshot and granular paths share the same persistent-key item-replacement contract, so their element/content lifecycle semantics cannot drift independently.
 
+`remountOn` owns its parent subtree until disposal. Its returned disposer is idempotent and relinquishes that ownership before consumer cleanup, so a reentrant or repeated call cannot remove content installed in the parent after the first teardown.
+
 KF-117 documented kerf's no-op-render fast path as a contract: when the static-surrounds HTML is byte-for-byte identical to the previous render, `mount()` skips the diff entirely. Any attribute / child set imperatively on a kerf-managed element (`el.setAttribute(...)`, `el.appendChild(...)`) survives across no-op re-renders; when surrounds DO change, the diff runs and `morphAttributes` removes anything the JSX didn't authorize. The fast path saves ~8 ms per partial-update / select-row / swap-rows render in the krausest harness. See `docs/4-render.md` §4.4.2 for the full rationale + practical guidance (use `data-morph-skip` for stable library-owned subtrees, drive imperative state from signals where possible).
 
 ### §5 Event delegation

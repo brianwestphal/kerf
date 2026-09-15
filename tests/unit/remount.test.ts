@@ -123,6 +123,94 @@ describe('remountOn()', () => {
     expect(parent.querySelector('.d')).toBeNull();
   });
 
+  it('the disposer is idempotent and does not remove external content added after disposal', () => {
+    const parent = host();
+    const key = signal(1);
+    let cleanupCalls = 0;
+    const stop = remountOn(parent, key, () => jsx('div', { class: 'owned' }), {
+      onMount: () => () => {
+        cleanupCalls += 1;
+      },
+    });
+    const owned = parent.querySelector('.owned')!;
+
+    stop();
+    expect(owned.isConnected).toBe(false);
+    expect(cleanupCalls).toBe(1);
+
+    const external = document.createElement('p');
+    external.className = 'external';
+    parent.replaceChildren(external);
+    stop();
+
+    expect(parent.firstElementChild).toBe(external);
+    expect(external.isConnected).toBe(true);
+    expect(cleanupCalls).toBe(1);
+  });
+
+  it('a disposer called reentrantly from cleanup does not mount a fresh subtree', () => {
+    const parent = host();
+    const key = signal(1);
+    let stop!: () => void;
+    let renderCalls = 0;
+    stop = remountOn(
+      parent,
+      key,
+      () => {
+        renderCalls += 1;
+        return jsx('div', { class: 'owned' });
+      },
+      { onMount: () => () => stop() },
+    );
+
+    key.value = 2;
+
+    expect(renderCalls).toBe(1);
+    expect(parent.childElementCount).toBe(0);
+    key.value = 3;
+    expect(renderCalls).toBe(1);
+  });
+
+  it('a disposer called reentrantly from render tears down the mount that finishes afterward', () => {
+    const parent = host();
+    const key = signal(1);
+    let stop = (): void => {};
+    let renderCalls = 0;
+    stop = remountOn(parent, key, () => {
+      renderCalls += 1;
+      if (key.value === 2) stop();
+      return jsx('div', { class: 'owned' });
+    });
+
+    key.value = 2;
+
+    expect(renderCalls).toBe(2);
+    expect(parent.childElementCount).toBe(0);
+    key.value = 3;
+    expect(renderCalls).toBe(2);
+  });
+
+  it('a disposer called reentrantly from onMount runs the cleanup returned afterward', () => {
+    const parent = host();
+    const key = signal(1);
+    let stop = (): void => {};
+    const cleanups: number[] = [];
+    stop = remountOn(parent, key, () => jsx('div', { class: 'owned' }), {
+      onMount: () => {
+        const at = key.value;
+        if (at === 2) stop();
+        return () => cleanups.push(at);
+      },
+    });
+
+    key.value = 2;
+
+    expect(cleanups).toEqual([1, 2]);
+    expect(parent.childElementCount).toBe(0);
+    key.value = 3;
+    expect(cleanups).toEqual([1, 2]);
+  });
+
   describe('onMount hook', () => {
     it('runs after each (re)mount with the live, freshly-rendered subtree', () => {
       const parent = host();

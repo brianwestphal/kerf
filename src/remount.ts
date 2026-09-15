@@ -16,7 +16,8 @@
  *   // key change -> old subtree + its mounts disposed, a fresh one mounted
  *
  * `remountOn` owns `parent`'s children (like `mount()` / `bindList`). It returns
- * a disposer that tears down the current subtree and stops watching the key.
+ * an idempotent disposer that tears down the current subtree and stops watching
+ * the key. Once disposed, it no longer owns later content placed in `parent`.
  * Pairs with `kerfjs/attach`: put the widget's setup/teardown on the fresh
  * node, and `remountOn` drives its re-creation.
  */
@@ -46,8 +47,9 @@ const UNSET = Symbol('kerf.remount.unset');
  * Watch `key` and, whenever it changes (by `Object.is`), dispose the current
  * subtree + its mounts and render a fresh one into `parent` via `mount(render)`.
  * An unchanged key leaves the subtree untouched. `options.onMount(parent)` runs
- * after each (re)mount to bind widgets to the fresh DOM. Returns a disposer that
- * tears down the current subtree and stops watching.
+ * after each (re)mount to bind widgets to the fresh DOM. Returns an idempotent
+ * disposer that tears down the current subtree and stops watching; later calls
+ * leave content added to `parent` after disposal untouched.
  */
 export function remountOn<K>(
   parent: HTMLElement,
@@ -60,8 +62,14 @@ export function remountOn<K>(
   let currentKey: K | typeof UNSET = UNSET;
   let disposeMount: (() => void) | undefined;
   let onMountCleanup: (() => void) | undefined;
+  let ownsSubtree = false;
+  let disposed = false;
 
   function tearDown(): void {
+    if (!ownsSubtree) return;
+    // Relinquish ownership before invoking consumer cleanup so a reentrant
+    // disposer cannot tear down twice or clear content installed afterward.
+    ownsSubtree = false;
     // Run the onMount cleanup BEFORE tearing down the DOM, so a synchronous
     // teardown (e.g. an attach() disposer returned from onMount) fires while
     // its node is still attached.
@@ -86,12 +94,31 @@ export function remountOn<K>(
     if (!Object.is(next, currentKey)) {
       currentKey = next;
       tearDown();
-      disposeMount = mount(parent, render);
-      onMountCleanup = onMount?.(parent) ?? undefined;
+      if (disposed) return;
+      const nextDisposeMount = mount(parent, render);
+      // `render` runs synchronously inside mount(). If it disposed this
+      // remounter reentrantly, tear down the mount that finished afterward.
+      if (disposed) {
+        nextDisposeMount();
+        parent.replaceChildren();
+        return;
+      }
+      disposeMount = nextDisposeMount;
+      ownsSubtree = true;
+      const nextOnMountCleanup = onMount?.(parent) ?? undefined;
+      // `onMount` may likewise dispose reentrantly before returning its
+      // cleanup. Honor that cleanup immediately instead of orphaning it.
+      if (disposed) {
+        nextOnMountCleanup?.();
+        return;
+      }
+      onMountCleanup = nextOnMountCleanup;
     }
   });
 
   return () => {
+    if (disposed) return;
+    disposed = true;
     stopWatch();
     tearDown();
   };

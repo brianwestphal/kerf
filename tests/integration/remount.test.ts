@@ -79,4 +79,36 @@ describe('remount — full pipeline', () => {
     expect(events).toEqual(['setup:a', 'teardown:a', 'setup:b', 'teardown:b']);
     expect(parent.querySelector('.pane')).toBeNull();
   });
+
+  it('repeated disposal relinquishes the parent so later external content survives', () => {
+    const parent = document.createElement('div');
+    document.body.appendChild(parent);
+    const key = signal('a');
+    const events: string[] = [];
+    const stop = remountOn(
+      parent,
+      key,
+      () => jsx('div', { class: 'pane', 'data-morph-skip': '' }),
+      {
+        onMount: (root) =>
+          attach(root.querySelector('.pane')!, () => {
+            events.push('setup');
+            return () => events.push('teardown');
+          }),
+      },
+    );
+
+    stop();
+    expect(events).toEqual(['setup', 'teardown']);
+
+    const external = document.createElement('p');
+    external.textContent = 'owned elsewhere';
+    parent.replaceChildren(external);
+    stop();
+
+    expect(parent.firstElementChild).toBe(external);
+    expect(events).toEqual(['setup', 'teardown']);
+    key.value = 'b';
+    expect(parent.firstElementChild).toBe(external);
+  });
 });
