@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Normalized synchronous `resource().run()` fetcher throws into the same stale-guarded failed state and resolving promise used for asynchronous rejections.
 - Escaped plain-string `toast()` content as text while preserving trusted `SafeHtml` and render-function markup, closing a stored-markup injection path.
 - Rejected non-finite and fractional indices in every indexed `arraySignal` mutator before changing source state or emitting a patch; even equal `move()` indices are now validated before the no-op path.
 - Made `DisclosureArrow` animate configurable directions over the shortest rotation path, including the left-to-up demo's natural 90-degree clockwise turn; closed-to-open 180-degree ties use counterclockwise rotation.

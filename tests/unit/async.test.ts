@@ -43,6 +43,19 @@ describe('resource()', () => {
     expect(r.value.data).toBe(1); // previous data preserved (stale-while-revalidate)
   });
 
+  it('normalizes a synchronous fetcher throw into failed state without rejecting', async () => {
+    const r = resource<number>();
+    await r.run(() => Promise.resolve(1));
+    const err = new Error('synchronous failure');
+
+    const result = r.run(() => {
+      throw err;
+    });
+
+    expect(r.value).toMatchObject({ status: 'failed', data: 1, error: err });
+    await expect(result).resolves.toBeUndefined();
+  });
+
   it('stale guard: only the latest run resolves the state', async () => {
     const r = resource<string>();
     const slow = deferred<string>();
@@ -72,6 +85,25 @@ describe('resource()', () => {
     expect(r.value.status).toBe('completed');
     expect(r.value.data).toBe('current');
     expect(r.value.error).toBeUndefined();
+  });
+
+  it('a stale synchronous failure does not overwrite a re-entrant newer run', async () => {
+    const r = resource<string>();
+    const current = deferred<string>();
+    let currentRun!: Promise<string | undefined>;
+    const staleError = new Error('stale synchronous failure');
+
+    const staleRun = r.run(() => {
+      currentRun = r.run(() => current.promise);
+      throw staleError;
+    });
+
+    expect(r.value).toMatchObject({ status: 'running', error: undefined });
+    await expect(staleRun).resolves.toBeUndefined();
+
+    current.resolve('current');
+    await expect(currentRun).resolves.toBe('current');
+    expect(r.value).toMatchObject({ status: 'completed', data: 'current', error: undefined });
   });
 
   it('reset() returns to idle and invalidates an in-flight run', async () => {

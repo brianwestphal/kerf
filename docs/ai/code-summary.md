@@ -385,6 +385,8 @@ kerf/
 └── README.md
 ```
 
+`resource().run()` applies its stale-generation guard to both promise rejections and synchronous fetcher throws; either failure form updates the current run to `failed` and resolves the returned promise with `undefined`.
+
 ## Public exports
 
 Every export reachable via `import { ... } from 'kerfjs'`:

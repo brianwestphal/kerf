@@ -105,6 +105,8 @@ Three-tier model:
 
 The `kerfjs/overlay` toast helper treats plain-string content as untrusted text: strings are HTML-escaped before mounting. Callers must use `SafeHtml` or a render function when they intentionally need markup.
 
+The `kerfjs/async` resource helper normalizes both synchronous fetcher throws and asynchronous promise rejections into its stale-guarded `failed` state; `run()` always returns a promise that resolves rather than rejecting.
+
 ### §6 JSX runtime
 
 JSX renders to `SafeHtml` strings via `kerfjs/jsx-runtime`. Configured via `tsconfig` `"jsxImportSource": "kerfjs"`. Attribute aliases for HTML + SVG camelCase → kebab-case. Boolean attribute semantics. Children: strings escaped, `SafeHtml` injected raw, DOM nodes throw, arrays joined. `raw(html)` wraps pre-escaped strings. §6.4.1 dangerous-URL filter: `javascript:`/`vbscript:`/script-executing `data:` values on URL-bearing attributes (`href`/`src`/`xlink:href`/`formaction`/`action`/`data`) are dropped — KF-340: throws in dev, warns+drops in prod (production byte-identical); `raw()` opts out in both modes.

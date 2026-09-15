@@ -197,7 +197,22 @@ export function resource<T, I = void>(options: ResourceOptions<T, I> = {}): Reso
       }
     };
 
-    return fetcher(report).then(
+    const fail = (error: unknown): undefined => {
+      if (gen === generation) {
+        // Keep `data` (and thus `revision`) on failure — stale-while-error.
+        state.value = { ...state.value, status: 'failed', error, progress: undefined, input };
+      }
+      return undefined;
+    };
+
+    let pending: Promise<T>;
+    try {
+      pending = fetcher(report);
+    } catch (error: unknown) {
+      return Promise.resolve(fail(error));
+    }
+
+    return pending.then(
       (data) => {
         if (gen === generation) {
           if (key !== undefined) cache.set(key, data);
@@ -212,13 +227,7 @@ export function resource<T, I = void>(options: ResourceOptions<T, I> = {}): Reso
         }
         return data;
       },
-      (error: unknown) => {
-        if (gen === generation) {
-          // Keep `data` (and thus `revision`) on failure — stale-while-error.
-          state.value = { ...state.value, status: 'failed', error, progress: undefined, input };
-        }
-        return undefined;
-      },
+      fail,
     );
   }
 
