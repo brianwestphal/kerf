@@ -128,6 +128,26 @@ test('keeps the composer on one labeled surface with shared field and action gut
     const fieldsBounds = fields.getBoundingClientRect();
     const headerBounds = header.getBoundingClientRect();
     const ownership = root.querySelector<HTMLElement>('.recipe-form__footer .kui-recipe__ownership')!.getBoundingClientRect();
+    const input = root.querySelector<HTMLElement>('wa-input[name="recipe-title"]')!;
+    const textarea = root.querySelector<HTMLElement>('wa-textarea[name="recipe-body"]')!;
+    const select = root.querySelector<HTMLElement>('wa-select[name="recipe-audience"]')!;
+    const inputLabel = input.shadowRoot!.querySelector<HTMLElement>('[part~="form-control-label"]')!;
+    const inputHint = input.shadowRoot!.querySelector<HTMLElement>('[part~="hint"]')!;
+    const textareaLabel = textarea.shadowRoot!.querySelector<HTMLElement>('[part~="form-control-label"]')!;
+    const textareaHint = textarea.shadowRoot!.querySelector<HTMLElement>('[part~="hint"]')!;
+    const textareaCount = textarea.shadowRoot!.querySelector<HTMLElement>('[part~="count"]')!;
+    const textareaControl = textarea.shadowRoot!.querySelector<HTMLElement>('[part~="textarea"]')!;
+    const selectLabel = select.shadowRoot!.querySelector<HTMLElement>('[part~="form-control-label"]')!;
+    const textareaBounds = textarea.getBoundingClientRect();
+    const countBounds = textareaCount.getBoundingClientRect();
+    const hintSlot = textareaHint.querySelector<HTMLSlotElement>('slot[name="hint"]')!;
+    const hintRange = document.createRange();
+    hintRange.selectNodeContents(hintSlot);
+    const hintCountOverlap = [...hintRange.getClientRects()].some((rect) => Math.min(rect.right, countBounds.right) > Math.max(rect.left, countBounds.left) && Math.min(rect.bottom, countBounds.bottom) > Math.max(rect.top, countBounds.top));
+    const partPadding = (part: HTMLElement) => {
+      const style = window.getComputedStyle(part);
+      return { end: parseFloat(style.paddingInlineEnd), start: parseFloat(style.paddingInlineStart) };
+    };
     return {
       actionsInsideFooter: actions.left >= footer.left && actions.right <= footer.right && actions.top >= footer.top && actions.bottom <= footer.bottom,
       actionStart: actions.left - rootBounds.left,
@@ -142,8 +162,16 @@ test('keeps the composer on one labeled surface with shared field and action gut
       footerEnd: rootBounds.right - footer.right,
       headerStart: headerBounds.left - rootBounds.left,
       headerEnd: rootBounds.right - headerBounds.right,
+      hintCountOverlap,
       rootBackground: rootStyle.backgroundColor,
       rootBorderWidth: parseFloat(rootStyle.borderLeftWidth),
+      selectLabelPadding: partPadding(selectLabel),
+      textareaControlPadding: partPadding(textareaControl),
+      textareaCountEnd: textareaBounds.right - countBounds.right,
+      textareaHintPadding: partPadding(textareaHint),
+      textareaLabelPadding: partPadding(textareaLabel),
+      inputHintPadding: partPadding(inputHint),
+      inputLabelPadding: partPadding(inputLabel),
     };
   });
   const expectLayout = async (scale: number, bannerRole?: 'alert' | 'status') => {
@@ -170,7 +198,15 @@ test('keeps the composer on one labeled surface with shared field and action gut
     expect(measured.footerContentOverlap).toBe(0);
     expect(measured.documentOverflow).toBeLessThanOrEqual(1);
     expect(measured.fieldsGap).toBeCloseTo(8 * scale, 0);
+    expect(measured.hintCountOverlap).toBe(false);
     for (const inset of [measured.actionStart, measured.fieldStart, measured.fieldsStart, measured.fieldsEnd, measured.footerStart, measured.footerEnd, measured.headerStart, measured.headerEnd]) expect(inset).toBeCloseTo(1 + (8 * scale), 0);
+    for (const padding of [measured.inputLabelPadding, measured.inputHintPadding, measured.textareaLabelPadding, measured.textareaHintPadding, measured.selectLabelPadding]) {
+      expect(padding.start).toBeCloseTo(8 * scale, 0);
+      expect(padding.end).toBeCloseTo(8 * scale, 0);
+    }
+    expect(measured.textareaControlPadding.start).toBeCloseTo(8 * scale, 0);
+    expect(measured.textareaControlPadding.end).toBeCloseTo(8 * scale, 0);
+    expect(measured.textareaCountEnd).toBeCloseTo(8 * scale, 0);
   };
 
   await expectLayout(1);

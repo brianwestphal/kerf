@@ -149,6 +149,16 @@
 .recipe-form__fields {
   align-content: start;
 }
+.recipe-form__fields wa-input::part(form-control-label),
+.recipe-form__fields wa-input::part(hint),
+.recipe-form__fields wa-textarea::part(form-control-label),
+.recipe-form__fields wa-textarea::part(hint),
+.recipe-form__fields .kui-select::part(form-control-label) {
+  padding-inline: remify(8px);
+}
+.recipe-form__fields wa-textarea::part(textarea) {
+  padding-inline: remify(8px);
+}
 .recipe-form__footer {
   align-content: start;
 }
