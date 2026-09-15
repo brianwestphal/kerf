@@ -66,7 +66,7 @@ test('aligns multiline MenuItem and MenuActionRow icons with the first text line
   );
   if (browserName === 'chromium') {
     await wideMenuItem.hover();
-    await wideMenuItem.screenshot({ path: '/private/tmp/menu-item-first-line-alignment-wide.png' });
+    await wideMenuItem.screenshot({ path: 'test-results/menu-item-first-line-alignment-wide.png' });
   }
   const menuItem = await expectFirstLineAlignment(
     page,
@@ -78,7 +78,7 @@ test('aligns multiline MenuItem and MenuActionRow icons with the first text line
   );
   if (browserName === 'chromium') {
     await menuItem.hover();
-    await menuItem.screenshot({ path: '/private/tmp/menu-item-first-line-alignment-narrow.png' });
+    await menuItem.screenshot({ path: 'test-results/menu-item-first-line-alignment-narrow.png' });
   }
 
   const wideActionRow = await expectFirstLineAlignment(
@@ -92,7 +92,7 @@ test('aligns multiline MenuItem and MenuActionRow icons with the first text line
   );
   if (browserName === 'chromium') {
     await wideActionRow.locator('.kui-menu-action-row__primary').hover();
-    await wideActionRow.screenshot({ path: '/private/tmp/menu-action-row-first-line-alignment-wide.png' });
+    await wideActionRow.screenshot({ path: 'test-results/menu-action-row-first-line-alignment-wide.png' });
   }
   const actionRow = await expectFirstLineAlignment(
     page,
@@ -104,7 +104,7 @@ test('aligns multiline MenuItem and MenuActionRow icons with the first text line
   );
   if (browserName === 'chromium') {
     await actionRow.locator('.kui-menu-action-row__primary').hover();
-    await actionRow.screenshot({ path: '/private/tmp/menu-action-row-first-line-alignment-narrow.png' });
+    await actionRow.screenshot({ path: 'test-results/menu-action-row-first-line-alignment-narrow.png' });
   }
 
   await page.setViewportSize({ width: 720, height: 900 });
