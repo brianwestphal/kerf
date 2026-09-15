@@ -81,11 +81,13 @@ test('package.json keeps kerfjs a peerDependency (never bundled), with ESM + sub
   });
 });
 
-test('tsup build keeps kerfjs external and emits ESM + dts', () => {
+test('tsup build keeps kerfjs external and emits ESM + TypeScript 6-compatible dts', () => {
   withScaffold('my-widgets', ({ read }) => {
     const tsup = read('tsup.config.ts');
     assert.match(tsup, /external:\s*\[\s*['"]kerfjs['"]/, 'kerfjs must be external in the build');
-    assert.match(tsup, /dts:\s*true/);
+    assert.match(tsup, /dts:\s*\{/);
+    assert.match(tsup, /ignoreDeprecations:\s*['"]6\.0['"]/);
+    assert.match(tsup, /versionMajorMinor\.startsWith\(['"]6\.['"]\)/);
     assert.match(tsup, /format:\s*\[\s*['"]esm['"]/);
   });
 });
