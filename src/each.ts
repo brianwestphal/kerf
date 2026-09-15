@@ -41,7 +41,7 @@
  * top-level element — the list reconciler binds one live DOM node per item.
  */
 
-import type { ArraySignal } from './array-signal.js';
+import type { ArrayPatch, ArraySignal } from './array-signal.js';
 import { type Binding, captureRowBindings } from './bindings.js';
 import { devHooks } from './dev-hooks.js';
 import { itemVersion } from './item-version.js';
@@ -382,6 +382,50 @@ function assertObjectItem(item: unknown, index: number): asserts item is object 
 }
 
 /**
+ * Replay structural patches over the indices at which rows were rendered and
+ * report whether any surviving row would occupy a different final index.
+ * Pure transition stage extracted from `eachGranular` for direct coverage.
+ */
+export function _hasGranularIndexShift<T>(
+  previousBindingCount: number,
+  patches: readonly ArrayPatch<T>[],
+): boolean {
+  const rendered: number[] = [];
+  for (let i = 0; i < previousBindingCount; i++) rendered.push(i);
+  for (const patch of patches) {
+    if (patch.type === 'insert') rendered.splice(patch.index, 0, patch.index);
+    else if (patch.type === 'remove') rendered.splice(patch.index, 1);
+    else if (patch.type === 'move') {
+      const [moved] = rendered.splice(patch.from, 1);
+      rendered.splice(patch.to, 0, moved);
+    }
+  }
+  return rendered.some((renderedAt, index) => renderedAt !== index);
+}
+
+interface CacheKeyLookup {
+  get(item: object): { cacheKey: unknown } | undefined;
+}
+
+/**
+ * Re-evaluate cache keys to retain their reactive dependencies and report the
+ * first bound row whose cached comparator has drifted. Does not mutate state.
+ */
+export function _hasGranularCacheKeyDrift<T extends object>(
+  snapshot: readonly T[],
+  cacheKey: (item: T, index: number) => unknown,
+  cache: CacheKeyLookup,
+): boolean {
+  for (let i = 0; i < snapshot.length; i++) {
+    const item = snapshot[i];
+    const nextKey = cacheKey(item, i);
+    const cached = cache.get(item);
+    if (cached !== undefined && cached.cacheKey !== nextKey) return true;
+  }
+  return false;
+}
+
+/**
  * Granular path for `arraySignal`-backed lists. Drains queued patches and
  * emits a list segment that the reconciler applies to the existing binding
  * directly — no full iteration of the snapshot, no O(N) classify pass.
@@ -465,26 +509,9 @@ function eachGranular<T extends object>(
   // it DOES catch a fresh insert displaced by a later same-batch insert, whose
   // patch-time index the granular path can't retroactively fix (KF-425). The
   // O(rows) replay runs only in dev under the opt-in for an index-reading list.
-  let staleIndexShift = false;
-  if (render.length >= 2 && devHooks.staleIndexEnabled?.() === true) {
-    const rendered: number[] = [];
-    for (let i = 0; i < (previousBindingCount as number); i++) rendered.push(i);
-    for (const p of patches) {
-      if (p.type === 'insert') rendered.splice(p.index, 0, p.index);
-      else if (p.type === 'remove') rendered.splice(p.index, 1);
-      else if (p.type === 'move') {
-        const [moved] = rendered.splice(p.from, 1);
-        rendered.splice(p.to, 0, moved);
-      }
-      // 'update' re-renders in place (index unchanged); 'replace' routed to snapshot above.
-    }
-    for (let i = 0; i < rendered.length; i++) {
-      if (rendered[i] !== i) {
-        staleIndexShift = true;
-        break;
-      }
-    }
-  }
+  const staleIndexShift = render.length >= 2
+    && devHooks.staleIndexEnabled?.() === true
+    && _hasGranularIndexShift(previousBindingCount as number, patches);
 
   // The granular path applies arraySignal patches but never evaluates
   // `cacheKey` (or `render`) for the rows the patches don't touch. That has
@@ -517,28 +544,13 @@ function eachGranular<T extends object>(
     // whose else-branch would be unreachable — and would drop us below the 99%
     // branch-coverage threshold.
     const cache = ctx.caches.get(id) as WeakMap<object, CacheEntry>;
-    // Plain indexed loop (not `for..of`): `cacheKey` needs the row index, and
-    // this runs over every row on every granular render (up to 10k rows), so we
-    // keep it allocation-free. `item` is read once to avoid a double `snapshot[i]`.
-    for (let i = 0; i < snapshot.length; i++) {
-      const item = snapshot[i];
-      // Evaluate `cacheKey` for EVERY row unconditionally: that read is what
-      // keeps an external signal (e.g. `selectedId`) in the mount effect's
-      // dependency set. It must NOT move inside the `cached` check below — rows
-      // with no cache entry (fresh refs after a granular update) would then
-      // never read it and the dependency could silently drop.
-      const k = cacheKey(item, i);
-      const cached = cache.get(item);
-      // Fall back to snapshot ONLY on real drift — a bound row whose `cacheKey`
-      // changed. We can't just `return eachSnapshotById(...)` unconditionally
-      // whenever a `cacheKey` exists: that would forfeit the granular fast path
-      // for every structural op (append/remove/update/move) on a selectable
-      // list — the whole reason the arraySignal path exists. The common case, a
-      // structural change with no selection change, stays granular.
-      if (cached !== undefined && cached.cacheKey !== k) {
-        // Transition-table reason: `cachekey-drift` (list-render-state.ts).
-        return eachSnapshotById(snapshot, render, cacheKey, id, sig);
-      }
+    // Evaluate `cacheKey` for every row while looking for real drift. That read
+    // keeps external signals in the mount effect's dependency set, including
+    // for fresh refs with no cache entry. A drift reroutes the full render so
+    // structure and content reconcile together.
+    if (_hasGranularCacheKeyDrift(snapshot, cacheKey, cache)) {
+      // Transition-table reason: `cachekey-drift` (list-render-state.ts).
+      return eachSnapshotById(snapshot, render, cacheKey, id, sig);
     }
   }
 

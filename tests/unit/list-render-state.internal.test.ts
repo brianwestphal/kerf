@@ -10,6 +10,7 @@
 
 import { describe,expect,it } from 'vitest';
 
+import { _hasGranularCacheKeyDrift,_hasGranularIndexShift } from '../../src/each.js';
 import { decideListPath,deriveListRenderState } from '../../src/list-render-state.js';
 
 describe('deriveListRenderState', () => {
@@ -74,5 +75,39 @@ describe('decideListPath — the transition table', () => {
     // arithmetic.
     expect(decideListPath('bound', [ins], 1, undefined))
       .toEqual({ path: 'granular' });
+  });
+});
+
+describe('eachGranular — pure transition stages', () => {
+  it('detects only structural patch sequences that leave a row at a stale rendered index', () => {
+    expect(_hasGranularIndexShift(2, [
+      { type: 'insert', index: 0, item: {} },
+    ])).toBe(true);
+    expect(_hasGranularIndexShift(2, [
+      { type: 'insert', index: 0, item: {} },
+      { type: 'remove', index: 0 },
+    ])).toBe(false);
+    expect(_hasGranularIndexShift(1, [
+      { type: 'insert', index: 1, item: {} },
+      { type: 'insert', index: 1, item: {} },
+    ])).toBe(true);
+    expect(_hasGranularIndexShift(2, [
+      { type: 'update', index: 1, item: {} },
+    ])).toBe(false);
+  });
+
+  it('re-evaluates cache keys and reports drift only for an already-cached row', () => {
+    const a = { id: 'a' };
+    const fresh = { id: 'fresh' };
+    const cache = new WeakMap<object, { cacheKey: unknown }>([[a, { cacheKey: 'a:0' }]]);
+    const evaluated: string[] = [];
+    const cacheKey = (item: { id: string }, index: number): string => {
+      evaluated.push(item.id);
+      return `${item.id}:${index}`;
+    };
+
+    expect(_hasGranularCacheKeyDrift([a, fresh], cacheKey, cache)).toBe(false);
+    expect(evaluated).toEqual(['a', 'fresh']);
+    expect(_hasGranularCacheKeyDrift([fresh, a], cacheKey, cache)).toBe(true);
   });
 });
