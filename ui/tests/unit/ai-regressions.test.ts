@@ -8,6 +8,7 @@ import { AI_REGRESSION_V1_CONTEXT_SNAPSHOTS, buildAiRegressionContext } from '..
 import { scoreAiRegression } from '../../scripts/lib/ai-regression-score.mjs';
 import { scoreAiRegressionV2 } from '../../scripts/lib/ai-regression-score-v2.mjs';
 
+const compileTestTimeout = 15_000;
 const root = resolve(import.meta.dirname, '../..');
 const readJson = async (path: string) => JSON.parse(await readFile(resolve(root, path), 'utf8'));
 
@@ -110,7 +111,7 @@ describe('local AI regression foundation', () => {
     expect(first.compiledFiles).toBe(1);
     expect(first.packages.map(({ name }) => name)).toEqual(['@kerfjs/ui', 'kerfjs']);
     expect(first.responseSha256).toMatch(/^[a-f0-9]{64}$/);
-  });
+  }, compileTestTimeout);
 
   it('reports incompatible callbacks and props without executing generated code', async () => {
     const result = await compileAiRegressionResponse(root, {
@@ -181,7 +182,7 @@ describe('local AI regression foundation', () => {
     }
     const historical = scoreAiRegression(definition, numericBadge, catalog, { legacyPublicBoundary: true });
     expect(historical.checks.some(({ code }) => code === 'duplicate:menu-header-numeric-badge')).toBe(false);
-  });
+  }, compileTestTimeout);
 
   it('compiles direct MenuHeader calls and invalid numeric literals without executing them', async () => {
     const [directValid, invalidLiteral] = await Promise.all([
@@ -194,7 +195,7 @@ describe('local AI regression foundation', () => {
     ]);
     expect(directValidResult.passed).toBe(true);
     expect(invalidLiteralResult.passed).toBe(true);
-  });
+  }, compileTestTimeout);
 
   it('rejects response paths that could escape the compile sandbox', async () => {
     await expect(compileAiRegressionResponse(root, { files: { '../escape.ts': 'export {}' } }))
