@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - Removed the overlay barrel/helper cycle by extracting the lifecycle core and splitting `confirm`, `prompt`, `form`, and `choice` into focused internal modules, without changing the public `kerfjs/overlay` API.
 - Made `bindList` reject duplicate keys before changing the DOM, with errors that name the key and both indices; rejected `arraySignal` batches are drained and the next valid state snapshot-recovers before granular updates resume.
+- Made `bindList` recover after a granular row render throws: the failing call still reports the error, while the next source update reconciles the authoritative snapshot before granular patches resume, including when an earlier patch in the same batch already changed the DOM.
 - Fixed stores created before `kerfjs/dev` installation never emitting the opt-in narrow-set warning. Store actions now resolve the warning hook at `set()` call time and allocate per-store dedup state only when diagnostics are present.
 - Added a deterministic `bindList` transition matrix covering empty/refill recovery, granular-to-snapshot-to-granular sequences, and mixed batched structural changes with node-identity assertions.
 - Made concurrent fallback overlays arbitrate dismissal from the top down, so one Escape, backdrop, or outside click closes only the active modal or non-modal surface.

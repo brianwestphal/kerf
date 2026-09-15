@@ -231,6 +231,63 @@ describe('bindList() — arraySignal granular patch path (KF-478)', () => {
     dispose();
   });
 
+  it('snapshot-recovers after an inserted row render throws, then resumes granular patches', () => {
+    const parent = host();
+    const initial = { id: 1, label: 'a' };
+    const items = arraySignal<Item>([initial]);
+    const dispose = bindList(parent, items, {
+      key: (i) => i.id,
+      render: (i) => {
+        if (i.label === 'bad') throw new Error('bad row');
+        return i.label;
+      },
+    });
+    const initialRow = parent.firstElementChild;
+
+    expect(() => items.push({ id: 2, label: 'bad' })).toThrow('bad row');
+    expect(texts(parent)).toEqual(['a']);
+
+    items.update(1, () => ({ id: 2, label: 'b' }));
+    expect(texts(parent)).toEqual(['a', 'b']);
+    expect(parent.children[0]).toBe(initialRow);
+
+    const repairedRow = parent.children[1];
+    items.push({ id: 3, label: 'c' });
+    expect(texts(parent)).toEqual(['a', 'b', 'c']);
+    expect(parent.children[0]).toBe(initialRow);
+    expect(parent.children[1]).toBe(repairedRow);
+    dispose();
+  });
+
+  it('snapshot-recovers after a later row render fails in a partially applied batch', () => {
+    const parent = host();
+    const initial = { id: 1, label: 'a' };
+    const items = arraySignal<Item>([initial]);
+    const dispose = bindList(parent, items, {
+      key: (i) => i.id,
+      render: (i) => {
+        if (i.label === 'bad') throw new Error('bad row');
+        return i.label;
+      },
+    });
+    const initialRow = parent.firstElementChild;
+
+    expect(() => {
+      batch(() => {
+        items.push({ id: 2, label: 'b' });
+        items.push({ id: 3, label: 'bad' });
+      });
+    }).toThrow('bad row');
+    expect(texts(parent)).toEqual(['a', 'b']);
+    const partiallyAppliedRow = parent.children[1];
+
+    items.update(2, () => ({ id: 3, label: 'c' }));
+    expect(texts(parent)).toEqual(['a', 'b', 'c']);
+    expect(parent.children[0]).toBe(initialRow);
+    expect(parent.children[1]).toBe(partiallyAppliedRow);
+    dispose();
+  });
+
   it('two bindLists sharing one arraySignal both stay correct (one goes granular, the other snapshots)', () => {
     const p1 = host();
     const p2 = host();

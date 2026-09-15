@@ -399,6 +399,8 @@ Worked example: pointer drag across columns at `site/src/examples/complete/kanba
 
 Worked examples: TodoMVC at `site/src/examples/complete/todomvc/main.tsx` (plain signal + each), streaming-chat at `site/src/examples/complete/chat/main.tsx` (arraySignal). Reconciliation rules at `docs/4-render.md` §4.4.
 
+For `bindList` over an `arraySignal`, a row-render exception still propagates to the mutation caller. Repair the source with a later mutation: kerf forces that notification through a full snapshot, including after a partially applied patch batch, then resumes granular updates.
+
 ### Side effects / imperative DOM
 
 - **Does a library-owned subtree (Monaco, xterm, charts, third-party widget) need to survive across renders untouched?**

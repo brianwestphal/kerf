@@ -591,7 +591,17 @@ export function bindList<T>(
           && patches.length > 0
           && !patches.some((p) => p.type === 'replace')
         ) {
-          applyPatches(patches);
+          try {
+            applyPatches(patches);
+          } catch (error) {
+            // The patch queue was already consumed and applyPatches may have
+            // completed an earlier patch in the same batch. The next source
+            // notification must therefore reconcile the authoritative snapshot
+            // instead of applying a new patch to potentially divergent row
+            // state. A successful snapshot clears this latch below.
+            forceSnapshot = true;
+            throw error;
+          }
           return;
         }
       }

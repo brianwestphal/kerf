@@ -143,7 +143,7 @@ kerf/
 │   │   ├── overlay-toast.test.ts ← toast stacking, replacement, timers, animation classes, and dismissal
 │   │   ├── overlay-tooltip.test.ts ← tooltip pointer/focus timing, independent mixed-modality presence, content, and teardown
 │   │   ├── overlay-test-helpers.ts ← shared overlay DOM/setup helpers used by the focused overlay suites
-│   │   ├── list-core.test.ts ← bindList keyed reconciliation, source updates, and core disposal
+│   │   ├── list-core.test.ts ← bindList keyed reconciliation, granular render-failure recovery, source updates, and core disposal
 │   │   ├── list-transition-matrix.test.ts ← bindList adversarial empty/refill, granular↔snapshot, mixed-batch, and node-identity transitions
 │   │   ├── list-element-mode.test.ts ← app-owned row elements, keyed reuse, update, and disposal
 │   │   ├── list-measured-virtualization.test.ts ← measured heights, anchoring, and ResizeObserver integration
@@ -409,7 +409,7 @@ Router named and wildcard captures decode through a fail-closed helper: malforme
 `ai-assistant-configs` reports filesystem drift during plain lint without writing; its unusual cross-file installer/updater runs only for an explicit CLI `--fix`, with real ESLint API regression coverage for both modes.
 Before updating a stale section, it validates the consumer's canonical hash against the manifest history for that exact version. Known untouched versions remain fixable; edited or historically unknown versions are forked and never overwritten. `scripts/ai-canonical-history.json` is the committed source ledger, and bundle sync carries its current hashes into `ai/manifest.json`.
 
-`bindList` preflights every source snapshot for unique keys before reconciliation. Duplicate-key errors name the key and both indices; rejected `arraySignal` patches are drained and force the next valid state through snapshot recovery before granular patching resumes.
+`bindList` preflights every source snapshot for unique keys before reconciliation. Duplicate-key errors name the key and both indices; rejected `arraySignal` patches are drained and force the next valid state through snapshot recovery before granular patching resumes. A granular row-render exception also latches snapshot recovery for the next source notification, repairing a partially applied batch before patches resume.
 
 ## Public exports
 
