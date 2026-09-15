@@ -398,6 +398,30 @@ unkeyed lists swapping order at a constant call count. Both are the price of a
 conservative trigger, and keys close both by construction — which is what the
 message asks for.
 
+### Missing row key (always-on once installed)
+
+**Trigger:** the first top-level row element bound for an `each()` list has
+neither an `id` nor a `data-key` attribute. **What it catches:** positional row
+matching, where an insertion or removal ahead of a row can make focus,
+mid-edit form state, and other per-row DOM state follow the position rather
+than the item.
+
+**Mechanism.** First render and every snapshot or granular reconcile call the
+installed diagnostic with the list's first bound row. Sampling the first row
+is intentional: rows come from one render function, so checking every row
+would normally repeat the same verdict. The warning quotes a truncated copy of
+that row's HTML and points at adding `data-key={item.id}` (or `id`) to the
+top-level row element.
+
+**Dedup scope.** Once per list binding for the lifetime of its mount. The
+binding records that it has performed the check even when the sampled row is
+keyed, so later reconciles do not repeatedly inspect it.
+
+**Why always-on rather than switch-gated.** A missing DOM key has a concrete
+state-loss consequence and a one-line fix, so this warning has no
+`KERF_DEV_WARN_*` switch. It remains unreachable when `kerfjs/dev` is not
+imported.
+
 ### Double-mount guard (always-on, not opt-in)
 
 **Trigger:** `mount(el, render)` is called on an element that is already the root of a live mount, or on a descendant or ancestor of such an element. **What it catches:** the "two competing effects" pattern — two `mount()` calls on the same DOM subtree both install `effect()` watchers that fight over the same live nodes, producing conflicting DOM mutations and unpredictable rendering output with no runtime error.

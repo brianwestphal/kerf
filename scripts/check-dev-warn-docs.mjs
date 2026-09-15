@@ -11,7 +11,7 @@
  * own section numbers stopped being monotonic because later sections were
  * appended rather than inserted.
  *
- * Four assertions, each targeting one of those failures:
+ * Five assertions, each targeting one of those failures:
  *
  *   1. every `KERF_DEV_WARN_*` in `ENV_NAME` has a section in the doc;
  *   2. every `KERF_DEV_WARN_*` the doc documents still exists in `ENV_NAME`;
@@ -19,6 +19,7 @@
  *   4. canonical, published, AI-facing, project-guidance, and source prose
  *      does not resurrect the old claim that kerf gates diagnostics on
  *      NODE_ENV or forget the enableWarnings()/always-on split.
+ *   5. every canonical diagnostic section also appears in the published guide.
  *
  * Modeled on `check-doc-api-coverage.mjs` — same shape, same reason: a list a
  * human maintains alongside a list the compiler maintains will diverge, and the
@@ -31,12 +32,13 @@ import { fileURLToPath } from 'node:url';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const DOC_PATH = 'docs/11-dev-warnings.md';
+const PUBLISHED_DOC_PATH = 'site/src/content/docs/docs/dev-warnings.md';
 const GATING_PROSE_PATHS = [
   'CLAUDE.md',
   DOC_PATH,
   'docs/2-reactivity.md',
   'docs/3-stores.md',
-  'site/src/content/docs/docs/dev-warnings.md',
+  PUBLISHED_DOC_PATH,
   'site/src/content/docs/docs/reactivity.md',
   'site/src/content/docs/docs/stores.md',
   'docs/ai/code-summary.md',
@@ -49,6 +51,7 @@ const GATING_PROSE_PATHS = [
 
 const config = readFileSync(join(ROOT, 'src/dev-warn-config.ts'), 'utf8');
 const doc = readFileSync(join(ROOT, DOC_PATH), 'utf8');
+const publishedDoc = readFileSync(join(ROOT, PUBLISHED_DOC_PATH), 'utf8');
 
 /** Every `KERF_DEV_WARN_*` name in the ENV_NAME map. */
 const envNameBlock = /const ENV_NAME[^=]*=\s*\{([\s\S]*?)\n\};/.exec(config)?.[1];
@@ -99,7 +102,25 @@ headingNumbers.forEach((num, i) => {
   }
 });
 
-// 4 — NODE_ENV is a valid example in the consumer-owned import condition and
+// 4 — the published guide must carry every canonical diagnostic section. The
+// canonical headings deliberately cover both the switched warning family and
+// the always-on hooks/guards, so a new or renamed section cannot silently stay
+// private to the repository-facing design doc.
+const canonicalDiagnosticHeadings = [...doc.matchAll(/^### 11\.2\.\d+ (.+)$/gm)]
+  .map((m) => m[1]);
+const publishedHeadings = new Set(
+  [...publishedDoc.matchAll(/^### (.+)$/gm)].map((m) => m[1]),
+);
+for (const heading of canonicalDiagnosticHeadings) {
+  if (!publishedHeadings.has(heading)) {
+    problems.push(
+      `${PUBLISHED_DOC_PATH} is missing the canonical diagnostic section ${JSON.stringify(heading)}.\n`
+      + `    Mirror every 11.2 diagnostic from ${DOC_PATH}, including always-on diagnostics.`,
+    );
+  }
+}
+
+// 5 — NODE_ENV is a valid example in the consumer-owned import condition and
 // in the history explaining why inference was removed. These phrases are the
 // narrower stale claims that incorrectly put NODE_ENV inside kerf's warning
 // mechanism or describe an uninstalled hook as a runtime mode check.
@@ -147,5 +168,6 @@ if (problems.length > 0) {
 
 console.log(
   `[check-dev-warn-docs] OK — ${declared.length} KERF_DEV_WARN_* names documented, `
-  + `${headingNumbers.length} sections numbered in order, and diagnostic-gating prose is current.`,
+  + `${headingNumbers.length} diagnostic sections published and numbered in order, `
+  + 'and diagnostic-gating prose is current.',
 );
