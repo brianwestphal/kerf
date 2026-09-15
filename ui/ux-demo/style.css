@@ -216,6 +216,7 @@ button {
 }
 .catalog-resource {
   display: inline-flex;
+  flex: 0 0 auto;
   min-width: 0;
   height: remify(30px);
   padding: 0 var(--kui-space-xs);
@@ -224,6 +225,7 @@ button {
   color: var(--kui-color-text);
   background: transparent;
   text-decoration: none;
+  white-space: nowrap;
   align-items: center;
   gap: var(--kui-space-2xs);
 }
@@ -1614,7 +1616,12 @@ button {
   .catalog-footer .kui-toolbar[data-has-center="false"] {
     grid-template-columns: minmax(0, 1fr);
   }
+  .catalog-footer .kui-toolbar__leading,
+  .catalog-footer__resource-group {
+    width: 100%;
+  }
   .catalog-footer .kui-toolbar__trailing {
+    width: 100%;
     justify-content: flex-start;
   }
   .catalog-relationships__select {

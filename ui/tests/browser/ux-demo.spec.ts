@@ -66,12 +66,14 @@ test('links catalog details to their first-party source and existing guidance', 
   for (const layout of [
     { name: 'wide', width: 1440, height: 900, rootFontSize: '' },
     { name: 'narrow', width: 390, height: 844, rootFontSize: '' },
+    { name: 'narrow-recipe', width: 390, height: 844, rootFontSize: '' },
     { name: 'zoom-200', width: 720, height: 900, rootFontSize: '200%' },
   ] as const) {
+    const isRecipe = layout.name === 'narrow-recipe' || layout.name === 'zoom-200';
     await page.setViewportSize({ width: layout.width, height: layout.height });
-    await page.goto(`/?component=${layout.name === 'zoom-200' ? 'recipe-master-detail-dialog' : 'toolbar'}`);
+    await page.goto(`/?component=${isRecipe ? 'recipe-master-detail-dialog' : 'toolbar'}`);
     if (layout.rootFontSize) await page.locator('html').evaluate((element, size) => { element.style.fontSize = size; }, layout.rootFontSize);
-    const resources = page.getByRole('navigation', { name: `Reference links for ${layout.name === 'zoom-200' ? 'Master-detail dialog' : 'Toolbar'}` });
+    const resources = page.getByRole('navigation', { name: `Reference links for ${isRecipe ? 'Master-detail dialog' : 'Toolbar'}` });
     const source = resources.locator('[data-catalog-resource="source"]');
     const guidance = resources.locator('[data-catalog-resource="guidance"]');
     await expect(resources).toBeVisible();
@@ -79,19 +81,31 @@ test('links catalog details to their first-party source and existing guidance', 
     await expect(source).toBeFocused();
     const geometry = await page.evaluate(() => ({
       documentOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      resourceOverflowX: window.getComputedStyle(document.querySelector<HTMLElement>('.catalog-footer__resource-group')!).overflowX,
+      footerSections: [...document.querySelectorAll<HTMLElement>('.catalog-footer .kui-toolbar__leading, .catalog-footer .kui-toolbar__trailing')].map((section) => ({
+        top: section.getBoundingClientRect().top,
+        bottom: section.getBoundingClientRect().bottom,
+        left: section.getBoundingClientRect().left,
+        right: section.getBoundingClientRect().right,
+        width: section.getBoundingClientRect().width,
+      })),
       links: [...document.querySelectorAll<HTMLElement>('.catalog-resource')].map((link) => ({
         height: link.getBoundingClientRect().height,
-        right: link.getBoundingClientRect().right,
-        viewportWidth: window.innerWidth,
         outlineStyle: window.getComputedStyle(link).outlineStyle,
       })),
     }));
     expect(geometry.documentOverflow).toBeLessThanOrEqual(1);
-    expect(geometry.links).toHaveLength(layout.name === 'zoom-200' ? 2 : 3);
+    expect(geometry.resourceOverflowX).toBe('auto');
+    for (const section of geometry.footerSections) {
+      expect(section.left).toBeGreaterThanOrEqual(-1);
+      expect(section.right).toBeLessThanOrEqual(layout.width + 1);
+      expect(section.width).toBeGreaterThan(0);
+    }
+    expect(geometry.links).toHaveLength(isRecipe ? 2 : 3);
     for (const link of geometry.links) {
       expect(link.height).toBeGreaterThanOrEqual(30);
-      expect(link.right).toBeLessThanOrEqual(link.viewportWidth + 1);
     }
+    if (layout.name.startsWith('narrow')) expect(geometry.footerSections[0].bottom).toBeLessThanOrEqual(geometry.footerSections[1].top + 1);
     expect(geometry.links[0].outlineStyle).not.toBe('none');
     await expect(guidance).toBeVisible();
     if (browserName === 'chromium') {
