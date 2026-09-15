@@ -122,17 +122,17 @@ export interface RouterHandle {
  */
 function matchPattern(pattern: string, path: string): Record<string, string> | null {
   if (pattern === '*') return {};
-  const pp = pattern.split('/').filter(Boolean);
-  const ps = path.split('/').filter(Boolean);
+  const patternSegments = pattern.split('/').filter(Boolean);
+  const pathSegments = path.split('/').filter(Boolean);
   const params: Record<string, string> = {};
-  for (let i = 0; i < pp.length; i++) {
-    const seg = pp[i];
-    if (seg.startsWith('*')) {
+  for (let i = 0; i < patternSegments.length; i++) {
+    const patternSegment = patternSegments[i];
+    if (patternSegment.startsWith('*')) {
       // Wildcard rest — consumes every remaining segment.
-      const name = seg.slice(1);
+      const name = patternSegment.slice(1);
       if (name.length > 0) {
         const decoded: string[] = [];
-        for (const part of ps.slice(i)) {
+        for (const part of pathSegments.slice(i)) {
           const value = decodePathSegment(part);
           if (value === null) return null;
           decoded.push(value);
@@ -141,17 +141,17 @@ function matchPattern(pattern: string, path: string): Record<string, string> | n
       }
       return params;
     }
-    if (i >= ps.length) return null;
-    if (seg.startsWith(':')) {
-      const value = decodePathSegment(ps[i]);
+    if (i >= pathSegments.length) return null;
+    if (patternSegment.startsWith(':')) {
+      const value = decodePathSegment(pathSegments[i]);
       if (value === null) return null;
-      params[seg.slice(1)] = value;
+      params[patternSegment.slice(1)] = value;
       continue;
     }
-    if (seg !== ps[i]) return null;
+    if (patternSegment !== pathSegments[i]) return null;
   }
   // No wildcard matched, so the segment counts must be exactly equal.
-  return ps.length === pp.length ? params : null;
+  return pathSegments.length === patternSegments.length ? params : null;
 }
 
 /** Decode a route parameter, treating malformed percent escapes as no match. */
@@ -276,9 +276,10 @@ export function createRouter(options: RouterOptions): RouterHandle {
 
   if (interceptLinks && typeof document !== 'undefined') {
     const onClick = (event: Event, anchor: HTMLAnchorElement): void => {
-      const e = event as MouseEvent;
+      const mouseEvent = event as MouseEvent;
       // Let the browser handle anything that isn't a plain left-click navigation.
-      if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      if (mouseEvent.defaultPrevented || mouseEvent.button !== 0 || mouseEvent.metaKey
+        || mouseEvent.ctrlKey || mouseEvent.shiftKey || mouseEvent.altKey) return;
       if (anchor.hasAttribute('download') || anchor.hasAttribute('data-router-ignore')) return;
       const target = anchor.getAttribute('target');
       if (target !== null && target !== '' && target !== '_self') return;

@@ -36,21 +36,21 @@ export function positionAnchored(el: HTMLElement, anchor: Element, options: Anch
   // edge. As a fixed, shrink-to-fit box its `width`/`height` are its real size.
   el.style.position = 'fixed';
   el.style.margin = '0';
-  const a = anchor.getBoundingClientRect();
-  const p = el.getBoundingClientRect();
-  const vw = window.innerWidth;
-  const vh = window.innerHeight;
+  const anchorRect = anchor.getBoundingClientRect();
+  const elementRect = el.getBoundingClientRect();
+  const viewportWidth = window.innerWidth;
+  const viewportHeight = window.innerHeight;
 
   // Vertical: preferred side, flipped only if it overflows and the other side fits.
-  const belowTop = a.bottom + gap;
-  const aboveTop = a.top - gap - p.height;
+  const belowTop = anchorRect.bottom + gap;
+  const aboveTop = anchorRect.top - gap - elementRect.height;
   let below = placement !== 'top';
-  if (below && belowTop + p.height > vh && aboveTop >= 0) below = false;
-  else if (!below && aboveTop < 0 && belowTop + p.height <= vh) below = true;
+  if (below && belowTop + elementRect.height > viewportHeight && aboveTop >= 0) below = false;
+  else if (!below && aboveTop < 0 && belowTop + elementRect.height <= viewportHeight) below = true;
 
   // Horizontal: align to an anchor edge, then clamp into the viewport.
-  let left = align === 'end' ? a.right - p.width : a.left;
-  left = Math.max(0, Math.min(left, vw - p.width));
+  let left = align === 'end' ? anchorRect.right - elementRect.width : anchorRect.left;
+  left = Math.max(0, Math.min(left, viewportWidth - elementRect.width));
 
   el.style.left = `${left}px`;
   el.style.top = `${below ? belowTop : aboveTop}px`;
