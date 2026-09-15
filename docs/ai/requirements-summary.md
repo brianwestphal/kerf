@@ -103,6 +103,8 @@ Three-tier model:
 - **Tier 2** (`delegateCapture()`) — explicit-capture escape hatch. Use when the auto-promotion list doesn't cover your event type (custom non-bubbling events) or when you want capture-phase interception. Matches via `closest()` walk-up by default (unified with `delegate()`, passing the matched ancestor); pass `{ match: 'direct' }` for strict `target.matches()` matching. Both helpers accept the `{ match?: 'closest' | 'direct' }` options argument (`DelegateOptions`).
 - **Tier 3** (library-owned subtrees) → `data-morph-skip` + manual lifecycle.
 
+The `kerfjs/overlay` toast helper treats plain-string content as untrusted text: strings are HTML-escaped before mounting. Callers must use `SafeHtml` or a render function when they intentionally need markup.
+
 ### §6 JSX runtime
 
 JSX renders to `SafeHtml` strings via `kerfjs/jsx-runtime`. Configured via `tsconfig` `"jsxImportSource": "kerfjs"`. Attribute aliases for HTML + SVG camelCase → kebab-case. Boolean attribute semantics. Children: strings escaped, `SafeHtml` injected raw, DOM nodes throw, arrays joined. `raw(html)` wraps pre-escaped strings. §6.4.1 dangerous-URL filter: `javascript:`/`vbscript:`/script-executing `data:` values on URL-bearing attributes (`href`/`src`/`xlink:href`/`formaction`/`action`/`data`) are dropped — KF-340: throws in dev, warns+drops in prod (production byte-identical); `raw()` opts out in both modes.

@@ -7,8 +7,9 @@
  */
 import { type SafeHtml } from './jsx-runtime.js';
 import { mount, type MountResult } from './mount.js';
+import { escapeHtml } from './utils/escapeHtml.js';
 
-/** Content for a {@link toast}: text, `SafeHtml`, or a render function. */
+/** Content for a {@link toast}: an escaped text string, trusted `SafeHtml`, or a render function. */
 export type ToastContent = string | SafeHtml | (() => MountResult);
 
 /** Accent variant for a {@link toast} — mapped to a `${className}--${variant}` class. */
@@ -121,7 +122,10 @@ export function toast(content: ToastContent, options: ToastOptions = {}): ToastH
   el.setAttribute('role', role);
   region.appendChild(el);
 
-  const disposeMount = mount(el, typeof content === 'function' ? content : () => content);
+  const render = typeof content === 'function'
+    ? content
+    : () => typeof content === 'string' ? escapeHtml(content) : content;
+  const disposeMount = mount(el, render);
   const state: {
     dismissed: boolean;
     removed: boolean;

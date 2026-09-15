@@ -1,6 +1,6 @@
 import { afterEach,beforeEach,describe,expect,it,vi } from 'vitest';
 
-import { jsx } from '../../src/jsx-runtime.js';
+import { jsx, raw } from '../../src/jsx-runtime.js';
 import { toast } from '../../src/overlay.js';
 
 beforeEach(() => {
@@ -35,6 +35,17 @@ describe('toast()', () => {
     vi.useFakeTimers();
     toast(() => jsx('b', { class: 'bold', children: 'hi' }), { duration: 0 });
     expect(document.querySelector('.kerf-toast .bold')?.textContent).toBe('hi');
+  });
+
+  it('escapes string content as text while preserving trusted SafeHtml markup', () => {
+    const attack = '<img id="toast-xss" src="x" onerror="globalThis.pwned=true"> & "quoted"';
+    const textToast = toast(attack, { duration: 0 }).el;
+
+    expect(textToast.textContent).toBe(attack);
+    expect(textToast.querySelector('#toast-xss')).toBeNull();
+
+    const htmlToast = toast(raw('<strong id="trusted-toast">trusted</strong>'), { duration: 0 }).el;
+    expect(htmlToast.querySelector('#trusted-toast')?.textContent).toBe('trusted');
   });
 
   it('returns { el, dismiss } — el is the node, dismiss removes it early (idempotent)', () => {

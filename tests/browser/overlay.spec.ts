@@ -109,6 +109,25 @@ test('tooltip(): shows on real hover and hides on leave', async ({ page }) => {
   await expect(page.locator('.kerf-tooltip')).toHaveCount(0);
 });
 
+test('toast(): string content is text while SafeHtml and render functions preserve markup', async ({ page }) => {
+  const attack = '<img id="toast-xss" src="x" onerror="globalThis.pwned=true">';
+  await page.evaluate((untrusted) => {
+    const { toast } = (window as any).kerfOverlay;
+    const { jsx, raw } = (window as any).jsxRuntime;
+    toast(untrusted, { duration: 0 });
+    toast(raw('<strong id="trusted-toast">trusted</strong>'), { duration: 0 });
+    toast(() => jsx('em', { id: 'rendered-toast', children: 'rendered' }), { duration: 0 });
+  }, attack);
+
+  const toasts = page.locator('.kerf-toast');
+  await expect(toasts).toHaveCount(3);
+  await expect(toasts.nth(0)).toHaveText(attack);
+  await expect(page.locator('#toast-xss')).toHaveCount(0);
+  expect(await page.evaluate(() => (globalThis as any).pwned)).toBeUndefined();
+  await expect(page.locator('#trusted-toast')).toHaveText('trusted');
+  await expect(page.locator('#rendered-toast')).toHaveText('rendered');
+});
+
 test('outside click dismisses a non-modal popover; content + an outsideIgnore trigger do not', async ({ page }) => {
   await page.evaluate(() => {
     const trigger = document.createElement('button');
