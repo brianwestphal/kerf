@@ -89,11 +89,16 @@ test('links catalog details to their first-party source and existing guidance', 
         right: section.getBoundingClientRect().right,
         width: section.getBoundingClientRect().width,
       })),
-      links: [...document.querySelectorAll<HTMLElement>('.catalog-resource')].map((link) => ({
-        height: link.getBoundingClientRect().height,
-        hiddenLabelWidth: link.querySelector<HTMLElement>('code')!.getBoundingClientRect().width,
-        outlineStyle: window.getComputedStyle(link).outlineStyle,
-      })),
+      links: [...document.querySelectorAll<HTMLElement>('.catalog-resource')].map((link) => {
+        const linkRect = link.getBoundingClientRect();
+        const hiddenLabelRect = link.querySelector<HTMLElement>('code')!.getBoundingClientRect();
+        return {
+          height: linkRect.height,
+          hiddenLabelInlineOffset: Math.abs(hiddenLabelRect.left - linkRect.left),
+          hiddenLabelWidth: hiddenLabelRect.width,
+          outlineStyle: window.getComputedStyle(link).outlineStyle,
+        };
+      }),
     }));
     expect(geometry.documentOverflow).toBeLessThanOrEqual(1);
     expect(geometry.resourceOverflowX).toBe('auto');
@@ -105,6 +110,7 @@ test('links catalog details to their first-party source and existing guidance', 
     expect(geometry.links).toHaveLength(isRecipe ? 2 : 3);
     for (const link of geometry.links) {
       expect(link.height).toBeGreaterThanOrEqual(30);
+      expect(link.hiddenLabelInlineOffset).toBeLessThanOrEqual(1);
       expect(link.hiddenLabelWidth).toBeLessThanOrEqual(1);
     }
     if (layout.name.startsWith('narrow')) expect(geometry.footerSections[0].bottom).toBeLessThanOrEqual(geometry.footerSections[1].top + 1);

@@ -215,6 +215,7 @@ button {
   min-width: 0;
 }
 .catalog-resource {
+  position: relative;
   display: inline-flex;
   flex: 0 0 auto;
   min-width: 0;
@@ -243,6 +244,8 @@ button {
 }
 .catalog-resource code {
   position: absolute;
+  inset-block-start: 0;
+  inset-inline-start: 0;
   width: 1px;
   height: 1px;
   padding: 0;
