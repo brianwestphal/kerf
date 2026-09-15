@@ -38,6 +38,10 @@ env:
   # crashes any `npm install -g` before it can replace itself. Bumping back
   # to a major-version range (`'22'`) is safe once 22.22.2 ages out.
   NODE_VERSION: '22.21.0'
+  # This pinned Node release bundles npm 11.6.2, satisfying npm trusted
+  # publishing's npm >= 11.5.1 requirement without a registry install in the
+  # OIDC-capable job.
+  PUBLISH_NODE_VERSION: '24.12.0'
 
 jobs:
   # ─── Phase 1: validation (parallel) ─────────────────────────────────
@@ -180,14 +184,15 @@ jobs:
           prerelease: true
           make_latest: 'false'  # defence-in-depth
 
-  # ─── Phase 3: build dist/ (no token) → publish (token) ──────────────
+  # ─── Phase 3: build + pack (no token) → publish tarball (token) ─────
   #
   # KF-318 defense-in-depth: the OIDC-token-holding publish job must NOT run
   # build tools or dependency install scripts. The `build` job runs `npm ci`
   # (which executes esbuild/fsevents/etc. install scripts) and `npm run build`
   # (tsup/esbuild) but holds NO `id-token`, so a compromised build tool or
   # install script there can't mint a publishing token or push a tarball. It
-  # hands the built `dist/` to `npm-publish` as an artifact.
+  # prepares every tag-derived metadata surface and hands the final npm
+  # tarball to `npm-publish` as an artifact.
 
   build:
     needs: [create-release, detect]
@@ -198,11 +203,17 @@ jobs:
         with: { node-version: '${{ env.NODE_VERSION }}', cache: npm }
       - run: npm ci
       - run: npm run build
-      - name: Upload built dist/ for the publish job
+      - name: Prepare exact release metadata
+        run: node scripts/prepare-release-package.mjs kerfjs "${{ needs.detect.outputs.version }}"
+      - name: Pack the exact artifact for the publish job
+        run: |
+          mkdir -p "$RUNNER_TEMP/release-package"
+          npm pack --ignore-scripts --pack-destination "$RUNNER_TEMP/release-package"
+      - name: Upload packed release artifact
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
-          name: kerfjs-dist
-          path: dist/
+          name: kerfjs-package
+          path: ${{ runner.temp }}/release-package/*.tgz
           retention-days: 1
           if-no-files-found: error
 
@@ -211,37 +222,24 @@ jobs:
     runs-on: ubuntu-latest
     environment: npm-publish
     permissions:
-      contents: read    # checkout
+      contents: read
       id-token: write   # npm OIDC trusted publishing
     steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
       # No `cache: npm` — this job installs nothing (no `npm ci`, no build).
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
-          node-version: '${{ env.NODE_VERSION }}'
+          node-version: '${{ env.PUBLISH_NODE_VERSION }}'
           registry-url: 'https://registry.npmjs.org/'
-      # Pinned to the npm 11 line (not @latest): OIDC trusted publishing needs
-      # npm ≥ 11.5.1, but npm@12 requires Node ≥ 22.22.2 — above the 22.21.0
-      # pin (see NODE_VERSION comment). Revisit when the Node pin is lifted.
-      - run: npm install -g npm@11
-      - name: Download the built dist/ (produced by the token-less build job)
+      - name: Download the packed artifact (produced by the token-less build job)
         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
-          name: kerfjs-dist
-          path: dist/
-      - name: Bump package.json to beta version (ephemeral, not committed)
-        if: needs.detect.outputs.is_beta == 'true'
-        run: |
-          VERSION="${{ needs.detect.outputs.version }}"
-          npm version "$VERSION" --no-git-tag-version --allow-same-version
-      # `--ignore-scripts`: dist/ is already built + downloaded, so skip the
-      # `prepublishOnly: npm run build` rebuild — and, more importantly, run NO
-      # scripts at all in the token-holding job. The published `files`
-      # (dist from the artifact; ai/llms.txt/README/CHANGELOG/LICENSE from
-      # checkout) are all present without a dependency install.
+          name: kerfjs-package
+          path: release-package/
+      # The token-holding job publishes the already-packed bytes and runs no
+      # repository code, build tool, or package lifecycle script.
       - name: Publish to npm@latest (stable)
         if: needs.detect.outputs.is_beta == 'false'
-        run: npm publish --ignore-scripts --provenance --access public
+        run: npm publish release-package/*.tgz --ignore-scripts --provenance --access public
       - name: Publish to npm@beta (beta)
         if: needs.detect.outputs.is_beta == 'true'
-        run: npm publish --ignore-scripts --tag beta --provenance --access public
+        run: npm publish release-package/*.tgz --ignore-scripts --tag beta --provenance --access public

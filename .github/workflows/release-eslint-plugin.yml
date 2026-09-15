@@ -6,9 +6,9 @@ name: Release eslint-plugin-kerfjs
 # Trusted Publisher rule for every package is `v*`, so the OIDC ref pattern
 # accepts the same tags.
 #
-# Lockstep is enforced at tag time by `scripts/release.sh`, which bumps the
-# root, eslint-plugin/, create-kerf-component/, and ui/ manifests before
-# committing and tagging.
+# Stable lockstep is committed by `scripts/release.sh`; beta tag metadata is
+# applied to the final tarball by `scripts/prepare-release-package.mjs` in the
+# tokenless `pack` job below.
 
 # Least-privilege baseline: read-only contents, no OIDC token for any job.
 # `id-token: write` (npm OIDC trusted publishing) is granted ONLY to the
@@ -31,6 +31,9 @@ env:
   # Pinned to 22.21.0 — matches release.yml. See the comment there for the
   # Node 22.22.2 / arborist breakage that motivated the pin.
   NODE_VERSION: '22.21.0'
+  # Bundles npm 11.6.2, so the OIDC job needs no registry install before
+  # trusted publishing (npm >= 11.5.1).
+  PUBLISH_NODE_VERSION: '24.12.0'
 
 jobs:
   # ─── Phase 1: validate the plugin ───────────────────────────────────
@@ -70,46 +73,57 @@ jobs:
           echo "is_beta=$IS_BETA" >> "$GITHUB_OUTPUT"
           echo "Releasing eslint-plugin-kerfjs v$VERSION (beta: $IS_BETA)"
 
-  # ─── Phase 2: npm publish ───────────────────────────────────────────
+  # ─── Phase 2: pack without a token, then publish exact bytes ────────
   #
   # No GitHub-release job here — the kerfjs core `release.yml` is the
   # single source for the GitHub Release on each tag. This workflow only
   # owns the eslint-plugin-kerfjs npm publish.
 
-  npm-publish:
+  pack:
     needs: [test, detect]
     runs-on: ubuntu-latest
-    environment: npm-publish-eslint-plugin
-    permissions:
-      contents: read    # checkout
-      id-token: write   # npm OIDC trusted publishing
     defaults:
       run:
         working-directory: eslint-plugin
     steps:
-      # KF-318 defense-in-depth: eslint-plugin-kerfjs publishes source directly
-      # (no build step), so the token-holding job needs no `npm ci` at all — the
-      # published `files` come straight from the checkout. Dropping `npm ci`
-      # removes dependency-install-script execution from the OIDC-token job; the
-      # `test` job above still runs `npm ci` + `npm test` (with no id-token) so
-      # the deps are validated. `--ignore-scripts` on publish runs nothing else.
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: '${{ env.NODE_VERSION }}'
-          registry-url: 'https://registry.npmjs.org/'
-      # Pinned to the npm 11 line (not @latest): OIDC trusted publishing needs
-      # npm ≥ 11.5.1, but npm@12 requires Node ≥ 22.22.2 — above the 22.21.0
-      # pin (see NODE_VERSION comment). Revisit when the Node pin is lifted.
-      - run: npm install -g npm@11
-      - name: Bump package.json to beta version (ephemeral, not committed)
-        if: needs.detect.outputs.is_beta == 'true'
+      - name: Prepare exact release metadata
+        run: node ../scripts/prepare-release-package.mjs eslint-plugin-kerfjs "${{ needs.detect.outputs.version }}"
+      - name: Pack the exact artifact for the publish job
         run: |
-          VERSION="${{ needs.detect.outputs.version }}"
-          npm version "$VERSION" --no-git-tag-version --allow-same-version
+          mkdir -p "$RUNNER_TEMP/release-package"
+          npm pack --ignore-scripts --pack-destination "$RUNNER_TEMP/release-package"
+      - name: Upload packed release artifact
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: eslint-plugin-kerfjs-package
+          path: ${{ runner.temp }}/release-package/*.tgz
+          retention-days: 1
+          if-no-files-found: error
+
+  npm-publish:
+    needs: [pack, detect]
+    runs-on: ubuntu-latest
+    environment: npm-publish-eslint-plugin
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: '${{ env.PUBLISH_NODE_VERSION }}'
+          registry-url: 'https://registry.npmjs.org/'
+      - name: Download the packed artifact
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: eslint-plugin-kerfjs-package
+          path: release-package/
       - name: Publish to npm@latest (stable)
         if: needs.detect.outputs.is_beta == 'false'
-        run: npm publish --ignore-scripts --provenance --access public
+        run: npm publish release-package/*.tgz --ignore-scripts --provenance --access public
       - name: Publish to npm@beta (beta)
         if: needs.detect.outputs.is_beta == 'true'
-        run: npm publish --ignore-scripts --tag beta --provenance --access public
+        run: npm publish release-package/*.tgz --ignore-scripts --tag beta --provenance --access public
