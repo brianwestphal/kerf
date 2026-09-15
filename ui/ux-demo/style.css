@@ -743,6 +743,12 @@ button {
   color: var(--kui-color-neutral-on-quiet);
   font-size: var(--kui-font-xs);
 }
+.demo-state-banner-grid h3 {
+  margin-inline-start: calc(
+    var(--kui-layout-inline-margin, remify(8px)) + 1px +
+      var(--kui-layout-item-padding, remify(8px))
+  );
+}
 .toolbar-control-group-demo wa-button::part(base) {
   width: remify(32px);
   height: remify(32px);

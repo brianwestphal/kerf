@@ -2304,7 +2304,14 @@ test('ships semantic banner palettes with scoped overrides', async ({ page, brow
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/?component=state-banner');
   const banners = page.locator('[data-demo="state-banner"] [data-component="state-banner"]');
+  const articles = page.locator('[data-demo="state-banner"] article');
   await expect(banners).toHaveCount(6);
+  await expect(articles).toHaveCount(6);
+  const labelIconOffsets = () => articles.evaluateAll((nodes) => nodes.map((node) => {
+    const label = node.querySelector('h3')!;
+    const icon = node.querySelector('.kui-state-banner__icon')!;
+    return Math.abs(label.getBoundingClientRect().left - icon.getBoundingClientRect().left);
+  }));
   const styles = await banners.evaluateAll((nodes) => nodes.map((node) => {
     const style = window.getComputedStyle(node);
     return { tone: node.getAttribute('data-tone'), color: style.color, background: style.backgroundColor, border: style.borderColor };
@@ -2316,10 +2323,12 @@ test('ships semantic banner palettes with scoped overrides', async ({ page, brow
   expect(new Set(styles.slice(0, 5).map(({ border }) => border)).size).toBe(5);
   expect(styles[5]!.color).toBe('rgb(109, 63, 156)');
   expect(styles[1]!.color).toBe('rgb(30, 110, 244)');
-  if (browserName === 'chromium') await page.screenshot({ path: 'test-results/state-banner-palettes-wide.png', fullPage: true });
+  expect(await labelIconOffsets()).toEqual(Array(6).fill(0));
+  if (browserName === 'chromium') await page.screenshot({ path: 'test-results/state-banner-type-label-alignment-after.png', fullPage: true });
   await page.setViewportSize({ width: 390, height: 844 });
   await expect(banners.last()).toBeVisible();
-  if (browserName === 'chromium') await page.screenshot({ path: 'test-results/state-banner-palettes-narrow.png', fullPage: true });
+  expect(await labelIconOffsets()).toEqual(Array(6).fill(0));
+  if (browserName === 'chromium') await page.screenshot({ path: 'test-results/state-banner-type-label-alignment-after-narrow.png', fullPage: true });
 });
 
 test('reorders and horizontally scrolls controlled TabBars', async ({ page, browserName }) => {
