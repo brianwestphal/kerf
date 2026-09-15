@@ -138,6 +138,7 @@ kerf/
 │   │   ├── overlay-tooltip.test.ts ← tooltip pointer/focus timing, independent mixed-modality presence, content, and teardown
 │   │   ├── overlay-test-helpers.ts ← shared overlay DOM/setup helpers used by the focused overlay suites
 │   │   ├── list-core.test.ts ← bindList keyed reconciliation, source updates, and core disposal
+│   │   ├── list-transition-matrix.test.ts ← bindList adversarial empty/refill, granular↔snapshot, mixed-batch, and node-identity transitions
 │   │   ├── list-element-mode.test.ts ← app-owned row elements, keyed reuse, update, and disposal
 │   │   ├── list-measured-virtualization.test.ts ← measured heights, anchoring, and ResizeObserver integration
 │   │   ├── list-virtualization.test.ts ← fixed and declared-height windowing with deterministic rAF scheduling
