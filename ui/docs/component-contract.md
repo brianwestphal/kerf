@@ -117,6 +117,15 @@ into the section label. Do not add padding to pane shells,
 double child-owned geometry with wrapper insets, or create competing scroll
 owners. The [layout contract](./layout.md) lists the public roles and tokens.
 
+`DialogHeader` composes its icon and first title line inside a borderless
+`ToolbarControlGroup` in a real top `Toolbar`. Direct `actions` children are
+automatically placed in one contained `ToolbarControlGroup`; use the optional
+localized `actionsLabel` when that group needs an accessible name. Existing
+pre-grouped action content remains layout-compatible, but new callers should
+pass the action children rather than groups. The optional summary is a separate
+row aligned below the title, so it cannot pull the 24px icon or 34px circular
+icon background out of vertical alignment with the 44px action row.
+
 `ValueTable` composes typed `ValueTableRow` entries. A row owns its `dt`/`dd`
 semantics and may receive a leading `SafeHtml` icon. Every row keeps 8px of
 root-scaled padding above and below its content; the shared item-padding token

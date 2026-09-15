@@ -127,6 +127,120 @@ test('loads component-reachable package CSS through browser subpaths', async ({ 
   await expect(page.locator('[data-component="empty-state"] .kui-loading-spinner')).toHaveCSS('display', 'block');
 });
 
+test('aligns DialogHeader identity and grouped actions across layout, theme, and scale', async ({ page, browserName }) => {
+  const layouts = [
+    { name: 'wide', width: 1100, height: 760, rootFontSize: '100%', dark: false, scale: 1 },
+    { name: 'narrow', width: 390, height: 844, rootFontSize: '100%', dark: false, scale: 1 },
+    { name: 'dark', width: 1100, height: 760, rootFontSize: '100%', dark: true, scale: 1 },
+    { name: 'zoom-200', width: 720, height: 900, rootFontSize: '200%', dark: false, scale: 2 },
+  ] as const;
+
+  for (const layout of layouts) {
+    await page.setViewportSize({ width: layout.width, height: layout.height });
+    await page.goto('/?component=dialog-header');
+    await page.locator('html').evaluate((element, fontSize) => { element.style.fontSize = fontSize; }, layout.rootFontSize);
+    if (layout.dark) await page.locator('[data-action="toggle-theme"]').click();
+
+    const demo = page.locator('[data-demo="dialog-header"]');
+    const preferred = demo.locator('[data-component="dialog-header"]');
+    const toolbar = preferred.locator(':scope > [data-component="toolbar"]');
+    const identity = toolbar.locator(':scope > .kui-toolbar__leading > .kui-dialog-header__identity');
+    const icon = identity.locator('.kui-dialog-header__icon');
+    const glyph = icon.locator('svg');
+    const title = identity.getByRole('heading', { level: 2, name: 'Package details' });
+    const actions = toolbar.locator(':scope > .kui-toolbar__trailing > .kui-dialog-header__actions');
+    const action = actions.getByRole('button', { name: 'Done' });
+    const summary = preferred.locator(':scope > .kui-dialog-header__summary');
+
+    await expect(toolbar).toHaveAttribute('data-divider', 'false');
+    expect(await toolbar.evaluate((element) => element.tagName)).toBe('HEADER');
+    await expect(identity).toHaveAttribute('data-component', 'toolbar-control-group');
+    await expect(identity).toHaveAttribute('data-appearance', 'borderless');
+    await expect(glyph).toBeVisible();
+    await expect(title).toBeVisible();
+    await expect(title).toHaveAttribute('id', 'standalone-package-title');
+    await expect(actions).toHaveAttribute('data-component', 'toolbar-control-group');
+    await expect(actions).toHaveAccessibleName('Package actions');
+    await expect(action).toBeVisible();
+    await action.focus();
+    await expect(action).toBeFocused();
+    await expect(summary).toHaveAttribute('id', 'standalone-package-summary');
+    await expect(summary).toHaveText('Production-backed primitives with explicit contracts.');
+
+    const geometry = await preferred.evaluate((element) => {
+      const bounds = (selector: string) => element.querySelector<HTMLElement>(selector)!.getBoundingClientRect();
+      const iconBounds = bounds('.kui-dialog-header__icon');
+      const glyphBounds = bounds('.kui-dialog-header__icon svg');
+      const titleBounds = bounds('.kui-dialog-header__copy h2');
+      const actionBounds = bounds('.kui-dialog-header__actions > button');
+      const groupBounds = bounds('.kui-dialog-header__actions');
+      const summaryBounds = bounds('.kui-dialog-header__summary');
+      const summaryStyle = window.getComputedStyle(element.querySelector<HTMLElement>('.kui-dialog-header__summary')!);
+      return {
+        actionCenter: actionBounds.top + actionBounds.height / 2,
+        documentOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+        glyphHeight: glyphBounds.height,
+        glyphWidth: glyphBounds.width,
+        groupHeight: groupBounds.height,
+        iconCenter: iconBounds.top + iconBounds.height / 2,
+        iconHeight: iconBounds.height,
+        iconWidth: iconBounds.width,
+        summaryTextLeft: summaryBounds.left + Number.parseFloat(summaryStyle.paddingInlineStart),
+        summaryTop: summaryBounds.top,
+        titleBottom: titleBounds.bottom,
+        titleCenter: titleBounds.top + titleBounds.height / 2,
+        titleLeft: titleBounds.left,
+      };
+    });
+    expect(geometry.iconWidth).toBeCloseTo(34 * layout.scale, 4);
+    expect(geometry.iconHeight).toBeCloseTo(34 * layout.scale, 4);
+    expect(geometry.glyphWidth).toBeCloseTo(24 * layout.scale, 4);
+    expect(geometry.glyphHeight).toBeCloseTo(24 * layout.scale, 4);
+    expect(geometry.groupHeight).toBeCloseTo(2 + 42 * layout.scale, 4);
+    expect(geometry.iconCenter).toBeCloseTo(geometry.actionCenter, 3);
+    expect(geometry.titleCenter).toBeCloseTo(geometry.actionCenter, 3);
+    expect(geometry.summaryTextLeft).toBeCloseTo(geometry.titleLeft, 4);
+    expect(geometry.summaryTop).toBeGreaterThanOrEqual(geometry.titleBottom - 0.1);
+    expect(geometry.documentOverflow).toBeLessThanOrEqual(1);
+
+    await page.goto('/?component=headers');
+    await page.locator('html').evaluate((element, fontSize) => { element.style.fontSize = fontSize; }, layout.rootFontSize);
+    const compatible = page.locator('[data-demo="headers"] [data-component="dialog-header"]');
+    const compatibilityWrapper = compatible.locator('.kui-dialog-header__actions');
+    const nestedGroups = compatibilityWrapper.locator(':scope > [data-component="toolbar-control-group"]');
+    await expect(compatibilityWrapper).toHaveAccessibleName('Package actions');
+    await expect(nestedGroups).toHaveCount(1);
+    await expect(compatible.getByRole('button', { name: 'Done' })).toBeVisible();
+    const compatibilityGeometry = await compatibilityWrapper.evaluate((element) => {
+      const style = window.getComputedStyle(element);
+      const bounds = element.getBoundingClientRect();
+      const children = [...element.children].map((child) => (child as HTMLElement).getBoundingClientRect());
+      return {
+        backgroundColor: style.backgroundColor,
+        borderColor: style.borderTopColor,
+        height: bounds.height,
+        childrenCentered: children.every((child) => Math.abs((child.top + child.height / 2) - (bounds.top + bounds.height / 2)) < 0.1),
+      };
+    });
+    expect(compatibilityGeometry).toEqual(expect.objectContaining({
+      backgroundColor: 'rgba(0, 0, 0, 0)',
+      borderColor: 'rgba(0, 0, 0, 0)',
+      childrenCentered: true,
+    }));
+    expect(compatibilityGeometry.height).toBeCloseTo(2 + 42 * layout.scale, 4);
+
+    if (browserName === 'chromium') {
+      await page.goto('/?component=dialog-header');
+      await page.locator('html').evaluate((element, fontSize) => { element.style.fontSize = fontSize; }, layout.rootFontSize);
+      if (layout.dark) await page.locator('[data-action="toggle-theme"]').click();
+      await page.screenshot({ path: `test-results/dialog-header-${layout.name}.png`, fullPage: true });
+      if (layout.name === 'wide') {
+        await page.locator('[data-demo="dialog-header"]').screenshot({ path: 'test-results/dialog-header-reference-after.png' });
+      }
+    }
+  }
+});
+
 test('sizes and rotates the first-class disclosure arrow while Select keeps its independent half scale', async ({ page, browserName }) => {
   await page.setViewportSize({ width: 1100, height: 760 });
   await page.goto('/?component=disclosure-arrow');

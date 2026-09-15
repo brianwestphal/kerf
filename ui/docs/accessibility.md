@@ -41,6 +41,17 @@ The handle exposes separator role, orientation, name, minimum, maximum, and curr
 
 The application owns persistence and collapsed/expanded policy. Keep the last expanded size outside the component and restore it when reopening. An optional `handleIcon` replaces only decorative dormant content; it must not contain controls or interactive roles because the separator remains the sole focus and interaction owner.
 
+## DialogHeader
+
+`DialogHeader` keeps its icon and `h2` together in the leading borderless
+`ToolbarControlGroup`, with optional actions in a separate trailing group. Pass
+localized `actionsLabel` text when the action group needs an accessible name;
+the component does not synthesize an English label. The application connects
+`titleId` and an optional `summaryId` to the owning dialog through
+`aria-labelledby` and `aria-describedby`. Pass action children directly so the
+component can group them; existing pre-grouped actions remain compatible, but
+their inner groups retain their own labels and semantics.
+
 ## Tabs
 
 `AppTab` renders one controlled tab. `TabBar` supplies the containing tab list,

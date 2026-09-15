@@ -2,6 +2,7 @@
   --kui-dialog-header-border: transparent;
   --kui-dialog-header-icon-background: var(--kui-color-brand-fill-quiet);
   --kui-dialog-header-icon-foreground: var(--kui-color-brand-on-quiet);
+  --kui-dialog-header-title-inset: 2px;
   display: grid;
   min-height: remify(44px);
   margin-inline: var(--kui-layout-inline-margin, remify(8px));
@@ -9,44 +10,78 @@
   box-sizing: border-box;
   border: 1px solid var(--kui-dialog-header-border);
   border-radius: var(--kui-layout-rounded-radius, calc(1px + remify(11px)));
-  grid-template-columns: remify(32px) minmax(0, 1fr) auto;
-  align-items: start;
+  gap: 0;
+}
+
+.kui-dialog-header[data-has-icon="true"] {
+  --kui-dialog-header-title-inset: calc(
+    2px + remify(34px) + var(--kui-layout-item-gap, remify(8px))
+  );
+}
+
+.kui-dialog-header__toolbar {
+  min-height: var(--kui-toolbar-group-size, calc(2px + remify(42px)));
+  padding: 0;
+}
+
+.kui-dialog-header__identity {
+  max-width: 100%;
+  border-color: transparent;
+  background: transparent;
   gap: var(--kui-layout-item-gap, remify(8px));
 }
-.kui-dialog-header[data-has-icon="false"] {
-  grid-template-columns: minmax(0, 1fr) auto;
-}
+
 .kui-dialog-header__icon {
   display: grid;
-  width: remify(32px);
-  height: remify(32px);
+  width: remify(34px);
+  height: remify(34px);
   border-radius: var(--kui-radius-circle);
   color: var(--kui-dialog-header-icon-foreground);
   background: var(--kui-dialog-header-icon-background);
+  flex: none;
   place-items: center;
 }
+
 .kui-dialog-header__icon svg {
-  width: remify(20px);
-  height: remify(20px);
+  width: remify(24px);
+  height: remify(24px);
 }
+
 .kui-dialog-header__copy {
   min-width: 0;
+  overflow: hidden;
 }
+
 .kui-dialog-header h2,
-.kui-dialog-header p {
+.kui-dialog-header__summary {
   margin: 0;
 }
+
 .kui-dialog-header h2 {
+  overflow: hidden;
   color: var(--kui-color-text);
   font-size: var(--kui-font-l);
   line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
-.kui-dialog-header p {
-  margin-block-start: var(--kui-space-2xs);
+
+.kui-dialog-header__summary {
+  min-width: 0;
+  margin-block-start: calc(-1 * var(--kui-layout-item-padding, remify(8px)));
+  padding-inline: var(--kui-layout-item-padding, remify(8px));
+  padding-inline-start: var(--kui-dialog-header-title-inset);
   color: var(--kui-color-text-quiet);
 }
+
 .kui-dialog-header__actions {
-  display: flex;
-  align-items: center;
+  gap: 0;
+}
+
+.kui-dialog-header__actions:has(> .kui-toolbar-control-group) {
+  height: var(--kui-toolbar-group-size, calc(2px + remify(42px)));
+  padding: 0;
+  border-color: transparent;
+  background: transparent;
   gap: var(--kui-layout-item-gap, remify(8px));
 }

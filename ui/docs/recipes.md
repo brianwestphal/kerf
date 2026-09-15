@@ -64,7 +64,9 @@ The production Web Awesome dialog owns modal focus and Escape; the thin recipe
 adapter restores the invoking control consistently after the hide event.
 `DialogHeader`, `MenuHeader`, `MenuItem`, and `ValueTable` own their included
 anatomy. The application owns open state, selection, dismissal policy, and
-record actions. Do not rebuild the dialog or reach into private shadow parts.
+record actions. Pass the dialog action children directly; `DialogHeader` places
+them in its top toolbar's action group and uses the localized `actionsLabel`.
+Do not rebuild the dialog or reach into private shadow parts.
 
 ## Composer form
 

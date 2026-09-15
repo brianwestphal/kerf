@@ -466,6 +466,11 @@ wire-owned drag/drop markers case-insensitively. `AppTab.closeIcon` and
 `ResizableRegion.handleIcon` replace decorative SafeHtml content without
 moving interaction or lifecycle ownership out of their existing controls and
 disposer-returning wiring.
+`DialogHeader` source-imports `Toolbar` and `ToolbarControlGroup`, so its styled
+browser subpath includes those reachable styles. It keeps a borderless
+icon/title identity group and an automatic action group on the first row, with
+the optional summary on a separately aligned row; a 24px icon sits in a 34px
+circle and `actionsLabel` names the group when needed.
 
 `DisclosureArrow` ships an 18px root-scaled default through compiled
 `remify(18px)` CSS and retains `--kui-disclosure-arrow-size` for scoped consumer

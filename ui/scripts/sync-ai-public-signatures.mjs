@@ -16,6 +16,7 @@ const entries = [
   ['@kerfjs/ui/menu-action-row', 'dist/menu-action-row.d.ts'],
   ['@kerfjs/ui/menu-item', 'dist/menu-item.d.ts'],
   ['@kerfjs/ui/page-header', 'dist/page-header.d.ts'],
+  ['@kerfjs/ui/dialog-header', 'dist/dialog-header.d.ts'],
   ['@kerfjs/ui/value-table', 'dist/value-table.d.ts'],
   ['@kerfjs/ui/app-tab', 'dist/app-tab.d.ts'],
   ['@kerfjs/ui/tab-bar', 'dist/tab-bar.d.ts'],

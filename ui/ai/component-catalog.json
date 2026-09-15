@@ -643,16 +643,18 @@
       "category": "Structure",
       "kind": "component",
       "source": "kerf",
-      "description": "Dialog title, summary, icon, and action hierarchy.",
+      "description": "Dialog toolbar with aligned icon, title, grouped actions, and a subtitle row.",
       "uses": [
-        "lucide-icon"
+        "lucide-icon",
+        "toolbar",
+        "toolbar-control-group"
       ],
-      "purpose": "Dialog title, summary, icon, and action hierarchy.",
+      "purpose": "Dialog toolbar with aligned icon, title, grouped actions, and a subtitle row.",
       "publicExports": [
         "DialogHeader"
       ],
       "useWhen": [
-        "Label a focused dialog task with title, summary, icon, and actions."
+        "Label a focused dialog task with a toolbar-aligned title, icon, actions, and subtitle."
       ],
       "avoidWhen": [
         "Do not use as the page heading or as a replacement for modal behavior."
@@ -671,16 +673,19 @@
         "open state",
         "focus lifecycle",
         "dismissal",
-        "copy"
+        "copy",
+        "localized action-group label"
       ],
       "variants": [
         "title",
-        "summary",
+        "optional summary",
         "icon",
-        "actions"
+        "actions",
+        "actionsLabel"
       ],
       "accessibility": [
-        "Connect title and summary ids to the dialog host."
+        "Connect the title id and any provided summary id to the dialog host.",
+        "Pass a localized actionsLabel when the automatic action group needs an accessible name."
       ],
       "delivery": {
         "browserImport": "@kerfjs/ui/dialog-header",
@@ -694,7 +699,10 @@
         "kui-dialog-header",
         "kui-dialog-header__actions",
         "kui-dialog-header__copy",
-        "kui-dialog-header__icon"
+        "kui-dialog-header__icon",
+        "kui-dialog-header__identity",
+        "kui-dialog-header__summary",
+        "kui-dialog-header__toolbar"
       ],
       "publicTokens": [
         "--kui-color-brand-fill-quiet",
@@ -705,8 +713,7 @@
         "--kui-dialog-header-icon-background",
         "--kui-dialog-header-icon-foreground",
         "--kui-font-l",
-        "--kui-radius-circle",
-        "--kui-space-2xs"
+        "--kui-radius-circle"
       ],
       "links": {
         "catalogRoute": "?component=dialog-header",

@@ -376,7 +376,7 @@ function HeadersDemo() {
   return <div class="demo-frame" data-demo="headers">
     <PageHeader title="UI foundations" action={button('New pattern', 'log-add')} />
     <div class="demo-dialog">
-      <DialogHeader title="Package details" titleId="package-title" summary="Production-backed primitives with explicit contracts." summaryId="package-summary" icon={icon(Wrench, 'wrench')} actions={button('Done', 'log-done')} />
+      <DialogHeader title="Package details" titleId="package-title" summary="Production-backed primitives with explicit contracts." summaryId="package-summary" icon={icon(Wrench, 'wrench')} actions={<ToolbarControlGroup single>{button('Done', 'log-done')}</ToolbarControlGroup>} actionsLabel="Package actions" />
       <div class="demo-dialog__body kui-content"><ValueTable label="Package metadata"><ValueTableRow label="Package" value="@kerfjs/ui" /><ValueTableRow label="Rendering" value="Kerf SafeHtml" /><ValueTableRow label="Styles" value="Explicit CSS subpaths" /></ValueTable></div>
     </div>
   </div>;
@@ -387,7 +387,7 @@ function PageHeaderDemo() {
 }
 
 function DialogHeaderDemo() {
-  return <div class="demo-dialog demo-dialog--standalone" data-demo="dialog-header"><DialogHeader title="Package details" titleId="standalone-package-title" summary="Production-backed primitives with explicit contracts." summaryId="standalone-package-summary" icon={icon(Wrench, 'wrench')} actions={button('Done', 'log-done')} /></div>;
+  return <div class="demo-dialog demo-dialog--standalone" data-demo="dialog-header"><DialogHeader title="Package details" titleId="standalone-package-title" summary="Production-backed primitives with explicit contracts." summaryId="standalone-package-summary" icon={icon(Wrench, 'wrench')} actions={button('Done', 'log-done')} actionsLabel="Package actions" /></div>;
 }
 
 function ValueTableDemo() {

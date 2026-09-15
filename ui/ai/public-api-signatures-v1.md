@@ -226,6 +226,26 @@ declare function PageHeader({ title, action }: PageHeaderProps): SafeHtml;
 export { PageHeader, type PageHeaderProps };
 ```
 
+## `@kerfjs/ui/dialog-header`
+
+```ts
+import { SafeHtml } from 'kerfjs';
+
+interface DialogHeaderProps {
+    title: string;
+    titleId: string;
+    summary?: string;
+    summaryId?: string;
+    icon?: SafeHtml;
+    iconClassName?: string;
+    actions?: SafeHtml;
+    actionsLabel?: string;
+}
+declare function DialogHeader({ title, titleId, summary, summaryId, icon, iconClassName, actions, actionsLabel }: DialogHeaderProps): SafeHtml;
+
+export { DialogHeader, type DialogHeaderProps };
+```
+
 ## `@kerfjs/ui/value-table`
 
 ```ts

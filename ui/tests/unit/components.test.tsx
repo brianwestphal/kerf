@@ -408,10 +408,33 @@ describe('production UI primitives', () => {
   it('renders page and dialog hierarchy plus a semantic value table', () => {
     expect(asHtml(PageHeader({ title: 'Settings', action: icon }))).toContain('<h1>Settings</h1>');
     expect(asHtml(PageHeader({ title: 'Plain' }))).not.toContain('kui-page-header__action');
-    const dialog = asHtml(DialogHeader({ title: 'Details', titleId: 'details-title', summary: 'Current state', summaryId: 'details-summary', icon, iconClassName: 'accent', actions: icon }));
+    const dialog = asHtml(DialogHeader({ title: 'Details', titleId: 'details-title', summary: 'Current state', summaryId: 'details-summary', icon, iconClassName: 'accent', actions: icon, actionsLabel: 'Detail actions' }));
     expect(dialog).toContain('data-has-icon="true"');
-    expect(dialog).toContain('<h2 id="details-title">Details</h2><p id="details-summary">Current state</p>');
-    expect(asHtml(DialogHeader({ title: 'Plain', titleId: 'plain-title', summary: 'Summary' }))).toContain('data-has-icon="false"');
+    const dialogHost = document.createElement('div');
+    dialogHost.innerHTML = dialog;
+    const dialogRoot = dialogHost.querySelector<HTMLElement>('[data-component="dialog-header"]')!;
+    const toolbar = dialogRoot.querySelector<HTMLElement>(':scope > [data-component="toolbar"]')!;
+    expect(dialogRoot.tagName).toBe('DIV');
+    expect(toolbar.tagName).toBe('HEADER');
+    expect(toolbar.dataset.divider).toBe('false');
+    expect(toolbar.querySelector(':scope > .kui-toolbar__leading > .kui-dialog-header__identity[data-component="toolbar-control-group"]')).not.toBeNull();
+    expect(toolbar.querySelector('.kui-dialog-header__identity > .kui-dialog-header__icon.accent')).not.toBeNull();
+    expect(toolbar.querySelector('.kui-dialog-header__identity h2')?.outerHTML).toBe('<h2 id="details-title">Details</h2>');
+    expect(toolbar.querySelector(':scope > .kui-toolbar__trailing > .kui-dialog-header__actions[data-component="toolbar-control-group"]')?.getAttribute('aria-label')).toBe('Detail actions');
+    expect(dialogRoot.querySelector(':scope > .kui-dialog-header__summary')?.outerHTML).toBe('<p class="kui-dialog-header__summary" id="details-summary">Current state</p>');
+
+    const preGrouped = asHtml(DialogHeader({ title: 'Compatible', titleId: 'compatible-title', summary: 'Summary', actions: ToolbarControlGroup({ children: icon, label: 'Existing actions', appearance: 'borderless' }) }));
+    const compatibleHost = document.createElement('div');
+    compatibleHost.innerHTML = preGrouped;
+    const outerActions = compatibleHost.querySelector<HTMLElement>('.kui-dialog-header__actions')!;
+    expect(outerActions.hasAttribute('role')).toBe(false);
+    expect(outerActions.querySelector(':scope > .kui-toolbar-control-group')?.getAttribute('aria-label')).toBe('Existing actions');
+    expect(outerActions.querySelector(':scope > .kui-toolbar-control-group')?.getAttribute('data-appearance')).toBe('borderless');
+
+    const plain = asHtml(DialogHeader({ title: 'Plain', titleId: 'plain-title' }));
+    expect(plain).toContain('data-has-icon="false" data-has-actions="false" data-has-summary="false"');
+    expect(plain).not.toContain('kui-dialog-header__actions');
+    expect(plain).not.toContain('kui-dialog-header__summary');
     const plainRow = ValueTableRow({ label: 'Version', value: '4' });
     const iconRow = asHtml(ValueTableRow({ label: 'Runtime', value: 'Kerf', icon, className: 'featured' }));
     const values = asHtml(ValueTable({ label: 'Metadata', className: 'dense', children: plainRow }));

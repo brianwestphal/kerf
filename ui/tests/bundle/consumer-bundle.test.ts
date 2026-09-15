@@ -76,6 +76,22 @@ describe('consumer bundle boundaries', () => {
     expect(css).not.toContain('remify(');
   });
 
+  it('ships DialogHeader with its reachable toolbar and group styles', async () => {
+    const result = await bundle("import { DialogHeader } from '@kerfjs/ui/dialog-header'; console.log(String(DialogHeader({ title: 'Details', titleId: 'details-title' }))); ");
+    const inputs = Object.keys(result.metafile!.inputs).join('\n');
+    const css = output(result, '.css');
+    expect(inputs).toContain('dist/browser/dialog-header.js');
+    expect(inputs).toContain('dist/styles/dialog-header.css');
+    expect(inputs).toContain('dist/styles/toolbar.css');
+    expect(inputs).toContain('dist/styles/toolbar-control-group.css');
+    expect(css).toContain('.kui-dialog-header');
+    expect(css).toContain('.kui-toolbar');
+    expect(css).toContain('.kui-toolbar-control-group');
+    expect(css).not.toContain('.kui-value-table');
+    expect(css).not.toContain('.kui-menu-item');
+    expect(css).not.toContain('remify(');
+  });
+
   it('keeps SegmentedControl CSS reachable without retaining unrelated controls', async () => {
     const result = await bundle("import { SegmentedControl } from '@kerfjs/ui/segmented-control'; console.log(String(SegmentedControl({ id: 'view', label: 'View', value: 'list', choices: [{ value: 'list', label: 'List' }] }))); ");
     const inputs = Object.keys(result.metafile!.inputs).join('\n');

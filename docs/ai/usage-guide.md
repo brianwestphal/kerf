@@ -103,6 +103,15 @@ focus, and click ownership while the application controls selection and any
 popover or context-menu lifecycle. Its `label`, `icon`, and
 `trailingActionIcon` SafeHtml slots are dormant and must not contain controls.
 
+Use `DialogHeader` for a focused dialog task. It places the optional 24px icon
+inside a 34px circular background and the first title line in a borderless
+identity group, vertically aligned with one automatic action group in a real
+top toolbar. Pass action children directly through `actions`, add a localized
+`actionsLabel` when the group needs an accessible name, and connect `titleId`
+plus the optional `summaryId` to the dialog host. Omit `summary` when no subtitle
+is needed; the component omits that row entirely. The app still owns modal
+focus, dismissal, command policy, and action handling.
+
 Prefer an equivalent component prop or semantic token before writing an
 anatomy selector. When composition-specific layout still needs one, the
 machine catalog's `publicClasses` arrays are the exact supported boundary:

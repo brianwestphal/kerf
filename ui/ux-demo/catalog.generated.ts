@@ -194,9 +194,11 @@ export const generatedKerfCatalog = [
     "category": "Structure",
     "kind": "component",
     "source": "kerf",
-    "description": "Dialog title, summary, icon, and action hierarchy.",
+    "description": "Dialog toolbar with aligned icon, title, grouped actions, and a subtitle row.",
     "uses": [
-      "lucide-icon"
+      "lucide-icon",
+      "toolbar",
+      "toolbar-control-group"
     ],
     "demoSource": "ui/ux-demo/main.tsx",
     "componentSource": "ui/src/dialog-header.tsx",

@@ -125,7 +125,7 @@ instead of retaining stale content.
 | Toolbars | `Toolbar`, `ToolbarControlGroup`, `ToolbarText` | Leading/center/trailing structure and grouped controls |
 | Menus | `MenuItem`, `MenuActionRow`, `MenuHeader` | Navigation/action rows, sibling primary/trailing row actions, and section headings with semantic count/countLabel pills, plus narrow typed `data-*` and popover-relationship extension slots but no domain commands |
 | Tabs | `AppTab`, `TabBar`, `wireTabBars`, `reorderTabs` | Controlled tab/close markup with runtime-safe domain metadata and an optional decorative close glyph, fixed rails, horizontal overflow, edge autoscroll, pointer/keyboard reorder, and focus restoration; the app owns state and persistence |
-| Layout | `PageHeader`, `DialogHeader`, `ValueTable`, `ValueTableRow` | Page/dialog hierarchy and typed semantic definition-list rows, with optional leading icons |
+| Layout | `PageHeader`, `DialogHeader`, `ValueTable`, `ValueTableRow` | Page hierarchy, dialog toolbars with grouped identity/actions and an optional subtitle, and typed semantic definition-list rows with optional leading icons |
 | Resize | `ResizableRegion`, `wireResizableRegions` | Pointer-captured resize plus arrows, Shift acceleration, Home, End, and an optional decorative handle glyph |
 | Choice controls | `SegmentedControl`, `Select` | Controlled exclusive buttons with toolbar/rounded/pill presentation; grouped Web Awesome popup choices with optional Lucide icons |
 | Search | `TokenSearchField`, `readTokenSearchField`, `placeTokenSearchCaret`, `wireTokenSearchFields` | DOM-owned free text plus controlled ordered atomic filter chips; optional animated standalone or toolbar-group collapse; DOM reading, Enter submission, and caret-preserving keyboard deletion without application query grammar |
@@ -137,6 +137,9 @@ instead of retaining stale content.
   target sizes. Icons are `aria-hidden` unless they carry a supplied label.
 - `StateBanner` defaults to polite `status`; callers opt into assertive `alert`
   only for immediate action.
+- `DialogHeader` keeps its 24px icon and first title line centered against the
+  top toolbar's 44px action group. The optional summary/id stays below the
+  title; pass a localized `actionsLabel` when the automatic group needs a name.
 - `ResizableRegion` renders a focusable ARIA separator with orientation and live
   min/max/current values. Its wiring returns a disposer. `handleIcon` replaces
   dormant decoration only; it does not replace separator semantics or wiring.

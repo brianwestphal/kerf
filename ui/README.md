@@ -116,6 +116,12 @@ as a `New` marker.
 | `DialogHeader` | `@kerfjs/ui/dialog-header` | `@kerfjs/ui/dialog-header.css` |
 | `ValueTable`, `ValueTableRow` | `@kerfjs/ui/value-table` | `@kerfjs/ui/value-table.css` |
 
+`DialogHeader` puts its 24px icon in a 34px circular background and aligns that
+identity group with its automatically grouped action children in a real top
+toolbar. Its optional summary stays on a separate row below the title. Pass a
+localized `actionsLabel` when the action group needs an accessible name; new
+callers pass action children directly rather than pre-wrapping groups.
+
 `DisclosureArrow` defaults to an 18px root-scaled decorative visual. Override
 `--kui-disclosure-arrow-size` at the narrowest useful scope when a consumer
 needs another size; the owning control still supplies interaction, naming, and

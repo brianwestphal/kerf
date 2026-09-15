@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Reworked `DialogHeader` as a true top toolbar: its 24px icon in a 34px circle and first title line align with automatically grouped actions, while an optional subtitle remains below; added localized action-group labels and compatibility for existing pre-grouped actions.
 - Gave every `ValueTableRow` 8px of root-scaled top and bottom padding while preserving its semantic inline inset and icon-aware separator alignment.
 - Fixed the composer-form recipe's Reset action so upgraded Web Awesome input and textarea controls clear their live displayed values together with the controlled Kerf state, while retaining the `Draft reset` announcement.
 - Removed the unsolicited command-palette catalog demo and production recipe while retaining the earlier, independent application-local adapter example for missing-concept guidance.
