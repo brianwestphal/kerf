@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Covered `each()` count-drift recovery through the public API: after a granular insert drains its patches and row rendering fails, a subsequent update now has a regression test proving the snapshot path repairs the DOM.
 - Fixed tooltips hiding when just one of their pointer/focus triggers left; pointer and focus presence are now tracked independently, so either interaction keeps the tooltip open until both end.
 - Strengthened the `bindList` feature index with exact existing guards for same-key rebuilds, granular patch sequences, and teardown semantics.
 - Extracted pure granular-list index-shift and cache-key-drift stages from the `each()` transition coordinator for direct testing.

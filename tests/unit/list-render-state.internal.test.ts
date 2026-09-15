@@ -2,8 +2,8 @@
  * Direct unit coverage for the reified list-reconciler dispatch state machine
  * (`src/list-render-state.ts`) — every row of its transition table, including
  * the count-drift arm that was previously a `c8 ignore`d defensive branch
- * inside `each.ts` (unreachable through `mount()` by construction; reachable
- * — and now pinned — as a pure function). The side-effectful reasons
+ * inside `each.ts` (reachable after a granular DOM reconcile fails with its
+ * patch queue already drained, and pinned here as a pure function too). The side-effectful reasons
  * (cachekey-drift, render-threw) stay covered by the transition-matrix suite
  * in `tests/unit/array-signal-transition-matrix.test.ts`.
  */
@@ -50,8 +50,9 @@ describe('decideListPath — the transition table', () => {
   });
 
   it('bound + count/netΔ mismatch → snapshot (count-drift)', () => {
-    // 3 recorded rows + 1 insert should mean 4 — a snapshot of 5 means an
-    // external party mutated or drained behind the signal's back.
+    // 3 recorded rows + 1 insert should mean 4 — a snapshot of 5 means a
+    // prior granular reconcile failed after draining or an external party
+    // mutated/drained behind the signal's back.
     expect(decideListPath('bound', [ins], 5, 3))
       .toEqual({ path: 'snapshot', reason: 'count-drift' });
   });

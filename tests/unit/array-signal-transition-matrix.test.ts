@@ -134,6 +134,27 @@ describe('arraySignal — reconciler transition matrix (adversarial)', () => {
     expect(t.selIds()).toEqual([String(id)]);
   });
 
+  it('row-contract failure after a granular insert recovers through count-drift', () => {
+    const rows = arraySignal([{ id: 1, label: 'a' }]);
+    let invalidId: number | undefined;
+    mount(root, () => jsx('ul', {
+      children: each(rows, (row) => invalidId === row.id
+        ? '   '
+        : jsx('li', { 'data-key': String(row.id), children: row.label })),
+    }));
+
+    invalidId = 2;
+    expect(() => rows.push({ id: 2, label: 'broken' }))
+      .toThrow(/row render at index 1 produced no top-level element/);
+    expect(rows.value).toHaveLength(2);
+    expect([...root.querySelectorAll('li')].map((row) => row.textContent)).toEqual(['a']);
+
+    invalidId = undefined;
+    rows.update(1, (row) => ({ ...row, label: 'repaired' }));
+    expect([...root.querySelectorAll('li')].map((row) => row.textContent))
+      .toEqual(['a', 'repaired']);
+  });
+
   it('partial-update-every-other → remove → select', () => {
     const t = harness();
     batch(() => t.rows.replace(build(6)));

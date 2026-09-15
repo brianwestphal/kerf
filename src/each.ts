@@ -459,11 +459,10 @@ function eachGranular<T extends object>(
   // Structural decision: first-render / empty-binding / no-patches / replace /
   // count-drift all route to the snapshot path (see the transition table for
   // why each one can't be patched granularly). The two side-effectful reasons
-  // — cachekey-drift and render-threw — are layered on below. The count-drift
-  // arm is defensive-only from inside `mount()` (it needs an external party
-  // draining `_consumePatches()` or mutating `_items` behind the signal's
-  // back), but as a pure function it's now covered directly by
-  // `tests/unit/list-render-state.internal.test.ts`.
+  // — cachekey-drift and render-threw — are layered on below. Count drift also
+  // recovers a granular DOM reconcile that failed after patches were drained
+  // (for example, row parsing rejected an insert), leaving the recorded live
+  // binding count behind the source snapshot.
   // KF-388: before trusting the state at all, confirm this id still refers to
   // THIS list. Ids are call-order indexes, so a render that adds or drops an
   // `each()` call ahead of this one silently hands us the previous occupant's

@@ -101,8 +101,9 @@ export function decideListPath(
   // fallback keeps the function total for defensive callers.
   const count = previousBindingCount ?? 0;
   // Drift: after a clean prior reconcile, count + netΔ must equal the
-  // snapshot. A mismatch means a prior render threw mid-reconcile or an
-  // external party drained/mutated behind the signal's back — rebuild.
+  // snapshot. A mismatch means a granular DOM reconcile failed after its
+  // patches were drained, or an external party drained/mutated behind the
+  // signal's back — rebuild.
   if (count + netDelta !== snapshotLength) {
     return { path: 'snapshot', reason: 'count-drift' };
   }
