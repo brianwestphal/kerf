@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Pointed `@kerfjs/ui` package metadata at the existing published component-packages documentation route and added a source-backed metadata regression test.
 - Fixed the complete router example's broken documentation links and taught the docs-example gate to validate published routes and heading fragments.
 - Added full-pipeline coverage for missing-row-key diagnostics across initial, snapshot, granular, and in-place list reconciliation, including per-binding deduplication and production silence.
 - Extended the feature-completeness gate to inventory router-subpath exports and deduplicate values re-exported across public surfaces.
