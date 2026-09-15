@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Strengthened the `bindList` feature index with exact existing guards for same-key rebuilds, granular patch sequences, and teardown semantics.
 - Extracted pure granular-list index-shift and cache-key-drift stages from the `each()` transition coordinator for direct testing.
 - Normalized internal helper module filenames to the repository's kebab-case or primary-export convention and updated all live imports and documentation paths.
 - Made list-binding rationale comments self-contained and named the bounded template/URL diagnostic excerpt limits.
