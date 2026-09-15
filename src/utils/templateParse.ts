@@ -52,13 +52,16 @@ const TEXT_HOLE: TextHole = { kind: 'text' };
 /** Matches a chunk tail of `name=` optionally followed by an opening quote. */
 const ATTR_TAIL = /(\s*)([^\s"'<>/=]+)=(["'])?$/;
 
+/** Keep the actionable end of a malformed attribute without echoing an entire template. */
+const PARTIAL_VALUE_DIAGNOSTIC_TAIL_LENGTH = 30;
+
 function holeError(detail: string): Error {
   return new Error(`html\`\`: ${detail}`);
 }
 
 function partialValueError(tail: string): Error {
   return holeError(
-    `partial attribute values are not supported (near ${JSON.stringify(tail.slice(-30))}) — `
+    `partial attribute values are not supported (near ${JSON.stringify(tail.slice(-PARTIAL_VALUE_DIAGNOSTIC_TAIL_LENGTH))}) — `
     + 'a hole must be the COMPLETE attribute value: attr=${v} or attr="${v}". '
     + 'For class="a ${b}"-style composition, build the full string first '
     + '(a plain template literal, or computed(() => `a ${b.value}`) for a bound attribute).',

@@ -104,7 +104,9 @@ export function reconcileGranular(
     }
     if (patch.type === 'remove') {
       const entry = items[patch.index];
-      disposeRowBindings(entry.bindingDisposers);  // KF-294
+      // Stop the removed row's effects before detaching its DOM so stale
+      // signals cannot keep mutating a node the list no longer owns.
+      disposeRowBindings(entry.bindingDisposers);
       liveParent.removeChild(entry.node);
       items.splice(patch.index, 1);
       i += 1;
@@ -333,7 +335,9 @@ function applyBulkInsert(
     newEntries[k] = {
       ref: p.item, cacheKey: undefined, html: htmls[k], node: newNodes[k],
       bindings: p.bindings,
-      bindingDisposers: wireRowIfBound(newNodes[k], p.bindings),  // KF-294
+      // Every fresh row needs its fine-grained holes wired to the newly parsed
+      // node; otherwise later signal writes would target no live DOM binding.
+      bindingDisposers: wireRowIfBound(newNodes[k], p.bindings),
     };
   }
   items.splice(startIdx, 0, ...newEntries);

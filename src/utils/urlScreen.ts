@@ -84,6 +84,9 @@ const INERT_JAVASCRIPT_URLS = new Set([
 // eslint-disable-next-line no-control-regex -- deliberately matching C0 + DEL.
 const CONTROL_CHARS = /[\u0000-\u001F\u007F]/g;
 
+/** Bound diagnostic payloads so an unsafe, attacker-controlled URL cannot flood logs. */
+const DANGEROUS_URL_DIAGNOSTIC_VALUE_LENGTH = 80;
+
 /**
  * Normalize a URL the way a browser does before scheme resolution: remove every
  * C0 control (0x00-0x1F) and DEL (0x7F) from anywhere — no legitimate URL
@@ -148,7 +151,7 @@ export function isDangerousUrlValue(name: string, value: string): boolean {
  * live-attribute writer).
  */
 export function dangerousUrlWarning(name: string, value: string): string {
-  return `dropped dangerous URL value for ${name}=${JSON.stringify(value.slice(0, 80))}. `
+  return `dropped dangerous URL value for ${name}=${JSON.stringify(value.slice(0, DANGEROUS_URL_DIAGNOSTIC_VALUE_LENGTH))}. `
     + 'kerf blocks javascript:, vbscript:, and script-executing data: URLs '
     + '(text/html, image/svg+xml, xml) in href/src/data/formaction/action/xlink:href by default. '
     + 'Wrap in raw() if this is intentional (e.g. bookmarklets), or sanitize upstream.';
