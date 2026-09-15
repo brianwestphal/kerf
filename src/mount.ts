@@ -98,7 +98,7 @@ function assertNotInsideMountedTree(rootEl: HTMLElement): void {
   }
   // Ancestors — walk up.
   let ancestor: Element | null = rootEl.parentElement;
-  while (ancestor !== null) {
+  while (ancestor) {
     if (isMounted(ancestor)) throw new Error(NESTED_MOUNT_MSG);
     ancestor = ancestor.parentElement;
   }
@@ -156,7 +156,7 @@ export function mount(rootEl: HTMLElement, render: () => MountResult): () => voi
   const owner = rootEl.ownerDocument as Document;
   if (owner !== document) {
     /* c8 ignore start -- the defaultView!==null arm needs a second live browsing context (iframe element); not constructible in the unit environment */
-    if (owner.defaultView === null) document.adoptNode(rootEl);
+    if (!owner.defaultView) document.adoptNode(rootEl);
     /* c8 ignore stop */
   }
   assertNotInsideMountedTree(rootEl);
@@ -220,7 +220,8 @@ export function mount(rootEl: HTMLElement, render: () => MountResult): () => voi
     }
   };
 
-  const disposeEffect = effect(() => {
+  /** Recover list call order, then render/morph surrounds and align bindings. */
+  function renderStaticPhase(): Segment {
     let result = runRenderPass();
 
     // An unkeyed list is identified by its position among the `each()` calls,
@@ -236,9 +237,8 @@ export function mount(rootEl: HTMLElement, render: () => MountResult): () => voi
     // and render again. The discarded pass costs one extra render on precisely
     // the render that was already going to rebuild — and never on a steady-state
     // one, where the count is unchanged.
-    const countChanged = renderCtx.previousCallCount !== undefined
-      && renderCtx.previousCallCount !== renderCtx.counter;
-    if (countChanged) {
+    if (renderCtx.previousCallCount !== undefined
+      && renderCtx.previousCallCount !== renderCtx.counter) {
       // Warn from the FIRST pass: the reset clears the recorded sources the
       // shift detection compares against, so a second pass has nothing to spot.
       for (const id of renderCtx.shiftCandidates) {
@@ -264,7 +264,7 @@ export function mount(rootEl: HTMLElement, render: () => MountResult): () => voi
       // property of the markup, not of any particular update.
       devHooks.parserRepair?.(prevStaticHtml);
       bindingDisposers = wireBindings(rootEl, bindingCtx, bindingDisposers);
-      if (devHooks.staleBindingEnabled?.() === true) prevWiredBindings = bindingCtx.list;
+      if (devHooks.staleBindingEnabled?.()) prevWiredBindings = bindingCtx.list;
       isFirst = false;
     } else {
       let nextStaticHtml = runSubsequentRender(
@@ -308,7 +308,7 @@ export function mount(rootEl: HTMLElement, render: () => MountResult): () => voi
       // duplicating inserted text nodes, so it's not worth it for an anti-pattern.
       if (nextStaticHtml !== prevStaticHtml) {
         bindingDisposers = wireBindings(rootEl, bindingCtx, bindingDisposers);
-        if (devHooks.staleBindingEnabled?.() === true) prevWiredBindings = bindingCtx.list;
+        if (devHooks.staleBindingEnabled?.()) prevWiredBindings = bindingCtx.list;
       } else {
         // KF-338: fast path — the effects stay bound to `prevWiredBindings`.
         // Dev-warn (opt-in) if this render tried to bind a DIFFERENT signal
@@ -318,11 +318,15 @@ export function mount(rootEl: HTMLElement, render: () => MountResult): () => voi
       }
       prevStaticHtml = nextStaticHtml;
     }
+    return segment;
+  }
 
+  /** Reconcile every list, commit bookkeeping, then audit the final DOM. */
+  function reconcileAndCommitListPhase(segment: Segment): void {
     // KF-416: per-list expected row count, for the dev-mode row-count invariant.
     // Only built when the checks are enabled — otherwise the map would cost an
     // allocation per render for nothing, and this family promises zero prod cost.
-    const expectedCounts = devHooks.listInvariantsEnabled?.() === true ? new Map<string, number>() : null;
+    const expectedCounts = devHooks.listInvariantsEnabled?.() ? new Map<string, number>() : null;
 
     for (const listSeg of collectLists(segment).values()) {
       // Invariant: `bindListsFromMarkers` just ran over this segment, so every
@@ -331,7 +335,7 @@ export function mount(rootEl: HTMLElement, render: () => MountResult): () => voi
       // refused to update. Guard that edge with a descriptive error instead of
       // letting `reconcileList(undefined, …)` die on a bare TypeError.
       const binding = bindings.get(listSeg.id);
-      if (binding === undefined) {
+      if (!binding) {
         throw new Error(
           'mount: an each() list appeared in the render output but its marker never reached the live DOM. '
           + 'The most common cause is an each() introduced inside a data-morph-skip subtree on a re-render — '
@@ -353,18 +357,21 @@ export function mount(rootEl: HTMLElement, render: () => MountResult): () => voi
       // ArraySignal (which would pull it into the main bundle — KF-95).
       expectedCounts?.set(
         listSeg.id,
-        listSeg.patches !== undefined && listSeg.source !== undefined
+        listSeg.patches && listSeg.source
           ? (listSeg.source as { value: readonly unknown[] }).value.length
           : listSeg.items.length,
       );
     }
-
     renderCtx.previousCallCount = renderCtx.counter;
 
     // Opt-in structural audit of every list binding against the live DOM
     // (KERF_DEV_INVARIANTS). Placed after the reconcile loop so it sees the
     // render's final state; a no-op, with no DOM walking at all, when unset.
-    devHooks.listInvariants?.(rootEl, bindings, expectedCounts ?? undefined);
+    devHooks.listInvariants?.(rootEl, bindings, expectedCounts || undefined);
+  }
+
+  const disposeEffect = effect(() => {
+    reconcileAndCommitListPhase(renderStaticPhase());
   });
 
   return () => {
@@ -461,8 +468,7 @@ function runSubsequentRender(
  * is stringified (numbers → `"42"`, strings pass through).
  */
 function coerceRenderResult(result: unknown): string {
-  if (result === null || result === undefined) return '';
-  if (result === false || result === true) return '';
+  if (result == null || typeof result === 'boolean') return '';
   return String(result);
 }
 
@@ -484,10 +490,10 @@ function resultToSegment(result: MountResult): Segment {
  * `mount()` re-renders those lists onto the snapshot path when this is true.
  */
 function anyRebuiltListIsGranular(segment: Segment, rebuilt: ReadonlySet<string>): boolean {
-  if (rebuilt.size === 0) return false;
+  if (!rebuilt.size) return false;
   const lists = collectLists(segment);
   for (const id of rebuilt) {
-    if (lists.get(id)?.patches !== undefined) return true;
+    if (lists.get(id)?.patches) return true;
   }
   return false;
 }
@@ -525,7 +531,7 @@ function bindListsFromMarkers(
     if (!marker.data.startsWith(LIST_MARKER_PREFIX)) continue;
     const id = marker.data.slice(LIST_MARKER_PREFIX.length);
     const existing = bindings.get(id);
-    if (existing !== undefined) {
+    if (existing) {
       // Existing binding survives the diff — the prior render's item nodes stay
       // bound — but only when this id is still carried by the SAME marker node.
       //
@@ -591,7 +597,7 @@ function bindListsFromMarkers(
           bindings: rowBindings,
         };
         // KF-294: wire this inlined first-render row's fine-grained bindings.
-        if (rowBindings !== undefined && rowBindings.length > 0) {
+        if (rowBindings?.length) {
           bound.bindingDisposers = wireRowBindings(next, rowBindings);
         }
         items.push(bound);
@@ -704,13 +710,9 @@ function cleanupOrphanBindings(
     for (const item of binding.items) {
       // KF-294: dispose the removed list's row binding effects.
       disposeRowBindings(item.bindingDisposers);
-      if (item.node.parentElement !== null) {
-        item.node.parentElement.removeChild(item.node);
-      }
+      item.node.remove();
     }
-    if (binding.marker.parentElement !== null) {
-      binding.marker.parentElement.removeChild(binding.marker);
-    }
+    binding.marker.remove();
     bindings.delete(id);
     renderCtx.bindingCounts.delete(id);
     renderCtx.bindingSources.delete(id);
@@ -724,7 +726,7 @@ function cleanupOrphanBindings(
  * so we walk children directly. Cheap (O(elements)) and portable.
  */
 function collectComments(node: Node, out: Comment[]): void {
-  for (let c: Node | null = node.firstChild; c !== null; c = c.nextSibling) {
+  for (let c: Node | null = node.firstChild; c; c = c.nextSibling) {
     if (c.nodeType === Node.COMMENT_NODE) out.push(c as Comment);
     else if (c.nodeType === Node.ELEMENT_NODE) collectComments(c, out);
   }

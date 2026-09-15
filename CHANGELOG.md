@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Split `mount()`'s render effect into named synchronous static-render and list-reconcile/commit phases without changing lifecycle order.
 - Replaced terse router and overlay-position internals with descriptive route-segment, event, rectangle, and viewport names.
 - Preserved edited stale AI-assistant configs as forks by validating their versioned canonical section against shipped historical hashes before offering an autofix.
 - Required every complete example app to have its own feature-coverage row mapped to a smoke test inside that app's Playwright suite.
