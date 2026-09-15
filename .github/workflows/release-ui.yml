@@ -90,7 +90,7 @@ jobs:
           path: release-package/
       - name: Publish stable
         if: needs.detect.outputs.is_beta == 'false'
-        run: npm publish release-package/*.tgz --ignore-scripts --provenance --access public
+        run: npm publish ./release-package/*.tgz --ignore-scripts --provenance --access public
       - name: Publish beta
         if: needs.detect.outputs.is_beta == 'true'
-        run: npm publish release-package/*.tgz --ignore-scripts --tag beta --provenance --access public
+        run: npm publish ./release-package/*.tgz --ignore-scripts --tag beta --provenance --access public

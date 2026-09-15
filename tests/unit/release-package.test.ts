@@ -22,6 +22,7 @@ const packages = [
   ['create-kerf-component', 'create-kerf-component'],
   ['@kerfjs/ui', 'ui'],
 ] as const;
+const tarballs = new Map<string, string>();
 
 function copy(relative: string): void {
   const destination = join(fixtureRoot, relative);
@@ -61,36 +62,34 @@ beforeAll(() => {
       { stdio: 'pipe' },
     );
   }
+
+  for (const [name, relative] of packages) {
+    const out = join(fixtureRoot, 'packed', name.replaceAll('/', '-'));
+    mkdirSync(out, { recursive: true });
+    const packOutput = execFileSync(
+      'npm',
+      ['pack', '--ignore-scripts', '--json', '--pack-destination', out],
+      {
+        cwd: join(fixtureRoot, relative),
+        encoding: 'utf8',
+        env: {
+          ...process.env,
+          HUSKY: '0',
+          npm_config_cache: join(fixtureRoot, 'npm-cache'),
+        },
+      },
+    );
+    const packResult = JSON.parse(packOutput.slice(packOutput.indexOf('[\n'))) as Array<{
+      filename: string;
+    }>;
+    tarballs.set(name, join(out, basename(packResult[0].filename)));
+  }
 });
 
 afterAll(() => rmSync(fixtureRoot, { recursive: true, force: true }));
 
 describe('release package preparation', () => {
   it('packs synchronized beta metadata into all four release artifacts', () => {
-    const tarballs = new Map<string, string>();
-
-    for (const [name, relative] of packages) {
-      const out = join(fixtureRoot, 'packed', name.replaceAll('/', '-'));
-      mkdirSync(out, { recursive: true });
-      const packOutput = execFileSync(
-        'npm',
-        ['pack', '--ignore-scripts', '--json', '--pack-destination', out],
-        {
-          cwd: join(fixtureRoot, relative),
-          encoding: 'utf8',
-          env: {
-            ...process.env,
-            HUSKY: '0',
-            npm_config_cache: join(fixtureRoot, 'npm-cache'),
-          },
-        },
-      );
-      const packResult = JSON.parse(packOutput.slice(packOutput.indexOf('[\n'))) as Array<{
-        filename: string;
-      }>;
-      tarballs.set(name, join(out, basename(packResult[0].filename)));
-    }
-
     const coreTarball = tarballs.get('kerfjs')!;
     expect(JSON.parse(packedText(coreTarball, 'package.json')).version).toBe(betaVersion);
     expect(JSON.parse(packedText(coreTarball, 'ai/manifest.json')).kerfjsVersion).toBe(
@@ -119,7 +118,7 @@ describe('release package preparation', () => {
     );
   });
 
-  it('keeps preparation and packing outside every OIDC publish job', () => {
+  it('keeps preparation and packing outside every OIDC publish job and publishes local paths', () => {
     const workflows = [
       'release.yml',
       'release-eslint-plugin.yml',
@@ -127,21 +126,46 @@ describe('release package preparation', () => {
       'release-ui.yml',
     ];
 
+    const releasePackage = join(fixtureRoot, 'release-package');
+    mkdirSync(releasePackage, { recursive: true });
+    const coreTarball = tarballs.get('kerfjs')!;
+    cpSync(coreTarball, join(releasePackage, basename(coreTarball)));
+
     for (const workflow of workflows) {
       const source = readFileSync(join(repoRoot, '.github/workflows', workflow), 'utf8');
       const publishJob = source.slice(source.indexOf('  npm-publish:\n'));
       const beforePublish = source.slice(0, source.indexOf('  npm-publish:\n'));
+      const publishArguments = [...publishJob.matchAll(/run: npm publish (\S+)/g)].map(
+        (match) => match[1],
+      );
 
       expect(beforePublish).toContain('scripts/prepare-release-package.mjs');
       expect(beforePublish).toContain('npm pack --ignore-scripts');
       expect(publishJob).toContain('actions/download-artifact@');
-      expect(publishJob).toContain('npm publish');
-      expect(publishJob).toContain('release-package/*.tgz');
+      expect(publishArguments).toHaveLength(2);
       expect(publishJob).not.toContain('scripts/prepare-release-package.mjs');
       expect(publishJob).not.toContain('npm version');
       expect(publishJob).not.toContain('npm install');
       expect(publishJob).not.toContain('actions/checkout@');
       expect(publishJob).toContain("node-version: '${{ env.PUBLISH_NODE_VERSION }}'");
+
+      for (const artifactArgument of publishArguments) {
+        const expandedArgument = artifactArgument.replace('*.tgz', basename(coreTarball));
+        expect(() =>
+          execFileSync(
+            'npm',
+            ['publish', expandedArgument, '--dry-run', '--offline', '--ignore-scripts'],
+            {
+              cwd: fixtureRoot,
+              stdio: 'pipe',
+              env: {
+                ...process.env,
+                npm_config_cache: join(fixtureRoot, 'npm-cache'),
+              },
+            },
+          ),
+        ).not.toThrow();
+      }
     }
-  });
+  }, 20_000);
 });

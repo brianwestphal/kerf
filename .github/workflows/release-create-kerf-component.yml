@@ -123,7 +123,7 @@ jobs:
           path: release-package/
       - name: Publish to npm@latest (stable)
         if: needs.detect.outputs.is_beta == 'false'
-        run: npm publish release-package/*.tgz --ignore-scripts --provenance --access public
+        run: npm publish ./release-package/*.tgz --ignore-scripts --provenance --access public
       - name: Publish to npm@beta (beta)
         if: needs.detect.outputs.is_beta == 'true'
-        run: npm publish release-package/*.tgz --ignore-scripts --tag beta --provenance --access public
+        run: npm publish ./release-package/*.tgz --ignore-scripts --tag beta --provenance --access public
