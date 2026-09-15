@@ -38,10 +38,12 @@
  * so a plain `signal<T[]>` or an `arraySignal<T>` both work.
  */
 import { ARRAY_SIGNAL_BRAND, type ArrayPatch } from './array-signal.js';
-import { captureFocus, restoreFocus } from './list-reconcile-focus.js';
-import { mount, type MountResult } from './mount.js';
+import { createListRowController } from './list-row-controller.js';
+import { createListVirtualizationController } from './list-virtualization-controller.js';
+import type { MountResult } from './mount.js';
 import { effect } from './reactive.js';
-import { moveNode } from './utils/moveNode.js';
+
+const NOOP = (): void => { /* intentional no-op */ };
 
 /** A row's stable key. */
 export type ListKey = string | number;
@@ -207,29 +209,19 @@ export interface BindListOptions<T> {
   };
 }
 
-interface Row<T> {
-  el: HTMLElement;
-  item: T;
-  dispose: () => void;
-  /** True for element-mode rows (the caller owns the element — reuse it, don't rebuild on item change). */
-  elementMode: boolean;
-  /** Element mode only: refresh the existing element when the item changes at the same key. */
-  update?: (item: T) => void;
-}
-
 /** Reject a keyed snapshot before reconciliation can alias two rows in the DOM. */
 function assertUniqueListKeys<T>(items: readonly T[], key: (item: T) => ListKey): void {
-  const firstIndex = new Map<ListKey, number>();
+  const firstIndex = new Map<ListKey,number>();
   for (let index = 0; index < items.length; index++) {
-    const k = key(items[index]);
-    const first = firstIndex.get(k);
+    const rowKey = key(items[index]);
+    const first = firstIndex.get(rowKey);
     if (first !== undefined) {
-      const displayed = typeof k === 'string' ? JSON.stringify(k) : String(k);
+      const displayed = typeof rowKey === 'string' ? JSON.stringify(rowKey) : String(rowKey);
       throw new Error(
         `bindList: duplicate key ${displayed} at indices ${first} and ${index} — every row key must be unique.`,
       );
     }
-    firstIndex.set(k, index);
+    firstIndex.set(rowKey,index);
   }
 }
 
@@ -244,535 +236,95 @@ export function bindList<T>(
   source: ListSource<T>,
   options: BindListOptions<T>,
 ): BindListHandle {
-  const { key, render, tag = 'div', virtualize, before } = options;
-  const overscan = virtualize?.overscan ?? 3;
-  const minRows = virtualize?.minRows;
-  // Content-visibility mode (KF-525): keep every row in the DOM and let the
-  // browser skip off-screen layout/paint via CSS, instead of windowing rows out.
-  // Feature-detection is deliberately absent: the CSS is inert on an unsupporting
-  // engine (all rows still render, still findable) — that IS the graceful degrade.
-  const contentVisibility = virtualize?.mode === 'content-visibility';
-
-  // The node the row block ends before — `before` (KF-496) when the list shares
-  // `parent` with trailing siblings, else the end of the container. Never applies
-  // when virtualized: the rows own bindList's inner sizer exclusively.
-  const endAnchor = (): Node | null => {
-    if (virtualize !== undefined || before === undefined) return null;
-    return (typeof before === 'function' ? before() : before) ?? null;
-  };
-
-  const rows = new Map<ListKey, Row<T>>();
-  // The current DOM order of rows, kept in step by both the keyed-diff and the
-  // granular patch paths so index-based patches can address rows directly.
-  const order: Array<Row<T>> = [];
-  let items: readonly T[] = [];
-  let disposed = false;
-  let rafPending = false;
+  const { key,render,tag = 'div',virtualize,before } = options;
   let firstRender = true;
   let forceSnapshot = false;
 
-  // Granular fast path (KF-478): when the source is an `arraySignal` and the
-  // list is NOT virtualized, apply its insert/remove/move/update patches
-  // directly in O(patches) instead of diffing the whole snapshot. Virtualized
-  // lists keep the keyed diff — their visible set is just the window (cheap),
-  // and absolute-index patches don't compose with a shifting window. A plain
-  // `signal<T[]>` has no patches, so it always uses the keyed diff.
   const patchSource = source as {
     [ARRAY_SIGNAL_BRAND]?: boolean;
     _consumePatches?: () => ArrayPatch<T>[];
   };
   const granularEligible = virtualize === undefined && patchSource[ARRAY_SIGNAL_BRAND] === true;
 
-  // Virtualized lists put the windowing padding + rows on an INNER sizer, so the
-  // padding never inflates the scroll container's clientHeight (padding counts
-  // toward clientHeight). `parent` stays the clean scroll viewport; `container`
-  // holds the rows. Non-virtualized lists render straight into `parent`.
-  const container: HTMLElement = virtualize === undefined ? parent : document.createElement('div');
+  const container = virtualize === undefined ? parent : document.createElement('div');
   if (virtualize !== undefined) {
     if (virtualize.containerClass !== undefined) container.className = virtualize.containerClass;
     if (virtualize.containerId !== undefined) container.id = virtualize.containerId;
   }
-
-  const NOOP = (): void => { /* element-mode rows with no caller teardown */ };
-
-  // Detect element mode from a render result: a raw `HTMLElement`, or a
-  // `{ el, dispose? }` object. Everything else (SafeHtml / string / nullish) is
-  // content mode. SafeHtml is an object but has no `el`, so it never matches.
-  const asElementRow = (
-    rendered: MountResult | RowElement<T>,
-  ): { el: HTMLElement; dispose: () => void; update?: (item: T) => void } | null => {
-    if (rendered instanceof HTMLElement) return { el: rendered, dispose: NOOP };
-    if (
-      rendered !== null
-      && typeof rendered === 'object'
-      && 'el' in rendered
-      && (rendered as { el: unknown }).el instanceof HTMLElement
-    ) {
-      const r = rendered as { el: HTMLElement; update?: (item: T) => void; dispose?: () => void };
-      return { el: r.el, dispose: r.dispose ?? NOOP, update: r.update };
-    }
-    return null;
+  const endAnchor = (): Node | null => {
+    if (virtualize !== undefined || before === undefined) return null;
+    return (typeof before === 'function' ? before() : before) ?? null;
   };
 
-  const makeRow = (item: T): Row<T> => {
-    // One call decides the mode per row (so a list may mix element + content rows).
-    const elementRow = asElementRow(render(item));
-    if (elementRow !== null) {
-      // Element mode: the returned element IS the row; the caller owns its
-      // content + cleanup. bindList sizes it for the windowing math per render
-      // (see `sizeVisibleRows`), not here, since a variable height depends on the
-      // row's current index in the full list.
-      return { el: elementRow.el, item, dispose: elementRow.dispose, elementMode: true, update: elementRow.update };
-    }
-    // Content mode: kerf creates the row element and mounts `render` inside it,
-    // so the content is per-row reactive. (In content mode `render` runs once
-    // more here for the mode probe than the mount itself needs — keep it a pure
-    // projection, which bindList already requires.)
-    const el = document.createElement(tag);
-    // Content mode: `render` returns a MountResult here (element results were
-    // handled above), so narrowing it for `mount` is sound.
-    const dispose = mount(el, () => render(item) as MountResult);
-    return { el, item, dispose, elementMode: false };
-  };
+  const rows = createListRowController({ container,key,render,tag,endAnchor });
+  const virtualization = virtualize === undefined
+    ? undefined
+    : createListVirtualizationController({ parent,container,virtualize,key,rows });
 
-  // A row whose KEY persists but whose item object changed. Content-mode rows are
-  // rebuilt (their mount re-renders the fresh item); element-mode rows are REUSED
-  // — the caller owns the element, so we keep it (preserving focus / scroll /
-  // listeners) and refresh via the optional `update(item)`. Returns the row to
-  // use at that key (a fresh one for content, the same one for element).
-  const reconcileItem = (row: Row<T>, k: ListKey, item: T): Row<T> => {
-    if (row.item === item) return row;
-    if (row.elementMode) {
-      row.item = item;
-      row.update?.(item);
-      return row;
-    }
-    row.dispose();
-    row.el.remove();
-    rows.delete(k);
-    const fresh = makeRow(item);
-    rows.set(k, fresh);
-    return fresh;
-  };
-
-  const preserveFocus = (operation: () => void): void => {
-    const focus = captureFocus(container);
-    try {
-      operation();
-    } finally {
-      if (focus !== null) restoreFocus(focus);
-    }
-  };
-
-  // Reconcile the live rows to exactly `visible`, in order, keyed.
-  const syncRows = (visible: readonly T[]): void => {
-    preserveFocus(() => {
-      const wanted = new Set<ListKey>();
-      for (const item of visible) wanted.add(key(item));
-
-      // Remove rows that are gone from the window.
-      for (const [k, row] of rows) {
-        if (!wanted.has(k)) {
-          row.dispose();
-          row.el.remove();
-          rows.delete(k);
-        }
-      }
-
-      // Create missing rows; reuse existing ones by key (element rows keep their
-      // element across item changes; content rows rebuild on identity change).
-      order.length = 0;
-      for (const item of visible) {
-        const k = key(item);
-        const existing = rows.get(k);
-        let row: Row<T>;
-        if (existing !== undefined) {
-          row = reconcileItem(existing, k, item);
-        } else {
-          row = makeRow(item);
-          rows.set(k, row);
-        }
-        order.push(row);
-      }
-
-      // Reverse pass: move only rows that are out of position. `moveNode` keeps a
-      // reordered (already-connected) row's live state via `moveBefore` where
-      // supported; a brand-new row (parentNode !== container, not yet connected)
-      // falls back to `insertBefore` via the guard.
-      let ref: Node | null = endAnchor();
-      for (let i = order.length - 1; i >= 0; i--) {
-        const el = order[i].el;
-        if (el.parentNode !== container || el.nextSibling !== ref) {
-          moveNode(container, el, ref);
-        }
-        ref = el;
-      }
-    });
-  };
-
-  // Apply arraySignal structural patches directly to `order` + the DOM, in
-  // O(patches). Indices are always valid by construction: `order` reflects the
-  // last-rendered state and the patches are exactly the delta from it (bindList
-  // drains the queue every render, and `replace` is filtered out by the caller,
-  // which snapshots instead). The `splice()`s mirror `arraySignal`'s own
-  // `_items` mutations exactly.
-  const applyPatches = (patches: readonly ArrayPatch<T>[]): void => {
-    preserveFocus(() => {
-      for (const patch of patches) {
-        if (patch.type === 'insert') {
-          const row = makeRow(patch.item);
-          rows.set(key(patch.item), row);
-          order.splice(patch.index, 0, row);
-          container.insertBefore(row.el, order[patch.index + 1]?.el ?? endAnchor());
-        } else if (patch.type === 'remove') {
-          const [row] = order.splice(patch.index, 1);
-          row.dispose();
-          row.el.remove();
-          rows.delete(key(row.item));
-        } else if (patch.type === 'move') {
-          const [row] = order.splice(patch.from, 1);
-          order.splice(patch.to, 0, row);
-          // Relocating an existing connected row → state-preserving move.
-          moveNode(container, row.el, order[patch.to + 1]?.el ?? endAnchor());
-        } else if (patch.type === 'update') {
-          // An item whose OBJECT identity changed: content rows rebuild (their mount
-          // re-renders the fresh item); element rows are REUSED — keep the caller's
-          // element and refresh via update(), re-keying if the key changed. A
-          // same-ref update needs nothing (the row's mount reacts to its signals).
-          const current = order[patch.index];
-          if (current.item !== patch.item) {
-            if (current.elementMode) {
-              const oldKey = key(current.item);
-              const newKey = key(patch.item);
-              current.item = patch.item;
-              if (newKey !== oldKey) {
-                rows.delete(oldKey);
-                rows.set(newKey, current);
-              }
-              current.update?.(patch.item);
-            } else {
-              current.dispose();
-              current.el.remove();
-              rows.delete(key(current.item));
-              const row = makeRow(patch.item);
-              rows.set(key(patch.item), row);
-              order[patch.index] = row;
-              container.insertBefore(row.el, order[patch.index + 1]?.el ?? endAnchor());
-            }
-          }
-        }
-        // 'replace' never reaches here — the caller snapshots on it.
-      }
-    });
-  };
-
-  // Virtualization height model, three modes:
-  //  - `fixedHeight` (a `number`): the O(1) fast path — no cumulative model.
-  //  - `variableHeightAt` (a function): app-declared per-row heights.
-  //  - measuring (`{ estimate }`): `variableHeightAt` returns the measured height
-  //    when the app has reported one (via `setHeight`), else the estimate.
-  // In the two variable cases, `offsets[i]` is the total height of rows 0..i-1
-  // (a prefix sum, length total+1), so `offsets[i+1] - offsets[i]` is row i's
-  // height and `offsets[total]` is the full scroll height. It is rebuilt only
-  // when `items` changes or a height is reported (heightsDirty), never per scroll
-  // frame — a scroll reuses the prefix sum and pays only the O(log n) searches.
-  const rowHeight = virtualize?.rowHeight;
-  const fixedHeight = typeof rowHeight === 'number' ? rowHeight : null;
-  const measuring = typeof rowHeight === 'object' && rowHeight !== null;
-  const measured = new Map<ListKey, number>(); // key → real reported height
-  const estimateAt = (index: number): number => {
-    const est = (rowHeight as { estimate: number | ((item: T, index: number) => number) }).estimate;
-    return typeof est === 'function' ? est(items[index], index) : est;
-  };
-  const variableHeightAt: ((index: number) => number) | null =
-    fixedHeight !== null
-      ? null
-      : measuring
-        ? (index): number => {
-          const k = key(items[index]);
-          return measured.has(k) ? (measured.get(k) as number) : estimateAt(index);
-        }
-        : (index): number => (rowHeight as (item: T, index: number) => number)(items[index], index);
-
-  // Content-visibility mode only: the `contain-intrinsic-size` placeholder for
-  // row `index`, derived from the same `rowHeight` source — a fixed `number`, a
-  // declared `(item, index) => number`, or `{ estimate }` (its estimate; there is
-  // no measurement in this mode, so `variableHeightAt`'s measured-height branch
-  // never fires — `measured` stays empty).
-  const intrinsicSizeAt = (index: number): number =>
-    fixedHeight !== null ? fixedHeight : (variableHeightAt as (index: number) => number)(index);
-
-  let offsets: number[] = [0];
-  let heightsDirty = true;
-  // Measuring only: key → current absolute index, so `setHeight(key, …)` locates
-  // the row in O(1). Rebuilt with the prefix sum when `items` changes.
-  const indexByKey = new Map<ListKey, number>();
-  // Accumulated scroll-anchor correction: the summed height delta of remeasured
-  // rows that sit entirely ABOVE the viewport top, applied to `scrollTop` before
-  // the next window render so on-screen content does not jump.
-  let pendingAnchorDelta = 0;
-
-  const rebuildOffsets = (): void => {
-    const fn = variableHeightAt as (index: number) => number;
-    const total = items.length;
-    offsets = new Array<number>(total + 1);
-    offsets[0] = 0;
-    if (measuring) indexByKey.clear();
-    for (let i = 0; i < total; i++) {
-      offsets[i + 1] = offsets[i] + fn(i);
-      if (measuring) indexByKey.set(key(items[i]), i);
-    }
-    // Prune reported heights for keys no longer in the source, so a measured list
-    // with key churn (a feed prepending new ids over a long session) doesn't grow
-    // `measured` without bound. `indexByKey` now holds exactly the live keys (all
-    // of them, windowed or not, since we walked every item). A key that only
-    // scrolled out of the window stays — it's still in the source.
-    if (measuring) {
-      for (const k of measured.keys()) if (!indexByKey.has(k)) measured.delete(k);
-    }
-  };
-
-  // Greatest index i in [0, total] with `offsets[i] <= target` — the first row
-  // whose top is at or above `target` (the viewport top).
-  const findStart = (target: number, total: number): number => {
-    let lo = 0;
-    let hi = total;
-    while (lo < hi) {
-      const mid = (lo + hi + 1) >> 1;
-      if (offsets[mid] <= target) lo = mid;
-      else hi = mid - 1;
-    }
-    return lo;
-  };
-
-  // Smallest index i in [0, total] with `offsets[i] >= target` — one past the
-  // last row that starts before `target` (the viewport bottom). `total` if none.
-  const findEnd = (target: number, total: number): number => {
-    let lo = 0;
-    let hi = total;
-    while (lo < hi) {
-      const mid = (lo + hi) >> 1;
-      if (offsets[mid] >= target) hi = mid;
-      else lo = mid + 1;
-    }
-    return lo;
-  };
-
-  // Size each visible row for the windowing math. `order` holds the visible rows
-  // in order, so `order[j]` is the item at absolute index `start + j`.
-  // MEASURED mode is the exception: the row must take its NATURAL height so the
-  // app (or `observeRowHeights`) can read the real `offsetHeight` — forcing a
-  // height here would make the measurement echo the estimate. Its offsets come
-  // from `setHeight` reports instead.
-  const sizeVisibleRows = (start: number): void => {
-    if (measuring) return;
-    for (let j = 0; j < order.length; j++) {
-      const abs = start + j;
-      const h = fixedHeight !== null ? fixedHeight : offsets[abs + 1] - offsets[abs];
-      order[j].el.style.height = `${h}px`;
-    }
-  };
-
-  // Called after each virtualized window render (used by `observeRowHeights` to
-  // re-observe the current visible rows).
-  const renderSubscribers = new Set<() => void>();
-
-  const renderWindow = (): void => {
-    if (virtualize === undefined) {
-      if (granularEligible) {
-        // Always drain to keep the single patch queue clean (so patches never
-        // double-apply). Take the granular path past the first render, when
-        // there are patches, and none is a `replace` (which reshapes the whole
-        // array — snapshot instead). Otherwise fall through to a keyed diff.
-        const patches = patchSource._consumePatches!();
-        if (
-          !firstRender
-          && !forceSnapshot
-          && patches.length > 0
-          && !patches.some((p) => p.type === 'replace')
-        ) {
-          try {
-            applyPatches(patches);
-          } catch (error) {
-            // The patch queue was already consumed and applyPatches may have
-            // completed an earlier patch in the same batch. The next source
-            // notification must therefore reconcile the authoritative snapshot
-            // instead of applying a new patch to potentially divergent row
-            // state. A successful snapshot clears this latch below.
-            forceSnapshot = true;
-            throw error;
-          }
-          return;
-        }
-      }
-      syncRows(items);
-      firstRender = false;
-      forceSnapshot = false;
+  const renderItems = (items: readonly T[]): void => {
+    if (virtualization !== undefined) {
+      virtualization.render(items);
       return;
     }
-    if (contentVisibility) {
-      // Every row stays in the DOM (full find-in-page / a11y); the browser skips
-      // off-screen layout/paint. No windowing, no padding, no scroll math — just
-      // reconcile all rows and set the two CSS props (`start` is 0, so `order[j]`
-      // is item j). On an unsupporting engine the CSS is inert but harmless.
-      syncRows(items);
-      for (let j = 0; j < order.length; j++) {
-        const el = order[j].el;
-        el.style.contentVisibility = 'auto';
-        el.style.containIntrinsicSize = `0 ${intrinsicSizeAt(j)}px`;
-      }
-      return;
-    }
-    const total = items.length;
-    let start: number;
-    let end: number;
-    let padTop: number;
-    let padBottom: number;
-    if (minRows !== undefined && total < minRows) {
-      // Below the threshold: render EVERY row, no windowing, zero padding — one
-      // DOM structure (the inner container) shared with the windowed path, so the
-      // caller never branches. Rows are still sized (declared/fixed) from the
-      // prefix sum, which we still build for the sizing pass.
-      if (fixedHeight === null && heightsDirty) {
-        rebuildOffsets();
-        heightsDirty = false;
-      }
-      start = 0;
-      end = total;
-      padTop = 0;
-      padBottom = 0;
-    } else {
-      const scrollTop = parent.scrollTop;
-      const viewportBottom = scrollTop + parent.clientHeight;
-      if (fixedHeight !== null) {
-        start = Math.max(0, Math.floor(scrollTop / fixedHeight) - overscan);
-        end = Math.min(total, Math.ceil(viewportBottom / fixedHeight) + overscan);
-        padTop = start * fixedHeight;
-        padBottom = Math.max(0, total - end) * fixedHeight;
-      } else {
-        if (heightsDirty) {
-          rebuildOffsets();
-          heightsDirty = false;
+    if (granularEligible) {
+      const patches = patchSource._consumePatches!();
+      if (
+        !firstRender
+        && !forceSnapshot
+        && patches.length > 0
+        && !patches.some((patch) => patch.type === 'replace')
+      ) {
+        try {
+          rows.applyPatches(patches);
+        } catch (error) {
+          forceSnapshot = true;
+          throw error;
         }
-        start = Math.max(0, findStart(scrollTop, total) - overscan);
-        end = Math.min(total, findEnd(viewportBottom, total) + overscan);
-        padTop = offsets[start];
-        padBottom = offsets[total] - offsets[end];
+        return;
       }
     }
-    syncRows(items.slice(start, end));
-    sizeVisibleRows(start);
-    container.style.paddingTop = `${padTop}px`;
-    container.style.paddingBottom = `${padBottom}px`;
-    for (const cb of renderSubscribers) cb();
+    rows.sync(items);
+    firstRender = false;
+    forceSnapshot = false;
   };
 
   const stopEffect = effect(() => {
-    const nextItems = source.value; // tracking read — re-runs on any structural change
+    const items = source.value;
     try {
-      assertUniqueListKeys(nextItems, key);
+      assertUniqueListKeys(items,key);
     } catch (error) {
-      // A rejected arraySignal transition cannot be replayed later against the
-      // unchanged DOM. Drain it now, then snapshot the next valid state before
-      // granular patching resumes.
       if (granularEligible) {
         patchSource._consumePatches!();
         forceSnapshot = true;
       }
       throw error;
     }
-    items = nextItems;
-    heightsDirty = true; // items changed → the prefix sum (if any) is stale
-    renderWindow();
+    renderItems(items);
   });
 
-  // Build virtualized rows in the detached sizer first. Initial duplicate-key
-  // failures therefore leave the caller's live parent entirely untouched.
-  if (virtualize !== undefined) parent.appendChild(container);
-
-  // One rAF-coalesced render, shared by scroll and by measurement reports. A
-  // pending anchor correction is applied to `scrollTop` first (which itself may
-  // fire a scroll, but with the delta already cleared the follow-up is a no-op).
-  const scheduleRender = (): void => {
-    if (rafPending) return;
-    rafPending = true;
-    globalThis.requestAnimationFrame(() => {
-      rafPending = false;
-      if (disposed) return;
-      if (pendingAnchorDelta !== 0) {
-        parent.scrollTop += pendingAnchorDelta;
-        pendingAnchorDelta = 0;
-      }
-      renderWindow();
-    });
-  };
-  // Content-visibility mode needs no scroll listener (there's no window to
-  // recompute — the browser handles off-screen skipping itself).
-  if (virtualize !== undefined && !contentVisibility) parent.addEventListener('scroll', scheduleRender);
-
-  // Re-window when `parent` RESIZES, not just on scroll. This makes two cases
-  // robust that the scroll-only model missed: a list mounted before layout
-  // (`clientHeight` 0 — a hidden tab, pre-first-paint) fills in once it's sized,
-  // and a container resized while open re-windows. ResizeObserver fires an
-  // initial callback on observe, so the 0-height case self-heals with no synthetic
-  // scroll. Absent (older SSR/runtime) → scroll-only, as before.
-  const RO = globalThis.ResizeObserver;
-  const parentResize =
-    virtualize !== undefined && !contentVisibility && RO !== undefined ? new RO(scheduleRender) : undefined;
-  parentResize?.observe(parent);
-
-  // Measured mode: report a row's real height. No-op for fixed / declared lists
-  // and for keys not currently in the list.
-  const setHeight = (k: ListKey, height: number): void => {
-    // No-op for fixed / declared lists, unknown keys, and content-visibility mode
-    // (the browser owns measurement there — no windowing to correct).
-    if (!measuring || contentVisibility) return;
-    const idx = indexByKey.get(k);
-    if (idx === undefined) return;
-    const oldHeight = measured.has(k) ? (measured.get(k) as number) : estimateAt(idx);
-    if (height === oldHeight) return;
-    measured.set(k, height);
-    // A row whose bottom is at/above the viewport top shifts everything below it
-    // (the on-screen content) by the height delta — correct `scrollTop` to match.
-    // Uses the CURRENT (pre-rebuild) offsets, which reflect the on-screen layout.
-    if (offsets[idx + 1] <= parent.scrollTop) pendingAnchorDelta += height - oldHeight;
-    heightsDirty = true;
-    scheduleRender();
-  };
+  if (virtualization !== undefined) {
+    parent.appendChild(container);
+    virtualization.start();
+  }
 
   const dispose = ((): void => {
-    disposed = true;
     stopEffect();
-    for (const row of rows.values()) {
-      row.dispose();
-      if (virtualize === undefined) row.el.remove();
-    }
-    rows.clear();
-    renderSubscribers.clear();
-    if (virtualize !== undefined) {
-      parent.removeEventListener('scroll', scheduleRender);
-      parentResize?.disconnect();
-      container.remove(); // removes the inner sizer and its rows in one go
+    rows.dispose(virtualization === undefined);
+    if (virtualization !== undefined) {
+      virtualization.dispose();
+      container.remove();
       VIRTUAL_INTERNALS.delete(handle);
     }
   }) as BindListHandle;
   const handle = dispose;
-  handle.setHeight = setHeight;
+  handle.setHeight = virtualization?.setHeight ?? NOOP;
 
-  // Register the coordination surface the `observeRowHeights` helper needs, kept
-  // off the public type (a GC-tied WeakMap, so it doesn't count against Design
-  // rule 5). Only virtualized lists have a window to observe.
-  if (virtualize !== undefined) {
+  if (virtualization !== undefined) {
     handle.container = container;
-    // Content-visibility mode registers no internals, so `observeRowHeights` is a
-    // clean no-op on it (there's nothing to measure — the browser owns layout).
-    if (!contentVisibility) {
-      VIRTUAL_INTERNALS.set(handle, {
-        visibleRows: () => order.map((row) => ({ key: key(row.item), el: row.el })),
-        onRender: (cb) => {
-          renderSubscribers.add(cb);
-          return () => renderSubscribers.delete(cb);
-        },
+    if (!virtualization.contentVisibility) {
+      VIRTUAL_INTERNALS.set(handle,{
+        visibleRows: () => rows.order.map((row) => ({ key: key(row.item),el: row.el })),
+        onRender: virtualization.onRender,
       });
     }
   }
@@ -809,7 +361,7 @@ const VIRTUAL_INTERNALS = new WeakMap<object, VirtualInternals>();
 export function observeRowHeights(handle: BindListHandle): () => void {
   const internals = VIRTUAL_INTERNALS.get(handle);
   const RO = globalThis.ResizeObserver;
-  if (internals === undefined || RO === undefined) return () => { /* nothing to observe */ };
+  if (internals === undefined || RO === undefined) return NOOP;
 
   const keyByEl = new WeakMap<Element, ListKey>();
   const observer = new RO((entries) => {

@@ -96,6 +96,8 @@ KF-103 enforces "exactly one top-level element per row" with row-precise diagnos
 
 `bindList` requires unique `ListKey` values and validates a complete source snapshot before mutating its owned DOM. A rejected `arraySignal` transition drains the unusable patch batch and forces snapshot recovery on the next valid state before granular reconciliation resumes. If a row render throws during granular reconciliation, the error still reaches the caller and the next source notification snapshot-recovers the authoritative array, including after a partially applied patch batch.
 
+Its public `list.ts` entry now delegates keyed row ownership to `list-row-controller.ts` and all window/content-visibility height and scheduling behavior to `list-virtualization-controller.ts`. Snapshot and granular paths share the same persistent-key item-replacement contract, so their element/content lifecycle semantics cannot drift independently.
+
 KF-117 documented kerf's no-op-render fast path as a contract: when the static-surrounds HTML is byte-for-byte identical to the previous render, `mount()` skips the diff entirely. Any attribute / child set imperatively on a kerf-managed element (`el.setAttribute(...)`, `el.appendChild(...)`) survives across no-op re-renders; when surrounds DO change, the diff runs and `morphAttributes` removes anything the JSX didn't authorize. The fast path saves ~8 ms per partial-update / select-row / swap-rows render in the krausest harness. See `docs/4-render.md` §4.4.2 for the full rationale + practical guidance (use `data-morph-skip` for stable library-owned subtrees, drive imperative state from signals where possible).
 
 ### §5 Event delegation

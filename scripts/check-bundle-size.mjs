@@ -158,8 +158,9 @@ const BUDGETS = [
     // tree-shakes out — this measures the common case incl. the measured tier.
     name: 'list',
     // +0.2 for KF-525 content-visibility virtualization mode; +0.1 for
-    // KF-Z2CHG2 duplicate-key preflight and recovery before DOM mutation.
-    budgetKb: 12.6,
+    // KF-Z2CHG2 duplicate-key preflight and recovery before DOM mutation; +0.1
+    // for KF-04QBM0 focused keyed-row and virtualization controllers.
+    budgetKb: 12.7,
     description: 'the bindList subpath (keyed per-row mount + virtualization) — includes shared core',
     entry: `
       import { bindList } from '${DIST}/list.js';
