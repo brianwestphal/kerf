@@ -18,7 +18,7 @@ The rule resolves `kerfjs/ai/manifest.json` from the consumer's installed `kerfj
 A triggered file is then classified into one of three reported states (a fourth, "up-to-date," is silent):
 
 - **Missing** — the consumer's `dest` doesn't exist.
-- **Stale** — exists, parses cleanly, but its `kerf-skill-version` line is older than the bundle's.
+- **Stale** — exists, parses cleanly, its `kerf-skill-version` line is older than the bundle's, and its canonical-section hash matches that version in the manifest's history.
 - **Forked** — the consumer's file no longer matches the canonical layout: marker is missing, marker appears more than once, `kerf-skill-version` line is missing, or the content above the marker has been edited.
 
 ## ❌ Reported
@@ -55,7 +55,8 @@ If the consumer has edited the file in a way that breaks the canonical/append-zo
 - **No marker present.** The file pre-dates the marker convention, the consumer deleted the marker, or the file is a hand-written variant. Auto-fixing would either clobber legitimate customizations or leave the file in an ambiguous state.
 - **Multiple markers.** A well-formed file has exactly one. Auto-fix would have to guess which boundary is real.
 - **No `kerf-skill-version` line.** The staleness signal is missing; we can't tell what's there.
-- **Content above the marker has been edited.** The contract is "above the marker is kerf's; below is yours." Above-the-marker edits are a deliberate fork.
+- **Content above the marker has been edited.** The contract is "above the marker is kerf's; below is yours." The rule checks stale files against the historical canonical hash for their own version, so an edited old section is preserved as a deliberate fork rather than overwritten.
+- **Canonical history unavailable.** An old version absent from the shipped manifest history cannot be proven untouched, so the rule conservatively refuses to overwrite it.
 
 Resolution: either restore the canonical layout (move customizations below a freshly-inserted marker, delete extras, re-add the version line) or disable the rule for this project — `'kerfjs/ai-assistant-configs': 'off'` in `eslint.config.js`.
 

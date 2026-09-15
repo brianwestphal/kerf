@@ -60,7 +60,20 @@ function makeCursorrulesBody(version) {
  * with the bundle files, an optional `.claude/` and `.cursorrules`, and a
  * `package.json` for require.resolve traversal.
  */
-function setupProject({ skillVersion = '1.0.0', cursorVersion = '1.0.0', withClaude = false, withCursor = false, skillBody, cursorBody } = {}) {
+function setupProject({
+  skillVersion = '1.0.0',
+  cursorVersion = '1.0.0',
+  withClaude = false,
+  withCursor = false,
+  skillBody,
+  cursorBody,
+  skillHistory = skillVersion === '1.0.0'
+    ? {}
+    : { '1.0.0': sha256(makeSkillBody('1.0.0')) },
+  cursorHistory = cursorVersion === '1.0.0'
+    ? {}
+    : { '1.0.0': sha256(makeCursorrulesBody('1.0.0')) },
+} = {}) {
   const root = mkdtempSync(join(tmpdir(), 'kerf-ai-test-'));
 
   // Consumer's package.json (any content; require.resolve needs the dir to look like a project).
@@ -83,6 +96,7 @@ function setupProject({ skillVersion = '1.0.0', cursorVersion = '1.0.0', withCla
         dest: '.claude/skills/kerf-app/SKILL.md',
         version: skillVersion,
         sha256: sha256(bundledSkill),
+        history: skillHistory,
       },
       {
         name: 'cursorrules',
@@ -91,6 +105,7 @@ function setupProject({ skillVersion = '1.0.0', cursorVersion = '1.0.0', withCla
         dest: '.cursorrules',
         version: cursorVersion,
         sha256: sha256(bundledCursor),
+        history: cursorHistory,
       },
     ],
   };
@@ -220,6 +235,25 @@ test('ESLint integration — fix mode updates stale canonical content and preser
   }
 });
 
+test('ESLint integration — fix mode does not overwrite an edited stale canonical section', async () => {
+  _resetForTests();
+  const edited = makeSkillBody('1.0.0').replace('Canonical body', 'EDITED body');
+  const { root, manifest } = setupProject({
+    skillVersion: '1.1.0',
+    withClaude: true,
+    skillBody: edited,
+  });
+  const dest = join(root, manifest.files.find((file) => file.name === 'skill').dest);
+  try {
+    const [result] = await withFixCliFlag(() => lintProject(root, true));
+    assert.equal(result.warningCount, 1);
+    assert.match(result.messages[0].message, /is forked/);
+    assert.equal(readFileSync(dest, 'utf8'), edited);
+  } finally {
+    cleanup(root);
+  }
+});
+
 test('missing — .claude/ exists but no SKILL.md installed', () => {
   _resetForTests();
   const { root, manifest } = setupProject({ withClaude: true });
@@ -266,6 +300,42 @@ test('stale — consumer version is behind bundle, append zone preserved', () =>
     assert.equal(result.consumerVersion, '1.0.0');
     assert.equal(result.bundledVersion, '1.1.0');
     assert.equal(result.appendZone, '\n## My customizations\n\nKeep me!\n');
+  } finally {
+    cleanup(root);
+  }
+});
+
+test('forked — edited canonical content stays protected after the bundled version advances', () => {
+  _resetForTests();
+  const consumerSkill = makeSkillBody('1.0.0').replace('Canonical body', 'EDITED body');
+  const { root } = setupProject({
+    skillVersion: '1.1.0',
+    withClaude: true,
+    skillBody: consumerSkill,
+  });
+  try {
+    const checked = runCheck(root);
+    const result = checked.results.find((r) => r.file.name === 'skill').result;
+    assert.equal(result.state, 'forked');
+    assert.match(result.reason, /above marker/);
+  } finally {
+    cleanup(root);
+  }
+});
+
+test('forked — unknown stale versions are preserved when no canonical hash is available', () => {
+  _resetForTests();
+  const consumerSkill = makeSkillBody('0.9.0');
+  const { root } = setupProject({
+    skillVersion: '1.1.0',
+    withClaude: true,
+    skillBody: consumerSkill,
+  });
+  try {
+    const checked = runCheck(root);
+    const result = checked.results.find((r) => r.file.name === 'skill').result;
+    assert.equal(result.state, 'forked');
+    assert.match(result.reason, /hash for version 0\.9\.0 is unavailable/);
   } finally {
     cleanup(root);
   }

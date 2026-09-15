@@ -29,6 +29,7 @@ export const FILES = [
 
 export const MARKER = '<!-- KERF-APP-CANONICAL-END · your customizations below -->';
 const VERSION_RE = /kerf-skill-version:\s*(\d+\.\d+\.\d+(?:-[\w.]+)?)/;
+const HISTORY_PATH = join(REPO_ROOT, 'scripts', 'ai-canonical-history.json');
 
 function readPackageVersion() {
   const pkg = JSON.parse(readFileSync(join(REPO_ROOT, 'package.json'), 'utf8'));
@@ -70,6 +71,7 @@ function sha256(text) {
  */
 export function computeBundle() {
   const kerfjsVersion = readPackageVersion();
+  const canonicalHistory = JSON.parse(readFileSync(HISTORY_PATH, 'utf8'));
   const outputs = [];
   const manifestFiles = [];
   for (const f of FILES) {
@@ -79,17 +81,26 @@ export function computeBundle() {
     const canonical = canonicalSection(source, f.source);
     const bundleContent = canonical;
     outputs.push({ path: f.bundle, content: bundleContent });
+    const canonicalHash = sha256(canonical);
+    const history = canonicalHistory[f.name] || {};
+    history[version] = canonicalHash;
+    canonicalHistory[f.name] = history;
     manifestFiles.push({
       name: f.name,
       source: f.source,
       bundle: f.bundle,
       dest: f.dest,
       version,
-      sha256: sha256(canonical),
+      sha256: canonicalHash,
+      history,
     });
   }
   const manifest = { kerfjsVersion, files: manifestFiles };
   const manifestContent = JSON.stringify(manifest, null, 2) + '\n';
   outputs.push({ path: 'ai/manifest.json', content: manifestContent });
+  outputs.push({
+    path: 'scripts/ai-canonical-history.json',
+    content: JSON.stringify(canonicalHistory, null, 2) + '\n',
+  });
   return outputs;
 }

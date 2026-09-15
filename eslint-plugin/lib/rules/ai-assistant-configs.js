@@ -119,12 +119,23 @@ export function classifyFile(file, bundleDir, cwd) {
   }
 
   const cmp = compareSemver(consumerVersion, file.version);
+  const consumerCanonicalHash = sha256(consumerCanonical);
   if (cmp === 0) {
     // Same version. Above-marker section should match the bundled sha256.
-    if (sha256(consumerCanonical) === file.sha256) return { state: 'ok' };
+    if (consumerCanonicalHash === file.sha256) return { state: 'ok' };
     return { state: 'forked', reason: 'content above marker has been edited' };
   }
   if (cmp < 0) {
+    const historicalHash = file.history?.[consumerVersion];
+    if (!historicalHash) {
+      return {
+        state: 'forked',
+        reason: `canonical hash for version ${consumerVersion} is unavailable`,
+      };
+    }
+    if (consumerCanonicalHash !== historicalHash) {
+      return { state: 'forked', reason: 'content above marker has been edited' };
+    }
     return {
       state: 'stale',
       consumerVersion,

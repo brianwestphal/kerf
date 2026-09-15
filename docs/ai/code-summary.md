@@ -347,7 +347,7 @@ kerf/
 ├── ai/                           ← KF-215 — generated mirror of the repo-root drop-in AI configs, shipped inside the npm package at `kerfjs/ai/`. Regenerate with `npm run ai-bundle:sync` after editing root files; kept honest by `check:ai-bundle-in-sync`.
 │   ├── skill.md                  ← copy of kerf.claude-skill.md, canonical section only
 │   ├── cursorrules               ← copy of kerf.cursorrules, canonical section only
-│   └── manifest.json             ← { kerfjsVersion, files: [{ name, source, bundle, dest, version, sha256 }] } — the shipped `kerfjs/ai-assistant-configs` rule's entry point
+│   └── manifest.json             ← { kerfjsVersion, files: [{ name, source, bundle, dest, version, sha256, history }] } — the shipped `kerfjs/ai-assistant-configs` rule's entry point; history maps prior canonical versions to hashes so edited stale files are preserved as forks
 ├── scripts/
 │   ├── lib/
 │   │   └── ai-bundle.mjs         ← KF-215 — shared logic for sync + check scripts; deterministic `computeBundle()` produces the three `ai/` files in memory from the root source-of-truth files
@@ -397,6 +397,7 @@ History-router base stripping and link interception share an exact-or-segment-bo
 Router named and wildcard captures decode through a fail-closed helper: malformed percent escapes return no-match so resolution can continue to a fallback without throwing.
 
 `ai-assistant-configs` reports filesystem drift during plain lint without writing; its unusual cross-file installer/updater runs only for an explicit CLI `--fix`, with real ESLint API regression coverage for both modes.
+Before updating a stale section, it validates the consumer's canonical hash against the manifest history for that exact version. Known untouched versions remain fixable; edited or historically unknown versions are forked and never overwritten. `scripts/ai-canonical-history.json` is the committed source ledger, and bundle sync carries its current hashes into `ai/manifest.json`.
 
 ## Public exports
 

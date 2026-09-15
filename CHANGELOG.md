@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Preserved edited stale AI-assistant configs as forks by validating their versioned canonical section against shipped historical hashes before offering an autofix.
 - Required every complete example app to have its own feature-coverage row mapped to a smoke test inside that app's Playwright suite.
 - Made router parameter decoding fail closed to no-match on malformed percent escapes instead of throwing `URIError`, including named and wildcard captures.
 - Pointed `@kerfjs/ui` package metadata at the existing published component-packages documentation route and added a source-backed metadata regression test.

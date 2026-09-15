@@ -103,7 +103,8 @@ pre-commit and CI.
       "bundle": "ai/skill.md",
       "dest": ".claude/skills/kerf-app/SKILL.md",
       "version": "1.0.0",
-      "sha256": "…"
+      "sha256": "…",
+      "history": { "0.9.0": "…", "1.0.0": "…" }
     },
     {
       "name": "cursorrules",
@@ -111,11 +112,19 @@ pre-commit and CI.
       "bundle": "ai/cursorrules",
       "dest": ".cursorrules",
       "version": "1.0.0",
-      "sha256": "…"
+      "sha256": "…",
+      "history": { "0.9.0": "…", "1.0.0": "…" }
     }
   ]
 }
 ```
+
+Each `history` entry maps a previously shipped `kerf-skill-version` to the
+sha256 of that version's canonical section. The committed
+`scripts/ai-canonical-history.json` ledger is seeded from released manifests;
+the bundle sync adds the current canonical hashes and emits the complete ledger
+into the shipped manifest. This lets the eslint rule distinguish an untouched
+old canonical section from an old section the consumer edited.
 
 The manifest is deterministic — `scripts/sync-ai-bundle.mjs` writes the
 same bytes given the same inputs, so the in-sync gate can re-run the
@@ -250,8 +259,9 @@ For each triggered file, the rule classifies into one of three states:
 - **Missing.** The consumer's `dest` path doesn't exist. Report
   recommending `--fix`; auto-fix copies the bundled file in verbatim.
 - **Stale.** The file exists, has a valid `kerf-skill-version` line,
-  and its version is older than the manifest's. Report recommending
-  `--fix`; auto-fix follows the versioned-section semantics below.
+  its version is older than the manifest's, and its canonical-section hash
+  matches the manifest history for that version. Report recommending `--fix`;
+  auto-fix follows the versioned-section semantics below.
 - **Up-to-date.** Version matches the manifest. Silent.
 
 A fourth implicit state, **forked**, gets a different report — see
@@ -293,10 +303,14 @@ a "forked" state instead:
   or the file is a hand-written variant. Don't guess at the boundary;
   warn and recommend either restoring the marker or disabling the
   rule.
-- **Content above the marker has been edited** — the bundled
-  canonical's `sha256` (in the manifest) does not match the sha256
-  of the consumer's above-marker section. The consumer has chosen to
-  customise inside kerf's zone; treat it as a deliberate fork.
+- **Content above the marker has been edited** — its sha256 does not match the
+  manifest's canonical hash for the consumer's own version (the current
+  `sha256`, or that version's `history` entry). The consumer has chosen to
+  customise inside kerf's zone; treat it as a deliberate fork even when the
+  version is stale.
+- **Historical hash unavailable.** An older version absent from `history`
+  cannot be proven canonical. Treat it conservatively as a fork instead of
+  risking an overwrite.
 - **Multiple markers** in the consumer's file. A well-formed file
   has exactly one. Multiple markers mean the file shape is
   unrecognised.
@@ -346,7 +360,9 @@ the canonical files or the rule should keep these properties intact.
 ### 12.5.1 Single source of truth at the repo root
 
 `kerf.claude-skill.md` and `kerf.cursorrules` at the repo root are the
-only files a human edits. Everything under `ai/` is generated. Never
+only canonical-content files a human edits. Everything under `ai/` is generated,
+while `scripts/ai-canonical-history.json` is the committed historical-hash ledger
+maintained by the sync. Never
 hand-edit `ai/skill.md`, `ai/cursorrules`, or `ai/manifest.json` — the
 in-sync gate will fail.
 
@@ -384,6 +400,7 @@ existing CI is already running.
 | Surface | Bundling (KF-215) | ESLint rule (KF-216) |
 | --- | --- | --- |
 | Source of truth | `kerf.claude-skill.md` / `kerf.cursorrules` | — |
+| Canonical hash history | `scripts/ai-canonical-history.json` | read from each shipped manifest entry's `history` map |
 | Generated mirror | `ai/skill.md` / `ai/cursorrules` / `ai/manifest.json` | — |
 | Sync script | `scripts/sync-ai-bundle.mjs` | — |
 | In-sync gate | `scripts/check-ai-bundle.mjs`, wired into `npm run check` | — |
@@ -406,8 +423,8 @@ or an `.github/copilot-instructions.md`), the steps are:
    `<!-- KERF-APP-CANONICAL-END · your customizations below -->`
    marker at the end of its canonical content.
 3. Add the file to the `FILES` array in
-   `scripts/sync-ai-bundle.mjs` with its `name`, `source`, `bundle`,
-   and `dest`.
+   `scripts/lib/ai-bundle.mjs` with its `name`, `source`, `bundle`,
+   and `dest`, and initialize that name in `scripts/ai-canonical-history.json`.
 4. Run `node scripts/sync-ai-bundle.mjs` to regenerate `ai/` (the
    in-sync gate will tell you if you forgot).
 5. Add a trigger heuristic to
