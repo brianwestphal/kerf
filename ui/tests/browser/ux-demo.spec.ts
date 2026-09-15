@@ -487,16 +487,16 @@ test('uses a collapsible pane shell, toolbar page chrome, and opt-in floating re
   await expect(note).toHaveCSS('position', 'absolute');
   await expect(page.locator('.catalog-log')).toHaveText('Recipe notes shown');
 
-  const expandedWidth = (await sidebar.boundingBox())!.width;
   await page.getByRole('button', { name: 'Collapse component catalog' }).click();
   await expect(shell).toHaveAttribute('data-sidebar-collapsed', 'true');
-  await expect(sidebar.locator(':scope > nav')).toBeHidden();
-  await expect.poll(async () => (await sidebar.boundingBox())!.width).toBeLessThan(expandedWidth / 2);
+  await expect(sidebar).toBeHidden();
+  await expect(pageHeader.getByRole('button', { name: 'Expand component catalog' })).toBeVisible();
+  await expect.poll(async () => (await page.locator('.catalog-detail').boundingBox())?.x ?? -1).toBeLessThanOrEqual(1);
   if (browserName === 'chromium') await page.screenshot({ path: 'test-results/catalog-application-shell-collapsed-wide.png', fullPage: true });
   await page.getByRole('button', { name: 'Expand component catalog' }).click();
   await expect(shell).toHaveAttribute('data-sidebar-collapsed', 'false');
+  await expect(sidebar).toBeVisible();
   await expect(sidebar.locator(':scope > nav')).toBeVisible();
-  await expect.poll(async () => (await sidebar.boundingBox())!.width).toBeCloseTo(expandedWidth, 0);
 
   if (browserName === 'chromium') {
     await page.screenshot({ path: 'test-results/catalog-application-shell-wide.png', fullPage: true });

@@ -36,6 +36,7 @@ import type { RecipeController } from './recipes/types.js';
 
 const app = document.querySelector<HTMLElement>('#app');
 if (!app) throw new Error('Missing #app');
+const kerfLogoUrl = new URL('../../assets/logo.svg', import.meta.url).href;
 
 const requested = new URLSearchParams(location.search).get('component');
 const initialDemo = isCatalogId(requested) ? requested : catalog[0].id;
@@ -562,7 +563,8 @@ mount(app, () => {
   return <main class="catalog-shell" data-sidebar-collapsed={String(sidebarCollapsed.value)}>
     <aside class="catalog-sidebar kui-pane" aria-label="Component catalog">
       <header class="catalog-brand kui-pane__toolbar">
-        <Toolbar label="Component catalog header" divider={false} leading={<ToolbarControlGroup appearance="borderless" className="catalog-brand__identity"><span class="catalog-mark" aria-hidden="true">K</span><div class="catalog-brand__copy"><h1>Kerf</h1><p>UI components</p></div></ToolbarControlGroup>} trailing={<ToolbarControlGroup appearance="borderless" single><button type="button" data-action="toggle-catalog-sidebar" aria-label={sidebarCollapsed.value ? 'Expand component catalog' : 'Collapse component catalog'}>{icon(sidebarCollapsed.value ? PanelLeftOpen : PanelLeftClose, sidebarCollapsed.value ? 'panel-left-open' : 'panel-left-close')}</button></ToolbarControlGroup>} />
+        <Toolbar label="Component catalog header" divider={false} leading={<ToolbarControlGroup appearance="borderless" className="catalog-brand__identity"><img class="catalog-mark" src={kerfLogoUrl} alt="" /><h1>Kerf</h1></ToolbarControlGroup>} trailing={<ToolbarControlGroup appearance="borderless" single><button type="button" data-action="toggle-catalog-sidebar" aria-label="Collapse component catalog">{icon(PanelLeftClose, 'panel-left-close')}</button></ToolbarControlGroup>} />
+        <p class="catalog-brand__subtitle">UI components</p>
       </header>
       <nav class="kui-pane__content kui-content">
         {catalogSections.map((section) => <section class="catalog-group">
@@ -586,7 +588,7 @@ mount(app, () => {
     </aside>
     <article class="catalog-detail kui-pane">
       <header class="catalog-header kui-pane__toolbar">
-        <Toolbar label={`${selected.name} page header`} divider={false} leading={<ToolbarControlGroup appearance="borderless" className="catalog-header__identity"><h2>{selected.name}</h2></ToolbarControlGroup>} trailing={<div class="catalog-header__actions">{isRecipe && <ToolbarControlGroup appearance="borderless" single buttonAppearance="push"><button type="button" data-action="toggle-recipe-notes" aria-label={recipeNotesVisible.value ? 'Hide recipe notes' : 'Show recipe notes'} aria-pressed={String(recipeNotesVisible.value)}>{icon(StickyNote, 'sticky-note')}</button></ToolbarControlGroup>}<ToolbarControlGroup className="catalog-settings" label="Catalog display settings"><button type="button" data-action="toggle-theme" aria-pressed={String(darkTheme.value)}>{icon(Moon, 'moon')}<span>Dark</span></button><button type="button" data-action="toggle-contrast" aria-pressed={String(increasedContrast.value)}>{icon(Contrast, 'contrast')}<span>Contrast</span></button><button type="button" data-action="toggle-motion" aria-pressed={String(reducedMotion.value)}>{icon(ZapOff, 'zap-off')}<span>Reduce motion</span></button></ToolbarControlGroup></div>} />
+        <Toolbar label={`${selected.name} page header`} divider={false} leading={<>{sidebarCollapsed.value && <ToolbarControlGroup appearance="borderless" single><button type="button" data-action="toggle-catalog-sidebar" aria-label="Expand component catalog">{icon(PanelLeftOpen, 'panel-left-open')}</button></ToolbarControlGroup>}<ToolbarControlGroup appearance="borderless" className="catalog-header__identity"><h2>{selected.name}</h2></ToolbarControlGroup></>} trailing={<div class="catalog-header__actions">{isRecipe && <ToolbarControlGroup appearance="borderless" single buttonAppearance="push"><button type="button" data-action="toggle-recipe-notes" aria-label={recipeNotesVisible.value ? 'Hide recipe notes' : 'Show recipe notes'} aria-pressed={String(recipeNotesVisible.value)}>{icon(StickyNote, 'sticky-note')}</button></ToolbarControlGroup>}<ToolbarControlGroup className="catalog-settings" label="Catalog display settings"><button type="button" data-action="toggle-theme" aria-pressed={String(darkTheme.value)}>{icon(Moon, 'moon')}<span>Dark</span></button><button type="button" data-action="toggle-contrast" aria-pressed={String(increasedContrast.value)}>{icon(Contrast, 'contrast')}<span>Contrast</span></button><button type="button" data-action="toggle-motion" aria-pressed={String(reducedMotion.value)}>{icon(ZapOff, 'zap-off')}<span>Reduce motion</span></button></ToolbarControlGroup></div>} />
         <p class="catalog-header__description kui-content-item">{selected.description}</p>
       </header>
       <section class="catalog-stage kui-pane__content" aria-label={`${selected.name} preview`} data-recipe-notes-visible={String(isRecipe && recipeNotesVisible.value)}>
@@ -617,7 +619,11 @@ const stopActions = delegateActions(app, 'click', {
     recipeControllers.get(id)?.action(target.dataset.recipeCommand ?? '', target);
   },
   'toggle-webawesome-catalog': () => { webAwesomeExpanded.value = !webAwesomeExpanded.value; actionLog.value = webAwesomeExpanded.value ? 'Web Awesome catalog expanded' : 'Web Awesome catalog collapsed'; },
-  'toggle-catalog-sidebar': () => { sidebarCollapsed.value = !sidebarCollapsed.value; actionLog.value = sidebarCollapsed.value ? 'Component catalog collapsed' : 'Component catalog expanded'; },
+  'toggle-catalog-sidebar': () => {
+    sidebarCollapsed.value = !sidebarCollapsed.value;
+    actionLog.value = sidebarCollapsed.value ? 'Component catalog collapsed' : 'Component catalog expanded';
+    window.requestAnimationFrame(() => document.querySelector<HTMLButtonElement>(`[aria-label="${sidebarCollapsed.value ? 'Expand' : 'Collapse'} component catalog"]`)?.focus());
+  },
   'toggle-recipe-notes': () => { recipeNotesVisible.value = !recipeNotesVisible.value; actionLog.value = recipeNotesVisible.value ? 'Recipe notes shown' : 'Recipe notes hidden'; },
   'show-wa-dialog': () => { actionLog.value = 'Dialog opened'; const dialog = document.querySelector<HTMLElement & { open: boolean }>('#catalog-wa-dialog'); if (dialog) dialog.open = true; },
   'hide-wa-dialog': () => { actionLog.value = 'Dialog closed'; const dialog = document.querySelector<HTMLElement & { open: boolean }>('#catalog-wa-dialog'); if (dialog) dialog.open = false; },

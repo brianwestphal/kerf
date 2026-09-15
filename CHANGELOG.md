@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Replaced the UX catalog's generic K badge with the Kerf logo and DialogHeader-like title/subtitle alignment; collapsing the catalog now removes its empty rail and moves the restore action to the main toolbar's leading edge, with first-class guidance for corresponding inline-start and inline-end pane controls.
 - Corrected the composer-form recipe hierarchy and layout: `DialogHeader` now supplies the form's referenced title and summary, while fields and actions align to the shared 8px control gutter instead of a doubled content-item inset.
 - Aligned the UX catalog's StateBanner tone labels with each banner's leading icon by deriving the shared 8px margin, 1px border, and 8px content inset in demo-only specimen chrome.
 - Let the UX catalog's resizable-panel specimen fill its available preview height and moved its committed-width readout into the shared status footer.

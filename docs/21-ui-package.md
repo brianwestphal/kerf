@@ -201,6 +201,14 @@ SegmentedControl variants, editable, disabled, single-line, and multiline
 TokenSearchField states, all StateBanner tones
 plus a scoped palette override, reorderable overflowing tabs, light and dark
 themes, contrast, motion, selection, resize, and feedback states.
+The tone labels above the StateBanner examples are catalog-only specimen chrome;
+they derive the shared 8px margin + 1px border + 8px padding inset so their text
+aligns with each banner's leading icon without adding a component API.
+The catalog sidebar header uses the Kerf logo with a vertically centered title
+and a separately aligned subtitle row. Its visible pane owns the collapse
+control; once hidden, the pane disappears completely and its restore control
+moves to the main toolbar's leading edge. The same shell rule places an
+inline-end inspector's restore control at the main toolbar's trailing edge.
 The focused resize specimen stacks its committed-width status below the
 controlled region when narrow, remains readable at 200% root scaling, and does
 not change the component's minimum, maximum, or application-owned size; locally
