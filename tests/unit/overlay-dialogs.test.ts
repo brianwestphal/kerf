@@ -290,6 +290,20 @@ describe('confirm / prompt / form — bring-your-own markup (render)', () => {
     await expect(p).resolves.toBe('ada');
   });
 
+  it('prompt render fails immediately when the required input slot is missing', () => {
+    expect(() => prompt('Name', {
+      render: ({ ok }) => jsx('div', {
+        children: [
+          jsx('input', { class: 'unwired-input' }),
+          jsx('button', { ...ok, children: 'Go' }),
+        ],
+      }),
+    })).toThrowError(
+      'prompt(): render missing <input data-prompt-input>.',
+    );
+    expect(document.querySelector('.kerf-overlay')).toBeNull();
+  });
+
   it('form render: per-field input/error wiring, validate blocks in the BYO slot, resolves a record', async () => {
     const p = form(
       [
@@ -343,6 +357,21 @@ describe('confirm / prompt / form — bring-your-own markup (render)', () => {
     (document.querySelector('.bare-a') as HTMLInputElement).value = 'x';
     (document.querySelector('.bfo') as HTMLElement).click();
     await expect(p).resolves.toEqual({ a: 'x' });
+  });
+
+  it('form render fails immediately and names the field whose required input marker is mistyped', () => {
+    expect(() => form([{ name: 'host' }, { name: 'token' }], {
+      render: ({ fields, ok }) => jsx('div', {
+        children: [
+          jsx('input', { ...fields[0].input }),
+          jsx('input', { 'data-feild': fields[1].name }),
+          jsx('button', { ...ok, children: 'Go' }),
+        ],
+      }),
+    })).toThrowError(
+      'form(): render missing <input data-field="token">.',
+    );
+    expect(document.querySelector('.kerf-overlay')).toBeNull();
   });
 });
 

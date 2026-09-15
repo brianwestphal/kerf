@@ -233,19 +233,24 @@ export function prompt(message: string, options: PromptOptions = {}): Promise<st
   });
 
   // The input is required; the error slot is optional (BYO markup may omit it).
-  const input = handle.el.querySelector<HTMLInputElement>('[data-prompt-input]')!;
+  const input = handle.el.querySelector<HTMLInputElement>('input[data-prompt-input]');
+  if (input === null) {
+    handle.close(null);
+    throw new Error('prompt(): render missing <input data-prompt-input>.');
+  }
+  const promptInput = input;
   const errorEl = handle.el.querySelector<HTMLElement>('[data-prompt-error]');
   if (errorEl !== null) errorEl.hidden = true;
 
   function attemptOk(): void {
-    const value = input.value;
+    const value = promptInput.value;
     const error = validate?.(value);
     if (typeof error === 'string' && error.length > 0) {
       if (errorEl !== null) {
         errorEl.textContent = error;
         errorEl.hidden = false;
       }
-      input.focus();
+      promptInput.focus();
       return;
     }
     handle.close(value);
@@ -258,7 +263,7 @@ export function prompt(message: string, options: PromptOptions = {}): Promise<st
 
   // Enter in the field submits, like the native prompt.
   handle.el.addEventListener('keydown', (event: KeyboardEvent) => {
-    if (event.key === 'Enter' && event.target === input) {
+    if (event.key === 'Enter' && event.target === promptInput) {
       event.preventDefault();
       attemptOk();
     }
@@ -399,17 +404,22 @@ export function form(
   });
 
   // Inputs are required; error nodes are optional (BYO markup may omit them).
-  const byAttr = <E extends HTMLElement>(attr: string, name: string): E =>
-    Array.from(handle.el.querySelectorAll<E>(`[${attr}]`)).find(
-      (el) => el.getAttribute(attr) === name,
-    )!;
   const errorFor = (name: string): HTMLElement | null =>
     Array.from(handle.el.querySelectorAll<HTMLElement>('[data-field-error]')).find(
       (el) => el.getAttribute('data-field-error') === name,
     ) ?? null;
+  const inputFor = (name: string): HTMLInputElement => {
+    const input = Array.from(handle.el.querySelectorAll<HTMLInputElement>('input[data-field]')).find(
+      (el) => el.getAttribute('data-field') === name,
+    );
+    if (input !== undefined) return input;
+    handle.close(null);
+    throw new Error(`form(): render missing <input data-field="${name}">.`);
+  };
 
-  // Start with every field's error hidden.
+  // Validate every required input immediately, then start with optional errors hidden.
   for (const field of fields) {
+    inputFor(field.name);
     const errorEl = errorFor(field.name);
     if (errorEl !== null) errorEl.hidden = true;
   }
@@ -418,7 +428,7 @@ export function form(
     const record: Record<string, string> = {};
     let firstInvalid: HTMLInputElement | null = null;
     for (const field of fields) {
-      const el = byAttr<HTMLInputElement>('data-field', field.name);
+      const el = inputFor(field.name);
       const value = el.value;
       record[field.name] = value;
       const error = field.validate?.(value);

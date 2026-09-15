@@ -608,7 +608,7 @@ await confirm('Delete this file?', {
 });
 ```
 
-`prompt`'s slots are `{ message, input, error, ok, cancel }` (spread `input` onto your `<input>`, `error` optional); `form`'s are `{ fields, ok, cancel }` where each `fields[i]` is `{ name, label, input, error }`. Omitting an `error` slot just skips that inline message — `validate` still blocks and focuses. Slot types: [`ConfirmRenderSlots`](#overlay-types), [`PromptRenderSlots`](#overlay-types), [`FormRenderSlots`](#overlay-types) / [`FormRenderField`](#overlay-types).
+`prompt`'s slots are `{ message, input, error, ok, cancel }` (spread `input` onto your `<input>`, `error` optional); `form`'s are `{ fields, ok, cancel }` where each `fields[i]` is `{ name, label, input, error }`. The prompt `<input data-prompt-input>` and one `<input data-field="name">` for every form field are required: kerf validates them immediately after mounting, removes incomplete markup, and throws a descriptive error when one is missing. Omitting an `error` slot just skips that inline message — `validate` still blocks and focuses. Slot types: [`ConfirmRenderSlots`](#overlay-types), [`PromptRenderSlots`](#overlay-types), [`FormRenderSlots`](#overlay-types) / [`FormRenderField`](#overlay-types).
 
 ### `popover(anchor, content, options?): OverlayHandle`
 
