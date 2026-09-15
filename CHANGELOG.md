@@ -6,7 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
-- Corrected the UX catalog's project-details dialog gutters so its header uses less side inset, its selected title uses the full content gutter, its value table fills the detail column, and its record actions avoid a doubled left inset.
+- Corrected the UX catalog's project-details dialog gutters so its header uses less side inset, its selected title uses the full content gutter, its value table fills the available detail width between the usual margins, and its record actions avoid a doubled left inset.
 - Fixed the UI catalog's Kerf logo in the Vite development server and kept emitted assets working when the demo is hosted below a preview or proxy path.
 - Aligned the composer-form recipe's labels, hints, character count, and textarea value to a consistent 8px field gutter at wide and narrow widths.
 - Prevented UX catalog resource links from overlapping the related-component selector at phone widths.

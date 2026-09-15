@@ -127,6 +127,7 @@ test('keeps project dialog content on intentional wide and narrow gutters', asyn
       titleRange.selectNodeContents(title);
       const pane = bounds('.recipe-dialog__pane');
       const header = bounds('.kui-dialog-header');
+      const masterDetail = bounds('.recipe-master-detail');
       const detail = bounds('.recipe-master-detail__detail');
       const table = bounds('.kui-value-table');
       const actions = bounds('.recipe-master-detail__actions');
@@ -136,6 +137,7 @@ test('keeps project dialog content on intentional wide and narrow gutters', asyn
         archiveInset: archive.left - actions.left,
         headerEndInset: pane.right - header.right,
         headerStartInset: header.left - pane.left,
+        masterDetailEndInset: pane.right - masterDetail.right,
         tableEndInset: detail.right - table.right,
         tableStartInset: table.left - detail.left,
         titleInset: titleRange.getBoundingClientRect().left - detail.left,
@@ -144,9 +146,10 @@ test('keeps project dialog content on intentional wide and narrow gutters', asyn
 
     expect(geometry.headerStartInset).toBeCloseTo(0, 1);
     expect(geometry.headerEndInset).toBeCloseTo(0, 1);
-    expect(geometry.tableStartInset).toBeCloseTo(0, 1);
-    expect(geometry.tableEndInset).toBeCloseTo(0, 1);
+    expect(geometry.masterDetailEndInset).toBeCloseTo(0, 1);
     expect(geometry.actionInset).toBeGreaterThan(5);
+    expect(geometry.tableStartInset).toBeCloseTo(geometry.actionInset, 1);
+    expect(geometry.tableEndInset).toBeCloseTo(geometry.actionInset, 1);
     expect(geometry.archiveInset).toBeCloseTo(0, 1);
     expect(geometry.titleInset).toBeGreaterThan(geometry.actionInset * 1.8);
     expect(geometry.titleInset).toBeLessThan(geometry.actionInset * 2.3);

@@ -72,8 +72,8 @@ record actions. Pass the dialog action children directly; `DialogHeader` places
 them in its top toolbar's action group and uses the localized `actionsLabel`.
 The header sits on the dialog edge while retaining its internal control inset;
 the selected title receives the full content gutter, the metadata table fills
-the detail column, and the action cluster uses one outer gutter without a
-second content-item inset.
+the available detail width between the usual outer margins, and the action
+cluster uses one outer gutter without a second content-item inset.
 Do not rebuild the dialog or reach into private shadow parts.
 
 ## Composer form
