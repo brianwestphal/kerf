@@ -273,6 +273,8 @@ Dangerous-URL screening treats the six URL-bearing attribute names ASCII-case-in
 
 History-router `base` paths match exactly or at a following `/` boundary: `/app` owns `/app` and `/app/users`, never the sibling `/apple`.
 
+Malformed percent escapes in named or wildcard router parameters fail closed to no-match rather than throwing; put a `*` route last when you want those URLs to render a not-found view.
+
 ```tsx
 // 1. Signal + mount. THE core idiom: values bind, structure re-renders.
 // Pass the signal ITSELF into a value hole ({count}, not {count.value}) —

@@ -926,4 +926,6 @@ In history mode, `base` is stripped only on an exact match or at a following `/`
 
 ### Router types
 
+Named and wildcard parameters fail closed to no-match when URL decoding encounters a malformed percent escape; router creation and navigation do not throw `URIError`, and matching continues to the next route.
+
 `RouteState`, `RouteComponent`, `RouteDef`, `NavigateOptions`, `RouterOptions`, and `RouterHandle` are exported from `kerfjs/router`. `RouteComponent` is `(params: Record<string, string>, route: RouteState) => MountResult`; a `RouteDef` is `{ path: string; component: RouteComponent }`.

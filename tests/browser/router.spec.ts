@@ -80,6 +80,40 @@ test('a base-prefix sibling link is not intercepted as an in-app route', async (
   await expect(page.locator('#outlet .home')).toHaveText('Home');
 });
 
+test('malformed encoded named and wildcard params fail closed without URIError', async ({ page }) => {
+  await setup(page);
+  const result = await page.evaluate(() => {
+    const router = (window as any)._router;
+    let namedThrew = false;
+    let wildcardThrew = false;
+    try {
+      router.navigate('/users/%E0%A4%A');
+    } catch {
+      namedThrew = true;
+    }
+    const named = { path: router.route.value.path, params: router.route.value.params };
+    try {
+      router.navigate('/files/good/%E0%A4%A');
+    } catch {
+      wildcardThrew = true;
+    }
+    return {
+      namedThrew,
+      wildcardThrew,
+      named,
+      wildcard: { path: router.route.value.path, params: router.route.value.params },
+    };
+  });
+
+  expect(result).toEqual({
+    namedThrew: false,
+    wildcardThrew: false,
+    named: { path: '/users/%E0%A4%A', params: {} },
+    wildcard: { path: '/files/good/%E0%A4%A', params: {} },
+  });
+  await expect(page.locator('#outlet .nf')).toHaveText('Not found');
+});
+
 test('browser Back / Forward drives popstate → the outlet follows', async ({ page }) => {
   await setup(page);
   await page.locator('#u1').click();

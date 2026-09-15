@@ -100,6 +100,8 @@ state, like `defineStore`):
 
 Routes are tried **in order**; the first match wins.
 
+Named and wildcard captures are URL-decoded. If any captured segment contains a malformed percent escape, that route fails closed as a no-match instead of throwing `URIError`; matching continues with the next route, normally the final `*` fallback.
+
 ## 20.4 The outlet — a keyed morph, not a new mechanism
 
 `router.outlet()` reads `route.value` (so the enclosing `mount()` re-renders on

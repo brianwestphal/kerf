@@ -130,18 +130,37 @@ function matchPattern(pattern: string, path: string): Record<string, string> | n
     if (seg.startsWith('*')) {
       // Wildcard rest — consumes every remaining segment.
       const name = seg.slice(1);
-      if (name.length > 0) params[name] = ps.slice(i).map(decodeURIComponent).join('/');
+      if (name.length > 0) {
+        const decoded: string[] = [];
+        for (const part of ps.slice(i)) {
+          const value = decodePathSegment(part);
+          if (value === null) return null;
+          decoded.push(value);
+        }
+        params[name] = decoded.join('/');
+      }
       return params;
     }
     if (i >= ps.length) return null;
     if (seg.startsWith(':')) {
-      params[seg.slice(1)] = decodeURIComponent(ps[i]);
+      const value = decodePathSegment(ps[i]);
+      if (value === null) return null;
+      params[seg.slice(1)] = value;
       continue;
     }
     if (seg !== ps[i]) return null;
   }
   // No wildcard matched, so the segment counts must be exactly equal.
   return ps.length === pp.length ? params : null;
+}
+
+/** Decode a route parameter, treating malformed percent escapes as no match. */
+function decodePathSegment(segment: string): string | null {
+  try {
+    return decodeURIComponent(segment);
+  } catch {
+    return null;
+  }
 }
 
 /** Whether `path` is exactly `base` or starts with it at a segment boundary. */

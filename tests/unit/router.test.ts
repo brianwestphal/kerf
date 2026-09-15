@@ -53,6 +53,20 @@ describe('createRouter() — matching + route signal', () => {
     expect(router.route.value.query.get('page')).toBe('2');
   });
 
+  it('malformed encoded params fail closed to no-match on initial, navigate, and wildcard routes', () => {
+    goto('/users/%E0%A4%A');
+    expect(() => {
+      router = createRouter({ routes });
+    }).not.toThrow();
+    expect(router!.route.value.params).toEqual({}); // catch-all, not /users/:id
+
+    expect(() => router!.navigate('/users/%E0%A4%A')).not.toThrow();
+    expect(router!.route.value.params).toEqual({});
+
+    expect(() => router!.navigate('/files/good/%E0%A4%A')).not.toThrow();
+    expect(router!.route.value.params).toEqual({}); // catch-all, not /files/*rest
+  });
+
   it('navigate pushes history; navigate({ replace }) replaces it', () => {
     router = createRouter({ routes });
     const before = history.length;

@@ -394,6 +394,8 @@ Dangerous-URL screening normalizes attribute names to lowercase before checking 
 
 History-router base stripping and link interception share an exact-or-segment-boundary predicate, preventing a base such as `/app` from claiming `/apple`.
 
+Router named and wildcard captures decode through a fail-closed helper: malformed percent escapes return no-match so resolution can continue to a fallback without throwing.
+
 `ai-assistant-configs` reports filesystem drift during plain lint without writing; its unusual cross-file installer/updater runs only for an explicit CLI `--fix`, with real ESLint API regression coverage for both modes.
 
 ## Public exports
