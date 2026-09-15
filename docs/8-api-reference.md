@@ -200,11 +200,11 @@ The diff:
 - The trailing-removal pass (unmatched live children that the new template doesn't emit) skips elements marked `data-morph-preserve` — imperatively-injected nodes whose lifetime the consumer manages outside kerf.
 - Otherwise preserves the focused text-entry's value + selection range, then proceeds.
 
-Lists rendered with `each(...)` go through a separate keyed reconciler that operates directly on the live parent's children — O(changes), not O(rows). See `each` below.
+Lists rendered with `each(...)` go through a separate keyed reconciler that operates directly on the live parent's children. The snapshot path scans O(rows) to classify the new list but limits rendering and DOM mutations to cache misses and structural changes; an `arraySignal` patch queue can skip that scan and run in O(patches). See `each` below.
 
 ### `morph(liveRoot: Element, template: Element | SafeHtml | string): void`
 
-One-shot in-place reconciliation primitive — the same algorithm `mount()` uses internally, exported for consumers that have an already-populated element they need to reconcile against a freshly-built template. Unlike `mount()`, `morph()` doesn't wrap an `effect()` and doesn't bulk-write `innerHTML` first: it runs once per call against the live tree as-is. When it mutates a `checked` / `value` / `selected` attribute it syncs the matching DOM property too, so controlled form state holds up after user interaction (the dirty-state flags would otherwise detach the visible state from the attribute); attributes the template never mentions are left alone.
+One-shot in-place reconciliation primitive — the same algorithm `mount()` uses internally, exported for consumers that have an already-populated element they need to reconcile against a freshly-built template. Unlike `mount()`, `morph()` doesn't wrap an `effect()` and doesn't bulk-write `innerHTML` first: it runs once per call against the live tree as-is. When it mutates a `checked` / `value` / `selected` attribute it syncs the matching DOM property too, so controlled form state holds up after user interaction (the dirty-state flags would otherwise detach the visible state from the attribute). Ordinary live attributes that the template omits are removed. The attribute-removal exceptions are user-agent-owned `open` on `<details>` / `<dialog>` and an element whose own attribute diff is skipped by `data-morph-skip`; `data-morph-skip-children` and `data-morph-preserve` do not by themselves protect a matched element's attributes.
 
 ```ts
 import { morph, raw } from 'kerfjs';
@@ -247,7 +247,7 @@ each(rows.value, (row) => <tr…>…</tr>, { key: 'rows' });
 each(rows.value, (row) => <tr…>…</tr>, { key: 'rows', cacheKey: (row) => row.id === selectedId });
 ```
 
-Keyed list iteration with per-item memoization, routed through `mount()`'s native list reconciler. Skips re-running `render` for items whose object identity (and optional `cacheKey`) are unchanged since the previous call — those items keep their existing live DOM nodes verbatim. Items whose identity or cacheKey did change get a fresh node (all fresh-node HTML for a render is bulk-parsed in one `innerHTML` call); items that disappeared are removed. Reorders use a longest-increasing-subsequence pass so the number of `insertBefore` calls is the minimum possible. Items must be objects (cache is a `WeakMap`); wrap primitives if you need to iterate them. Each item's render output must produce exactly one top-level element — and that element must survive HTML parsing as itself, so put an `each()` of `<tr>` inside an explicit `<tbody>` (a bare `<table>` makes the parser insert one, which kerf rejects with a precise error).
+Keyed list iteration with per-item memoization, routed through `mount()`'s native list reconciler. Skips re-running `render` for items whose object identity (and optional `cacheKey`) are unchanged since the previous call — those items keep their existing live DOM nodes verbatim. When there is no simultaneous structural change, content updates morph each same-tag row in place; a top-level tag change replaces that row. Content changes that coincide with an insert/remove/move on the snapshot path use fresh nodes, while genuinely new rows are bulk-parsed in one `innerHTML` call. Items that disappeared are removed. Reorders use a longest-increasing-subsequence pass to minimize moves, routing connected nodes through state-preserving `moveBefore()` where supported and falling back to `insertBefore()`. Items must be objects (cache is a `WeakMap`); wrap primitives if you need to iterate them. Each item's render output must produce exactly one top-level element — and that element must survive HTML parsing as itself, so put an `each()` of `<tr>` inside an explicit `<tbody>` (a bare `<table>` makes the parser insert one, which kerf rejects with a precise error).
 
 `cacheKey` is a passive comparator (not a reactive subscription): kerf calls it once per item per mount-effect run and compares the returned value against the previous run's. Use it when external state, not the item itself, drives what the row should render (e.g. a "currently selected" id flips a CSS class). Distinct from `data-key` on the rendered element, which is the DOM-reconciliation identity that morph uses — `cacheKey` controls when the cached HTML is invalidated; `data-key` controls how a row maps to its existing live DOM node. (Renamed from `key` for clarity; positional callers — the canonical form — are unaffected.)
 
@@ -260,13 +260,13 @@ Keyed list iteration with per-item memoization, routed through `mount()`'s nativ
 <ul>{each(results.value, renderResult, { key: 'results' })}</ul>
 ```
 
-A keyed list does not occupy a call-order slot, so keying just the *conditional* list is usually enough — its unkeyed siblings stop shifting too. Keys must be unique within a mount; two lists claiming the same key throw. In development, kerf warns once per list when it detects an identity shift and names the fix.
+A keyed list does not occupy a call-order slot, so keying just the *conditional* list is usually enough — its unkeyed siblings stop shifting too. Keys must be unique within a mount; two lists claiming the same key throw. When `kerfjs/dev` is installed, kerf warns once per list when it detects an identity shift and names the fix.
 
 A key must be a non-empty string of letters, digits, or `_ . : / -` and may not contain `--` — kerf writes it into the list's marker comment in the DOM, so anything that could terminate a comment is rejected with an error rather than corrupting the mount.
 
 **`each()` does not nest.** A row's HTML is flattened to a string, so an `each()` called inside a row render never binds — it would render as inert static markup. Render an inner collection with plain `.map()` (it re-renders with its row), or restructure to a flat list. A *keyed* nested `each()` throws and says so.
 
-If a descendant of a moved row holds focus, the reconciler snapshots the active element + its selection range before the move pass and re-applies them afterwards — so focus and caret position survive a reorder even on engines that drop focus on `insertBefore` (older Safari, happy-dom). See `docs/4-render.md` §4.4.
+If a descendant of a moved row holds focus, the reconciler snapshots the active element + its selection range before the move pass and re-applies them afterwards — so focus and caret position survive both the state-preserving `moveBefore()` path and the `insertBefore()` fallback used by engines without it. See `docs/4-render.md` §4.4.
 
 ## 8.4 Event delegation
 

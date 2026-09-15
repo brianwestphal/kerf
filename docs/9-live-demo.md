@@ -17,7 +17,7 @@ Both are static asset bundles. There is no server-side rendering, no API. The si
 
 `npm run site:build` runs `astro build`, whose `prebuild` npm hook chains four steps before Astro itself runs:
 
-1. **`sync-docs`** — generates `site/src/content/docs/docs/*.md` and `api.md` from `docs/N-*.md` and the AI usage guide. Single source of truth = `docs/`.
+1. **`sync-docs`** — currently writes no files. The published Starlight pages are hand-owned consumer documentation; `site/scripts/sync-docs.mjs` retains a source-to-site map (all current targets are `null`) because the documentation-ticket coverage gate imports that inventory. The hook remains in the pipeline so a future verbatim mapping can be re-enabled in one place.
 2. **`build-examples`** — runs in two passes:
    - Builds each complete app (`site/src/examples/complete/<name>/`) via Vite into `site/public/run/<name>/`. Each app's docs page links here as **Run live →**.
    - Builds the nine-section reactivity demo (`examples/reactivity-demo/`) via its own Vite config (base `/kerf/demo/`) and copies the result into `site/public/demo/`.
@@ -41,8 +41,8 @@ The basic single-concept examples (9 of them) are **not** built by this pipeline
 [`.github/workflows/pages.yml`](../.github/workflows/pages.yml) runs on every push to `main`:
 
 1. `npm ci` → installs kerf's deps.
-2. `npm run build` → emits `dist/` for the kerf package itself, which the demo and the complete apps consume via `kerfjs: file:..` (in `site/`) and `kerfjs: file:../..` (in `examples/reactivity-demo/`).
-3. `npm run site:build` → runs `prebuild` (sync-docs + build-examples) then `astro build`, producing the combined `site/dist/`.
+2. `npm run build` → emits `dist/` for the kerf package itself. This must happen before the site install/build: the site and examples consume local `file:` dependencies, while the site's install-script policy deliberately blocks the repository package's `prepare` script from building it implicitly.
+3. `npm run site:build` → runs `npm install` in `site/`, then `prebuild` (the no-op sync-docs inventory pass + build-examples + build-icons + gen-llms-txt) and `astro build`, producing the combined `site/dist/`.
 4. `actions/configure-pages@v5` → wires up Pages metadata.
 5. `actions/upload-pages-artifact@v3` with `path: site/dist` → uploads the bundle.
 6. A separate `deploy` job uses `actions/deploy-pages@v4` to publish.
@@ -52,18 +52,18 @@ The workflow uses least-privilege permissions — top-level `contents: read`, wi
 ### 9.3.1 Install-script policy
 
 The site has a narrow npm install-script policy in `site/package.json`. It
-allows the locked `esbuild` and `sharp` installers that provide required
-platform binaries, and explicitly denies the local `kerfjs: file:..`
-dependency's `prepare` script because Husky setup is a repository concern, not
-a site dependency build step. `site/.npmrc` enables npm's
+allows the locked `esbuild` and optional `fsevents` installers that provide
+required platform binaries / filesystem watching, and explicitly denies the
+local `kerfjs: file:..` dependency's `prepare` script because Husky setup is a
+repository concern, not a site dependency build step. `site/.npmrc` enables npm's
 `strict-allow-scripts` mode, so npm 11.19.1 and newer fail on any unreviewed
 installer instead of merely warning; older npm releases ignore that setting.
 
 `site/scripts/check-install-script-policy.mjs` runs as `preinstall` on every
 supported install. It pins the reviewed package/version set from
-`site/package-lock.json` (`esbuild@0.27.7`, `sharp@0.33.5`, and
-`sharp@0.34.5`) and fails when dependency churn introduces or upgrades an
-install script. Review the package and its lifecycle command before updating
+`site/package-lock.json` (`esbuild@0.28.2` and `fsevents@2.3.3`) and fails when
+dependency churn introduces or upgrades an install script. Review the package
+and its lifecycle command before updating
 both the lockfile expectation and `allowScripts`; do not use npm's
 `dangerously-allow-all-scripts` escape hatch.
 
@@ -89,7 +89,7 @@ GitHub Pages source must be set to **GitHub Actions** in repo settings (`Setting
 
 ## 9.5 Constraints and non-goals
 
-- **Two builds, one origin.** The site at `/kerf/` and the demo at `/kerf/demo/` are independent — different framework, different toolchain, different bundles. They share only the artifact upload step. A change in one cannot break the other at build time.
+- **Two front-end bundles, one build pipeline and origin.** The site at `/kerf/` and the demo at `/kerf/demo/` use different frameworks and emit separate bundles, but they are build-coupled: both consume the root package's prebuilt `dist/`, and `site:build` builds the demo and complete apps before Astro assembles one artifact. A failure in any part stops the shared deployment.
 - **No redirect from the old `/kerf/` root.** Before this layout, `/kerf/` *was* the demo. After, `/kerf/` is the Starlight home and the demo continues to deploy at `/kerf/demo/`. The demo is **fully supported and the canonical "play with kerf" URL** — README.md links to it directly, and the build pipeline rebuilds it on every push to `main`. The Starlight site nav was deliberately reshaped (KF-49) to surface inline single-concept examples next to their docs, but the nine-section reactivity demo at `/kerf/demo/` remains the right link to send a colleague who wants to explore the framework outside the docs context. Anyone with a stale bookmark for the old `/kerf/` (root demo URL) lands on the marketing site instead — if preserving those inbound links matters, add a `site/public/_redirects` (or equivalent) in a follow-up.
 - **No server-side rendering.** `SafeHtml.toString()` works server-side, but both deploys are pure client-side mounts.
 - **Tied to the package homepage.** The `homepage` field in `package.json` points at the Pages site (`https://brianwestphal.github.io/kerf/`) — npm uses `homepage` as the package's project landing page, and the docs site is the front door; the GitHub repo remains the canonical source of truth.
@@ -105,7 +105,7 @@ npm run site:dev:hmr    # `astro dev` instead — fast HMR for editing content,
                         # but search and Pagefind index are disabled.
 ```
 
-Both scripts run the `sync-docs` + `build-examples` pre-step (via `prebuild` for `site:dev`, `predev:hmr` for `site:dev:hmr`), so `/kerf/`, `/kerf/demo/`, and `/kerf/run/<name>/` all resolve from one local server.
+Both scripts run the no-op `sync-docs` inventory pass plus `build-examples`, `build-icons`, and `gen-llms-txt` (via `prebuild` for `site:dev`, `predev:hmr` for `site:dev:hmr`), so `/kerf/`, `/kerf/demo/`, and `/kerf/run/<name>/` all resolve from one local server.
 
 The first run takes longer because that pre-step builds each complete app + copies the reactivity demo into `site/public/`. Subsequent runs reuse the build cache.
 

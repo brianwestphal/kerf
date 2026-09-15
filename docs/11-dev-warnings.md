@@ -1,15 +1,18 @@
-# 11. Dev-mode warnings (opt-in)
+# 11. Dev-mode diagnostics (explicitly installed)
 
-A family of opt-in runtime warnings that surface common kerf misuse at the
-moment the developer makes the wrong call.
+A family of runtime warnings that surface common kerf misuse at the moment the
+developer makes the wrong call. Most are individually opt-in; two warnings are
+always on after the diagnostic entry is installed, and two structural/security
+guards have their own unconditional or mode-split contracts below.
 
-Two gates stand in front of every one of them. First, the diagnostics must be
-**installed** — kerf does not infer development mode; you import `kerfjs/dev`
-behind your own build's dev flag (§11.3.6). Second, each warning has its own
-feature-specific environment variable, so installing does not flood the
-console. Production is therefore unchanged at zero runtime cost *and* zero
-bundle cost — with the dev entry absent the whole family is unreachable and a
-bundler drops it (§11.3.5).
+The diagnostics must first be **installed** — kerf does not infer development
+mode; you import `kerfjs/dev` behind your own build's dev flag (§11.3.6).
+Most warnings then require their own feature-specific switch, either through
+`enableWarnings()` or a `KERF_DEV_WARN_*` environment variable, so installing
+does not flood the console. The missing-row-key and list-identity-shift
+warnings are deliberately always on once installed because they report
+unambiguous state-loss hazards. Production is therefore unchanged at zero
+runtime cost *and* zero bundle cost when the dev entry is absent (§11.3.5).
 
 This doc is the canonical statement of what the family is for, when each
 member fires, and the rules that keep them coherent. New dev-warnings added
@@ -156,8 +159,8 @@ returns `undefined` and the next action that calls `items.map(...)` throws.
 
 **Mechanism.** Each `defineStore` carries a per-instance one-shot context
 object (`{ warned: boolean }`). On every `set()` call,
-`maybeWarnNarrowSet(prev, next, ctx)` runs the gate: short-circuit on
-NODE_ENV / env var, short-circuit on non-plain-object state (arrays, null,
+`maybeWarnNarrowSet(prev, next, ctx)` runs the gate: short-circuit when its
+per-warning switch is off, short-circuit on non-plain-object state (arrays, null,
 primitives), then check `Object.keys(prev).some(k => !(k in next))`. If
 any key is missing, the warning fires once for this store and the context
 flips to `warned: true`. The warning message names the missing keys (e.g.,
@@ -185,7 +188,7 @@ would have missed same-count-different-keys cases.
 
 **What it catches:** a `cacheKey` function that isn't unique per item, which makes the memoization coarser than intended — distinct items share the same invalidation key, so when external state changes and the cacheKey would logically differ for only one of the duplicates, the cached HTML for the other is also invalidated (or not invalidated, depending on state direction). In practice this is not a correctness bug (the per-item HTML cache is a `WeakMap` keyed by object identity, so there's no cross-item cache pollution), but it IS a reliable indicator of a mistake in the cacheKey function — e.g. `(item) => item.category` when the intent was `(item) => \`${item.id}-${selectedId === item.id ? 'on' : 'off'}\``.
 
-**Mechanism.** `maybeWarnDuplicateCacheKeys(id, segItems)` is called at the end of `eachSnapshotById` when `cacheKey !== undefined`. The function: (1) short-circuits on NODE_ENV / env var; (2) checks a module-level `warnedDupIds` Set for dedup; (3) iterates `segItems` collecting `cacheKey` values into a Set, and fires a warning the first time a duplicate is found.
+**Mechanism.** `maybeWarnDuplicateCacheKeys(id, segItems)` is called at the end of `eachSnapshotById` when `cacheKey !== undefined`. The function: (1) short-circuits when its per-warning switch is off; (2) checks a module-level `warnedDupIds` Set for dedup; (3) iterates `segItems` collecting `cacheKey` values into a Set, and fires a warning the first time a duplicate is found.
 
 **Dedup scope.** Per list id (same as `KERF_DEV_WARN_EACH_IN_MORPH_SKIP`). One warning per `each()` callsite.
 
@@ -197,7 +200,7 @@ would have missed same-count-different-keys cases.
 **Module:** [`src/dev-each-warn.ts`](../src/dev-each-warn.ts).
 **Trigger:** `bindListsFromMarkers` (called by `mount()` on every first-render or newly-appearing list) discovers that a new list binding's `liveParent` has a `data-morph-skip` ancestor between it and the mount `rootEl`. **What it catches:** the asymmetric-freeze pattern — `each()` rows inside a `data-morph-skip` subtree still update (the keyed reconciler operates directly on the live parent independently of the morph), but static signal-reactive JSX inside the same skipped ancestor is frozen because the morph short-circuits before visiting that element's children.
 
-**Mechanism.** `maybeWarnEachInMorphSkip(id, liveParent, rootEl)` is called after the binding is created. The function: (1) short-circuits on NODE_ENV / env var; (2) checks a module-level `warnedIds` Set for dedup; (3) walks from `liveParent` up to `rootEl` looking for any ancestor with `data-morph-skip`; (4) if found, fires a `console.warn` naming the list id, explaining the asymmetry, and pointing at removing `data-morph-skip` as the fix.
+**Mechanism.** `maybeWarnEachInMorphSkip(id, liveParent, rootEl)` is called after the binding is created. The function: (1) short-circuits when its per-warning switch is off; (2) checks a module-level `warnedIds` Set for dedup; (3) walks from `liveParent` up to `rootEl` looking for any ancestor with `data-morph-skip`; (4) if found, fires a `console.warn` naming the list id, explaining the asymmetry, and pointing at removing `data-morph-skip` as the fix.
 
 **Dedup scope.** Per list id (the internal sequential id assigned by the render context counter — stable across renders within a mount). One warning per `each()` callsite, not one per render pass.
 
@@ -213,7 +216,7 @@ would have missed same-count-different-keys cases.
 
 **Dedup scope.** One warning per process. Structurally identical to the rebuilt-listeners warning — the signal is "your code has this antipattern"; firing once is enough to direct attention. A consumer who fixes the first instance and has another won't be told twice in the same process, but they'll see it on the next run.
 
-**Why opt-in.** No realistic kerf code legitimately calls `delegate()` inside an `effect()` body — but the wrap of `effect()` itself adds a microscopic call-frame overhead, so the bare `coreEffect` re-export stays the default path when the env var is unset. Production NODE_ENV short-circuits before the wrap decision; production bundles see the bare re-export with zero overhead.
+**Why opt-in.** No realistic kerf code legitimately calls `delegate()` inside an `effect()` body — but the wrap of `effect()` itself adds a microscopic call-frame overhead, so the bare `coreEffect` re-export stays the default path when the warning switch is off. A production bundle that omits `kerfjs/dev` cannot reach the wrapper at all; `NODE_ENV` is not consulted.
 
 ### 11.2.7 `KERF_DEV_WARN_STALE_BINDING=1`
 
@@ -233,7 +236,7 @@ re-binds to `sigB`, so the hole freezes: no error, the UI just stops updating.
 wired (`prevWiredBindings`, refreshed whenever `wireBindings` runs — first
 render and every surrounds-changed morph). On a fast-path render it calls
 `maybeWarnStaleBinding(prevWiredBindings, bindingCtx.list)`, which: (1)
-short-circuits on NODE_ENV / env var; (2) walks the two lists in registration
+short-circuits when its per-warning switch is off; (2) walks the two lists in registration
 order (they describe the same holes in the same order on the fast path); (3)
 when a hole's signal instance differs and hasn't already warned, fires a
 one-shot `console.warn` naming the hole (kind / attr / id) and pointing at "bind
@@ -293,8 +296,8 @@ container in place for that shape.)
 
 **Mechanism.** `maybeWarnListRebind(id, liveParent)` is called from the
 self-heal branch after the stale binding is dropped, with the fresh container
-the cloned marker landed in. The function: (1) short-circuits on NODE_ENV /
-env var; (2) checks a module-level `warnedIds` Set for dedup; (3) fires a
+the cloned marker landed in. The function: (1) short-circuits when its
+per-warning switch is off; (2) checks a module-level `warnedIds` Set for dedup; (3) fires a
 `console.warn` naming the list id and container tag, explaining the row-state
 loss, and pointing at the fix: give the **list's own container** a stable
 `id`/`data-key` (which makes it both un-hijackable positionally and findable
@@ -414,7 +417,7 @@ always want is friction with no benefit.
 
 Throughout this doc, **"always-on" means "always on once `kerfjs/dev` is
 installed"** (§11.3.6) — it is the per-warning env var these skip, not the
-install step. The double-mount guard (§11.2.13) is the sole exception: it is
+install step. The double-mount guard (§11.2.14) is the sole exception: it is
 unconditional in every build, dev entry or not, because it throws on a
 structural error rather than warning about a pattern.
 
@@ -424,7 +427,32 @@ unkeyed lists swapping order at a constant call count. Both are the price of a
 conservative trigger, and keys close both by construction — which is what the
 message asks for.
 
-### 11.2.13 Double-mount guard (always-on, not opt-in)
+### 11.2.13 Missing row key (always-on once installed)
+
+**Module:** [`src/dev-row-key-warn.ts`](../src/dev-row-key-warn.ts).
+**Trigger:** the first top-level row element bound for an `each()` list has
+neither an `id` nor a `data-key` attribute. **What it catches:** positional row
+matching, where an insertion or removal ahead of a row can make focus,
+mid-edit form state, and other per-row DOM state follow the position rather
+than the item.
+
+**Mechanism.** First render and every snapshot or granular reconcile call
+`maybeWarnMissingRowKey` with the list's first bound row. Sampling the first
+row is intentional: rows come from one render function, so checking every row
+would normally repeat the same verdict. The warning quotes a truncated copy of
+that row's HTML and points at adding `data-key={item.id}` (or `id`) to the
+top-level row element.
+
+**Dedup scope.** Once per list binding for the lifetime of its mount. The
+binding records that it has performed the check even when the sampled row is
+keyed, so later reconciles do not repeatedly inspect it.
+
+**Why always-on rather than switch-gated.** A missing DOM key has a concrete
+state-loss consequence and a one-line fix, so this warning is installed
+directly in the `missingRowKey` hook slot. It has no `KERF_DEV_WARN_*` switch,
+but remains unreachable when `kerfjs/dev` is not imported.
+
+### 11.2.14 Double-mount guard (always-on, not opt-in)
 
 
 **Module:** [`src/mount.ts`](../src/mount.ts).
@@ -436,7 +464,7 @@ message asks for.
 
 **Sibling mounts are allowed.** Two `mount()` calls on independent elements (neither is an ancestor or descendant of the other) work correctly — each manages its own subtree. This is the multi-island pattern for apps with independently reactive regions of the page.
 
-### 11.2.14 Dangerous-URL screen (throws in dev, warns in prod)
+### 11.2.15 Dangerous-URL screen (throws in dev, warns in prod)
 
 
 **Module:** [`src/utils/urlScreen.ts`](../src/utils/urlScreen.ts), applied in [`src/jsx-runtime.ts`](../src/jsx-runtime.ts) (`renderAttr`) and [`src/bindings.ts`](../src/bindings.ts) (`setBoundAttr`).
@@ -446,7 +474,7 @@ message asks for.
 
 **Like the double-mount guard, this is always-on (unconditional), not opt-in** — there is no env var to silence it, only the mode split. A dropped-but-silent dangerous URL in dev is the exact failure mode the throw fixes (nobody reads the console; the attribute just quietly vanishes). Production keeps the non-crashing warn+drop so attacker-influenced data can never take down a shipped app — **production output is byte-identical to before this split.** This is the one place kerf changes behavior between dev and prod for the *same* input; it's justified because the dev throw only ever fires on input a correct app would never produce (a dangerous URL that isn't wrapped in `raw()`).
 
-### 11.2.15 Structural invariant checks (`KERF_DEV_INVARIANTS`)
+### 11.2.16 Structural invariant checks (`KERF_DEV_INVARIANTS`)
 
 
 **Module:** [`src/dev-invariants.ts`](../src/dev-invariants.ts), called from [`src/mount.ts`](../src/mount.ts) after each render's reconcile pass.
@@ -485,13 +513,14 @@ added to the family must too.
    at all. The gate lives at the CALL SITE, not inside the warner — an
    unconditional call into a self-gating warner keeps the module reachable no
    matter how the gate is written, so no dead-code elimination can reclaim it.
-2. **Per-warning switch.** Each warning has its own switch, named the same way
+2. **Per-warning switch for opt-in members.** Each opt-in warning has its own switch, named the same way
    in both places it can be set: `enableWarnings({ narrowSet: true })` in code,
    or `KERF_DEV_WARN_NARROW_SET=1` in the environment. There is intentionally
    no umbrella "all warnings" flag — opt-in is per-warning, so a consumer can
-   enable the Rule 4 warner while leaving the Rule 9 warner off.
-3. **Default off.** Every warning is off by default. The env-var
-   `=0` and the unset state both mean off.
+   enable the Rule 4 warner while leaving the Rule 9 warner off. The explicitly
+   documented always-on hooks skip this second gate.
+3. **Opt-in members default off.** For those warnings, an env-var `=0` and the
+   unset state both mean off. Always-on hooks run whenever the dev entry is installed.
 
 #### Two switches, one lookup
 
@@ -539,7 +568,7 @@ them.
 
 ### 11.3.3 Warning message shape
 
-Every warning message ends with:
+Every switch-gated warning message ends with:
 
 ```
 Set KERF_DEV_WARN_<NOUN>=0 (or unset it) to silence this warning.
@@ -555,7 +584,7 @@ so the developer doesn't need to fetch additional docs to act on it.
 None of the warners are re-exported from the main `kerfjs` barrel.
 Consumers don't import them individually; the warning is a runtime behavior
 of the host primitive (`signal()`, `mount()`, `defineStore`) once the dev
-entry is installed and the env var is set. The internal modules
+entry is installed and, for opt-in members, its switch is enabled. The internal modules
 (`src/dev-listener-warn.ts`, `src/dev-signal.ts`, `src/dev-store-warn.ts`)
 are not in `src/index.ts`.
 
@@ -681,11 +710,12 @@ The `isDevMode()` helper that read both is **gone** — it briefly survived insi
 the dev chunk as a second gate in front of each warner's env-var check, which
 was redundant (reaching a warner at all means the consumer installed the
 diagnostics) and occasionally wrong (a Node/SSR consumer who deliberately
-installed the dev entry under `NODE_ENV=production` got silence). Each warner
-now reads only its own `KERF_DEV_WARN_*` variable. Whether the diagnostics run
+installed the dev entry under `NODE_ENV=production` got silence). Each opt-in
+warner now reads only its own `KERF_DEV_WARN_*` switch; always-on hooks need no
+second gate. Whether the diagnostics run
 is decided in exactly one place: whether you imported them.
 
-## 11.4 Where each warning is referenced
+## 11.4 Where each opt-in warning is referenced
 
 | Surface | rebuilt listeners | untracked signals | narrow set | duplicate cacheKey | each-in-morph-skip | delegate-in-effect | stale binding | value-only re-render | list rebind | stale index |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -695,16 +725,18 @@ is decided in exactly one place: whether you imported them.
 | AI usage guide | `docs/ai/usage-guide.md` "Hard rules" | same | same | n/a | `docs/ai/usage-guide.md` "Common errors" | `docs/ai/usage-guide.md` Hard Rule 5 + "Common errors" | `docs/ai/usage-guide.md` "Common errors" | `docs/ai/usage-guide.md` Hard Rule 9 family list | `docs/ai/usage-guide.md` "Common errors" | `docs/ai/usage-guide.md` "Common errors" |
 | Test fixture | `tests/unit/dev-listener-warn.internal.test.ts` | covered in `tests/unit/reactive.test.ts` | `tests/unit/dev-store-warn.internal.test.ts` | `tests/unit/dev-each-warn.internal.test.ts` | same | `tests/unit/dev-delegate-warn.internal.test.ts` | `tests/unit/dev-binding-warn.internal.test.ts` | `tests/unit/dev-rerender-warn.internal.test.ts` | `tests/unit/dev-list-rebind-warn.internal.test.ts` | `tests/unit/dev-list-index-warn.internal.test.tsx` |
 
-The two newest members are deliberately absent from that table because two of its
-columns don't apply to them. `KERF_DEV_INVARIANTS` ([`src/dev-invariants.ts`](../src/dev-invariants.ts),
-wired in `src/mount.ts` after the reconcile pass, tested by
-`tests/unit/dev-invariants.internal.test.ts`) and `KERF_DEV_WARN_PARSER_REPAIR`
-([`src/dev-parser-repair-warn.ts`](../src/dev-parser-repair-warn.ts), wired in
-`src/mount.ts` on first render, tested by
-`tests/unit/dev-parser-repair-warn.internal.test.tsx`) have **no numbered-doc or
-AI-usage-guide surface**: neither describes a kerf pattern an author should adopt.
-One reports a kerf bug, the other reports invalid HTML. There is nothing for the
-usage guide to teach.
+The remaining diagnostics do not fit every column in that table. The always-on
+list-identity and missing-row-key warnings live in `src/dev-list-key-warn.ts` and
+`src/dev-row-key-warn.ts`, are installed through `src/dev.ts`, and are exercised
+by `tests/unit/dev-list-key-warn.internal.test.tsx`,
+`tests/unit/list-identity-warning.test.tsx`, and
+`tests/unit/dev-listener-warn.internal.test.ts`. The unconditional double-mount
+guard lives in `src/mount.ts`; the dangerous-URL screen lives in
+`src/utils/urlScreen.ts`. `KERF_DEV_INVARIANTS` (`src/dev-invariants.ts`) and
+`KERF_DEV_WARN_PARSER_REPAIR` (`src/dev-parser-repair-warn.ts`) report framework
+or invalid-markup defects rather than patterns the AI usage guide should teach;
+their dedicated tests are `tests/unit/dev-invariants.internal.test.ts` and
+`tests/unit/dev-parser-repair-warn.internal.test.tsx`.
 
 ## 11.5 Adding a new warning
 

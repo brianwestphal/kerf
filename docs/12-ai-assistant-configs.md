@@ -232,18 +232,16 @@ than throwing).
 
 Per-file:
 
-- `skill.md`: triggered when `.claude/` exists in the project root, OR
-  when `package.json` has `kerfjs` in `dependencies` /
-  `devDependencies` and any `.claude/` directory exists. The rule
-  doesn't push Claude Code on consumers who haven't signalled they
+- `skill.md`: triggered when `.claude/` exists in the project root. The
+  rule doesn't push Claude Code on consumers who haven't signalled they
   use it (no `.claude/` ⇒ silent).
 - `cursorrules`: triggered when `.cursorrules` exists at the project
-  root, OR when `.cursor/` exists, OR (same kerfjs-in-deps heuristic).
+  root, OR when `.cursor/` exists.
 
-The "kerfjs-in-deps AND `.claude/` exists" rule catches the realistic
-case of a project that uses Claude Code (a `.claude/` directory is
-present for other skills) but hasn't installed the kerf-app skill
-specifically.
+Resolving the manifest already proves `kerfjs` is installed; dependency
+metadata is not a separate trigger. The tool-specific directory/file is the
+signal that the project uses that assistant, and the missing destination is
+then what the rule reports.
 
 ### 12.4.2 Three states per file
 

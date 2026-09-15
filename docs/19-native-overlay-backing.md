@@ -1,10 +1,12 @@
 # 19. Native top-layer backing for `kerfjs/overlay`
 
-> **Status: shipped.** An **opt-in** `native: true` option on every `kerfjs/overlay`
-> surface hosts the overlay in the browser **top layer** — a `<dialog>` opened
+> **Status: shipped.** An **opt-in** `native: true` option on the seven
+> overlay/dialog/popover/tooltip surfaces hosts the overlay in the browser
+> **top layer** — a `<dialog>` opened
 > with `.showModal()` for modal surfaces, the **Popover API** for non-modal ones —
 > feature-detected, falling back to today's plain `<div>` where unsupported. The
-> `render` slot and the promise API are unchanged.
+> `render` slot and the promise API are unchanged. Toasts and standalone
+> positioning helpers do not create native top-layer hosts.
 
 ## 19.1 Why — three correctness gaps in a pure-JS overlay
 

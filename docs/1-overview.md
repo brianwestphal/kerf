@@ -6,7 +6,7 @@ A tiny reactive UI framework. Roughly 12 KB minified + gzipped including its sol
 
 - **Signals** — fine-grained reactive values. `signal()`, `computed()`, `effect()`, `batch()`.
 - **Stores** — composable testable units of state. `defineStore()`, `resetAllStores()`.
-- **Render** — `mount(rootEl, () => jsx)`. JSX renders to a structured `SafeHtml`; kerf's segment-aware diff reconciles static surrounds while a keyed list reconciler owns rows from `each(...)`. The split keeps partial-update / select-row / swap-rows costs at O(changes), not O(rows).
+- **Render** — `mount(rootEl, () => jsx)`. JSX renders to a structured `SafeHtml`; kerf's segment-aware diff reconciles static surrounds while a keyed list reconciler owns rows from `each(...)`. The split limits DOM mutations to changed rows; when `each(...)` consumes an `arraySignal` patch queue, it also avoids the O(rows) snapshot scan and runs in O(patches).
 - **Event delegation** — `delegate()` (Tier 1, bubble + auto-capture for the known non-bubblers like focus/blur/scroll) and `delegateCapture()` (Tier 2, explicit capture) replace per-element listeners with one root-level listener per event type.
 
 Plus a JSX runtime (`kerfjs/jsx-runtime`), the `html` tagged template (`kerfjs/html` — identical runtime semantics with no JSX transform, so a CDN / importmap project needs no build step at all), and an SVG-aware `toElement()` for direct JSX-to-DOM conversion.
@@ -65,3 +65,10 @@ In prose: a `count.value += 1` write reaches the DOM down one of two paths. A **
 - [§13 Component packages](13-component-packages.md) — publishing reusable kerf components to npm.
 - [§14 Feature coverage](14-feature-coverage.md) — the per-behavior test index.
 - [§15 No-build example](15-no-build-example.md) — the served-as-source `live-poll` app (importmap + `html` tagged template).
+- [§16 List identity](16-list-identity.md) — stable identities for conditional and nested lists.
+- [§17 List virtualization](17-list-virtualization.md) — variable-height windowing for large keyed collections.
+- [§18 State-preserving DOM moves](18-state-preserving-moves.md) — `moveBefore()` and the compatibility fallback.
+- [§19 Native top-layer overlays](19-native-overlay-backing.md) — dialog/popover backing for `kerfjs/overlay`.
+- [§20 Routing](20-router.md) — the optional, tree-shakeable `kerfjs/router` subpath.
+- [§21 UI package](21-ui-package.md) — the optional `@kerfjs/ui` component package.
+- [§22 Pixel-first UI CSS](22-ui-css-authoring.md) — authoring pixels that compile to `rem` units.

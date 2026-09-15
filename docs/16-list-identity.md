@@ -208,5 +208,6 @@ Two properties fell out of the implementation that are worth stating:
   identity surviving `push`/`update`/`remove`, not just by output equality.
 - The benchmark's partial-update and select-row numbers are unchanged.
 - `caches`, `bindingCounts`, `bindingSources`, and `bindings` all key on the
-  new identity, and the source guard becomes an assertion rather than a
-  routing decision.
+  new identity, and the source guard remains a routing decision: a changed
+  source takes the snapshot path, including the legitimate case where a keyed
+  list switches between data sources.

@@ -1,6 +1,6 @@
 # Code summary — kerf
 
-A directory map + reverse index ("where do I look for X?") for Claude Code sessions and other AI assistants. Keep this in sync with `src/` whenever a file is added, removed, or renamed.
+A directory map + reverse index ("where do I look for X?") for Claude Code sessions and other AI assistants. Keep this in sync whenever a represented file, directory, entry point, export, command, route, or architectural fact changes.
 
 The optional `ui/ux-demo/recipes/` directory contains seven literal dynamic
 recipe chunks, a shared per-instance controller contract, and semantic
@@ -62,7 +62,7 @@ kerf/
 │   ├── dev-store-warn.ts         ← KF-212 — opt-in dev warn when `defineStore.set(next)` has any key from the current state missing in `next` (Rule 8 partial-set helper). Per-store one-shot dedup; opt-in via `KERF_DEV_WARN_NARROW_SET=1` in dev; production unchanged.
 │   ├── array-signal.ts           ← arraySignal (KF-92) — granular collection signal; lives at the kerfjs/array-signal subpath (KF-95) so non-users shed ~1 KB. `update()` bumps the item's content version (item-version.ts) so a same-ref mutation is visible to the row memo (KF-418).
 │   ├── item-version.ts           ← KF-418 — a shared `WeakMap<item, number>` content version so a same-ref `arraySignal.update()` (which keeps the identity the row memo is keyed on) re-renders the row in EVERY consumer: other lists, other mounts, plain-array filter() views. `bumpItemVersion` (called by array-signal.update), `itemVersion` (read by each() — CacheEntry stores the version, a hit requires it to match). Lives in the MAIN bundle (not on ArraySignal) so each() reads it without importing the subpath (KF-95); an `anyVersioned` flag keeps apps that never mutate in place at zero per-row cost.
-│   ├── store.ts                  ← defineStore + resetAllStores + REGISTRY. Dev-only: `get()` returns a deep read-only Proxy (via `utils/devReadonly.ts`, reached through the `devHooks.readonlySnapshot` slot); `set()` unwraps any get()-derived proxies with `toRaw` so the signal stores plain objects. Prod returns the bare reference.
+│   ├── store.ts                  ← defineStore + resetAllStores + REGISTRY. Dev-only: `get()` returns a deep read-only Proxy (via `utils/devReadonly.ts`, reached through the `devHooks.storeReadonly` slot); `set()` unwraps any get()-derived proxies with `storeToRaw`/`toRaw` so the signal stores plain objects. Prod returns the bare reference.
 │   ├── mount.ts                  ← mount() — segment-aware render bound to effect(); adopts an inert-document rootEl (defaultView === null) into the live document before first render (KF-243 defense-in-depth for the KF-240 WebKit inert-doc parse bug)
 │   ├── morph.ts                  ← native general-purpose DOM reconciler (replaces morphdom); exported publicly as morph() (KF-150). Binding-marker aware: its child pairing steps past the wiring-inserted text node a `kfb:`/`kfbr:` marker owns (via bindings.ts `boundTextNodeOf`), so a bound hole mixed with static text siblings survives a morph (KF-374 — the static sibling used to be dropped). Two positional-lookahead recovery steps when a sibling shifts the cursor: 2.5 elements (KF-377 — a later same-tag unkeyed element is MOVED up, not cloned, so list containers/stateful elements survive a preceding removal), and 2.6 `kf-list:` markers (KF-382 — the marker is matched on exact data and moved WITH its row region, with captureFocus/restoreFocus around the move, so an each() binding never detaches and rows keep identity + caret). KF-385: the row region is `afterListRegion()` = marker through LAST owned row (interlopers between rows included, scan bounded by the next list's marker), used BOTH for the 2.6 run and for the cursor advance after a positional marker match — the old contiguous-owned-run reading let a single injected node shrink the region to the bare marker (run) or park the cursor inside the list (advance), either of which wedged a trailing template sibling in among the rows
 │   ├── segment.ts                ← Segment types (static/list/mixed) + flatten helpers
@@ -102,7 +102,7 @@ kerf/
 │   ├── dev-binding-warn.ts       ← KF-338 — opt-in dev warn when a fine-grained GLOBAL binding switches signal instance on `mount()`'s byte-equal-surrounds fast path (`class={cond ? sigA : sigB}`): the effect isn't re-wired so the hole silently goes stale. `mount()` retains the wired binding list (gated on the opt-in) and calls `maybeWarnStaleBinding` on the fast path; per-hole one-shot dedup. Opt-in via `KERF_DEV_WARN_STALE_BINDING=1` in dev; production unchanged.
 │   ├── toElement.ts              ← SVG-aware JSX-to-DOM; adopts the result into the live `document` (KF-240) so inert-template/DOMParser-document nodes aren't returned (WebKit mis-parses innerHTML on inert-doc elements under bursts)
 │   └── utils/
-│       ├── devReadonly.ts        ← KF-341 dev-only deep read-only Proxy for defineStore's `get()` snapshot. `devReadonlyProxy(obj)` throws a Rule-8 `TypeError` on set/delete/defineProperty and lazily wraps nested plain objects/arrays (deep, O(1)/access, no clone); reads (spread/JSON/keys/iteration/instanceof) are transparent. `toRaw(value)` deep-unwraps (structural-sharing) so a `set({ ...get() })`-derived object is stored plain — the internal signal never holds a Proxy. Never freezes the live object.
+│       ├── devReadonly.ts        ← KF-341 dev-only deep read-only Proxy for defineStore's `get()` snapshot. `devReadonlyProxy(obj)` throws a Rule-9 `TypeError` on set/delete/defineProperty and lazily wraps nested plain objects/arrays (deep, O(1)/access, no clone); reads (spread/JSON/keys/iteration/instanceof) are transparent. `toRaw(value)` deep-unwraps (structural-sharing) so a `set({ ...get() })`-derived object is stored plain — the internal signal never holds a Proxy. Never freezes the live object.
 │       ├── escapeHtml.ts         ← used by jsx-runtime
 │       ├── jsx-attr-aliases.ts   ← camelCase → HTML/SVG attribute name table (KF-21)
 │       ├── moveNode.ts           ← KF-518 state-preserving move: `moveNode(parent, node, ref)` uses `Node.prototype.moveBefore()` (atomic, keeps focus/selection/animation/iframe/media across a reorder) where the engine supports it AND the node is already connected, else `insertBefore()`. Used at every keyed-reorder MOVE site (snapshot applyMoves, granular move patch, bindList reverse pass + move patch, morph.ts keyed/positional/marker-run moves); insert-only sites stay on insertBefore. See docs/18. Fallback is byte-for-byte the prior behavior; the isConnected guard keeps fresh (detached) rows on insertBefore since moveBefore throws for them
@@ -112,6 +112,9 @@ kerf/
 │       └── urlScreen.ts          ← KF-297 shared URL-attr screening (isDangerousUrlValue / dangerousUrlWarning / reportDangerousUrl) used by BOTH jsx-runtime's renderAttr (static attrs) and bindings' setBoundAttr (bound attrs) — scheme-based: drops javascript:/vbscript: + script-executing data: subtypes (text/html, image/svg+xml, xml; inert media allowlisted) on href/src/formaction/action/xlink:href/data(<object>); normalizes control-char/whitespace scheme obfuscation before matching; raw() opts out. KF-437: the `javascript:` no-op placeholders (`javascript:void(0)` / `void 0` / `;` / bare, per `INERT_JAVASCRIPT_URLS`) are allowlisted — the placeholder-link idiom, matched against the WHOLE normalized value so nothing can ride along. KF-340: reportDangerousUrl THROWS when the diagnostics are installed (the `devHooks.urlScreenThrow` slot), console.warns + drops when they are not (byte-identical) — the drop happens in both modes, only the reporting differs
 ├── tests/
 │   ├── conventions.test.ts       ← KF-286 — API-surface + no-default-export + row-contract invariants (the in-suite complement to check-doc-api-coverage.mjs / check-feature-coverage.mjs); pins facts line coverage can't express
+│   ├── setup-dev-hooks.ts        ← global Vitest setup that installs the dev-hook bundle for source-suite coverage
+│   ├── helpers/
+│   │   └── dev-shape.ts          ← test helpers for switching between installed diagnostics and the production-shaped empty hook registry
 │   ├── unit/
 │   │   ├── array-signal-api.test.ts ← standalone ArraySignal API, validation, reads, and reset/replace behavior
 │   │   ├── array-signal-granular-updates.test.ts ← granular update/remove behavior and row reuse
@@ -132,6 +135,7 @@ kerf/
 │   │   ├── overlay-positioning.test.ts ← popover placement plus positionAnchored/autoReposition
 │   │   ├── overlay-toast.test.ts ← toast stacking, replacement, timers, animation classes, and dismissal
 │   │   ├── overlay-tooltip.test.ts ← tooltip pointer/focus timing, content, and teardown
+│   │   ├── overlay-test-helpers.ts ← shared overlay DOM/setup helpers used by the focused overlay suites
 │   │   ├── list-core.test.ts ← bindList keyed reconciliation, source updates, and core disposal
 │   │   ├── list-element-mode.test.ts ← app-owned row elements, keyed reuse, update, and disposal
 │   │   ├── list-measured-virtualization.test.ts ← measured heights, anchoring, and ResizeObserver integration
@@ -259,7 +263,7 @@ kerf/
 │   ├── browser/                  ← Playwright real-browser tests (chromium/firefox/webkit) — run via `npm run test:browser`
 │   │   ├── fixtures/index.html         ← importmap-based page that loads kerf from dist/
 │   │   ├── consumer-app.spec.ts        ← KF-123 — drives `tests/dist/consumer-app/` (real esbuild-bundled app against dist/) across Chromium / Firefox / WebKit
-│   │   ├── example-apps.spec.ts        ← KF-165 — one smoke spec per `site/src/examples/complete/<name>/` app (all nine: kanban / markdown-editor / chat / todomvc / dashboard / cart-htmx / counter-store / row-selector / live-poll). Kanban drag spec is the regression gate for KF-163 (no visual feedback during drag) and KF-165 (delegateCapture matches() vs. delegate() closest() — pointerdown on `.card-text` missed `.card` until the example switched to `delegate()`).
+│   │   ├── example-apps.spec.ts        ← KF-165 — one smoke spec per `site/src/examples/complete/<name>/` app (all eleven: kanban / markdown-editor / chat / todomvc / dashboard / cart-htmx / counter-store / row-selector / virtual-list / router / live-poll). The kanban drag spec retains the historical regression where direct target matching missed a pointerdown on `.card-text` inside `.card`; both delegation helpers now default to `closest()` walk-up matching.
 │   │   ├── global-setup.mjs            ← rebuilds `tests/dist/consumer-app/dist/main.js` AND `tests/dist/example-apps/<name>/` before the suite (skipped per-build via `KERF_SKIP_CONSUMER_BUILD=1` / `KERF_SKIP_EXAMPLE_APPS_BUILD=1`)
 │   │   ├── input-preservation.spec.ts  ← KF-474 / KF-2TNZPJ — exact input/textarea/contenteditable caret preservation in all three engines: an each() row across unrelated morph + keyed reorder, and a bindList contenteditable through its own keyed move; pins Firefox's moveBefore Selection-retargeting regression
 │   │   ├── list.spec.ts                ← kerfjs/list virtualization real scroll/layout happy-dom can't model: only the viewport window renders, shifts on real scroll, padding keeps scrollHeight honest; + measured mode: observeRowHeights sizes rows from real offsetHeight (natural 40px, not the estimate), scrollHeight grows past the estimate baseline; + content-visibility mode KF-525: EVERY row present in the DOM (findability guarantee, incl. the far last row), content-visibility:auto/contain-intrinsic-size set, off-screen rows layout-skipped via checkVisibility({contentVisibilityAuto}) where the engine implements the flag
@@ -283,6 +287,8 @@ kerf/
 │       ├── example-apps/                  ← KF-165 — Vite-bundled `site/src/examples/complete/<name>/` apps re-emitted with `base: './'` so the Playwright webServer can serve them at `/tests/dist/example-apps/<name>/`. Driven by `tests/browser/example-apps.spec.ts`
 │       │   └── build.mjs                  ← one Vite build per app; called from `tests/browser/global-setup.mjs`
 │       ├── jsx-typing/                    ← KF-123 — `tsc -p tests/dist/jsx-typing/tsconfig.json` (the native TS 7 `tsc` via the `typescript7` alias) typechecks consumer .tsx against `dist/jsx-runtime.d.ts` to catch IntrinsicElements self-shadow / declaration-merging regressions; gated by `npm run check`
+│       │   ├── consumer.tsx               ← emitted-declaration consumer for the standard intrinsic-element surface
+│       │   └── consumer-merge.tsx         ← emitted-declaration consumer for module-scoped custom-element augmentation
 │       ├── safe-html-cross-bundle.test.ts ← KF-14 regression
 │       └── store-registry-shared.test.ts  ← KF-15 regression
 ├── examples/
@@ -298,7 +304,7 @@ kerf/
 │   ├── results.json              ← KF-138 / KF-291 — in-repo snapshot tracked in git (from import-krausest.mjs); the Pages build has no network so this IS the source of truth at site-build time
 │   ├── results.md                ← markdown tables (from import-krausest.mjs) consumed by docs
 │   └── results-table.mjs         ← helper for the perf-comparison renderer
-├── site/                         ← Astro + Starlight marketing/docs site, deployed to /kerf/ on GitHub Pages. Installs use npm's strict `allowScripts` policy: `esbuild`/`sharp` binary setup is approved, the linked root package's Husky-only `prepare` is denied, and `site/scripts/check-install-script-policy.mjs` pins the reviewed lockfile installer set. `npm run check:audit` audits the complete site build tree, including dev dependencies, and fails at high/critical severity. `site/src/examples/complete/<name>/` holds eleven complete example apps — ten Vite-built .tsx apps plus the no-build `live-poll` (plain main.js + importmap, copied verbatim with a vendored dist by `site/scripts/lib/copy-no-build-app.mjs`; design in docs/15). `site/scripts/demo-captures/pages/<name>/` holds STATIC capture pages (not apps) rendered to animated SVGs by the same domotion machinery — `architecture` (the docs' architecture diagram, embedded in docs/1 §1.5) and `getting-started` (the end-to-end editor→terminal→browser coding session on /kerf/getting-started/ + the README); listed in capture-demos.sh PAGES. `site/src/content/docs/getting-started.md` is the Start-here landing page (hero "Get started" points at it). Each bundled app opens with `if (import.meta.env.DEV) await import('kerfjs/dev')` under its imports (KF-432 — the examples are how the install idiom is discoverable); `site/src/examples/complete/env.d.ts` declares the one `ImportMetaEnv` member that needs, because the examples' tsconfig sets `"types": []` and the typecheck gate runs without `site/node_modules`. `live-poll` is the deliberate counter-example — it maps `kerfjs/dev` in its importmap but never imports it, because the served page is the production one
+├── site/                         ← Astro + Starlight marketing/docs site, deployed to /kerf/ on GitHub Pages. Installs use npm's strict `allowScripts` policy: the reviewed `esbuild` and `fsevents` installers are approved, the linked root package's Husky-only `prepare` is denied, and `site/scripts/check-install-script-policy.mjs` pins the reviewed lockfile installer set. `npm run check:audit` audits the complete site build tree, including dev dependencies, and fails at high/critical severity. `site/src/examples/complete/<name>/` holds eleven complete example apps — ten Vite-built .tsx apps plus the no-build `live-poll` (plain main.js + importmap, copied verbatim with a vendored dist by `site/scripts/lib/copy-no-build-app.mjs`; design in docs/15). `site/scripts/demo-captures/pages/<name>/` holds STATIC capture pages (not apps) rendered to animated SVGs by the same domotion machinery — `architecture` (the docs' architecture diagram, embedded in docs/1 §1.5) and `getting-started` (the end-to-end editor→terminal→browser coding session on /kerf/getting-started/ + the README); listed in capture-demos.sh PAGES. `site/src/content/docs/getting-started.md` is the Start-here landing page (hero "Get started" points at it). Each bundled app opens with `if (import.meta.env.DEV) await import('kerfjs/dev')` under its imports (KF-432 — the examples are how the install idiom is discoverable); `site/src/examples/complete/env.d.ts` declares the one `ImportMetaEnv` member that needs, because the examples' tsconfig sets `"types": []` and the typecheck gate runs without `site/node_modules`. `live-poll` is the deliberate counter-example — it maps `kerfjs/dev` in its importmap but never imports it, because the served page is the production one
 ├── docs/
 │   ├── orientation.md            ← KF-179 — hard-capped 500-word one-pager for humans new to the codebase. Maintained by the `/check-requirements-against-code` skill.
 │   ├── diagrams/
@@ -318,14 +324,28 @@ kerf/
 │   ├── 13-component-packages.md   ← KF-254 — guide to building/publishing reusable kerf components as npm packages (no-instance model, per-instance state via factories, event/cleanup patterns, kerfjs-as-peer-dependency packaging modeled on eslint-plugin-kerfjs)
 │   ├── 14-feature-coverage.md     ← KF-284 — feature/behavior coverage axis (orthogonal to line coverage): per-behavior index mapping each behavior (esp. reconciler state transitions) → its guarding test; enforced by scripts/check-feature-coverage.mjs (npm run check:features)
 │   ├── 15-no-build-example.md     ← the no-build example app (live-poll): served-as-source (importmap + html tagged template, zero tooling), the vendor-copy contract (site/scripts/lib/copy-no-build-app.mjs shared by the three example build scripts), and its test/capture surfaces
+│   ├── 16-list-identity.md        ← stable `each({ key })` identity, source-guard boundaries, and identity-shift diagnostics
+│   ├── 17-list-virtualization.md  ← `bindList` fixed, declared, measured, and content-visibility virtualization contracts
+│   ├── 18-state-preserving-moves.md ← atomic `moveBefore()` reorders with the `insertBefore()` fallback
+│   ├── 19-native-overlay-backing.md ← opt-in dialog/popover top-layer backing
+│   ├── 20-router.md               ← the optional `kerfjs/router` postcard-router contract
+│   ├── 21-ui-package.md           ← the first-party `@kerfjs/ui` package contract
+│   ├── 22-ui-css-authoring.md     ← pixel-first `remify(<px>)` authoring and compiled-rem delivery
+│   ├── companion-utilities-design.md ← design history for the optional companion subpaths
+│   ├── graphics/                  ← editable logo sources plus the published SVG
+│   ├── technical-changelog/      ← long-form release migration notes
 │   └── ai/
 │       ├── code-summary.md       ← THIS FILE
 │       ├── requirements-summary.md
-│       └── usage-guide.md        ← consumer-facing cheat sheet for AI assistants writing apps with kerf
+│       ├── usage-guide.md        ← consumer-facing cheat sheet for AI assistants writing apps with kerf
+│       ├── test-gap-analysis-kf380.md
+│       ├── test-gap-analysis-kf387.md
+│       ├── test-gap-analysis-kf393.md
+│       └── ui-consumer-audit-2026-09-13.md
 ├── ai/                           ← KF-215 — generated mirror of the repo-root drop-in AI configs, shipped inside the npm package at `kerfjs/ai/`. Regenerate with `npm run ai-bundle:sync` after editing root files; kept honest by `check:ai-bundle-in-sync`.
 │   ├── skill.md                  ← copy of kerf.claude-skill.md, canonical section only
 │   ├── cursorrules               ← copy of kerf.cursorrules, canonical section only
-│   └── manifest.json             ← { kerfjsVersion, files: [{ name, source, bundle, dest, version, sha256 }] } — the upcoming eslint rule's entry point
+│   └── manifest.json             ← { kerfjsVersion, files: [{ name, source, bundle, dest, version, sha256 }] } — the shipped `kerfjs/ai-assistant-configs` rule's entry point
 ├── scripts/
 │   ├── lib/
 │   │   └── ai-bundle.mjs         ← KF-215 — shared logic for sync + check scripts; deterministic `computeBundle()` produces the three `ai/` files in memory from the root source-of-truth files
@@ -343,14 +363,17 @@ kerf/
 │   ├── pages.yml                 ← build + deploy reactivity-demo to GitHub Pages on push to main
 │   ├── release-ui.yml            ← validate/build @kerfjs/ui without OIDC, transfer dist/ artifact, publish from the token-only job
 │   └── release.yml               ← publish on v*.*.* (stable) and v*-beta.* (beta) — single workflow because npm allows only one trusted publisher per package
-├── package.json
+├── package.json / package-lock.json
+├── .nvmrc                        ← repository Node version for local toolchain selection
 ├── tsconfig.json
 ├── tsup.config.ts
 ├── vitest.config.ts            ← default suite: tests/unit + tests/integration vs `src/`
+├── vitest.config.bench.ts      ← benchmark-focused Vitest configuration
 ├── vitest.config.dist.ts       ← targeted dist regressions: tests/dist vs `dist/`
 ├── vitest.config.dist-full.ts  ← full unit + integration suite remapped onto `dist/` (KF-16)
+├── playwright.config.ts        ← three-engine browser-suite configuration
 ├── eslint.config.js
-├── CLAUDE.md                     ← project instructions for AI assistants
+├── AGENTS.md / CLAUDE.md / GEMINI.md / opencode.json ← provider adapters plus the shared project instructions
 ├── CHANGELOG.md
 ├── LICENSE                       ← MIT
 ├── llms.txt                      ← AI-discovery entry point indexing the docs
@@ -380,13 +403,14 @@ Every export reachable via `import { ... } from 'kerfjs'`:
 | `mount` | `mount.ts` | Render JSX into a DOM element via kerf's segment-aware diff |
 | `MountResult` | `mount.ts` | Type — what `mount()`'s render function can return (`SafeHtml \| string \| number \| boolean \| null \| undefined`, KF-119) |
 | `morph` | `morph.ts` | KF-150 — one-shot in-place DOM reconciliation; same algorithm `mount()` uses, but doesn't subscribe to signals |
+| `renderDocument`, `RenderDocumentOptions` | `renderDocument.ts` | Pure SSR helper: prepend a configurable doctype (default `html`) to a `SafeHtml` or string document; no DOM dependency |
 | `each` | `each.ts` | Keyed list iteration; per-item HTML memo by object identity (+ optional key) |
 | `attr`, `AttrSpec<N,V>` | `attrSelector.ts` | Two overloads. **Static** `attr(name, value)` → `AttrSpec<N,V>` with `.name`, `.value`, `.selector`, `.attrs` (`{ readonly [name]: value }` — spreadable into JSX). **Dynamic** `attr<N,V=string>(name)` → factory `(value: V) => { readonly [name]: V }` for per-row data attributes; `V` defaults to `string`, specify both generics to constrain the value set. Both CSS-escape at creation time. |
 | `delegate<T>` | `delegate.ts` | Event delegation; auto-promotes known non-bubblers (focus/blur/scroll/load/error/mouseenter/mouseleave) to capture, keeps `closest()` matching; generic `T extends Element` narrows the `target` arg; optional `{ match: 'closest' \| 'direct' }` (default `'closest'`) |
 | `delegateCapture<T>` | `delegate.ts` | Explicit-capture escape hatch; `closest()`-style walk-up matching by default (unified with `delegate()`), passes the matched ancestor; same `T` generic; opt into strict `matches()` via `{ match: 'direct' }` |
 | `DelegateOptions` | `delegate.ts` | Options for both delegation helpers: `{ match?: 'closest' \| 'direct' }` — `'closest'` (default) walks up via `closest()`, `'direct'` matches only `event.target` |
 | `action`, `delegateActions`, `ActionHandler`, `DelegateActionsOptions` | `actions.ts` (`kerfjs/actions` subpath) | The blessed data-action table idiom. `action(v)` → `attr('data-action', v)` AttrSpec; `delegateActions(root, event, table, opts?)` wires ONE `delegate()` on `[data-action]` and dispatches by the matched element's attribute value (unknown actions ignored; `opts.attr` overrides the attribute; `match` inherited from `DelegateOptions`). Returns a disposer; no per-instance state |
-| `overlay`, `confirm`, `prompt`, `form`, `popover`, `positionAnchored`, `autoReposition`, `tooltip`, `toast` (+ `OverlayHandle`, `OverlayOptions`, `OverlayContent`, `DismissTrigger`, `ConfirmOptions`, `ConfirmRenderSlots`, `PromptOptions`, `PromptRenderSlots`, `FormField`, `FormOptions`, `FormRenderSlots`, `FormRenderField`, `FieldValidator`, `ChoiceAction`, `ChoiceOptions`, `ChoiceRenderSlots`, `PopoverOptions`, `PopoverPlacement`, `AnchorPositionOptions`, `TooltipContent`, `TooltipOptions`, `ToastContent`, `ToastOptions`, `ToastVariant`, `ToastHandle`) | `overlay.ts` (`kerfjs/overlay` subpath) | The blessed modal/overlay pattern. `choice<R>(msg, actions, opts?)` → `Promise<R\|null>` N-way dialog (defaultValue→Enter). `overlay(content, opts?)` → `{ el, close(result?), result }` (wrapper + mount + dismissals + focus trap/restore, idempotent close); `confirm(msg, opts?)` → `Promise<boolean>`; `prompt(msg, opts?)` → `Promise<string\|null>`; `form(fields, opts?)` → `Promise<Record<string,string>\|null>` (window.confirm/window.prompt replacements + multi-field dialog, Enter-submit, inline validate); `popover(anchor, content, opts?)` → `OverlayHandle` (non-modal anchored overlay: position:fixed below/above w/ flip+clamp, dismiss-outside, reposition on scroll/resize); `toast(content, opts?)` → dismiss fn. **`native: true`** (opt-in, on all seven surfaces) hosts a modal in a `<dialog>.showModal()` and a non-modal in a `[popover]` (feature-detected, falls back to `<div>`; docs/19). Structural only (no CSS); no per-instance framework state |
+| `overlay`, `confirm`, `prompt`, `form`, `choice`, `popover`, `positionAnchored`, `autoReposition`, `tooltip`, `toast` (+ `OverlayHandle`, `OverlayOptions`, `OverlayContent`, `DismissTrigger`, `ConfirmOptions`, `ConfirmRenderSlots`, `PromptOptions`, `PromptRenderSlots`, `FormField`, `FormOptions`, `FormRenderSlots`, `FormRenderField`, `FieldValidator`, `ChoiceAction`, `ChoiceOptions`, `ChoiceRenderSlots`, `PopoverOptions`, `PopoverPlacement`, `AnchorPositionOptions`, `TooltipContent`, `TooltipOptions`, `ToastContent`, `ToastOptions`, `ToastVariant`, `ToastHandle`) | `overlay.ts` (`kerfjs/overlay` subpath) | The blessed modal/overlay pattern. `choice<R>(msg, actions, opts?)` → `Promise<R\|null>` N-way dialog (defaultValue→Enter). `overlay(content, opts?)` → `{ el, close(result?), result }` (wrapper + mount + dismissals + focus trap/restore, idempotent close); `confirm(msg, opts?)` → `Promise<boolean>`; `prompt(msg, opts?)` → `Promise<string\|null>`; `form(fields, opts?)` → `Promise<Record<string,string>\|null>` (window.confirm/window.prompt replacements + multi-field dialog, Enter-submit, inline validate); `popover(anchor, content, opts?)` → `OverlayHandle` (non-modal anchored overlay: position:fixed below/above w/ flip+clamp, dismiss-outside, reposition on scroll/resize); `toast(content, opts?)` → `ToastHandle` (`{ el, dismiss(options?) }`). **`native: true`** (opt-in, on the seven modal/popover/tooltip surfaces, not toast) hosts a modal in a `<dialog>.showModal()` and a non-modal in a `[popover]` (feature-detected, falls back to `<div>`; docs/19). Structural only (no CSS); no per-instance framework state |
 | `bindList`, `observeRowHeights` (+ `ListKey`, `ListSource`, `RowElement`, `RowHeight`, `BindListHandle`, `BindListOptions`) | `list.ts` (`kerfjs/list` subpath) | A distinct keyed list from `each()`: each row individually `mount()`ed (per-row fine-grained updates) + optional viewport virtualization (`rowHeight` a fixed `number`, a `(item,index)=>number` for app-declared variable heights, or `{ estimate }` for measured heights — app reports via the handle's `setHeight(key,px)` or `observeRowHeights(handle)`; kerf anchor-corrects scrollTop). `render` returns a `MountResult` (content mode) OR an `HTMLElement`/`{el, update?, dispose?}` (element mode — app owns the row element; kerf keys/moves/reuses it, refresh via update()). `bindList(parent, source, { key, render, tag?, before?, virtualize? })` → `BindListHandle` (disposer + `setHeight` + `container`); `virtualize` also takes `mode` (`'window'` default | `'content-visibility'` — keep every row in the DOM + set `content-visibility:auto`/`contain-intrinsic-size`, full find-in-page/a11y, browser skips off-screen layout; `setHeight`/`observeRowHeights`/`minRows` inert), `minRows` (render-all below N), `containerClass`/`containerId`, and re-windows on a parent `ResizeObserver`. `source` is a `signal<T[]>` or an `arraySignal`. For surgical per-row updates, app-owned row elements, or windowing; `each()` stays the default |
 | `createRouter` (+ `RouteState`, `RouteComponent`, `RouteDef`, `NavigateOptions`, `RouterOptions`, `RouterHandle`) | `router.ts` (`kerfjs/router` subpath) | The "postcard router". `createRouter({ routes, mode?, base?, interceptLinks? })` → a handle: `route` (`ReadonlySignal<{path,params,query,hash}>`), `navigate(path,{replace?,state?})`, `back()`/`forward()`, `match(pattern)`→`ReadonlySignal<boolean>`, `activeClass(pattern,className)`, `outlet()`, `dispose()`. Matching: `:param` / trailing `*rest` / `*` catch-all (in order). `outlet()` = keyed morph (route change → wholesale page swap via `data-key`=matched pattern; param change → morph in place). Auto `<a href>` interception via `delegate()` (opt out per-link `data-router-ignore`/`rel=external`, or `interceptLinks:false`). Core stays router-free — opt-in, tree-shakeable; NO nested layouts/loaders/lazy/guards/SSR (compose those) |
 | `attach` (+ `AttachSetup`) | `attach.ts` (`kerfjs/attach` subpath) | Bind a non-kerf widget's lifecycle to one existing node (a `data-morph-skip` host). NOT React `useEffect` — no dep array/re-run/scoping; closer to `connectedCallback`/`disconnectedCallback`. `attach(node, setup)` runs `setup(node)` now; the returned teardown runs once when the node leaves the DOM (MutationObserver) or the disposer is called. Re-creation via `kerfjs/remount`. DOM only, no core |
@@ -419,6 +443,13 @@ Plus, on the `kerfjs/testing` subpath:
 | --- | --- | --- |
 | `clearStoreRegistry` | `store.ts` (re-exported via `testing.ts`) | Drop every registered store. Test-only — lets a unit-test file reset `defineStore`'s module-level `REGISTRY` between cases without re-importing the store modules. |
 
+Plus, on the `kerfjs/dev` subpath:
+
+| Export | From | Purpose |
+| --- | --- | --- |
+| `enableWarnings`, `DevWarningOptions` | `dev.ts` / `dev-warn-config.ts` | Switch individual opt-in diagnostics in browser code or override environment settings after installing the dev entry. |
+| `DEV_HOOKS`, `devHooks`, `DevHooks`, `installDevHooks`, `clearDevHooks` | `dev.ts` / `dev-hooks.ts` | Installed diagnostic hook set and test-isolation/override surface. Importing the subpath installs `DEV_HOOKS`; application code normally only calls `enableWarnings`. |
+
 Plus, on the `kerfjs/jsx-runtime` subpath (re-exported types for declaration merging — KF-100):
 
 | Export | From | Purpose |
@@ -428,6 +459,7 @@ Plus, on the `kerfjs/jsx-runtime` subpath (re-exported types for declaration mer
 | `AttrLike<T>` / `AttrValue` / `DataAriaAttrs` | `jsx-types.ts` | Building blocks for project-specific intrinsic-element types |
 
 The JSX runtime is a separate subpath export at `kerfjs/jsx-runtime`. It's referenced by tsconfig (`"jsxImportSource": "kerfjs"`); users do not import from it directly *unless* they're declaration-merging custom-element types into `JSX.IntrinsicElements` (see `docs/8-api-reference.md` §8.5).
+`kerfjs/jsx-dev-runtime` is an export-map alias to the same runtime declarations and implementation for JSX transforms that request the development-runtime name.
 
 ## Build outputs
 
@@ -445,7 +477,7 @@ Each entry emits a small shim that re-exports from shared chunks; the bulk of th
 
 Runtime dep (`@preact/signals-core`) is external — consumers' bundlers pick it up from their own `node_modules`.
 
-`ui/npm run build` independently emits the ESM/type entry shims for
+`npm --prefix ui run build` independently emits the ESM/type entry shims for
 `@kerfjs/ui`, compiles pixel-first `remify(<px>)` author CSS into standard
 `dist/styles/*.css`, then derives component-to-component reachability from
 source imports and generates `dist/browser/*.js` wrappers. A browser component
@@ -502,9 +534,9 @@ keeps non-disclosing navigation chevron-free.
 | Test coverage thresholds | `vitest.config.ts` |
 | Release flow / version bumping | `scripts/release.sh` + `scripts/sync-lockstep-versions.mjs` (four package manifests/locks, plugin metadata, and scaffold/docs ranges; release notes are drafted via gitgist, whose generated-surface exclusions are documented in CLAUDE.md § Releasing) |
 | Commit-message drafting | `npm run commit:msg` → `gitgist --staged --commit-message` (gitgist is a devDependency) |
-| GitHub Pages live-demo deploy | `.github/workflows/pages.yml` + `examples/reactivity-demo/vite.config.ts` (`base: '/kerf/demo/'`) + `site/vite.config.ts` / `site/scripts/render-site.tsx` (`base: '/kerf'`) + `docs/9-live-demo.md` |
-| Benchmark harness / perf numbers | `bench/` (`bench/README.md` + `setup.sh` / `run.sh` / `results.sh` / `aggregate-results.mjs` are the LOCAL dev-only harness → gitignored `results.local.*`). PUBLISHED numbers come from `bench/import-krausest.mjs`, which writes the tracked `bench/results.json` + `results.md`; `site/scripts/lib/site-content.mjs` reads the JSON for the homepage table. |
-| Migrating hub (`/kerf/migrating/`) | `docs/10-migrating.md` (design doc) + `site/src/content/docs/migrating/{index,react,alpine,lit,vanjs}.md` (rendered pages) — KF-132 + KF-156/157/158/159 |
+| GitHub Pages live-demo deploy | `.github/workflows/pages.yml` + `examples/reactivity-demo/vite.config.ts` (`base: '/kerf/demo/'`) + `site/astro.config.mjs` (`base: '/kerf'`) + `site/package.json` build scripts + `docs/9-live-demo.md` |
+| Benchmark harness / perf numbers | `bench/` (`bench/README.md` + `setup.sh` / `run.sh` / `results.sh` / `aggregate-results.mjs` are the LOCAL dev-only harness → gitignored `results.local.*`). PUBLISHED numbers come from `bench/import-krausest.mjs`, which writes the tracked `bench/results.json` + `results.md`; `site/src/components/PerfTable.astro` imports the JSON for the homepage table. |
+| Migrating hub (`/kerf/migrating/`) | `docs/10-migrating.md` (design doc) + the 15 rendered files under `site/src/content/docs/migrating/`: `index.mdx`, `incremental.md`, and 13 framework pages (`react`, `preact`, `vue`, `svelte`, `solid`, `angular`, `lit`, `alpine`, `htmx`, `jquery`, `redux`, `astro`, `vanjs`) |
 | Drop-in AI-tool config | `kerf.cursorrules` + `kerf.claude-skill.md` at repo root (source of truth) — both are hand-maintained condensations of `docs/ai/usage-guide.md`. KF-215 ships generated mirrors inside the npm package at `ai/skill.md` / `ai/cursorrules` / `ai/manifest.json`; regenerate via `npm run ai-bundle:sync`; design + canonical-file contract in `docs/12-ai-assistant-configs.md` |
 | First-party components / styles | `ui/src/`, `ui/docs/component-contract.md`, `ui/docs/accessibility.md`, and `ui/ux-demo/`; package overview in `docs/21-ui-package.md` |
 
@@ -512,9 +544,10 @@ keeps non-disclosing navigation chevron-free.
 
 Update this doc whenever you:
 
-1. Add or rename a file under `src/`.
-2. Add a new public export to `src/index.ts`.
-3. Change the build output shape (`tsup.config.ts`).
-4. Add a new conventional `data-*` attribute that `mount()` recognizes.
-5. Add a new test directory or convention.
-6. Add a new `scripts/` entry or a new gate wired into `npm run check`.
+1. Add, rename, or remove a represented source, test helper/spec, numbered/supporting doc, root configuration file, package, or site directory.
+2. Add, remove, or change a value, type, overload, or return-handle shape in the main barrel or any public subpath (`package.json` exports included).
+3. Change the build output shape, entry list, package script, or canonical command (`tsup.config.ts`, root/package `package.json`).
+4. Add or change a conventional `data-*` attribute, marker namespace, dev hook, warning, or other architectural contract.
+5. Add a test directory, fixture, helper, browser app, suite convention, or coverage gate.
+6. Add or change a repository script or any gate wired into `npm run check` / `check:full`.
+7. Add, remove, or rename a site route, migrating page, complete example app, deploy/build input, or benchmark-data consumer.

@@ -63,7 +63,7 @@ Write plain `.tsx` and build with your existing esbuild / Vite / tsup — no ext
 
 2. **No virtual DOM, no compiler.** JSX → HTML strings → native diff. DevTools shows the real DOM because it *is* the DOM.
 
-3. **Values bind, structure re-renders.** Hand a signal *itself* into a JSX hole — `class={selectedId}` — and kerf binds that one node: on change, only that attribute updates, with no render re-run and no list reconcile. A selection flip on a 10,000-row table touches exactly one class. ([more →](#fine-grained-updates-bind-a-signal-into-a-hole))
+3. **Values bind, structure re-renders.** Hand a signal *itself* into a JSX hole — `class={selectedId}` — and kerf binds that one node: on change, only that attribute updates, with no render re-run and no list reconcile. Moving selection between rows in a 10,000-row table touches at most the old and new row classes. ([more →](#fine-grained-updates-bind-a-signal-into-a-hole))
 
 4. **Focus, selection, and listeners survive re-renders — even mid-list.** The reconciler morphs instead of rebuilding, so caret position, IME composition, scroll, and delegated listeners survive every update; keyed rows are patched in place rather than recreated.
 
@@ -158,7 +158,7 @@ mount(root, () => (
 status.value = 'saving';     // updates the class + the text node directly — no re-render
 ```
 
-The headline use is external state driving one spot: a `selectedId` flipping a single row's class inside a 10,000-row `each()` list touches exactly that one node, no reconcile. Works in static content and inside `each()` rows (a row's binding is torn down with the row); outside a `mount()` (SSR / `SafeHtml.toString()`) a bound signal just snapshots its current value.
+The headline use is external state driving a hot spot: a `selectedId` moving between rows inside a 10,000-row `each()` list updates at most the old and new row class attributes, with no reconcile. Works in static content and inside `each()` rows (a row's binding is torn down with the row); outside a `mount()` (SSR / `SafeHtml.toString()`) a bound signal just snapshots its current value.
 
 This is kerf's guiding idiom — *values bind, structure re-renders*: pass the signal itself wherever a hole is just a value, and read `.value` in the render function only where the JSX structure depends on it. A render that reads no `.value` runs exactly once; from then on every update is a direct write to the node it concerns. See [`docs/2-reactivity.md`](./docs/2-reactivity.md) §2.9.
 

@@ -6,9 +6,7 @@
 
 kerf is **signals + DOM-string rendering + a morph diff**. There is no virtual DOM, compiler, fiber tree, or scheduler.
 
-`mount(rootEl, () => jsx)` runs your render function inside an `effect()` from `@preact/signals-core`. The render function returns a `SafeHtml` — an HTML string for static markup, plus structured "list" segments where `each()` was called. On a signal write, the effect re-fires; `morph()` reconciles the static parts against the live DOM in place; the keyed list reconciler patches each `each()` list against its live children in O(changes). Coming from React: there is no in-memory tree to diff — kerf re-reads the live DOM and writes only what changed.
-
-A signal handed *itself* into a JSX hole (`class={sig}`) binds that node directly; later writes skip re-rendering.
+`mount(rootEl, () => jsx)` runs your render function inside an `effect()` from `@preact/signals-core`. It returns `SafeHtml`: static HTML plus structured list segments from `each()`. Pass a signal itself into a text or attribute hole and its binding updates that node directly, without re-running the render. Read `.value` when structure depends on it; that write re-fires the effect, `morph()` reconciles static parts in place, and the keyed list reconciler updates live children. Coming from React: there is no in-memory tree to diff — kerf reads live DOM and writes only what changed.
 
 ![Render pipeline](./diagrams/render-pipeline.svg)
 
@@ -39,4 +37,4 @@ One coherent concern per file, one primary export per file, ESM-only, kebab-case
 
 ## Deeper reading
 
-`docs/1-overview.md` → `docs/21-ui-package.md`; `docs/ai/usage-guide.md`; `CLAUDE.md`.
+`docs/1-overview.md` → `docs/22-ui-css-authoring.md`; `docs/ai/usage-guide.md`; `CLAUDE.md`.
