@@ -1,25 +1,48 @@
-import { existsSync, readFileSync } from 'node:fs';
-import { cwd } from 'node:process';
-import { pathToFileURL } from 'node:url';
+import { execFileSync } from 'node:child_process';
+import { copyFileSync, existsSync, mkdtempSync, readFileSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { cwd, execPath } from 'node:process';
 
 import { describe, expect, it } from 'vitest';
 
-interface SiteConfig {
-  redirects?: Record<string, string>;
-}
+import { redirects } from '../../site/redirects.mjs';
 
 describe('site config', () => {
-  it('defines one normalized legacy redirect for the renamed raw-sanitize example', async () => {
-    const configUrl = pathToFileURL(`${cwd()}/site/astro.config.mjs`).href;
-    const { default: config } = (await import(configUrl)) as { default: SiteConfig };
-    const redirects = Object.entries(config.redirects ?? {});
-    const legacyRedirects = redirects.filter(
+  it('defines one normalized legacy redirect for the renamed raw-sanitize example', () => {
+    const legacyRedirects = Object.entries(redirects).filter(
       ([from]) => from.replace(/\/$/, '') === '/examples/basics/09-raw-sanitise',
     );
 
     expect(legacyRedirects).toEqual([
       ['/examples/basics/09-raw-sanitise', '/kerf/examples/basics/09-raw-sanitize/'],
     ]);
+
+    const astroConfig = readFileSync(`${cwd()}/site/astro.config.mjs`, 'utf8');
+    expect(astroConfig).toContain("import { redirects } from './redirects.mjs';");
+    expect(astroConfig).toMatch(/\n {2}redirects,\n/);
+  });
+
+  it('loads the redirect contract in a clean environment without site dependencies', () => {
+    const cleanRoot = mkdtempSync(join(tmpdir(), 'kerf-site-config-'));
+    try {
+      copyFileSync(`${cwd()}/site/redirects.mjs`, join(cleanRoot, 'redirects.mjs'));
+
+      const output = execFileSync(
+        execPath,
+        [
+          '--input-type=module',
+          '--eval',
+          "import { redirects } from './redirects.mjs'; process.stdout.write(JSON.stringify(redirects));",
+        ],
+        { cwd: cleanRoot, encoding: 'utf8' },
+      );
+
+      expect(existsSync(join(cleanRoot, 'node_modules'))).toBe(false);
+      expect(JSON.parse(output)).toEqual(redirects);
+    } finally {
+      rmSync(cleanRoot, { recursive: true, force: true });
+    }
   });
 
   it('keeps the public site on Astro and does not publish the in-progress UI package', () => {

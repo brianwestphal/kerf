@@ -2,16 +2,12 @@
 import starlight from '@astrojs/starlight';
 import { defineConfig } from 'astro/config';
 
+import { redirects } from './redirects.mjs';
+
 export default defineConfig({
   site: 'https://brianwestphal.github.io',
   base: '/kerf',
-  // KF-154: the basics example at index 9 was originally `09-raw-sanitise`
-  // (British spelling). The slug moved to `09-raw-sanitize` after the
-  // American-English sweep (KF-153); this redirect preserves deep links
-  // to the old URL. Remove once external traffic to the old slug stops.
-  redirects: {
-    '/examples/basics/09-raw-sanitise': '/kerf/examples/basics/09-raw-sanitize/',
-  },
+  redirects,
   vite: {
     esbuild: {
       jsx: 'automatic',
