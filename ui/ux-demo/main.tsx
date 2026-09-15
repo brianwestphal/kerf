@@ -398,8 +398,7 @@ function ValueTableDemo() {
 
 function ResizeDemo() {
   return <div class="demo-resize-shell" data-demo="resize">
-    <ResizableRegion id="catalog-panel" label="Catalog panel" size={regionSize.value} min={180} max={420} handleIcon={icon(GripVertical, 'custom-resize-handle')}><div class="demo-resize-panel kui-content-item"><strong>Resizable panel</strong><span>Use the handle with a pointer, arrow keys, Home, or End.</span></div></ResizableRegion>
-    <div class="demo-resize-content kui-content-item"><span>Committed width</span><strong data-region-size>{regionSize.value}px</strong></div>
+    <ResizableRegion id="catalog-panel" label="Catalog panel" size={regionSize.value} min={180} max={420} handleIcon={icon(GripVertical, 'custom-resize-handle')}><div class="demo-resize-panel kui-pane"><div class="demo-resize-panel__copy kui-content-item"><strong>Resizable panel</strong><span>Use the handle with a pointer, arrow keys, Home, or End.</span></div></div></ResizableRegion>
   </div>;
 }
 
@@ -594,7 +593,7 @@ mount(app, () => {
         <div class="catalog-canvas"><Stage /></div>
       </section>
       <footer class="catalog-footer kui-pane__footer">
-        <div class="catalog-footer__status"><output class="catalog-log" aria-live="polite">{actionLog.value}</output><span>{selected.source === 'webawesome' ? 'Web Awesome component · Kerf theme' : selected.kind === 'component' ? 'Kerf first-class component · production CSS' : 'Kerf composition · production CSS'}</span></div>
+        <div class="catalog-footer__status"><output class="catalog-log" aria-live="polite">{actionLog.value}</output>{selected.id === 'resize' && <span class="catalog-footer__metric"><span>Committed width</span><strong data-region-size>{regionSize.value}px</strong></span>}<span>{selected.source === 'webawesome' ? 'Web Awesome component · Kerf theme' : selected.kind === 'component' ? 'Kerf first-class component · production CSS' : 'Kerf composition · production CSS'}</span></div>
         <Toolbar label={`${selected.name} resources`} divider={false} leading={<nav class="catalog-resources" aria-label={`Reference links for ${selected.name}`}><ToolbarControlGroup className="catalog-footer__resource-group" label={`${selected.name} resources`}><a class="catalog-resource" data-catalog-resource="source" href={catalogRepositoryHref(selected.demoSource)} target="_blank" rel="noopener noreferrer" aria-label={`${selected.name}: View demo source (opens in new tab)`}>{icon(ExternalLink, 'external-link')}<span>Demo source</span><code>{selected.demoSource}</code></a>{selected.componentSource ? <a class="catalog-resource" data-catalog-resource="component-source" href={catalogRepositoryHref(selected.componentSource)} target="_blank" rel="noopener noreferrer" aria-label={`${selected.name}: View component source (opens in new tab)`}>{icon(ExternalLink, 'external-link')}<span>Component source</span><code>{selected.componentSource}</code></a> : <></>}<a class="catalog-resource" data-catalog-resource="guidance" href={catalogRepositoryHref(selected.documentation)} target="_blank" rel="noopener noreferrer" aria-label={`${selected.name}: ${selected.source === 'webawesome' ? 'Read Kerf integration guidance' : 'Read guidance'} (opens in new tab)`}>{icon(ExternalLink, 'external-link')}<span>{selected.source === 'webawesome' ? 'Integration guidance' : 'Guidance'}</span><code>{selected.documentation}</code></a></ToolbarControlGroup></nav>} trailing={<DemoRelationships entry={selected} />} />
       </footer>
     </article>
