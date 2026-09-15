@@ -818,7 +818,7 @@ const onScroll = throttle(() => measure(), 100);
 window.addEventListener('scroll', onScroll);
 ```
 
-Leading-plus-trailing throttle: `fn` runs immediately on the first call, then **at most once per `ms`**; calls during a cooldown collapse to a single trailing call (with the latest arguments) at the window's end. Returns a [`Throttled<A>`](#timing-types) with the same `cancel()` / `flush()` shape.
+Leading-plus-trailing throttle: `fn` runs immediately on the first call, then **at most once per `ms`**; calls during a cooldown collapse to a single trailing call (with the latest arguments) at the window's end. Returns a [`Throttled<A>`](#timing-types) with the same `cancel()` / `flush()` shape. The cooldown is active while `fn` runs, including for the trailing invocation, so `fn` may call `cancel()` itself to reset the window immediately; a reentrant call stays throttled unless the callback first cancels.
 
 ### `debouncedSignal<T>(source, ms): ReadonlySignal<T>`
 

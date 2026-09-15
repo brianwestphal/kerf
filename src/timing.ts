@@ -33,7 +33,7 @@ export interface Debounced<A extends unknown[]> {
 /** A throttled function: call it like the original, plus `cancel()` / `flush()`. */
 export interface Throttled<A extends unknown[]> {
   (...args: A): void;
-  /** Drop any pending trailing call and reset the rate window. */
+  /** Drop any pending trailing call and reset the rate window, including from inside `fn`. */
   cancel(): void;
   /** Invoke the pending trailing call now (if any). */
   flush(): void;
@@ -81,7 +81,8 @@ export function debounce<A extends unknown[]>(fn: (...args: A) => void, ms: numb
  * Leading-plus-trailing throttle: `fn` runs immediately on the first call, then
  * at most once per `ms`. Calls during a cooldown collapse to a single trailing
  * call at the window's end (with the latest arguments). `cancel()` drops a
- * pending trailing call and resets the window; `flush()` runs it now.
+ * pending trailing call and resets the window, even when called by a leading
+ * or trailing callback; `flush()` runs a pending trailing call now.
  */
 export function throttle<A extends unknown[]>(fn: (...args: A) => void, ms: number): Throttled<A> {
   let timer: ReturnType<typeof setTimeout> | undefined;
@@ -97,16 +98,21 @@ export function throttle<A extends unknown[]>(fn: (...args: A) => void, ms: numb
     timer = setTimeout(() => {
       timer = undefined;
       if (trailingArgs !== undefined) {
+        // Install the next window before invoking user code. A trailing
+        // callback can therefore cancel that window, and reentrant calls stay
+        // throttled unless the callback explicitly resets it first.
+        startCooldown();
         runTrailing();
-        startCooldown(); // hold the rate limit for a beat after a trailing call
       }
     }, ms);
   };
 
   const throttled = ((...args: A): void => {
     if (timer === undefined) {
-      fn(...args); // leading edge
+      // Make the pending window visible before invoking user code so
+      // `cancel()` from inside a leading callback remains effective.
       startCooldown();
+      fn(...args); // leading edge
     } else {
       trailingArgs = args; // collapse into one trailing call
     }

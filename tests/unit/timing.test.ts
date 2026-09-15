@@ -106,6 +106,57 @@ describe('throttle()', () => {
     expect(calls).toEqual([1, 3]);
   });
 
+  it('cancel() inside the leading callback resets the window immediately', () => {
+    const calls: number[] = [];
+    let t: ReturnType<typeof throttle<[number]>>;
+    t = throttle((x: number) => {
+      calls.push(x);
+      if (x === 1) {
+        t.cancel();
+        t(2);
+      }
+    }, 100);
+
+    t(1);
+
+    expect(calls).toEqual([1, 2]);
+    vi.advanceTimersByTime(100);
+    expect(calls).toEqual([1, 2]);
+  });
+
+  it('cancel() inside the trailing callback resets its newly started window', () => {
+    const calls: number[] = [];
+    let t: ReturnType<typeof throttle<[number]>>;
+    t = throttle((x: number) => {
+      calls.push(x);
+      if (x === 2) {
+        t.cancel();
+        t(3);
+      }
+    }, 100);
+
+    t(1);
+    t(2);
+    vi.advanceTimersByTime(100);
+    expect(calls).toEqual([1, 2, 3]);
+  });
+
+  it('keeps reentrant calls throttled when the callback does not cancel first', () => {
+    const calls: number[] = [];
+    let t: ReturnType<typeof throttle<[number]>>;
+    t = throttle((x: number) => {
+      calls.push(x);
+      if (x < 3) t(x + 1);
+    }, 100);
+
+    t(1);
+    expect(calls).toEqual([1]);
+    vi.advanceTimersByTime(100);
+    expect(calls).toEqual([1, 2]);
+    vi.advanceTimersByTime(100);
+    expect(calls).toEqual([1, 2, 3]);
+  });
+
   it('flush() invokes a pending trailing call now; flush() with nothing pending is a no-op', () => {
     const calls: number[] = [];
     const t = throttle((x: number) => calls.push(x), 100);
