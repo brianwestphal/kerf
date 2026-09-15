@@ -21,6 +21,9 @@
  *    missing, or if a referenced title no longer appears in any of the row's
  *    referenced files (backslash-normalized so escaped quotes/apostrophes in
  *    the source match the plain title in the doc).
+ *  - Fails if any app in `site/scripts/build-examples.mjs`'s `COMPLETE_APPS`
+ *    lacks its own feature row mapped to a title inside that app's Playwright
+ *    `test.describe` block.
  *  - **Export-representation completeness (KF-289):** also fails if any
  *    user-facing *value* export (from `src/index.ts` and every public runtime
  *    subpath source),
@@ -43,6 +46,8 @@ const REPO_ROOT = env.KERF_FEATURE_COVERAGE_ROOT
   ? resolve(env.KERF_FEATURE_COVERAGE_ROOT)
   : dirname(dirname(fileURLToPath(import.meta.url)));
 const INDEX_DOC = resolve(REPO_ROOT, 'docs/14-feature-coverage.md');
+const EXAMPLE_BUILD = resolve(REPO_ROOT, 'site/scripts/build-examples.mjs');
+const EXAMPLE_BROWSER_SPEC = resolve(REPO_ROOT, 'tests/browser/example-apps.spec.ts');
 
 // Export-representation completeness (KF-289): every user-facing *value* export
 // must be named by at least one index row, so adding a public export forces a
@@ -104,12 +109,39 @@ function collectRows(docText) {
       rows.push({
         line: j + 1,
         id: idCol >= 0 ? (c[idCol] ?? '') : (c[0] ?? ''),
+        implements: c[header.findIndex((value) => value === 'implements')] ?? '',
         guarding: c[c.length - 1] ?? '',
       });
     }
     i = j - 1;
   }
   return rows;
+}
+
+function guardingTitles(guarding) {
+  return [
+    ...[...guarding.matchAll(/"([^"]+)"/g)].map((m) => m[1]),
+    ...[...guarding.matchAll(/`([^`]+)`/g)].map((m) => m[1]).filter((t) => !/\.tsx?$/.test(t)),
+  ];
+}
+
+function collectCompleteExamples() {
+  const buildSource = readFileSync(EXAMPLE_BUILD, 'utf8');
+  const match = buildSource.match(/const COMPLETE_APPS = \[([\s\S]*?)\];/);
+  if (!match) return null;
+  return match[1]
+    .split(',')
+    .map((name) => name.trim().replace(/^['"]|['"]$/g, ''))
+    .filter(Boolean);
+}
+
+function collectExampleTestBodies() {
+  const source = readFileSync(EXAMPLE_BROWSER_SPEC, 'utf8');
+  const starts = [...source.matchAll(/test\.describe\(\s*['"]([^'"]+)['"]/g)];
+  return new Map(starts.map((match, index) => [
+    match[1],
+    source.slice(match.index, starts[index + 1]?.index ?? source.length),
+  ]));
 }
 
 function main() {
@@ -138,10 +170,7 @@ function main() {
     // Titles: double-quoted strings, plus backtick spans that are NOT file
     // paths (so a title containing `<svg>`/`<details>` can be written in a
     // code span and won't be mangled by Markdown's HTML parsing).
-    const titles = [
-      ...[...row.guarding.matchAll(/"([^"]+)"/g)].map((m) => m[1]),
-      ...[...row.guarding.matchAll(/`([^`]+)`/g)].map((m) => m[1]).filter((t) => !/\.tsx?$/.test(t)),
-    ];
+    const titles = guardingTitles(row.guarding);
     const where = `${row.id || '(no id)'} @ docs/14-feature-coverage.md:${row.line}`;
 
     if (files.length === 0) { errors.push(`${where}: no guarding test file referenced`); continue; }
@@ -157,6 +186,30 @@ function main() {
       const needle = norm(title);
       if (!contents.some(({ txt }) => txt.includes(needle))) {
         errors.push(`${where}: title not found in any referenced file: "${title}"`);
+      }
+    }
+  }
+
+  // Every built complete example gets its own row and at least one guarding
+  // title from that app's describe block. A single umbrella row cannot mask a
+  // removed smoke test for one of the other examples.
+  const completeExamples = collectCompleteExamples();
+  if (completeExamples === null) {
+    errors.push('could not find COMPLETE_APPS in site/scripts/build-examples.mjs');
+  } else {
+    const exampleBodies = collectExampleTestBodies();
+    for (const app of completeExamples) {
+      const implementation = `site/src/examples/complete/${app}`;
+      const appRows = rows.filter((row) => row.implements.includes(implementation));
+      const body = exampleBodies.get(app);
+      if (appRows.length === 0) {
+        errors.push(`complete example "${app}" has no independent feature-index row naming ${implementation}`);
+      } else if (body === undefined) {
+        errors.push(`complete example "${app}" has no test.describe block in tests/browser/example-apps.spec.ts`);
+      } else if (!appRows.some((row) =>
+        row.guarding.includes('tests/browser/example-apps.spec.ts')
+        && guardingTitles(row.guarding).some((title) => norm(body).includes(norm(title))))) {
+        errors.push(`complete example "${app}" has no feature-index row mapped to one of its own browser smoke tests`);
       }
     }
   }
