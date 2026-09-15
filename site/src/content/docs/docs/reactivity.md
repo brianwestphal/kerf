@@ -225,7 +225,7 @@ Wrap the expression in `computed(() => …)` (or pass a plain `signal`). The mem
 The JSX runtime renders to HTML strings. When it sees a signal in a hole it emits a **marker** into the string instead of stringifying, records the binding, and — after the one `innerHTML` parse — wires a tiny `effect` per marker that writes straight to the node. So the string-render model is preserved:
 
 - **SSR / `SafeHtml.toString()`**: outside a `mount()` there's nothing to wire, so a bound signal **snapshots its current value** and emits no markers — server output is correct and marker-free.
-- **Bound URL attributes** (`href`/`src`/`formaction`/`action`/`xlink:href`/`data`) get the same dangerous-URL screening as static attributes — a bound value resolving to `javascript:`/`vbscript:` or a script-executing `data:` document type (`text/html`, `image/svg+xml`, XHTML/XML) is never written (throws in development, warns and drops the attribute in production), including control-character-obfuscated schemes; `raw()` opts out.
+- **Bound URL attributes** (`href`/`src`/`formaction`/`action`/`xlink:href`/`data`) get the same dangerous-URL screening as static attributes — including mixed-case attribute-name spellings and control-character-obfuscated schemes. A bound value resolving to `javascript:`/`vbscript:` or a script-executing `data:` document type (`text/html`, `image/svg+xml`, XHTML/XML) is never written (throws in development, warns and drops the attribute in production); `raw()` opts out.
 
 ### Reserved marker names
 

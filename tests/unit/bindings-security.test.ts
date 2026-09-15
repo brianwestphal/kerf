@@ -127,6 +127,27 @@ describe('fine-grained bindings — bound-attribute security: warn+drop in produ
     dispose();
   });
 
+  it('screens mixed-case names for every bound URL-bearing attribute family', () => {
+    type AttrBag = Parameters<typeof jsx>[1];
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const dangerous = signal('javascript:alert(1)');
+    const dispose = mount(root, () => jsx('div', {
+      HREF: dangerous,
+      Src: dangerous,
+      'XLINK:HREF': dangerous,
+      FormAction: dangerous,
+      ACTION: dangerous,
+      DaTa: dangerous,
+    } as unknown as AttrBag));
+    const el = root.firstElementChild as HTMLElement;
+    for (const attr of ['href', 'src', 'xlink:href', 'formaction', 'action', 'data']) {
+      expect(el.hasAttribute(attr), attr).toBe(false);
+    }
+    expect(warn).toHaveBeenCalledTimes(6);
+    warn.mockRestore();
+    dispose();
+  });
+
   it('toggles the attribute as the bound URL goes safe → dangerous → safe', () => {
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
     const url = signal('/safe');

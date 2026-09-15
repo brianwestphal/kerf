@@ -243,6 +243,20 @@ describe('jsx — dangerous URL attribute filter (production warn+drop)', () => 
     expect(out.toString()).toBe('<use></use>');
   });
 
+  it('screens mixed-case names for every URL-bearing attribute family', () => {
+    type AttrBag = Parameters<typeof jsx>[1];
+    const out = jsx('div', {
+      HREF: 'javascript:alert(1)',
+      Src: 'javascript:alert(1)',
+      'XLINK:HREF': 'javascript:alert(1)',
+      FormAction: 'javascript:alert(1)',
+      ACTION: 'javascript:alert(1)',
+      DaTa: 'javascript:alert(1)',
+    } as unknown as AttrBag);
+    expect(out.toString()).toBe('<div></div>');
+    expect(warnSpy).toHaveBeenCalledTimes(6);
+  });
+
   it('drops vbscript: URLs', () => {
     const out = jsx('a', { href: 'vbscript:msgbox(1)', children: 'x' });
     expect(out.toString()).toBe('<a>x</a>');

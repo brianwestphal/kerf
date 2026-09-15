@@ -223,7 +223,7 @@ The JSX runtime renders to HTML strings. When it sees a signal in a hole it emit
 
 - **SSR / `SafeHtml.toString()`**: outside a `mount()` there's nothing to wire, so a bound signal **snapshots its current value** and emits no markers — server output is correct and marker-free.
 - **Non-breaking**: passing a raw signal into JSX used to throw (`"Did you mean to read .value off a Signal?"`), so this only lights up input that couldn't run before.
-- **Bound URL attributes** (`href`/`src`/`formaction`/`action`/`xlink:href`/`data`) get the same dangerous-URL screening as static attributes — a bound value resolving to `javascript:`/`vbscript:` or a script-executing `data:` document type (`text/html`, `image/svg+xml`, XHTML/XML) is never written (throws in development, warns and drops the attribute in production — see §6.4.1), including control-character-obfuscated schemes; `raw()` opts out.
+- **Bound URL attributes** (`href`/`src`/`formaction`/`action`/`xlink:href`/`data`) get the same dangerous-URL screening as static attributes — including mixed-case attribute-name spellings and control-character-obfuscated schemes. A bound value resolving to `javascript:`/`vbscript:` or a script-executing `data:` document type (`text/html`, `image/svg+xml`, XHTML/XML) is never written (throws in development, warns and drops the attribute in production — see §6.4.1); `raw()` opts out.
 
 ### Reserved marker names
 

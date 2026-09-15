@@ -269,6 +269,8 @@ import { html } from 'kerfjs/html';
 
 ## The core patterns
 
+Dangerous-URL screening treats the six URL-bearing attribute names ASCII-case-insensitively on both static and fine-grained bound paths; mixed-case author spellings do not opt out.
+
 ```tsx
 // 1. Signal + mount. THE core idiom: values bind, structure re-renders.
 // Pass the signal ITSELF into a value hole ({count}, not {count.value}) —

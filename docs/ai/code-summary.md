@@ -387,6 +387,8 @@ kerf/
 
 `resource().run()` applies its stale-generation guard to both promise rejections and synchronous fetcher throws; either failure form updates the current run to `failed` and resolves the returned promise with `undefined`.
 
+Dangerous-URL screening normalizes attribute names to lowercase before checking the six URL-bearing families, so static and bound mixed-case spellings cannot bypass the shared screen.
+
 ## Public exports
 
 Every export reachable via `import { ... } from 'kerfjs'`:

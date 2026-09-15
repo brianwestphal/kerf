@@ -126,7 +126,11 @@ function isDangerousDataUrl(normalized: string): boolean {
 
 /** True if `value` is a dangerous URL for the URL-bearing attribute `name`. */
 export function isDangerousUrlValue(name: string, value: string): boolean {
-  if (!URL_ATTRS.has(name)) return false;
+  // HTML attribute names are ASCII-case-insensitive, and JSX can reach this
+  // helper with the author-written casing on both static and bound paths.
+  // Normalize before the allowlist check so `HREF` / `Src` / `XLINK:HREF`
+  // cannot bypass the same browser sink written in lowercase.
+  if (!URL_ATTRS.has(name.toLowerCase())) return false;
   // Normalized once here — every helper below reasons about the same string the
   // browser's scheme resolution would see.
   const normalized = normalizeUrl(value);

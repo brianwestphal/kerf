@@ -19,7 +19,11 @@
 import { expect, test } from '@playwright/test';
 
 interface KerfGlobals {
-  kerf: { toElement: (input: string | object) => Element };
+  kerf: {
+    mount: (root: Element, render: () => object) => () => void;
+    signal: <T>(value: T) => { value: T };
+    toElement: (input: string | object) => Element;
+  };
   jsxRuntime: { jsx: (tag: string, props: Record<string, unknown>) => object };
   kerfReady: boolean;
   __htmlXss: boolean;
@@ -131,4 +135,48 @@ test('a javascript: no-op href survives, and the anchor stays a real link', asyn
   expect(result.droppedHref).toBeNull();
   expect(result.droppedIsLink).toBe(false);
   expect(result.droppedFocused).toBe(false);
+});
+
+test('mixed-case URL attribute names cannot bypass static or bound screening', async ({ page }) => {
+  const result = await page.evaluate(() => {
+    const w = window as unknown as KerfGlobals;
+    const attrs = ['href', 'src', 'xlink:href', 'formaction', 'action', 'data'];
+    const mixedCaseAttrs = {
+      HREF: 'javascript:alert(1)',
+      Src: 'javascript:alert(1)',
+      'XLINK:HREF': 'javascript:alert(1)',
+      FormAction: 'javascript:alert(1)',
+      ACTION: 'javascript:alert(1)',
+      DaTa: 'javascript:alert(1)',
+    };
+    const staticEl = w.kerf.toElement(w.jsxRuntime.jsx('div', mixedCaseAttrs));
+
+    const root = document.getElementById('root')!;
+    root.innerHTML = '';
+    const url = w.kerf.signal('/safe');
+    const dispose = w.kerf.mount(root, () => w.jsxRuntime.jsx('div', {
+      HREF: url,
+      Src: url,
+      'XLINK:HREF': url,
+      FormAction: url,
+      ACTION: url,
+      DaTa: url,
+    }));
+    const boundEl = root.firstElementChild!;
+    const safeBound = attrs.every((name) => boundEl.getAttribute(name) === '/safe');
+    url.value = 'javascript:alert(1)';
+    const result = {
+      staticDropped: attrs.every((name) => !staticEl.hasAttribute(name)),
+      safeBound,
+      dangerousBoundDropped: attrs.every((name) => !boundEl.hasAttribute(name)),
+    };
+    dispose();
+    return result;
+  });
+
+  expect(result).toEqual({
+    staticDropped: true,
+    safeBound: true,
+    dangerousBoundDropped: true,
+  });
 });

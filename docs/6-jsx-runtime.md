@@ -124,6 +124,8 @@ Two attributes are absent for the same reason: **`<select value>` and `<textarea
 
 Plain-string values written to URL-bearing attributes are screened by scheme. If a value resolves to a `javascript:` or `vbscript:` scheme, or a script-executing `data:` document type (`data:text/html`, `data:image/svg+xml`, XHTML/XML), kerf **drops the attribute entirely**. The screen runs on these attribute names: `href`, `src`, `xlink:href`, `formaction`, `action`, and `data` (the `<object data>` attribute).
 
+Attribute-name matching is ASCII-case-insensitive, matching HTML semantics, so author spellings such as `HREF`, `Src`, and `XLINK:HREF` cannot bypass the screen.
+
 **How a drop surfaces depends on the build mode.** In **development** the screen **throws an `Error`** with the full diagnostic, so a mistyped or unsafe URL fails loudly at your desk instead of vanishing into a console nobody reads. In **production** it does exactly what it always did — `console.warn`s and drops the attribute — because a shipped app must never crash on attacker-influenced data. The attribute is dropped either way; only how the drop is reported differs. Mode is decided the same way as the rest of kerf's dev diagnostics: importing `kerfjs/dev` selects the throwing behavior, omitting it selects warn-and-drop. kerf does not probe the environment. This is a dev-only change — production output is byte-identical to before.
 
 Inert `data:` media — raster images (`data:image/png`, …), fonts, audio, video, and plain text/CSS — pass through, so `<img src="data:image/png;base64,…">` still works. Every other `data:` subtype (including unknown ones) fails closed.
