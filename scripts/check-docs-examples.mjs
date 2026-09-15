@@ -2,7 +2,7 @@
 /**
  * Doc/example consistency gate.
  *
- * Three checks:
+ * Four checks:
  *
  * 1. **Run-live links resolve** (migrating/) — every `/kerf/run/<name>/` link in
  *    a migration page must point at an example app that is (a) registered in
@@ -28,6 +28,10 @@
  *    the source, but the doc excerpt still uses the pre-release pattern" —
  *    the v0.11.0 release missed this and shipped doc/source drift.
  *
+ * 4. **Published documentation links resolve** (examples/complete/) — every
+ *    `/kerf/api/` or `/kerf/docs/…/` Markdown link targets a real content
+ *    route, and any fragment names a heading that route actually publishes.
+ *
  * Surfaces the kerf-of-the-shape "doc snippet violates a runtime contract"
  * bug that let the partial-set TodoMVC regression ship plus the "source
  * moved to attr() but doc excerpts didn't" drift caught after v0.11.0.
@@ -36,7 +40,7 @@
 
 import { execSync } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
-import { dirname, resolve } from 'node:path';
+import { dirname, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -44,6 +48,7 @@ const repoRoot = resolve(__dirname, '..');
 const migratingDir = resolve(repoRoot, 'site/src/content/docs/migrating');
 const exampleDocsDir = resolve(repoRoot, 'site/src/content/docs/examples/complete');
 const exampleSrcDir = resolve(repoRoot, 'site/src/examples/complete');
+const siteContentDir = resolve(repoRoot, 'site/src/content/docs');
 const buildExamplesPath = resolve(repoRoot, 'site/scripts/build-examples.mjs');
 const browserSpecPath = resolve(repoRoot, 'tests/browser/example-apps.spec.ts');
 const distTypingTsconfig = resolve(repoRoot, 'tests/dist/jsx-typing/tsconfig.json');
@@ -87,6 +92,43 @@ const docFiles = readdirSync(migratingDir)
 
 const linkRe = /\/kerf\/run\/([a-z0-9-]+)\/?/g;
 const codeBlockRe = /```(tsx|ts)\n([\s\S]*?)```/g;
+const publishedDocLinkRe = /\]\((\/kerf\/(?:api|docs\/[^)#?]+)\/?(?:#[^)]+)?)\)/g;
+
+function githubHeadingSlug(heading) {
+  return heading
+    .replace(/<[^>]*>/g, '')
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+    .replace(/[`*_~]/g, '')
+    .toLowerCase()
+    .replace(/[^\p{Letter}\p{Number}\p{Mark}\-_ ]/gu, '')
+    .replace(/ /g, '-');
+}
+
+function publishedHeadings(src) {
+  const slugs = new Set();
+  const occurrences = new Map();
+  for (const match of src.matchAll(/^#{1,6}\s+(.+)$/gm)) {
+    const base = githubHeadingSlug(match[1]);
+    const occurrence = occurrences.get(base) ?? 0;
+    occurrences.set(base, occurrence + 1);
+    slugs.add(occurrence === 0 ? base : `${base}-${occurrence}`);
+  }
+  return slugs;
+}
+
+function sourceForPublishedRoute(target) {
+  const url = new URL(target, 'https://kerf.invalid');
+  const route = decodeURIComponent(url.pathname)
+    .replace(/^\/kerf\//, '')
+    .replace(/^\/+|\/+$/g, '');
+  const candidates = [
+    resolve(siteContentDir, `${route}.md`),
+    resolve(siteContentDir, `${route}.mdx`),
+    resolve(siteContentDir, route, 'index.md'),
+    resolve(siteContentDir, route, 'index.mdx'),
+  ];
+  return { url, sourcePath: candidates.find(existsSync) };
+}
 
 const scratchDir = resolve(repoRoot, 'tests/.docs-examples-scratch');
 if (existsSync(scratchDir)) rmSync(scratchDir, { recursive: true, force: true });
@@ -208,6 +250,35 @@ if (process.exitCode === 1) {
   process.exit(1);
 }
 ok(`${totalExamplePairs} example doc/source pairs have matching kerfjs imports`);
+
+// --- Check 4: complete-example links target published docs ----------------
+
+let totalPublishedDocLinks = 0;
+for (const docFile of exampleDocFiles) {
+  const docPath = resolve(exampleDocsDir, docFile);
+  const src = readFileSync(docPath, 'utf8');
+  for (const match of src.matchAll(publishedDocLinkRe)) {
+    const target = match[1];
+    const { url, sourcePath } = sourceForPublishedRoute(target);
+    totalPublishedDocLinks++;
+    if (!sourcePath) {
+      fail(`${docFile}: ${target} does not map to a published site content route`);
+      continue;
+    }
+    if (url.hash) {
+      const anchor = decodeURIComponent(url.hash.slice(1));
+      const headings = publishedHeadings(readFileSync(sourcePath, 'utf8'));
+      if (!headings.has(anchor)) {
+        fail(`${docFile}: ${target} names no published heading in ${relative(repoRoot, sourcePath)}`);
+      }
+    }
+  }
+}
+if (process.exitCode === 1) {
+  ok(`${totalPublishedDocLinks} published documentation links — see errors above`);
+  process.exit(1);
+}
+ok(`${totalPublishedDocLinks} published documentation links resolve to source routes and headings`);
 
 // --- Compile self-contained blocks via tsc ------------------------------
 

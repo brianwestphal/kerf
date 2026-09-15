@@ -10,7 +10,7 @@ description: A whole client-side router in one createRouter — URL-driven pages
 
 [![Animated preview: navigating a routed app inside a fake browser window; the address bar and Back button drive URL routing with no page reloads](/kerf/demos/router.svg)](/kerf/run/router/)
 
-A small single-page app driven by [`kerfjs/router`](/kerf/docs/docs/20-router/) — the "postcard router", shown inside a **fake browser window** so you can watch the address bar. Navigate between Home, a guides list, an individual guide (a `/guides/:slug` param route), and About; the window's Back button drives real history. The active nav tab follows the URL, the address bar updates on every step, and **nothing ever reloads** — links are intercepted and the outlet swaps the page.
+A small single-page app driven by [`kerfjs/router`](/kerf/api/#router--kerfjsrouter-subpath) — the "postcard router", shown inside a **fake browser window** so you can watch the address bar. Navigate between Home, a guides list, an individual guide (a `/guides/:slug` param route), and About; the window's Back button drives real history. The active nav tab follows the URL, the address bar updates on every step, and **nothing ever reloads** — links are intercepted and the outlet swaps the page.
 
 The kerf **core stays router-free**: `kerfjs/router` is an opt-in, tree-shakeable subpath, so an app that doesn't route ships the same ~12 KB core.
 
@@ -21,7 +21,7 @@ The kerf **core stays router-free**: `kerfjs/router` is an opt-in, tree-shakeabl
 - **Automatic link interception.** `createRouter` installs one delegated click listener; in-app `<a href="#/…">` links route instead of reloading (opt a link out with `data-router-ignore` / `rel="external"`). This demo uses **hash mode** so it works no matter what sub-path it's served under.
 - **Reactive active links.** `router.activeClass('/guides', 'active')` returns a bound class signal — the nav highlight follows the route with no manual wiring.
 
-This example deliberately stays a "postcard router": no nested layouts, data loaders, lazy routes, or guards. Those compose with kerf primitives (`resource` from `kerfjs/async` for loading, an `effect` on `router.route` for a guard) — see [`docs/20-router.md`](/kerf/docs/docs/20-router/).
+This example deliberately stays a "postcard router": no nested layouts, data loaders, lazy routes, or guards. Those compose with kerf primitives (`resource` from `kerfjs/async` for loading, an `effect` on `router.route` for a guard) — see the [`kerfjs/router` API reference](/kerf/api/#router--kerfjsrouter-subpath).
 
 [View source on GitHub →](https://github.com/brianwestphal/kerf/tree/main/site/src/examples/complete/router)
 
