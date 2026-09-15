@@ -153,6 +153,17 @@
       .avatar.c { background: #f59e0b; }
       .avatar.d { background: #ec4899; }
       .avatar.e { background: #14b8a6; }
+
+      @media (max-width: 640px) {
+        body { padding: 1rem; }
+        header {
+          align-items: flex-start;
+          flex-direction: column;
+          gap: 0.5rem;
+        }
+        .board { grid-template-columns: 1fr; }
+        .col { min-height: 0; }
+      }
     </style>
   </head>
   <body>

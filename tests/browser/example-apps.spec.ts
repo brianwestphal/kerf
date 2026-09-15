@@ -15,6 +15,29 @@ import { expect, test } from '@playwright/test';
 const BASE = '/tests/dist/example-apps';
 
 test.describe('kanban', () => {
+  test('stacks its columns without document overflow on a mobile viewport', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto(`${BASE}/kanban/`);
+
+    const layout = await page.evaluate(() => ({
+      viewportWidth: document.documentElement.clientWidth,
+      documentWidth: document.documentElement.scrollWidth,
+      columns: [...document.querySelectorAll<HTMLElement>('.col')].map((column) => {
+        const bounds = column.getBoundingClientRect();
+        return { left: bounds.left, right: bounds.right, top: bounds.top, bottom: bounds.bottom };
+      }),
+    }));
+
+    expect(layout.documentWidth).toBeLessThanOrEqual(layout.viewportWidth + 1);
+    expect(layout.columns).toHaveLength(3);
+    for (const column of layout.columns) {
+      expect(column.left).toBeGreaterThanOrEqual(0);
+      expect(column.right).toBeLessThanOrEqual(layout.viewportWidth);
+    }
+    expect(layout.columns[1]!.top).toBeGreaterThan(layout.columns[0]!.bottom);
+    expect(layout.columns[2]!.top).toBeGreaterThan(layout.columns[1]!.bottom);
+  });
+
   test('drag updates the card transform during pointermove (KF-163 regression)', async ({ page }) => {
     await page.goto(`${BASE}/kanban/`);
     const card = page.locator('.card[data-card="a"]');
