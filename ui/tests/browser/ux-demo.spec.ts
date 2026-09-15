@@ -2,6 +2,62 @@ import { expect, test } from '@playwright/test';
 
 import { catalog, catalogRepositoryHref, catalogSections, kerfCatalog, webAwesomeCatalog } from '../../ux-demo/catalog.js';
 
+test('theme action follows the effective OS appearance and explicitly switches either direction', async ({ page, browserName }) => {
+  await page.emulateMedia({ colorScheme: 'light' });
+  await page.goto('/');
+
+  const themeButton = page.locator('[data-action="toggle-theme"]');
+  const lightBackground = await page.locator('body').evaluate((element) => window.getComputedStyle(element).backgroundColor);
+  await expect(themeButton).toHaveAttribute('data-effective-theme', 'light');
+  await expect(themeButton).toHaveAttribute('aria-label', 'Use dark theme');
+  await expect(themeButton).not.toHaveAttribute('aria-pressed', /.*/);
+
+  await page.emulateMedia({ colorScheme: 'dark' });
+  await expect(themeButton).toHaveAttribute('data-effective-theme', 'dark');
+  await expect(themeButton).toHaveAttribute('aria-label', 'Use light theme');
+  await expect(themeButton).toContainText('Light');
+  await expect(page.locator('html')).not.toHaveClass(/demo-(?:light|dark)/);
+  const darkBackground = await page.locator('body').evaluate((element) => window.getComputedStyle(element).backgroundColor);
+  expect(darkBackground).not.toBe(lightBackground);
+
+  await themeButton.click();
+  await expect(themeButton).toHaveAttribute('data-effective-theme', 'light');
+  await expect(themeButton).toHaveAttribute('aria-label', 'Use dark theme');
+  await expect(themeButton).toContainText('Dark');
+  await expect(page.locator('html')).toHaveClass(/demo-light/);
+  await expect(page.locator('html')).not.toHaveClass(/demo-dark/);
+  await expect(page.locator('.catalog-log')).toHaveText('Light theme on');
+  await expect.poll(() => page.locator('body').evaluate((element) => window.getComputedStyle(element).backgroundColor)).toBe(lightBackground);
+  if (browserName === 'chromium') await page.screenshot({ path: 'test-results/theme-override-light-from-os-dark.png', fullPage: true });
+
+  await page.emulateMedia({ colorScheme: 'light' });
+  await page.emulateMedia({ colorScheme: 'dark' });
+  await expect(themeButton).toHaveAttribute('data-effective-theme', 'light');
+  await expect(page.locator('html')).toHaveClass(/demo-light/);
+  await expect.poll(() => page.locator('body').evaluate((element) => window.getComputedStyle(element).backgroundColor)).toBe(lightBackground);
+
+  await page.reload();
+  await expect(themeButton).toHaveAttribute('data-effective-theme', 'dark');
+  await expect(themeButton).toHaveAttribute('aria-label', 'Use light theme');
+  await expect(page.locator('html')).not.toHaveClass(/demo-(?:light|dark)/);
+
+  await page.emulateMedia({ colorScheme: 'light' });
+  await expect(themeButton).toHaveAttribute('data-effective-theme', 'light');
+  await expect(themeButton).toHaveAttribute('aria-label', 'Use dark theme');
+  await themeButton.click();
+  await expect(themeButton).toHaveAttribute('data-effective-theme', 'dark');
+  await expect(page.locator('html')).toHaveClass(/demo-dark/);
+  await expect(page.locator('html')).not.toHaveClass(/demo-light/);
+  await expect(page.locator('.catalog-log')).toHaveText('Dark theme on');
+  await expect.poll(() => page.locator('body').evaluate((element) => window.getComputedStyle(element).backgroundColor)).toBe(darkBackground);
+  if (browserName === 'chromium') {
+    await page.screenshot({ path: 'test-results/theme-override-dark-from-os-light.png', fullPage: true });
+    await page.setViewportSize({ width: 390, height: 844 });
+    await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
+    await page.screenshot({ path: 'test-results/theme-override-dark-narrow.png', fullPage: true });
+  }
+});
+
 test('omits the removed command-palette recipe and safely falls back from its stale route', async ({ page, browserName }) => {
   const openRemainingRecipes = async (width: number, height: number) => {
     await page.setViewportSize({ width, height });
@@ -1312,7 +1368,8 @@ test('catalog routes every production component family and supports its stateful
 
   const themeButton = page.locator('[data-action="toggle-theme"]');
   await themeButton.click();
-  await expect(themeButton).toHaveAttribute('aria-pressed', 'true');
+  await expect(themeButton).toHaveAttribute('data-effective-theme', 'dark');
+  await expect(themeButton).toHaveAttribute('aria-label', 'Use light theme');
   await expect(page.locator('html')).toHaveClass(/demo-dark/);
   await page.locator('[data-action="toggle-contrast"]').click();
   await expect(page.locator('html')).toHaveClass(/demo-contrast/);

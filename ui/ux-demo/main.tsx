@@ -28,9 +28,10 @@ import { reorderTabs, wireTabBars } from '@kerfjs/ui/wire-tab-bars';
 import { wireTokenSearchFields } from '@kerfjs/ui/wire-token-search-fields';
 import { batch, delegate, delegateCapture, mount, signal } from 'kerfjs';
 import { delegateActions } from 'kerfjs/actions';
-import { ArrowDownAZ, ArrowRight, Bell, Check, ChevronLeft, ChevronRight, CircleHelp, Columns3, Contrast, ExternalLink, Folder, GitCompare, GripVertical, Inbox, List, Moon, MoreHorizontal, PanelLeft, PanelLeftClose, PanelLeftOpen, Pin, Plus, Search, Settings, SlidersHorizontal, Star, StickyNote, Wrench, X, ZapOff } from 'lucide';
+import { ArrowDownAZ, ArrowRight, Bell, Check, ChevronLeft, ChevronRight, CircleHelp, Columns3, Contrast, ExternalLink, Folder, GitCompare, GripVertical, Inbox, List, Moon, MoreHorizontal, PanelLeft, PanelLeftClose, PanelLeftOpen, Pin, Plus, Search, Settings, SlidersHorizontal, Star, StickyNote, Sun, Wrench, X, ZapOff } from 'lucide';
 
 import { catalog, catalogEntriesUsing, type CatalogEntry, type CatalogId, catalogRepositoryHref, catalogSections, findCatalogEntry, isCatalogId, type KerfCatalogId, webAwesomeCatalog, type WebAwesomeCatalogId, webAwesomeCatalogSections } from './catalog.js';
+import { applyDemoTheme, type DemoTheme, oppositeDemoTheme, preferredDemoTheme } from './demo-theme.js';
 import { isRecipeId, type RecipeId, recipeLoaders } from './recipes/loaders.js';
 import type { RecipeController } from './recipes/types.js';
 
@@ -75,7 +76,9 @@ const menuActionPressed = signal(false);
 const inspectorSection = signal<'summary' | 'activity' | 'files'>('summary');
 const displayDensity = signal<'compact' | 'comfortable' | 'roomy'>('comfortable');
 const actionLog = signal('Catalog ready');
-const darkTheme = signal(false);
+const systemDarkTheme = window.matchMedia('(prefers-color-scheme: dark)');
+const effectiveTheme = signal<DemoTheme>(preferredDemoTheme(systemDarkTheme.matches));
+let explicitTheme: DemoTheme | undefined;
 const increasedContrast = signal(false);
 const reducedMotion = signal(false);
 const webAwesomeReady = signal(false);
@@ -560,6 +563,7 @@ function revealSelectedSidebarItem(id: CatalogId, block: ScrollLogicalPosition =
 mount(app, () => {
   const selected = findCatalogEntry(selectedDemo.value)!;
   const isRecipe = selected.kind === 'recipe';
+  const nextTheme = oppositeDemoTheme(effectiveTheme.value);
   return <main class="catalog-shell" data-sidebar-collapsed={String(sidebarCollapsed.value)}>
     <aside class="catalog-sidebar kui-pane" aria-label="Component catalog">
       <header class="catalog-brand kui-pane__toolbar">
@@ -588,7 +592,7 @@ mount(app, () => {
     </aside>
     <article class="catalog-detail kui-pane">
       <header class="catalog-header kui-pane__toolbar">
-        <Toolbar label={`${selected.name} page header`} divider={false} leading={<>{sidebarCollapsed.value && <ToolbarControlGroup appearance="borderless" single><button type="button" data-action="toggle-catalog-sidebar" aria-label="Expand component catalog">{icon(PanelLeftOpen, 'panel-left-open')}</button></ToolbarControlGroup>}<ToolbarControlGroup appearance="borderless" className="catalog-header__identity"><h2>{selected.name}</h2></ToolbarControlGroup></>} trailing={<div class="catalog-header__actions">{isRecipe && <ToolbarControlGroup appearance="borderless" single buttonAppearance="push"><button type="button" data-action="toggle-recipe-notes" aria-label={recipeNotesVisible.value ? 'Hide recipe notes' : 'Show recipe notes'} aria-pressed={String(recipeNotesVisible.value)}>{icon(StickyNote, 'sticky-note')}</button></ToolbarControlGroup>}<ToolbarControlGroup className="catalog-settings" label="Catalog display settings"><button type="button" data-action="toggle-theme" aria-pressed={String(darkTheme.value)}>{icon(Moon, 'moon')}<span>Dark</span></button><button type="button" data-action="toggle-contrast" aria-pressed={String(increasedContrast.value)}>{icon(Contrast, 'contrast')}<span>Contrast</span></button><button type="button" data-action="toggle-motion" aria-pressed={String(reducedMotion.value)}>{icon(ZapOff, 'zap-off')}<span>Reduce motion</span></button></ToolbarControlGroup></div>} />
+        <Toolbar label={`${selected.name} page header`} divider={false} leading={<>{sidebarCollapsed.value && <ToolbarControlGroup appearance="borderless" single><button type="button" data-action="toggle-catalog-sidebar" aria-label="Expand component catalog">{icon(PanelLeftOpen, 'panel-left-open')}</button></ToolbarControlGroup>}<ToolbarControlGroup appearance="borderless" className="catalog-header__identity"><h2>{selected.name}</h2></ToolbarControlGroup></>} trailing={<div class="catalog-header__actions">{isRecipe && <ToolbarControlGroup appearance="borderless" single buttonAppearance="push"><button type="button" data-action="toggle-recipe-notes" aria-label={recipeNotesVisible.value ? 'Hide recipe notes' : 'Show recipe notes'} aria-pressed={String(recipeNotesVisible.value)}>{icon(StickyNote, 'sticky-note')}</button></ToolbarControlGroup>}<ToolbarControlGroup className="catalog-settings" label="Catalog display settings"><button type="button" data-action="toggle-theme" aria-label={`Use ${nextTheme} theme`} data-effective-theme={effectiveTheme.value}>{nextTheme === 'dark' ? icon(Moon, 'moon') : icon(Sun, 'sun')}<span>{nextTheme === 'dark' ? 'Dark' : 'Light'}</span></button><button type="button" data-action="toggle-contrast" aria-pressed={String(increasedContrast.value)}>{icon(Contrast, 'contrast')}<span>Contrast</span></button><button type="button" data-action="toggle-motion" aria-pressed={String(reducedMotion.value)}>{icon(ZapOff, 'zap-off')}<span>Reduce motion</span></button></ToolbarControlGroup></div>} />
         <p class="catalog-header__description kui-content-item">{selected.description}</p>
       </header>
       <section class="catalog-stage kui-pane__content" aria-label={`${selected.name} preview`} data-recipe-notes-visible={String(isRecipe && recipeNotesVisible.value)}>
@@ -731,7 +735,12 @@ const stopActions = delegateActions(app, 'click', {
     actionLog.value = 'Find cleared';
   },
   'cycle-tone': () => { const tones = ['neutral', 'info', 'success', 'warning', 'danger'] as const; bannerTone.value = tones[(tones.indexOf(bannerTone.value) + 1) % tones.length]!; actionLog.value = `Banner tone: ${bannerTone.value}`; },
-  'toggle-theme': () => { darkTheme.value = !darkTheme.value; document.documentElement.classList.toggle('demo-dark', darkTheme.value); actionLog.value = darkTheme.value ? 'Dark theme on' : 'Dark theme off'; },
+  'toggle-theme': () => {
+    explicitTheme = oppositeDemoTheme(effectiveTheme.value);
+    applyDemoTheme(document.documentElement, explicitTheme);
+    effectiveTheme.value = explicitTheme;
+    actionLog.value = `${explicitTheme === 'dark' ? 'Dark' : 'Light'} theme on`;
+  },
   'toggle-contrast': () => { increasedContrast.value = !increasedContrast.value; document.documentElement.classList.toggle('demo-contrast', increasedContrast.value); actionLog.value = increasedContrast.value ? 'Increased contrast on' : 'Increased contrast off'; },
   'toggle-motion': () => { reducedMotion.value = !reducedMotion.value; document.documentElement.classList.toggle('demo-reduced-motion', reducedMotion.value); actionLog.value = reducedMotion.value ? 'Reduced motion on' : 'Reduced motion off'; },
   'log-add': () => { actionLog.value = 'Add action requested'; },
@@ -861,5 +870,9 @@ const stopResizeObserver = delegate(app, 'wa-resize', 'wa-resize-observer', (eve
   output.textContent = `Observed width · ${Math.round(entry.contentRect.width)}px`;
 });
 const stopTabBars = wireTabBars(app, { onReorder: ({ barId, sourceId, targetId, position, source }) => { tabBarTabs.value = reorderTabs(tabBarTabs.value, (tab) => tab.id, sourceId, targetId, position); actionLog.value = `${source === 'pointer' ? 'Dragged' : 'Moved'} ${sourceId} ${position} ${targetId} in ${barId}`; } });
+const syncSystemTheme = (event: MediaQueryListEvent): void => {
+  if (!explicitTheme) effectiveTheme.value = preferredDemoTheme(event.matches);
+};
+systemDarkTheme.addEventListener('change', syncSystemTheme);
 
-window.addEventListener('pagehide', () => { stopActions(); stopResize(); stopSelect(); stopRecipeChanges(); stopRecipeInputs(); stopRecipeDialogs(); stopTokenSearch(); stopToolbarFind(); stopTokenSearchSubmits(); stopToolbarFindClearPointer(); stopToolbarFindFocus(); stopMenuItemDragOver(); stopMenuItemDrop(); stopMenuActionRowDoubleClick(); stopMenuActionRowContextMenu(); stopRelationships(); stopAnimationSelects(); stopAnimationRanges(); stopAnimationEvents.forEach((dispose) => dispose()); stopIntersectionObserver(); stopMutationObserver(); stopResizeObserver(); stopTabBars(); }, { once: true });
+window.addEventListener('pagehide', () => { stopActions(); stopResize(); stopSelect(); stopRecipeChanges(); stopRecipeInputs(); stopRecipeDialogs(); stopTokenSearch(); stopToolbarFind(); stopTokenSearchSubmits(); stopToolbarFindClearPointer(); stopToolbarFindFocus(); stopMenuItemDragOver(); stopMenuItemDrop(); stopMenuActionRowDoubleClick(); stopMenuActionRowContextMenu(); stopRelationships(); stopAnimationSelects(); stopAnimationRanges(); stopAnimationEvents.forEach((dispose) => dispose()); stopIntersectionObserver(); stopMutationObserver(); stopResizeObserver(); stopTabBars(); systemDarkTheme.removeEventListener('change', syncSystemTheme); }, { once: true });

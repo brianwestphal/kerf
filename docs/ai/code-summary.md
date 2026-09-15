@@ -8,6 +8,9 @@ container-responsive CSS. The composer recipe uses one visible form surface,
 DialogHeader title/summary hierarchy, shared 8px field/action gutters, and a
 conditional StateBanner as its only nested semantic surface. The copyable `mount-recipe.ts` adapter owns stable-root
 delegation, form/dialog forwarding, resize commits, and idempotent disposal.
+`ui/ux-demo/demo-theme.ts` derives the effective operating-system light/dark
+appearance and applies the catalog's mutually exclusive explicit theme
+overrides.
 The application-local `ui/docs/examples/command-palette-adapter.tsx` demonstrates
 canonical layout ownership for a recurring concept the package does not export.
 `ui/scripts/check-recipes.mjs` keeps those sources,

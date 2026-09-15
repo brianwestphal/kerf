@@ -1,5 +1,5 @@
 :root {
-  color-scheme: light;
+  color-scheme: light dark;
   font-family: var(--kui-font-sans);
   font-synthesis: none;
 }
@@ -11,6 +11,9 @@ html {
   min-width: 320px;
   min-height: 100%;
   background: var(--kui-color-surface-lowered);
+}
+html.demo-light {
+  color-scheme: light;
 }
 html.demo-dark {
   color-scheme: dark;
