@@ -105,6 +105,8 @@ Three-tier model:
 
 The `kerfjs/overlay` toast helper treats plain-string content as untrusted text: strings are HTML-escaped before mounting. Callers must use `SafeHtml` or a render function when they intentionally need markup.
 
+Concurrent plain-element fallback overlays in one document share a document-owned open-order stack. Escape, backdrop, and outside-click dismissal applies only to the topmost active fallback surface, for both modal and non-modal overlays; closing a lower surface programmatically removes only its own stack entry.
+
 The `kerfjs/async` resource helper normalizes both synchronous fetcher throws and asynchronous promise rejections into its stale-guarded `failed` state; `run()` always returns a promise that resolves rather than rejecting.
 
 ### §6 JSX runtime

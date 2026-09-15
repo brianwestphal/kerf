@@ -112,6 +112,35 @@ describe('overlay()', () => {
       h.close();
       expect(h.el.parentElement).toBeNull();
     });
+
+    it('concurrent fallback modals dismiss from the top down on Escape', () => {
+      const lowerDismiss = vi.fn();
+      const upperDismiss = vi.fn();
+      const lower = overlay(raw('<div class="lower"/>'), { onDismiss: lowerDismiss });
+      const upper = overlay(raw('<div class="upper"/>'), { onDismiss: upperDismiss });
+
+      key(document, 'Escape');
+      expect(upper.el.isConnected).toBe(false);
+      expect(lower.el.isConnected).toBe(true);
+      expect(upperDismiss).toHaveBeenCalledTimes(1);
+      expect(lowerDismiss).not.toHaveBeenCalled();
+
+      key(document, 'Escape');
+      expect(lower.el.isConnected).toBe(false);
+      expect(lowerDismiss).toHaveBeenCalledTimes(1);
+    });
+
+    it('concurrent fallback non-modal overlays dismiss from the top down on outside clicks', () => {
+      const lower = overlay(raw('<div class="lower"/>'), { dismiss: 'outside', trap: false });
+      const upper = overlay(raw('<div class="upper"/>'), { dismiss: 'outside', trap: false });
+
+      document.body.click();
+      expect(upper.el.isConnected).toBe(false);
+      expect(lower.el.isConnected).toBe(true);
+
+      document.body.click();
+      expect(lower.el.isConnected).toBe(false);
+    });
   });
 
   it('initialFocus: a selector focuses the matched element', () => {

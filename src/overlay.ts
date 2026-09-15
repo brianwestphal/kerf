@@ -117,10 +117,21 @@ function supportsPopover(): boolean {
     && typeof HTMLElement.prototype.showPopover === 'function';
 }
 
+const FALLBACK_OVERLAY_STACK = Symbol('kerf.fallbackOverlayStack');
+type FallbackOverlayDocument = Document & {
+  [FALLBACK_OVERLAY_STACK]?: HTMLElement[];
+};
+
+function fallbackOverlayStack(wrapper: HTMLElement): HTMLElement[] {
+  const document = wrapper.ownerDocument as FallbackOverlayDocument;
+  return document[FALLBACK_OVERLAY_STACK] ??= [];
+}
+
 /**
  * Open an overlay: append a wrapper to `container`, `mount()` `content` inside
  * it, wire the requested dismissals + (optionally) a focus trap, and return a
- * handle. See {@link OverlayOptions}.
+ * handle. Concurrent fallback overlays dismiss from the top down. See
+ * {@link OverlayOptions}.
  */
 export function overlay(content: OverlayContent, options: OverlayOptions = {}): OverlayHandle {
   const {
@@ -156,8 +167,14 @@ export function overlay(content: OverlayContent, options: OverlayOptions = {}): 
     wrapper.setAttribute('aria-modal', 'true');
   }
   container.appendChild(wrapper);
+  const fallback = !useDialog && !usePopover;
+  const fallbackStack = fallback ? fallbackOverlayStack(wrapper) : undefined;
+
+  const isTopmostFallback = (): boolean =>
+    fallbackStack === undefined || fallbackStack[fallbackStack.length - 1] === wrapper;
 
   const disposeMount = mount(wrapper, typeof content === 'function' ? content : () => content);
+  fallbackStack?.push(wrapper);
 
   // Enter the top layer after the content is mounted + connected. `showModal()`
   // moves focus into the dialog by default; kerf's `initialFocus` pass below runs
@@ -185,6 +202,10 @@ export function overlay(content: OverlayContent, options: OverlayOptions = {}): 
   function close(value?: unknown): void {
     if (state.closed) return;
     state.closed = true;
+    if (fallbackStack !== undefined) {
+      const stackIndex = fallbackStack.indexOf(wrapper);
+      if (stackIndex !== -1) fallbackStack.splice(stackIndex, 1);
+    }
     for (const remove of removers) remove();
     disposeMount();
     // Exit the top layer before removing the node, so the native close steps run
@@ -218,6 +239,7 @@ export function overlay(content: OverlayContent, options: OverlayOptions = {}): 
     removers.push(() => wrapper.removeEventListener('cancel', onCancel));
   } else if (wantEscape || trap) {
     const onKeydown = (event: KeyboardEvent): void => {
+      if (!isTopmostFallback()) return;
       if (wantEscape && event.key === 'Escape') {
         event.stopPropagation();
         userDismiss();
@@ -248,6 +270,7 @@ export function overlay(content: OverlayContent, options: OverlayOptions = {}): 
 
   if (triggers.includes('backdrop')) {
     const onClick = (event: Event): void => {
+      if (!isTopmostFallback()) return;
       if (event.target === wrapper) userDismiss();
     };
     wrapper.addEventListener('click', onClick);
@@ -261,6 +284,7 @@ export function overlay(content: OverlayContent, options: OverlayOptions = {}): 
     // Capture phase: the click that opened this overlay already passed
     // document's capture phase, so this never fires for that opening click.
     const onDocClick = (event: Event): void => {
+      if (!isTopmostFallback()) return;
       const target = event.target as Node | null;
       if (target === null) return;
       if (wrapper.contains(target)) return;

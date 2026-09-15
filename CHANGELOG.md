@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Made concurrent fallback overlays arbitrate dismissal from the top down, so one Escape, backdrop, or outside click closes only the active modal or non-modal surface.
 - Made `prompt()` and `form()` reject malformed bring-your-own dialog markup immediately: missing required input markers now close the incomplete overlay and throw an error naming the exact marker (and form field) instead of failing later on interaction.
 - Covered `each()` count-drift recovery through the public API: after a granular insert drains its patches and row rendering fails, a subsequent update now has a regression test proving the snapshot path repairs the DOM.
 - Fixed tooltips hiding when just one of their pointer/focus triggers left; pointer and focus presence are now tracked independently, so either interaction keeps the tooltip open until both end.

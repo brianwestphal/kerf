@@ -120,8 +120,9 @@ const BUDGETS = [
     // already uses kerf. The budget still guards overlay's OWN growth.
     name: 'overlay',
     // KF-2TNZPJ: shared render core restores exact contenteditable selections;
-    // KF-3HYK5B adds immediate, descriptive BYO-dialog slot validation.
-    budgetKb: 16.6,
+    // KF-3HYK5B adds BYO-dialog slot validation; KF-P0AB45 adds fallback
+    // overlay stack arbitration so one dismissal affects only the topmost.
+    budgetKb: 16.7,
     description: 'the overlay/modal subpath (overlay + confirm + prompt + form + choice + popover + tooltip + positioning + toast) — includes shared core',
     entry: `
       import { overlay, confirm, prompt, form, choice, popover, tooltip, positionAnchored, autoReposition, toast } from '${DIST}/overlay.js';

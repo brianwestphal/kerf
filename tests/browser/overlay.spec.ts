@@ -45,6 +45,42 @@ test('focus trap: initial focus, Tab cycles + wraps within, Escape restores focu
   expect(await activeId(page)).toBe('trigger'); // focus restored on close
 });
 
+test('fallback overlays arbitrate Escape and outside dismissal from the top down', async ({ page }) => {
+  await page.evaluate(() => {
+    const { overlay } = (window as any).kerfOverlay;
+    const { raw } = (window as any).jsxRuntime;
+    overlay(raw('<div>lower modal</div>'), { className: 'lower-modal' });
+    overlay(raw('<div>upper modal</div>'), { className: 'upper-modal' });
+  });
+
+  await page.keyboard.press('Escape');
+  await expect(page.locator('.upper-modal')).toHaveCount(0);
+  await expect(page.locator('.lower-modal')).toHaveCount(1);
+  await page.keyboard.press('Escape');
+  await expect(page.locator('.lower-modal')).toHaveCount(0);
+
+  await page.evaluate(() => {
+    const { overlay } = (window as any).kerfOverlay;
+    const { raw } = (window as any).jsxRuntime;
+    const outside = document.createElement('button');
+    outside.id = 'outside-overlays';
+    outside.textContent = 'outside';
+    document.body.appendChild(outside);
+    overlay(raw('<div>lower menu</div>'), {
+      className: 'lower-menu', dismiss: 'outside', trap: false,
+    });
+    overlay(raw('<div>upper menu</div>'), {
+      className: 'upper-menu', dismiss: 'outside', trap: false,
+    });
+  });
+
+  await page.locator('#outside-overlays').click();
+  await expect(page.locator('.upper-menu')).toHaveCount(0);
+  await expect(page.locator('.lower-menu')).toHaveCount(1);
+  await page.locator('#outside-overlays').click();
+  await expect(page.locator('.lower-menu')).toHaveCount(0);
+});
+
 test('prompt(): real focus lands in the field, typing + Enter resolves the entered string', async ({ page }) => {
   await page.evaluate(() => {
     const { prompt } = (window as any).kerfOverlay;
