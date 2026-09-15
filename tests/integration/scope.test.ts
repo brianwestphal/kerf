@@ -55,4 +55,29 @@ describe('scope — append-heavy feed', () => {
 
     stop();
   });
+
+  it('keeps a moved card reactive until it permanently leaves the observed feed', async () => {
+    const feed = document.createElement('main');
+    const parentA = document.createElement('section');
+    const parentB = document.createElement('section');
+    const card = document.createElement('article');
+    parentA.appendChild(card);
+    feed.append(parentA, parentB);
+    document.body.appendChild(feed);
+    const stop = observeRemovals(feed);
+    const value = signal('one');
+
+    disposeScope(card).mount(card, () => value.value);
+    parentB.appendChild(card);
+    await microtask();
+
+    value.value = 'two';
+    expect(card.textContent).toBe('two');
+
+    card.remove();
+    await microtask();
+    value.value = 'three';
+    expect(card.textContent).toBe('two');
+    stop();
+  });
 });

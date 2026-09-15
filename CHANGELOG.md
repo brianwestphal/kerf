@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Kept `observeRemovals()` scopes alive when their nodes move between parents or reorder within the observed root; automatic disposal now waits for permanent removal from that root.
 - Made `throttle().cancel()` effective from inside both leading and trailing callbacks: the callback can now reset the active rate window immediately instead of having a new cooldown installed after it returns.
 - Removed the overlay barrel/helper cycle by extracting the lifecycle core and splitting `confirm`, `prompt`, `form`, and `choice` into focused internal modules, without changing the public `kerfjs/overlay` API.
 - Made `bindList` reject duplicate keys before changing the DOM, with errors that name the key and both indices; rejected `arraySignal` batches are drained and the next valid state snapshot-recovers before granular updates resume.

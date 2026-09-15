@@ -685,7 +685,7 @@ Disposes `root`'s own scope and every descendant scope, then leaves the DOM remo
 const stop = observeRemovals(document.body); // auto-dispose on removal, app-wide
 ```
 
-Installs a `MutationObserver` on `root` that auto-runs a node's scope (via `disposeSubtree`) when that node — or an ancestor — is removed from the subtree. One observer covers the whole tree. Returns a disconnect function. `MutationObserver` fires asynchronously, so disposal runs a microtask after the removal.
+Installs a `MutationObserver` on `root` that auto-runs a node's scope (via `disposeSubtree`) when that node — or an ancestor — is **permanently** removed from the subtree. One observer covers the whole tree. A node moved between descendants of `root`, or reordered under the same parent, remains live because containment is checked when the asynchronous observer callback runs. Returns a disconnect function.
 
 ### `Scope` (type)
 

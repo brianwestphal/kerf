@@ -127,6 +127,47 @@ describe('observeRemovals()', () => {
     stop();
   });
 
+  it('preserves a scoped node moved from parent A to parent B within the observed root', async () => {
+    const root = document.createElement('main');
+    const parentA = document.createElement('section');
+    const parentB = document.createElement('section');
+    const card = document.createElement('div');
+    parentA.appendChild(card);
+    root.append(parentA, parentB);
+    document.body.appendChild(root);
+    const stop = observeRemovals(root);
+    const calls: string[] = [];
+    disposeScope(card).add(() => calls.push('card'));
+
+    parentB.appendChild(card);
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    expect(calls).toEqual([]);
+
+    card.remove();
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    expect(calls).toEqual(['card']);
+    stop();
+  });
+
+  it('preserves a scoped node reordered within the same parent', async () => {
+    const root = document.createElement('main');
+    const first = document.createElement('div');
+    const card = document.createElement('div');
+    root.append(first, card);
+    document.body.appendChild(root);
+    const stop = observeRemovals(root);
+    const calls: string[] = [];
+    disposeScope(card).add(() => calls.push('card'));
+
+    root.prepend(card);
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    expect(calls).toEqual([]);
+
+    disposeSubtree(root);
+    expect(calls).toEqual(['card']);
+    stop();
+  });
+
   it('ignores removed non-element nodes (e.g. a text node)', async () => {
     const stop = observeRemovals(document.body);
     const host = document.createElement('div');

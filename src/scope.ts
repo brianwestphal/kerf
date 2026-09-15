@@ -121,15 +121,16 @@ export function disposeSubtree(root: Element): void {
 
 /**
  * Install a `MutationObserver` on `root` that auto-disposes a node's scope when
- * that node (or an ancestor) is removed from the subtree. One observer covers
- * the whole tree. Returns a disconnect function. Note: `MutationObserver` fires
- * asynchronously, so disposal runs a microtask after the removal.
+ * that node (or an ancestor) is permanently removed from the subtree. A node
+ * moved or reordered within `root` remains live. One observer covers the whole
+ * tree. Returns a disconnect function. Note: `MutationObserver` fires
+ * asynchronously, so final containment and disposal run after the mutation.
  */
 export function observeRemovals(root: Element): () => void {
   const observer = new MutationObserver((records) => {
     for (const record of records) {
       for (const node of record.removedNodes) {
-        if (node instanceof Element) disposeSubtree(node);
+        if (node instanceof Element && !root.contains(node)) disposeSubtree(node);
       }
     }
   });
