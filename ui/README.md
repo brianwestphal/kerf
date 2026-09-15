@@ -79,6 +79,8 @@ JavaScript callers cannot bypass those protections with case-variant names.
 sibling primary and trailing native-button actions with independent names,
 disabled states, focus, and click ownership. Its `label`, `icon`, and
 `trailingActionIcon` slots are dormant content and must not contain controls.
+In either component's multiline mode, the leading icon remains aligned with
+the first text line as the label wraps below it.
 For section quantities, pass a non-negative safe-integer `count` together with
 the localized full spoken phrase in `countLabel`, for example
 `count={3} countLabel="3 notes"`. This renders the standard neutral count pill

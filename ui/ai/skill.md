@@ -27,8 +27,8 @@ Quick routing:
 
 | Need | Choose | Nearest alternatives / boundary |
 | --- | --- | --- |
-| Navigation row | `MenuItem` | Use an ordinary link or button when sidebar/menu anatomy and state do not apply. |
-| Navigation row with a trailing action | `MenuActionRow` | Use `MenuItem` when the trailing region is dormant; never put controls inside either component's SafeHtml slots. |
+| Navigation row | `MenuItem` | Use an ordinary link or button when sidebar/menu anatomy and state do not apply. Multiline leading icons stay aligned with the first text line. |
+| Navigation row with a trailing action | `MenuActionRow` | Use `MenuItem` when the trailing region is dormant; never put controls inside either component's SafeHtml slots. Multiline leading icons stay aligned with the first text line. |
 | Page chrome or heading | `Toolbar`, `PageHeader`, or `DialogHeader` | Toolbar is persistent chrome; page and dialog headers identify different scopes. |
 | Exclusive choice | `TabBar`, `SegmentedControl`, or `Select` | Tabs switch tabpanels; segments expose a few choices; Select handles a longer value list. |
 | Status or absent content | `StateBanner` or `EmptyState` | Web Awesome callouts suit ecosystem content; toasts are transient and never the only record of important state. |

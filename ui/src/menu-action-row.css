@@ -117,6 +117,12 @@
   white-space: normal;
 }
 
+.kui-menu-action-row[data-multiline="true"] .kui-menu-action-row__icon {
+  inset-block-start: calc(
+    var(--kui-layout-item-padding, remify(8px)) + (1lh / 2)
+  );
+}
+
 .kui-menu-action-row__trailing-action {
   display: grid;
   width: remify(44px);

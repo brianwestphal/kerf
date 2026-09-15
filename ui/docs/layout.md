@@ -87,6 +87,8 @@ title. The icon visual is 24px inside a 34px circular background.
    replaces it.
    `MenuActionRow` uses a noninteractive row root around sibling 44px primary
    and trailing buttons. `MenuItem.trailing` remains dormant content.
+   In multiline `MenuItem` and `MenuActionRow` rows, the leading icon stays
+   centered on the label's first line rather than the full wrapped label.
 6. Reading width, column placement, and responsive relocation remain application
    decisions. The shared classes define local geometry, not the whole shell.
 

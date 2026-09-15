@@ -51,6 +51,9 @@ and disposal.
 contain controls. When a row needs an independently interactive trailing
 region, `MenuActionRow` owns the noninteractive root and the two sibling native
 buttons; the application owns their delegated behavior and controlled state.
+Both row components align a leading icon with the first label line when
+`multiline` allows the label to wrap; additional lines extend below that fixed
+visual anchor.
 
 ### Public CSS anatomy
 

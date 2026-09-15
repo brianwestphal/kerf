@@ -104,6 +104,11 @@
   white-space: normal;
 }
 
+.kui-menu-item[data-multiline="true"] .kui-menu-item__icon {
+  align-self: start;
+  margin-block-start: calc((1lh - remify(24px)) / 2);
+}
+
 .kui-menu-item__trailing {
   display: inline-flex;
   min-width: 0;
