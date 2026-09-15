@@ -96,6 +96,23 @@ describe('dev-store-warn (KF-212, opt-in)', () => {
     }
   });
 
+  it('warns when the hooks are installed after the store is created', () => {
+    env.KERF_DEV_WARN_NARROW_SET = '1';
+    enterProductionShape();
+    const store = defineStore({
+      initial: () => ({ a: 1, b: 2 }),
+      actions: (set) => ({
+        setA: (a: number) => set({ a } as { a: number; b: number }),
+      }),
+    });
+
+    restoreDevelopmentShape();
+    store.actions.setA(99);
+
+    expect(warnSpy).toHaveBeenCalledOnce();
+    expect(String(warnSpy.mock.calls[0]?.[0])).toContain('`b`');
+  });
+
   describe('with KERF_DEV_WARN_NARROW_SET=1', () => {
     beforeEach(() => {
       env.KERF_DEV_WARN_NARROW_SET = '1';

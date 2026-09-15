@@ -141,15 +141,18 @@ not in `next`. The canonical bug shape is `set({ filter })` against a
 3-key state of `{items, filter, editingId}` — the next read of `items`
 returns `undefined` and the next action that calls `items.map(...)` throws.
 
-**Mechanism.** Each `defineStore` carries a per-instance one-shot context
-object (`{ warned: boolean }`). On every `set()` call,
-`maybeWarnNarrowSet(prev, next, ctx)` runs the gate: short-circuit on
-NODE_ENV / env var, short-circuit on non-plain-object state (arrays, null,
+**Mechanism.** Every `set()` call resolves the currently installed narrow-set
+hook. Once present, the store lazily creates its per-instance one-shot context
+object (`{ warned: boolean }`) and calls
+`maybeWarnNarrowSet(prev, next, ctx)`: short-circuit when its per-warning switch
+is off, short-circuit on non-plain-object state (arrays, null,
 primitives), then check `Object.keys(prev).some(k => !(k in next))`. If
 any key is missing, the warning fires once for this store and the context
 flips to `warned: true`. The warning message names the missing keys (e.g.,
 `` `items`, `editingId` ``) and points at `set({ ...get(), ...next })` as
-the canonical merge fix.
+the canonical merge fix. Resolving the hook at call time means a store created
+before `kerfjs/dev` is installed begins warning on later actions; only signal
+creation has an install-order boundary.
 
 **Why opt-in.** Narrow-set IS legal — a `reset()` action that drops keys,
 a feature-flag-driven schema change, a state shape that genuinely needs to
@@ -573,8 +576,10 @@ needs `import.meta.env` to be typed — real apps get that from
 `/// <reference types="vite/client" />`.
 
 **Install ordering.** Every hook except one is read at *call* time — render,
-reconcile, `set()`, `delegate()` — so installing any time before your first
-`mount()` is enough. The exception is `signal()`, which picks its constructor
+reconcile, `set()`, `delegate()` — so installation only needs to precede the
+operation you want diagnosed. Existing stores observe later installation on
+their next `get()` or `set()`; render diagnostics observe it on the next render.
+The exception is `signal()`, which picks its constructor
 when the signal is *created*. Static imports are hoisted above a top-level
 `await import()`, so module-scope signals in imported modules are created
 before the dev entry runs and `KERF_DEV_WARN_UNTRACKED_SIGNALS` will not see

@@ -87,7 +87,7 @@ defineStore({
 
 Creates a store with `state: ReadonlySignal<TState>`, `actions: TActions`, `reset(): void`. Registers in the global registry consumed by `resetAllStores()`.
 
-`set(next)` REPLACES state; it does NOT merge. Pass the full state object on every call, or use `set({ ...get(), ...patch })` to merge. When the diagnostics are installed (`import 'kerfjs/dev'`), `get()` returns a deep read-only `Proxy` so that any mutation of it — including a nested `get().nested.x = 1` — throws a `TypeError`; reads (spread, `JSON.stringify`, `Object.keys`, iteration) are transparent, and the live state object is never frozen. Production returns the bare reference for zero overhead. Opt in to the runtime narrow-set warning with `KERF_DEV_WARN_NARROW_SET=1` to catch partial-set bugs at the moment they happen (see [docs/11-dev-warnings.md](/kerf/docs/dev-warnings/) for the full dev-warn family).
+`set(next)` REPLACES state; it does NOT merge. Pass the full state object on every call, or use `set({ ...get(), ...patch })` to merge. When the diagnostics are installed (`import 'kerfjs/dev'`), `get()` returns a deep read-only `Proxy` so that any mutation of it — including a nested `get().nested.x = 1` — throws a `TypeError`; reads (spread, `JSON.stringify`, `Object.keys`, iteration) are transparent, and the live state object is never frozen. Production returns the bare reference for zero overhead. Opt in to the runtime narrow-set warning with `KERF_DEV_WARN_NARROW_SET=1` to catch partial-set bugs at the moment they happen. The warning hook is resolved on every `set()` call, so a store created before `kerfjs/dev` is installed starts warning on later actions as soon as diagnostics are available (see [Dev-mode warnings](/kerf/docs/dev-warnings/) for the full family).
 
 ### `resetAllStores(): void`
 
@@ -173,7 +173,9 @@ time, so signals created before the dev entry runs are invisible to
 top-level `await import()`, that is the common case. To cover module-scope
 signals, make `import 'kerfjs/dev'` the first static import of a dev-only entry
 file. Opting into that warning prints the boundary once so the gap is never
-silent. Every other hook is read at call time. See
+silent. Every other hook is read at call time, including store hooks: an
+already-created store observes a later `kerfjs/dev` installation on its next
+`get()` or `set()` call. See
 [`docs/11-dev-warnings.md`](/kerf/docs/dev-warnings/).
 
 ## Render

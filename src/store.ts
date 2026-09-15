@@ -44,9 +44,11 @@ export function defineStore<TState, TActions>(
   const internal: Signal<TState> = signal(spec.initial());
   // KF-212: per-store one-shot dedup for the opt-in narrow-set warning.
   // Default off; consumers opt in via `KERF_DEV_WARN_NARROW_SET=1` in dev.
-  // Allocated only when the diagnostics are installed — production never pays
-  // for an object it will never read.
-  const warnCtx: WarnOnceContext | null = devHooks.narrowSet ? { warned: false } : null;
+  // Resolve the hook on each set(), so a store created before `kerfjs/dev` is
+  // installed starts warning as soon as the diagnostics become available.
+  // Allocate the context lazily — production never pays for an object it will
+  // never read.
+  let warnCtx: WarnOnceContext | null = null;
 
   const set = (next: TState): void => {
     // With `kerfjs/dev` installed, `next` may carry proxies handed back by the
@@ -56,7 +58,11 @@ export function defineStore<TState, TActions>(
     // the bare reference.
     const toRaw = devHooks.storeToRaw;
     const raw = toRaw ? toRaw(next) : next;
-    if (warnCtx) devHooks.narrowSet?.(internal.value, raw, warnCtx);
+    const narrowSet = devHooks.narrowSet;
+    if (narrowSet) {
+      warnCtx ??= { warned: false };
+      narrowSet(internal.value, raw, warnCtx);
+    }
     internal.value = raw;
   };
   // With the diagnostics installed, wrap the reference returned to actions in a

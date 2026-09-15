@@ -114,7 +114,7 @@ To catch this at runtime, set the opt-in env var in dev or CI:
 KERF_DEV_WARN_NARROW_SET=1 npm run dev
 ```
 
-When set (and `NODE_ENV !== 'production'`), every `defineStore.set(next)` call checks whether any key from the current state is missing in `next`. The first violation per store emits a one-shot `console.warn` naming the missing keys and pointing at the canonical merge fix:
+When the diagnostics are installed and this warning is enabled, every `defineStore.set(next)` call checks whether any key from the current state is missing in `next`. The hook is resolved at `set()` call time, so a store created before `kerfjs/dev` is installed starts checking on its next action after installation. The first violation per store emits a one-shot `console.warn` naming the missing keys and pointing at the canonical merge fix:
 
 ```
 kerf: defineStore.set() called with keys missing from the current state — `items`, `editingId`. set() REPLACES state; the missing keys will be undefined after this call. Use `set({ ...get(), ...next })` to merge instead, or update each call site to pass the full state. Set KERF_DEV_WARN_NARROW_SET=0 (or unset it) to silence this warning.

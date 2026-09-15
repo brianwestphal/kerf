@@ -333,7 +333,7 @@ axis (`cacheKey` reading an external signal) crosses all of them.
 | ID | Behavior | Implements | Guarding test(s) |
 | --- | --- | --- | --- |
 | FC-DW1 | `KERF_DEV_WARN_UNTRACKED_SIGNALS` untracked-write warning | `src/dev-signal.ts` | `tests/unit/reactive.test.ts` › "dev-mode untracked-write warning (KF-176, opt-in)" |
-| FC-DW2 | `KERF_DEV_WARN_NARROW_SET` partial-set store warning | `src/dev-store-warn.ts` | `tests/unit/dev-store-warn.internal.test.ts` › "dev-store-warn (KF-212, opt-in)" |
+| FC-DW2 | `KERF_DEV_WARN_NARROW_SET` partial-set store warning is per-store one-shot and resolves its hook on each `set()`, so a store created before `kerfjs/dev` is installed starts warning on later actions | `src/store.ts`, `src/dev-store-warn.ts` | `tests/unit/dev-store-warn.internal.test.ts` › "dev-store-warn (KF-212, opt-in)"; `tests/unit/dev-store-warn.internal.test.ts` › "warns when the hooks are installed after the store is created" |
 | FC-DW3 | `KERF_DEV_WARN_REBUILT_LISTENERS` rebuilt-listener warning | `src/dev-listener-warn.ts` | `tests/unit/dev-listener-warn.internal.test.ts` › "dev-listener-warn (KF-174, opt-in)" |
 | FC-DW4 | `KERF_DEV_WARN_EACH_IN_MORPH_SKIP` each()-in-morph-skip warning | `src/dev-each-warn.ts` | `tests/unit/dev-each-warn.internal.test.ts` › "dev-each-warn (KERF_DEV_WARN_EACH_IN_MORPH_SKIP=1)" |
 | FC-DW5 | `KERF_DEV_WARN_DUPLICATE_EACH_KEYS` duplicate-cacheKey warning | `src/dev-each-warn.ts` | `tests/unit/dev-each-warn.internal.test.ts` › "dev-each-warn duplicate cacheKey (KERF_DEV_WARN_DUPLICATE_EACH_KEYS=1)" |
