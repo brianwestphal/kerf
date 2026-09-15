@@ -109,6 +109,35 @@ test('tooltip(): shows on real hover and hides on leave', async ({ page }) => {
   await expect(page.locator('.kerf-tooltip')).toHaveCount(0);
 });
 
+test('tooltip(): pointer and focus presence keep each other alive across modality transitions', async ({ page }) => {
+  await page.evaluate(() => {
+    const anchor = document.createElement('button');
+    anchor.id = 'tip-modality-anchor';
+    anchor.textContent = 'mixed modality';
+    document.body.appendChild(anchor);
+    const { tooltip } = (window as any).kerfOverlay;
+    (window as any)._tipModalityStop = tooltip(anchor, 'Mixed', { delay: 0, hideDelay: 0 });
+  });
+
+  const dispatch = (type: string) => page.locator('#tip-modality-anchor').dispatchEvent(type);
+
+  await dispatch('pointerenter');
+  await expect(page.locator('.kerf-tooltip')).toHaveText('Mixed');
+  await dispatch('focus');
+  await dispatch('pointerleave');
+  await expect(page.locator('.kerf-tooltip')).toHaveText('Mixed');
+  await dispatch('blur');
+  await expect(page.locator('.kerf-tooltip')).toHaveCount(0);
+
+  await dispatch('focus');
+  await expect(page.locator('.kerf-tooltip')).toHaveText('Mixed');
+  await dispatch('pointerenter');
+  await dispatch('blur');
+  await expect(page.locator('.kerf-tooltip')).toHaveText('Mixed');
+  await dispatch('pointerleave');
+  await expect(page.locator('.kerf-tooltip')).toHaveCount(0);
+});
+
 test('toast(): string content is text while SafeHtml and render functions preserve markup', async ({ page }) => {
   const attack = '<img id="toast-xss" src="x" onerror="globalThis.pwned=true">';
   await page.evaluate((untrusted) => {

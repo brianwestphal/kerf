@@ -47,6 +47,42 @@ describe('tooltip()', () => {
     stop();
   });
 
+  it('pointerenter → focus → pointerleave stays visible until focus leaves', () => {
+    vi.useFakeTimers();
+    const anchor = tipAnchor();
+    const stop = tooltip(anchor, 'x', { delay: 0, hideDelay: 0 });
+
+    anchor.dispatchEvent(new Event('pointerenter'));
+    vi.advanceTimersByTime(0);
+    anchor.dispatchEvent(new Event('focus'));
+    anchor.dispatchEvent(new Event('pointerleave'));
+    vi.advanceTimersByTime(0);
+    expect(document.querySelector('.kerf-tooltip')).not.toBeNull();
+
+    anchor.dispatchEvent(new Event('blur'));
+    vi.advanceTimersByTime(0);
+    expect(document.querySelector('.kerf-tooltip')).toBeNull();
+    stop();
+  });
+
+  it('focus → pointerenter → blur stays visible until the pointer leaves', () => {
+    vi.useFakeTimers();
+    const anchor = tipAnchor();
+    const stop = tooltip(anchor, 'x', { delay: 0, hideDelay: 0 });
+
+    anchor.dispatchEvent(new Event('focus'));
+    vi.advanceTimersByTime(0);
+    anchor.dispatchEvent(new Event('pointerenter'));
+    anchor.dispatchEvent(new Event('blur'));
+    vi.advanceTimersByTime(0);
+    expect(document.querySelector('.kerf-tooltip')).not.toBeNull();
+
+    anchor.dispatchEvent(new Event('pointerleave'));
+    vi.advanceTimersByTime(0);
+    expect(document.querySelector('.kerf-tooltip')).toBeNull();
+    stop();
+  });
+
   it('two pointerenters before the delay schedule only one tooltip (debounced show)', () => {
     vi.useFakeTimers();
     const anchor = tipAnchor();

@@ -447,6 +447,7 @@ export function tooltip(anchor: Element, content: TooltipContent, options: Toolt
 
   const timers: { show?: ReturnType<typeof setTimeout>; hide?: ReturnType<typeof setTimeout> } = {};
   let current: { handle: OverlayHandle; stop: () => void } | undefined;
+  let presence = 0;
 
   function show(): void {
     const handle = overlay(body, { container, className, dismiss: false, trap: false, initialFocus: false, native });
@@ -462,13 +463,16 @@ export function tooltip(anchor: Element, content: TooltipContent, options: Toolt
     current = undefined;
   }
 
-  const onEnter = (): void => {
+  const onEnter = (event: Event): void => {
+    presence |= event.type === 'focus' ? 2 : 1;
     if (timers.hide !== undefined) clearTimeout(timers.hide);
     if (current !== undefined) return;
     if (timers.show !== undefined) clearTimeout(timers.show); // debounce: one pending show at a time
     timers.show = setTimeout(show, delay);
   };
-  const onLeave = (): void => {
+  const onLeave = (event: Event): void => {
+    presence &= event.type === 'blur' ? ~2 : ~1;
+    if (presence) return;
     if (timers.show !== undefined) clearTimeout(timers.show);
     if (current === undefined) return;
     timers.hide = setTimeout(hide, hideDelay);
