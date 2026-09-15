@@ -45,7 +45,7 @@ Status markers:
 | §2 | Reactivity (`signal` / `computed` / `effect` / `batch`) | Shipped |
 | §3 | Stores (`defineStore` / `resetAllStores`) | Shipped |
 | §4 | Render (`mount` + native diff + list reconciler) | Shipped |
-| §5 | Event delegation (Tier 1 / 2 / 3); companion subpaths `kerfjs/actions` (action-table), `kerfjs/overlay` (overlay / confirm / toast), `kerfjs/scope` (dispose-scope registry with permanent-removal detection that preserves same-root moves), `kerfjs/async` (resource async-state), `kerfjs/list` (bindList keyed/virtualized) | Shipped |
+| §5 | Event delegation (Tier 1 / 2 / 3); companion subpaths `kerfjs/actions` (action-table), `kerfjs/overlay` (overlay / confirm / toast), `kerfjs/scope` (dispose-scope registry with permanent-removal detection that preserves same-root moves), `kerfjs/attach` (single-node lifecycle), `kerfjs/async` (resource async-state), `kerfjs/list` (bindList keyed/virtualized) | Shipped |
 | §6 | JSX runtime (`SafeHtml` / `raw` / `Fragment`) + `kerfjs/html` tagged templates | Shipped |
 | §7 | SVG (`toElement` SVG-aware) | Shipped |
 | §8 | API reference | Shipped |
@@ -108,6 +108,8 @@ Three-tier model:
 - **Tier 1** (`delegate()`) — bubbling events plus the well-known non-bubblers (`focus`, `blur`, `scroll`, `load`, `error`, `mouseenter`, `mouseleave`) auto-promoted to capture phase under the hood. Walk-up via `closest()` for every event type.
 - **Tier 2** (`delegateCapture()`) — explicit-capture escape hatch. Use when the auto-promotion list doesn't cover your event type (custom non-bubbling events) or when you want capture-phase interception. Matches via `closest()` walk-up by default (unified with `delegate()`, passing the matched ancestor); pass `{ match: 'direct' }` for strict `target.matches()` matching. Both helpers accept the `{ match?: 'closest' | 'direct' }` options argument (`DelegateOptions`).
 - **Tier 3** (library-owned subtrees) → `data-morph-skip` + manual lifecycle.
+
+`kerfjs/attach` provides that single-node lifecycle seam. Setup runs immediately even when a widget node is prepared while disconnected; document observation plus a temporary animation-frame watch detects its first connection, including direct insertion into an already-connected shadow root. Automatic teardown then fires once on direct removal, ancestor removal, or removal of its containing shadow host. The returned idempotent disposer remains the explicit teardown path; a node abandoned before connecting must be disposed to cancel its connection watch.
 
 The `kerfjs/overlay` toast helper treats plain-string content as untrusted text: strings are HTML-escaped before mounting. Callers must use `SafeHtml` or a render function when they intentionally need markup.
 

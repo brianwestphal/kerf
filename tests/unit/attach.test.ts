@@ -3,6 +3,8 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { attach } from '../../src/attach.js';
 
 const microtask = (): Promise<void> => new Promise((resolve) => setTimeout(resolve, 0));
+const frame = (): Promise<void> =>
+  new Promise((resolve) => globalThis.requestAnimationFrame(() => resolve()));
 
 afterEach(() => {
   document.body.innerHTML = '';
@@ -46,6 +48,137 @@ describe('attach()', () => {
     attach(node, () => () => torn.push('down'));
 
     parent.remove(); // node itself was never touched, but it's now disconnected
+    await microtask();
+    expect(torn).toEqual(['down']);
+  });
+
+  it('waits for a disconnected node to connect, then tears down on direct removal', async () => {
+    const node = document.createElement('div');
+    const events: string[] = [];
+    attach(node, () => {
+      events.push('setup');
+      return () => events.push('teardown');
+    });
+
+    document.body.appendChild(document.createElement('aside'));
+    await microtask();
+    expect(events).toEqual(['setup']);
+
+    document.body.appendChild(node);
+    await microtask();
+    expect(events).toEqual(['setup']);
+
+    node.remove();
+    await microtask();
+    expect(events).toEqual(['setup', 'teardown']);
+  });
+
+  it('a never-connected node tears down only when explicitly disposed', async () => {
+    const node = document.createElement('div');
+    const torn: string[] = [];
+    const stop = attach(node, () => () => torn.push('down'));
+
+    document.body.appendChild(document.createElement('aside'));
+    await microtask();
+    expect(torn).toEqual([]);
+
+    stop();
+    expect(torn).toEqual(['down']);
+  });
+
+  it('explicit disposal cancels a disconnected node connection watch', () => {
+    const node = document.createElement('div');
+    const request = vi
+      .spyOn(globalThis, 'requestAnimationFrame')
+      .mockReturnValue(42);
+    const cancel = vi.spyOn(globalThis, 'cancelAnimationFrame');
+
+    const stop = attach(node, () => undefined);
+    expect(request).toHaveBeenCalledOnce();
+    stop();
+    expect(cancel).toHaveBeenCalledWith(42);
+
+    request.mockRestore();
+    cancel.mockRestore();
+  });
+
+  it('follows a disconnected node through ancestor insertion and ancestor removal', async () => {
+    const parent = document.createElement('section');
+    const node = document.createElement('div');
+    parent.appendChild(node);
+    const torn: string[] = [];
+    attach(node, () => () => torn.push('down'));
+
+    document.body.appendChild(parent);
+    await microtask();
+    expect(torn).toEqual([]);
+
+    parent.remove();
+    await microtask();
+    expect(torn).toEqual(['down']);
+  });
+
+  it('tears down when a disconnected node is inserted and removed in one observer batch', async () => {
+    const parent = document.createElement('section');
+    const node = document.createElement('div');
+    parent.appendChild(node);
+    const torn: string[] = [];
+    attach(node, () => () => torn.push('down'));
+
+    document.body.appendChild(parent);
+    parent.remove();
+    await microtask();
+    expect(torn).toEqual(['down']);
+  });
+
+  it('follows a connected node into a shadow root before later removal', async () => {
+    const node = document.createElement('div');
+    document.body.appendChild(node);
+    const shadowHost = document.createElement('section');
+    const shadow = shadowHost.attachShadow({ mode: 'open' });
+    document.body.appendChild(shadowHost);
+    const torn: string[] = [];
+    attach(node, () => () => torn.push('down'));
+
+    shadow.appendChild(node);
+    await microtask();
+    expect(torn).toEqual([]);
+
+    node.remove();
+    await microtask();
+    expect(torn).toEqual(['down']);
+  });
+
+  it('follows a disconnected node into a shadow tree, then tears down when the host is removed', async () => {
+    const shadowHost = document.createElement('section');
+    const shadow = shadowHost.attachShadow({ mode: 'closed' });
+    const node = document.createElement('div');
+    shadow.appendChild(node);
+    const torn: string[] = [];
+    attach(node, () => () => torn.push('down'));
+
+    document.body.appendChild(shadowHost);
+    await microtask();
+    expect(torn).toEqual([]);
+
+    shadowHost.remove();
+    await microtask();
+    expect(torn).toEqual(['down']);
+  });
+
+  it('detects a disconnected node inserted directly into an already-connected shadow root', async () => {
+    const shadowHost = document.createElement('section');
+    const shadow = shadowHost.attachShadow({ mode: 'closed' });
+    document.body.appendChild(shadowHost);
+    const node = document.createElement('div');
+    const torn: string[] = [];
+    attach(node, () => () => torn.push('down'));
+
+    shadow.appendChild(node);
+    await frame();
+    expect(torn).toEqual([]);
+
+    node.remove();
     await microtask();
     expect(torn).toEqual(['down']);
   });

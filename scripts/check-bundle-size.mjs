@@ -202,10 +202,12 @@ const BUDGETS = [
     `,
   },
   {
-    // ISOLATED size — attach() is pure DOM (a MutationObserver), no signals
-    // and no render core, so it's the smallest subpath.
+    // ISOLATED size — attach() is pure DOM (a MutationObserver plus a temporary
+    // animation-frame connection watch), no signals and no render core, so
+    // it's the smallest subpath. +0.1 for KF-Q6P3VE initially-disconnected
+    // lifecycle support, including insertion into an existing shadow root.
     name: 'attach',
-    budgetKb: 0.4,
+    budgetKb: 0.5,
     description: 'the attach subpath (attach — node-lifecycle adapter) — DOM only, no core',
     entry: `
       import { attach } from '${DIST}/attach.js';
