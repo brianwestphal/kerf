@@ -59,7 +59,9 @@ complete theme, one semantic tone, or one instance.
 `--kui-disclosure-arrow-size` for a scoped consumer override. Kerf `Select`
 uses a separate Web Awesome expand-glyph contract with
 `--kui-disclosure-icon-scale: .5`, so its half-scale treatment remains
-independent of the shared arrow's box size.
+independent of the shared arrow's box size. Configured directions animate over
+the shortest path; a 180-degree closed-to-open tie uses counterclockwise
+rotation.
 `MenuHeader` toggle mode composes that production arrow automatically when no
 custom `actionIcon` is supplied; its controlled `expanded` value must correspond
 to real revealed content, and ordinary navigation does not borrow the

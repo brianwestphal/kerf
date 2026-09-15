@@ -91,7 +91,9 @@ and reveal matching content. Omitting `actionIcon` supplies the production 18px
 `DisclosureArrow`; a custom icon replaces it. Do not put disclosure chevrons on
 ordinary navigation rows. The header fills its available inline width and keeps
 a separate action at the logical end in a 44px target; its visible glyph defaults
-to 18px through `--kui-menu-header-action-icon-size`.
+to 18px through `--kui-menu-header-action-icon-size`. Configured arrow
+directions animate over the shortest path; a 180-degree closed-to-open tie uses
+counterclockwise rotation.
 AppTab additionally protects tab identity plus transient drag/drop markers at
 runtime. Its `closeIcon` and ResizableRegion's `handleIcon` replace decorative,
 noninteractive content only; the existing named controls and wiring retain

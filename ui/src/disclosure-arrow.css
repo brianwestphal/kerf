@@ -5,21 +5,9 @@
   flex: none;
   align-items: center;
   justify-content: center;
-  transform: rotate(0deg);
+  transform: rotate(var(--_kui-disclosure-arrow-rotation, 0deg));
   transform-origin: center;
   transition: transform var(--kui-disclosure-arrow-duration, 0.2s) ease;
-}
-
-.kui-disclosure-arrow[data-direction="down"] {
-  transform: rotate(90deg);
-}
-
-.kui-disclosure-arrow[data-direction="left"] {
-  transform: rotate(180deg);
-}
-
-.kui-disclosure-arrow[data-direction="up"] {
-  transform: rotate(-90deg);
 }
 
 .kui-disclosure-arrow svg {

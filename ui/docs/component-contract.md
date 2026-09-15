@@ -72,7 +72,8 @@ need, request a supported hook instead of inferring one from rendered markup.
 `--kui-disclosure-arrow-size` on the component or its containing scope when a
 consumer needs another size. Kerf `Select` uses a separate Web Awesome expand
 glyph contract, `--kui-disclosure-icon-scale: .5`; changing one contract does
-not implicitly change the other.
+not implicitly change the other. Direction changes take the shortest rotation
+path; a 180-degree closed-to-open tie uses counterclockwise rotation.
 
 In `MenuHeader` toggle mode, omitting `actionIcon` composes the production
 `DisclosureArrow` and derives its visual direction from `expanded`. The app

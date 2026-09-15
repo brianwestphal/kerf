@@ -18,7 +18,7 @@ export const generatedKerfCatalog = [
     "category": "Foundation",
     "kind": "component",
     "source": "kerf",
-    "description": "Indicate whether a disclosure control is open with an overridable 18px root-scaled visual and one shared rotation behavior.",
+    "description": "Indicate whether a disclosure control is open with an overridable 18px root-scaled visual and shortest-path rotation behavior.",
     "uses": [
       "lucide-icon"
     ],

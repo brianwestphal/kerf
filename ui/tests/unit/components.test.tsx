@@ -35,6 +35,7 @@ describe('production UI primitives', () => {
   it('renders a rotating disclosure arrow with configurable state directions and icon', () => {
     const closed = asHtml(DisclosureArrow({ open: false }));
     expect(closed).toContain('data-component="disclosure-arrow" data-open="false" data-direction="right" aria-hidden="true"');
+    expect(closed).toContain('style="--_kui-disclosure-arrow-rotation:0deg"');
     expect(closed).toContain('data-lucide="chevron-right"');
 
     const open = asHtml(DisclosureArrow({
@@ -45,8 +46,21 @@ describe('production UI primitives', () => {
       className: 'custom-arrow',
     }));
     expect(open).toContain('class="kui-disclosure-arrow custom-arrow"');
+    expect(open).toContain('style="--_kui-disclosure-arrow-rotation:180deg"');
     expect(open).toContain('data-open="true" data-direction="left"');
     expect(open).toContain('<span>Custom</span>');
+
+    const clockwise = asHtml(DisclosureArrow({ open: true, openDirection: 'up', closedDirection: 'left' }));
+    expect(clockwise).toContain('style="--_kui-disclosure-arrow-rotation:270deg"');
+
+    const counterclockwise = asHtml(DisclosureArrow({ open: true, openDirection: 'up', closedDirection: 'right' }));
+    expect(counterclockwise).toContain('style="--_kui-disclosure-arrow-rotation:-90deg"');
+
+    const counterclockwiseTie = asHtml(DisclosureArrow({ open: true, openDirection: 'left', closedDirection: 'right' }));
+    expect(counterclockwiseTie).toContain('style="--_kui-disclosure-arrow-rotation:-180deg"');
+
+    const wrappedClockwise = asHtml(DisclosureArrow({ open: true, openDirection: 'right', closedDirection: 'up' }));
+    expect(wrappedClockwise).toContain('style="--_kui-disclosure-arrow-rotation:360deg"');
   });
 
   it('composes toolbar slots, groups, and text variants', () => {

@@ -128,7 +128,8 @@ needs another size; the owning control still supplies interaction, naming, and
 expanded state. Kerf `Select` retains its independent Web Awesome expand-glyph
 scale of `.5` through `--kui-disclosure-icon-scale`. Author replacement
 `DisclosureArrow` icon content facing right before its configured direction
-transform is applied.
+transform is applied. Direction changes take the shortest rotation path; a
+180-degree closed-to-open tie uses counterclockwise rotation.
 
 `MenuHeader` supplies that production `DisclosureArrow` automatically when
 `toggle` is true and `actionIcon` is omitted. Keep `expanded` synchronized with

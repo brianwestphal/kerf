@@ -287,11 +287,37 @@ test('sizes and rotates the first-class disclosure arrow while Select keeps its 
   await expect(customButton).toHaveAttribute('aria-expanded', 'false');
   if (browserName === 'chromium') await button.screenshot({ path: 'test-results/disclosure-arrow-open.png' });
 
+  await demo.evaluate((element) => {
+    element.style.setProperty('--kui-disclosure-arrow-duration', '10s');
+  });
   await customButton.click();
   await expect(customButton).toHaveAttribute('aria-expanded', 'true');
   await expect(customButton).toHaveAccessibleName('Replacement: closed left, open up');
   await expect(customArrow).toHaveAttribute('data-open', 'true');
   await expect(customArrow).toHaveAttribute('data-direction', 'up');
+  const midpoint = await customArrow.evaluate(async (element) => {
+    await new Promise<void>((resolve) => window.requestAnimationFrame(() => resolve()));
+    const transition = element.getAnimations().find((animation) => (
+      animation instanceof CSSTransition && animation.transitionProperty === 'transform'
+    ));
+    if (!transition) throw new Error('Expected a transform transition');
+    transition.pause();
+    transition.effect?.updateTiming({ easing: 'linear' });
+    const duration = transition.effect?.getComputedTiming().duration;
+    if (typeof duration !== 'number') throw new Error('Expected a finite transform transition');
+    transition.currentTime = duration / 2;
+    const { a, b, c, d } = new DOMMatrixReadOnly(window.getComputedStyle(element).transform);
+    return { a, b, c, d };
+  });
+  expect(midpoint.a).toBeCloseTo(-Math.SQRT1_2, 2);
+  expect(midpoint.b).toBeCloseTo(-Math.SQRT1_2, 2);
+  expect(midpoint.c).toBeCloseTo(Math.SQRT1_2, 2);
+  expect(midpoint.d).toBeCloseTo(-Math.SQRT1_2, 2);
+  if (browserName === 'chromium') await customButton.screenshot({ path: 'test-results/disclosure-arrow-replacement-mid-clockwise.png' });
+  await customArrow.evaluate((element) => {
+    element.getAnimations().forEach((animation) => animation.finish());
+  });
+  await demo.evaluate((element) => element.style.removeProperty('--kui-disclosure-arrow-duration'));
   await expect.poll(async () => customArrow.evaluate((element) => window.getComputedStyle(element).transform)).toBe('matrix(0, -1, 1, 0, 0, 0)');
   await expect(button).toHaveAttribute('aria-expanded', 'true');
   await expect(page.locator('.catalog-log')).toHaveText('Custom disclosure opened');

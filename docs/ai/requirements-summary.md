@@ -191,7 +191,8 @@ separately aligned row, and `actionsLabel` supplies a localized group name.
 
 `DisclosureArrow` uses an overridable 18px root-scaled default, while Kerf
 `Select` retains an independent `.5` scale for its intrinsic Web Awesome expand
-glyph.
+glyph. Configurable arrow directions use shortest-path rotation, with
+counterclockwise chosen for a 180-degree closed-to-open tie.
 
 `MenuHeader` now distinguishes semantic section counts from legacy non-count
 badges. A non-negative safe-integer `count` requires a localized `countLabel`,

@@ -61,16 +61,16 @@
       "category": "Foundation",
       "kind": "component",
       "source": "kerf",
-      "description": "Root-scaled 18px animated open and closed disclosure indicator with configurable directions and right-oriented replacement icon content.",
+      "description": "Root-scaled 18px animated open and closed disclosure indicator with configurable directions, shortest-path rotation, and right-oriented replacement icon content.",
       "uses": [
         "lucide-icon"
       ],
-      "purpose": "Indicate whether a disclosure control is open with an overridable 18px root-scaled visual and one shared rotation behavior.",
+      "purpose": "Indicate whether a disclosure control is open with an overridable 18px root-scaled visual and shortest-path rotation behavior.",
       "publicExports": [
         "DisclosureArrow"
       ],
       "useWhen": [
-        "Add a rotating indicator to a control that owns open and closed state; author replacement icon content facing right before direction transforms are applied."
+        "Add a shortest-path rotating indicator to a control that owns open and closed state; author replacement icon content facing right before direction transforms are applied."
       ],
       "avoidWhen": [
         "Do not use the arrow as the interactive control or accessible name by itself."

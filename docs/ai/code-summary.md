@@ -507,7 +507,8 @@ circle and `actionsLabel` names the group when needed.
 `DisclosureArrow` ships an 18px root-scaled default through compiled
 `remify(18px)` CSS and retains `--kui-disclosure-arrow-size` for scoped consumer
 overrides. Kerf `Select` keeps its independent Web Awesome expand-glyph scale
-at `--kui-disclosure-icon-scale: .5`.
+at `--kui-disclosure-icon-scale: .5`. Configurable directions animate over the
+shortest path; a 180-degree closed-to-open tie uses counterclockwise rotation.
 
 `MenuHeader` exposes mutually exclusive semantic count and legacy badge
 contracts. A non-negative safe-integer `count` requires a localized
