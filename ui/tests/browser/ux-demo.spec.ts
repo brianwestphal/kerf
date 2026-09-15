@@ -91,6 +91,45 @@ test('omits the removed command-palette recipe and safely falls back from its st
   if (browserName === 'chromium') await page.screenshot({ path: 'test-results/catalog-without-command-palette-narrow.png' });
 });
 
+test('slides the catalog sidebar out and back via a composited transform, not a width animation', async ({ page, browserName }) => {
+  await page.setViewportSize({ width: 1200, height: 900 });
+  await page.goto('/');
+
+  const shell = page.locator('.catalog-shell');
+  const sidebar = page.locator('.catalog-sidebar');
+  const collapse = page.locator('[data-action="toggle-catalog-sidebar"][aria-label="Collapse component catalog"]');
+
+  // Expanded: no offset, and the slide rides on a transform transition (so the
+  // width can snap instantly while the panel animates — the composited path).
+  await expect(shell).toHaveAttribute('data-sidebar-collapsed', 'false');
+  await expect(sidebar).toHaveCSS('transform', 'none');
+  await expect(sidebar).toHaveCSS('transition-property', /transform/);
+  const expandedWidth = await sidebar.evaluate((element) => element.getBoundingClientRect().width);
+  expect(expandedWidth).toBeGreaterThan(0);
+  if (browserName === 'chromium') await page.screenshot({ path: 'test-results/catalog-sidebar-expanded.png' });
+
+  await collapse.click();
+  await expect(shell).toHaveAttribute('data-sidebar-collapsed', 'true');
+
+  // Settles at translateX(-100%): the fixed-width panel is shifted fully offscreen
+  // by its own width (a negative e-component), then hidden from the tab order.
+  await expect
+    .poll(() => sidebar.evaluate((element) => new DOMMatrixReadOnly(window.getComputedStyle(element).transform).e))
+    .toBeLessThanOrEqual(-(expandedWidth - 1));
+  await expect(sidebar).toHaveCSS('visibility', 'hidden');
+  // The detail pane keeps its position; the width change is one instant reflow.
+  await expect
+    .poll(() => shell.evaluate((element) => window.getComputedStyle(element).gridTemplateColumns.startsWith('0px')))
+    .toBe(true);
+  if (browserName === 'chromium') await page.screenshot({ path: 'test-results/catalog-sidebar-collapsed.png' });
+
+  // Expanding restores it: visible again and back to the identity transform.
+  await page.locator('[data-action="toggle-catalog-sidebar"][aria-label="Expand component catalog"]').click();
+  await expect(shell).toHaveAttribute('data-sidebar-collapsed', 'false');
+  await expect(sidebar).toHaveCSS('visibility', 'visible');
+  await expect.poll(() => sidebar.evaluate((element) => new DOMMatrixReadOnly(window.getComputedStyle(element).transform).e)).toBe(0);
+});
+
 test('links catalog details to their first-party source and existing guidance', async ({ page, browserName }) => {
   for (const [id, name, sourcePath, componentPath, documentationPath, guidanceLabel] of [
     ['toolbar', 'Toolbar', 'ui/ux-demo/main.tsx', 'ui/src/toolbar.tsx', 'ui/docs/component-selection.md', 'Read guidance'],

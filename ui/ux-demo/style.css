@@ -43,21 +43,32 @@ button {
 }
 
 .catalog-shell {
+  /* Collapsing the sidebar changes its grid column, which reflows the detail
+     pane. Animating that width relayouts the whole catalog per frame, so the
+     column snaps instantly (one reflow) and the fixed-width sidebar slides via
+     transform only (composited, clipped by this shell's overflow) — the
+     instant-width / sliding-content technique from ~/Documents/hotsheet2. */
+  --catalog-sidebar-width: remify(288px);
   display: grid;
   height: 100vh;
-  grid-template-columns: minmax(remify(272px), remify(304px)) minmax(0, 1fr);
-  transition: grid-template-columns 180ms ease;
+  grid-template-columns: var(--catalog-sidebar-width) minmax(0, 1fr);
+  overflow: hidden;
 }
 .catalog-shell[data-sidebar-collapsed="true"] {
   grid-template-columns: 0 minmax(0, 1fr);
 }
 .catalog-sidebar {
-  min-width: 0;
+  width: var(--catalog-sidebar-width);
+  min-width: var(--catalog-sidebar-width);
   height: 100%;
   padding: 0;
   overflow: hidden;
+  justify-self: start;
   border-inline-end: 1px solid var(--kui-color-border);
   background: var(--kui-color-surface);
+  transition:
+    transform 200ms ease,
+    visibility 0s linear 0s;
 }
 .catalog-brand {
   border-block-end: 1px solid var(--kui-color-border);
@@ -103,8 +114,14 @@ button {
   flex: 0 0 auto;
 }
 .catalog-shell[data-sidebar-collapsed="true"] .catalog-sidebar {
-  visibility: hidden;
   border-inline-end: 0;
+  /* Slide out first, then hide — so the panel animates offscreen and only then
+     leaves the tab order, rather than snapping invisible mid-slide. */
+  transform: translateX(-100%);
+  visibility: hidden;
+  transition:
+    transform 200ms ease,
+    visibility 0s linear 200ms;
 }
 .catalog-eyebrow {
   margin: 0;
@@ -1536,8 +1553,13 @@ button {
   }
   .catalog-sidebar {
     width: 100%;
+    min-width: 0;
     height: auto;
     padding: 0;
+    justify-self: stretch;
+    /* The stacked narrow layout collapses via display:none, not the desktop
+       horizontal slide, so drop the fixed width and transform here. */
+    transform: none;
     border-inline-end: 0;
     border-bottom: 1px solid var(--kui-color-border);
   }
