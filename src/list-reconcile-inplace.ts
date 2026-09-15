@@ -31,7 +31,7 @@ import { tryAttributeOnlyFastPath, tryTextContentFastPath } from './list-reconci
 import { captureFocus, restoreFocus } from './list-reconcile-focus.js';
 import { _morphElement } from './morph.js';
 import type { ListItem, ListSegment } from './segment.js';
-import { parseSingleRow } from './utils/rowContract.js';
+import { parseSingleRow } from './utils/row-contract.js';
 
 /**
  * If the new segment has the same refs in the same order as `binding.items`,
@@ -113,4 +113,3 @@ function updateRowInPlace(
     bindings: fresh.bindings, bindingDisposers: fresh.bindingDisposers,
   };
 }
-

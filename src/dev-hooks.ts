@@ -123,7 +123,7 @@ export interface DevHooks {
   staleIndex?: (id: string) => void;
   duplicateCacheKeys?: (id: string, segItems: readonly { cacheKey: unknown }[]) => void;
 
-  // --- utils/urlScreen.ts ------------------------------------------------
+  // --- utils/url-screen.ts -----------------------------------------------
   /**
    * When installed, a screened URL throws instead of warning-and-dropping.
    * A slot rather than a boolean so the check stays uniform with the rest.

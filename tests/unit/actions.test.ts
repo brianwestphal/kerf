@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { action, delegateActions } from '../../src/actions.js';
-import type { AttrSpec } from '../../src/attrSelector.js';
+import type { AttrSpec } from '../../src/attr.js';
 
 function mount(html: string): HTMLElement {
   const root = document.createElement('div');

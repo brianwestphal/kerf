@@ -34,7 +34,7 @@ import {
   parseRowTemplate,
   parseSingleRow,
   rowContractError,
-} from './utils/rowContract.js';
+} from './utils/row-contract.js';
 
 export function reconcileGranular(
   binding: ListBinding,

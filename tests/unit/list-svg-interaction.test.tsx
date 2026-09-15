@@ -57,7 +57,7 @@ describe('KF-387 seam: SVG × list reconcile', () => {
     // granular insert, a snapshot append, and a structural update each
     // produced HTML-namespace nodes a real browser will not paint — and
     // because first render was correct, it presented as a flake. Row parsing
-    // is now namespace-aware (utils/rowContract.ts).
+    // is now namespace-aware (utils/row-contract.ts).
     const SVG_NS = 'http://www.w3.org/2000/svg';
 
     // Granular insert.

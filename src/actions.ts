@@ -29,7 +29,7 @@
  * well-known non-bubbling event types). One event type per call, mirroring
  * `delegate()`; collect the disposers for a root that needs several.
  */
-import { attr, type AttrSpec } from './attrSelector.js';
+import { attr, type AttrSpec } from './attr.js';
 import { delegate, type DelegateOptions } from './delegate.js';
 
 /** The attribute an action table keys on by default. */

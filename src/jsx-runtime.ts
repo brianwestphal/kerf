@@ -35,7 +35,7 @@ import {
 } from './segment.js';
 import { escapeAttr, escapeHtml } from './utils/escapeHtml.js';
 import { ATTR_ALIASES } from './utils/jsx-attr-aliases.js';
-import { isDangerousUrlValue, reportDangerousUrl } from './utils/urlScreen.js';
+import { isDangerousUrlValue, reportDangerousUrl } from './utils/url-screen.js';
 
 // Cross-realm/cross-bundle brand. Using `Symbol.for` (the global registry)
 // means two `SafeHtml` classes from different module copies still recognize

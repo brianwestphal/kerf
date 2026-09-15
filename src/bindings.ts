@@ -44,7 +44,7 @@
 
 import { effect, isSignal, type Signal } from './reactive.js';
 import { syncFormProp } from './utils/syncFormProp.js';
-import { isDangerousUrlValue, reportDangerousUrl } from './utils/urlScreen.js';
+import { isDangerousUrlValue, reportDangerousUrl } from './utils/url-screen.js';
 
 // RESERVED NAMESPACE (consumer contract, KF-314). The wiring pass finds these
 // markers by scanning the mounted subtree and matching by id, and resolves an

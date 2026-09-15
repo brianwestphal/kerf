@@ -65,7 +65,7 @@ import { maybeWarnMissingRowKey } from './dev-row-key-warn.js';
 import { DevSignal, isDevWarnUntrackedEnabled, noteUntrackedCoverage } from './dev-signal.js';
 import { maybeWarnNarrowSet } from './dev-store-warn.js';
 import { applyWarningOptions, type DevWarningOptions } from './dev-warn-config.js';
-import { devReadonlyProxy, toRaw } from './utils/devReadonly.js';
+import { devReadonlyProxy, toRaw } from './utils/dev-readonly.js';
 
 export { clearDevHooks, type DevHooks, devHooks, installDevHooks } from './dev-hooks.js';
 export type { DevWarningOptions } from './dev-warn-config.js';

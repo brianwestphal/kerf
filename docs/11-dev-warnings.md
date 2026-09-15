@@ -467,7 +467,7 @@ but remains unreachable when `kerfjs/dev` is not imported.
 ### 11.2.15 Dangerous-URL screen (throws in dev, warns in prod)
 
 
-**Module:** [`src/utils/urlScreen.ts`](../src/utils/urlScreen.ts), applied in [`src/jsx-runtime.ts`](../src/jsx-runtime.ts) (`renderAttr`) and [`src/bindings.ts`](../src/bindings.ts) (`setBoundAttr`).
+**Module:** [`src/utils/url-screen.ts`](../src/utils/url-screen.ts), applied in [`src/jsx-runtime.ts`](../src/jsx-runtime.ts) (`renderAttr`) and [`src/bindings.ts`](../src/bindings.ts) (`setBoundAttr`).
 **Trigger:** a plain-string URL value that resolves to a `javascript:` / `vbscript:` scheme or a script-executing `data:` document type is written to a URL-bearing attribute (`href`, `src`, `xlink:href`, `formaction`, `action`, `data`). **What it catches:** a stored-XSS payload reaching a `href={...}` interpolation that would otherwise turn into a clickable script vector. See [`docs/6-jsx-runtime.md`](6-jsx-runtime.md) §6.4.1 for the screening details.
 
 **Mechanism.** The attribute is always **dropped** (omitted from the string / removed from the live node). How the drop is reported depends on the mode: in **dev** the screen **throws an `Error`** with the diagnostic; in **prod** it `console.warn`s and drops. Mode comes from whether the diagnostics are installed: `kerfjs/dev` fills the `urlScreenThrow` hook slot, so importing it selects the throwing behavior and omitting it selects warn+drop. kerf no longer probes the environment to decide (§11.3.6) — which also fixes the case where a production browser bundle inferred DEVELOPMENT and threw on attacker-influenced data. `raw()` / `SafeHtml` values are the documented bypass in both modes.
@@ -732,7 +732,7 @@ by `tests/unit/dev-list-key-warn.internal.test.tsx`,
 `tests/unit/list-identity-warning.test.tsx`, and
 `tests/unit/dev-listener-warn.internal.test.ts`. The unconditional double-mount
 guard lives in `src/mount.ts`; the dangerous-URL screen lives in
-`src/utils/urlScreen.ts`. `KERF_DEV_INVARIANTS` (`src/dev-invariants.ts`) and
+`src/utils/url-screen.ts`. `KERF_DEV_INVARIANTS` (`src/dev-invariants.ts`) and
 `KERF_DEV_WARN_PARSER_REPAIR` (`src/dev-parser-repair-warn.ts`) report framework
 or invalid-markup defects rather than patterns the AI usage guide should teach;
 their dedicated tests are `tests/unit/dev-invariants.internal.test.ts` and

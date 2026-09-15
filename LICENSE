@@ -54,7 +54,7 @@ Steele-Idem, which is also distributed under the MIT License:
 
 ---
 
-`src/attrSelector.ts`'s `cssEscapeIdent` adapts the CSS identifier escaping of
+`src/attr.ts`'s `cssEscapeIdent` adapts the CSS identifier escaping of
 the [CSS.escape polyfill](https://github.com/mathiasbynens/CSS.escape) by
 Mathias Bynens, which is also distributed under the MIT License:
 

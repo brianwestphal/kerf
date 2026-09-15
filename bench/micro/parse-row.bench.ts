@@ -15,7 +15,7 @@
 
 import { bench, describe } from 'vitest';
 
-import { parseRowTemplate } from '../../src/utils/rowContract.js';
+import { parseRowTemplate } from '../../src/utils/row-contract.js';
 
 const KRAUSEST_ROW_HTML = '<tr data-key="1" class="">'
   + '<td class="col-md-1">1</td>'

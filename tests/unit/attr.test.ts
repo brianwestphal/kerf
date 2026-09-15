@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { attr } from '../../src/attrSelector.js';
+import { attr } from '../../src/attr.js';
 
 describe('attr — static overload', () => {
   it('returns name, value, selector, and attrs for a basic attribute', () => {

@@ -21,7 +21,7 @@
  * Unlike JSX, NO camelCase attribute aliasing is applied — template authors
  * write real HTML attribute names (`class`, not `className`).
  *
- * Hole contract (enforced by the parser in `utils/templateParse.ts`): holes
+ * Hole contract (enforced by the parser in `utils/parseTemplate.ts`): holes
  * are allowed in text/child positions and as a COMPLETE attribute value
  * (`attr=${v}` or `attr="${v}"`). Tag-name holes, attribute-name holes,
  * partial attribute values (`class="a ${b}"`), and holes inside comments
@@ -43,7 +43,7 @@ import {
 } from './jsx-runtime.js';
 import type { ReadonlySignal, Signal } from './reactive.js';
 import { mergeChildSegments, type Segment } from './segment.js';
-import { type ParsedTemplate, parseTemplate } from './utils/templateParse.js';
+import { type ParsedTemplate, parseTemplate } from './utils/parseTemplate.js';
 
 /**
  * Values accepted in `html\`\`` holes — the same set JSX accepts for

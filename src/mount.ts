@@ -53,7 +53,7 @@ import {
   type ListSegment,
   type Segment,
 } from './segment.js';
-import { parseRowTemplate, rowContractError } from './utils/rowContract.js';
+import { parseRowTemplate, rowContractError } from './utils/row-contract.js';
 
 /** What `mount()`'s render function may return; non-SafeHtml values coerce (nullish/boolean → render nothing). */
 export type MountResult = SafeHtml | string | number | boolean | null | undefined;

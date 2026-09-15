@@ -1,6 +1,6 @@
 /**
  * Unit tests for the dev-only deep read-only guard helpers
- * (`src/utils/devReadonly.ts`). `*.internal.test.ts` so the dist-full suite
+ * (`src/utils/dev-readonly.ts`). `*.internal.test.ts` so the dist-full suite
  * excludes it — these helpers are internal, not on the public barrel. The
  * store-level behavior is covered end-to-end in `store.test.ts`; this file
  * pins the helper's edge branches directly.
@@ -8,7 +8,7 @@
 
 import { describe, expect, it } from 'vitest';
 
-import { devReadonlyProxy, toRaw } from '../../src/utils/devReadonly.js';
+import { devReadonlyProxy, toRaw } from '../../src/utils/dev-readonly.js';
 
 describe('devReadonlyProxy()', () => {
   it('wraps null-prototype nested objects (treated as plain)', () => {

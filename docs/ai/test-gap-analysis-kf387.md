@@ -115,7 +115,7 @@ Read every `KERF_DEV_WARN_*` message against its current trigger:
   `REBUILT_LISTENERS`, `NARROW_SET`, `UNTRACKED_SIGNALS`,
   `VALUE_ONLY_RERENDER` — messages match their triggers; no drift found.
 - **False positive found (always-on warning):** the missing-row-key warning
-  (`utils/rowContract.ts`) fires claiming rows lack `id`/`data-key` when the
+  (`utils/row-contract.ts`) fires claiming rows lack `id`/`data-key` when the
   real problem is the KF-391 tbody misbind — it inspects the mis-bound tbody.
   An actively misleading diagnostic; folded into KF-391.
 - Dedup-scope footnote from the audit: ids were not stable per callsite under

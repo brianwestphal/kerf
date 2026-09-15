@@ -30,7 +30,7 @@ import { captureFocus, restoreFocus } from './list-reconcile-focus.js';
 import { tryInPlaceContentUpdate } from './list-reconcile-inplace.js';
 import type { ListSegment } from './segment.js';
 import { moveNode } from './utils/moveNode.js';
-import { parseRowTemplate, rowContractError } from './utils/rowContract.js';
+import { parseRowTemplate, rowContractError } from './utils/row-contract.js';
 
 interface Classification {
   newRecord: BoundItem[];

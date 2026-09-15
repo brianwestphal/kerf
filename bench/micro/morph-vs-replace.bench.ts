@@ -24,7 +24,7 @@
 import { bench, describe } from 'vitest';
 
 import { _morphElement } from '../../src/morph.js';
-import { parseRowTemplate } from '../../src/utils/rowContract.js';
+import { parseRowTemplate } from '../../src/utils/row-contract.js';
 
 const KRAUSEST_ROW_TEMPLATE = (id: number, label: string, danger: boolean): string =>
   `<tr data-key="${id}" class="${danger ? 'danger' : ''}">`

@@ -68,7 +68,7 @@ export default defineConfig({
         //   list-reconcile-granular.ts 112 .. patch-type discriminator
         //   each.ts 475 .................... patch-type discriminator
         //   dev-rerender-warn.ts 63 ......... nodeType discriminator
-        //   urlScreen.ts 118 ............... `?? ''` after a regex that always
+        //   url-screen.ts 118 .............. `?? ''` after a regex that always
         //                                     matches for a `data:` scheme —
         //                                     a TypeScript-only guard
         //

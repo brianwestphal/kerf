@@ -19,7 +19,7 @@
  * family.
  */
 
-import { truncateRowHtml } from './utils/rowContract.js';
+import { truncateRowHtml } from './utils/row-contract.js';
 
 export function maybeWarnMissingRowKey(
   rowEl: Element,

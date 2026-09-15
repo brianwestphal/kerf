@@ -10,7 +10,7 @@
  * into foreign-content mode — so the bug presented as a flake: the initial
  * picture was right and everything added later was invisible.
  *
- * `utils/rowContract.ts` now selects the parse namespace from the list's live
+ * `utils/row-contract.ts` now selects the parse namespace from the list's live
  * parent. The fix re-enters foreign content the same way first render does
  * (wrap in `<svg>`, let the HTML parser namespace the rows, lift them out)
  * rather than switching to the XML parser, so both paths accept exactly the

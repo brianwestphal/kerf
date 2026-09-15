@@ -20,7 +20,7 @@ import * as htmlSubpath from '../src/html.js';
 import * as barrel from '../src/index.js';
 import * as jsxRuntime from '../src/jsx-runtime.js';
 import * as testingSubpath from '../src/testing.js';
-import { parseRowTemplate } from '../src/utils/rowContract.js';
+import { parseRowTemplate } from '../src/utils/row-contract.js';
 
 /** Runtime (value) exports only — type-only exports are erased and never appear here. */
 const runtimeKeys = (ns: object): string[] =>
