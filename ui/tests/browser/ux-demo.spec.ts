@@ -130,6 +130,35 @@ test('slides the catalog sidebar out and back via a composited transform, not a 
   await expect.poll(() => sidebar.evaluate((element) => new DOMMatrixReadOnly(window.getComputedStyle(element).transform).e)).toBe(0);
 });
 
+test('keeps an icon-only control-group wa-button highlight at least square (min-width == height)', async ({ page, browserName }) => {
+  await page.setViewportSize({ width: 1200, height: 900 });
+  await page.goto('/?component=toolbar-control-group');
+
+  // The highlight lives on the wa-button's shadow `base` part. An icon-only
+  // button must not render it as a vertical oval: its width must be >= its
+  // height (a circle at the 40px default), while a caret button grows wider.
+  const basePart = (sel: string) =>
+    page.locator(sel).first().evaluate((host) => {
+      const base = (host as unknown as { shadowRoot: ShadowRoot | null }).shadowRoot?.querySelector('[part~="base"]');
+      const r = (base as HTMLElement | null)?.getBoundingClientRect();
+      return r ? { w: Math.round(r.width), h: Math.round(r.height) } : null;
+    });
+
+  const favorite = await basePart('wa-button[aria-label="Favorite view"]');
+  expect(favorite).not.toBeNull();
+  expect(favorite!.h).toBeGreaterThan(0);
+  expect(favorite!.w).toBeGreaterThanOrEqual(favorite!.h); // square or wider, never a vertical oval
+  expect(favorite!.w).toBe(favorite!.h); // icon-only settles to a circle
+
+  const sort = await basePart('wa-button[aria-label="Sort tickets"]');
+  expect(sort!.w).toBeGreaterThan(sort!.h); // caret content grows past the square floor
+
+  if (browserName === 'chromium') {
+    await page.locator('wa-button[aria-label="Favorite view"]').hover();
+    await page.locator('h3:has-text("Button group")').locator('xpath=following-sibling::*[1]').screenshot({ path: 'test-results/button-group-highlight.png' });
+  }
+});
+
 test('links catalog details to their first-party source and existing guidance', async ({ page, browserName }) => {
   for (const [id, name, sourcePath, componentPath, documentationPath, guidanceLabel] of [
     ['toolbar', 'Toolbar', 'ui/ux-demo/main.tsx', 'ui/src/toolbar.tsx', 'ui/docs/component-selection.md', 'Read guidance'],

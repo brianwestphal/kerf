@@ -107,6 +107,10 @@
 }
 
 .kui-toolbar-control-group wa-button::part(base) {
+  /* Match min-width to the 40px height so an icon-only button's highlight is at
+     least a circle, not a vertical oval — the host is 40px wide but the base
+     part was sizing to its ~32px content. Text/caret buttons grow past it. */
+  min-width: remify(40px);
   min-height: remify(40px);
   box-sizing: border-box;
   border: 1px solid transparent;
