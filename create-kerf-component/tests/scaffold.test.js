@@ -44,6 +44,7 @@ test('scaffolds the expected file tree', () => {
       'tsconfig.json',
       'tsup.config.ts',
       'README.md',
+      'LICENSE',
       '.gitignore',
       'src/index.ts',
       'src/counter.tsx',
@@ -57,11 +58,12 @@ test('scaffolds the expected file tree', () => {
 
 test('replaces the package-name token everywhere', () => {
   withScaffold('my-widgets', ({ target, read }) => {
-    for (const f of ['package.json', 'README.md', 'src/index.ts']) {
+    for (const f of ['package.json', 'README.md', 'LICENSE', 'src/index.ts']) {
       assert.ok(!read(f).includes('__PKG_NAME__'), `token left in ${f}`);
     }
     assert.equal(JSON.parse(read('package.json')).name, 'my-widgets');
     assert.match(read('README.md'), /my-widgets/);
+    assert.match(read('LICENSE'), /^MIT License\n\nCopyright \(c\) The my-widgets contributors$/m);
   });
 });
 
@@ -75,6 +77,7 @@ test('package.json keeps kerfjs a peerDependency (never bundled), with ESM + sub
     assert.deepEqual(pkg.exports['.'], { types: './dist/index.d.ts', import: './dist/index.js' });
     assert.ok(pkg.exports['./counter'], 'subpath export missing');
     assert.ok(pkg.files.includes('dist'), 'files must ship dist');
+    assert.ok(pkg.files.includes('LICENSE'), 'files must ship LICENSE');
   });
 });
 

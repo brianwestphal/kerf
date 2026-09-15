@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Added the missing MIT `LICENSE` to generated `create-kerf-component` packages, including package-name token replacement and publish-contents coverage.
 - Made dangerous-URL attribute-name matching ASCII-case-insensitive so mixed-case spellings cannot bypass static or bound screening.
 - Normalized synchronous `resource().run()` fetcher throws into the same stale-guarded failed state and resolving promise used for asynchronous rejections.
 - Escaped plain-string `toast()` content as text while preserving trusted `SafeHtml` and render-function markup, closing a stored-markup injection path.

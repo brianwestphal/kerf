@@ -27,6 +27,8 @@ A ready-to-publish component package that encodes the rules from the kerf docs
   the package boundary.
 - **ESM + `.d.ts` output** via `tsup`, with **subpath exports** (`.` and
   `./counter`).
+- **An MIT `LICENSE`** carrying the generated package's contributor notice and
+  included in the package publish allowlist.
 - **`tsconfig` with `jsxImportSource: "kerfjs"`** so the author's `.tsx` compiles
   against kerf's JSX runtime; consumers need no extra setup.
 - **An example `Counter` component** demonstrating the two patterns every kerf
@@ -38,9 +40,10 @@ A ready-to-publish component package that encodes the rules from the kerf docs
 
 ```
 my-widgets/
-├── package.json        # peerDependencies.kerfjs, exports map, files: [dist]
+├── package.json        # peerDependencies.kerfjs, exports map, publish files
 ├── tsconfig.json       # jsxImportSource: "kerfjs"
 ├── tsup.config.ts      # external: ['kerfjs'], format esm, dts
+├── LICENSE             # MIT license with the package contributor notice
 ├── .gitignore
 ├── README.md
 └── src/
