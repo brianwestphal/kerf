@@ -59,6 +59,27 @@ test('a real link click routes without a reload; the outlet swaps', async ({ pag
   await expect(page.locator('#outlet .home')).toHaveCount(0);
 });
 
+test('a base-prefix sibling link is not intercepted as an in-app route', async ({ page }) => {
+  await setup(page);
+  await page.evaluate(() => {
+    const sibling = document.createElement('a');
+    sibling.id = 'base-prefix-sibling';
+    sibling.href = '/tests/browser/fixtures/index.htmlish/users/2';
+    sibling.textContent = 'Outside';
+    document.body.appendChild(sibling);
+    // Registered after the router's delegated body listener: suppress the real
+    // navigation only after kerf has had the chance to decide whether to claim it.
+    document.body.addEventListener('click', (event) => {
+      if ((event.target as Element).closest('#base-prefix-sibling')) event.preventDefault();
+    });
+  });
+
+  await page.locator('#base-prefix-sibling').click();
+  expect(page.url()).toContain('/tests/browser/fixtures/index.html');
+  expect(await page.evaluate(() => (window as any)._router.route.value.path)).toBe('/');
+  await expect(page.locator('#outlet .home')).toHaveText('Home');
+});
+
 test('browser Back / Forward drives popstate → the outlet follows', async ({ page }) => {
   await setup(page);
   await page.locator('#u1').click();

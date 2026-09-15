@@ -913,6 +913,8 @@ mount(app, () => (
 
 Creates a router bound to the browser history (reads the current location immediately, installs a `popstate` listener — plus `hashchange` in hash mode — and, unless `interceptLinks: false`, one delegated link interceptor). Returns a [`RouterHandle`](#router-types) (a closure — no module-global state, like `defineStore`):
 
+In history mode, `base` is stripped only on an exact match or at a following `/` segment boundary; a base of `/app` therefore owns `/app` and `/app/users`, but not `/apple`.
+
 - **`route`** — `ReadonlySignal<`[`RouteState`](#router-types)`>` = `{ path, params, query, hash }`. `params` is a `Record<string, string>` from the matched pattern (URL-decoded); `query` is a `URLSearchParams`. A tracked read.
 - **`navigate(path, { replace?, state? })`** — push (or replace) a history entry and update `route`; `path` may include `?query` / `#hash`.
 - **`back()` / `forward()`** — `history.back()` / `history.forward()`.

@@ -76,7 +76,7 @@ export interface RouterOptions {
    * no server rewrite.
    */
   mode?: 'history' | 'hash';
-  /** History mode only: a base path every route sits under (`/app`), stripped from `route.path` and prepended on navigation. */
+  /** History mode only: a base path every route sits under (`/app`), matched at a segment boundary, stripped from `route.path`, and prepended on navigation. */
   base?: string;
   /**
    * Auto-intercept clicks on in-app `<a href>` links (same-origin, left-click, no
@@ -144,6 +144,11 @@ function matchPattern(pattern: string, path: string): Record<string, string> | n
   return ps.length === pp.length ? params : null;
 }
 
+/** Whether `path` is exactly `base` or starts with it at a segment boundary. */
+function isWithinBase(path: string, base: string): boolean {
+  return base.length === 0 || path === base || path.startsWith(base + '/');
+}
+
 /**
  * Create a router bound to the browser history. Reads the current location
  * immediately (so `route.value` is correct before first paint), installs a
@@ -172,7 +177,9 @@ export function createRouter(options: RouterOptions): RouterHandle {
       hash = '';
     } else {
       path = location.pathname;
-      if (normBase.length > 0 && path.startsWith(normBase)) path = path.slice(normBase.length) || '/';
+      if (normBase.length > 0 && isWithinBase(path, normBase)) {
+        path = path.slice(normBase.length) || '/';
+      }
       query = new URLSearchParams(location.search);
       hash = location.hash;
     }
@@ -261,7 +268,7 @@ export function createRouter(options: RouterOptions): RouterHandle {
       const url = new URL(anchor.href, location.href);
       if (url.origin !== location.origin) return;
       if (mode === 'history') {
-        if (normBase.length > 0 && !url.pathname.startsWith(normBase)) return; // outside the app's base
+        if (!isWithinBase(url.pathname, normBase)) return; // outside the app's base
         event.preventDefault();
         navigate(url.pathname.slice(normBase.length) + url.search + url.hash);
       } else {

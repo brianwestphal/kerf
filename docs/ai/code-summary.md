@@ -389,6 +389,8 @@ kerf/
 
 Dangerous-URL screening normalizes attribute names to lowercase before checking the six URL-bearing families, so static and bound mixed-case spellings cannot bypass the shared screen.
 
+History-router base stripping and link interception share an exact-or-segment-boundary predicate, preventing a base such as `/app` from claiming `/apple`.
+
 ## Public exports
 
 Every export reachable via `import { ... } from 'kerfjs'`:

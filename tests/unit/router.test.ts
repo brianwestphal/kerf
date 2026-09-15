@@ -207,6 +207,17 @@ describe('createRouter() — hash mode + base', () => {
     router.navigate('/users/9');
     expect(location.pathname).toBe('/app/users/9'); // base prepended
   });
+
+  it('base stripping requires an exact match or a following path separator', () => {
+    goto('/apple/users/8');
+    router = createRouter({ routes, base: '/app' });
+    expect(router.route.value.path).toBe('/apple/users/8');
+
+    router.dispose();
+    goto('/app');
+    router = createRouter({ routes, base: '/app' });
+    expect(router.route.value.path).toBe('/');
+  });
 });
 
 describe('createRouter() — edge coverage', () => {
@@ -270,6 +281,10 @@ describe('createRouter() — edge coverage', () => {
     const outOfBase = link({ href: '/other/page' });
     outOfBase.dispatchEvent(leftClick());
     expect(router.route.value.path).toBe('/users/3'); // unchanged — outside base
+
+    const prefixSibling = link({ href: '/apple/users/4' });
+    prefixSibling.dispatchEvent(leftClick());
+    expect(router.route.value.path).toBe('/users/3'); // unchanged — raw prefix is not a base match
     document.body.removeEventListener('click', guard);
   });
 

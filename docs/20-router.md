@@ -59,7 +59,7 @@ const router = createRouter({
     { path: '*',          component: () => <NotFound /> },   // catch-all — put last
   ],
   mode: 'history',   // 'history' (default) | 'hash'
-  base: '/app',      // optional (history mode)
+  base: '/app',      // optional (history mode; exact path/segment boundary)
 });
 
 mount(document.getElementById('app')!, () => (
@@ -134,7 +134,7 @@ A click is intercepted only when it is a plain, in-app navigation:
 - not already `defaultPrevented` by another handler,
 - no `target` (other than `_self`), no `download`,
 - not `rel="external"`, not `data-router-ignore`,
-- same-origin (and, in history mode with a `base`, under that base),
+- same-origin (and, in history mode with a `base`, exactly that base or below it at a path-segment boundary — `/app` does not claim `/apple`),
 - in hash mode, an in-app `#/…` link.
 
 Everything else falls through to the browser untouched. Opt a single link out with
