@@ -109,6 +109,8 @@ The `kerfjs/overlay` toast helper treats plain-string content as untrusted text:
 
 Concurrent plain-element fallback overlays in one document share a document-owned open-order stack. Escape, backdrop, and outside-click dismissal applies only to the topmost active fallback surface, for both modal and non-modal overlays; closing a lower surface programmatically removes only its own stack entry.
 
+The `kerfjs/overlay` public entry is composition-only. Overlay lifecycle and types live in an internal core, while `confirm`, `prompt`, `form`, and `choice` each have a focused implementation module that imports the core directly; this preserves the public surface without the former barrel/helper module cycle.
+
 The `kerfjs/async` resource helper normalizes both synchronous fetcher throws and asynchronous promise rejections into its stale-guarded `failed` state; `run()` always returns a promise that resolves rather than rejecting.
 
 ### §6 JSX runtime
