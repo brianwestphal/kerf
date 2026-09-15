@@ -57,9 +57,11 @@
  * those before paying the cost, exactly as it checked the old `isOptedIn()`
  * exports.
  *
- * Each warner keeps its own internal opt-in check (the `KERF_DEV_WARN_*` env
- * reads). Installation decides whether the diagnostics are *present*; the
- * individual warner still decides whether it is *switched on*.
+ * Each opt-in warner keeps its own internal switch check through `devFlag()`;
+ * an `enableWarnings()` override wins over the matching `KERF_DEV_WARN_*`
+ * environment variable. Installation decides whether the diagnostics are
+ * *present*; the opt-in warner decides whether it is *switched on*. Always-on
+ * hooks skip that second gate.
  *
  * @see docs/11-dev-warnings.md
  */

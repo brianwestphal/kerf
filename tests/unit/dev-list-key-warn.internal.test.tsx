@@ -5,8 +5,8 @@
  * development, like the missing-row-key warning, because it fires only when
  * kerf is about to silently discard row state and it names a one-line fix.
  * Tests cover: it fires on a real shift, it is one-shot per list, a keyed list
- * never triggers it, an ordinary render never triggers it, and production mode
- * is silent.
+ * never triggers it, an ordinary render never triggers it, and the production
+ * shape with hooks uninstalled is silent.
  */
 import { afterEach, beforeEach, describe, expect, it, type MockInstance, vi } from 'vitest';
 
@@ -96,7 +96,7 @@ describe('dev-list-key-warn (always-on identity-shift warning)', () => {
     dispose();
   });
 
-  it('is silent in production mode', () => {
+  it('is silent in production shape with hooks uninstalled', () => {
     enterProductionShape();
     try {
       const { cond, b, dispose } = shiftingTree(false);

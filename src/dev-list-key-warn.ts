@@ -11,13 +11,13 @@
  * this rebuild routes through the ordinary classify pass, not the self-heal it
  * watches — so an author had no signal at all that state was being thrown away.
  *
- * **Always on in development, like the missing-row-key warning** rather than
- * env-gated like the `KERF_DEV_WARN_*` family. The reasoning is the same as for
- * that one: it fires only when kerf is about to silently discard row state, it
- * names a concrete one-line fix, and it is one-shot per list — so it is a
- * diagnostic an author always wants, not one they opt into. Production emits
- * nothing because the diagnostics are not installed there — reaching this
- * module at all means the consumer imported `kerfjs/dev`.
+ * **Always on once diagnostics are installed, like the missing-row-key
+ * warning**, rather than individually switched like the `KERF_DEV_WARN_*`
+ * family. The reasoning is the same as for that one: it fires only when kerf
+ * is about to silently discard row state, it names a concrete one-line fix,
+ * and it is one-shot per list — so it is a diagnostic an author always wants,
+ * not one they opt into. The production shape emits nothing because the dev
+ * entry is absent; kerf does not infer that shape from the environment.
  *
  * Detection is deliberately conservative (KF-394). A changed data source alone
  * is NOT a shift — the same list swapping which signal it renders (a filter or
@@ -50,4 +50,3 @@ export function maybeWarnListIdShift(id: string): void {
     + 'slot, so its siblings stop shifting too.',
   );
 }
-

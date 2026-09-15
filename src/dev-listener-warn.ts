@@ -1,7 +1,8 @@
 /**
- * Dev-mode warning for Rule 4 violations (KF-174). When the opt-in env var
- * `KERF_DEV_WARN_REBUILT_LISTENERS=1` is set in a non-production build,
- * `mount()` calls `installListenerRebuildWarn()` to set up two things:
+ * Dev-mode warning for Rule 4 violations (KF-174). Once the diagnostics are
+ * installed, switching on `rebuiltListeners` through `enableWarnings()` or
+ * `KERF_DEV_WARN_REBUILT_LISTENERS=1` makes `mount()` call
+ * `installListenerRebuildWarn()` to set up two things:
  *
  *   1. A global one-time monkey-patch on `EventTarget.prototype.addEventListener`
  *      that marks the `Element` receiver with a `Symbol.for("kerfjs.devListener")`
@@ -18,8 +19,8 @@
  * patterns (custom elements that attach listeners in their constructor,
  * third-party widgets the user forgot to wrap in `data-morph-skip`, library
  * teardown code that detaches a node it owns). The warning is opt-in so
- * existing projects aren't surprised; CI / dev environments that want the
- * diagnostic enable the env var.
+ * existing projects aren't surprised; consumers that want the diagnostic
+ * enable its switch.
  *
  * The MutationObserver delivers mutations asynchronously (microtask after the
  * morph), so the warning fires AFTER the bad re-render rather than at the
@@ -27,7 +28,9 @@
  * Rule 4 at 2 with the opt-in (not 3) — the model sees the warning paired
  * with the broken listener, not at the read site.
  *
- * Production behavior is unchanged for zero runtime cost.
+ * With the dev entry absent, the nullable hook slot makes this module
+ * unreachable. With diagnostics installed but this warning switched off, the
+ * predicate returns before patching `EventTarget` or creating an observer.
  */
 
 import { devFlag } from './dev-warn-config.js';

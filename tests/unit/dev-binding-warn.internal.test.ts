@@ -7,7 +7,7 @@
  * the previously-wired holes and warns once per hole whose signal INSTANCE
  * switched — the `class={cond ? sigA : sigB}` anti-pattern that silently goes
  * stale because the fast path never re-binds. Tests cover the opt-out / opt-in /
- * dedup / production-mode paths and the wiring-path retention.
+ * dedup / production-shape (hooks uninstalled) paths and the wiring-path retention.
  */
 
 import { afterEach, beforeEach, describe, expect, it, type MockInstance, vi } from 'vitest';

@@ -7,8 +7,8 @@
  * was computed at its OLD index. When the render fn reads that index, the row
  * silently shows a stale value. This warner surfaces it. Tests cover both the
  * snapshot path (plain-array reorder) and the granular path (arraySignal shift),
- * plus the opt-out / arity-gate / tail-append-no-shift / dedup / production
- * paths through the real pipeline.
+ * plus the opt-out / arity-gate / tail-append-no-shift / dedup /
+ * production-shape (hooks uninstalled) paths through the real pipeline.
  */
 
 import { afterEach, beforeEach, describe, expect, it, type MockInstance, vi } from 'vitest';
@@ -120,7 +120,7 @@ describe('dev-list-index-warn (KERF_DEV_WARN_STALE_INDEX=1)', () => {
     expect(warnSpy).toHaveBeenCalledTimes(1);
   });
 
-  it('is silent in production mode even with the env var set', () => {
+  it('is silent in production shape with hooks uninstalled even when its switch is on', () => {
     env.KERF_DEV_WARN_STALE_INDEX = '1';
     enterProductionShape();
     try {

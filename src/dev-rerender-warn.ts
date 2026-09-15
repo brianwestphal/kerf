@@ -21,9 +21,10 @@
  *
  * Why opt-in (docs/11 family rules): plenty of legitimate code re-renders on
  * `.value` reads — the warning is a migration aid for adopting the bound-first
- * idiom, not a lint on correctness. Production behavior is unchanged for zero
- * runtime cost: the env-var read short-circuits before any parsing runs, and
- * the parse itself happens only on the already-slow surrounds-changed path.
+ * idiom, not a lint on correctness. With the dev entry absent, the nullable
+ * hook slot makes this module unreachable. With diagnostics installed but the
+ * warning switched off, its predicate returns before parsing; enabled parsing
+ * happens only on the already-slow surrounds-changed path.
  */
 
 import { devFlag } from './dev-warn-config.js';
@@ -45,7 +46,7 @@ const COMMENT_NODE = 8;
  * Lockstep structural comparison: true when the two fragments have identical
  * element/comment shape, so every difference is confined to text data and
  * attributes ("value-only"). Exported for direct unit coverage of the branch
- * matrix; production callers go through `maybeWarnValueOnlyRerender`.
+ * matrix; installed-hook callers go through `maybeWarnValueOnlyRerender`.
  */
 export function _isValueOnlyDiff(a: Node, b: Node): boolean {
   const an = a.childNodes;

@@ -1,18 +1,20 @@
 ---
 title: 'Dev-mode warnings (opt-in)'
-description: 'Opt-in dev-mode warnings — KERF_DEV_WARN_REBUILT_LISTENERS / KERF_DEV_WARN_UNTRACKED_SIGNALS / KERF_DEV_WARN_NARROW_SET.'
+description: 'Explicitly installed runtime diagnostics, with individually switched warnings and always-on correctness guards.'
 ---
 
-A family of opt-in runtime warnings that surface common kerf misuse at the
-moment the developer makes the wrong call.
+A family of runtime diagnostics that surface common kerf misuse at the moment
+the developer makes the wrong call. Most are individually opt-in; two warnings
+are always on after the diagnostic entry is installed, while the structural
+and security guards have the contracts described below.
 
-Two gates stand in front of every one of them. First, the diagnostics must be
-**installed** — kerf does not infer development mode; you import `kerfjs/dev`
-behind your own build's dev flag. Second, each warning has its own
-feature-specific environment variable, so installing does not flood the
-console. Production is therefore unchanged at zero runtime cost *and* zero
-bundle cost — with the dev entry absent the whole family is unreachable and a
-bundler drops it.
+The diagnostics must first be **installed** — kerf does not infer development
+mode; you import `kerfjs/dev` behind your own build's dev flag. Most warnings
+then require their own switch, through `enableWarnings()` or a
+`KERF_DEV_WARN_*` environment variable, so installing does not flood the
+console. The missing-row-key and list-identity-shift warnings are deliberately
+always on once installed. With the dev entry absent, the family is unreachable
+and a bundler drops it.
 
 This doc is the canonical statement of what the family is for, when each
 member fires, and the rules that keep them coherent.
@@ -173,7 +175,7 @@ would have missed same-count-different-keys cases.
 
 **What it catches:** a `cacheKey` function that isn't unique per item, which makes the memoization coarser than intended — distinct items share the same invalidation key, so when external state changes and the cacheKey would logically differ for only one of the duplicates, the cached HTML for the other is also invalidated (or not invalidated, depending on state direction). In practice this is not a correctness bug (the per-item HTML cache is a `WeakMap` keyed by object identity, so there's no cross-item cache pollution), but it IS a reliable indicator of a mistake in the cacheKey function — e.g. `(item) => item.category` when the intent was `(item) => \`${item.id}-${selectedId === item.id ? 'on' : 'off'}\``.
 
-**Mechanism.** `maybeWarnDuplicateCacheKeys(id, segItems)` is called at the end of `eachSnapshotById` when `cacheKey !== undefined`. The function: (1) short-circuits on NODE_ENV / env var; (2) checks a module-level `warnedDupIds` Set for dedup; (3) iterates `segItems` collecting `cacheKey` values into a Set, and fires a warning the first time a duplicate is found.
+**Mechanism.** `maybeWarnDuplicateCacheKeys(id, segItems)` is called at the end of `eachSnapshotById` when `cacheKey !== undefined`. The function: (1) short-circuits when its per-warning switch is off; (2) checks a module-level `warnedDupIds` Set for dedup; (3) iterates `segItems` collecting `cacheKey` values into a Set, and fires a warning the first time a duplicate is found.
 
 **Dedup scope.** Per list id (same as `KERF_DEV_WARN_EACH_IN_MORPH_SKIP`). One warning per `each()` callsite.
 
@@ -183,7 +185,7 @@ would have missed same-count-different-keys cases.
 
 **Trigger:** `bindListsFromMarkers` (called by `mount()` on every first-render or newly-appearing list) discovers that a new list binding's `liveParent` has a `data-morph-skip` ancestor between it and the mount `rootEl`. **What it catches:** the asymmetric-freeze pattern — `each()` rows inside a `data-morph-skip` subtree still update (the keyed reconciler operates directly on the live parent independently of the morph), but static signal-reactive JSX inside the same skipped ancestor is frozen because the morph short-circuits before visiting that element's children.
 
-**Mechanism.** `maybeWarnEachInMorphSkip(id, liveParent, rootEl)` is called after the binding is created. The function: (1) short-circuits on NODE_ENV / env var; (2) checks a module-level `warnedIds` Set for dedup; (3) walks from `liveParent` up to `rootEl` looking for any ancestor with `data-morph-skip`; (4) if found, fires a `console.warn` naming the list id, explaining the asymmetry, and pointing at removing `data-morph-skip` as the fix.
+**Mechanism.** `maybeWarnEachInMorphSkip(id, liveParent, rootEl)` is called after the binding is created. The function: (1) short-circuits when its per-warning switch is off; (2) checks a module-level `warnedIds` Set for dedup; (3) walks from `liveParent` up to `rootEl` looking for any ancestor with `data-morph-skip`; (4) if found, fires a `console.warn` naming the list id, explaining the asymmetry, and pointing at removing `data-morph-skip` as the fix.
 
 **Dedup scope.** Per list id (the internal sequential id assigned by the render context counter — stable across renders within a mount). One warning per `each()` callsite, not one per render pass.
 
@@ -197,7 +199,7 @@ would have missed same-count-different-keys cases.
 
 **Dedup scope.** One warning per process. Structurally identical to the rebuilt-listeners warning — the signal is "your code has this antipattern"; firing once is enough to direct attention. A consumer who fixes the first instance and has another won't be told twice in the same process, but they'll see it on the next run.
 
-**Why opt-in.** No realistic kerf code legitimately calls `delegate()` inside an `effect()` body — but the wrap of `effect()` itself adds a microscopic call-frame overhead, so the bare `coreEffect` re-export stays the default path when the env var is unset. Production NODE_ENV short-circuits before the wrap decision; production bundles see the bare re-export with zero overhead.
+**Why opt-in.** No realistic kerf code legitimately calls `delegate()` inside an `effect()` body — but the wrap of `effect()` itself adds a microscopic call-frame overhead, so the bare `coreEffect` re-export stays the default path when the warning switch is off. A production bundle that omits `kerfjs/dev` cannot reach the wrapper at all; `NODE_ENV` is not consulted.
 
 ### `KERF_DEV_WARN_STALE_BINDING=1`
 
@@ -215,7 +217,7 @@ re-binds to `sigB`, so the hole freezes: no error, the UI just stops updating.
 wired (`prevWiredBindings`, refreshed whenever `wireBindings` runs — first
 render and every surrounds-changed morph). On a fast-path render it calls
 `maybeWarnStaleBinding(prevWiredBindings, bindingCtx.list)`, which: (1)
-short-circuits on NODE_ENV / env var; (2) walks the two lists in registration
+short-circuits when its per-warning switch is off; (2) walks the two lists in registration
 order (they describe the same holes in the same order on the fast path); (3)
 when a hole's signal instance differs and hasn't already warned, fires a
 one-shot `console.warn` naming the hole (kind / attr / id) and pointing at "bind
@@ -244,7 +246,7 @@ removal, so they never reach this warner.)
 
 **Dedup scope.** Once per mount (a per-mount context object), not per render.
 
-**Why opt-in.** Re-rendering on `.value` reads is *correct* — this is a migration aid for adopting the bound-first idiom, not a lint on broken code. The parse-and-compare also has real (dev-only) cost, so it runs only when asked, and only on the already-slow surrounds-changed path; the env read short-circuits everything else.
+**Why opt-in.** Re-rendering on `.value` reads is *correct* — this is a migration aid for adopting the bound-first idiom, not a lint on broken code. The parse-and-compare also has real (dev-only) cost, so it runs only when asked, and only on the already-slow surrounds-changed path; the per-warning switch short-circuits everything else.
 
 ### `KERF_DEV_WARN_LIST_REBIND=1`
 
@@ -271,8 +273,8 @@ container in place for that shape.)
 
 **Mechanism.** `maybeWarnListRebind(id, liveParent)` is called from the
 self-heal branch after the stale binding is dropped, with the fresh container
-the cloned marker landed in. The function: (1) short-circuits on NODE_ENV /
-env var; (2) checks a module-level `warnedIds` Set for dedup; (3) fires a
+the cloned marker landed in. The function: (1) short-circuits when its
+per-warning switch is off; (2) checks a module-level `warnedIds` Set for dedup; (3) fires a
 `console.warn` naming the list id and container tag, explaining the row-state
 loss, and pointing at the fix: give the **list's own container** a stable
 `id`/`data-key` (which makes it both un-hijackable positionally and findable
@@ -446,13 +448,14 @@ Every dev-warning in this family follows the same shape.
    slots. A consumer who never imports the dev entry pays one
    property read per call site, and the warner module is not in their bundle
    at all.
-2. **Per-warning switch.** Each warning has its own switch, named the same way
+2. **Per-warning switch for opt-in members.** Each opt-in warning has its own switch, named the same way
    in both places it can be set: `enableWarnings({ narrowSet: true })` in code,
    or `KERF_DEV_WARN_NARROW_SET=1` in the environment. There is intentionally
    no umbrella "all warnings" flag — opt-in is per-warning, so a consumer can
-   enable the Rule 4 warner while leaving the Rule 9 warner off.
-3. **Default off.** Every warning is off by default. The env-var
-   `=0` and the unset state both mean off.
+   enable the Rule 4 warner while leaving the Rule 9 warner off. The explicitly
+   documented always-on hooks skip this second gate.
+3. **Opt-in members default off.** For those warnings, an env-var `=0` and the
+   unset state both mean off. Always-on hooks run whenever the dev entry is installed.
 
 #### Two switches, one lookup
 
@@ -504,12 +507,12 @@ so the developer doesn't need to fetch additional docs to act on it.
 None of the warners are re-exported from the main `kerfjs` barrel.
 Consumers don't import them individually; the warning is a runtime behavior
 of the host primitive (`signal()`, `mount()`, `defineStore`) once the dev
-entry is installed and the env var is set. The internal warner modules
-are not part of the public barrel.
+entry is installed and, for opt-in members, its switch is enabled. The
+internal warner modules are not part of the public barrel.
 
-The one deliberate exception is the `kerfjs/dev` subpath itself, which is a
-side-effect import rather than an API — plus `clearDevHooks` /
-`installDevHooks` / `devHooks` re-exported from it so a consumer's own test
+The one deliberate exception is the `kerfjs/dev` subpath itself. Its import
+installs the diagnostics; it also exports `enableWarnings()` for typed switches
+and `clearDevHooks` / `installDevHooks` / `devHooks` so a consumer's own test
 suite can assert production-shaped behavior without reloading modules.
 
 This keeps the public surface small and means a consumer's IDE
@@ -587,16 +590,18 @@ them. To cover those, make `import 'kerfjs/dev'` the first static import of a
 dev-only entry file, or load your app through a dynamic import after it.
 
 **Two layers, not one.** Installation decides whether the diagnostics are
-*present*; each individual warner still reads its own `KERF_DEV_WARN_*` env
-var to decide whether it is *switched on*. Installing the dev entry
-does not flood the console — it makes the opt-in warnings available.
+*present*; each opt-in warner then reads its own switch through
+`devFlag(name)`, where an `enableWarnings()` override wins over the matching
+`KERF_DEV_WARN_*` environment variable. Always-on hooks skip that second
+layer. Installing the dev entry does not flood the console — it makes the
+opt-in warnings available.
 
 **Uninstalling.** `kerfjs/dev` re-exports `clearDevHooks()` (and
 `installDevHooks()` / `devHooks`) so a consumer's test suite can assert
 production-shaped behavior without module-reload gymnastics.
 
 **`globalThis.KERF_DEV` and `NODE_ENV` mean nothing to kerf.** Not
-importing the dev entry is the escape hatch for turning the diagnostics off, and
-it is a compile-time one. Each warner reads only its own `KERF_DEV_WARN_*`
-variable. Whether the diagnostics run is decided in exactly one place: whether
-you imported them.
+importing the dev entry is the escape hatch for turning the diagnostics off,
+and it is a compile-time one. Each opt-in warner reads only its own switch;
+always-on hooks need no second gate. Whether the diagnostics are installed is
+decided in exactly one place: whether you imported them.

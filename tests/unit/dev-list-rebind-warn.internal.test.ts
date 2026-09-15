@@ -7,7 +7,7 @@
  * root because an ancestor's tag changed and `replaceChild` swapped the whole
  * subtree. The recovery repopulates the rows but discards their DOM state;
  * this warner surfaces that. Tests verify the opt-out / opt-in / dedup /
- * production-mode paths through the real mount pipeline.
+ * production-shape (hooks uninstalled) paths through the real mount pipeline.
  */
 
 import { afterEach, beforeEach, describe, expect, it, type MockInstance, vi } from 'vitest';
@@ -96,7 +96,7 @@ describe('dev-list-rebind-warn (KERF_DEV_WARN_LIST_REBIND=1)', () => {
     expect(warnSpy).toHaveBeenCalledTimes(1);
   });
 
-  it('is silent in production mode even with the env var set', () => {
+  it('is silent in production shape with hooks uninstalled even when its switch is on', () => {
     env.KERF_DEV_WARN_LIST_REBIND = '1';
     enterProductionShape();
     try {

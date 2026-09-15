@@ -1,11 +1,11 @@
 /**
- * Dev-mode warning for partial-set violations of Hard Rule 8 (KF-212). When
- * the opt-in env var `KERF_DEV_WARN_NARROW_SET=1` is set in a non-production
- * build, `defineStore`'s `set()` calls `maybeWarnNarrowSet(prev, next, ctx)`
- * before assigning. If `next` is a plain object whose own-keys are a strict
- * subset of `prev`'s own-keys, a one-shot `console.warn` fires naming the
- * missing keys and pointing at the canonical `set({ ...get(), ...next })`
- * merge fix.
+ * Dev-mode warning for partial-set violations of Hard Rule 8 (KF-212). Once
+ * the diagnostics are installed, switching on `narrowSet` through
+ * `enableWarnings()` or `KERF_DEV_WARN_NARROW_SET=1` makes `defineStore`'s
+ * `set()` call `maybeWarnNarrowSet(prev, next, ctx)` before assigning. If
+ * `next` is a plain object whose own-keys are a strict subset of `prev`'s
+ * own-keys, a one-shot `console.warn` fires naming the missing keys and
+ * pointing at the canonical `set({ ...get(), ...next })` merge fix.
  *
  * Why opt-in: narrow-set IS legal — sometimes you want to replace state with
  * a smaller shape (a reset() that drops keys, a feature-flag-driven schema
@@ -32,8 +32,9 @@
  * scope is the store, not the module, so a second store can still warn
  * if it independently hits the same bug.
  *
- * Production behavior is unchanged for zero runtime cost (the env-var read
- * short-circuits before any per-set work runs).
+ * With the dev entry absent, `set()` sees no warning hook and allocates no
+ * warning context. With diagnostics installed but this warning switched off,
+ * the predicate returns before the key comparison.
  */
 
 import { devFlag } from './dev-warn-config.js';

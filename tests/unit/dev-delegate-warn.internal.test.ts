@@ -6,8 +6,8 @@
  * evaluated when the user calls `effect()`, not when the module is imported.
  *
  * The warning is gated three ways:
- *   1. NODE_ENV !== 'production' (always true in unit tests).
- *   2. KERF_DEV_WARN_DELEGATE_IN_EFFECT === '1'.
+ *   1. the `kerfjs/dev` hooks are installed;
+ *   2. KERF_DEV_WARN_DELEGATE_IN_EFFECT === '1';
  *   3. depth > 0 (`enterEffect()` ran but no matching `exitEffect()` yet).
  *
  * If any gate fails, the warn is silent.

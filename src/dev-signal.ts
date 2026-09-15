@@ -8,12 +8,13 @@
  * the moment the user makes the wrong write, instead of leaving them to
  * notice that their UI never updates.
  *
- * The gate is `KERF_DEV_WARN_UNTRACKED_SIGNALS === '1'`, on top of the
- * diagnostics being installed at all — importing `kerfjs/dev` is what makes
- * this module reachable. Off by default because the heuristic produces false
- * positives for purely imperative signals (used as mutable cells with no UI
- * consumer); opt-in is the right shape until a sharper heuristic is found.
- * Production behavior is unchanged for zero runtime cost.
+ * The switch is `enableWarnings({ untrackedSignals: true })` or
+ * `KERF_DEV_WARN_UNTRACKED_SIGNALS=1`, on top of the diagnostics being
+ * installed at all — importing `kerfjs/dev` is what makes this module
+ * reachable. Off by default because the heuristic produces false positives
+ * for purely imperative signals (used as mutable cells with no UI consumer);
+ * opt-in is the right shape until a sharper heuristic is found. Omitting the
+ * dev entry keeps the subclass and its tracking out of the production path.
  *
  * The subclass uses signals-core's `SignalOptions.watched` callback to set a
  * per-instance `__hasSubscriber` flag — fired by signals-core when the first

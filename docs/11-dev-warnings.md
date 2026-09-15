@@ -270,7 +270,7 @@ removal, so they never reach this warner.)
 
 **Dedup scope.** Once per mount (a per-mount context object), not per render.
 
-**Why opt-in.** Re-rendering on `.value` reads is *correct* — this is a migration aid for adopting the bound-first idiom, not a lint on broken code. The parse-and-compare also has real (dev-only) cost, so it runs only when asked, and only on the already-slow surrounds-changed path; the env read short-circuits everything else.
+**Why opt-in.** Re-rendering on `.value` reads is *correct* — this is a migration aid for adopting the bound-first idiom, not a lint on broken code. The parse-and-compare also has real (dev-only) cost, so it runs only when asked, and only on the already-slow surrounds-changed path; the per-warning switch short-circuits everything else.
 
 ### 11.2.9 `KERF_DEV_WARN_LIST_REBIND=1`
 
@@ -591,9 +591,9 @@ entry is installed and, for opt-in members, its switch is enabled. The internal 
 (`src/dev-listener-warn.ts`, `src/dev-signal.ts`, `src/dev-store-warn.ts`)
 are not in `src/index.ts`.
 
-The one deliberate exception is the `kerfjs/dev` subpath itself, which is a
-side-effect import rather than an API — plus `clearDevHooks` /
-`installDevHooks` / `devHooks` re-exported from it so a consumer's own test
+The one deliberate exception is the `kerfjs/dev` subpath itself. Its import
+installs the diagnostics; it also exports `enableWarnings()` for typed switches
+and `clearDevHooks` / `installDevHooks` / `devHooks` so a consumer's own test
 suite can assert production-shaped behavior without reloading modules.
 
 This keeps the public surface small and means a consumer's IDE
@@ -699,9 +699,11 @@ them. To cover those, make `import 'kerfjs/dev'` the first static import of a
 dev-only entry file, or load your app through a dynamic import after it.
 
 **Two layers, not one.** Installation decides whether the diagnostics are
-*present*; each individual warner still reads its own `KERF_DEV_WARN_*` env
-var to decide whether it is *switched on* (§11.3.1). Installing the dev entry
-does not flood the console — it makes the opt-in warnings available.
+*present*; each opt-in warner then reads its own switch through
+`devFlag(name)`, where an `enableWarnings()` override wins over the matching
+`KERF_DEV_WARN_*` environment variable (§11.3.1). Always-on hooks skip that
+second layer. Installing the dev entry does not flood the console — it makes
+the opt-in warnings available.
 
 **Uninstalling.** `kerfjs/dev` re-exports `clearDevHooks()` (and
 `installDevHooks()` / `devHooks`) so a consumer's test suite can assert
@@ -717,8 +719,8 @@ was redundant (reaching a warner at all means the consumer installed the
 diagnostics) and occasionally wrong (a Node/SSR consumer who deliberately
 installed the dev entry under `NODE_ENV=production` got silence). Each opt-in
 warner now reads only its own `KERF_DEV_WARN_*` switch; always-on hooks need no
-second gate. Whether the diagnostics run
-is decided in exactly one place: whether you imported them.
+second gate. Whether the diagnostics are installed is decided in exactly one
+place: whether you imported them.
 
 ## 11.4 Where each opt-in warning is referenced
 

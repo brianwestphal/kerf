@@ -4,7 +4,7 @@
  *
  * `maybeWarnEachInMorphSkip` is called by `mount()`'s `bindListsFromMarkers`
  * when a new list binding is established. Tests verify the opt-out / opt-in /
- * dedup / production-mode paths.
+ * dedup / production-shape (hooks uninstalled) paths.
  */
 
 import { afterEach, beforeEach, describe, expect, it, type MockInstance, vi } from 'vitest';

@@ -3,30 +3,49 @@
  * Keep `docs/11-dev-warnings.md` in step with the actual dev-warning family.
  *
  * `src/dev-warn-config.ts`'s `ENV_NAME` map is the authority on which
- * diagnostics exist — every warner's gate reads through it. The doc is the
- * canonical prose. Nothing connected the two, and they drifted in both
+ * individually switched diagnostics exist — every opt-in warner's switch
+ * reads through it, while the documented always-on hooks skip it. The doc is
+ * the canonical prose. Nothing connected the two, and they drifted in both
  * directions at once: two warnings shipped without ever being counted in the
  * summaries (which said eight, then nine, against a real eleven), and the doc's
  * own section numbers stopped being monotonic because later sections were
  * appended rather than inserted.
  *
- * Three assertions, each targeting one of those failures:
+ * Four assertions, each targeting one of those failures:
  *
  *   1. every `KERF_DEV_WARN_*` in `ENV_NAME` has a section in the doc;
  *   2. every `KERF_DEV_WARN_*` the doc documents still exists in `ENV_NAME`;
  *   3. the `11.2.N` headings are numbered 1..N in document order.
+ *   4. canonical, published, AI-facing, project-guidance, and source prose
+ *      does not resurrect the old claim that kerf gates diagnostics on
+ *      NODE_ENV or forget the enableWarnings()/always-on split.
  *
  * Modeled on `check-doc-api-coverage.mjs` — same shape, same reason: a list a
  * human maintains alongside a list the compiler maintains will diverge, and the
  * only question is whether anything notices.
  */
 
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const DOC_PATH = 'docs/11-dev-warnings.md';
+const GATING_PROSE_PATHS = [
+  'CLAUDE.md',
+  DOC_PATH,
+  'docs/2-reactivity.md',
+  'docs/3-stores.md',
+  'site/src/content/docs/docs/dev-warnings.md',
+  'site/src/content/docs/docs/reactivity.md',
+  'site/src/content/docs/docs/stores.md',
+  'docs/ai/code-summary.md',
+  'docs/ai/requirements-summary.md',
+  'docs/ai/usage-guide.md',
+  ...readdirSync(join(ROOT, 'src'))
+    .filter((name) => name.startsWith('dev-') && name.endsWith('.ts'))
+    .map((name) => `src/${name}`),
+];
 
 const config = readFileSync(join(ROOT, 'src/dev-warn-config.ts'), 'utf8');
 const doc = readFileSync(join(ROOT, DOC_PATH), 'utf8');
@@ -80,6 +99,46 @@ headingNumbers.forEach((num, i) => {
   }
 });
 
+// 4 — NODE_ENV is a valid example in the consumer-owned import condition and
+// in the history explaining why inference was removed. These phrases are the
+// narrower stale claims that incorrectly put NODE_ENV inside kerf's warning
+// mechanism or describe an uninstalled hook as a runtime mode check.
+const staleGatingClaims = [
+  /short-circuits? on NODE_ENV\s*\/\s*env var/i,
+  /production NODE_ENV short-circuits/i,
+  /production(?:-mode| ) short-circuit/i,
+  /production-mode silence/i,
+  /silent in production mode/i,
+  /env-var check short-circuits before any per-set work/i,
+  /env read short-circuits everything else/i,
+  /each individual warner[\s\S]{0,100}KERF_DEV_WARN_\* env/i,
+  /each warner reads only its own `KERF_DEV_WARN_\*` variable/i,
+  /(?:a|each) warner's only gate[^.]*KERF_DEV_WARN_/i,
+  /the gate is `KERF_DEV_WARN_[^`]+`/i,
+  /opt-in env var[\s\S]{0,120}non-production build/i,
+  /set `KERF_DEV_WARN_[^`]+` in a non-production build/i,
+  /production behavior is unchanged for zero runtime cost/i,
+  /always on in development/i,
+  /env-gated like the `KERF_DEV_WARN_\*` family/i,
+  /covers the env-var gates/i,
+  /production silence/i,
+  /production callers go through/i,
+  /diagnostic enable the env var/i,
+  /opt-in via `KERF_DEV_WARN_[^`]+` in dev; production unchanged/i,
+];
+for (const path of GATING_PROSE_PATHS) {
+  const prose = readFileSync(join(ROOT, path), 'utf8');
+  for (const pattern of staleGatingClaims) {
+    const match = pattern.exec(prose);
+    if (match === null) continue;
+    const line = prose.slice(0, match.index).split('\n').length;
+    problems.push(
+      `${path}:${line} repeats a stale or incomplete diagnostic-gating claim: ${JSON.stringify(match[0])}.\n`
+      + '    Describe both axes: the dev entry installs nullable hooks; each opt-in warner uses enableWarnings()/its environment fallback, while always-on hooks skip that switch.',
+    );
+  }
+}
+
 if (problems.length > 0) {
   console.error(`\n${DOC_PATH} is out of step with src/dev-warn-config.ts:\n`);
   for (const p of problems) console.error(`  - ${p}\n`);
@@ -88,5 +147,5 @@ if (problems.length > 0) {
 
 console.log(
   `[check-dev-warn-docs] OK — ${declared.length} KERF_DEV_WARN_* names documented, `
-  + `${headingNumbers.length} sections numbered in order.`,
+  + `${headingNumbers.length} sections numbered in order, and diagnostic-gating prose is current.`,
 );

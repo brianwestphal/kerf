@@ -33,10 +33,11 @@
  * wired per-row-node and disposed on row removal, so they are not subject to
  * this fast-path staleness and never reach this warner.)
  *
- * Production behavior is unchanged for zero runtime cost — the env-var read
- * short-circuits before any per-render comparison work runs, and `mount()` gates
- * the previously-wired-list retention on the same opt-in so the fast path stays
- * allocation-free when the warning is off.
+ * With the dev entry absent, the nullable hook slots make this module
+ * unreachable. With diagnostics installed but this warning switched off, the
+ * predicate returns before comparison work, and `mount()` gates the
+ * previously-wired-list retention on the same switch so the fast path stays
+ * allocation-free.
  */
 
 import type { Binding } from './bindings.js';

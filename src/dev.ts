@@ -36,9 +36,10 @@
  * `Signal.prototype`'s `value` accessor is non-configurable, and reaching live
  * instances would require a per-signal registry that production would pay for.
  *
- * Installation decides whether the diagnostics are PRESENT; each individual
- * warner still reads its own `KERF_DEV_WARN_*` env var to decide whether it is
- * switched ON. That keeps the existing opt-in contract intact.
+ * Installation decides whether the diagnostics are PRESENT. Each opt-in
+ * warner then reads its own switch through `devFlag()`: an `enableWarnings()`
+ * override wins over the matching `KERF_DEV_WARN_*` environment variable.
+ * The always-on hooks skip that second gate.
  *
  * @see docs/11-dev-warnings.md
  */

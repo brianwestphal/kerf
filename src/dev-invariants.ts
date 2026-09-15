@@ -27,9 +27,12 @@
  *  - **region-overlap** — one list's rows sitting between another list's first
  *    and last row. Two sibling lists interleaving their rows is exactly this.
  *
- * Off by default and dev-only, so production is untouched. `throw` mode exists
- * because a warning inside a passing test is invisible: kerf's own suites can
- * turn corruption into a failure rather than a line in the log.
+ * Off by default and reachable only after `kerfjs/dev` is installed. Its
+ * switch is `enableWarnings({ invariants: true | 'throw' })` or
+ * `KERF_DEV_INVARIANTS=1|throw`; omitting the dev entry leaves production
+ * untouched. `throw` mode exists because a warning inside a passing test is
+ * invisible: kerf's own suites can turn corruption into a failure rather than
+ * a line in the log.
  */
 
 import { devFlag } from './dev-warn-config.js';

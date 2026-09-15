@@ -18,9 +18,9 @@
  * and decrements after; `delegate.ts` checks the counter and fires the
  * warning once total.
  *
- * Production behavior is unchanged for zero runtime cost — the env-var check
- * short-circuits before any state is touched, and the wrapper in
- * `reactive.ts` only wraps when the gate is on.
+ * With the dev entry absent, the nullable hook slot makes this module and its
+ * wrapper unreachable. With diagnostics installed but this warning switched
+ * off, the predicate short-circuits before any depth state is touched.
  */
 
 import { devFlag } from './dev-warn-config.js';
@@ -42,14 +42,14 @@ export function exitEffect(): void {
   depth--;
 }
 
-/** Public re-export of the env-var check so `reactive.ts` can decide whether to wrap. */
+/** Expose the warning-switch check so `reactive.ts` can decide whether to wrap. */
 export function isDevWarnDelegateInEffectEnabled(): boolean {
   return isOptedIn();
 }
 
 /**
  * Called at the top of `delegate()` and `delegateCapture()`. If the call is
- * happening inside an `effect()` body (depth > 0) AND the env var is on, fire
+ * happening inside an `effect()` body (depth > 0) AND its switch is on, fire
  * a one-shot warning. The `fn` argument is the name of the caller for the
  * message ("delegate" vs "delegateCapture").
  */
