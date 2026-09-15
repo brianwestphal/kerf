@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Extended the feature-completeness gate to inventory router-subpath exports and deduplicate values re-exported across public surfaces.
 - Required history-router bases to match an exact path or path-segment boundary, so `/app` no longer strips or intercepts `/apple`.
 - Added the missing MIT `LICENSE` to generated `create-kerf-component` packages, including package-name token replacement and publish-contents coverage.
 - Made dangerous-URL attribute-name matching ASCII-case-insensitive so mixed-case spellings cannot bypass static or bound screening.

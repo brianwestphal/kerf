@@ -22,7 +22,8 @@
  *    referenced files (backslash-normalized so escaped quotes/apostrophes in
  *    the source match the plain title in the doc).
  *  - **Export-representation completeness (KF-289):** also fails if any
- *    user-facing *value* export (from `src/index.ts` / `src/array-signal.ts`,
+ *    user-facing *value* export (from `src/index.ts` and every public runtime
+ *    subpath source),
  *    minus type-only and `EXPORT_EXEMPT` names) is not named by any index row —
  *    so adding a public export forces adding a behavior row. Behavior-level
  *    completeness (every documented prose behavior) is intentionally NOT
@@ -33,16 +34,21 @@
  */
 import { existsSync, readFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
+import { env } from 'node:process';
 import { fileURLToPath } from 'node:url';
 
-const REPO_ROOT = dirname(dirname(fileURLToPath(import.meta.url)));
+// The override lets the gate's unit tests exercise complete, isolated fixture
+// repositories without modifying the real feature index or source tree.
+const REPO_ROOT = env.KERF_FEATURE_COVERAGE_ROOT
+  ? resolve(env.KERF_FEATURE_COVERAGE_ROOT)
+  : dirname(dirname(fileURLToPath(import.meta.url)));
 const INDEX_DOC = resolve(REPO_ROOT, 'docs/14-feature-coverage.md');
 
 // Export-representation completeness (KF-289): every user-facing *value* export
 // must be named by at least one index row, so adding a public export forces a
 // behavior row. Type-only exports have no behavior; internal/JSX-transform
 // symbols are exempt.
-const EXPORT_SOURCES = ['src/index.ts', 'src/array-signal.ts', 'src/html.ts', 'src/actions.ts', 'src/overlay.ts', 'src/scope.ts', 'src/async.ts', 'src/list.ts', 'src/timing.ts', 'src/remount.ts', 'src/attach.ts'];
+const EXPORT_SOURCES = ['src/index.ts', 'src/array-signal.ts', 'src/html.ts', 'src/actions.ts', 'src/overlay.ts', 'src/scope.ts', 'src/async.ts', 'src/list.ts', 'src/timing.ts', 'src/remount.ts', 'src/attach.ts', 'src/router.ts'];
 const EXPORT_EXEMPT = new Set([
   'ARRAY_SIGNAL_BRAND', // internal cross-bundle brand symbol, not a user behavior
   'jsx', 'jsxs', 'jsxDEV', // JSX-transform entry points, not called by hand
@@ -159,13 +165,19 @@ function main() {
   // by name in the index. (Behavior-level completeness — every documented prose
   // behavior — is intentionally NOT scripted; see docs/14 "Completeness".)
   const docText = readFileSync(INDEX_DOC, 'utf8');
-  const missingExports = [];
+  const exportsByName = new Map();
   for (const source of EXPORT_SOURCES) {
     for (const name of collectValueExports(source)) {
       if (EXPORT_EXEMPT.has(name)) continue;
-      if (!new RegExp(`\\b${name}\\b`).test(docText)) {
-        missingExports.push(`${name} (exported from ${source})`);
-      }
+      const sources = exportsByName.get(name) ?? [];
+      sources.push(source);
+      exportsByName.set(name, sources);
+    }
+  }
+  const missingExports = [];
+  for (const [name, sources] of exportsByName) {
+    if (!new RegExp(`\\b${name}\\b`).test(docText)) {
+      missingExports.push(`${name} (exported from ${sources.join(', ')})`);
     }
   }
 
