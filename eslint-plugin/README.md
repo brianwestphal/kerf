@@ -83,7 +83,7 @@ npm install
 npm test
 ```
 
-The AST rules' test suites use ESLint's `RuleTester` with `@typescript-eslint/parser`. The `ai-assistant-configs` tests are filesystem-driven — they build temp project roots with fixture `node_modules/kerfjs/ai/` bundles and drive the rule's classifier directly, since `RuleTester` doesn't simulate the filesystem.
+The AST rules' test suites use ESLint's `RuleTester` with `@typescript-eslint/parser`. The `ai-assistant-configs` tests are filesystem-driven — they build temp project roots with fixture `node_modules/kerfjs/ai/` bundles, drive the classifier directly, and use the real ESLint API to prove plain lint is read-only while explicit `--fix` performs the external write.
 
 ## License
 

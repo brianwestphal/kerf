@@ -46,7 +46,7 @@ For **missing** files, `--fix` copies the bundled canonical (`node_modules/kerfj
 
 For **stale** files, `--fix` replaces only the content **above and including the `KERF-APP-CANONICAL-END` marker**. Everything below the marker — the consumer's append zone — is preserved byte-for-byte. This is the "versioned-section preservation" strategy from the design doc.
 
-The `fix()` callback writes to a file OTHER than the linted source — unusual for an ESLint rule. ESLint only invokes `fix()` under `--fix`, so the side effect is opt-in by definition; plain `eslint` will report the warning without touching disk.
+The `fix()` callback writes to a file OTHER than the linted source — unusual for an ESLint rule. ESLint evaluates fix callbacks during ordinary lint too, so the callback gates this external write on an explicit CLI `--fix` flag. Plain `eslint` reports the warning without touching disk; `eslint --fix` opts into installation or update.
 
 ## ❗ Forked — no auto-fix
 

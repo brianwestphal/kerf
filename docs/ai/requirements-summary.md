@@ -52,7 +52,7 @@ Status markers:
 | §9 | Live demo (GitHub Pages deploy of `examples/reactivity-demo`) | Shipped |
 | §10 | Migrating hub (`/kerf/migrating/` — index, incremental adoption, and 13 framework pages) | Shipped |
 | §11 | Dev-mode warnings (the opt-in, switch-gated `KERF_DEV_WARN_*` family — eleven warnings, plus `KERF_DEV_INVARIANTS` structural checks and four always-on guards) | Shipped |
-| §12 | AI-assistant configs (Claude skill + Cursor rules bundled in npm; eslint drift-check rule) | Partial — packaging and detection ship, but plain lint currently performs fixer writes and an edited stale canonical section can be overwritten instead of classified as a fork |
+| §12 | AI-assistant configs (Claude skill + Cursor rules bundled in npm; eslint drift-check rule) | Partial — packaging, detection, and read-only plain lint ship, but an edited stale canonical section can still be overwritten instead of classified as a fork |
 | §13 | Component packages (authoring/publishing reusable kerf components as npm packages) | Shipped — scaffold plus the first-party `@kerfjs/ui` example |
 | §14 | Feature coverage (per-behavior index + `check:features` gate) | Partial — export completeness covers core, array-signal, and router, but the complete-app browser row represents only Kanban rather than all eleven apps |
 | §15 | No-build example app (`live-poll` — served-as-source, importmap + `html` tagged template) | Shipped |
@@ -137,7 +137,7 @@ Eleven opt-in runtime warnings are reachable only when `kerfjs/dev` is installed
 
 ### §12 AI-assistant configs
 
-**Overall status: Partial.** The bundled files, manifest, detection, and fix shape ship, but two implementation gaps remain: a normal lint pass currently evaluates fixer callbacks that write missing/stale files even without `--fix`, and a stale canonical section edited by the consumer can be overwritten rather than preserved and reported as a fork.
+**Overall status: Partial.** The bundled files, manifest, detection, and fix shape ship. Plain lint is read-only even though ESLint evaluates fixer callbacks; only an explicit CLI `--fix` permits external config writes. One implementation gap remains: a stale canonical section edited by the consumer can be overwritten rather than preserved and reported as a fork.
 
 How the drop-in Claude Code skill (`kerf.claude-skill.md`) and Cursor rules (`kerf.cursorrules`) ship to consumers and stay in sync as kerfjs evolves. Three components in one feature: (a) **bundling** — the canonical files ship inside the `kerfjs` npm package at `ai/skill.md` / `ai/cursorrules` / `ai/manifest.json`, regenerated from the repo-root source-of-truth by `scripts/sync-ai-bundle.mjs` and gated by `check:ai-bundle-in-sync`; (b) **canonical-file contract** — each bundled file carries a `kerf-skill-version: <semver>` line (the staleness signal) and a `<!-- KERF-APP-CANONICAL-END · your customizations below -->` marker that delimits kerf's section from the consumer's append zone; (c) **eslint rule** — `kerfjs/ai-assistant-configs` in `eslint-plugin-kerfjs` v0.9.0 (`warn` in `recommended`), once per lint run, resolves `kerfjs/ai/manifest.json` from the consumer's installed kerfjs, reports missing/stale/forked drop-ins, and `eslint --fix` replaces only the section above the marker so customizations below survive. KF-215 shipped (a) + (b); KF-216 shipped (c) with the versioned-section preservation strategy from KF-217 baked into v1.
 

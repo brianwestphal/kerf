@@ -4,10 +4,9 @@
  * The rule reports based on what's on disk (`.claude/` presence, the
  * consumer's drop-in file content, the bundled manifest), so the
  * standard ESLint `RuleTester` (which doesn't simulate the filesystem)
- * isn't a good fit. Instead these tests build a temp project root with
- * fixture files and drive the rule's classifier directly. The shape of
- * the data the classifier returns IS the shape the rule reports on, so
- * we can assert state transitions without spinning up ESLint.
+ * isn't a good fit. These tests build temp project roots with fixture files,
+ * drive the classifier directly for state coverage, and use the real ESLint
+ * API for report-only versus `--fix` side-effect coverage.
  */
 import { strict as assert } from 'node:assert';
 import { createHash } from 'node:crypto';
@@ -15,8 +14,14 @@ import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { test } from 'node:test';
+import { ESLint } from 'eslint';
 
-import { _resetForTests, applyFix, classifyFile, runCheck } from '../../lib/rules/ai-assistant-configs.js';
+import aiAssistantConfigs, {
+  _resetForTests,
+  applyFix,
+  classifyFile,
+  runCheck,
+} from '../../lib/rules/ai-assistant-configs.js';
 
 const MARKER = '<!-- KERF-APP-CANONICAL-END · your customizations below -->';
 
@@ -124,6 +129,96 @@ function setupProject({ skillVersion = '1.0.0', cursorVersion = '1.0.0', withCla
 function cleanup(root) {
   rmSync(root, { recursive: true, force: true });
 }
+
+async function lintProject(root, fix) {
+  const eslint = new ESLint({
+    cwd: root,
+    fix,
+    overrideConfigFile: true,
+    overrideConfig: {
+      plugins: {
+        kerfjs: { rules: { 'ai-assistant-configs': aiAssistantConfigs } },
+      },
+      rules: { 'kerfjs/ai-assistant-configs': 'warn' },
+    },
+  });
+  return eslint.lintText('export const value = 1;\n', {
+    filePath: join(root, 'src', 'fixture.js'),
+  });
+}
+
+async function withFixCliFlag(run) {
+  process.argv.push('--fix');
+  try {
+    return await run();
+  } finally {
+    process.argv.pop();
+  }
+}
+
+test('ESLint integration — plain lint reports a missing drop-in without writing it', async () => {
+  _resetForTests();
+  const { root, manifest } = setupProject({ withClaude: true });
+  const dest = join(root, manifest.files.find((file) => file.name === 'skill').dest);
+  try {
+    const [result] = await lintProject(root, false);
+    assert.equal(result.warningCount, 1);
+    assert.match(result.messages[0].message, /drop-in is missing/);
+    assert.equal(existsSync(dest), false, 'plain lint must not install the drop-in');
+  } finally {
+    cleanup(root);
+  }
+});
+
+test('ESLint integration — fix mode installs a missing drop-in without changing source', async () => {
+  _resetForTests();
+  const { root, manifest, bundledSkill } = setupProject({ withClaude: true });
+  const dest = join(root, manifest.files.find((file) => file.name === 'skill').dest);
+  try {
+    const [result] = await withFixCliFlag(() => lintProject(root, true));
+    assert.equal(result.warningCount, 1);
+    assert.equal(result.output, undefined);
+    assert.equal(readFileSync(dest, 'utf8'), bundledSkill);
+  } finally {
+    cleanup(root);
+  }
+});
+
+test('ESLint integration — plain lint leaves a stale drop-in byte-for-byte unchanged', async () => {
+  _resetForTests();
+  const stale = makeSkillBody('1.0.0') + '\n## Keep this append zone\n';
+  const { root, manifest } = setupProject({
+    skillVersion: '1.1.0',
+    withClaude: true,
+    skillBody: stale,
+  });
+  const dest = join(root, manifest.files.find((file) => file.name === 'skill').dest);
+  try {
+    const [result] = await lintProject(root, false);
+    assert.equal(result.warningCount, 1);
+    assert.match(result.messages[0].message, /is stale/);
+    assert.equal(readFileSync(dest, 'utf8'), stale);
+  } finally {
+    cleanup(root);
+  }
+});
+
+test('ESLint integration — fix mode updates stale canonical content and preserves the append zone', async () => {
+  _resetForTests();
+  const appendZone = '\n## Keep this append zone\n';
+  const { root, manifest, bundledSkill } = setupProject({
+    skillVersion: '1.1.0',
+    withClaude: true,
+    skillBody: makeSkillBody('1.0.0') + appendZone,
+  });
+  const dest = join(root, manifest.files.find((file) => file.name === 'skill').dest);
+  try {
+    await withFixCliFlag(() => lintProject(root, true));
+    assert.equal(readFileSync(dest, 'utf8'), bundledSkill + appendZone);
+  } finally {
+    cleanup(root);
+  }
+});
 
 test('missing — .claude/ exists but no SKILL.md installed', () => {
   _resetForTests();

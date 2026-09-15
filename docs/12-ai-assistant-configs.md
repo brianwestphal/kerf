@@ -276,8 +276,11 @@ written, with the marker at the end and an empty append zone after it.
 
 `eslint --fix` is already a user-initiated invocation, so writing
 outside the linted file is consistent with how `--fix` works in
-general. The rule's docs explicitly call out the cross-file write —
-unusual enough to be worth surfacing.
+general. ESLint evaluates fix callbacks even during a plain lint pass, so the
+callback explicitly checks for the CLI's `--fix` flag before performing this
+cross-file write. Without `--fix`, missing and stale files are reported but
+remain byte-for-byte untouched. The rule's docs explicitly call out the
+cross-file write — unusual enough to be worth surfacing.
 
 ### 12.4.4 Edge cases — when auto-fix refuses
 

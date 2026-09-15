@@ -8,9 +8,10 @@
  * `KERF-APP-CANONICAL-END` marker; the consumer's append zone below the
  * marker is preserved byte-for-byte (the "option 2" strategy from KF-217).
  *
- * Unusual for an ESLint rule: the `fix()` callback writes to a file
- * OTHER than the linted source. ESLint only invokes `fix()` when
- * `--fix` is enabled, so the side effect is opt-in by definition.
+ * Unusual for an ESLint rule: the `fix()` callback writes to a file OTHER than
+ * the linted source. ESLint evaluates fix callbacks during ordinary lint too,
+ * so the callback must explicitly gate that side effect on the CLI's `--fix`
+ * flag.
  */
 import { createHash } from 'node:crypto';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
@@ -210,9 +211,9 @@ const meta = {
     forked:
       '{{tool}} drop-in at `{{dest}}` is forked: {{reason}}. Restore the canonical layout (one `KERF-APP-CANONICAL-END` marker, no edits above it) or disable this rule with `\'kerfjs/ai-assistant-configs\': \'off\'`.',
   },
-  // Mark as fixable so ESLint runs the `fix()` callback under `--fix`.
-  // The callback writes to a separate file and returns null, so ESLint
-  // applies no edit to the linted source itself — see file header.
+  // Mark as fixable so the CLI exposes this rule under `--fix`. The callback
+  // writes to a separate file and returns null, so ESLint applies no edit to
+  // the linted source itself — see file header.
   fixable: 'code',
 };
 
@@ -225,10 +226,7 @@ function create(context) {
       const claudeEnabled = options.claude !== false;
       const cursorEnabled = options.cursor !== false;
       // ESLint v9: `context.cwd` is a string. ESLint v8: `context.getCwd()`.
-      const cwd =
-        (typeof context.cwd === 'string' && context.cwd)
-        || (typeof context.getCwd === 'function' && context.getCwd())
-        || process.cwd();
+      const cwd = contextCwd(context);
       const checked = runCheck(cwd);
       CACHED_RESULT = checked;
       if (!checked) return;
@@ -248,7 +246,7 @@ function create(context) {
             messageId: 'missing',
             data,
             fix() {
-              applyFix(file, checked.bundleDir, cwd, '');
+              if (isFixCliRun()) applyFix(file, checked.bundleDir, cwd, '');
               return null;
             },
           });
@@ -262,7 +260,9 @@ function create(context) {
               bundledVersion: result.bundledVersion,
             },
             fix() {
-              applyFix(file, checked.bundleDir, cwd, result.appendZone);
+              if (isFixCliRun()) {
+                applyFix(file, checked.bundleDir, cwd, result.appendZone);
+              }
               return null;
             },
           });
@@ -276,6 +276,18 @@ function create(context) {
       }
     },
   };
+}
+
+function contextCwd(context) {
+  return (
+    (typeof context.cwd === 'string' && context.cwd)
+    || (typeof context.getCwd === 'function' && context.getCwd())
+    || process.cwd()
+  );
+}
+
+function isFixCliRun() {
+  return process.argv.includes('--fix');
 }
 
 export default { meta, create };

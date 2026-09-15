@@ -393,6 +393,8 @@ Dangerous-URL screening normalizes attribute names to lowercase before checking 
 
 History-router base stripping and link interception share an exact-or-segment-boundary predicate, preventing a base such as `/app` from claiming `/apple`.
 
+`ai-assistant-configs` reports filesystem drift during plain lint without writing; its unusual cross-file installer/updater runs only for an explicit CLI `--fix`, with real ESLint API regression coverage for both modes.
+
 ## Public exports
 
 Every export reachable via `import { ... } from 'kerfjs'`:
