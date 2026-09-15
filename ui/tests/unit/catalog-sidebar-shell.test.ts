@@ -15,6 +15,13 @@ describe('UX catalog sidebar shell', () => {
     expect(source).not.toContain('<span class="catalog-mark" aria-hidden="true">K</span>');
   });
 
+  it('serves the repo-owned logo in development and builds relative asset URLs for nested preview paths', async () => {
+    const source = await readFile(resolve(import.meta.dirname, '../../ux-demo/vite.config.ts'), 'utf8');
+
+    expect(source).toContain("base: './'");
+    expect(source).toContain("fs: { allow: [fileURLToPath(new URL('../..', import.meta.url))] }");
+  });
+
   it('fully collapses the pane so its restore action can live in the detail toolbar', async () => {
     const file = resolve(import.meta.dirname, '../../ux-demo/style.css');
     const root = postcss.parse(await readFile(file, 'utf8'), { from: file });

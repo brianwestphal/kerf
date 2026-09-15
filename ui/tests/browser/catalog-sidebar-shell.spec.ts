@@ -39,6 +39,13 @@ test("uses the Kerf identity and relocates sidebar restore into the detail toolb
 
   await expect(logo).toHaveAttribute("src", /assets\/logo(?:-[^/]+)?\.svg/);
   await expect(logo).toHaveAttribute("alt", "");
+  await expect
+    .poll(() =>
+      logo.evaluate(
+        (image: HTMLImageElement) => image.complete && image.naturalWidth > 0,
+      ),
+    )
+    .toBe(true);
   await expect(sidebar.getByText("K", { exact: true })).toHaveCount(0);
   const wideGeometry = await headerGeometry(page);
   expect(wideGeometry).toMatchObject({

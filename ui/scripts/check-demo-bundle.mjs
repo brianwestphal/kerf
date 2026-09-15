@@ -14,6 +14,12 @@ const javascript = (await readdir(assetsDir)).filter((name) => name.endsWith('.j
 const stylesheets = (await readdir(assetsDir)).filter((name) => name.endsWith('.css'));
 if (javascript.length < 2) throw new Error('UX demo must emit multiple JavaScript chunks');
 
+const indexHtml = await readFile(new URL('../dist-demo/index.html', import.meta.url), 'utf8');
+const emittedModules = await Promise.all(javascript.map((name) => readFile(new URL(`../dist-demo/assets/${name}`, import.meta.url), 'utf8')));
+if ([indexHtml, ...emittedModules].some((source) => /["']\/assets\//.test(source))) {
+  throw new Error('UX demo assets must use relative URLs so the catalog remains relocatable below a host path');
+}
+
 for (const name of stylesheets) {
   const css = await readFile(new URL(`../dist-demo/assets/${name}`, import.meta.url), 'utf8');
   if (css.includes('remify(')) {

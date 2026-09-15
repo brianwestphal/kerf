@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Fixed the UI catalog's Kerf logo in the Vite development server and kept emitted assets working when the demo is hosted below a preview or proxy path.
 - Aligned the composer-form recipe's labels, hints, character count, and textarea value to a consistent 8px field gutter at wide and narrow widths.
 - Prevented UX catalog resource links from overlapping the related-component selector at phone widths.
 - Replaced the UX catalog's generic K badge with the Kerf logo and DialogHeader-like title/subtitle alignment; collapsing the catalog now removes its empty rail and moves the restore action to the main toolbar's leading edge, with first-class guidance for corresponding inline-start and inline-end pane controls.

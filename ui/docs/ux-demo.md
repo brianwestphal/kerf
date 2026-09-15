@@ -1,6 +1,6 @@
 # UX catalog contract
 
-Run `npm run dev` from `ui/`. The catalog is a development and review surface, not a second implementation.
+Run `npm run dev` from `ui/`. The catalog is a development and review surface, not a second implementation. The development server allows repo-owned assets used by the catalog, and its production bundle uses relative asset URLs so the complete catalog remains intact below preview and proxy paths.
 
 Seven lazy production-composition routes live under the `Recipes` category.
 Each `?component=recipe-*` route uses public package primitives, real wiring,

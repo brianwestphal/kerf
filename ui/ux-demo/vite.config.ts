@@ -12,6 +12,8 @@ function sourceStyle(file: string) {
 
 export default defineConfig({
   root: fileURLToPath(new URL('.', import.meta.url)),
+  // Keep the standalone catalog relocatable when it is hosted below a preview or proxy path.
+  base: './',
   plugins: [{
     name: 'kerf-ui-source-styles',
     enforce: 'pre',
@@ -32,7 +34,12 @@ export default defineConfig({
     ],
   },
   css: { postcss: { plugins: [remifyCss()] } },
-  server: { host: '127.0.0.1', port: 42817, strictPort: true },
+  server: {
+    host: '127.0.0.1',
+    port: 42817,
+    strictPort: true,
+    fs: { allow: [fileURLToPath(new URL('../..', import.meta.url))] },
+  },
   preview: { host: '127.0.0.1', port: 42817, strictPort: true },
   build: {
     outDir: '../dist-demo',
