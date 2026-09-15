@@ -101,7 +101,7 @@ export type BindListHandle = (() => void) & {
 
 /** Options for {@link bindList}. */
 export interface BindListOptions<T> {
-  /** Stable per-row key. Rows are matched, moved, and reused by this. */
+  /** Stable, unique per-row key. Duplicate keys are rejected before DOM mutation. */
   key: (item: T) => ListKey;
   /**
    * Build a row. Two modes, chosen per call by what you return:
@@ -217,6 +217,22 @@ interface Row<T> {
   update?: (item: T) => void;
 }
 
+/** Reject a keyed snapshot before reconciliation can alias two rows in the DOM. */
+function assertUniqueListKeys<T>(items: readonly T[], key: (item: T) => ListKey): void {
+  const firstIndex = new Map<ListKey, number>();
+  for (let index = 0; index < items.length; index++) {
+    const k = key(items[index]);
+    const first = firstIndex.get(k);
+    if (first !== undefined) {
+      const displayed = typeof k === 'string' ? JSON.stringify(k) : String(k);
+      throw new Error(
+        `bindList: duplicate key ${displayed} at indices ${first} and ${index} — every row key must be unique.`,
+      );
+    }
+    firstIndex.set(k, index);
+  }
+}
+
 /**
  * Bind a keyed, per-row-reactive list to `parent`, driven by `source` (a
  * `signal<readonly T[]>` or an `arraySignal<T>`). Returns a disposer that tears
@@ -253,6 +269,7 @@ export function bindList<T>(
   let disposed = false;
   let rafPending = false;
   let firstRender = true;
+  let forceSnapshot = false;
 
   // Granular fast path (KF-478): when the source is an `arraySignal` and the
   // list is NOT virtualized, apply its insert/remove/move/update patches
@@ -274,7 +291,6 @@ export function bindList<T>(
   if (virtualize !== undefined) {
     if (virtualize.containerClass !== undefined) container.className = virtualize.containerClass;
     if (virtualize.containerId !== undefined) container.id = virtualize.containerId;
-    parent.appendChild(container);
   }
 
   const NOOP = (): void => { /* element-mode rows with no caller teardown */ };
@@ -571,6 +587,7 @@ export function bindList<T>(
         const patches = patchSource._consumePatches!();
         if (
           !firstRender
+          && !forceSnapshot
           && patches.length > 0
           && !patches.some((p) => p.type === 'replace')
         ) {
@@ -580,6 +597,7 @@ export function bindList<T>(
       }
       syncRows(items);
       firstRender = false;
+      forceSnapshot = false;
       return;
     }
     if (contentVisibility) {
@@ -640,10 +658,27 @@ export function bindList<T>(
   };
 
   const stopEffect = effect(() => {
-    items = source.value; // tracking read — re-runs on any structural change
+    const nextItems = source.value; // tracking read — re-runs on any structural change
+    try {
+      assertUniqueListKeys(nextItems, key);
+    } catch (error) {
+      // A rejected arraySignal transition cannot be replayed later against the
+      // unchanged DOM. Drain it now, then snapshot the next valid state before
+      // granular patching resumes.
+      if (granularEligible) {
+        patchSource._consumePatches!();
+        forceSnapshot = true;
+      }
+      throw error;
+    }
+    items = nextItems;
     heightsDirty = true; // items changed → the prefix sum (if any) is stale
     renderWindow();
   });
+
+  // Build virtualized rows in the detached sizer first. Initial duplicate-key
+  // failures therefore leave the caller's live parent entirely untouched.
+  if (virtualize !== undefined) parent.appendChild(container);
 
   // One rAF-coalesced render, shared by scroll and by measurement reports. A
   // pending anchor correction is applied to `scrollTop` first (which itself may

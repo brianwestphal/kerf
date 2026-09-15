@@ -403,6 +403,8 @@ Router named and wildcard captures decode through a fail-closed helper: malforme
 `ai-assistant-configs` reports filesystem drift during plain lint without writing; its unusual cross-file installer/updater runs only for an explicit CLI `--fix`, with real ESLint API regression coverage for both modes.
 Before updating a stale section, it validates the consumer's canonical hash against the manifest history for that exact version. Known untouched versions remain fixable; edited or historically unknown versions are forked and never overwritten. `scripts/ai-canonical-history.json` is the committed source ledger, and bundle sync carries its current hashes into `ai/manifest.json`.
 
+`bindList` preflights every source snapshot for unique keys before reconciliation. Duplicate-key errors name the key and both indices; rejected `arraySignal` patches are drained and force the next valid state through snapshot recovery before granular patching resumes.
+
 ## Public exports
 
 Every export reachable via `import { ... } from 'kerfjs'`:

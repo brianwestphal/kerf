@@ -57,6 +57,39 @@ describe('bindList() — keyed reconcile', () => {
     dispose();
   });
 
+  it('rejects duplicate keys from a plain signal before mutating the DOM', () => {
+    const parent = host();
+    const a = { id: 1, label: 'a' };
+    const b = { id: 2, label: 'b' };
+    const items = signal<Item[]>([a, b]);
+    const dispose = bindList(parent, items, { key: (i) => i.id, render: (i) => i.label });
+    const originalRows = Array.from(parent.children);
+
+    expect(() => {
+      items.value = [a, { id: 1, label: 'duplicate' }];
+    }).toThrow('bindList: duplicate key 1 at indices 0 and 1 — every row key must be unique.');
+    expect(Array.from(parent.children)).toEqual(originalRows);
+    expect(texts(parent)).toEqual(['a', 'b']);
+
+    items.value = [a, b];
+    expect(Array.from(parent.children)).toEqual(originalRows);
+    dispose();
+  });
+
+  it('rejects initial duplicate keys before attaching a virtualized container', () => {
+    const parent = host();
+    const existing = document.createElement('button');
+    parent.appendChild(existing);
+    const items = signal<Item[]>([{ id: 1, label: 'a' }, { id: 1, label: 'duplicate' }]);
+
+    expect(() => bindList(parent, items, {
+      key: (i) => i.id,
+      render: (i) => i.label,
+      virtualize: { rowHeight: 32 },
+    })).toThrow('bindList: duplicate key 1 at indices 0 and 1 — every row key must be unique.');
+    expect(Array.from(parent.childNodes)).toEqual([existing]);
+  });
+
   it('rebuilds a row when its item OBJECT identity changes at the same key', () => {
     const parent = host();
     const items = signal<Item[]>([{ id: 1, label: 'a' }]);
@@ -93,6 +126,30 @@ describe('bindList() — keyed reconcile', () => {
 });
 
 describe('bindList() — arraySignal granular patch path (KF-478)', () => {
+  it('rejects a duplicate-key transition before mutation, then snapshot-recovers before resuming patches', () => {
+    const parent = host();
+    const a = { id: 1, label: 'a' };
+    const b = { id: 2, label: 'b' };
+    const items = arraySignal<Item>([a, b]);
+    const dispose = bindList(parent, items, { key: (i) => i.id, render: (i) => i.label });
+    const originalRows = Array.from(parent.children);
+
+    expect(() => {
+      items.insert(1, { id: 1, label: 'duplicate' });
+    }).toThrow('bindList: duplicate key 1 at indices 0 and 1 — every row key must be unique.');
+    expect(Array.from(parent.children)).toEqual(originalRows);
+    expect(texts(parent)).toEqual(['a', 'b']);
+
+    items.remove(1);
+    expect(Array.from(parent.children)).toEqual(originalRows);
+
+    items.push({ id: 3, label: 'c' });
+    expect(texts(parent)).toEqual(['a', 'b', 'c']);
+    expect(parent.children[0]).toBe(originalRows[0]);
+    expect(parent.children[1]).toBe(originalRows[1]);
+    dispose();
+  });
+
   it('applies insert / move / remove patches, preserving unchanged rows\' element identity', () => {
     const parent = host();
     const items = arraySignal<Item>([
