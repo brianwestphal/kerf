@@ -116,7 +116,40 @@ npm run site:build
 cd site && npx astro preview
 ```
 
-## 9.7 Update triggers
+## 9.7 Visual QA
+
+Every site-facing visual change needs a real-browser review of the built output:
+
+```bash
+cd site
+npm run test:visual
+```
+
+The command builds the complete site, discovers every emitted HTML surface
+(directory indexes plus standalone pages such as `404.html`), and visits each
+route in Chromium at desktop (1440×1000), tablet (834×1112), and mobile
+(390×844) viewports. It saves a collision-safe full-page capture for every
+route/viewport pair in Playwright's test-results directory and fails on a route
+that does not load, document-level horizontal overflow, a broken or unsettled
+image, or collapsed primary content. Inspect the captures as well as the
+automated assertions; geometry checks do not replace visual judgment.
+
+Filter to one built route while iterating, then finish with the unfiltered
+matrix:
+
+```bash
+KERF_VISUAL_ROUTE=api/ npm run test:visual
+KERF_VISUAL_ROUTE=run/chat/ npm run test:visual
+```
+
+The filter accepts a route relative to `/kerf/`, with or without leading and
+trailing slashes, the root route (`/`, `/kerf`, or the deployed root URL), a
+standalone HTML route such as `404.html`, or a full deployed URL. A non-matching
+filter fails instead of silently running zero routes. The runner is configured by
+`site/playwright.config.ts`; the audit lives in
+`site/tests/full-visual-audit.spec.ts`.
+
+## 9.8 Update triggers
 
 Update this doc whenever:
 
@@ -125,3 +158,4 @@ Update this doc whenever:
 - A third build is added under the same Pages deploy.
 - The repo moves to a new owner or name (the Pages URL changes accordingly).
 - The site's audit severity or dependency-scope policy changes.
+- The visual-QA route discovery, viewports, page-health checks, or command changes.

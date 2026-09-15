@@ -189,9 +189,10 @@ npm run check:full        # KF-118: extended pre-push gate — `check` plus the 
 ```
 
 Visually validate every site-facing change with Playwright, not just DOM
-assertions. From `site/`, `npm run test:visual` builds 225 full-page captures for
-all 75 emitted HTML surfaces at desktop, tablet, and mobile widths while checking page
-overflow, broken images, and collapsed main content. Inspect the generated
+assertions. From `site/`, `npm run test:visual` builds three full-page captures
+for every emitted HTML surface (including standalone pages such as `404.html`)
+at desktop, tablet, and mobile widths while checking page overflow, broken
+images, and collapsed main content. Inspect the generated
 captures before handoff. Set `KERF_VISUAL_ROUTE=api/` (or another built route such as
 `run/chat/`) to focus the matrix while iterating, then run the unfiltered command.
 

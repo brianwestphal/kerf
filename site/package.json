@@ -20,6 +20,9 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
+    "pretest:visual": "npm run build",
+    "preview:visual": "node scripts/serve-visual-preview.mjs",
+    "test:visual": "playwright test tests/full-visual-audit.spec.ts --project=chromium",
     "check:audit": "npm audit --include=dev --audit-level=high"
   },
   "dependencies": {
@@ -31,6 +34,7 @@
     "sharp": "^0.35.4"
   },
   "devDependencies": {
+    "@playwright/test": "^1.63.0",
     "typescript": "^6.0.3",
     "vite": "^8.3.0"
   },
