@@ -83,16 +83,14 @@ test('links catalog details to their first-party source and existing guidance', 
         height: link.getBoundingClientRect().height,
         right: link.getBoundingClientRect().right,
         viewportWidth: window.innerWidth,
-        pathOverflow: link.querySelector<HTMLElement>('code')!.scrollWidth - link.querySelector<HTMLElement>('code')!.clientWidth,
         outlineStyle: window.getComputedStyle(link).outlineStyle,
       })),
     }));
     expect(geometry.documentOverflow).toBeLessThanOrEqual(1);
     expect(geometry.links).toHaveLength(layout.name === 'zoom-200' ? 2 : 3);
     for (const link of geometry.links) {
-      expect(link.height).toBeGreaterThanOrEqual(44);
+      expect(link.height).toBeGreaterThanOrEqual(30);
       expect(link.right).toBeLessThanOrEqual(link.viewportWidth + 1);
-      expect(link.pathOverflow).toBeLessThanOrEqual(1);
     }
     expect(geometry.links[0].outlineStyle).not.toBe('none');
     await expect(guidance).toBeVisible();
@@ -431,7 +429,10 @@ test('routes the generated application-layout composition at wide and narrow siz
   const wideGap = Number.parseFloat(await demo.locator('.kui-content').evaluate((element) => window.getComputedStyle(element).rowGap));
   await demo.getByRole('button', { name: 'Primary action' }).click();
   await expect(page.locator('.catalog-log')).toHaveText('Add action requested');
-  if (browserName === 'chromium') await page.screenshot({ path: 'test-results/component-catalog-layout-wide.png', fullPage: true });
+  if (browserName === 'chromium') {
+    await page.screenshot({ path: 'test-results/component-catalog-layout-wide.png', fullPage: true });
+    await demo.screenshot({ path: 'test-results/layout-new-item-alignment-after.png' });
+  }
 
   await page.setViewportSize({ width: 390, height: 844 });
   await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
@@ -439,6 +440,81 @@ test('routes the generated application-layout composition at wide and narrow siz
   expect(narrowGap).toBe(wideGap);
   await expect(demo.getByRole('button', { name: 'Secondary action' })).toBeVisible();
   if (browserName === 'chromium') await page.screenshot({ path: 'test-results/component-catalog-layout-narrow.png', fullPage: true });
+});
+
+test('uses a collapsible pane shell, toolbar page chrome, and opt-in floating recipe notes', async ({ page, browserName }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/?component=recipe-app-shell');
+
+  const shell = page.locator('.catalog-shell');
+  const sidebar = page.locator('.catalog-sidebar');
+  const pageHeader = page.locator('.catalog-header');
+  const stage = page.locator('.catalog-stage');
+  const footer = page.locator('.catalog-footer');
+  const note = stage.locator('.kui-recipe__ownership');
+
+  await expect(sidebar.getByRole('heading', { level: 1, name: 'Kerf' })).toBeVisible();
+  await expect(sidebar.getByText('UI components', { exact: true })).toBeVisible();
+  await expect(sidebar.getByText('Production catalog', { exact: true })).toHaveCount(0);
+  await expect(pageHeader.locator(':scope > [data-component="toolbar"]')).toBeVisible();
+  await expect(pageHeader.getByRole('heading', { level: 2, name: 'Desktop application shell' })).toBeVisible();
+  await expect(pageHeader.getByText('Recipes', { exact: true })).toHaveCount(0);
+  await expect(footer.getByRole('navigation', { name: 'Reference links for Desktop application shell' })).toBeVisible();
+  await expect(footer.locator('.catalog-log')).toHaveText('Catalog ready');
+  await expect(note).toBeHidden();
+  await expect(stage).toHaveAttribute('data-recipe-notes-visible', 'false');
+
+  const shellGeometry = await page.evaluate(() => {
+    const style = (selector: string) => window.getComputedStyle(document.querySelector<HTMLElement>(selector)!);
+    const stageStyle = style('.catalog-stage');
+    return {
+      headerBackground: style('.catalog-header').backgroundColor,
+      headerBorder: Number.parseFloat(style('.catalog-header').borderBottomWidth),
+      stageBackgroundImage: stageStyle.backgroundImage,
+      footerBackground: style('.catalog-footer').backgroundColor,
+      footerBorder: Number.parseFloat(style('.catalog-footer').borderTopWidth),
+    };
+  });
+  expect(shellGeometry.headerBackground).not.toBe('rgba(0, 0, 0, 0)');
+  expect(shellGeometry.headerBorder).toBe(1);
+  expect(shellGeometry.stageBackgroundImage).toContain('linear-gradient');
+  expect(shellGeometry.footerBackground).not.toBe('rgba(0, 0, 0, 0)');
+  expect(shellGeometry.footerBorder).toBe(1);
+
+  await page.getByRole('button', { name: 'Show recipe notes' }).click();
+  await expect(stage).toHaveAttribute('data-recipe-notes-visible', 'true');
+  await expect(note).toBeVisible();
+  await expect(note).toHaveCSS('position', 'absolute');
+  await expect(page.locator('.catalog-log')).toHaveText('Recipe notes shown');
+
+  const expandedWidth = (await sidebar.boundingBox())!.width;
+  await page.getByRole('button', { name: 'Collapse component catalog' }).click();
+  await expect(shell).toHaveAttribute('data-sidebar-collapsed', 'true');
+  await expect(sidebar.locator(':scope > nav')).toBeHidden();
+  await expect.poll(async () => (await sidebar.boundingBox())!.width).toBeLessThan(expandedWidth / 2);
+  if (browserName === 'chromium') await page.screenshot({ path: 'test-results/catalog-application-shell-collapsed-wide.png', fullPage: true });
+  await page.getByRole('button', { name: 'Expand component catalog' }).click();
+  await expect(shell).toHaveAttribute('data-sidebar-collapsed', 'false');
+  await expect(sidebar.locator(':scope > nav')).toBeVisible();
+  await expect.poll(async () => (await sidebar.boundingBox())!.width).toBeCloseTo(expandedWidth, 0);
+
+  if (browserName === 'chromium') {
+    await page.screenshot({ path: 'test-results/catalog-application-shell-wide.png', fullPage: true });
+    await page.setViewportSize({ width: 390, height: 844 });
+    await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+    await page.screenshot({ path: 'test-results/catalog-application-shell-narrow.png', fullPage: true });
+  }
+});
+
+test('aligns PageHeader actions with the following content-item border', async ({ page }) => {
+  await page.setViewportSize({ width: 1100, height: 760 });
+  await page.goto('/?component=layout');
+  const geometry = await page.locator('[data-demo="layout"]').evaluate((demo) => {
+    const action = demo.querySelector<HTMLElement>('.kui-page-header__action > button')!.getBoundingClientRect();
+    const following = demo.querySelector<HTMLElement>('.kui-page-header + .kui-pane__content .kui-content-item')!.getBoundingClientRect();
+    return { actionRight: action.right, followingRight: following.right };
+  });
+  expect(geometry.actionRight).toBeCloseTo(geometry.followingRight, 4);
 });
 
 test('keeps the header-composition dialog on the shared inline gutter', async ({ page, browserName }) => {

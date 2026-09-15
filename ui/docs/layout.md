@@ -64,6 +64,8 @@ also keeps 8px of root-scaled block padding independently of its semantic inline
 inset. Most interactive rows and toolbar groups are 44px tall.
 Toolbar groups reserve a real 1px outer border around a 42px inner area, even
 when their border and background are transparent.
+`PageHeader` keeps its title on the shared inset while its action border aligns
+with the logical edge of the following `.kui-content-item` border.
 `DialogHeader` applies the same rule internally: its icon/title identity is a
 borderless group in a top toolbar, its direct action children are wrapped in a
 contained group, and its optional subtitle is a separate row aligned below the

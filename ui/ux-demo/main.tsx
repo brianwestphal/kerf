@@ -28,7 +28,7 @@ import { reorderTabs, wireTabBars } from '@kerfjs/ui/wire-tab-bars';
 import { wireTokenSearchFields } from '@kerfjs/ui/wire-token-search-fields';
 import { batch, delegate, delegateCapture, mount, signal } from 'kerfjs';
 import { delegateActions } from 'kerfjs/actions';
-import { ArrowDownAZ, ArrowRight, Bell, Check, ChevronLeft, ChevronRight, CircleHelp, Columns3, Contrast, Folder, GitCompare, GripVertical, Inbox, List, Moon, MoreHorizontal, PanelLeft, PanelLeftOpen, Pin, Plus, Search, Settings, SlidersHorizontal, Star, Wrench, X, ZapOff } from 'lucide';
+import { ArrowDownAZ, ArrowRight, Bell, Check, ChevronLeft, ChevronRight, CircleHelp, Columns3, Contrast, ExternalLink, Folder, GitCompare, GripVertical, Inbox, List, Moon, MoreHorizontal, PanelLeft, PanelLeftClose, PanelLeftOpen, Pin, Plus, Search, Settings, SlidersHorizontal, Star, StickyNote, Wrench, X, ZapOff } from 'lucide';
 
 import { catalog, catalogEntriesUsing, type CatalogEntry, type CatalogId, catalogRepositoryHref, catalogSections, findCatalogEntry, isCatalogId, type KerfCatalogId, webAwesomeCatalog, type WebAwesomeCatalogId, webAwesomeCatalogSections } from './catalog.js';
 import { isRecipeId, type RecipeId, recipeLoaders } from './recipes/loaders.js';
@@ -41,6 +41,8 @@ const requested = new URLSearchParams(location.search).get('component');
 const initialDemo = isCatalogId(requested) ? requested : catalog[0].id;
 const selectedDemo = signal<CatalogId>(initialDemo);
 const webAwesomeExpanded = signal(findCatalogEntry(initialDemo)?.source === 'webawesome');
+const sidebarCollapsed = signal(false);
+const recipeNotesVisible = signal(false);
 const regionSize = signal(276);
 const activeTab = signal('library');
 const tabBarActive = signal('components');
@@ -532,7 +534,7 @@ function DemoRelationships({ entry }: { entry: CatalogEntry }) {
     ...usedBy.map((related) => ({ value: related.id, label: related.name, group: 'Used by' })),
   ];
   if (choices.length === 0) return null;
-  return <footer class="catalog-relationships" data-relationships-for={entry.id}><Select className="catalog-relationships__select" name="related-component" value="" label="Related components" placeholder="Choose a related component" choices={choices} /></footer>;
+  return <div class="catalog-relationships" data-relationships-for={entry.id}><ToolbarControlGroup className="catalog-footer__related" label="Related components"><Select className="catalog-relationships__select" name="related-component" value="" label="Related components" placeholder="Related components" choices={choices} /></ToolbarControlGroup></div>;
 }
 
 function selectDemo(id: string): void {
@@ -541,6 +543,7 @@ function selectDemo(id: string): void {
   if (selected.source === 'webawesome' || selected.id === 'webawesome-theme') void ensureWebAwesomeDemos();
   if (isRecipeId(selected.id)) void ensureRecipe(selected.id);
   selectedDemo.value = id;
+  recipeNotesVisible.value = false;
   if (selected.source === 'webawesome') webAwesomeExpanded.value = true;
   const url = new URL(location.href);
   url.searchParams.set('component', id);
@@ -556,11 +559,11 @@ function revealSelectedSidebarItem(id: CatalogId, block: ScrollLogicalPosition =
 
 mount(app, () => {
   const selected = findCatalogEntry(selectedDemo.value)!;
-  return <main class="catalog-shell">
+  const isRecipe = selected.kind === 'recipe';
+  return <main class="catalog-shell" data-sidebar-collapsed={String(sidebarCollapsed.value)}>
     <aside class="catalog-sidebar kui-pane" aria-label="Component catalog">
-      <header class="catalog-brand">
-        <span class="catalog-mark" aria-hidden="true">K</span>
-        <div><p class="catalog-eyebrow">Kerf</p><h1>UI components</h1><p>Production catalog</p></div>
+      <header class="catalog-brand kui-pane__toolbar">
+        <Toolbar label="Component catalog header" divider={false} leading={<ToolbarControlGroup appearance="borderless" className="catalog-brand__identity"><span class="catalog-mark" aria-hidden="true">K</span><div class="catalog-brand__copy"><h1>Kerf</h1><p>UI components</p></div></ToolbarControlGroup>} trailing={<ToolbarControlGroup appearance="borderless" single><button type="button" data-action="toggle-catalog-sidebar" aria-label={sidebarCollapsed.value ? 'Expand component catalog' : 'Collapse component catalog'}>{icon(sidebarCollapsed.value ? PanelLeftOpen : PanelLeftClose, sidebarCollapsed.value ? 'panel-left-open' : 'panel-left-close')}</button></ToolbarControlGroup>} />
       </header>
       <nav class="kui-pane__content kui-content">
         {catalogSections.map((section) => <section class="catalog-group">
@@ -582,34 +585,18 @@ mount(app, () => {
         </section>
       </nav>
     </aside>
-    <article class="catalog-detail kui-content">
-      <header class="catalog-header kui-content-item">
-        <div class="catalog-header__summary"><p class="catalog-eyebrow">{selected.source === 'webawesome' ? `Web Awesome · ${selected.category}` : selected.category}</p><h2>{selected.name}</h2><p>{selected.description}</p></div>
-        <div class="catalog-settings" role="group" aria-label="Catalog display settings">
-          <button type="button" data-action="toggle-theme" aria-pressed={String(darkTheme.value)}>{icon(Moon, 'moon')}<span>Dark</span></button>
-          <button type="button" data-action="toggle-contrast" aria-pressed={String(increasedContrast.value)}>{icon(Contrast, 'contrast')}<span>Contrast</span></button>
-          <button type="button" data-action="toggle-motion" aria-pressed={String(reducedMotion.value)}>{icon(ZapOff, 'zap-off')}<span>Reduce motion</span></button>
-        </div>
-        <nav class="catalog-resources" aria-label={`Reference links for ${selected.name}`}>
-          <a class="catalog-resource" data-catalog-resource="source" href={catalogRepositoryHref(selected.demoSource)} target="_blank" rel="noopener noreferrer" aria-label={`${selected.name}: View demo source (opens in new tab)`}>
-            <strong>View demo source <span aria-hidden="true">↗</span></strong>
-            <code>{selected.demoSource}</code>
-          </a>
-          {selected.componentSource && <a class="catalog-resource" data-catalog-resource="component-source" href={catalogRepositoryHref(selected.componentSource)} target="_blank" rel="noopener noreferrer" aria-label={`${selected.name}: View component source (opens in new tab)`}>
-            <strong>View component source <span aria-hidden="true">↗</span></strong>
-            <code>{selected.componentSource}</code>
-          </a>}
-          <a class="catalog-resource" data-catalog-resource="guidance" href={catalogRepositoryHref(selected.documentation)} target="_blank" rel="noopener noreferrer" aria-label={`${selected.name}: ${selected.source === 'webawesome' ? 'Read Kerf integration guidance' : 'Read guidance'} (opens in new tab)`}>
-            <strong>{selected.source === 'webawesome' ? 'Read Kerf integration guidance' : 'Read guidance'} <span aria-hidden="true">↗</span></strong>
-            <code>{selected.documentation}</code>
-          </a>
-        </nav>
+    <article class="catalog-detail kui-pane">
+      <header class="catalog-header kui-pane__toolbar">
+        <Toolbar label={`${selected.name} page header`} divider={false} leading={<ToolbarControlGroup appearance="borderless" className="catalog-header__identity"><h2>{selected.name}</h2></ToolbarControlGroup>} trailing={<div class="catalog-header__actions">{isRecipe && <ToolbarControlGroup appearance="borderless" single buttonAppearance="push"><button type="button" data-action="toggle-recipe-notes" aria-label={recipeNotesVisible.value ? 'Hide recipe notes' : 'Show recipe notes'} aria-pressed={String(recipeNotesVisible.value)}>{icon(StickyNote, 'sticky-note')}</button></ToolbarControlGroup>}<ToolbarControlGroup className="catalog-settings" label="Catalog display settings"><button type="button" data-action="toggle-theme" aria-pressed={String(darkTheme.value)}>{icon(Moon, 'moon')}<span>Dark</span></button><button type="button" data-action="toggle-contrast" aria-pressed={String(increasedContrast.value)}>{icon(Contrast, 'contrast')}<span>Contrast</span></button><button type="button" data-action="toggle-motion" aria-pressed={String(reducedMotion.value)}>{icon(ZapOff, 'zap-off')}<span>Reduce motion</span></button></ToolbarControlGroup></div>} />
+        <p class="catalog-header__description kui-content-item">{selected.description}</p>
       </header>
-      <section class="catalog-stage kui-content-item" aria-label={`${selected.name} preview`}>
-        <div class="catalog-canvas kui-content-item"><Stage /></div>
-        <footer class="catalog-stage__footer kui-content-item"><output class="catalog-log" aria-live="polite">{actionLog.value}</output><span>{selected.source === 'webawesome' ? 'Web Awesome component · Kerf theme' : selected.kind === 'component' ? 'Kerf first-class component · production CSS' : 'Kerf composition · production CSS'}</span></footer>
+      <section class="catalog-stage kui-pane__content" aria-label={`${selected.name} preview`} data-recipe-notes-visible={String(isRecipe && recipeNotesVisible.value)}>
+        <div class="catalog-canvas"><Stage /></div>
       </section>
-      <DemoRelationships entry={selected} />
+      <footer class="catalog-footer kui-pane__footer">
+        <div class="catalog-footer__status"><output class="catalog-log" aria-live="polite">{actionLog.value}</output><span>{selected.source === 'webawesome' ? 'Web Awesome component · Kerf theme' : selected.kind === 'component' ? 'Kerf first-class component · production CSS' : 'Kerf composition · production CSS'}</span></div>
+        <Toolbar label={`${selected.name} resources`} divider={false} leading={<nav class="catalog-resources" aria-label={`Reference links for ${selected.name}`}><ToolbarControlGroup className="catalog-footer__resource-group" label={`${selected.name} resources`}><a class="catalog-resource" data-catalog-resource="source" href={catalogRepositoryHref(selected.demoSource)} target="_blank" rel="noopener noreferrer" aria-label={`${selected.name}: View demo source (opens in new tab)`}>{icon(ExternalLink, 'external-link')}<span>Demo source</span><code>{selected.demoSource}</code></a>{selected.componentSource ? <a class="catalog-resource" data-catalog-resource="component-source" href={catalogRepositoryHref(selected.componentSource)} target="_blank" rel="noopener noreferrer" aria-label={`${selected.name}: View component source (opens in new tab)`}>{icon(ExternalLink, 'external-link')}<span>Component source</span><code>{selected.componentSource}</code></a> : <></>}<a class="catalog-resource" data-catalog-resource="guidance" href={catalogRepositoryHref(selected.documentation)} target="_blank" rel="noopener noreferrer" aria-label={`${selected.name}: ${selected.source === 'webawesome' ? 'Read Kerf integration guidance' : 'Read guidance'} (opens in new tab)`}>{icon(ExternalLink, 'external-link')}<span>{selected.source === 'webawesome' ? 'Integration guidance' : 'Guidance'}</span><code>{selected.documentation}</code></a></ToolbarControlGroup></nav>} trailing={<DemoRelationships entry={selected} />} />
+      </footer>
     </article>
   </main>;
 });
@@ -631,6 +618,8 @@ const stopActions = delegateActions(app, 'click', {
     recipeControllers.get(id)?.action(target.dataset.recipeCommand ?? '', target);
   },
   'toggle-webawesome-catalog': () => { webAwesomeExpanded.value = !webAwesomeExpanded.value; actionLog.value = webAwesomeExpanded.value ? 'Web Awesome catalog expanded' : 'Web Awesome catalog collapsed'; },
+  'toggle-catalog-sidebar': () => { sidebarCollapsed.value = !sidebarCollapsed.value; actionLog.value = sidebarCollapsed.value ? 'Component catalog collapsed' : 'Component catalog expanded'; },
+  'toggle-recipe-notes': () => { recipeNotesVisible.value = !recipeNotesVisible.value; actionLog.value = recipeNotesVisible.value ? 'Recipe notes shown' : 'Recipe notes hidden'; },
   'show-wa-dialog': () => { actionLog.value = 'Dialog opened'; const dialog = document.querySelector<HTMLElement & { open: boolean }>('#catalog-wa-dialog'); if (dialog) dialog.open = true; },
   'hide-wa-dialog': () => { actionLog.value = 'Dialog closed'; const dialog = document.querySelector<HTMLElement & { open: boolean }>('#catalog-wa-dialog'); if (dialog) dialog.open = false; },
   'show-wa-drawer': () => { actionLog.value = 'Drawer opened'; const drawer = document.querySelector<HTMLElement & { open: boolean }>('#catalog-wa-drawer'); if (drawer) drawer.open = true; },

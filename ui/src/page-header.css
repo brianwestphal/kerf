@@ -22,5 +22,12 @@
   letter-spacing: -0.025em;
 }
 .kui-page-header__action {
+  margin-inline-end: calc(
+    -1 *
+      (
+        var(--kui-layout-item-padding, remify(8px)) +
+          var(--kui-layout-item-border-width, 1px)
+      )
+  );
   flex: none;
 }
