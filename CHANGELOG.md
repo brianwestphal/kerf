@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Fixed the complete dashboard example's mobile layout so its status header, chart, and table fit the viewport without horizontal overflow.
 - Decomposed `bindList` into focused keyed-row and virtualization controllers while keeping `list.ts` as the public orchestration entry; snapshot and granular updates now share one item-replacement contract.
 - Corrected the canonical, published, and AI-facing dev-warning documentation to reflect the hook-only production boundary: kerf never gates diagnostics on `NODE_ENV`; omitting `kerfjs/dev` makes them unreachable, while installed opt-in warnings check only their own switch.
 - Added the missing always-on row-key warning to the published diagnostics guide and made the documentation gate require every canonical diagnostic section on the public site.

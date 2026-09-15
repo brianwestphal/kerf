@@ -396,6 +396,20 @@ test.describe('dashboard', () => {
     // Status pill is LIVE.
     await expect(page.locator('.status')).toContainText('LIVE');
   });
+
+  test('fits the mobile viewport without horizontal overflow', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto(`${BASE}/dashboard/`);
+    await expect(page.locator('.chart-host')).toBeVisible();
+
+    const geometry = await page.evaluate(() => ({
+      clientWidth: document.documentElement.clientWidth,
+      scrollWidth: document.documentElement.scrollWidth,
+      chartRight: document.querySelector('.chart-host')!.getBoundingClientRect().right,
+    }));
+    expect(geometry.scrollWidth).toBeLessThanOrEqual(geometry.clientWidth + 1);
+    expect(geometry.chartRight).toBeLessThanOrEqual(geometry.clientWidth + 1);
+  });
 });
 
 test.describe('row-selector', () => {

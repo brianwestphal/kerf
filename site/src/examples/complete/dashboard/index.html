@@ -12,13 +12,37 @@
       .status.down  { color: #fb7185; }
       .frame { color: #94a3b8; font-family: ui-monospace, monospace; }
       .up { margin-left: auto; color: #4ade80; font-family: ui-monospace, monospace; }
-      .chart-host { background: #0f172a; border-radius: 4px; padding: 2px; }
+      .chart-host {
+        background: #0f172a;
+        border-radius: 4px;
+        padding: 2px;
+        min-width: 0;
+      }
+      .chart-host canvas {
+        display: block;
+        max-width: 100%;
+        height: auto;
+      }
       table { width: 100%; border-collapse: collapse; margin-top: 1rem; font-family: ui-monospace, monospace; font-size: 0.85rem; }
       th, td { padding: 0.25rem 0.75rem; text-align: left; border-bottom: 1px solid #334155; }
       th { background: #1e293b; }
       .num { text-align: right; }
       tr.up   td.num { color: #4ade80; }
       tr.down td.num { color: #fb7185; }
+      @media (max-width: 600px) {
+        header {
+          display: grid;
+          grid-template-columns: minmax(0, 1fr) auto;
+          gap: 0.5rem 0.75rem;
+        }
+        .frame { grid-column: 1 / -1; }
+        .up {
+          grid-column: 2;
+          grid-row: 1;
+          margin-left: 0;
+        }
+        .chart-host { grid-column: 1 / -1; }
+      }
     </style>
   </head>
   <body>
