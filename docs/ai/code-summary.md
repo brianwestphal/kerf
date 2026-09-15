@@ -252,6 +252,7 @@ kerf/
 │   │   ├── toElement.test.ts
 │   │   └── url-screen-corpus.internal.test.ts ← KF-437 — the dangerous-URL screen's two corpora (must-block AND must-pass) exercised against every screened attribute. The must-pass list is the standing guard against a FALSE POSITIVE, which a suite that only tests attacks is structurally blind to — that is the gap `javascript:void(0)` fell into
 │   ├── integration/
+│   │   ├── dev-row-key-warning.internal.test.ts ← full-pipeline missing-row-key warning wiring across initial, snapshot, granular, and in-place reconciliation; source-only because it installs internal dev hooks directly
 │   │   ├── full-pipeline.test.ts ← end-to-end cart UI exercising every primitive
 │   │   ├── actions.test.ts       ← kerfjs/actions through the pipeline: delegateActions handlers keep firing across mount() re-renders (morph)
 │   │   ├── overlay.test.ts       ← kerfjs/overlay through the pipeline: a confirm() resolution drives a signal-backed mount() region; a delegated prompt() string and a form() record each drive a mount() region; reactive overlay content updates while open
