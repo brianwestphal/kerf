@@ -112,6 +112,49 @@ test('keeps recipe geometry responsive at narrow, intermediate, and 200% zoom la
   }
 });
 
+test('keeps project dialog content on intentional wide and narrow gutters', async ({ page }) => {
+  for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 }]) {
+    await page.setViewportSize(viewport);
+    const recipe = await openRecipe(page, 'recipe-master-detail-dialog');
+    const dialog = page.locator('wa-dialog.recipe-dialog');
+    await activateDialogAndWaitForShow(dialog, () => recipe.getByRole('button', { name: 'Open project details' }).click());
+    expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
+
+    const geometry = await dialog.evaluate((root) => {
+      const bounds = (selector: string) => root.querySelector<HTMLElement>(selector)!.getBoundingClientRect();
+      const title = root.querySelector<HTMLElement>('.recipe-master-detail__title')!;
+      const titleRange = document.createRange();
+      titleRange.selectNodeContents(title);
+      const pane = bounds('.recipe-dialog__pane');
+      const header = bounds('.kui-dialog-header');
+      const detail = bounds('.recipe-master-detail__detail');
+      const table = bounds('.kui-value-table');
+      const actions = bounds('.recipe-master-detail__actions');
+      const archive = bounds('[data-recipe-command="archive"]');
+      return {
+        actionInset: actions.left - detail.left,
+        archiveInset: archive.left - actions.left,
+        headerEndInset: pane.right - header.right,
+        headerStartInset: header.left - pane.left,
+        tableEndInset: detail.right - table.right,
+        tableStartInset: table.left - detail.left,
+        titleInset: titleRange.getBoundingClientRect().left - detail.left,
+      };
+    });
+
+    expect(geometry.headerStartInset).toBeCloseTo(0, 1);
+    expect(geometry.headerEndInset).toBeCloseTo(0, 1);
+    expect(geometry.tableStartInset).toBeCloseTo(0, 1);
+    expect(geometry.tableEndInset).toBeCloseTo(0, 1);
+    expect(geometry.actionInset).toBeGreaterThan(5);
+    expect(geometry.archiveInset).toBeCloseTo(0, 1);
+    expect(geometry.titleInset).toBeGreaterThan(geometry.actionInset * 1.8);
+    expect(geometry.titleInset).toBeLessThan(geometry.actionInset * 2.3);
+
+    await page.keyboard.press('Escape');
+  }
+});
+
 test('keeps the composer on one labeled surface with shared field and action gutters', async ({ page, browserName }) => {
   await page.setViewportSize({ width: 1100, height: 1000 });
   const form = await openRecipe(page, 'recipe-composer-form');

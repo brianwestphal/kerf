@@ -130,9 +130,21 @@
   min-width: 0;
   padding-block: var(--kui-layout-item-gap);
 }
+.recipe-master-detail__title {
+  margin-inline: var(--kui-layout-inline-margin, remify(8px));
+}
+.recipe-master-detail__detail .kui-value-table {
+  margin-inline: 0;
+}
+.recipe-master-detail__actions {
+  margin-inline: var(--kui-layout-inline-margin, remify(8px));
+}
 .recipe-dialog {
   --spacing: 0;
   --width: min(62rem, calc(100vw - 2rem));
+}
+.recipe-dialog .kui-dialog-header {
+  margin-inline: 0;
 }
 
 .recipe-form {
