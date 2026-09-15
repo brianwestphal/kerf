@@ -141,13 +141,10 @@
   padding-block: var(--kui-layout-item-gap);
 }
 .recipe-form__section {
-  --kui-content-item-border: transparent;
-  --kui-content-item-background: transparent;
   display: grid;
+  min-width: 0;
+  margin-inline: var(--kui-layout-inline-margin, remify(8px));
   gap: var(--kui-layout-item-gap);
-}
-.recipe-form__introduction > :where(h2, p) {
-  margin: 0;
 }
 .recipe-form__fields {
   align-content: start;

@@ -250,9 +250,10 @@ composer form, list-state lifecycle, and compact mixed-control toolbar. They
 are lazy catalog modules rather than new runtime exports. Each uses public
 component subpaths plus `layout.css`, declares what the recipe
 owns versus application policy, and has a stable `?component=recipe-*` route.
-The composer reference keeps one visible form surface around three transparent
-8/1/8 content sections with 24px major rhythm; only its conditional
-`StateBanner` adds another semantic surface. Its controlled Reset synchronizes
+The composer reference keeps one visible form surface with `DialogHeader`
+title/summary hierarchy, fields and actions on the shared 8px control gutter,
+and 24px major rhythm; only its conditional `StateBanner` adds another semantic
+surface. Its controlled Reset synchronizes
 the upgraded Web Awesome fields' live value properties with their rendered
 empty attributes and announces the reset through the catalog live region.
 `ui/docs/recipes.md` is the copyable guide; canonical recipe facts live beside

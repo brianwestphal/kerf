@@ -112,7 +112,7 @@ test('keeps recipe geometry responsive at narrow, intermediate, and 200% zoom la
   }
 });
 
-test('keeps the composer on one surface with three transparent content sections', async ({ page, browserName }) => {
+test('keeps the composer on one labeled surface with shared field and action gutters', async ({ page, browserName }) => {
   await page.setViewportSize({ width: 1100, height: 1000 });
   const form = await openRecipe(page, 'recipe-composer-form');
   const sections = form.locator(':scope > .recipe-form__section');
@@ -120,39 +120,41 @@ test('keeps the composer on one surface with three transparent content sections'
   const geometry = () => form.evaluate((root) => {
     const rootBounds = root.getBoundingClientRect();
     const rootStyle = window.getComputedStyle(root);
-    const sectionGeometry = [...root.querySelectorAll<HTMLElement>(':scope > .recipe-form__section')].map((section) => {
-      const bounds = section.getBoundingClientRect();
-      const style = window.getComputedStyle(section);
-      return {
-        backgroundToken: style.getPropertyValue('--kui-content-item-background').trim(),
-        borderToken: style.getPropertyValue('--kui-content-item-border').trim(),
-        borderWidth: parseFloat(style.borderLeftWidth),
-        gap: parseFloat(style.rowGap),
-        insideRoot: bounds.left >= rootBounds.left && bounds.right <= rootBounds.right,
-        marginEnd: parseFloat(style.marginInlineEnd),
-        marginStart: parseFloat(style.marginInlineStart),
-        paddingEnd: parseFloat(style.paddingInlineEnd),
-        paddingStart: parseFloat(style.paddingInlineStart),
-      };
-    });
+    const header = root.querySelector<HTMLElement>(':scope > [data-component="dialog-header"]')!;
+    const fields = root.querySelector<HTMLElement>(':scope > .recipe-form__fields')!;
     const footer = root.querySelector<HTMLElement>('.recipe-form__footer')!.getBoundingClientRect();
     const actions = root.querySelector<HTMLElement>('.recipe-form__actions')!.getBoundingClientRect();
+    const firstField = root.querySelector<HTMLElement>('.recipe-form__fields > :first-child')!.getBoundingClientRect();
+    const fieldsBounds = fields.getBoundingClientRect();
+    const headerBounds = header.getBoundingClientRect();
     const ownership = root.querySelector<HTMLElement>('.recipe-form__footer .kui-recipe__ownership')!.getBoundingClientRect();
     return {
       actionsInsideFooter: actions.left >= footer.left && actions.right <= footer.right && actions.top >= footer.top && actions.bottom <= footer.bottom,
+      actionStart: actions.left - rootBounds.left,
       directGap: parseFloat(rootStyle.rowGap),
       documentOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      fieldStart: firstField.left - rootBounds.left,
+      fieldsGap: parseFloat(window.getComputedStyle(fields).rowGap),
+      fieldsStart: fieldsBounds.left - rootBounds.left,
+      fieldsEnd: rootBounds.right - fieldsBounds.right,
       footerContentOverlap: Math.max(0, Math.min(actions.bottom, ownership.bottom) - Math.max(actions.top, ownership.top)),
+      footerStart: footer.left - rootBounds.left,
+      footerEnd: rootBounds.right - footer.right,
+      headerStart: headerBounds.left - rootBounds.left,
+      headerEnd: rootBounds.right - headerBounds.right,
       rootBackground: rootStyle.backgroundColor,
       rootBorderWidth: parseFloat(rootStyle.borderLeftWidth),
-      sectionGeometry,
     };
   });
   const expectLayout = async (scale: number, bannerRole?: 'alert' | 'status') => {
-    await expect(sections).toHaveCount(3);
-    await expect(form.locator(':scope > .kui-content-item')).toHaveCount(3);
-    await expect(form.locator('.recipe-form__section .kui-content-item')).toHaveCount(0);
-    await expect(form.locator(':scope > :not(.recipe-form__section):not([data-component="state-banner"])')).toHaveCount(0);
+    await expect(form).toHaveAttribute('aria-labelledby', 'recipe-composer-title');
+    await expect(form).toHaveAttribute('aria-describedby', 'recipe-composer-summary');
+    await expect(form.locator(':scope > [data-component="dialog-header"]')).toHaveCount(1);
+    await expect(form.locator('#recipe-composer-title')).toHaveText('Publish workspace update');
+    await expect(form.locator('#recipe-composer-summary')).toHaveText('Share a concise, actionable update with collaborators.');
+    await expect(sections).toHaveCount(2);
+    await expect(form.locator(':scope > .kui-content-item')).toHaveCount(0);
+    await expect(form.locator(':scope > :not([data-component="dialog-header"]):not(.recipe-form__section):not([data-component="state-banner"])')).toHaveCount(0);
     const banner = form.locator(':scope > [data-component="state-banner"]');
     await expect(banner).toHaveCount(bannerRole ? 1 : 0);
     if (bannerRole) await expect(banner).toHaveAttribute('role', bannerRole);
@@ -167,18 +169,12 @@ test('keeps the composer on one surface with three transparent content sections'
     expect(measured.actionsInsideFooter).toBe(true);
     expect(measured.footerContentOverlap).toBe(0);
     expect(measured.documentOverflow).toBeLessThanOrEqual(1);
-    for (const section of measured.sectionGeometry) {
-      expect(section).toMatchObject({ backgroundToken: 'transparent', borderToken: 'transparent', borderWidth: 1, insideRoot: true });
-      expect(section.gap).toBeCloseTo(8 * scale, 0);
-      expect(section.marginStart).toBeCloseTo(8 * scale, 0);
-      expect(section.marginEnd).toBeCloseTo(8 * scale, 0);
-      expect(section.paddingStart).toBeCloseTo(8 * scale, 0);
-      expect(section.paddingEnd).toBeCloseTo(8 * scale, 0);
-    }
+    expect(measured.fieldsGap).toBeCloseTo(8 * scale, 0);
+    for (const inset of [measured.actionStart, measured.fieldStart, measured.fieldsStart, measured.fieldsEnd, measured.footerStart, measured.footerEnd, measured.headerStart, measured.headerEnd]) expect(inset).toBeCloseTo(1 + (8 * scale), 0);
   };
 
   await expectLayout(1);
-  if (browserName === 'chromium') await form.screenshot({ path: 'test-results/composer-layout-wide.png' });
+  if (browserName === 'chromium') await form.screenshot({ path: 'test-results/composer-layout-reference-after.png' });
 
   await page.setViewportSize({ width: 390, height: 1000 });
   await form.scrollIntoViewIfNeeded();
@@ -251,12 +247,15 @@ test('keeps the composer on one surface with three transparent content sections'
         bannerBorderWidth: parseFloat(bannerStyle.borderLeftWidth),
         rootBorderStyle: rootStyle.borderStyle,
         rootBorderWidth: parseFloat(rootStyle.borderLeftWidth),
-        sectionBorderColors: [...root.querySelectorAll<HTMLElement>(':scope > .recipe-form__section')].map((section) => window.getComputedStyle(section).borderLeftColor),
+        sectionBorders: [...root.querySelectorAll<HTMLElement>(':scope > .recipe-form__section')].map((section) => {
+          const style = window.getComputedStyle(section);
+          return { style: style.borderLeftStyle, width: parseFloat(style.borderLeftWidth) };
+        }),
         surfaceColor: rootStyle.backgroundColor,
       };
     });
     expect(forcedBoundaries).toMatchObject({ bannerBorderStyle: 'solid', bannerBorderWidth: 1, rootBorderStyle: 'solid', rootBorderWidth: 1 });
-    expect(forcedBoundaries.sectionBorderColors).toEqual([forcedBoundaries.surfaceColor, forcedBoundaries.surfaceColor, forcedBoundaries.surfaceColor]);
+    expect(forcedBoundaries.sectionBorders).toEqual([{ style: 'none', width: 0 }, { style: 'none', width: 0 }]);
     await form.screenshot({ path: 'test-results/composer-layout-forced-colors.png' });
     await page.emulateMedia({ forcedColors: 'none' });
   }

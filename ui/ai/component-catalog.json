@@ -244,25 +244,31 @@
       "purpose": "Provide one reusable pane, toolbar, content stack, and content-item geometry across sidebars, main areas, and dialogs.",
       "publicExports": [],
       "useWhen": [
-        "Build sidebars, main areas, or dialogs from an unpadded pane with optional toolbar/footer and one content stack."
+        "Build sidebars, main areas, inspectors, or dialogs from an unpadded pane with optional toolbar/footer and one content stack.",
+        "Relocate a hidden pane's restore control into the adjacent main toolbar on the same logical edge."
       ],
       "avoidWhen": [
-        "Do not pad the pane itself or add wrapper insets around children that already own content-item geometry."
+        "Do not pad the pane itself or add wrapper insets around children that already own content-item geometry.",
+        "Do not leave an empty icon-only rail after collapsing a pane."
       ],
       "alternatives": [],
       "appOwns": [
         "layout hierarchy",
         "reading width",
-        "responsive relocation"
+        "responsive relocation",
+        "pane visibility and matching collapse/restore controls"
       ],
       "variants": [
         "toolbar + content",
         "toolbar + content + footer",
         "rounded content item",
-        "pill content item"
+        "pill content item",
+        "hidden inline-start pane restored from main-toolbar leading",
+        "hidden inline-end pane restored from main-toolbar trailing"
       ],
       "accessibility": [
-        "Keep reading and focus order coherent when controls wrap or panes relocate, and preserve one scroll owner per pane."
+        "Keep reading and focus order coherent when controls wrap or panes relocate, and preserve one scroll owner per pane.",
+        "When collapse replaces one control with its counterpart in another toolbar, move focus to the newly rendered restore or collapse control."
       ],
       "delivery": {
         "manualCssImport": "@kerfjs/ui/layout.css",
@@ -4424,12 +4430,12 @@
       "category": "Recipes",
       "kind": "recipe",
       "source": "kerf",
-      "purpose": "One visible publishing-form surface with exactly three transparent 8/1/8 content sections, 24px major rhythm, and a conditional StateBanner as its only nested semantic surface.",
-      "uses": ["select", "state-banner", "wa-input", "wa-textarea", "wa-button", "layout"],
+      "purpose": "One visible publishing-form surface with DialogHeader hierarchy, fields and actions on the shared 8px control gutter, 24px major rhythm, and a conditional StateBanner as its only nested semantic surface.",
+      "uses": ["dialog-header", "select", "state-banner", "wa-input", "wa-textarea", "wa-button", "layout"],
       "useWhen": ["A short form needs one coherent surface, consistent field/action rhythm, and persistent validation feedback."],
       "avoidWhen": ["Do not turn each form section into another visible card or use the recipe as a generic form engine or transport abstraction."],
       "appOwns": ["validation rules", "draft persistence", "permissions", "transport"],
-      "accessibility": ["Production fields own labels and help; invalid submission creates an assertive persistent StateBanner while successful submission creates a polite persistent banner."],
+      "accessibility": ["The form references DialogHeader's title and summary ids; production fields own labels and help; invalid submission creates an assertive persistent StateBanner while successful submission creates a polite persistent banner."],
       "delivery": { "sideEffects": ["lazy-recipe-css", "individual-custom-element-registration"] },
       "links": { "catalogRoute": "?component=recipe-composer-form", "documentation": "docs/recipes.md#composer-form", "recipe": "docs/recipes.md#composer-form" }
     },

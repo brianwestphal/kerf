@@ -495,8 +495,9 @@ export const generatedKerfCatalog = [
     "category": "Recipes",
     "kind": "recipe",
     "source": "kerf",
-    "description": "One visible publishing-form surface with exactly three transparent 8/1/8 content sections, 24px major rhythm, and a conditional StateBanner as its only nested semantic surface.",
+    "description": "One visible publishing-form surface with DialogHeader hierarchy, fields and actions on the shared 8px control gutter, 24px major rhythm, and a conditional StateBanner as its only nested semantic surface.",
     "uses": [
+      "dialog-header",
       "select",
       "state-banner",
       "wa-input",

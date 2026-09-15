@@ -33,6 +33,10 @@ specific dispatch; either way, wire once at a stable root and retain disposal.
 Use `Toolbar`, controlled `ResizableRegion` panes, and one
 `.kui-pane__content` scroll owner per pane. The recipe owns the shell topology;
 the app owns routing, responsive pane visibility, sizes, persistence, and data.
+Keep each visible pane's collapse action in its own toolbar. Once hidden, put
+its restore action in the adjacent main toolbar on the same logical edge:
+leading for an inline-start sidebar and trailing for an inline-end inspector.
+Collapse the pane completely rather than preserving an empty icon rail.
 Adapt only public `--kui-layout-*` and component variables.
 
 ## Navigation sidebar
@@ -72,11 +76,11 @@ Do not rebuild the dialog or reach into private shadow parts.
 
 [Open the recipe](../ux-demo/?component=recipe-composer-form) · [TSX source](../ux-demo/recipes/composer-form.tsx)
 
-Production fields own labels, help, and native focus; semantic layout classes
-compose one visible form surface from exactly three transparent content items:
-introduction, fields, and a footer containing actions plus ownership guidance.
-The three sections retain 8px margin, 1px transparent border, and 8px padding,
-with 24px between major children and 8px inside each section. The app owns
+`DialogHeader` supplies the task title and summary, with their ids referenced
+by the form. Production fields own labels, help, and native focus. The field
+and footer control edges sit directly on the shared 8px inline gutter rather
+than acquiring a second content-item padding inset; major children remain 24px
+apart and related controls use 8px gaps. The app owns
 validation, drafts, permissions, and transport. Persistent error or success
 feedback is the only nested semantic surface and uses `StateBanner`, not a toast.
 Because upgraded Web Awesome fields retain live value properties, controlled

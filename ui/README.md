@@ -8,8 +8,9 @@ For connective application patterns, use the seven [production composition
 recipes](./docs/recipes.md). Each has a stable catalog route, runnable state,
 public-subpath source, semantic layout ownership, and explicit application
 customization boundaries. The composer recipe demonstrates one coherent form
-surface with three transparent content sections; only persistent feedback adds
-a nested semantic `StateBanner` surface.
+surface with `DialogHeader` hierarchy and field/action controls aligned to the
+shared 8px gutter; only persistent feedback adds a nested semantic
+`StateBanner` surface.
 
 When no primitive matches, keep policy application-owned while reusing the
 layout vocabulary. The typed

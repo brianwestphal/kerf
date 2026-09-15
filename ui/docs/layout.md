@@ -38,9 +38,11 @@ changing its geometry by setting `--kui-content-item-border` and
 `--kui-content-item-background`.
 
 A visible parent surface does not make every child another visible card. The
-composer recipe keeps its form as the single surface and uses three transparent
-content items for the introduction, fields, and footer. A conditional
-`StateBanner` remains visibly distinct because it communicates semantic status.
+composer recipe keeps its form as the single surface, uses `DialogHeader` for
+its task hierarchy, and places field and action control edges on the shared 8px
+inline gutter instead of nesting them inside another padded content item. A
+conditional `StateBanner` remains visibly distinct because it communicates
+semantic status.
 
 ## Public roles and tokens
 
@@ -93,6 +95,11 @@ title. The icon visual is 24px inside a 34px circular background.
    centered on the label's first line rather than the full wrapped label.
 6. Reading width, column placement, and responsive relocation remain application
    decisions. The shared classes define local geometry, not the whole shell.
+7. A visible collapsible pane owns its collapse control in that pane's toolbar.
+   When the pane is hidden, move the restore control into the adjacent main
+   toolbar on the same logical edge: an inline-start pane restores from the
+   main toolbar's leading group, and an inline-end pane restores from its
+   trailing group. Do not leave an otherwise empty icon-only rail behind.
 
 At narrow widths or 200% zoom, relocate or stack panes before shrinking targets.
 The 8/1/8 item contract and 44px controls remain stable, so screenshots and

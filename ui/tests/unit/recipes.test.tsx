@@ -64,15 +64,19 @@ describe('production composition recipes', () => {
     expect(html(toolbar.render())).toContain('data-value="board"');
   });
 
-  it('keeps the composer as one surface with exactly three structural sections', () => {
+  it('gives the composer DialogHeader hierarchy and direct shared-gutter controls', () => {
     const form = createComposerForm(() => {});
     const template = document.createElement('template');
     template.innerHTML = html(form.render());
     const root = template.content.querySelector<HTMLFormElement>('[data-recipe="recipe-composer-form"]')!;
     expect(root.classList).toContain('kui-recipe__surface');
-    expect([...root.children].filter((child) => child.classList.contains('recipe-form__section'))).toHaveLength(3);
-    expect([...root.children].filter((child) => child.classList.contains('kui-content-item'))).toHaveLength(3);
-    expect(root.querySelectorAll('.recipe-form__section .kui-content-item')).toHaveLength(0);
+    expect(root.getAttribute('aria-labelledby')).toBe('recipe-composer-title');
+    expect(root.getAttribute('aria-describedby')).toBe('recipe-composer-summary');
+    expect(root.querySelector(':scope > [data-component="dialog-header"]')).not.toBeNull();
+    expect(root.querySelector('#recipe-composer-title')?.textContent).toBe('Publish workspace update');
+    expect(root.querySelector('#recipe-composer-summary')?.textContent).toBe('Share a concise, actionable update with collaborators.');
+    expect([...root.children].filter((child) => child.classList.contains('recipe-form__section'))).toHaveLength(2);
+    expect([...root.children].filter((child) => child.classList.contains('kui-content-item'))).toHaveLength(0);
     expect(root.querySelector('[data-component="state-banner"]')).toBeNull();
     expect(root.querySelector('.recipe-form__footer .recipe-form__actions')).not.toBeNull();
     expect(root.querySelector('.recipe-form__footer .kui-recipe__ownership')).not.toBeNull();
@@ -83,7 +87,7 @@ describe('production composition recipes', () => {
     const banner = errorRoot.querySelector('[data-component="state-banner"]');
     expect(banner?.parentElement).toBe(errorRoot);
     expect(banner?.getAttribute('role')).toBe('alert');
-    expect([...errorRoot.children].filter((child) => child.classList.contains('recipe-form__section'))).toHaveLength(3);
+    expect([...errorRoot.children].filter((child) => child.classList.contains('recipe-form__section'))).toHaveLength(2);
   });
 
   it('resets the composer signals and upgraded field values together', () => {

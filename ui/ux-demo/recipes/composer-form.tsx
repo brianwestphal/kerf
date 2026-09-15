@@ -6,6 +6,7 @@ import '@awesome.me/webawesome/dist/components/input/input.js';
 import '@awesome.me/webawesome/dist/components/textarea/textarea.js';
 import './recipes.css';
 
+import { DialogHeader } from '@kerfjs/ui/dialog-header';
 import { Select } from '@kerfjs/ui/select';
 import { StateBanner } from '@kerfjs/ui/state-banner';
 import { signal } from 'kerfjs';
@@ -28,16 +29,16 @@ export const createRecipe: RecipeFactory = (announce) => {
   const body = signal('The tablet layout now keeps navigation, content, and inspector focus order aligned.');
   const audience = signal('team');
   const status = signal<'idle' | 'error' | 'saved'>('idle');
-  const render = () => <form class="kui-recipe recipe-form kui-recipe__surface kui-content" data-recipe="recipe-composer-form" noValidate>
-    <header class="recipe-form__section recipe-form__introduction kui-content-item"><h2>Publish workspace update</h2><p class="kui-recipe__muted">Share a concise, actionable update with collaborators.</p></header>
+  const render = () => <form class="kui-recipe recipe-form kui-recipe__surface kui-content" data-recipe="recipe-composer-form" aria-labelledby="recipe-composer-title" aria-describedby="recipe-composer-summary" noValidate>
+    <DialogHeader title="Publish workspace update" titleId="recipe-composer-title" summary="Share a concise, actionable update with collaborators." summaryId="recipe-composer-summary" />
     {status.value === 'error' && <StateBanner title="Add a title before publishing" detail="The update body and audience are preserved." tone="danger" urgency="alert" />}
     {status.value === 'saved' && <StateBanner title="Update published" detail="The team audience can now read it." tone="success" />}
-    <div class="recipe-form__section recipe-form__fields kui-content-item">
+    <div class="recipe-form__section recipe-form__fields">
       <wa-input name="recipe-title" label="Update title" hint="Summarize the outcome in one line." required value={title.value}></wa-input>
       <wa-textarea name="recipe-body" label="Details" hint="Include decisions, owners, and the next checkpoint." rows="5" maxlength="400" with-count value={body.value}></wa-textarea>
       <Select name="recipe-audience" value={audience.value} label="Audience" choices={[{ value: 'team', label: 'Workspace team' }, { value: 'reviewers', label: 'Reviewers' }, { value: 'organization', label: 'Entire organization' }]} />
     </div>
-    <footer class="recipe-form__section recipe-form__footer kui-content-item"><div class="recipe-form__actions kui-control-cluster"><wa-button appearance="outlined" data-action="recipe-action" data-recipe-command="reset">Reset</wa-button><wa-button variant="brand" appearance="accent" data-action="recipe-action" data-recipe-command="submit">Publish update</wa-button></div><p class="kui-recipe__ownership">The recipe owns field, message, and action rhythm. The app owns validation rules, draft persistence, permissions, and transport.</p></footer>
+    <footer class="recipe-form__section recipe-form__footer"><div class="recipe-form__actions kui-control-cluster"><wa-button appearance="outlined" data-action="recipe-action" data-recipe-command="reset">Reset</wa-button><wa-button variant="brand" appearance="accent" data-action="recipe-action" data-recipe-command="submit">Publish update</wa-button></div><p class="kui-recipe__ownership">The recipe owns field, message, and action rhythm. The app owns validation rules, draft persistence, permissions, and transport.</p></footer>
   </form>;
   return {
     render,

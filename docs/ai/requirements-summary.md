@@ -10,9 +10,9 @@ Their shipped reference adapter makes stable-root delegated actions, form and
 dialog forwarding, resize commits, and retained idempotent disposal copyable
 outside the catalog. A typed application-local command-palette example retains
 custom semantics while reusing the canonical layout and control-cluster roles.
-The composer reference uses one visible form surface with exactly three
-transparent 8/1/8 content sections and 24px major rhythm; a conditional
-`StateBanner` is its only nested semantic surface. Its controlled Reset clears
+The composer reference uses one visible form surface with `DialogHeader`
+title/summary hierarchy, shared 8px field/action gutters, and 24px major rhythm;
+a conditional `StateBanner` is its only nested semantic surface. Its controlled Reset clears
 both upgraded Web Awesome live value properties and rendered value attributes,
 then announces `Draft reset`.
 The UI package also has an internal deterministic AI-regression foundation,
