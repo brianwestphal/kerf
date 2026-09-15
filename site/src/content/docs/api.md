@@ -57,7 +57,7 @@ class ArraySignal<T> {
 }
 ```
 
-All mutators throw a descriptive `Error` on out-of-bounds indices (with one carve-out: `move()`'s `from === to` no-op check runs *before* its bounds check, so an out-of-bounds `move(9, 9)` silently no-ops). Reads on `arraySig.value` register a tracking dependency just like `signal.value` — `computed(() => arraySig.value.filter(...))` and `effect(() => render(arraySig.value))` work the same way.
+Every indexed mutator requires finite integer indices in range and throws a descriptive `Error` before changing state or emitting a patch otherwise. `move()` validates both indices before applying its `from === to` no-op. Reads on `arraySig.value` register a tracking dependency just like `signal.value` — `computed(() => arraySig.value.filter(...))` and `effect(() => render(arraySig.value))` work the same way.
 
 The `ArraySignal<T>` class is detected via `Symbol.for('kerfjs.ArraySignal')`, not `instanceof`, so multiple bundle copies still interoperate. The brand symbol itself is also exported as **`ARRAY_SIGNAL_BRAND`** from `kerfjs/array-signal` for consumers who build their own collection types and want `each(...)` to recognize them via brand check.
 

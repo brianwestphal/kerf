@@ -112,7 +112,7 @@ axis (`cacheKey` reading an external signal) crosses all of them.
 
 | ID | Behavior | Implements | Guarding test(s) |
 | --- | --- | --- | --- |
-| FC-AS1 | `arraySignal()` standalone API — `update`/`insert`/`push`/`remove`/`move`/`replace` mutators + tracked `.value` | `src/array-signal.ts` | `tests/unit/array-signal-api.test.ts` › "arraySignal — standalone API" |
+| FC-AS1 | `arraySignal()` standalone API — `update`/`insert`/`push`/`remove`/`move`/`replace` mutators + tracked `.value`; every indexed mutator rejects non-finite, fractional, and out-of-range indices before mutation, including equal-index moves | `src/array-signal.ts` | `tests/unit/array-signal-api.test.ts` › "arraySignal — standalone API"; `tests/unit/array-signal-api.test.ts` › "rejects non-finite or non-integer index %s before every indexed mutation"; `tests/browser/consumer-app.spec.ts` › "arraySignal — invalid indices are rejected before source or patch mutation" |
 | FC-AS2 | `ArraySignal` class exposed for `instanceof` checks | `src/array-signal.ts` | `tests/unit/array-signal-api.test.ts` › "exposes ArraySignal class for instanceof checks" |
 
 ### §2 Reactivity

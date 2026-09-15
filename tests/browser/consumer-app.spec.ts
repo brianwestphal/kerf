@@ -96,6 +96,15 @@ test('arraySignal — push/update/move/remove patches apply to live DOM', async 
   expect(lenText).toMatch(/^len:3$/);
 });
 
+test('arraySignal — invalid indices are rejected before source or patch mutation', async ({ page }) => {
+  await expect(page.getByTestId('array-len')).toHaveText('len:2');
+  await expect(page.getByTestId('array-invalid-result')).toHaveText('invalid:untested');
+  await page.getByTestId('array-invalid-indices').click();
+  await expect(page.getByTestId('array-invalid-result')).toHaveText('invalid:rejected');
+  await expect(page.getByTestId('array-len')).toHaveText('len:2');
+  await expect(page.getByTestId('array-list').locator('li')).toHaveCount(2);
+});
+
 test('delegateCapture — focus event fires under explicit capture', async ({ page }) => {
   await expect(page.getByTestId('capture-count')).toHaveText('focuses:0');
   await page.getByTestId('capture-input').focus();

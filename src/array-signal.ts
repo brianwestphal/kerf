@@ -45,6 +45,10 @@ export type ArrayPatch<T> =
  */
 export const ARRAY_SIGNAL_BRAND = Symbol.for('kerfjs.ArraySignal');
 
+function isValidIndex(index: number, length: number, allowEnd = false): boolean {
+  return Number.isInteger(index) && index >= 0 && (allowEnd ? index <= length : index < length);
+}
+
 export class ArraySignal<T> {
   private _items: T[];
   private _version: Signal<number>;
@@ -73,7 +77,7 @@ export class ArraySignal<T> {
    * to every consumer's row memo.
    */
   update(index: number, fn: (item: T) => T): void {
-    if (index < 0 || index >= this._items.length) {
+    if (!isValidIndex(index, this._items.length)) {
       throw new Error(
         `arraySignal.update: index ${index} out of bounds [0, ${this._items.length}).`,
       );
@@ -93,7 +97,7 @@ export class ArraySignal<T> {
 
   /** Insert `item` at `index`. Existing items at index..N shift right. Emits one `insert` patch. */
   insert(index: number, item: T): void {
-    if (index < 0 || index > this._items.length) {
+    if (!isValidIndex(index, this._items.length, true)) {
       throw new Error(
         `arraySignal.insert: index ${index} out of bounds [0, ${this._items.length}].`,
       );
@@ -110,7 +114,7 @@ export class ArraySignal<T> {
 
   /** Remove and return the item at `index`. Emits one `remove` patch. */
   remove(index: number): T {
-    if (index < 0 || index >= this._items.length) {
+    if (!isValidIndex(index, this._items.length)) {
       throw new Error(
         `arraySignal.remove: index ${index} out of bounds [0, ${this._items.length}).`,
       );
@@ -123,12 +127,12 @@ export class ArraySignal<T> {
 
   /** Move the item at `from` to position `to`. Emits one `move` patch (no-op when from === to). */
   move(from: number, to: number): void {
-    if (from === to) return;
-    if (from < 0 || from >= this._items.length || to < 0 || to >= this._items.length) {
+    if (!isValidIndex(from, this._items.length) || !isValidIndex(to, this._items.length)) {
       throw new Error(
         `arraySignal.move: indices out of bounds (from=${from}, to=${to}, length=${this._items.length}).`,
       );
     }
+    if (from === to) return;
     const [item] = this._items.splice(from, 1);
     this._items.splice(to, 0, item);
     this._patches.push({ type: 'move', from, to });

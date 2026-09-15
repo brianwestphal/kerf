@@ -4,7 +4,7 @@
  * path.
  */
 
-import { describe,expect,it } from 'vitest';
+import { describe,expect,it,vi } from 'vitest';
 
 import { ArraySignal,arraySignal } from '../../src/array-signal.js';
 import { each } from '../../src/index.js';
@@ -87,6 +87,24 @@ describe('arraySignal — standalone API', () => {
     expect(() => sig.move(0, 5)).toThrow(/out of bounds/);
     expect(() => sig.move(5, 0)).toThrow(/out of bounds/);
   });
+
+  it.each([NaN, 0.5, Infinity, -Infinity])(
+    'rejects non-finite or non-integer index %s before every indexed mutation',
+    (invalidIndex) => {
+      const sig = arraySignal([{ id: 1 }, { id: 2 }]);
+      const update = vi.fn((item: { id: number }) => item);
+
+      expect(() => sig.update(invalidIndex, update)).toThrow(/out of bounds/);
+      expect(update).not.toHaveBeenCalled();
+      expect(() => sig.insert(invalidIndex, { id: 3 })).toThrow(/out of bounds/);
+      expect(() => sig.remove(invalidIndex)).toThrow(/out of bounds/);
+      expect(() => sig.move(invalidIndex, 0)).toThrow(/out of bounds/);
+      expect(() => sig.move(0, invalidIndex)).toThrow(/out of bounds/);
+      expect(() => sig.move(invalidIndex, invalidIndex)).toThrow(/out of bounds/);
+      expect(sig.value).toEqual([{ id: 1 }, { id: 2 }]);
+      expect(sig._consumePatches()).toEqual([]);
+    },
+  );
 
   it('replace swaps the entire array', () => {
     const sig = arraySignal([{ id: 1 }]);

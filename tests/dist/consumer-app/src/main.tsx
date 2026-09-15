@@ -163,6 +163,7 @@ declare module 'kerfjs/jsx-runtime' {
     { id: 1, label: 'one' },
     { id: 2, label: 'two' },
   ]);
+  const invalidIndexResult = signal('invalid:untested');
   let nextId = 3;
   mount(root, () => (
     <div>
@@ -172,7 +173,9 @@ declare module 'kerfjs/jsx-runtime' {
         <button data-action="update0" data-testid="array-update0">update[0]</button>
         <button data-action="move" data-testid="array-move">move 0→last</button>
         <button data-action="remove0" data-testid="array-remove0">remove[0]</button>
+        <button data-action="invalid-indices" data-testid="array-invalid-indices">try invalid indices</button>
         <span data-testid="array-len">len:{rows.value.length}</span>
+        <span data-testid="array-invalid-result">{invalidIndexResult}</span>
       </div>
       <ul data-testid="array-list">
         {each(rows, (r) => <li data-key={r.id} data-testid={`array-row-${r.id}`}>{r.label}</li>)}
@@ -191,6 +194,27 @@ declare module 'kerfjs/jsx-runtime' {
   });
   delegate(root, 'click', '[data-action="remove0"]', () => {
     if (rows.value.length > 0) rows.remove(0);
+  });
+  delegate(root, 'click', '[data-action="invalid-indices"]', () => {
+    const probe = arraySignal([{ id: 1 }, { id: 2 }]);
+    const invalidCalls = [
+      () => probe.update(NaN, (item) => item),
+      () => probe.insert(0.5, { id: 3 }),
+      () => probe.remove(Infinity),
+      () => probe.move(0, -Infinity),
+      () => probe.move(0.5, 0.5),
+    ];
+    const rejected = invalidCalls.filter((call) => {
+      try {
+        call();
+        return false;
+      } catch {
+        return true;
+      }
+    }).length;
+    invalidIndexResult.value = rejected === invalidCalls.length && probe.value.length === 2
+      ? 'invalid:rejected'
+      : 'invalid:failed';
   });
 }
 
