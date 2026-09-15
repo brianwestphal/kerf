@@ -18,4 +18,37 @@ describe('package metadata', () => {
       ),
     ).toBe(true);
   });
+
+  it('builds the UI distribution before catalog validation in CI and releases', () => {
+    const repoRoot = resolve(import.meta.dirname, '../../..');
+    const ciWorkflow = readFileSync(resolve(repoRoot, '.github/workflows/ci.yml'), 'utf8');
+    const releaseWorkflow = readFileSync(
+      resolve(repoRoot, '.github/workflows/release-ui.yml'),
+      'utf8',
+    );
+    const ciUiJob = ciWorkflow.slice(
+      ciWorkflow.indexOf('  ui:\n'),
+      ciWorkflow.indexOf('  browser:\n'),
+    );
+    const releaseValidationJob = releaseWorkflow.slice(
+      releaseWorkflow.indexOf('  validate-and-build:\n'),
+      releaseWorkflow.indexOf('  detect:\n'),
+    );
+
+    expect(ciUiJob).toContain(
+      ['      - run: npm ci', '      - run: npm run build', '      - run: npm run check'].join(
+        '\n',
+      ),
+    );
+    expect(releaseValidationJob).toContain(
+      [
+        '      - run: npm ci',
+        '        working-directory: ui',
+        '      - run: npm run build',
+        '        working-directory: ui',
+        '      - run: npm run check',
+        '        working-directory: ui',
+      ].join('\n'),
+    );
+  });
 });

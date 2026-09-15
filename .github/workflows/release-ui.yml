@@ -34,6 +34,8 @@ jobs:
       - run: npm run build
       - run: npm ci
         working-directory: ui
+      - run: npm run build
+        working-directory: ui
       - run: npm run check
         working-directory: ui
       - name: Upload built UI dist/
