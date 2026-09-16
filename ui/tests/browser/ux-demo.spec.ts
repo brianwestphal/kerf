@@ -240,6 +240,41 @@ test('shows a visible hover background on borderless toolbar-group buttons', asy
   await expect.poll(groupBackground).not.toBe('rgb(255, 255, 255)');
 });
 
+test('paints a selected wa-button control on ::part(base), not the outer host box', async ({ page }) => {
+  await page.goto('/?component=toolbar-control-group');
+  // Inject a data-single="false" group with a selected wa-button whose ::part(base)
+  // is sized smaller than the 40px host. The selected background/border/shadow must
+  // land on part(base) (matching the pill) — not the host, which would overflow the
+  // group's rounded border as an oversized square (KF-5BDDQ9).
+  const measured = await page.evaluate(async () => {
+    const host = document.querySelector('.catalog-canvas') ?? document.body;
+    const group = document.createElement('div');
+    group.className = 'kui-toolbar-control-group';
+    group.setAttribute('data-single', 'false');
+    group.innerHTML = '<wa-button appearance="plain" aria-pressed="true" aria-label="A"><span>A</span></wa-button><wa-button appearance="plain" aria-label="B"><span>B</span></wa-button>';
+    host.append(group);
+    const selected = group.querySelector('wa-button[aria-pressed="true"]') as HTMLElement & { updateComplete?: Promise<unknown> };
+    await selected.updateComplete;
+    const base = selected.shadowRoot?.querySelector('[part~="base"]') as HTMLElement;
+    // Shrink part(base) below the host so a host-painted background would be visibly larger.
+    base.style.minWidth = base.style.minHeight = '24px';
+    base.style.width = base.style.height = '24px';
+    const read = (el: Element) => {
+      const style = window.getComputedStyle(el);
+      return { background: style.backgroundColor, shadow: style.boxShadow, border: style.borderColor };
+    };
+    const result = { host: read(selected), base: read(base) };
+    group.remove();
+    return result;
+  });
+  const transparent = 'rgba(0, 0, 0, 0)';
+  // The visual (part base) carries the selected paint; the host stays clear.
+  expect(measured.base.background).not.toBe(transparent);
+  expect(measured.base.shadow).not.toBe('none');
+  expect(measured.host.background).toBe(transparent);
+  expect(measured.host.shadow).toBe('none');
+});
+
 test('presents the LucideIcon modes as labeled examples that differ only in semantics', async ({ page }) => {
   await page.goto('/?component=lucide-icon');
   const demo = page.locator('[data-demo="lucide-icon"]');

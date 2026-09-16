@@ -167,10 +167,26 @@
   background: transparent;
 }
 
-.kui-toolbar-control-group[data-single="false"]
-  > :is(button, wa-button)[aria-pressed="true"] {
+/* A plain <button> child paints its own box for the selected state. */
+.kui-toolbar-control-group[data-single="false"] > button[aria-pressed="true"] {
   border-color: var(--kui-toolbar-control-selected-border);
   color: var(--kui-toolbar-control-selected-color);
+  background: var(--kui-toolbar-control-selected-background);
+  box-shadow: var(--kui-toolbar-control-selected-shadow);
+}
+
+/* A wa-button's visual is ::part(base), not the outer 40px host box (which has no
+   pill radius). Paint the selected background/border/shadow on ::part(base) —
+   mirroring the hover rule — so the selected state matches the pill radius/size
+   and stays inside the group's border instead of overflowing it as an oversized
+   square (KF-5BDDQ9). The selected text color rides on the host and inherits in. */
+.kui-toolbar-control-group[data-single="false"]
+  > wa-button[aria-pressed="true"] {
+  color: var(--kui-toolbar-control-selected-color);
+}
+.kui-toolbar-control-group[data-single="false"]
+  > wa-button[aria-pressed="true"]::part(base) {
+  border-color: var(--kui-toolbar-control-selected-border);
   background: var(--kui-toolbar-control-selected-background);
   box-shadow: var(--kui-toolbar-control-selected-shadow);
 }
