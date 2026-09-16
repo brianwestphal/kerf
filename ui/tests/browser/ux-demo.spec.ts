@@ -92,7 +92,7 @@ test('omits the removed command-palette recipe and safely falls back from its st
   if (browserName === 'chromium') await page.screenshot({ path: 'test-results/catalog-without-command-palette-narrow.png' });
 });
 
-test('drills through the navigation-stack recipe with animated push/pop, reduced motion, and a live device class', async ({ page, browserName }) => {
+test('drills through the navigation-stack recipe with animated push/pop and reduced motion', async ({ page, browserName }) => {
   await page.setViewportSize({ width: 1100, height: 820 });
   await page.goto('/?component=recipe-navigation-stack');
   const recipe = page.locator('[data-recipe="recipe-navigation-stack"]');
@@ -103,9 +103,6 @@ test('drills through the navigation-stack recipe with animated push/pop, reduced
   await expect(nav).toHaveAttribute('data-depth', '1');
   await expect(nav.locator('[data-nav-back]')).toHaveCount(0);
   await expect(nav.locator('.kui-nav-stack__view').first()).toHaveCSS('transition-property', /transform/);
-  // The live device-class badge reflects the (desktop-width) viewport.
-  const badge = recipe.locator('[data-recipe-device]');
-  await expect(badge).toContainText('desktop');
 
   // Push a detail: back control appears and the title cross-fades to the item.
   await recipe.locator('[data-item-id="layouts"]').click();
@@ -125,10 +122,6 @@ test('drills through the navigation-stack recipe with animated push/pop, reduced
     .poll(() => nav.locator('.kui-nav-stack__view').first().evaluate((el) => Number.parseFloat(window.getComputedStyle(el).transitionDuration)))
     .toBeLessThanOrEqual(0.001);
   await page.emulateMedia({ reducedMotion: null });
-
-  // The device class updates reactively when the viewport crosses a breakpoint.
-  await page.setViewportSize({ width: 380, height: 820 });
-  await expect(badge).toContainText('mobile');
 });
 
 test('slides the catalog sidebar out and back via a composited transform, not a width animation', async ({ page, browserName }) => {

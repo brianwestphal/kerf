@@ -2,7 +2,6 @@ import '@kerfjs/ui/layout.css';
 import '@kerfjs/ui/nav-stack.css';
 import './recipes.css';
 
-import { deviceClass } from '@kerfjs/ui/device-class';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { MenuHeader } from '@kerfjs/ui/menu-header';
 import { MenuItem } from '@kerfjs/ui/menu-item';
@@ -25,8 +24,6 @@ const ITEMS: LibraryItem[] = [
 ];
 
 export const createRecipe: RecipeFactory = (announce) => {
-  const device = deviceClass();
-
   const listView = (): NavStackView => ({
     key: 'library',
     title: 'Library',
@@ -54,7 +51,6 @@ export const createRecipe: RecipeFactory = (announce) => {
   const views = signal<NavStackView[]>([listView()]);
 
   const render = () => <section class="kui-recipe recipe-navstack kui-recipe__surface" data-recipe="recipe-navigation-stack">
-    <p class="recipe-navstack__meta kui-recipe__muted" data-recipe-device>Device class: {device.value.size} · {device.value.orientation}</p>
     <div class="recipe-navstack__stage"><NavStack id="recipe-nav" label="Component library" views={views.value} /></div>
   </section>;
 

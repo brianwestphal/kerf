@@ -349,11 +349,6 @@
   margin-inline: auto;
   flex-direction: column;
 }
-.recipe-navstack__meta {
-  margin: 0;
-  padding: var(--kui-space-2xs) var(--kui-space-s);
-  border-block-end: 1px solid var(--kui-color-border);
-}
 .recipe-navstack__stage {
   height: 24rem;
 }
