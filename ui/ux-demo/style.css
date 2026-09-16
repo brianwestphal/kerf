@@ -1604,9 +1604,11 @@ button {
 [data-demo="loading-spinner"]
   .demo-example
   > :not(.kui-menu-header):not(.demo-example__note),
-[data-demo="skeleton"]
-  .demo-example
-  > :not(.kui-menu-header):not(.demo-example__note) {
+/* Skeleton scopes the inset to the bare primitive blocks only. The demo's
+   composition example (a ValueTable) carries its own content-item geometry, so
+   it must keep its intrinsic margins — its label already lands on the 16px line —
+   and is marked data-demo-overlay-skip so the overlay never paints it. */
+[data-demo="skeleton"] .demo-skeleton-blocks {
   --demo-align-inset: remify(16px);
   margin-inline-start: var(--demo-align-inset);
 }

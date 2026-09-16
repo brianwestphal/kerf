@@ -551,7 +551,7 @@ function SkeletonDemo() {
         <Skeleton width="6em" label="Loading value" />
       </div>
     </section>
-    <section class="demo-example"><MenuHeader label="In composition" /><p class="demo-example__note">Value-bearing components accept a <code>placeholder</code> prop that renders their real chrome with skeleton value slots. See the <strong>Loading inspector</strong> recipe for a full composition.</p>
+    <section class="demo-example" data-demo-overlay-skip><MenuHeader label="In composition" /><p class="demo-example__note">Value-bearing components accept a <code>placeholder</code> prop that renders their real chrome with skeleton value slots. See the <strong>Loading inspector</strong> recipe for a full composition.</p>
       <ValueTable label="Placeholder rows"><ValueTableRow label="Status" value="" placeholder /><ValueTableRow label="Owner" value="" placeholder /></ValueTable>
     </section>
   </div>;
