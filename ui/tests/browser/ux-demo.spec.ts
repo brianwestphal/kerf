@@ -1885,8 +1885,12 @@ test('fills MenuHeader rows and keeps 18px action visuals at the logical end', a
       expect(measured.documentOverflow).toBeLessThanOrEqual(1);
     }
     for (const measured of [attachmentGeometry, unavailableGeometry]) {
-      expect(measured.actionWidth).toBeCloseTo(44 * scale, 0);
-      expect(measured.actionHeight).toBeCloseTo(44 * scale, 0);
+      // The action is a fitted square: 18px icon + 8px padding each side (both
+      // rem-based, so they track the font scale) + a 1px border each side (literal
+      // px, unscaled) = 36px at 1x — not a forced 44px box with a halo, nor a
+      // stretched oval.
+      expect(measured.actionWidth).toBeCloseTo((18 + 16) * scale + 2, 0);
+      expect(measured.actionHeight).toBeCloseTo((18 + 16) * scale + 2, 0);
       expect(measured.actionLogicalEnd).toBeCloseTo(0, 0);
       expect(measured.titleActionOverlap).toBe(0);
       expect(measured.visualInsideAction).toBe(true);
@@ -1898,7 +1902,8 @@ test('fills MenuHeader rows and keeps 18px action visuals at the logical end', a
 
   await expectLayout(1);
   await attachments.evaluate((element) => element.style.setProperty('--kui-menu-header-action-icon-size', '20px'));
-  expect(await geometry(attachments)).toMatchObject({ actionHeight: 44, actionWidth: 44, visualHeight: 20, visualWidth: 20 });
+  // A larger icon grows the fitted square with it (20 + 8 + 8 + 1 + 1 = 38).
+  expect(await geometry(attachments)).toMatchObject({ actionHeight: 38, actionWidth: 38, visualHeight: 20, visualWidth: 20 });
   await attachments.evaluate((element) => element.style.removeProperty('--kui-menu-header-action-icon-size'));
   await expectLayout(1);
   if (browserName === 'chromium') await demo.screenshot({ path: 'test-results/menu-header-layout-wide.png' });
@@ -2334,7 +2339,10 @@ test('matches shared menu, content-item, and toolbar geometry', async ({ page, b
     near('iconWidth', geometry.iconWidth, 24);
     near('surfacePadding', geometry.surfacePadding, 8);
     near('surfaceBorder', geometry.surfaceBorder, 1);
-    for (const name of ['headerActionWidth', 'headerActionHeight', 'toolbarActionWidth', 'toolbarActionHeight'] as const) near(name, geometry[name], 44);
+    for (const name of ['toolbarActionWidth', 'toolbarActionHeight'] as const) near(name, geometry[name], 44);
+    // The MenuHeader action is a fitted square (18px icon + 8px padding + 1px
+    // border each side = 36px), not the toolbar control group's 44px.
+    for (const name of ['headerActionWidth', 'headerActionHeight'] as const) near(name, geometry[name], 36);
     near('toggleLayerWidth', geometry.toggleLayerWidth, 24);
     near('toggleLayerHeight', geometry.toggleLayerHeight, 24);
     expect(geometry.rowHeight).toBeGreaterThanOrEqual(44);

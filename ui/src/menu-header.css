@@ -93,10 +93,23 @@
 }
 
 .kui-menu-header__action {
+  /* A fitted square: the icon size plus its padding and 1px border, instead of a
+     forced 44px box that left an oversized halo around the ~18px icon and, via the
+     parent's align-items: stretch, a vertically stretched oval. `align-self:
+     center` keeps it centered in the header's 44px row without stretching. Sizing
+     off the icon variable keeps it square and correct at any icon size. */
+  --_kui-menu-header-action-size: calc(
+    var(--_kui-menu-header-action-icon-size) +
+      (2 * var(--kui-layout-item-padding, remify(8px))) + 2px
+  );
   appearance: none;
-  width: remify(44px);
-  height: remify(44px);
+  display: inline-flex;
+  width: var(--_kui-menu-header-action-size);
+  height: var(--_kui-menu-header-action-size);
   padding: var(--kui-layout-item-padding, remify(8px));
+  align-items: center;
+  justify-content: center;
+  align-self: center;
   cursor: pointer;
   flex: none;
 }
@@ -138,6 +151,10 @@
 
 .kui-menu-header__action > svg,
 .kui-menu-header__action-layer > svg {
+  /* min-block-size: 0 overrides the flex item's automatic minimum, which would
+     otherwise resolve to the icon SVG's intrinsic 24px viewBox height and stretch
+     the button past its used icon size. */
   width: var(--_kui-menu-header-action-icon-size);
   height: var(--_kui-menu-header-action-icon-size);
+  min-block-size: 0;
 }
