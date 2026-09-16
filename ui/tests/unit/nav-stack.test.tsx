@@ -103,6 +103,23 @@ describe('wireNavStack', () => {
     dispose();
   });
 
+  it('finalizes a pushed view instantly when animation is disabled', async () => {
+    const root = mountStack([view('home', 'Home')]);
+    const dispose = wireNavStack(root, { duration: 0 });
+    const viewport = root.querySelector('[data-nav-stack-viewport]')!;
+    viewport.querySelector<HTMLElement>('.kui-nav-stack__view')!.dataset.navActive = 'false';
+    const next = document.createElement('article');
+    next.className = 'kui-nav-stack__view';
+    next.dataset.navKey = 'detail';
+    next.dataset.navActive = 'true';
+    viewport.append(next);
+    await tick();
+    // With animation off, the transient entering class is removed synchronously (no rAF).
+    expect(next.classList.contains('kui-nav-stack__view--entering')).toBe(false);
+    expect(viewport.querySelectorAll('.kui-nav-stack__view')).toHaveLength(2);
+    dispose();
+  });
+
   it('re-attaches and slides out a popped view, then removes it (animated path)', async () => {
     const root = mountStack([view('home', 'Home'), view('detail', 'Detail')]);
     const dispose = wireNavStack(root, { duration: 10 });
