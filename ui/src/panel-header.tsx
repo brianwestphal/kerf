@@ -3,7 +3,7 @@ import type { SafeHtml } from 'kerfjs';
 import { Skeleton } from './skeleton.js';
 import { Toolbar } from './toolbar.js';
 import { ToolbarControlGroup } from './toolbar-control-group.js';
-import { ToolbarText } from './toolbar-text.js';
+import { type HeadingLevel, ToolbarText } from './toolbar-text.js';
 
 export interface PanelHeaderProps {
   title: string;
@@ -13,6 +13,13 @@ export interface PanelHeaderProps {
   icon?: SafeHtml;
   iconClassName?: string;
   actions?: SafeHtml;
+  /**
+   * Expose the title as a heading landmark (`role="heading"` + `aria-level`). Set it
+   * for a PAGE or view heading so screen-reader heading navigation works and the view
+   * has a primary heading; omit it (the default) for a dialog title, which is instead
+   * referenced via `aria-labelledby={titleId}` and needs no heading landmark.
+   */
+  headingLevel?: HeadingLevel;
   /** Render the title and summary as unanimated loading skeletons, keeping the icon and actions. */
   placeholder?: boolean;
 }
@@ -29,10 +36,10 @@ export interface PanelHeaderProps {
  * is passed straight into the toolbar's trailing zone; the app supplies whatever
  * trailing controls it needs (typically a `ToolbarControlGroup`).
  */
-export function PanelHeader({ title, titleId, summary, summaryId, icon, iconClassName = '', actions, placeholder = false }: PanelHeaderProps) {
+export function PanelHeader({ title, titleId, summary, summaryId, icon, iconClassName = '', actions, headingLevel, placeholder = false }: PanelHeaderProps) {
   const identity = <>
     {icon && <ToolbarControlGroup single className={`kui-panel-header__icon ${iconClassName}`.trim()}>{icon}</ToolbarControlGroup>}
-    <ToolbarText text={title} size="xlarge" id={titleId} className="kui-panel-header__title" placeholder={placeholder} />
+    <ToolbarText text={title} size="xlarge" id={titleId} className="kui-panel-header__title" headingLevel={headingLevel} placeholder={placeholder} />
   </>;
 
   return <div class="kui-panel-header" data-component="panel-header" data-has-icon={String(Boolean(icon))} data-has-actions={String(Boolean(actions))} data-has-summary={String(Boolean(summary))} data-placeholder={placeholder ? 'true' : undefined}>

@@ -42,7 +42,7 @@ export {
 } from './token-search-field.js';
 export { Toolbar, type ToolbarProps } from './toolbar.js';
 export { ToolbarControlGroup, type ToolbarControlGroupProps } from './toolbar-control-group.js';
-export { ToolbarText, type ToolbarTextProps, type ToolbarTextSize } from './toolbar-text.js';
+export { type HeadingLevel, ToolbarText, type ToolbarTextProps, type ToolbarTextSize } from './toolbar-text.js';
 export { ValueTable, type ValueTableProps, ValueTableRow, type ValueTableRowProps } from './value-table.js';
 export {
   type ResizeCommit,

@@ -46,11 +46,16 @@ The application owns persistence and collapsed/expanded policy. Keep the last ex
 `PanelHeader` is a plain `Toolbar` heading. Its leading zone holds an optional
 icon (a normal bordered `ToolbarControlGroup`) and the title as extra-large
 `ToolbarText`, and the app's trailing controls go straight into the trailing
-zone. The title carries no native heading role, so the application connects
-`titleId` and an optional `summaryId` to the owning dialog or panel through
-`aria-labelledby` and `aria-describedby` (and provides a document heading
-separately when one is required). Pass the trailing controls as a labeled
-`ToolbarControlGroup` when that group needs an accessible name.
+zone. By default the title carries no native heading role, so for a **dialog or
+panel** the application connects `titleId` and an optional `summaryId` to the
+owning host through `aria-labelledby` and `aria-describedby`. For a **page or
+view** title, pass `headingLevel` (usually `1`): the title then exposes
+`role="heading"` with a matching `aria-level`, giving the view a heading landmark
+so screen-reader heading navigation and "main heading" semantics work — the same
+role/level pair `ToolbarText` exposes when it is given `headingLevel` directly.
+Keep the levels meaningful and non-skipping within a view. Pass the trailing
+controls as a labeled `ToolbarControlGroup` when that group needs an accessible
+name.
 
 ## Tabs
 

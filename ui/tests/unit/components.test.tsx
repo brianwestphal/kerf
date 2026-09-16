@@ -439,6 +439,9 @@ describe('production UI primitives', () => {
     expect(panelTitle.dataset.size).toBe('xlarge');
     expect(panelTitle.id).toBe('details-title');
     expect(panelTitle.textContent).toBe('Details');
+    // Default (dialog-style) title is a plain span, referenced via aria-labelledby, not a heading.
+    expect(panelTitle.getAttribute('role')).toBeNull();
+    expect(panelTitle.hasAttribute('aria-level')).toBe(false);
     // The actions ride straight in the trailing zone — no wrapper group of PanelHeader's own.
     expect(toolbar.querySelector(':scope > .kui-toolbar__trailing > [data-lucide]')).not.toBeNull();
     expect(panel).not.toContain('kui-panel-header__actions');
@@ -458,6 +461,25 @@ describe('production UI primitives', () => {
     expect(iconRow).toContain('class="kui-value-table__row featured" data-has-icon="true"');
     expect(iconRow).toContain('class="kui-value-table__icon"');
     expect(iconRow).toContain('<span class="kui-value-table__label">Runtime</span>');
+  });
+
+  it('exposes optional heading semantics for page/section titles', () => {
+    // ToolbarText opts into role="heading" + aria-level via headingLevel.
+    const plainText = asHtml(ToolbarText({ text: 'Section' }));
+    expect(plainText).not.toContain('role="heading"');
+    expect(plainText).not.toContain('aria-level');
+    const heading = asHtml(ToolbarText({ text: 'Overview', size: 'large', headingLevel: 2 }));
+    expect(heading).toContain('role="heading"');
+    expect(heading).toContain('aria-level="2"');
+
+    // PanelHeader forwards headingLevel to its title so a page keeps a heading landmark.
+    const pageHost = document.createElement('div');
+    pageHost.innerHTML = asHtml(PanelHeader({ title: 'Dashboard', titleId: 'page-title', headingLevel: 1 }));
+    const pageTitle = pageHost.querySelector<HTMLElement>('.kui-panel-header__title')!;
+    expect(pageTitle.getAttribute('role')).toBe('heading');
+    expect(pageTitle.getAttribute('aria-level')).toBe('1');
+    expect(pageTitle.id).toBe('page-title');
+    expect(pageTitle.textContent).toBe('Dashboard');
   });
 
   it('renders labeled or decorative progress and generic feedback', () => {

@@ -436,8 +436,8 @@ function HeadersDemo() {
 
 function PanelHeaderDemo() {
   return <div class="demo-stack demo-stack--labeled" data-demo="panel-header">
-    <section class="demo-example"><MenuHeader label="Page title" /><PanelHeader title="UI foundations" titleId="panel-page-title" actions={button('New pattern', 'log-add')} /></section>
-    <section class="demo-example"><MenuHeader label="Panel heading with icon and subtitle" /><PanelHeader title="Package details" titleId="panel-standalone-title" summary="Production-backed primitives with explicit contracts." summaryId="panel-standalone-summary" icon={icon(Wrench, 'wrench')} actions={button('Done', 'log-done')} /></section>
+    <section class="demo-example"><MenuHeader label="Page title (h1 heading)" /><p class="demo-example__note">Pass <code>headingLevel</code> for a page/view title so it is a real heading landmark (<code>role="heading"</code> + <code>aria-level</code>).</p><PanelHeader title="UI foundations" titleId="panel-page-title" headingLevel={1} actions={button('New pattern', 'log-add')} /></section>
+    <section class="demo-example"><MenuHeader label="Panel heading with icon and subtitle" /><p class="demo-example__note">A dialog/panel title omits <code>headingLevel</code> and is instead referenced by <code>aria-labelledby</code> pointing at its <code>titleId</code>.</p><PanelHeader title="Package details" titleId="panel-standalone-title" summary="Production-backed primitives with explicit contracts." summaryId="panel-standalone-summary" icon={icon(Wrench, 'wrench')} actions={button('Done', 'log-done')} /></section>
   </div>;
 }
 

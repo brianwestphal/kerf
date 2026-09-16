@@ -45,18 +45,26 @@ export { Toolbar, type ToolbarProps };
 import * as kerfjs from 'kerfjs';
 
 type ToolbarTextSize = 'xlarge' | 'large' | 'default' | 'small';
+/** ARIA heading level for a title exposed as a heading landmark. */
+type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
 interface ToolbarTextProps {
     text: string;
     size?: ToolbarTextSize;
     className?: string;
     /** Optional id, e.g. so a dialog can reference the title via aria-labelledby. */
     id?: string;
+    /**
+     * Expose heading semantics (`role="heading"` + `aria-level`) so the text acts as
+     * a heading landmark — e.g. a page's primary title. Omit to keep the plain span
+     * (the default), which suits a dialog title referenced via `aria-labelledby`.
+     */
+    headingLevel?: HeadingLevel;
     /** Render the text as an unanimated loading skeleton instead of its value. */
     placeholder?: boolean;
 }
-declare function ToolbarText({ text, size, className, id, placeholder }: ToolbarTextProps): kerfjs.SafeHtml;
+declare function ToolbarText({ text, size, className, id, headingLevel, placeholder }: ToolbarTextProps): kerfjs.SafeHtml;
 
-export { ToolbarText, type ToolbarTextProps, type ToolbarTextSize };
+export { type HeadingLevel, ToolbarText, type ToolbarTextProps, type ToolbarTextSize };
 ```
 
 ## `@kerfjs/ui/toolbar-control-group`
@@ -226,6 +234,7 @@ export { MenuItem, type MenuItemProps };
 
 ```ts
 import { SafeHtml } from 'kerfjs';
+import { HeadingLevel } from './toolbar-text.js';
 
 interface PanelHeaderProps {
     title: string;
@@ -235,6 +244,13 @@ interface PanelHeaderProps {
     icon?: SafeHtml;
     iconClassName?: string;
     actions?: SafeHtml;
+    /**
+     * Expose the title as a heading landmark (`role="heading"` + `aria-level`). Set it
+     * for a PAGE or view heading so screen-reader heading navigation works and the view
+     * has a primary heading; omit it (the default) for a dialog title, which is instead
+     * referenced via `aria-labelledby={titleId}` and needs no heading landmark.
+     */
+    headingLevel?: HeadingLevel;
     /** Render the title and summary as unanimated loading skeletons, keeping the icon and actions. */
     placeholder?: boolean;
 }
@@ -250,7 +266,7 @@ interface PanelHeaderProps {
  * is passed straight into the toolbar's trailing zone; the app supplies whatever
  * trailing controls it needs (typically a `ToolbarControlGroup`).
  */
-declare function PanelHeader({ title, titleId, summary, summaryId, icon, iconClassName, actions, placeholder }: PanelHeaderProps): SafeHtml;
+declare function PanelHeader({ title, titleId, summary, summaryId, icon, iconClassName, actions, headingLevel, placeholder }: PanelHeaderProps): SafeHtml;
 
 export { PanelHeader, type PanelHeaderProps };
 ```

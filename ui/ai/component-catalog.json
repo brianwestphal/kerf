@@ -488,7 +488,9 @@
         "small",
         "placeholder (loading)"
       ],
-      "accessibility": [],
+      "accessibility": [
+        "Plain text is not a heading; pass headingLevel to expose role=heading + aria-level for a page/section title."
+      ],
       "delivery": {
         "browserImport": "@kerfjs/ui/toolbar-text",
         "manualCssImport": "@kerfjs/ui/toolbar-text.css",
@@ -614,11 +616,13 @@
         "optional summary",
         "icon",
         "actions",
-        "placeholder (loading)"
+        "placeholder (loading)",
+        "page heading (headingLevel)"
       ],
       "accessibility": [
         "Connect the title id and any provided summary id to the dialog or panel host.",
-        "Pass the trailing actions as a labeled ToolbarControlGroup when the group needs an accessible name."
+        "Pass the trailing actions as a labeled ToolbarControlGroup when the group needs an accessible name.",
+        "For a page/view title pass headingLevel (usually 1) so the title exposes role=heading + aria-level as a heading landmark; omit it for a dialog title, which is referenced via aria-labelledby to titleId."
       ],
       "delivery": {
         "browserImport": "@kerfjs/ui/panel-header",

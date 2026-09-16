@@ -22,3 +22,16 @@ test('centers the PanelHeader icon inside its filled circle', async ({ page, bro
     await page.locator('.demo-stack[data-demo="panel-header"] .demo-example').nth(1).screenshot({ path: 'test-results/panel-header-icon-centered.png' });
   }
 });
+
+test('exposes a page PanelHeader title as a heading landmark', async ({ page }) => {
+  await page.goto('/?component=panel-header');
+  // The first example is a page title with headingLevel={1}.
+  const pageHeading = page.getByRole('heading', { level: 1, name: 'UI foundations' });
+  await expect(pageHeading).toBeVisible();
+  await expect(pageHeading).toHaveClass(/kui-panel-header__title/);
+
+  // The dialog/panel example (no headingLevel) is not a heading.
+  const panelTitle = page.locator('#panel-standalone-title');
+  await expect(panelTitle).toHaveText('Package details');
+  expect(await panelTitle.getAttribute('role')).toBeNull();
+});
