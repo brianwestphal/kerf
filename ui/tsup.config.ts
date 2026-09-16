@@ -16,6 +16,8 @@ const entries = [
   'app-tab',
   'tab-bar',
   'wire-tab-bars',
+  'nav-stack',
+  'wire-nav-stack',
   'page-header',
   'loading-spinner',
   'select',

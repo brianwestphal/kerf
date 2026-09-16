@@ -1,0 +1,115 @@
+.kui-nav-stack {
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  overflow: hidden;
+  flex-direction: column;
+  background: var(--kui-color-surface);
+}
+
+.kui-nav-stack__chrome {
+  display: flex;
+  min-width: 0;
+  min-height: calc(2px + remify(42px));
+  padding-inline: var(--kui-space-xs);
+  border-block-end: 1px solid var(--kui-color-border);
+  align-items: center;
+  gap: var(--kui-space-xs);
+  background: var(--kui-color-surface);
+}
+
+.kui-nav-stack__lead {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  align-items: center;
+  gap: var(--kui-space-2xs);
+}
+
+.kui-nav-stack__back {
+  display: grid;
+  width: remify(40px);
+  height: remify(40px);
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: var(--kui-layout-rounded-radius, calc(1px + remify(11px)));
+  color: inherit;
+  background: transparent;
+  cursor: pointer;
+  place-items: center;
+}
+
+.kui-nav-stack__back:hover {
+  border-color: var(--kui-color-border);
+  background: var(--kui-color-neutral-fill-normal);
+}
+
+.kui-nav-stack__back:focus-visible {
+  outline: var(--kui-focus-ring);
+  outline-offset: 1px;
+}
+
+.kui-nav-stack__back-icon {
+  display: block;
+}
+
+.kui-nav-stack__title {
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  font-size: var(--kui-font-m);
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.kui-nav-stack__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--kui-space-2xs);
+}
+
+.kui-nav-stack__viewport {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.kui-nav-stack__view {
+  position: absolute;
+  overflow: auto;
+  background: var(--kui-color-surface);
+  transition: transform 200ms ease;
+  inset: 0;
+}
+
+/* Only the active view (and any view mid-exit) is shown; lower entries stay
+   mounted for state/focus but hidden behind it. */
+.kui-nav-stack__view[data-nav-active="false"] {
+  visibility: hidden;
+}
+
+.kui-nav-stack__view[data-nav-exiting="true"] {
+  z-index: 1;
+  visibility: visible;
+}
+
+/* Push: the incoming view starts off the trailing edge and slides to rest.
+   Pop: the outgoing view starts at rest and slides off the trailing edge. */
+.kui-nav-stack__view--entering,
+.kui-nav-stack__view--exiting {
+  transform: translateX(100%);
+}
+
+.kui-nav-stack__bottom {
+  border-block-start: 1px solid var(--kui-color-border);
+  background: var(--kui-color-surface);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kui-nav-stack__view {
+    transition: none;
+  }
+}

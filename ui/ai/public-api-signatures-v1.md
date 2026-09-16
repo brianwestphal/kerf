@@ -343,6 +343,69 @@ declare function wireTabBars(root: HTMLElement | Document, { onReorder }: WireTa
 export { type TabDropPosition, type TabReorder, type TabReorderSource, type WireTabBarsOptions, reorderTabs, wireTabBars };
 ```
 
+## `@kerfjs/ui/nav-stack`
+
+```ts
+import { SafeHtml } from 'kerfjs';
+
+/**
+ * One entry in a {@link NavStack}. The app owns the stack as an array (usually a
+ * signal); `NavStack` renders it and `wireNavStack` animates the transitions.
+ */
+interface NavStackView {
+    /** Stable identity for keyed reconcile and transition direction. */
+    key: string;
+    content: SafeHtml;
+    /** Title shown in the top toolbar for this view. */
+    title?: string;
+    /** Trailing actions for this view's top toolbar. */
+    toolbar?: SafeHtml;
+}
+interface NavStackProps {
+    id: string;
+    /** Accessible name for the stack region. */
+    label: string;
+    /** The stack, root first; the last entry is the active top view. */
+    views: NavStackView[];
+    /** Accessible label for the back control (default "Back"). */
+    backLabel?: string;
+    /** Hide the top toolbar entirely (rare — a fully custom-chrome view). */
+    hideToolbar?: boolean;
+    /** Optional persistent bottom toolbar. */
+    bottomToolbar?: SafeHtml;
+    className?: string;
+}
+/**
+ * A navigation stack (iOS-style push/pop). Renders every entry stacked, the last
+ * one active; `@kerfjs/ui/wire-nav-stack`'s `wireNavStack` slides the content and
+ * cross-fades the chrome across a change. A single-pane layout is a `NavStack`
+ * with one entry. See `docs/23-app-layouts.md` §3.1.
+ */
+declare function NavStack({ id, label, views, backLabel, hideToolbar, bottomToolbar, className }: NavStackProps): SafeHtml;
+
+export { NavStack, type NavStackProps, type NavStackView };
+```
+
+## `@kerfjs/ui/wire-nav-stack`
+
+```ts
+interface WireNavStackOptions {
+    /** Invoked when the back control is activated. The app pops its own stack. */
+    onBack?: () => void;
+    /** Transition duration in ms (default 200). Set 0 to disable animation. */
+    duration?: number;
+}
+/**
+ * Animate a `NavStack`'s push/pop transitions and wire its back control. The app
+ * owns the stack (a signal of `NavStackView[]`) and re-renders `NavStack` when it
+ * changes; this helper slides the content and settles the chrome across each
+ * change, and calls `onBack` when the back control is used. Returns a disposer.
+ */
+declare function wireNavStack(root: Element, options?: WireNavStackOptions): () => void;
+
+export { type WireNavStackOptions, wireNavStack };
+```
+
 ## `@kerfjs/ui/resizable-region`
 
 ```ts

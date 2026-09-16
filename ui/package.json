@@ -106,6 +106,14 @@
       "types": "./dist/wire-tab-bars.d.ts",
       "import": "./dist/wire-tab-bars.js"
     },
+    "./nav-stack": {
+      "types": "./dist/nav-stack.d.ts",
+      "import": "./dist/nav-stack.js"
+    },
+    "./wire-nav-stack": {
+      "types": "./dist/wire-nav-stack.d.ts",
+      "import": "./dist/wire-nav-stack.js"
+    },
     "./page-header": {
       "types": "./dist/page-header.d.ts",
       "browser": "./dist/browser/page-header.js",
@@ -182,6 +190,7 @@
     "./resizable-region.css": "./dist/styles/resizable-region.css",
     "./app-tab.css": "./dist/styles/app-tab.css",
     "./tab-bar.css": "./dist/styles/tab-bar.css",
+    "./nav-stack.css": "./dist/styles/nav-stack.css",
     "./page-header.css": "./dist/styles/page-header.css",
     "./loading-spinner.css": "./dist/styles/loading-spinner.css",
     "./select.css": "./dist/styles/select.css",

@@ -121,17 +121,22 @@ slides** (the pattern already used on several `~/Documents/hotsheet2` dialogs).
 - A **single-pane layout is a `NavStack` with one entry** — no separate
   primitive; the doc and guidance say so explicitly.
 - Applicable at every device size and inside dialogs of every size.
-- Honors reduced motion (cross-fade/slide collapse to instant) and uses
-  `moveNode`/`Node.moveBefore` semantics so focus survives a push/pop, consistent
-  with kerf's state-preserving moves ([`18-state-preserving-moves.md`](18-state-preserving-moves.md)).
+- Honors reduced motion (cross-fade/slide collapse to instant) and restores
+  focus into the new top view after a push/pop.
 
-Proposed shape:
+**Ratified rendering model (declarative + wire).** Consistent with every other
+`@kerfjs/ui` component, the app owns the stack as a `signal<NavStackView[]>`;
+`NavStack({ views })` renders it as `SafeHtml` (all views stacked, the last
+active), and `wireNavStack(root, { onBack })` animates the push/pop transition
+and cross-fades the chrome, returning a disposer. Back is a delegated control;
+the app's `onBack` pops its own signal. This replaces the earlier imperative
+`navStack({ root }).push()` sketch.
 
 ```ts
-const stack = navStack({ root: () => <HomeView/> });
-stack.push(() => <DetailView id={id}/>, { title: 'Detail' });
-stack.pop();
-// stack.entries: ReadonlySignal<StackEntry[]>; stack.canPop; dispose()
+const views = signal<NavStackView[]>([{ key: 'home', content: <HomeView/> }]);
+// render: <NavStack id="nav" label="Detail flow" views={views.value} />
+// once: const dispose = wireNavStack(root, { onBack: () => views.value = views.value.slice(0, -1) });
+// push: views.value = [...views.value, { key: id, title: 'Detail', content: <DetailView id={id}/> }];
 ```
 
 **Implementation:** ticket **NavStack layout**.
@@ -279,10 +284,13 @@ layout-selection guidance**.
 
 ## 6. Tree-shaking
 
-Each layout and the device-class module is its own subpath with its own CSS
-side-effect entry, matching the package's existing per-subpath boundary: an app
-importing `@kerfjs/ui/nav-stack` must not pull `Workbench` or its CSS. The root
-barrel stays CSS-free; Node/SSR paths stay DOM- and CSS-free (device-class SSR
+Each layout and the device-class module is its own opt-in subpath, kept out of
+the root barrel so an app importing `@kerfjs/ui/nav-stack` must not pull
+`Workbench` or its CSS. Because the layouts are not barrel components, they
+deliver styling through a **companion CSS import** (`@kerfjs/ui/nav-stack.css`,
+the same manual pattern as `layout.css`) rather than the browser auto-condition —
+so the component's own JS import stays CSS-free and the app opts into the
+stylesheet explicitly. Node/SSR paths stay DOM- and CSS-free (device-class SSR
 resolves to the caller default without touching `matchMedia`). The package's
 bundle/CSS tree-shaking gates extend to cover the new subpaths.
 

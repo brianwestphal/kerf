@@ -276,6 +276,12 @@ describe('consumer bundle boundaries', () => {
     expect(pkg.exports['./device-class']).toMatchObject({ types: './dist/device-class.d.ts', import: './dist/device-class.js' });
     expect(pkg.exports['./device-class']).not.toHaveProperty('browser');
     expect(pkg.exports['./device-class.css']).toBeUndefined();
+    // nav-stack is an opt-in layout subpath: component + companion CSS (manual
+    // import, like layout.css), a logic-only wire helper, and no browser entry.
+    expect(pkg.exports['./nav-stack']).toMatchObject({ types: './dist/nav-stack.d.ts', import: './dist/nav-stack.js' });
+    expect(pkg.exports['./nav-stack']).not.toHaveProperty('browser');
+    expect(pkg.exports['./nav-stack.css']).toBe('./dist/styles/nav-stack.css');
+    expect(pkg.exports['./wire-nav-stack']).toMatchObject({ import: './dist/wire-nav-stack.js' });
     expect(pkg.exports['./toolbar.css']).toBe('./dist/styles/toolbar.css');
     expect(pkg.exports['./menu-action-row.css']).toBe('./dist/styles/menu-action-row.css');
     expect(pkg.exports['./sidebar.css']).toBeUndefined();
