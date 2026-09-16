@@ -24,6 +24,20 @@ test('renders the Skeleton primitive demo', async ({ page, browserName }) => {
   if (browserName === 'chromium') await demo.screenshot({ path: 'test-results/skeleton-primitive.png' });
 });
 
+test('every placeholder-supporting component demos its placeholder case', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  // Each single-component demo (AppTab via `tabs`, ValueTableRow via `value-table`)
+  // must surface its placeholder=true variant so the loading state is discoverable
+  // where the component is evaluated, not only inside the loading-inspector recipe.
+  const components = ['segmented-control', 'toolbar-text', 'menu-header', 'menu-action-row', 'menu-item', 'panel-header', 'value-table', 'select', 'state-banner', 'tabs'];
+  for (const id of components) {
+    await page.goto(`/?component=${id}`);
+    const demo = page.locator(`[data-demo="${id}"]`);
+    await expect(demo, `${id} demo is visible`).toBeVisible();
+    await expect(demo.locator('[data-placeholder="true"]').first(), `${id} demos a placeholder case`).toBeVisible();
+  }
+});
+
 test('the Loading inspector recipe composes placeholder chrome and swaps to loaded', async ({ page, browserName }) => {
   await page.setViewportSize({ width: 1280, height: 900 });
   await page.goto('/?component=recipe-loading-inspector');

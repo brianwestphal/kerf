@@ -281,6 +281,15 @@ function SegmentedControlDemo() {
         { value: 'roomy', label: 'Roomy', disabled: true, title: 'Roomy density is unavailable' },
       ]} />
     </section>
+    <section class="demo-example">
+      <MenuHeader label="Placeholder" />
+      <p class="demo-example__note">A loading switcher renders inert pill chrome with skeleton labels.</p>
+      <SegmentedControl id="segmented-placeholder" label="Loading view mode" value="" choices={[
+        { value: 'list', label: 'List view' },
+        { value: 'columns', label: 'Columns view' },
+        { value: 'settings', label: 'Settings view' },
+      ]} placeholder />
+    </section>
   </section>;
 }
 
@@ -311,6 +320,7 @@ function ToolbarTextDemo() {
     <section class="demo-example"><MenuHeader label="Large" /><ToolbarText text="Component library" size="large" /></section>
     <section class="demo-example"><MenuHeader label="Default" /><ToolbarText text="Saved just now" /></section>
     <section class="demo-example"><MenuHeader label="Small" /><ToolbarText text="read-only" size="small" /></section>
+    <section class="demo-example"><MenuHeader label="Placeholder" /><p class="demo-example__note">A loading label skeletons its text while keeping its type slot.</p><ToolbarText text="" size="large" placeholder /></section>
   </div>;
 }
 
@@ -344,6 +354,7 @@ function MenuHeaderDemo() {
     <section class="demo-example"><MenuHeader label="Duplicates" count={2} countLabel="2 duplicates" /></section>
     <section class="demo-example"><MenuHeader label="Preview" badge={<span>New</span>} /></section>
     <section class="demo-example"><MenuHeader label="Unavailable" action="log-add" actionLabel="Unavailable action" actionIcon={icon(Plus, 'plus')} actionDisabled /></section>
+    <section class="demo-example"><MenuHeader label="Attachments" count={0} countLabel="Loading attachments" placeholder /></section>
     <div id="menu-header-attachments-popover" class="demo-menu-popover" popover="auto" role="dialog" aria-label="Attachment action details">Application-owned popover content.</div>
   </div>;
 }
@@ -386,6 +397,9 @@ function MenuActionRowDemo() {
     <section class="demo-example">
       <MenuActionRow label="Unavailable trailing action" action="select-menu-action-row" itemId="disabled-trailing" selected={menuActionCurrent.value === 'disabled-trailing'} trailingAction="open-menu-action-row-actions" trailingActionLabel="Unavailable actions" trailingActionIcon={icon(MoreHorizontal, 'more-horizontal')} trailingActionDisabled trailingActionTitle="Actions unavailable" rootAttributes={{ 'data-demo-action-row': 'disabled-trailing' }} />
     </section>
+    <section class="demo-example">
+      <MenuActionRow label="Loading file" icon={icon(Folder, 'folder')} action="select-menu-action-row" itemId="placeholder" placeholder trailingAction="open-menu-action-row-actions" trailingActionLabel="Actions" trailingActionIcon={icon(MoreHorizontal, 'more-horizontal')} rootAttributes={{ 'data-demo-action-row': 'placeholder' }} />
+    </section>
     <div id="menu-action-row-popover" class="demo-menu-popover" popover="auto" role="dialog" aria-label="File actions"><button type="button" data-action="log-more">Open details</button></div>
   </div>;
 }
@@ -396,6 +410,7 @@ function MenuItemDemo() {
     <section class="demo-example"><MenuItem action="log-projects" itemId="default" label="Default item" icon={icon(Folder, 'folder')} /></section>
     <section class="demo-example"><MenuItem action="log-settings" itemId="multiline" label="A multiline item demonstrates content that wraps without clipping" icon={icon(Wrench, 'wrench')} multiline /></section>
     <section class="demo-example"><MenuItem action="disabled" itemId="disabled" label="Unavailable item" icon={icon(CircleHelp, 'circle-help')} disabled /></section>
+    <section class="demo-example"><MenuItem action="log-projects" itemId="placeholder" label="Loading item" icon={icon(Folder, 'folder')} trailing={<span>0</span>} placeholder /></section>
   </div>;
 }
 
@@ -411,6 +426,9 @@ function TabsDemo() {
   return <div class="demo-tabs demo-stack" data-demo="tabs">
     <section class="demo-example"><TabBar id="focused-app-tabs" label="Open documents">
       {(['library', 'guidelines', 'catalog'] as const).map((id) => <AppTab id={id} name={id[0]!.toUpperCase() + id.slice(1)} selected={activeTab.value === id} closable={id !== 'library'} leading={id === 'library' ? icon(PanelLeft, 'panel-left') : undefined} closeIcon={id === 'guidelines' ? icon(X, 'custom-tab-close') : undefined} rootAttributes={id === 'guidelines' ? extensionAttributes : undefined} />)}
+    </TabBar></section>
+    <section class="demo-example"><TabBar id="placeholder-app-tabs" label="Loading documents">
+      {(['first', 'second', 'third'] as const).map((id) => <AppTab id={id} name="" closable={id !== 'first'} placeholder />)}
     </TabBar></section>
   </div>;
 }
@@ -438,11 +456,15 @@ function PanelHeaderDemo() {
   return <div class="demo-stack demo-stack--labeled" data-demo="panel-header">
     <section class="demo-example"><MenuHeader label="Page title (h1 heading)" /><p class="demo-example__note">Pass <code>headingLevel</code> for a page/view title so it is a real heading landmark (<code>role="heading"</code> + <code>aria-level</code>).</p><PanelHeader title="UI foundations" titleId="panel-page-title" headingLevel={1} actions={button('New pattern', 'log-add')} /></section>
     <section class="demo-example"><MenuHeader label="Panel heading with icon and subtitle" /><p class="demo-example__note">A dialog/panel title omits <code>headingLevel</code> and is instead referenced by <code>aria-labelledby</code> pointing at its <code>titleId</code>.</p><PanelHeader title="Package details" titleId="panel-standalone-title" summary="Production-backed primitives with explicit contracts." summaryId="panel-standalone-summary" icon={icon(Wrench, 'wrench')} actions={button('Done', 'log-done')} /></section>
+    <section class="demo-example"><MenuHeader label="Placeholder" /><p class="demo-example__note">While a record loads, the header keeps its chrome and skeletons the title and subtitle.</p><PanelHeader title="Package details" titleId="panel-placeholder-title" summary="Production-backed primitives with explicit contracts." summaryId="panel-placeholder-summary" icon={icon(Wrench, 'wrench')} placeholder /></section>
   </div>;
 }
 
 function ValueTableDemo() {
-  return <div class="demo-value-table demo-stack" data-demo="value-table"><section class="demo-example"><ValueTable label="Package metadata"><ValueTableRow label="Package" value="@kerfjs/ui" /><ValueTableRow label="Rendering" value="Kerf SafeHtml" icon={icon(Wrench, 'wrench')} /><ValueTableRow label="Styles" value="Explicit CSS subpaths" /></ValueTable></section></div>;
+  return <div class="demo-value-table demo-stack demo-stack--labeled" data-demo="value-table">
+    <section class="demo-example"><MenuHeader label="Populated" /><ValueTable label="Package metadata"><ValueTableRow label="Package" value="@kerfjs/ui" /><ValueTableRow label="Rendering" value="Kerf SafeHtml" icon={icon(Wrench, 'wrench')} /><ValueTableRow label="Styles" value="Explicit CSS subpaths" /></ValueTable></section>
+    <section class="demo-example"><MenuHeader label="Placeholder" /><p class="demo-example__note">Rows accept <code>placeholder</code> to skeleton their values while a record loads.</p><ValueTable label="Loading metadata"><ValueTableRow label="Package" value="" placeholder /><ValueTableRow label="Rendering" value="" icon={icon(Wrench, 'wrench')} placeholder /><ValueTableRow label="Styles" value="" placeholder /></ValueTable></section>
+  </div>;
 }
 
 function ResizeDemo() {
@@ -461,6 +483,11 @@ function SelectDemo() {
         { value: 'explicit', label: 'Explicit', icon: Wrench, iconName: 'wrench', group: 'Control', separatorBefore: true },
       ]} renderSelected={(choice) => <span class="demo-select-selected">{choice.icon ? <LucideIcon icon={choice.icon} name={choice.iconName ?? choice.label.toLowerCase().replaceAll(' ', '-')} /> : null}<span>{choice.label}</span></span>} />
       <p class="demo-example__note">Live value: <strong data-select-value>{selectedChoice.value}</strong></p>
+    </section>
+    <section class="demo-example">
+      <MenuHeader label="Placeholder" />
+      <p class="demo-example__note">Loading renders a static, inert box in place of the interactive control.</p>
+      <Select name="select-placeholder" value="" label="Rendering balance" ariaLabel="Rendering balance" choices={[]} placeholder />
     </section>
   </div>;
 }
@@ -485,6 +512,7 @@ function StateBannerDemo() {
   return <div class="demo-state-banner-grid demo-stack demo-stack--labeled" data-demo="state-banner">
     {specimens.map(({ tone, title }) => <section class="demo-example"><MenuHeader label={tone} /><StateBanner tone={tone} urgency={tone === 'danger' ? 'alert' : 'status'} title={title} detail="Semantic defaults remain overridable." icon={tone === 'danger' ? icon(CircleHelp, 'circle-help') : icon(Check, 'check')} action={button('Act', `log-${tone}`)} /></section>)}
     <section class="demo-example"><MenuHeader label="Scoped override" /><StateBanner className="demo-state-banner--override" tone="info" title="Consumer palette" detail="Only this instance uses the override." icon={icon(Check, 'check')} /></section>
+    <section class="demo-example"><MenuHeader label="Placeholder" /><StateBanner tone="neutral" title="" detail="" placeholder /></section>
   </div>;
 }
 
