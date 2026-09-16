@@ -125,6 +125,8 @@
 }
 .recipe-master-detail__detail {
   min-width: 0;
+}
+.recipe-master-detail__body {
   padding-block: var(--kui-layout-item-gap);
 }
 .recipe-master-detail__title {

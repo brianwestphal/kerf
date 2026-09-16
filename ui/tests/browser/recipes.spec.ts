@@ -135,8 +135,8 @@ test('keeps project dialog content on intentional wide and narrow gutters', asyn
       return {
         actionInset: actions.left - detail.left,
         archiveInset: archive.left - actions.left,
-        headerEndInset: pane.right - header.right,
-        headerStartInset: header.left - pane.left,
+        headerEndInset: detail.right - header.right,
+        headerStartInset: header.left - detail.left,
         masterDetailEndInset: pane.right - masterDetail.right,
         tableEndInset: detail.right - table.right,
         tableStartInset: table.left - detail.left,
