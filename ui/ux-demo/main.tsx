@@ -39,7 +39,10 @@ import type { RecipeController } from './recipes/types.js';
 
 const app = document.querySelector<HTMLElement>('#app');
 if (!app) throw new Error('Missing #app');
-const kerfLogoUrl = new URL('../../assets/logo.svg', import.meta.url).href;
+// `?no-inline` keeps the logo an emitted file URL instead of a `data:image/svg+xml`
+// URI: kerf's URL screening drops script-capable SVG data URIs from `src`, which
+// would blank the mark once the asset is small enough for Vite to inline it.
+const kerfLogoUrl = new URL('../../assets/logo.svg?no-inline', import.meta.url).href;
 
 const requested = new URLSearchParams(location.search).get('component');
 const initialDemo = isCatalogId(requested) ? requested : catalog[0].id;
