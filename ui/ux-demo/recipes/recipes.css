@@ -206,8 +206,11 @@
   gap: var(--kui-layout-content-gap);
 }
 .recipe-compact-toolbar__guide {
+  /* Span the toolbar's full width instead of the 8px content-item inset — under a
+     full-bleed toolbar/divider the inset read as the boxes floating too far in. */
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin-inline: 0;
   gap: var(--kui-layout-control-gap);
 }
 .recipe-compact-toolbar__guide > div {
