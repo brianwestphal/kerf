@@ -1757,3 +1757,50 @@ button {
     forced-color-adjust: auto;
   }
 }
+
+/* Non-composition (single-component) demos render each component directly on the
+   transparency grid: strip the card chrome from the demo wrappers so the grid
+   shows through, and let the debug overlay mark each component's bounds/margins. */
+.catalog-canvas[data-demo-mode="component"]
+  :is(
+    .demo-frame,
+    .demo-feedback,
+    .demo-control-stack,
+    .demo-menu,
+    .demo-dialog,
+    .demo-dialog--standalone,
+    .demo-value-table,
+    .demo-tab-bar-frame,
+    .demo-text-variants,
+    .demo-select-selected
+  ) {
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
+}
+.catalog-canvas[data-demo-mode="component"] .demo-value-table {
+  padding: 0;
+}
+
+/* Debug overlay: a gray dashed outline at each transparent component's outer
+   bound, and semi-transparent orange bands over any non-zero default margin
+   (the convention Chrome/Safari devtools use for margins). */
+.demo-overlay {
+  position: absolute;
+  z-index: 3;
+  pointer-events: none;
+  inset: 0;
+}
+.demo-overlay__bound,
+.demo-overlay__margin {
+  position: absolute;
+  top: 0;
+  left: 0;
+  box-sizing: border-box;
+}
+.demo-overlay__bound {
+  border: 1px dashed color-mix(in srgb, var(--kui-color-text) 40%, transparent);
+}
+.demo-overlay__margin {
+  background: color-mix(in srgb, #f6a94c 55%, transparent);
+}

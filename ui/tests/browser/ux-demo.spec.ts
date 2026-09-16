@@ -226,6 +226,28 @@ test('hovers a lone control-group button as a whole, but keeps inner highlights 
   })).not.toBe(transparent);
 });
 
+test('renders non-composition demos on the grid with a bounds/margin overlay, and leaves composition demos alone', async ({ page, browserName }) => {
+  await page.setViewportSize({ width: 1200, height: 900 });
+
+  // A single-component demo: the wrapper card is stripped (transparent) so the
+  // component sits on the grid, and the overlay marks each component's outer
+  // bound (gray) and non-zero default margins (orange).
+  await page.goto('/?component=dialog-header');
+  const canvas = page.locator('.catalog-canvas');
+  await expect(canvas).toHaveAttribute('data-demo-mode', 'component');
+  const wrapper = page.locator('.demo-dialog--standalone');
+  await expect.poll(() => wrapper.evaluate((el) => window.getComputedStyle(el).backgroundColor)).toBe('rgba(0, 0, 0, 0)');
+  const overlay = page.locator('[data-demo-overlay]');
+  await expect.poll(() => overlay.locator('.demo-overlay__bound').count()).toBe(1);
+  await expect.poll(() => overlay.locator('.demo-overlay__margin').count()).toBe(2); // the dialog header's 8px inline margins
+  if (browserName === 'chromium') await canvas.screenshot({ path: 'test-results/component-demo-overlay.png' });
+
+  // A composition demo keeps its layout and gets no overlay.
+  await page.goto('/?component=menu');
+  await expect(canvas).toHaveAttribute('data-demo-mode', 'composition');
+  await expect.poll(() => overlay.locator('.demo-overlay__bound, .demo-overlay__margin').count()).toBe(0);
+});
+
 test('aligns the layout demo action buttons with the card border above them', async ({ page, browserName }) => {
   await page.setViewportSize({ width: 1200, height: 900 });
   await page.goto('/?component=layout');

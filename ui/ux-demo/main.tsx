@@ -32,6 +32,7 @@ import { delegateActions } from 'kerfjs/actions';
 import { ArrowDownAZ, ArrowRight, Bell, Check, ChevronLeft, ChevronRight, CircleHelp, Columns3, Contrast, ExternalLink, Folder, GitCompare, GripVertical, Inbox, List, Moon, MoreHorizontal, PanelLeft, PanelLeftClose, PanelLeftOpen, Pin, Plus, Search, Settings, SlidersHorizontal, Star, StickyNote, Sun, Wrench, X, ZapOff } from 'lucide';
 
 import { catalog, catalogEntriesUsing, type CatalogEntry, type CatalogId, catalogRepositoryHref, catalogSections, findCatalogEntry, isCatalogId, type KerfCatalogId, webAwesomeCatalog, type WebAwesomeCatalogId, webAwesomeCatalogSections } from './catalog.js';
+import { createComponentOverlay } from './component-overlay.js';
 import { applyDemoTheme, type DemoTheme, oppositeDemoTheme, preferredDemoTheme } from './demo-theme.js';
 import { isRecipeId, type RecipeId, recipeLoaders } from './recipes/loaders.js';
 import type { RecipeController } from './recipes/types.js';
@@ -597,7 +598,7 @@ mount(app, () => {
         <p class="catalog-header__description kui-content-item">{selected.description}</p>
       </header>
       <section class="catalog-stage kui-pane__content" aria-label={`${selected.name} preview`} data-recipe-notes-visible={String(isRecipe && recipeNotesVisible.value)}>
-        <div class="catalog-canvas"><Stage /></div>
+        <div class="catalog-canvas" data-demo-mode={selected.source === 'kerf' && selected.kind === 'component' ? 'component' : 'composition'}><Stage /><div class="demo-overlay" data-demo-overlay data-morph-skip-children aria-hidden="true" /></div>
       </section>
       <footer class="catalog-footer kui-pane__footer">
         <div class="catalog-footer__status"><output class="catalog-log" aria-live="polite">{actionLog.value}</output>{selected.id === 'resize' && <span class="catalog-footer__metric"><span>Committed width</span><strong data-region-size>{regionSize.value}px</strong></span>}<span>{selected.source === 'webawesome' ? 'Web Awesome component · Kerf theme' : selected.kind === 'component' ? 'Kerf first-class component · production CSS' : 'Kerf composition · production CSS'}</span></div>
@@ -781,6 +782,18 @@ const stopSelect = delegate(app, 'change', 'wa-select', (_event, element) => {
 // Wire the active recipe's NavStack (slide animation + back control). The
 // nav-stack element persists across pushes/pops, so we only re-wire when the
 // selected recipe (or its freshly-loaded controller) changes.
+const overlayCanvas = app.querySelector<HTMLElement>('.catalog-canvas');
+const overlayLayer = app.querySelector<HTMLElement>('[data-demo-overlay]');
+const componentOverlay = overlayCanvas && overlayLayer ? createComponentOverlay(overlayCanvas, overlayLayer) : null;
+const stopOverlayEffect = effect(() => {
+  void recipeRevision.value;
+  void effectiveTheme.value;
+  const id = selectedDemo.value;
+  window.requestAnimationFrame(() => {
+    const entry = findCatalogEntry(id);
+    componentOverlay?.update(entry?.source === 'kerf' && entry.kind === 'component');
+  });
+});
 let stopRecipeNav: (() => void) | null = null;
 const stopRecipeNavEffect = effect(() => {
   void recipeRevision.value;
@@ -894,4 +907,4 @@ const syncSystemTheme = (event: MediaQueryListEvent): void => {
 };
 systemDarkTheme.addEventListener('change', syncSystemTheme);
 
-window.addEventListener('pagehide', () => { stopActions(); stopResize(); stopSelect(); stopRecipeNav?.(); stopRecipeNavEffect(); stopRecipeChanges(); stopRecipeInputs(); stopRecipeDialogs(); stopTokenSearch(); stopToolbarFind(); stopTokenSearchSubmits(); stopToolbarFindClearPointer(); stopToolbarFindFocus(); stopMenuItemDragOver(); stopMenuItemDrop(); stopMenuActionRowDoubleClick(); stopMenuActionRowContextMenu(); stopRelationships(); stopAnimationSelects(); stopAnimationRanges(); stopAnimationEvents.forEach((dispose) => dispose()); stopIntersectionObserver(); stopMutationObserver(); stopResizeObserver(); stopTabBars(); systemDarkTheme.removeEventListener('change', syncSystemTheme); }, { once: true });
+window.addEventListener('pagehide', () => { stopActions(); stopResize(); stopSelect(); componentOverlay?.dispose(); stopOverlayEffect(); stopRecipeNav?.(); stopRecipeNavEffect(); stopRecipeChanges(); stopRecipeInputs(); stopRecipeDialogs(); stopTokenSearch(); stopToolbarFind(); stopTokenSearchSubmits(); stopToolbarFindClearPointer(); stopToolbarFindFocus(); stopMenuItemDragOver(); stopMenuItemDrop(); stopMenuActionRowDoubleClick(); stopMenuActionRowContextMenu(); stopRelationships(); stopAnimationSelects(); stopAnimationRanges(); stopAnimationEvents.forEach((dispose) => dispose()); stopIntersectionObserver(); stopMutationObserver(); stopResizeObserver(); stopTabBars(); systemDarkTheme.removeEventListener('change', syncSystemTheme); }, { once: true });
