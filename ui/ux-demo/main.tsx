@@ -619,7 +619,7 @@ function DemoRelationships({ entry }: { entry: CatalogEntry }) {
     ...usedBy.map((related) => ({ value: related.id, label: related.name, group: 'Used by' })),
   ];
   if (choices.length === 0) return null;
-  return <div class="catalog-relationships" data-relationships-for={entry.id}><ToolbarControlGroup className="catalog-footer__related" label="Related components"><Select className="catalog-relationships__select" name="related-component" value="" label="Related components" placeholderText="Related components" choices={choices} /></ToolbarControlGroup></div>;
+  return <div class="catalog-relationships" data-relationships-for={entry.id}><ToolbarControlGroup className="catalog-footer__related" label="Related components"><Select className="catalog-relationships__select" name="related-component" value="" label="Related components" placeholderText="Related components" fitMenu choices={choices} /></ToolbarControlGroup></div>;
 }
 
 function selectDemo(id: string): void {
