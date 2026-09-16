@@ -472,8 +472,8 @@ export const generatedKerfCatalog = [
     "documentation": "ui/docs/recipes.md#workspace-header"
   },
   {
-    "id": "recipe-master-detail-dialog",
-    "name": "Master-detail dialog",
+    "id": "recipe-list-detail-dialog",
+    "name": "List-detail dialog",
     "category": "Recipes",
     "kind": "recipe",
     "source": "kerf",
@@ -486,8 +486,8 @@ export const generatedKerfCatalog = [
       "wa-dialog",
       "wa-button"
     ],
-    "demoSource": "ui/ux-demo/recipes/master-detail-dialog.tsx",
-    "documentation": "ui/docs/recipes.md#master-detail-dialog"
+    "demoSource": "ui/ux-demo/recipes/list-detail-dialog.tsx",
+    "documentation": "ui/docs/recipes.md#list-detail-dialog"
   },
   {
     "id": "recipe-composer-form",

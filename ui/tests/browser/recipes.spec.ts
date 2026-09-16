@@ -1,7 +1,7 @@
 import type { Locator, Page } from '@playwright/test';
 import { expect, test } from '@playwright/test';
 
-const recipeIds = ['recipe-app-shell', 'recipe-navigation-sidebar', 'recipe-workspace-header', 'recipe-master-detail-dialog', 'recipe-composer-form', 'recipe-list-workspace-states', 'recipe-compact-toolbar', 'recipe-navigation-stack'] as const;
+const recipeIds = ['recipe-app-shell', 'recipe-navigation-sidebar', 'recipe-workspace-header', 'recipe-list-detail-dialog', 'recipe-composer-form', 'recipe-list-workspace-states', 'recipe-compact-toolbar', 'recipe-navigation-stack'] as const;
 
 async function openRecipe(page: Page, id: typeof recipeIds[number]) {
   await page.goto(`/?component=${id}`);
@@ -72,24 +72,24 @@ test('keeps recipe geometry responsive at narrow, intermediate, and 200% zoom la
       await expect(recipe.locator('[data-component="value-table"][aria-label="Selected task"]')).toBeVisible();
     }
     if (id === 'recipe-compact-toolbar') await expectToolbarZonesNotToOverlap(recipe);
-    if (id === 'recipe-master-detail-dialog') {
+    if (id === 'recipe-list-detail-dialog') {
       const dialog = page.locator('wa-dialog.recipe-dialog');
       await activateDialogAndWaitForShow(dialog, () => recipe.getByRole('button', { name: 'Open project details' }).click());
-      if (browserName === 'chromium') await page.screenshot({ path: 'test-results/recipe-master-detail-dialog-narrow-open.png' });
+      if (browserName === 'chromium') await page.screenshot({ path: 'test-results/recipe-list-detail-dialog-narrow-open.png' });
       await page.keyboard.press('Escape');
     }
-    if (browserName === 'chromium' && ['recipe-app-shell', 'recipe-master-detail-dialog', 'recipe-compact-toolbar'].includes(id)) await recipe.screenshot({ path: `test-results/${id}-narrow-dark.png` });
+    if (browserName === 'chromium' && ['recipe-app-shell', 'recipe-list-detail-dialog', 'recipe-compact-toolbar'].includes(id)) await recipe.screenshot({ path: `test-results/${id}-narrow-dark.png` });
   }
 
   await page.setViewportSize({ width: 900, height: 900 });
   const intermediateShell = await openRecipe(page, 'recipe-app-shell');
   expect(await intermediateShell.locator('.kui-pane__content').count()).toBe(3);
   expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
-  const intermediateDialogRecipe = await openRecipe(page, 'recipe-master-detail-dialog');
+  const intermediateDialogRecipe = await openRecipe(page, 'recipe-list-detail-dialog');
   const intermediateDialog = page.locator('wa-dialog.recipe-dialog');
   await activateDialogAndWaitForShow(intermediateDialog, () => intermediateDialogRecipe.getByRole('button', { name: 'Open project details' }).click());
   expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
-  if (browserName === 'chromium') await page.screenshot({ path: 'test-results/recipe-master-detail-dialog-intermediate-open.png' });
+  if (browserName === 'chromium') await page.screenshot({ path: 'test-results/recipe-list-detail-dialog-intermediate-open.png' });
   await page.keyboard.press('Escape');
 
   await page.setViewportSize({ width: 720, height: 900 });
@@ -115,22 +115,22 @@ test('keeps recipe geometry responsive at narrow, intermediate, and 200% zoom la
 test('keeps project dialog content on intentional wide and narrow gutters', async ({ page }) => {
   for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 }]) {
     await page.setViewportSize(viewport);
-    const recipe = await openRecipe(page, 'recipe-master-detail-dialog');
+    const recipe = await openRecipe(page, 'recipe-list-detail-dialog');
     const dialog = page.locator('wa-dialog.recipe-dialog');
     await activateDialogAndWaitForShow(dialog, () => recipe.getByRole('button', { name: 'Open project details' }).click());
     expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
 
     const geometry = await dialog.evaluate((root) => {
       const bounds = (selector: string) => root.querySelector<HTMLElement>(selector)!.getBoundingClientRect();
-      const title = root.querySelector<HTMLElement>('.recipe-master-detail__title')!;
+      const title = root.querySelector<HTMLElement>('.recipe-list-detail__title')!;
       const titleRange = document.createRange();
       titleRange.selectNodeContents(title);
       const pane = bounds('.recipe-dialog__pane');
       const header = bounds('.kui-panel-header');
-      const masterDetail = bounds('.recipe-master-detail');
-      const detail = bounds('.recipe-master-detail__detail');
+      const masterDetail = bounds('.recipe-list-detail');
+      const detail = bounds('.recipe-list-detail__detail');
       const table = bounds('.kui-value-table');
-      const actions = bounds('.recipe-master-detail__actions');
+      const actions = bounds('.recipe-list-detail__actions');
       const archive = bounds('[data-recipe-command="archive"]');
       return {
         actionInset: actions.left - detail.left,
@@ -388,12 +388,12 @@ test('supports keyboard shell/sidebar controls and controlled toolbar interactio
 });
 
 test('runs dialog focus lifecycle, form validation, and every list transition', async ({ page, browserName }) => {
-  const dialogRecipe = await openRecipe(page, 'recipe-master-detail-dialog');
+  const dialogRecipe = await openRecipe(page, 'recipe-list-detail-dialog');
   const launcher = dialogRecipe.getByRole('button', { name: 'Open project details' });
   await launcher.focus();
   const dialog = page.locator('wa-dialog.recipe-dialog');
   await activateDialogAndWaitForShow(dialog, () => launcher.press('Enter'));
-  if (browserName === 'chromium') await page.screenshot({ path: 'test-results/recipe-master-detail-dialog-wide-open.png' });
+  if (browserName === 'chromium') await page.screenshot({ path: 'test-results/recipe-list-detail-dialog-wide-open.png' });
   await page.keyboard.press('Escape');
   await expect(dialog).toHaveJSProperty('open', false);
   await expect(launcher).toBeFocused();

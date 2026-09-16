@@ -261,7 +261,7 @@ implementation classes.
 ## 21.6 Production composition recipes
 
 Seven task-oriented recipes bridge primitives and product adapters: a resizable
-application shell, navigation sidebar, workspace header, master-detail dialog,
+application shell, navigation sidebar, workspace header, list-detail dialog,
 composer form, list-state lifecycle, and compact mixed-control toolbar. They
 are lazy catalog modules rather than new runtime exports. Each uses public
 component subpaths plus `layout.css`, declares what the recipe
@@ -293,7 +293,7 @@ shortcuts, focus policy, actions, and copy.
 `ui/ai-regressions/` is an internal authoring harness, not a shipped component
 surface or public comparison. Seven neutral, task-shaped prompts cover the
 application shell, compact exclusive choice, navigation composition, workspace
-states, master-detail dialog, tokenized search, and a recurring concept the
+states, list-detail dialog, tokenized search, and a recurring concept the
 package does not provide. Their private oracles check actual AST-proven imports
 and invocations, required wiring capture, semantic layout classes and owners,
 the catalog's exact public-class CSS boundary, accessibility, and honest

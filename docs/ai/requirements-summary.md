@@ -1,7 +1,7 @@
 # Requirements summary — kerf
 
 `@kerfjs/ui` ships seven production-backed reference recipes (application
-shell, sidebar, workspace header, master-detail dialog, composer form,
+shell, sidebar, workspace header, list-detail dialog, composer form,
 list-state lifecycle, and compact toolbar). They are lazy catalog compositions,
 not public monolithic components, with responsive, keyboard, state,
 theme/contrast/motion, zoom, drift, and ownership coverage. Source of truth:

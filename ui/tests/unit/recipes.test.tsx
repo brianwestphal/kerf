@@ -4,8 +4,8 @@ import { mountCommandPaletteAdapter } from '../../docs/examples/command-palette-
 import { createRecipe as createAppShell } from '../../ux-demo/recipes/app-shell.js';
 import { createRecipe as createCompactToolbar } from '../../ux-demo/recipes/compact-toolbar.js';
 import { createRecipe as createComposerForm } from '../../ux-demo/recipes/composer-form.js';
+import { createRecipe as createMasterDetail } from '../../ux-demo/recipes/list-detail-dialog.js';
 import { createRecipe as createListWorkspace } from '../../ux-demo/recipes/list-workspace-states.js';
-import { createRecipe as createMasterDetail } from '../../ux-demo/recipes/master-detail-dialog.js';
 import { mountRecipe } from '../../ux-demo/recipes/mount-recipe.js';
 import { createRecipe as createNavigationSidebar } from '../../ux-demo/recipes/navigation-sidebar.js';
 import { createRecipe as createWorkspaceHeader } from '../../ux-demo/recipes/workspace-header.js';
@@ -20,7 +20,7 @@ const target = (data: Record<string, string> = {}) => {
 describe('production composition recipes', () => {
   it('renders every stable recipe marker from a per-instance factory', () => {
     const factories = [createAppShell, createNavigationSidebar, createWorkspaceHeader, createMasterDetail, createComposerForm, createListWorkspace, createCompactToolbar];
-    const ids = ['recipe-app-shell', 'recipe-navigation-sidebar', 'recipe-workspace-header', 'recipe-master-detail-dialog', 'recipe-composer-form', 'recipe-list-workspace-states', 'recipe-compact-toolbar'];
+    const ids = ['recipe-app-shell', 'recipe-navigation-sidebar', 'recipe-workspace-header', 'recipe-list-detail-dialog', 'recipe-composer-form', 'recipe-list-workspace-states', 'recipe-compact-toolbar'];
     factories.forEach((factory, index) => expect(html(factory(() => {}).render())).toContain(`data-recipe="${ids[index]}"`));
   });
 

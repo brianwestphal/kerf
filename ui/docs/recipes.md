@@ -60,9 +60,9 @@ no custom `actionIcon` is needed; ordinary navigation rows stay chevron-free.
 overflow, and primary actions. The app owns authorization and command policy;
 controls relocate without changing focus order.
 
-## Master-detail dialog
+## List-detail dialog
 
-[Open the recipe](../ux-demo/?component=recipe-master-detail-dialog) · [TSX source](../ux-demo/recipes/master-detail-dialog.tsx)
+[Open the recipe](../ux-demo/?component=recipe-list-detail-dialog) · [TSX source](../ux-demo/recipes/list-detail-dialog.tsx)
 
 The production Web Awesome dialog owns modal focus and Escape; the thin recipe
 adapter restores the invoking control consistently after the hide event.

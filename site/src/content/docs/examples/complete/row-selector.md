@@ -1,6 +1,6 @@
 ---
 title: Row selector
-description: Master-detail select-row list. Fine-grained signal bindings — the selected row's class and the detail pane update without a render re-run or a list reconcile.
+description: List-detail select-row list. Fine-grained signal bindings — the selected row's class and the detail pane update without a render re-run or a list reconcile.
 ---
 
 <div class="app-cta">
@@ -10,7 +10,7 @@ description: Master-detail select-row list. Fine-grained signal bindings — the
 
 [![Animated preview: clicking rows in a host list; the highlight and detail pane follow while the "list renders" counter stays at 1](/kerf/demos/row-selector.svg)](/kerf/run/row-selector/)
 
-A 120-host list with a master-detail layout. Clicking a host highlights its row and fills the detail pane — but the list is rendered **once**. The "list renders" counter in the header stays at `1` no matter how many rows you click; it only ticks when you hit **Regenerate**, which swaps the dataset and forces an actual re-render.
+A 120-host list with a list-detail layout. Clicking a host highlights its row and fills the detail pane — but the list is rendered **once**. The "list renders" counter in the header stays at `1` no matter how many rows you click; it only ticks when you hit **Regenerate**, which swaps the dataset and forces an actual re-render.
 
 **What to look at:**
 

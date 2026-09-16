@@ -64,16 +64,17 @@ test('omits the removed command-palette recipe and safely falls back from its st
     await page.goto('/?component=recipe-compact-toolbar');
     const recipes = page.locator('.catalog-group').filter({ has: page.getByText('Recipes', { exact: true }) });
     const rows = recipes.locator('[data-component="list-item"]');
-    await expect(rows).toHaveCount(8);
+    await expect(rows).toHaveCount(9);
     await expect(rows).toHaveText([
       /Desktop application shell/,
       /Navigation sidebar/,
       /Workspace header/,
-      /Master-detail dialog/,
+      /List-detail dialog/,
       /Composer form/,
       /List workspace states/,
       /Compact toolbar choices and actions/,
       /Navigation stack/,
+      /Loading inspector/,
     ]);
     await expect(page.locator('[data-item-id="recipe-command-palette"]')).toHaveCount(0);
     await expect(page.locator('[data-recipe="recipe-command-palette"]')).toHaveCount(0);
@@ -398,9 +399,9 @@ test('links catalog details to their first-party source and existing guidance', 
   ] as const) {
     const isRecipe = layout.name === 'narrow-recipe' || layout.name === 'zoom-200';
     await page.setViewportSize({ width: layout.width, height: layout.height });
-    await page.goto(`/?component=${isRecipe ? 'recipe-master-detail-dialog' : 'toolbar'}`);
+    await page.goto(`/?component=${isRecipe ? 'recipe-list-detail-dialog' : 'toolbar'}`);
     if (layout.rootFontSize) await page.locator('html').evaluate((element, size) => { element.style.fontSize = size; }, layout.rootFontSize);
-    const resources = page.getByRole('navigation', { name: `Reference links for ${isRecipe ? 'Master-detail dialog' : 'Toolbar'}` });
+    const resources = page.getByRole('navigation', { name: `Reference links for ${isRecipe ? 'List-detail dialog' : 'Toolbar'}` });
     const source = resources.locator('[data-catalog-resource="source"]');
     const guidance = resources.locator('[data-catalog-resource="guidance"]');
     await expect(resources).toBeVisible();
@@ -489,7 +490,7 @@ test('aligns PanelHeader identity, actions, and subtitle across layout, theme, a
     if (layout.dark) await page.locator('[data-action="toggle-theme"]').click();
 
     // The second example is the panel/dialog heading with an icon, subtitle, and action.
-    const preferred = page.locator('[data-component="panel-header"]', { has: page.locator('.kui-panel-header__icon') });
+    const preferred = page.locator('[data-component="panel-header"]:not([data-placeholder="true"])', { has: page.locator('.kui-panel-header__icon') });
     const toolbar = preferred.locator(':scope > [data-component="toolbar"]');
     const icon = toolbar.locator(':scope > .kui-toolbar__leading > .kui-panel-header__icon');
     const glyph = icon.locator('svg');
@@ -903,7 +904,7 @@ test('keeps ValueTableRow block padding root-scaled and separators aligned', asy
     if (layout.name === 'compact-inline') {
       await demo.evaluate((element) => { (element as HTMLElement).style.setProperty('--kui-layout-item-padding', '.25rem'); });
     }
-    const rows = demo.locator('.kui-value-table__row');
+    const rows = demo.locator('.kui-value-table__row:not([data-placeholder="true"])');
     await expect(rows).toHaveCount(3);
 
     const geometry = await rows.evaluateAll((elements) => elements.map((element) => {
@@ -1610,8 +1611,8 @@ test('catalog routes every production component family and supports its stateful
   await expect(page.locator('html')).toHaveClass(/demo-reduced-motion/);
 
   await page.locator('.catalog-sidebar [data-item-id="tabs"]').click();
-  await expect(page.locator('[data-demo="tabs"] [data-component="tab-bar"]')).toHaveAttribute('data-tab-bar-id', 'focused-app-tabs');
-  await expect(page.locator('[data-demo="tabs"] [data-kui-tab-list]')).toHaveAttribute('aria-label', 'Open documents');
+  await expect(page.locator('[data-demo="tabs"] [data-component="tab-bar"]').first()).toHaveAttribute('data-tab-bar-id', 'focused-app-tabs');
+  await expect(page.locator('[data-demo="tabs"] [data-kui-tab-list]').first()).toHaveAttribute('aria-label', 'Open documents');
   const guidelinesRoot = page.locator('[data-demo="tabs"] .kui-app-tab[data-tab-id="guidelines"]');
   await expect(guidelinesRoot).toHaveAttribute('data-demo-tab-source', 'workspace');
   await expect(guidelinesRoot).not.toHaveAttribute('data-action');
@@ -2569,9 +2570,9 @@ test('renders controlled toolbar, rounded, and pill SegmentedControl variants', 
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/?component=segmented-control');
   const demo = page.getByRole('region', { name: 'SegmentedControl variants' });
-  const controls = demo.locator('[data-component="segmented-control"]');
+  const controls = demo.locator('[data-component="segmented-control"]:not([data-placeholder="true"])');
   await expect(controls).toHaveCount(3);
-  await expect(demo.locator('.kui-list-header__label')).toHaveText(['Toolbar', 'Rounded rectangle', 'Pill']);
+  await expect(demo.locator('.kui-list-header__label')).toHaveText(['Toolbar', 'Rounded rectangle', 'Pill', 'Placeholder']);
 
   const toolbar = demo.locator('[data-segmented-control-id="standalone-toolbar-view"]');
   const rounded = demo.locator('[data-segmented-control-id="inspector-section"]');
@@ -2630,8 +2631,8 @@ test('renders controlled toolbar, rounded, and pill SegmentedControl variants', 
 test('ships semantic banner palettes with scoped overrides', async ({ page, browserName }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/?component=state-banner');
-  const banners = page.locator('[data-demo="state-banner"] [data-component="state-banner"]');
-  const articles = page.locator('[data-demo="state-banner"] .demo-example');
+  const banners = page.locator('[data-demo="state-banner"] [data-component="state-banner"]:not([data-placeholder="true"])');
+  const articles = page.locator('[data-demo="state-banner"] .demo-example:not(:has([data-placeholder="true"]))');
   await expect(banners).toHaveCount(6);
   await expect(articles).toHaveCount(6);
   const labelIconOffsets = () => articles.evaluateAll((nodes) => nodes.map((node) => {

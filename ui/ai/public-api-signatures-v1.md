@@ -471,7 +471,7 @@ interface SplitViewProps {
     className?: string;
 }
 /**
- * A list-detail (master-detail) split. On roomy classes it shows both panes side
+ * A list-detail split. On roomy classes it shows both panes side
  * by side with an optional resizable separator; on compact classes it collapses
  * to a `NavStack` (list → detail). See `docs/23-app-layouts.md` §3.2. Compose the
  * resizable wiring with `wireResizableRegions` and the compact back with

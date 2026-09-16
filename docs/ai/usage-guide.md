@@ -150,7 +150,7 @@ its action at the root, read `data-segment-value`, update the controlled value,
 and keep all choices in normal Tab order.
 
 When several primitives form a shell, sidebar, workspace header,
-master-detail dialog, composer, list-state surface, or mixed-control toolbar,
+list-detail dialog, composer, list-state surface, or mixed-control toolbar,
 start from `ui/docs/recipes.md`. The runnable recipes use only public production
 subpaths and semantic layout owners. Preserve the included primitives and
 replace only application copy, state, permissions, persistence, and transport.

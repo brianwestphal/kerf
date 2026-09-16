@@ -1,6 +1,6 @@
 # Split view (list-detail)
 
-`@kerfjs/ui/split-view` is a list-detail (master-detail) layout: a list and a
+`@kerfjs/ui/split-view` is a list-detail layout: a list and a
 detail side by side on roomy screens, collapsing to a `NavStack` (list → detail)
 on compact ones. One of the opt-in app layouts (see
 [`../../docs/23-app-layouts.md`](../../docs/23-app-layouts.md)).

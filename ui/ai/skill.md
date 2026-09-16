@@ -38,7 +38,7 @@ Quick routing:
 | Key/value facts | `ValueTable` with `ValueTableRow` | Use rows with `icon` only when the optional 24px leading visual adds context. |
 | Command search | Application-local semantics using shared layout vocabulary | No runtime component or production recipe is exported; the app owns behavior, policy, and copy. |
 
-For a complete shell, sidebar, workspace header, master-detail dialog, composer
+For a complete shell, sidebar, workspace header, list-detail dialog, composer
 form, list-state lifecycle, or mixed-control toolbar, start from the runnable
 reference in [`docs/recipes.md`](../docs/recipes.md). Preserve its production
 primitives and semantic ownership; replace application state, policy, and copy.

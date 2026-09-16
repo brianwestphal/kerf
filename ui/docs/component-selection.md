@@ -34,7 +34,7 @@ application boundary:
 | Desktop application shell | [Catalog](../ux-demo/) · `?component=recipe-app-shell` |
 | Navigation sidebar | [Catalog](../ux-demo/) · `?component=recipe-navigation-sidebar` |
 | Workspace header | [Catalog](../ux-demo/) · `?component=recipe-workspace-header` |
-| Master-detail dialog | [Catalog](../ux-demo/) · `?component=recipe-master-detail-dialog` |
+| List-detail dialog | [Catalog](../ux-demo/) · `?component=recipe-list-detail-dialog` |
 | Composer form | [Catalog](../ux-demo/) · `?component=recipe-composer-form` |
 | List workspace states | [Catalog](../ux-demo/) · `?component=recipe-list-workspace-states` |
 | Compact toolbar choices and actions | [Catalog](../ux-demo/) · `?component=recipe-compact-toolbar` |

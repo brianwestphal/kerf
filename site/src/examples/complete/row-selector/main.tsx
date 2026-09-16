@@ -1,4 +1,4 @@
-// Master-detail row selector — the "select-row, no re-render" win of kerf's
+// List-detail row selector — the "select-row, no re-render" win of kerf's
 // fine-grained signal bindings.
 //
 // The list renders ONCE. Each row's `class` is a `computed()` handed straight

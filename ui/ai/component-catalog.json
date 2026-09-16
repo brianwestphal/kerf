@@ -4473,8 +4473,8 @@
       }
     },
     {
-      "id": "recipe-master-detail-dialog",
-      "name": "Master-detail dialog",
+      "id": "recipe-list-detail-dialog",
+      "name": "List-detail dialog",
       "category": "Recipes",
       "kind": "recipe",
       "source": "kerf",
@@ -4509,9 +4509,9 @@
         ]
       },
       "links": {
-        "catalogRoute": "?component=recipe-master-detail-dialog",
-        "documentation": "docs/recipes.md#master-detail-dialog",
-        "recipe": "docs/recipes.md#master-detail-dialog"
+        "catalogRoute": "?component=recipe-list-detail-dialog",
+        "documentation": "docs/recipes.md#list-detail-dialog",
+        "recipe": "docs/recipes.md#list-detail-dialog"
       }
     },
     {

@@ -147,7 +147,7 @@ const views = signal<NavStackView[]>([{ key: 'home', content: <HomeView/> }]);
 ### 3.2 List-detail (split view) — `SplitView` (`@kerfjs/ui/split-view`)
 
 Two panes — a list and a detail — side by side, with an **optionally resizable
-separator** (with min/max limits). Also known as master-detail; `SplitView` is
+separator** (with min/max limits). `SplitView` is
 the public name (Apple's term), `ListDetail` documented as a synonym.
 
 Responsive presentation (device-class driven):

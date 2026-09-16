@@ -13,7 +13,7 @@ const [artifact, packageJson, loaders, docs, selection, skill, llms, adapter] = 
   readFile(resolve(root, 'llms.txt'), 'utf8'),
   readFile(resolve(root, 'ux-demo/recipes/mount-recipe.ts'), 'utf8'),
 ]);
-const expected = ['recipe-app-shell', 'recipe-navigation-sidebar', 'recipe-workspace-header', 'recipe-master-detail-dialog', 'recipe-composer-form', 'recipe-list-workspace-states', 'recipe-compact-toolbar', 'recipe-navigation-stack', 'recipe-loading-inspector'];
+const expected = ['recipe-app-shell', 'recipe-navigation-sidebar', 'recipe-workspace-header', 'recipe-list-detail-dialog', 'recipe-composer-form', 'recipe-list-workspace-states', 'recipe-compact-toolbar', 'recipe-navigation-stack', 'recipe-loading-inspector'];
 const recipes = artifact.entries.filter((entry) => entry.kind === 'recipe');
 const failures = [];
 const fail = (message) => failures.push(message);
