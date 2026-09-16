@@ -17,11 +17,13 @@ describe('UX catalog sidebar shell', () => {
     expect(source).not.toContain('<span class="catalog-mark" aria-hidden="true">K</span>');
   });
 
-  it('links the brand favicon in the catalog page head', async () => {
-    const html = await readFile(resolve(import.meta.dirname, '../../ux-demo/index.html'), 'utf8');
-    // A static <link> (not a kerf-rendered src) so it needs no ?no-inline; Vite
-    // bundles the repo-owned favicon and rewrites the href against `base: './'`.
-    expect(html).toContain('<link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg" />');
+  it('sets the brand favicon from an emitted file URL that resolves in dev and build', async () => {
+    const source = await readFile(resolve(import.meta.dirname, '../../ux-demo/main.tsx'), 'utf8');
+    // From JS via `new URL(..., import.meta.url)` — like the logo — so it resolves
+    // on the dev server too, unlike a static `../../` link in index.html which the
+    // browser normalizes to a path outside the demo root.
+    expect(source).toContain("faviconLink.href = new URL('../../assets/favicon.svg?no-inline', import.meta.url).href;");
+    expect(source).toContain("faviconLink.rel = 'icon';");
   });
 
   it('serves the repo-owned logo in development and builds relative asset URLs for nested preview paths', async () => {

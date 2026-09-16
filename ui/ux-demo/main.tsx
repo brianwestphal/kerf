@@ -43,6 +43,17 @@ if (!app) throw new Error('Missing #app');
 // would blank the mark once the asset is small enough for Vite to inline it.
 const kerfLogoUrl = new URL('../../assets/logo.svg?no-inline', import.meta.url).href;
 
+// Set the brand favicon from an emitted file URL (like the logo). A static
+// `../../assets/favicon.svg` link in index.html only resolves in the built
+// output — Vite rewrites it there but leaves it unresolved on the dev server,
+// where the browser normalizes `../../` to a path outside the demo root. This
+// URL import resolves identically in dev and build. `?no-inline` keeps it a file.
+const faviconLink = document.createElement('link');
+faviconLink.rel = 'icon';
+faviconLink.type = 'image/svg+xml';
+faviconLink.href = new URL('../../assets/favicon.svg?no-inline', import.meta.url).href;
+document.head.append(faviconLink);
+
 const requested = new URLSearchParams(location.search).get('component');
 const initialDemo = isCatalogId(requested) ? requested : catalog[0].id;
 const selectedDemo = signal<CatalogId>(initialDemo);
