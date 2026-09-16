@@ -15,7 +15,11 @@ export interface ComponentOverlayHandle {
 
 function px(value: string): number {
   const n = Number.parseFloat(value);
-  return Number.isFinite(n) ? n : 0;
+  if (!Number.isFinite(n)) return 0;
+  // Custom properties are returned unresolved; the demo authors lengths in `rem`
+  // against a fixed 16px baseline (docs/22), so convert those. Standard box
+  // properties (margins) already come back from getComputedStyle in px.
+  return value.trim().endsWith('rem') ? n * 16 : n;
 }
 
 function isTransparent(color: string): boolean {
@@ -88,10 +92,13 @@ export function createComponentOverlay(canvas: HTMLElement, layer: HTMLElement):
     for (const element of specimens(canvas)) {
       const rect = element.getBoundingClientRect();
       const style = window.getComputedStyle(element);
+      // Exclude the demo-only alignment inset (declared as --demo-align-inset and
+      // applied as the leading margin) so it is not drawn as intrinsic margin.
+      const alignInset = px(style.getPropertyValue('--demo-align-inset'));
       const mt = px(style.marginTop);
       const mr = px(style.marginRight);
       const mb = px(style.marginBottom);
-      const ml = px(style.marginLeft);
+      const ml = Math.max(0, px(style.marginLeft) - alignInset);
       const x = rect.left - base.left + canvas.scrollLeft;
       const y = rect.top - base.top + canvas.scrollTop;
 

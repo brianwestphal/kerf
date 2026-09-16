@@ -1585,6 +1585,54 @@ button {
 .demo-stack--labeled .demo-example > .kui-menu-header:first-child {
   width: auto;
 }
+/* Align each demoed component's visible left edge with its MenuHeader label text,
+   which sits 16px from the example's left edge (8px title padding + 8px label
+   padding). Components that render bare (no inline geometry) inset the full 16px;
+   components that carry ~8px of their own inline padding inset 8px so their
+   content lands on the same line. Demo-only — the components are unchanged
+   elsewhere. (KF-4Y0W15) */
+/* The inset is declared as `--demo-align-inset` and applied as the leading margin;
+   the debug overlay reads that variable and excludes it from the component's
+   measured margin, so the alignment device never shows as a false orange margin
+   band (the component's intrinsic geometry is what the overlay teaches). */
+[data-demo="lucide-icon"]
+  .demo-example
+  > :not(.kui-menu-header):not(.demo-example__note),
+[data-demo="disclosure-arrow"]
+  .demo-example
+  > :not(.kui-menu-header):not(.demo-example__note),
+[data-demo="loading-spinner"]
+  .demo-example
+  > :not(.kui-menu-header):not(.demo-example__note),
+[data-demo="skeleton"]
+  .demo-example
+  > :not(.kui-menu-header):not(.demo-example__note) {
+  --demo-align-inset: remify(16px);
+  margin-inline-start: var(--demo-align-inset);
+}
+[data-demo="disclosure-arrow"] .demo-example > .demo-disclosure-toggle {
+  /* The demo's toggle button adds 8px of its own inline padding; drop the leading
+     side so the arrow glyph itself lands on the 16px line. */
+  padding-inline-start: 0;
+}
+[data-demo="toolbar-control-group"]
+  .demo-example
+  > :not(.kui-menu-header):not(.demo-example__note),
+[data-demo="toolbar-text"]
+  .demo-example
+  > :not(.kui-menu-header):not(.demo-example__note),
+[data-demo="segmented-control"]
+  .demo-example
+  > :not(.kui-menu-header):not(.demo-example__note),
+[data-demo="token-search-field"]
+  .demo-example
+  > :not(.kui-menu-header):not(.demo-example__note),
+[data-demo="select"]
+  .demo-example
+  > :not(.kui-menu-header):not(.demo-example__note) {
+  --demo-align-inset: remify(8px);
+  margin-inline-start: var(--demo-align-inset);
+}
 .demo-disclosure-toggle {
   display: inline-flex;
   padding: var(--kui-space-xs);
