@@ -558,6 +558,26 @@ export const generatedKerfCatalog = [
     ],
     "demoSource": "ui/ux-demo/recipes/navigation-stack.tsx",
     "documentation": "ui/docs/recipes.md#navigation-stack"
+  },
+  {
+    "id": "recipe-loading-inspector",
+    "name": "Loading inspector",
+    "category": "Recipes",
+    "kind": "recipe",
+    "source": "kerf",
+    "description": "A record inspector whose per-record values load asynchronously — every value-bearing component takes a shared placeholder flag, so the same chrome renders a faithful loading state and then the populated record.",
+    "uses": [
+      "panel-header",
+      "value-table",
+      "select",
+      "segmented-control",
+      "menu-item",
+      "state-banner",
+      "skeleton",
+      "lucide-icon"
+    ],
+    "demoSource": "ui/ux-demo/recipes/loading-inspector.tsx",
+    "documentation": "ui/docs/recipes.md#loading-inspector"
   }
 ] as const;
 

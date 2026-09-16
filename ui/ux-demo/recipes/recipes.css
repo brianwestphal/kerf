@@ -353,3 +353,7 @@
      little block breathing room, not an inline pad that would double-inset them. */
   padding-block: var(--kui-space-2xs);
 }
+
+.recipe-inspector {
+  width: min(remify(560px), 100%);
+}

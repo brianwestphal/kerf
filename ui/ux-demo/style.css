@@ -1655,7 +1655,3 @@ button {
   flex-direction: column;
   gap: 12px;
 }
-
-.demo-skeleton-inspector {
-  max-width: 420px;
-}

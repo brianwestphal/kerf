@@ -121,6 +121,18 @@ settles the chrome (reduced motion collapses the slide to instant). A live
 [`app-layouts.md`](app-layouts.md) for choosing among `NavStack`, `SplitView`,
 `Workbench`, and `TabScaffold`.
 
+## Loading inspector
+
+[Open the recipe](../ux-demo/?component=recipe-loading-inspector) · [TSX source](../ux-demo/recipes/loading-inspector.tsx)
+
+A record inspector whose per-record values load asynchronously. Every
+value-bearing component (`PanelHeader`, `ValueTable`/`ValueTableRow`, `Select`,
+`SegmentedControl`, `MenuItem`, `StateBanner`) takes its `placeholder` from one
+loading flag, so the same real chrome renders a faithful loading state and then
+the populated record — no separate skeleton markup. The composition is the point;
+`Skeleton` is the primitive it builds on. The app owns the loading lifecycle and
+which values are still unknown.
+
 ## Rules shared by every recipe
 
 - Import `@kerfjs/ui/layout.css`; keep every pane unpadded and use exactly one

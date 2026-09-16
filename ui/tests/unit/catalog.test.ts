@@ -23,7 +23,7 @@ describe('UX catalog metadata', () => {
     expect(artifact.schemaVersion).toBe(1);
     expect(artifact.package).toBe('@kerfjs/ui');
     expect(artifact.entries.map(({ id }) => id)).toEqual(catalog.map(({ id }) => id));
-    expect(artifact.entries).toHaveLength(103);
+    expect(artifact.entries).toHaveLength(104);
     expect(findCatalogEntry('recipe-command-palette')).toBeUndefined();
     expect(isCatalogId('recipe-command-palette')).toBe(false);
     expect(artifact.entries.every((entry) => entry.useWhen.length > 0 && entry.avoidWhen.length > 0)).toBe(true);
@@ -128,7 +128,7 @@ describe('UX catalog metadata', () => {
     expect(findCatalogEntry('wa-select')?.uses).toEqual(['wa-icon', 'wa-popup', 'wa-tag', 'wa-option']);
     expect(catalogEntriesUsing('wa-select').map((entry) => entry.id)).toEqual(['webawesome-theme', 'select']);
     expect(catalogEntriesUsing('wa-carousel-item').map((entry) => entry.id)).toEqual(['webawesome-theme', 'wa-carousel']);
-    expect(catalogEntriesUsing('segmented-control').map((entry) => entry.id)).toEqual(['toolbar-control-group', 'recipe-compact-toolbar']);
+    expect(catalogEntriesUsing('segmented-control').map((entry) => entry.id)).toEqual(['toolbar-control-group', 'recipe-compact-toolbar', 'recipe-loading-inspector']);
     expect(findCatalogEntry('token-search-field')?.uses).toEqual(['lucide-icon']);
     expect(findCatalogEntry('menu-action-row')?.uses).toEqual(['lucide-icon']);
     expect(findCatalogEntry('panel-header')?.uses).toEqual(['lucide-icon', 'toolbar', 'toolbar-control-group', 'toolbar-text']);

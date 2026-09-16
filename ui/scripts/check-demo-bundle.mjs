@@ -7,7 +7,7 @@ const limits = {
   largestJavaScriptGzip: 150_000,
   // Measured at 252.01 kB after adding the navigation-stack recipe and the
   // component debug overlay; keep only narrow headroom and preserve the split.
-  totalJavaScriptGzip: 254_000,
+  totalJavaScriptGzip: 255_000,
 };
 
 const javascript = (await readdir(assetsDir)).filter((name) => name.endsWith('.js'));
