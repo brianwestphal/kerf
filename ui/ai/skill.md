@@ -92,3 +92,8 @@ Common mistakes:
 | Invent an `@kerfjs/ui` command-palette export | Keep the semantics application-local, reuse public layout vocabulary, and propose recurring behavior upstream |
 | Handwrite `ValueTable` row wrappers or compensate their padding or separators | Compose `ValueTableRow`; its root-scaled block padding, optional icon hook, and separator geometry are public contract |
 | Rebuild a panel/dialog heading row by hand | Use `PanelHeader`: a plain toolbar with an optional bordered icon group, an xl title, trailing controls you pass, and the optional subtitle below |
+| Force a `width`/`height`/`padding` on a component to size or space it | Let it size to its content and tokens; a forced box leaves a halo or a stretched oval — adjust an icon-size or spacing token, not the box |
+| Wrap a component or region in a card, border, backdrop, or outline to "contain" it | Let it sit on the surface; add a `.kui-content-item` only for a real distinction — hierarchy comes from alignment, spacing, and type first |
+| Add another container's padding on top of a content-item's own margin | Pick one owner of the inset; a pane has no padding and its `.kui-content` children own the 8/1/8 geometry — stacking them double-insets |
+| Keep chrome, a label, or a readout that aids no decision | Delete it; every element must help a person decide or act |
+| Override a component's default size or color because it "looks off" | Trust the default (a LucideIcon is 24px) and fix the surrounding layout instead |

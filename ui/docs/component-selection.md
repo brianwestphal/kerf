@@ -15,6 +15,15 @@ The application adapter is usually a plain function that maps domain state to
 component props plus stable `data-action` values. It is not a fork of package
 markup or CSS.
 
+**Don't fight the components.** The package is built to look right unstyled, so
+custom CSS is the exception. Before adding `padding`, `margin`, `width`, `height`,
+`border`, `background`, a wrapper card, or a decoration, check whether the
+component, the pane, or the content-item already owns it — it almost always does,
+and adding more usually double-insets or fights it. Trust component defaults and
+fix the surrounding layout instead of overriding a control. See
+[`design-philosophy.md`](./design-philosophy.md) "Reach for the primitive, not for
+CSS".
+
 ## Production recipes
 
 Use the [complete recipe guide](./recipes.md) when several primitives form one

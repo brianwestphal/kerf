@@ -24,6 +24,21 @@ Unrelated updates must not close controls, move focus, reset a draft, replace a 
 
 Establish one reading order and one dominant action per decision point. Group first with alignment, spacing, typography, and shared surfaces. A border, fill, badge, or nested card must communicate a real distinction.
 
+### Reach for the primitive, not for CSS
+
+The package is designed to look right *unstyled*. A screen built from the
+primitives, their props, and the semantic tokens should already read well, so
+custom CSS is the exception. Before adding any `padding`, `margin`, `width`,
+`height`, `border`, `background`, wrapper card, or decoration, check whether the
+component, the pane, or the content-item already owns it — it almost always does,
+and adding more usually **double-insets** or fights the component (the most common
+mistake). Trust component defaults: render a control at its natural size and color
+and fix the surrounding layout rather than overriding the control. Legitimate
+custom CSS is limited to genuinely new structure, and even then may only join a
+component's documented `publicClasses` or override documented `--kui-*` tokens at a
+real composition boundary — never size, space, or re-skin a primitive by hand, and
+never build a heading, toolbar, card, or pane geometry that a primitive provides.
+
 ### Panes share one child-owned geometry
 
 Sidebars, main areas, inspectors, and dialogs use the same unpadded pane. Their
