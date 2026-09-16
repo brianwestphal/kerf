@@ -169,32 +169,19 @@ export const generatedKerfCatalog = [
     "source": "kerf",
     "description": "Page, dialog, and definition-list hierarchy.",
     "uses": [
-      "page-header",
-      "dialog-header",
+      "panel-header",
       "value-table"
     ],
     "demoSource": "ui/ux-demo/main.tsx",
     "documentation": "ui/docs/component-selection.md"
   },
   {
-    "id": "page-header",
-    "name": "PageHeader",
+    "id": "panel-header",
+    "name": "PanelHeader",
     "category": "Structure",
     "kind": "component",
     "source": "kerf",
-    "description": "Page identity with an optional trailing action.",
-    "uses": [],
-    "demoSource": "ui/ux-demo/main.tsx",
-    "componentSource": "ui/src/page-header.tsx",
-    "documentation": "ui/docs/component-selection.md"
-  },
-  {
-    "id": "dialog-header",
-    "name": "DialogHeader",
-    "category": "Structure",
-    "kind": "component",
-    "source": "kerf",
-    "description": "Dialog toolbar with aligned icon, title, grouped actions, and a subtitle row.",
+    "description": "A plain Toolbar as a panel, dialog, or page heading: optional icon group, an extra-large title, trailing actions, and an optional subtitle row.",
     "uses": [
       "lucide-icon",
       "toolbar",
@@ -202,7 +189,7 @@ export const generatedKerfCatalog = [
       "toolbar-text"
     ],
     "demoSource": "ui/ux-demo/main.tsx",
-    "componentSource": "ui/src/dialog-header.tsx",
+    "componentSource": "ui/src/panel-header.tsx",
     "documentation": "ui/docs/component-selection.md"
   },
   {
@@ -433,7 +420,7 @@ export const generatedKerfCatalog = [
       "toolbar-control-group",
       "menu-header",
       "menu-item",
-      "page-header",
+      "panel-header",
       "resize",
       "value-table",
       "layout"
@@ -465,7 +452,7 @@ export const generatedKerfCatalog = [
     "source": "kerf",
     "description": "Page identity with primary, secondary, and overflow actions that relocate at narrow widths.",
     "uses": [
-      "page-header",
+      "panel-header",
       "state-banner",
       "layout"
     ],
@@ -478,9 +465,9 @@ export const generatedKerfCatalog = [
     "category": "Recipes",
     "kind": "recipe",
     "source": "kerf",
-    "description": "Production modal containing a DialogHeader, navigable record master list, and ValueTable detail.",
+    "description": "Production modal containing a PanelHeader, navigable record master list, and ValueTable detail.",
     "uses": [
-      "dialog-header",
+      "panel-header",
       "menu-header",
       "menu-item",
       "value-table",
@@ -496,9 +483,9 @@ export const generatedKerfCatalog = [
     "category": "Recipes",
     "kind": "recipe",
     "source": "kerf",
-    "description": "One visible publishing-form surface with DialogHeader hierarchy, fields and actions on the shared 8px control gutter, 24px major rhythm, and a conditional StateBanner as its only nested semantic surface.",
+    "description": "One visible publishing-form surface with PanelHeader hierarchy, fields and actions on the shared 8px control gutter, 24px major rhythm, and a conditional StateBanner as its only nested semantic surface.",
     "uses": [
-      "dialog-header",
+      "panel-header",
       "select",
       "state-banner",
       "wa-input",
@@ -517,7 +504,7 @@ export const generatedKerfCatalog = [
     "source": "kerf",
     "description": "Deterministic loading, empty, populated, stale refresh, and error states around one stable list workspace.",
     "uses": [
-      "page-header",
+      "panel-header",
       "state-banner",
       "empty-state",
       "loading-spinner",

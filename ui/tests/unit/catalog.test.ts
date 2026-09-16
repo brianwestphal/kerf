@@ -23,7 +23,7 @@ describe('UX catalog metadata', () => {
     expect(artifact.schemaVersion).toBe(1);
     expect(artifact.package).toBe('@kerfjs/ui');
     expect(artifact.entries.map(({ id }) => id)).toEqual(catalog.map(({ id }) => id));
-    expect(artifact.entries).toHaveLength(103);
+    expect(artifact.entries).toHaveLength(102);
     expect(findCatalogEntry('recipe-command-palette')).toBeUndefined();
     expect(isCatalogId('recipe-command-palette')).toBe(false);
     expect(artifact.entries.every((entry) => entry.useWhen.length > 0 && entry.avoidWhen.length > 0)).toBe(true);
@@ -96,8 +96,7 @@ describe('UX catalog metadata', () => {
       'Toolbar',
       'ToolbarControlGroup',
       'ToolbarText',
-      'PageHeader',
-      'DialogHeader',
+      'PanelHeader',
       'ValueTable',
       'MenuHeader',
       'MenuActionRow',
@@ -131,7 +130,7 @@ describe('UX catalog metadata', () => {
     expect(catalogEntriesUsing('segmented-control').map((entry) => entry.id)).toEqual(['toolbar-control-group', 'recipe-compact-toolbar']);
     expect(findCatalogEntry('token-search-field')?.uses).toEqual(['lucide-icon']);
     expect(findCatalogEntry('menu-action-row')?.uses).toEqual(['lucide-icon']);
-    expect(findCatalogEntry('dialog-header')?.uses).toEqual(['lucide-icon', 'toolbar', 'toolbar-control-group', 'toolbar-text']);
+    expect(findCatalogEntry('panel-header')?.uses).toEqual(['lucide-icon', 'toolbar', 'toolbar-control-group', 'toolbar-text']);
     expect(catalogEntriesUsing('menu-action-row').map((entry) => entry.id)).toEqual(['menu']);
   });
 

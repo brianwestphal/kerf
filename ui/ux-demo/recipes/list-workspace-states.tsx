@@ -3,7 +3,7 @@ import './recipes.css';
 
 import { EmptyState } from '@kerfjs/ui/empty-state';
 import { LoadingSpinner } from '@kerfjs/ui/loading-spinner';
-import { PageHeader } from '@kerfjs/ui/page-header';
+import { PanelHeader } from '@kerfjs/ui/panel-header';
 import { StateBanner } from '@kerfjs/ui/state-banner';
 import { signal } from 'kerfjs';
 
@@ -21,6 +21,6 @@ export const createRecipe: RecipeFactory = (announce) => {
     if (state.value === 'error') return <StateBanner title="Release tasks could not be refreshed" detail="Existing filters are preserved. Try again when the connection recovers." tone="danger" urgency="alert" action={<button class="kui-recipe__button" type="button" data-action="recipe-action" data-recipe-command="retry">Retry</button>} />;
     return <>{state.value === 'stale' && <StateBanner title="Showing saved results" detail="Refreshing in the background." tone="warning" action={<span class="kui-inline-metadata"><LoadingSpinner label="Refreshing release tasks" /><button class="kui-recipe__button" type="button" data-action="recipe-action" data-recipe-command="finish">Finish refresh</button></span>} />}{populated()}</>;
   };
-  const render = () => <section class="kui-recipe recipe-list kui-recipe__surface kui-pane" data-recipe="recipe-list-workspace-states" data-list-state={state.value}><PageHeader title="Release tasks" action={<div class="kui-control-cluster"><button class="kui-recipe__button" type="button" data-action="recipe-action" data-recipe-command="empty">Clear</button><button class="kui-recipe__button" type="button" data-action="recipe-action" data-recipe-command="fail">Simulate failure</button><button class="kui-recipe__button" data-primary="true" type="button" data-action="recipe-action" data-recipe-command="refresh">Refresh</button></div>} /><div class="recipe-list__body kui-pane__content kui-content">{renderBody()}<p class="kui-recipe__ownership kui-content-item">The recipe owns feedback placement and stable content. The app owns fetching, cache age, retry policy, and domain rows.</p></div></section>;
+  const render = () => <section class="kui-recipe recipe-list kui-recipe__surface kui-pane" data-recipe="recipe-list-workspace-states" data-list-state={state.value}><PanelHeader title="Release tasks" titleId="recipe-list-title" actions={<div class="kui-control-cluster"><button class="kui-recipe__button" type="button" data-action="recipe-action" data-recipe-command="empty">Clear</button><button class="kui-recipe__button" type="button" data-action="recipe-action" data-recipe-command="fail">Simulate failure</button><button class="kui-recipe__button" data-primary="true" type="button" data-action="recipe-action" data-recipe-command="refresh">Refresh</button></div>} /><div class="recipe-list__body kui-pane__content kui-content">{renderBody()}<p class="kui-recipe__ownership kui-content-item">The recipe owns feedback placement and stable content. The app owns fetching, cache age, retry policy, and domain rows.</p></div></section>;
   return { render, action(command) { const next: Record<string, ListState> = { load: 'populated', empty: 'empty', create: 'populated', fail: 'error', retry: 'populated', refresh: 'stale', finish: 'populated' }; if (command in next) state.value = next[command]!; announce(`List state: ${state.value}`); } };
 };

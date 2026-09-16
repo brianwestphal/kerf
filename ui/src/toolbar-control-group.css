@@ -147,7 +147,7 @@
 
 /* A group holding exactly one control behaves like `single` even without the
    flag: the whole group background changes on hover instead of highlighting an
-   inner layer inset from the border (KF-J9P1ZD — a DialogHeader's lone Close/
+   inner layer inset from the border (KF-J9P1ZD — a PanelHeader's lone Close/
    Done action). */
 .kui-toolbar-control-group:not([data-single="true"]):has(
     > :is(button, wa-button):only-child

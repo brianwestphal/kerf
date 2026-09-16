@@ -1,5 +1,4 @@
 export { AppTab, type AppTabProps } from './app-tab.js';
-export { DialogHeader, type DialogHeaderProps } from './dialog-header.js';
 export {
   DisclosureArrow,
   type DisclosureArrowProps,
@@ -11,7 +10,7 @@ export { LucideIcon, type LucideIconProps, type LucideNode } from './lucide-icon
 export { MenuActionRow, type MenuActionRowProps } from './menu-action-row.js';
 export { MenuHeader, type MenuHeaderProps } from './menu-header.js';
 export { MenuItem, type MenuItemProps } from './menu-item.js';
-export { PageHeader, type PageHeaderProps } from './page-header.js';
+export { PanelHeader, type PanelHeaderProps } from './panel-header.js';
 export {
   clampRegionSize,
   ResizableRegion,

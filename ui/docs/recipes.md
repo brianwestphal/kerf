@@ -56,7 +56,7 @@ no custom `actionIcon` is needed; ordinary navigation rows stay chevron-free.
 
 [Open the recipe](../ux-demo/?component=recipe-workspace-header) · [TSX source](../ux-demo/recipes/workspace-header.tsx)
 
-`PageHeader` owns the page heading while one control cluster holds secondary,
+`PanelHeader` owns the page heading while one control cluster holds secondary,
 overflow, and primary actions. The app owns authorization and command policy;
 controls relocate without changing focus order.
 
@@ -66,10 +66,10 @@ controls relocate without changing focus order.
 
 The production Web Awesome dialog owns modal focus and Escape; the thin recipe
 adapter restores the invoking control consistently after the hide event.
-`DialogHeader`, `MenuHeader`, `MenuItem`, and `ValueTable` own their included
+`PanelHeader`, `MenuHeader`, `MenuItem`, and `ValueTable` own their included
 anatomy. The application owns open state, selection, dismissal policy, and
-record actions. Pass the dialog action children directly; `DialogHeader` places
-them in its top toolbar's action group and uses the localized `actionsLabel`.
+record actions. `PanelHeader` places the trailing controls the app passes
+directly into its top toolbar's trailing zone.
 The header sits on the dialog edge while retaining its internal control inset;
 the selected title receives the full content gutter, the metadata table fills
 the available detail width between the usual outer margins, and the action
@@ -80,7 +80,7 @@ Do not rebuild the dialog or reach into private shadow parts.
 
 [Open the recipe](../ux-demo/?component=recipe-composer-form) · [TSX source](../ux-demo/recipes/composer-form.tsx)
 
-`DialogHeader` supplies the task title and summary, with their ids referenced
+`PanelHeader` supplies the task title and summary, with their ids referenced
 by the form. Production fields own labels, help, and native focus. The field
 and footer control edges sit directly on the shared 8px inline gutter rather
 than acquiring a second content-item padding inset; major children remain 24px

@@ -6,7 +6,7 @@ import '@awesome.me/webawesome/dist/components/input/input.js';
 import '@awesome.me/webawesome/dist/components/textarea/textarea.js';
 import './recipes.css';
 
-import { DialogHeader } from '@kerfjs/ui/dialog-header';
+import { PanelHeader } from '@kerfjs/ui/panel-header';
 import { Select } from '@kerfjs/ui/select';
 import { StateBanner } from '@kerfjs/ui/state-banner';
 import { signal } from 'kerfjs';
@@ -30,7 +30,7 @@ export const createRecipe: RecipeFactory = (announce) => {
   const audience = signal('team');
   const status = signal<'idle' | 'error' | 'saved'>('idle');
   const render = () => <form class="kui-recipe recipe-form kui-recipe__surface kui-content" data-recipe="recipe-composer-form" aria-labelledby="recipe-composer-title" aria-describedby="recipe-composer-summary" noValidate>
-    <DialogHeader title="Publish workspace update" titleId="recipe-composer-title" summary="Share a concise, actionable update with collaborators." summaryId="recipe-composer-summary" />
+    <PanelHeader title="Publish workspace update" titleId="recipe-composer-title" summary="Share a concise, actionable update with collaborators." summaryId="recipe-composer-summary" />
     {status.value === 'error' && <StateBanner title="Add a title before publishing" detail="The update body and audience are preserved." tone="danger" urgency="alert" />}
     {status.value === 'saved' && <StateBanner title="Update published" detail="The team audience can now read it." tone="success" />}
     <div class="recipe-form__section recipe-form__fields">

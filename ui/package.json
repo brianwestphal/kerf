@@ -130,11 +130,6 @@
       "types": "./dist/wire-tab-scaffold.d.ts",
       "import": "./dist/wire-tab-scaffold.js"
     },
-    "./page-header": {
-      "types": "./dist/page-header.d.ts",
-      "browser": "./dist/browser/page-header.js",
-      "import": "./dist/page-header.js"
-    },
     "./loading-spinner": {
       "types": "./dist/loading-spinner.d.ts",
       "browser": "./dist/browser/loading-spinner.js",
@@ -177,10 +172,10 @@
       "browser": "./dist/browser/empty-state.js",
       "import": "./dist/empty-state.js"
     },
-    "./dialog-header": {
-      "types": "./dist/dialog-header.d.ts",
-      "browser": "./dist/browser/dialog-header.js",
-      "import": "./dist/dialog-header.js"
+    "./panel-header": {
+      "types": "./dist/panel-header.d.ts",
+      "browser": "./dist/browser/panel-header.js",
+      "import": "./dist/panel-header.js"
     },
     "./value-table": {
       "types": "./dist/value-table.d.ts",
@@ -210,14 +205,13 @@
     "./split-view.css": "./dist/styles/split-view.css",
     "./workbench.css": "./dist/styles/workbench.css",
     "./tab-scaffold.css": "./dist/styles/tab-scaffold.css",
-    "./page-header.css": "./dist/styles/page-header.css",
     "./loading-spinner.css": "./dist/styles/loading-spinner.css",
     "./select.css": "./dist/styles/select.css",
     "./segmented-control.css": "./dist/styles/segmented-control.css",
     "./token-search-field.css": "./dist/styles/token-search-field.css",
     "./state-banner.css": "./dist/styles/state-banner.css",
     "./empty-state.css": "./dist/styles/empty-state.css",
-    "./dialog-header.css": "./dist/styles/dialog-header.css",
+    "./panel-header.css": "./dist/styles/panel-header.css",
     "./value-table.css": "./dist/styles/value-table.css",
     "./ai/*": "./ai/*",
     "./docs/*": "./docs/*"

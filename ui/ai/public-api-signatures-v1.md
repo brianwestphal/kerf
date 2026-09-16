@@ -214,26 +214,12 @@ declare function MenuItem({ label, icon, trailing, selected, action, itemId, cla
 export { MenuItem, type MenuItemProps };
 ```
 
-## `@kerfjs/ui/page-header`
+## `@kerfjs/ui/panel-header`
 
 ```ts
 import { SafeHtml } from 'kerfjs';
 
-interface PageHeaderProps {
-    title: string | SafeHtml;
-    action?: SafeHtml;
-}
-declare function PageHeader({ title, action }: PageHeaderProps): SafeHtml;
-
-export { PageHeader, type PageHeaderProps };
-```
-
-## `@kerfjs/ui/dialog-header`
-
-```ts
-import { SafeHtml } from 'kerfjs';
-
-interface DialogHeaderProps {
+interface PanelHeaderProps {
     title: string;
     titleId: string;
     summary?: string;
@@ -241,19 +227,22 @@ interface DialogHeaderProps {
     icon?: SafeHtml;
     iconClassName?: string;
     actions?: SafeHtml;
-    actionsLabel?: string;
 }
 /**
- * The header row of a dialog: a real `Toolbar` whose leading zone holds an
- * optional icon (a borderless control group with an overridden circular
- * background) and the title as large `ToolbarText`, and whose trailing zone holds
- * the action controls. An optional summary sits on its own row, left-aligned with
- * the title. The header owns no inline padding or border of its own — its
- * sub-elements (icon, title, action buttons) carry their own geometry.
+ * The heading of a panel, dialog, or page: a plain `Toolbar` whose leading zone
+ * holds an optional icon control group and the title as extra-large `ToolbarText`,
+ * whose trailing zone holds the app's action controls, and with an optional
+ * subtitle on its own row, left-aligned with the title.
+ *
+ * PanelHeader overrides no Toolbar styles — it is just a Toolbar with an xl title.
+ * The only styling it adds is the icon group's fill/border color and the subtitle.
+ * When no icon is provided, the icon group is omitted entirely. The `actions` slot
+ * is passed straight into the toolbar's trailing zone; the app supplies whatever
+ * trailing controls it needs (typically a `ToolbarControlGroup`).
  */
-declare function DialogHeader({ title, titleId, summary, summaryId, icon, iconClassName, actions, actionsLabel }: DialogHeaderProps): SafeHtml;
+declare function PanelHeader({ title, titleId, summary, summaryId, icon, iconClassName, actions }: PanelHeaderProps): SafeHtml;
 
-export { DialogHeader, type DialogHeaderProps };
+export { PanelHeader, type PanelHeaderProps };
 ```
 
 ## `@kerfjs/ui/value-table`

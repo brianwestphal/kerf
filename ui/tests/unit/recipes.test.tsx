@@ -64,7 +64,7 @@ describe('production composition recipes', () => {
     expect(html(toolbar.render())).toContain('data-value="board"');
   });
 
-  it('gives the composer DialogHeader hierarchy and direct shared-gutter controls', () => {
+  it('gives the composer PanelHeader hierarchy and direct shared-gutter controls', () => {
     const form = createComposerForm(() => {});
     const template = document.createElement('template');
     template.innerHTML = html(form.render());
@@ -72,7 +72,7 @@ describe('production composition recipes', () => {
     expect(root.classList).toContain('kui-recipe__surface');
     expect(root.getAttribute('aria-labelledby')).toBe('recipe-composer-title');
     expect(root.getAttribute('aria-describedby')).toBe('recipe-composer-summary');
-    expect(root.querySelector(':scope > [data-component="dialog-header"]')).not.toBeNull();
+    expect(root.querySelector(':scope > [data-component="panel-header"]')).not.toBeNull();
     expect(root.querySelector('#recipe-composer-title')?.textContent).toBe('Publish workspace update');
     expect(root.querySelector('#recipe-composer-summary')?.textContent).toBe('Share a concise, actionable update with collaborators.');
     expect([...root.children].filter((child) => child.classList.contains('recipe-form__section'))).toHaveLength(2);

@@ -4,7 +4,6 @@ import '@kerfjs/ui/webawesome.css';
 import './style.css';
 
 import { AppTab } from '@kerfjs/ui/app-tab';
-import { DialogHeader } from '@kerfjs/ui/dialog-header';
 import { DisclosureArrow } from '@kerfjs/ui/disclosure-arrow';
 import { EmptyState } from '@kerfjs/ui/empty-state';
 import { LoadingSpinner } from '@kerfjs/ui/loading-spinner';
@@ -12,7 +11,7 @@ import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { MenuActionRow } from '@kerfjs/ui/menu-action-row';
 import { MenuHeader } from '@kerfjs/ui/menu-header';
 import { MenuItem } from '@kerfjs/ui/menu-item';
-import { PageHeader } from '@kerfjs/ui/page-header';
+import { PanelHeader } from '@kerfjs/ui/panel-header';
 import { ResizableRegion } from '@kerfjs/ui/resizable-region';
 import { SegmentedControl } from '@kerfjs/ui/segmented-control';
 import { Select } from '@kerfjs/ui/select';
@@ -408,21 +407,20 @@ function TabBarDemo() {
 }
 
 function HeadersDemo() {
+  // One PanelHeader as a page title (no icon), one as a panel/dialog heading
+  // (icon + subtitle), each owning its own row — no extra card chrome.
   return <div class="demo-frame" data-demo="headers">
-    <PageHeader title="UI foundations" action={button('New pattern', 'log-add')} />
-    <div class="demo-dialog">
-      <DialogHeader title="Package details" titleId="package-title" summary="Production-backed primitives with explicit contracts." summaryId="package-summary" icon={icon(Wrench, 'wrench')} actions={<ToolbarControlGroup single>{button('Done', 'log-done')}</ToolbarControlGroup>} actionsLabel="Package actions" />
-      <div class="demo-dialog__body kui-content"><ValueTable label="Package metadata"><ValueTableRow label="Package" value="@kerfjs/ui" /><ValueTableRow label="Rendering" value="Kerf SafeHtml" /><ValueTableRow label="Styles" value="Explicit CSS subpaths" /></ValueTable></div>
-    </div>
+    <PanelHeader title="UI foundations" titleId="headers-page-title" actions={button('New pattern', 'log-add')} />
+    <PanelHeader title="Package details" titleId="headers-panel-title" summary="Production-backed primitives with explicit contracts." summaryId="headers-panel-summary" icon={icon(Wrench, 'wrench')} actions={button('Done', 'log-done')} />
+    <div class="kui-content"><ValueTable label="Package metadata"><ValueTableRow label="Package" value="@kerfjs/ui" /><ValueTableRow label="Rendering" value="Kerf SafeHtml" /><ValueTableRow label="Styles" value="Explicit CSS subpaths" /></ValueTable></div>
   </div>;
 }
 
-function PageHeaderDemo() {
-  return <div class="demo-stack" data-demo="page-header"><section class="demo-example"><PageHeader title="UI foundations" action={button('New pattern', 'log-add')} /></section></div>;
-}
-
-function DialogHeaderDemo() {
-  return <div class="demo-dialog demo-dialog--standalone" data-demo="dialog-header"><DialogHeader title="Package details" titleId="standalone-package-title" summary="Production-backed primitives with explicit contracts." summaryId="standalone-package-summary" icon={icon(Wrench, 'wrench')} actions={button('Done', 'log-done')} actionsLabel="Package actions" /></div>;
+function PanelHeaderDemo() {
+  return <div class="demo-stack demo-stack--labeled" data-demo="panel-header">
+    <section class="demo-example"><MenuHeader label="Page title" /><PanelHeader title="UI foundations" titleId="panel-page-title" actions={button('New pattern', 'log-add')} /></section>
+    <section class="demo-example"><MenuHeader label="Panel heading with icon and subtitle" /><PanelHeader title="Package details" titleId="panel-standalone-title" summary="Production-backed primitives with explicit contracts." summaryId="panel-standalone-summary" icon={icon(Wrench, 'wrench')} actions={button('Done', 'log-done')} /></section>
+  </div>;
 }
 
 function ValueTableDemo() {
@@ -488,7 +486,7 @@ function LoadingSpinnerDemo() {
 
 function LayoutDemo() {
   return <div class="demo-layout kui-pane" data-demo="layout">
-    <PageHeader title="Semantic layout" action={button('New item', 'log-add')} />
+    <PanelHeader title="Semantic layout" titleId="layout-title" actions={button('New item', 'log-add')} />
     <section class="kui-pane__content kui-content">
       <div class="demo-layout__surface kui-content-item"><strong>One owner per item</strong><p>Each content child owns its margin, border, background, padding, and radius.</p></div>
       <div class="demo-layout__actions kui-control-cluster">{button('Primary action', 'log-add')}{button('Secondary action', 'log-more')}</div>
@@ -514,8 +512,7 @@ const demos: Record<Exclude<KerfCatalogId, RecipeId>, () => ReturnType<typeof To
   tabs: TabsDemo,
   'tab-bar': TabBarDemo,
   headers: HeadersDemo,
-  'page-header': PageHeaderDemo,
-  'dialog-header': DialogHeaderDemo,
+  'panel-header': PanelHeaderDemo,
   'value-table': ValueTableDemo,
   resize: ResizeDemo,
   select: SelectDemo,

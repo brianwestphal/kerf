@@ -8,7 +8,7 @@ For connective application patterns, use the seven [production composition
 recipes](./docs/recipes.md). Each has a stable catalog route, runnable state,
 public-subpath source, semantic layout ownership, and explicit application
 customization boundaries. The composer recipe demonstrates one coherent form
-surface with `DialogHeader` hierarchy and field/action controls aligned to the
+surface with `PanelHeader` hierarchy and field/action controls aligned to the
 shared 8px gutter; only persistent feedback adds a nested semantic
 `StateBanner` surface.
 
@@ -108,7 +108,6 @@ as a `New` marker.
 | `AppTab` | `@kerfjs/ui/app-tab` | `@kerfjs/ui/app-tab.css` |
 | `TabBar` | `@kerfjs/ui/tab-bar` | `@kerfjs/ui/tab-bar.css` |
 | `wireTabBars`, `reorderTabs` | `@kerfjs/ui/wire-tab-bars` | — |
-| `PageHeader` | `@kerfjs/ui/page-header` | `@kerfjs/ui/page-header.css` |
 | `LoadingSpinner` | `@kerfjs/ui/loading-spinner` | `@kerfjs/ui/loading-spinner.css` |
 | `Select` | `@kerfjs/ui/select` | `@kerfjs/ui/select.css` |
 | `SegmentedControl` | `@kerfjs/ui/segmented-control` | `@kerfjs/ui/segmented-control.css` |
@@ -116,14 +115,15 @@ as a `New` marker.
 | `wireTokenSearchFields` | `@kerfjs/ui/wire-token-search-fields` | — |
 | `StateBanner` | `@kerfjs/ui/state-banner` | `@kerfjs/ui/state-banner.css` |
 | `EmptyState` | `@kerfjs/ui/empty-state` | `@kerfjs/ui/empty-state.css` |
-| `DialogHeader` | `@kerfjs/ui/dialog-header` | `@kerfjs/ui/dialog-header.css` |
+| `PanelHeader` | `@kerfjs/ui/panel-header` | `@kerfjs/ui/panel-header.css` |
 | `ValueTable`, `ValueTableRow` | `@kerfjs/ui/value-table` | `@kerfjs/ui/value-table.css` |
 
-`DialogHeader` puts its 24px icon in a 34px circular background and aligns that
-identity group with its automatically grouped action children in a real top
-toolbar. Its optional summary stays on a separate row below the title. Pass a
-localized `actionsLabel` when the action group needs an accessible name; new
-callers pass action children directly rather than pre-wrapping groups.
+`PanelHeader` is a plain `Toolbar` used as a panel, dialog, or page heading: an
+optional icon control group (given a brand fill with a matching border), the
+title as extra-large `ToolbarText`, the app's trailing action controls, and an
+optional subtitle on a separate row below the title. It overrides no toolbar
+styles — the app passes its own trailing controls (typically a
+`ToolbarControlGroup`).
 
 `DisclosureArrow` defaults to an 18px root-scaled decorative visual. Override
 `--kui-disclosure-arrow-size` at the narrowest useful scope when a consumer

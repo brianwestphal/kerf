@@ -20,6 +20,7 @@
      to the larger text (the fixed 40px would clip its ascenders). */
   height: auto;
   min-height: remify(44px);
+  color: var(--kui-color-text);
   font-size: clamp(var(--kui-font-l), 2.3vw, var(--kui-font-2xl));
   letter-spacing: -0.025em;
 }

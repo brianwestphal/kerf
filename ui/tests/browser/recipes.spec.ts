@@ -63,7 +63,7 @@ test('keeps recipe geometry responsive at narrow, intermediate, and 200% zoom la
       await content.focus();
       await content.press('Enter');
       await expect(content).toBeFocused();
-      await expect(recipe.getByRole('heading', { name: 'Active projects' })).toBeVisible();
+      await expect(recipe.locator('.kui-panel-header__title', { hasText: 'Active projects' })).toBeVisible();
       await inspector.focus();
       await inspector.press('Enter');
       await expect(inspector).toBeFocused();
@@ -126,7 +126,7 @@ test('keeps project dialog content on intentional wide and narrow gutters', asyn
       const titleRange = document.createRange();
       titleRange.selectNodeContents(title);
       const pane = bounds('.recipe-dialog__pane');
-      const header = bounds('.kui-dialog-header');
+      const header = bounds('.kui-panel-header');
       const masterDetail = bounds('.recipe-master-detail');
       const detail = bounds('.recipe-master-detail__detail');
       const table = bounds('.kui-value-table');
@@ -166,7 +166,7 @@ test('keeps the composer on one labeled surface with shared field and action gut
   const geometry = () => form.evaluate((root) => {
     const rootBounds = root.getBoundingClientRect();
     const rootStyle = window.getComputedStyle(root);
-    const header = root.querySelector<HTMLElement>(':scope > [data-component="dialog-header"]')!;
+    const header = root.querySelector<HTMLElement>(':scope > [data-component="panel-header"]')!;
     const fields = root.querySelector<HTMLElement>(':scope > .recipe-form__fields')!;
     const footer = root.querySelector<HTMLElement>('.recipe-form__footer')!.getBoundingClientRect();
     const actions = root.querySelector<HTMLElement>('.recipe-form__actions')!.getBoundingClientRect();
@@ -223,12 +223,12 @@ test('keeps the composer on one labeled surface with shared field and action gut
   const expectLayout = async (scale: number, bannerRole?: 'alert' | 'status') => {
     await expect(form).toHaveAttribute('aria-labelledby', 'recipe-composer-title');
     await expect(form).toHaveAttribute('aria-describedby', 'recipe-composer-summary');
-    await expect(form.locator(':scope > [data-component="dialog-header"]')).toHaveCount(1);
+    await expect(form.locator(':scope > [data-component="panel-header"]')).toHaveCount(1);
     await expect(form.locator('#recipe-composer-title')).toHaveText('Publish workspace update');
     await expect(form.locator('#recipe-composer-summary')).toHaveText('Share a concise, actionable update with collaborators.');
     await expect(sections).toHaveCount(2);
     await expect(form.locator(':scope > .kui-content-item')).toHaveCount(0);
-    await expect(form.locator(':scope > :not([data-component="dialog-header"]):not(.recipe-form__section):not([data-component="state-banner"])')).toHaveCount(0);
+    await expect(form.locator(':scope > :not([data-component="panel-header"]):not(.recipe-form__section):not([data-component="state-banner"])')).toHaveCount(0);
     const banner = form.locator(':scope > [data-component="state-banner"]');
     await expect(banner).toHaveCount(bannerRole ? 1 : 0);
     if (bannerRole) await expect(banner).toHaveAttribute('role', bannerRole);
@@ -246,7 +246,7 @@ test('keeps the composer on one labeled surface with shared field and action gut
     expect(measured.fieldsGap).toBeCloseTo(8 * scale, 0);
     expect(measured.hintCountOverlap).toBe(false);
     for (const inset of [measured.actionStart, measured.fieldStart, measured.fieldsStart, measured.fieldsEnd, measured.footerStart, measured.footerEnd]) expect(inset).toBeCloseTo(1 + (8 * scale), 0);
-    // The redesigned DialogHeader is a flush toolbar and no longer replicates the
+    // The redesigned PanelHeader is a flush toolbar and no longer replicates the
     // content-item gutter, so it sits at the surface edge rather than the 9px inset.
     expect(measured.headerStart).toBeLessThanOrEqual(1 + (2 * scale));
     expect(measured.headerEnd).toBeLessThanOrEqual(1 + (2 * scale));

@@ -22,7 +22,6 @@ const entries = [
   'workbench',
   'tab-scaffold',
   'wire-tab-scaffold',
-  'page-header',
   'loading-spinner',
   'select',
   'segmented-control',
@@ -32,7 +31,7 @@ const entries = [
   'webawesome',
   'state-banner',
   'empty-state',
-  'dialog-header',
+  'panel-header',
   'value-table',
 ];
 

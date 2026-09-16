@@ -41,7 +41,7 @@ function isExampleLabel(el: Element): boolean {
 /**
  * The demoed specimens to outline: the actual component in each example (not
  * its MenuHeader label or note text), plus the top-level component of any demo
- * that isn't wrapped in `.demo-example` (toolbar, dialog-header, resize). A
+ * that isn't wrapped in `.demo-example` (toolbar, panel-header, resize). A
  * specimen may be a bare `<svg>` (a LucideIcon) with no `data-component`, so
  * selection is positional, not attribute-based.
  */

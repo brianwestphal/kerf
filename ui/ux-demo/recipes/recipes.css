@@ -113,9 +113,6 @@
 .recipe-header__context {
   margin: 0;
 }
-.recipe-header .kui-page-header__action {
-  max-width: 100%;
-}
 
 .recipe-master-detail {
   display: grid;
@@ -140,7 +137,7 @@
   --spacing: 0;
   --width: min(62rem, calc(100vw - 2rem));
 }
-.recipe-dialog .kui-dialog-header {
+.recipe-dialog .kui-panel-header {
   margin-inline: 0;
 }
 
@@ -323,10 +320,6 @@
   .recipe-shell__cards,
   .recipe-compact-toolbar__guide {
     grid-template-columns: 1fr;
-  }
-  .recipe-header .kui-page-header {
-    align-items: flex-start;
-    flex-direction: column;
   }
 }
 

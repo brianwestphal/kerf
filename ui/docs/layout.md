@@ -38,7 +38,7 @@ changing its geometry by setting `--kui-content-item-border` and
 `--kui-content-item-background`.
 
 A visible parent surface does not make every child another visible card. The
-composer recipe keeps its form as the single surface, uses `DialogHeader` for
+composer recipe keeps its form as the single surface, uses `PanelHeader` for
 its task hierarchy, and places field and action control edges on the shared 8px
 inline gutter instead of nesting them inside another padded content item. A
 conditional `StateBanner` remains visibly distinct because it communicates
@@ -58,7 +58,7 @@ semantic status.
 | Explicit scroll owner outside a pane | `.kui-scroll-owner` | `overflow: auto` |
 
 The component layer applies the same contract to `Toolbar`, `MenuHeader`,
-`MenuItem`, `PageHeader`, `DialogHeader`, `StateBanner`, `ValueTable`,
+`MenuItem`, `PanelHeader`, `StateBanner`, `ValueTable`,
 `ValueTableRow`, tabs, and form controls. A value-table row separator starts at
 the row's 8px content inset, or at 40px when the row contains its 24px leading
 icon and 8px gap, and always ends 8px from the right edge. Each value-table row
@@ -66,14 +66,12 @@ also keeps 8px of root-scaled block padding independently of its semantic inline
 inset. Most interactive rows and toolbar groups are 44px tall.
 Toolbar groups reserve a real 1px outer border around a 42px inner area, even
 when their border and background are transparent.
-`PageHeader` keeps its title on the shared inset while its action border aligns
-with the logical edge of the following `.kui-content-item` border.
-`DialogHeader` is itself a top `Toolbar` and owns no inline padding or border of
-its own — its sub-elements carry their geometry. The leading zone holds the
-optional icon (a borderless `ToolbarControlGroup` with an overridden circular
-background at the toolbar control size, a 22px glyph) and the title as large
-`ToolbarText`; direct action children are wrapped in a contained group in the
-trailing zone. The optional subtitle is a separate row below the toolbar, its
+`PanelHeader` is a plain top `Toolbar` used as a panel, dialog, or page heading
+and overrides no Toolbar styles. The leading zone holds the optional icon (a
+normal bordered `ToolbarControlGroup` given a brand fill with a matching border,
+a 22px glyph) and the title as extra-large `ToolbarText`; the app's trailing
+controls go straight into the trailing zone, and the icon group is omitted when
+no icon is passed. The optional subtitle is a separate row below the toolbar, its
 text left-aligned with the title text.
 
 ## Spacing scale

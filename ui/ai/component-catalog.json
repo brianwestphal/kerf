@@ -328,11 +328,7 @@
       ],
       "alternatives": [
         {
-          "id": "page-header",
-          "relationship": "nearest"
-        },
-        {
-          "id": "dialog-header",
+          "id": "panel-header",
           "relationship": "nearest"
         }
       ],
@@ -478,7 +474,7 @@
       ],
       "alternatives": [
         {
-          "id": "page-header",
+          "id": "panel-header",
           "relationship": "nearest"
         }
       ],
@@ -524,8 +520,7 @@
       "source": "kerf",
       "description": "Page, dialog, and definition-list hierarchy.",
       "uses": [
-        "page-header",
-        "dialog-header",
+        "panel-header",
         "value-table"
       ],
       "purpose": "Page, dialog, and definition-list hierarchy.",
@@ -542,11 +537,7 @@
           "relationship": "nearest"
         },
         {
-          "id": "page-header",
-          "relationship": "nearest"
-        },
-        {
-          "id": "dialog-header",
+          "id": "panel-header",
           "relationship": "nearest"
         }
       ],
@@ -578,97 +569,31 @@
       }
     },
     {
-      "id": "page-header",
-      "name": "PageHeader",
+      "id": "panel-header",
+      "name": "PanelHeader",
       "category": "Structure",
       "kind": "component",
       "source": "kerf",
-      "description": "Page identity with an optional trailing action.",
-      "uses": [],
-      "purpose": "Page identity with an optional trailing action.",
-      "publicExports": [
-        "PageHeader"
-      ],
-      "useWhen": [
-        "Identify a page with its primary heading and optional trailing action."
-      ],
-      "avoidWhen": [
-        "Do not use for persistent app chrome or a modal task."
-      ],
-      "alternatives": [
-        {
-          "id": "toolbar",
-          "relationship": "nearest"
-        },
-        {
-          "id": "dialog-header",
-          "relationship": "nearest"
-        }
-      ],
-      "appOwns": [
-        "title",
-        "action",
-        "responsive placement"
-      ],
-      "variants": [
-        "title",
-        "title with action"
-      ],
-      "accessibility": [
-        "Use once for the page primary heading."
-      ],
-      "delivery": {
-        "browserImport": "@kerfjs/ui/page-header",
-        "manualCssImport": "@kerfjs/ui/page-header.css",
-        "sideEffects": [
-          "browser-condition-css"
-        ]
-      },
-      "wiring": [],
-      "publicClasses": [
-        "kui-page-header",
-        "kui-page-header__action"
-      ],
-      "publicTokens": [
-        "--kui-color-text",
-        "--kui-font-2xl",
-        "--kui-font-l",
-        "--kui-page-header-background",
-        "--kui-page-header-border",
-        "--kui-page-header-foreground"
-      ],
-      "links": {
-        "catalogRoute": "?component=page-header",
-        "documentation": "docs/component-selection.md",
-        "recipe": "docs/component-selection.md#ambiguous-choices"
-      }
-    },
-    {
-      "id": "dialog-header",
-      "name": "DialogHeader",
-      "category": "Structure",
-      "kind": "component",
-      "source": "kerf",
-      "description": "Dialog toolbar with aligned icon, title, grouped actions, and a subtitle row.",
+      "description": "A plain Toolbar as a panel, dialog, or page heading: optional icon group, an extra-large title, trailing actions, and an optional subtitle row.",
       "uses": [
         "lucide-icon",
         "toolbar",
         "toolbar-control-group",
         "toolbar-text"
       ],
-      "purpose": "Dialog toolbar with aligned icon, title, grouped actions, and a subtitle row.",
+      "purpose": "A plain Toolbar as a panel, dialog, or page heading: optional icon group, an extra-large title, trailing actions, and an optional subtitle row.",
       "publicExports": [
-        "DialogHeader"
+        "PanelHeader"
       ],
       "useWhen": [
-        "Label a focused dialog task with a toolbar-aligned title, icon, actions, and subtitle."
+        "Give a panel, dialog, or page a heading with an extra-large title, optional icon and subtitle, and trailing actions."
       ],
       "avoidWhen": [
-        "Do not use as the page heading or as a replacement for modal behavior."
+        "Do not use it as persistent application chrome; use Toolbar. It supplies header structure, not modal behavior."
       ],
       "alternatives": [
         {
-          "id": "page-header",
+          "id": "toolbar",
           "relationship": "nearest"
         },
         {
@@ -681,46 +606,41 @@
         "focus lifecycle",
         "dismissal",
         "copy",
-        "localized action-group label"
+        "the trailing action controls"
       ],
       "variants": [
         "title",
         "optional summary",
         "icon",
-        "actions",
-        "actionsLabel"
+        "actions"
       ],
       "accessibility": [
-        "Connect the title id and any provided summary id to the dialog host.",
-        "Pass a localized actionsLabel when the automatic action group needs an accessible name."
+        "Connect the title id and any provided summary id to the dialog or panel host.",
+        "Pass the trailing actions as a labeled ToolbarControlGroup when the group needs an accessible name."
       ],
       "delivery": {
-        "browserImport": "@kerfjs/ui/dialog-header",
-        "manualCssImport": "@kerfjs/ui/dialog-header.css",
+        "browserImport": "@kerfjs/ui/panel-header",
+        "manualCssImport": "@kerfjs/ui/panel-header.css",
         "sideEffects": [
           "browser-condition-css"
         ]
       },
       "wiring": [],
       "publicClasses": [
-        "kui-dialog-header",
-        "kui-dialog-header__actions",
-        "kui-dialog-header__icon",
-        "kui-dialog-header__summary",
-        "kui-dialog-header__title",
-        "kui-dialog-header__toolbar"
+        "kui-panel-header",
+        "kui-panel-header__icon",
+        "kui-panel-header__summary"
       ],
       "publicTokens": [
         "--kui-color-brand-fill-quiet",
         "--kui-color-brand-on-quiet",
-        "--kui-color-text",
         "--kui-color-text-quiet",
-        "--kui-dialog-header-icon-background",
-        "--kui-dialog-header-icon-foreground",
-        "--kui-radius-circle"
+        "--kui-panel-header-icon-background",
+        "--kui-panel-header-icon-border",
+        "--kui-panel-header-icon-foreground"
       ],
       "links": {
-        "catalogRoute": "?component=dialog-header",
+        "catalogRoute": "?component=panel-header",
         "documentation": "docs/component-selection.md",
         "recipe": "docs/component-selection.md#ambiguous-choices"
       }
@@ -879,11 +799,7 @@
       ],
       "alternatives": [
         {
-          "id": "page-header",
-          "relationship": "nearest"
-        },
-        {
-          "id": "dialog-header",
+          "id": "panel-header",
           "relationship": "nearest"
         }
       ],
@@ -4375,7 +4291,7 @@
         "toolbar-control-group",
         "menu-header",
         "menu-item",
-        "page-header",
+        "panel-header",
         "resize",
         "value-table",
         "layout"
@@ -4453,7 +4369,7 @@
       "source": "kerf",
       "purpose": "Page identity with primary, secondary, and overflow actions that relocate at narrow widths.",
       "uses": [
-        "page-header",
+        "panel-header",
         "state-banner",
         "layout"
       ],
@@ -4461,7 +4377,7 @@
         "A workspace page needs one primary heading and a small prioritized action set."
       ],
       "avoidWhen": [
-        "Use Toolbar for persistent application chrome or DialogHeader for a focused modal task."
+        "Use Toolbar for persistent application chrome or PanelHeader for a focused modal task."
       ],
       "appOwns": [
         "authorization",
@@ -4489,9 +4405,9 @@
       "category": "Recipes",
       "kind": "recipe",
       "source": "kerf",
-      "purpose": "Production modal containing a DialogHeader, navigable record master list, and ValueTable detail.",
+      "purpose": "Production modal containing a PanelHeader, navigable record master list, and ValueTable detail.",
       "uses": [
-        "dialog-header",
+        "panel-header",
         "menu-header",
         "menu-item",
         "value-table",
@@ -4511,7 +4427,7 @@
         "record actions"
       ],
       "accessibility": [
-        "Web Awesome owns modal focus and Escape; the application adapter restores the invoking control after hide, and DialogHeader supplies the visible hierarchy."
+        "Web Awesome owns modal focus and Escape; the application adapter restores the invoking control after hide, and PanelHeader supplies the visible hierarchy."
       ],
       "delivery": {
         "sideEffects": [
@@ -4531,9 +4447,9 @@
       "category": "Recipes",
       "kind": "recipe",
       "source": "kerf",
-      "purpose": "One visible publishing-form surface with DialogHeader hierarchy, fields and actions on the shared 8px control gutter, 24px major rhythm, and a conditional StateBanner as its only nested semantic surface.",
+      "purpose": "One visible publishing-form surface with PanelHeader hierarchy, fields and actions on the shared 8px control gutter, 24px major rhythm, and a conditional StateBanner as its only nested semantic surface.",
       "uses": [
-        "dialog-header",
+        "panel-header",
         "select",
         "state-banner",
         "wa-input",
@@ -4554,7 +4470,7 @@
         "transport"
       ],
       "accessibility": [
-        "The form references DialogHeader's title and summary ids; production fields own labels and help; invalid submission creates an assertive persistent StateBanner while successful submission creates a polite persistent banner."
+        "The form references PanelHeader's title and summary ids; production fields own labels and help; invalid submission creates an assertive persistent StateBanner while successful submission creates a polite persistent banner."
       ],
       "delivery": {
         "sideEffects": [
@@ -4576,7 +4492,7 @@
       "source": "kerf",
       "purpose": "Deterministic loading, empty, populated, stale refresh, and error states around one stable list workspace.",
       "uses": [
-        "page-header",
+        "panel-header",
         "state-banner",
         "empty-state",
         "loading-spinner",

@@ -56,8 +56,8 @@
     {
       "id": "master-detail-dialog",
       "prompt": "prompts/master-detail-dialog.md",
-      "requiredComponentIds": ["dialog-header", "menu-item", "value-table", "layout", "menu"],
-      "requiredImports": ["@kerfjs/ui/dialog-header", "@kerfjs/ui/menu-item", "@kerfjs/ui/value-table", "@kerfjs/ui/layout.css"],
+      "requiredComponentIds": ["panel-header", "menu-item", "value-table", "layout", "menu"],
+      "requiredImports": ["@kerfjs/ui/panel-header", "@kerfjs/ui/menu-item", "@kerfjs/ui/value-table", "@kerfjs/ui/layout.css"],
       "requiredClasses": ["kui-pane", "kui-pane__content", "kui-content"],
       "requiredWiring": [{ "name": "delegateActions", "specifier": "kerfjs/actions", "captured": true }],
       "forbiddenComponentIds": [],

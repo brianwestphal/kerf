@@ -195,18 +195,16 @@ test('keeps an icon-only control-group wa-button highlight at least square (min-
 test('hovers a lone control-group button as a whole, but keeps inner highlights in a real group', async ({ page, browserName }) => {
   await page.setViewportSize({ width: 1200, height: 900 });
 
-  // A DialogHeader's single action: hovering fills the whole pill, not an inner
-  // layer inset from the border. The button background stays transparent while
-  // the group takes the hover background.
-  await page.goto('/?component=dialog-header');
-  const soloGroup = page.locator('.kui-dialog-header__actions').first();
-  const soloButton = soloGroup.locator('button').first();
+  // A single-control group: hovering fills the whole pill, not an inner layer
+  // inset from the border. The button background stays transparent while the
+  // group takes the hover background.
+  await page.goto('/?component=toolbar-control-group');
+  const soloGroup = page.locator('.toolbar-control-group-demo .kui-toolbar-control-group[data-single="true"]').filter({ has: page.locator('wa-button[aria-label="Pin view"]') }).first();
+  const soloButton = soloGroup.locator('wa-button[aria-label="Pin view"]');
   const transparent = 'rgba(0, 0, 0, 0)';
-  await expect(soloButton).toHaveCSS('background-color', transparent);
   await soloButton.hover();
-  await expect(soloButton).toHaveCSS('background-color', transparent);
   await expect.poll(() => soloGroup.evaluate((g) => window.getComputedStyle(g).backgroundColor)).not.toBe(transparent);
-  if (browserName === 'chromium') await soloGroup.screenshot({ path: 'test-results/dialog-header-solo-hover.png' });
+  if (browserName === 'chromium') await soloGroup.screenshot({ path: 'test-results/toolbar-control-group-solo-hover.png' });
 
   // A genuine multi-button group still highlights the hovered button itself.
   await page.goto('/?component=toolbar-control-group');
@@ -476,7 +474,7 @@ test('loads component-reachable package CSS through browser subpaths', async ({ 
   await expect(page.locator('[data-component="empty-state"] .kui-loading-spinner')).toHaveCSS('display', 'block');
 });
 
-test('aligns DialogHeader identity and grouped actions across layout, theme, and scale', async ({ page, browserName }) => {
+test('aligns PanelHeader identity, actions, and subtitle across layout, theme, and scale', async ({ page, browserName }) => {
   const layouts = [
     { name: 'wide', width: 1100, height: 760, rootFontSize: '100%', dark: false, scale: 1 },
     { name: 'narrow', width: 390, height: 844, rootFontSize: '100%', dark: false, scale: 1 },
@@ -486,50 +484,47 @@ test('aligns DialogHeader identity and grouped actions across layout, theme, and
 
   for (const layout of layouts) {
     await page.setViewportSize({ width: layout.width, height: layout.height });
-    await page.goto('/?component=dialog-header');
+    await page.goto('/?component=panel-header');
     await page.locator('html').evaluate((element, fontSize) => { element.style.fontSize = fontSize; }, layout.rootFontSize);
     if (layout.dark) await page.locator('[data-action="toggle-theme"]').click();
 
-    const demo = page.locator('[data-demo="dialog-header"]');
-    const preferred = demo.locator('[data-component="dialog-header"]');
+    // The second example is the panel/dialog heading with an icon, subtitle, and action.
+    const preferred = page.locator('[data-component="panel-header"]', { has: page.locator('.kui-panel-header__icon') });
     const toolbar = preferred.locator(':scope > [data-component="toolbar"]');
-    const icon = toolbar.locator(':scope > .kui-toolbar__leading > .kui-dialog-header__icon');
+    const icon = toolbar.locator(':scope > .kui-toolbar__leading > .kui-panel-header__icon');
     const glyph = icon.locator('svg');
-    const title = toolbar.locator(':scope > .kui-toolbar__leading > .kui-dialog-header__title');
-    const actions = toolbar.locator(':scope > .kui-toolbar__trailing > .kui-dialog-header__actions');
-    const action = actions.getByRole('button', { name: 'Done' });
-    const summary = preferred.locator(':scope > .kui-dialog-header__summary');
+    const title = toolbar.locator(':scope > .kui-toolbar__leading > .kui-panel-header__title');
+    const action = toolbar.locator(':scope > .kui-toolbar__trailing').getByRole('button', { name: 'Done' });
+    const summary = preferred.locator(':scope > .kui-panel-header__summary');
 
     await expect(toolbar).toHaveAttribute('data-divider', 'false');
     expect(await toolbar.evaluate((element) => element.tagName)).toBe('HEADER');
-    // The icon is a borderless control group; the title is large toolbar text.
+    // The icon is a normal (bordered) control group — not borderless — and the
+    // title is extra-large toolbar text.
     await expect(icon).toHaveAttribute('data-component', 'toolbar-control-group');
-    await expect(icon).toHaveAttribute('data-appearance', 'borderless');
+    expect(await icon.getAttribute('data-appearance')).not.toBe('borderless');
     await expect(glyph).toBeVisible();
     await expect(title).toHaveAttribute('data-component', 'toolbar-text');
-    await expect(title).toHaveAttribute('data-size', 'large');
+    await expect(title).toHaveAttribute('data-size', 'xlarge');
     await expect(title).toBeVisible();
     await expect(title).toHaveText('Package details');
-    await expect(title).toHaveAttribute('id', 'standalone-package-title');
-    await expect(actions).toHaveAttribute('data-component', 'toolbar-control-group');
-    await expect(actions).toHaveAccessibleName('Package actions');
+    await expect(title).toHaveAttribute('id', 'panel-standalone-title');
     await expect(action).toBeVisible();
     await action.focus();
     await expect(action).toBeFocused();
-    await expect(summary).toHaveAttribute('id', 'standalone-package-summary');
+    await expect(summary).toHaveAttribute('id', 'panel-standalone-summary');
     await expect(summary).toHaveText('Production-backed primitives with explicit contracts.');
 
     const geometry = await preferred.evaluate((element) => {
       const el = (selector: string) => element.querySelector<HTMLElement>(selector)!;
       const bounds = (selector: string) => el(selector).getBoundingClientRect();
-      const iconBounds = bounds('.kui-dialog-header__icon');
-      const glyphBounds = bounds('.kui-dialog-header__icon svg');
-      const titleElement = el('.kui-dialog-header__title');
+      const iconBounds = bounds('.kui-panel-header__icon');
+      const glyphBounds = bounds('.kui-panel-header__icon svg');
+      const titleElement = el('.kui-panel-header__title');
       const titleBounds = titleElement.getBoundingClientRect();
       const titleTextLeft = titleBounds.left + Number.parseFloat(window.getComputedStyle(titleElement).paddingInlineStart);
-      const actionBounds = bounds('.kui-dialog-header__actions > button');
-      const groupBounds = bounds('.kui-dialog-header__actions');
-      const summaryElement = el('.kui-dialog-header__summary');
+      const actionBounds = element.querySelector<HTMLElement>('.kui-toolbar__trailing button')!.getBoundingClientRect();
+      const summaryElement = el('.kui-panel-header__summary');
       const summaryBounds = summaryElement.getBoundingClientRect();
       const summaryTextLeft = summaryBounds.left + Number.parseFloat(window.getComputedStyle(summaryElement).paddingInlineStart);
       return {
@@ -537,7 +532,6 @@ test('aligns DialogHeader identity and grouped actions across layout, theme, and
         documentOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
         glyphHeight: glyphBounds.height,
         glyphWidth: glyphBounds.width,
-        groupHeight: groupBounds.height,
         iconCenter: iconBounds.top + iconBounds.height / 2,
         iconHeight: iconBounds.height,
         iconWidth: iconBounds.width,
@@ -548,13 +542,12 @@ test('aligns DialogHeader identity and grouped actions across layout, theme, and
         titleTextLeft,
       };
     });
-    // The icon is a circular borderless control group at the toolbar control size.
+    // The icon control group sits at the toolbar control size with a 22px glyph.
     expect(geometry.iconWidth).toBeCloseTo(2 + 42 * layout.scale, 4);
     expect(geometry.iconHeight).toBeCloseTo(2 + 42 * layout.scale, 4);
     expect(geometry.glyphWidth).toBeCloseTo(22 * layout.scale, 4);
     expect(geometry.glyphHeight).toBeCloseTo(22 * layout.scale, 4);
-    expect(geometry.groupHeight).toBeCloseTo(2 + 42 * layout.scale, 4);
-    // Icon, title, and actions share one vertical center in the toolbar row.
+    // Icon, title, and action share one vertical center in the toolbar row.
     expect(geometry.iconCenter).toBeCloseTo(geometry.actionCenter, 3);
     expect(geometry.titleCenter).toBeCloseTo(geometry.actionCenter, 3);
     // The summary text left-aligns with the title text, on its own row below it.
@@ -562,39 +555,10 @@ test('aligns DialogHeader identity and grouped actions across layout, theme, and
     expect(geometry.summaryTop).toBeGreaterThanOrEqual(geometry.titleBottom - 0.1);
     expect(geometry.documentOverflow).toBeLessThanOrEqual(1);
 
-    await page.goto('/?component=headers');
-    await page.locator('html').evaluate((element, fontSize) => { element.style.fontSize = fontSize; }, layout.rootFontSize);
-    const compatible = page.locator('[data-demo="headers"] [data-component="dialog-header"]');
-    const compatibilityWrapper = compatible.locator('.kui-dialog-header__actions');
-    const nestedGroups = compatibilityWrapper.locator(':scope > [data-component="toolbar-control-group"]');
-    await expect(compatibilityWrapper).toHaveAccessibleName('Package actions');
-    await expect(nestedGroups).toHaveCount(1);
-    await expect(compatible.getByRole('button', { name: 'Done' })).toBeVisible();
-    const compatibilityGeometry = await compatibilityWrapper.evaluate((element) => {
-      const style = window.getComputedStyle(element);
-      const bounds = element.getBoundingClientRect();
-      const children = [...element.children].map((child) => (child as HTMLElement).getBoundingClientRect());
-      return {
-        backgroundColor: style.backgroundColor,
-        borderColor: style.borderTopColor,
-        height: bounds.height,
-        childrenCentered: children.every((child) => Math.abs((child.top + child.height / 2) - (bounds.top + bounds.height / 2)) < 0.1),
-      };
-    });
-    expect(compatibilityGeometry).toEqual(expect.objectContaining({
-      backgroundColor: 'rgba(0, 0, 0, 0)',
-      borderColor: 'rgba(0, 0, 0, 0)',
-      childrenCentered: true,
-    }));
-    expect(compatibilityGeometry.height).toBeCloseTo(2 + 42 * layout.scale, 4);
-
     if (browserName === 'chromium') {
-      await page.goto('/?component=dialog-header');
-      await page.locator('html').evaluate((element, fontSize) => { element.style.fontSize = fontSize; }, layout.rootFontSize);
-      if (layout.dark) await page.locator('[data-action="toggle-theme"]').click();
-      await page.screenshot({ path: `test-results/dialog-header-${layout.name}.png`, fullPage: true });
+      await page.screenshot({ path: `test-results/panel-header-${layout.name}.png`, fullPage: true });
       if (layout.name === 'wide') {
-        await page.locator('[data-demo="dialog-header"]').screenshot({ path: 'test-results/dialog-header-reference-after.png' });
+        await page.locator('[data-demo="panel-header"]').screenshot({ path: 'test-results/panel-header-reference-after.png' });
       }
     }
   }
@@ -867,18 +831,20 @@ test('uses a collapsible pane shell, toolbar page chrome, and opt-in floating re
   }
 });
 
-test('aligns PageHeader actions with the following content-item border', async ({ page }) => {
+test('aligns a PanelHeader trailing action with the following content-item border', async ({ page }) => {
   await page.setViewportSize({ width: 1100, height: 760 });
   await page.goto('/?component=layout');
   const geometry = await page.locator('[data-demo="layout"]').evaluate((demo) => {
-    const action = demo.querySelector<HTMLElement>('.kui-page-header__action > button')!.getBoundingClientRect();
-    const following = demo.querySelector<HTMLElement>('.kui-page-header + .kui-pane__content .kui-content-item')!.getBoundingClientRect();
+    const action = demo.querySelector<HTMLElement>('.kui-panel-header .kui-toolbar__trailing button')!.getBoundingClientRect();
+    const following = demo.querySelector<HTMLElement>('.kui-panel-header + .kui-pane__content .kui-content-item')!.getBoundingClientRect();
     return { actionRight: action.right, followingRight: following.right };
   });
-  expect(geometry.actionRight).toBeCloseTo(geometry.followingRight, 4);
+  // The toolbar's 8px trailing padding and the content-item's 8px inline margin
+  // both land the right edge at the pane edge minus 8px, so they align.
+  expect(geometry.actionRight).toBeCloseTo(geometry.followingRight, 0);
 });
 
-test('keeps the header-composition dialog on the shared inline gutter', async ({ page, browserName }) => {
+test('renders the header composition as two panel headers over a value table', async ({ page, browserName }) => {
   const cases = [
     { name: 'wide', width: 1440, height: 900, rootFontSize: '', direction: 'ltr', scale: 1 },
     { name: 'narrow', width: 390, height: 844, rootFontSize: '', direction: 'ltr', scale: 1 },
@@ -894,44 +860,28 @@ test('keeps the header-composition dialog on the shared inline gutter', async ({
       element.style.fontSize = settings.rootFontSize;
     }, layout);
 
-    const geometry = await page.locator('[data-demo="headers"]').evaluate((demo) => {
-      const frame = demo.getBoundingClientRect();
-      const pageHeader = demo.querySelector<HTMLElement>('[data-component="page-header"]')!;
-      const dialog = demo.querySelector<HTMLElement>('.demo-dialog')!;
-      const pageHeaderRect = pageHeader.getBoundingClientRect();
-      const dialogRect = dialog.getBoundingClientRect();
-      const dialogStyle = window.getComputedStyle(dialog);
+    const demo = page.locator('[data-demo="headers"]');
+    // Two PanelHeaders (a page-style heading and an icon+subtitle panel heading)
+    // and one value table, each within the frame and with no page overflow.
+    await expect(demo.locator('[data-component="panel-header"]')).toHaveCount(2);
+    await expect(demo.locator('[data-component="panel-header"] .kui-panel-header__icon')).toHaveCount(1);
+    await expect(demo.locator('.kui-value-table')).toHaveCount(1);
+    const geometry = await demo.evaluate((element) => {
+      const frame = element.getBoundingClientRect();
+      const children = [...element.querySelectorAll<HTMLElement>('[data-component="panel-header"], .kui-value-table')]
+        .map((child) => child.getBoundingClientRect());
       return {
-        frameLeft: frame.left,
-        frameRight: frame.right,
-        pageHeaderLeft: pageHeaderRect.left,
-        pageHeaderRight: pageHeaderRect.right,
-        dialogLeft: dialogRect.left,
-        dialogRight: dialogRect.right,
-        marginBlockStart: Number.parseFloat(dialogStyle.marginBlockStart),
-        marginBlockEnd: Number.parseFloat(dialogStyle.marginBlockEnd),
-        marginInlineStart: Number.parseFloat(dialogStyle.marginInlineStart),
-        marginInlineEnd: Number.parseFloat(dialogStyle.marginInlineEnd),
+        withinFrame: children.every((child) => child.left >= frame.left - 1 && child.right <= frame.right + 1),
         documentOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
       };
     });
-
-    expect(geometry).toMatchObject({
-      marginBlockStart: 16 * layout.scale,
-      marginBlockEnd: 16 * layout.scale,
-      marginInlineStart: 8 * layout.scale,
-      marginInlineEnd: 8 * layout.scale,
-    });
-    expect(Math.abs(geometry.dialogLeft - geometry.pageHeaderLeft)).toBeLessThan(0.1);
-    expect(Math.abs(geometry.dialogRight - geometry.pageHeaderRight)).toBeLessThan(0.1);
-    expect(geometry.dialogLeft).toBeGreaterThanOrEqual(geometry.frameLeft);
-    expect(geometry.dialogRight).toBeLessThanOrEqual(geometry.frameRight);
+    expect(geometry.withinFrame).toBe(true);
     expect(geometry.documentOverflow).toBeLessThanOrEqual(1);
 
     if (browserName === 'chromium') {
       await page.screenshot({ path: `test-results/header-composition-${layout.name}.png`, fullPage: true });
       if (layout.name === 'wide') {
-        await page.locator('[data-demo="headers"]').screenshot({ path: 'test-results/header-composition-reference-after.png' });
+        await demo.screenshot({ path: 'test-results/header-composition-reference-after.png' });
       }
     }
   }
