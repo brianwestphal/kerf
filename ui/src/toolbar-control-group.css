@@ -43,6 +43,14 @@
 }
 
 .kui-toolbar-control-group[data-appearance="borderless"] {
+  /* A borderless group has no base fill to lift from, so the default
+     surface-colored hover/selected background is invisible against the page.
+     Use a visible neutral tint so buttons still show hover/press feedback
+     (KF-WZDQS8). */
+  --kui-toolbar-control-hover-background: var(--kui-color-neutral-fill-normal);
+  --kui-toolbar-control-selected-background: var(
+    --kui-color-neutral-fill-normal
+  );
   border-color: transparent;
   background: transparent;
 }

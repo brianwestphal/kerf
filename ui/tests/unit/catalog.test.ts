@@ -131,7 +131,7 @@ describe('UX catalog metadata', () => {
     expect(catalogEntriesUsing('segmented-control').map((entry) => entry.id)).toEqual(['toolbar-control-group', 'recipe-compact-toolbar']);
     expect(findCatalogEntry('token-search-field')?.uses).toEqual(['lucide-icon']);
     expect(findCatalogEntry('menu-action-row')?.uses).toEqual(['lucide-icon']);
-    expect(findCatalogEntry('dialog-header')?.uses).toEqual(['lucide-icon', 'toolbar', 'toolbar-control-group']);
+    expect(findCatalogEntry('dialog-header')?.uses).toEqual(['lucide-icon', 'toolbar', 'toolbar-control-group', 'toolbar-text']);
     expect(catalogEntriesUsing('menu-action-row').map((entry) => entry.id)).toEqual(['menu']);
   });
 

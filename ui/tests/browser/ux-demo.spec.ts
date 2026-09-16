@@ -226,6 +226,20 @@ test('hovers a lone control-group button as a whole, but keeps inner highlights 
   })).not.toBe(transparent);
 });
 
+test('shows a visible hover background on borderless toolbar-group buttons', async ({ page }) => {
+  await page.goto('/?component=toolbar-control-group');
+  const group = page.locator('.toolbar-control-group-demo .kui-toolbar-control-group[data-appearance="borderless"]').filter({ has: page.locator('> button') }).first();
+  const button = group.locator('> button').first();
+  const groupBackground = () => group.evaluate((element) => window.getComputedStyle(element).backgroundColor);
+  const transparent = 'rgba(0, 0, 0, 0)';
+  // Transparent at rest; a visible neutral tint on hover (not the page surface,
+  // which would be invisible on a borderless group). KF-WZDQS8.
+  await expect.poll(groupBackground).toBe(transparent);
+  await button.hover();
+  await expect.poll(groupBackground).not.toBe(transparent);
+  await expect.poll(groupBackground).not.toBe('rgb(255, 255, 255)');
+});
+
 test('presents the LucideIcon modes as labeled examples that differ only in semantics', async ({ page }) => {
   await page.goto('/?component=lucide-icon');
   const demo = page.locator('[data-demo="lucide-icon"]');
