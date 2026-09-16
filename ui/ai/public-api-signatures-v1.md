@@ -49,8 +49,10 @@ interface ToolbarTextProps {
     text: string;
     size?: ToolbarTextSize;
     className?: string;
+    /** Optional id, e.g. so a dialog can reference the title via aria-labelledby. */
+    id?: string;
 }
-declare function ToolbarText({ text, size, className }: ToolbarTextProps): kerfjs.SafeHtml;
+declare function ToolbarText({ text, size, className, id }: ToolbarTextProps): kerfjs.SafeHtml;
 
 export { ToolbarText, type ToolbarTextProps, type ToolbarTextSize };
 ```
@@ -241,6 +243,14 @@ interface DialogHeaderProps {
     actions?: SafeHtml;
     actionsLabel?: string;
 }
+/**
+ * The header row of a dialog: a real `Toolbar` whose leading zone holds an
+ * optional icon (a borderless control group with an overridden circular
+ * background) and the title as large `ToolbarText`, and whose trailing zone holds
+ * the action controls. An optional summary sits on its own row, left-aligned with
+ * the title. The header owns no inline padding or border of its own — its
+ * sub-elements (icon, title, action buttons) carry their own geometry.
+ */
 declare function DialogHeader({ title, titleId, summary, summaryId, icon, iconClassName, actions, actionsLabel }: DialogHeaderProps): SafeHtml;
 
 export { DialogHeader, type DialogHeaderProps };

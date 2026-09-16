@@ -198,7 +198,8 @@ export const generatedKerfCatalog = [
     "uses": [
       "lucide-icon",
       "toolbar",
-      "toolbar-control-group"
+      "toolbar-control-group",
+      "toolbar-text"
     ],
     "demoSource": "ui/ux-demo/main.tsx",
     "componentSource": "ui/src/dialog-header.tsx",

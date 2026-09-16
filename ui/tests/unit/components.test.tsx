@@ -431,9 +431,12 @@ describe('production UI primitives', () => {
     expect(dialogRoot.tagName).toBe('DIV');
     expect(toolbar.tagName).toBe('HEADER');
     expect(toolbar.dataset.divider).toBe('false');
-    expect(toolbar.querySelector(':scope > .kui-toolbar__leading > .kui-dialog-header__identity[data-component="toolbar-control-group"]')).not.toBeNull();
-    expect(toolbar.querySelector('.kui-dialog-header__identity > .kui-dialog-header__icon.accent')).not.toBeNull();
-    expect(toolbar.querySelector('.kui-dialog-header__identity h2')?.outerHTML).toBe('<h2 id="details-title">Details</h2>');
+    expect(toolbar.querySelector(':scope > .kui-toolbar__leading > .kui-dialog-header__icon.accent[data-component="toolbar-control-group"][data-appearance="borderless"]')).not.toBeNull();
+    const dialogTitle = toolbar.querySelector<HTMLElement>(':scope > .kui-toolbar__leading > .kui-dialog-header__title')!;
+    expect(dialogTitle.dataset.component).toBe('toolbar-text');
+    expect(dialogTitle.dataset.size).toBe('large');
+    expect(dialogTitle.id).toBe('details-title');
+    expect(dialogTitle.textContent).toBe('Details');
     expect(toolbar.querySelector(':scope > .kui-toolbar__trailing > .kui-dialog-header__actions[data-component="toolbar-control-group"]')?.getAttribute('aria-label')).toBe('Detail actions');
     expect(dialogRoot.querySelector(':scope > .kui-dialog-header__summary')?.outerHTML).toBe('<p class="kui-dialog-header__summary" id="details-summary">Current state</p>');
 

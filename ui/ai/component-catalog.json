@@ -653,7 +653,8 @@
       "uses": [
         "lucide-icon",
         "toolbar",
-        "toolbar-control-group"
+        "toolbar-control-group",
+        "toolbar-text"
       ],
       "purpose": "Dialog toolbar with aligned icon, title, grouped actions, and a subtitle row.",
       "publicExports": [
@@ -704,10 +705,9 @@
       "publicClasses": [
         "kui-dialog-header",
         "kui-dialog-header__actions",
-        "kui-dialog-header__copy",
         "kui-dialog-header__icon",
-        "kui-dialog-header__identity",
         "kui-dialog-header__summary",
+        "kui-dialog-header__title",
         "kui-dialog-header__toolbar"
       ],
       "publicTokens": [
@@ -715,10 +715,8 @@
         "--kui-color-brand-on-quiet",
         "--kui-color-text",
         "--kui-color-text-quiet",
-        "--kui-dialog-header-border",
         "--kui-dialog-header-icon-background",
         "--kui-dialog-header-icon-foreground",
-        "--kui-font-l",
         "--kui-radius-circle"
       ],
       "links": {

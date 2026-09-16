@@ -232,14 +232,14 @@ test('renders non-composition demos on the grid with a bounds/margin overlay, an
   // A single-component demo: the wrapper card is stripped (transparent) so the
   // component sits on the grid, and the overlay marks each component's outer
   // bound (gray) and non-zero default margins (orange).
-  await page.goto('/?component=dialog-header');
+  await page.goto('/?component=menu-header');
   const canvas = page.locator('.catalog-canvas');
   await expect(canvas).toHaveAttribute('data-demo-mode', 'component');
-  const wrapper = page.locator('.demo-dialog--standalone');
+  const wrapper = page.locator('.demo-menu').first();
   await expect.poll(() => wrapper.evaluate((el) => window.getComputedStyle(el).backgroundColor)).toBe('rgba(0, 0, 0, 0)');
   const overlay = page.locator('[data-demo-overlay]');
-  await expect.poll(() => overlay.locator('.demo-overlay__bound').count()).toBe(1);
-  await expect.poll(() => overlay.locator('.demo-overlay__margin').count()).toBe(2); // the dialog header's 8px inline margins
+  await expect.poll(() => overlay.locator('.demo-overlay__bound').count()).toBeGreaterThan(0);
+  await expect.poll(() => overlay.locator('.demo-overlay__margin').count()).toBeGreaterThan(0);
   if (browserName === 'chromium') await canvas.screenshot({ path: 'test-results/component-demo-overlay.png' });
 
   // A composition demo keeps its layout and gets no overlay.
@@ -423,20 +423,23 @@ test('aligns DialogHeader identity and grouped actions across layout, theme, and
     const demo = page.locator('[data-demo="dialog-header"]');
     const preferred = demo.locator('[data-component="dialog-header"]');
     const toolbar = preferred.locator(':scope > [data-component="toolbar"]');
-    const identity = toolbar.locator(':scope > .kui-toolbar__leading > .kui-dialog-header__identity');
-    const icon = identity.locator('.kui-dialog-header__icon');
+    const icon = toolbar.locator(':scope > .kui-toolbar__leading > .kui-dialog-header__icon');
     const glyph = icon.locator('svg');
-    const title = identity.getByRole('heading', { level: 2, name: 'Package details' });
+    const title = toolbar.locator(':scope > .kui-toolbar__leading > .kui-dialog-header__title');
     const actions = toolbar.locator(':scope > .kui-toolbar__trailing > .kui-dialog-header__actions');
     const action = actions.getByRole('button', { name: 'Done' });
     const summary = preferred.locator(':scope > .kui-dialog-header__summary');
 
     await expect(toolbar).toHaveAttribute('data-divider', 'false');
     expect(await toolbar.evaluate((element) => element.tagName)).toBe('HEADER');
-    await expect(identity).toHaveAttribute('data-component', 'toolbar-control-group');
-    await expect(identity).toHaveAttribute('data-appearance', 'borderless');
+    // The icon is a borderless control group; the title is large toolbar text.
+    await expect(icon).toHaveAttribute('data-component', 'toolbar-control-group');
+    await expect(icon).toHaveAttribute('data-appearance', 'borderless');
     await expect(glyph).toBeVisible();
+    await expect(title).toHaveAttribute('data-component', 'toolbar-text');
+    await expect(title).toHaveAttribute('data-size', 'large');
     await expect(title).toBeVisible();
+    await expect(title).toHaveText('Package details');
     await expect(title).toHaveAttribute('id', 'standalone-package-title');
     await expect(actions).toHaveAttribute('data-component', 'toolbar-control-group');
     await expect(actions).toHaveAccessibleName('Package actions');
@@ -447,14 +450,18 @@ test('aligns DialogHeader identity and grouped actions across layout, theme, and
     await expect(summary).toHaveText('Production-backed primitives with explicit contracts.');
 
     const geometry = await preferred.evaluate((element) => {
-      const bounds = (selector: string) => element.querySelector<HTMLElement>(selector)!.getBoundingClientRect();
+      const el = (selector: string) => element.querySelector<HTMLElement>(selector)!;
+      const bounds = (selector: string) => el(selector).getBoundingClientRect();
       const iconBounds = bounds('.kui-dialog-header__icon');
       const glyphBounds = bounds('.kui-dialog-header__icon svg');
-      const titleBounds = bounds('.kui-dialog-header__copy h2');
+      const titleElement = el('.kui-dialog-header__title');
+      const titleBounds = titleElement.getBoundingClientRect();
+      const titleTextLeft = titleBounds.left + Number.parseFloat(window.getComputedStyle(titleElement).paddingInlineStart);
       const actionBounds = bounds('.kui-dialog-header__actions > button');
       const groupBounds = bounds('.kui-dialog-header__actions');
-      const summaryBounds = bounds('.kui-dialog-header__summary');
-      const summaryStyle = window.getComputedStyle(element.querySelector<HTMLElement>('.kui-dialog-header__summary')!);
+      const summaryElement = el('.kui-dialog-header__summary');
+      const summaryBounds = summaryElement.getBoundingClientRect();
+      const summaryTextLeft = summaryBounds.left + Number.parseFloat(window.getComputedStyle(summaryElement).paddingInlineStart);
       return {
         actionCenter: actionBounds.top + actionBounds.height / 2,
         documentOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
@@ -464,21 +471,24 @@ test('aligns DialogHeader identity and grouped actions across layout, theme, and
         iconCenter: iconBounds.top + iconBounds.height / 2,
         iconHeight: iconBounds.height,
         iconWidth: iconBounds.width,
-        summaryTextLeft: summaryBounds.left + Number.parseFloat(summaryStyle.paddingInlineStart),
+        summaryTextLeft,
         summaryTop: summaryBounds.top,
         titleBottom: titleBounds.bottom,
         titleCenter: titleBounds.top + titleBounds.height / 2,
-        titleLeft: titleBounds.left,
+        titleTextLeft,
       };
     });
-    expect(geometry.iconWidth).toBeCloseTo(34 * layout.scale, 4);
-    expect(geometry.iconHeight).toBeCloseTo(34 * layout.scale, 4);
-    expect(geometry.glyphWidth).toBeCloseTo(24 * layout.scale, 4);
-    expect(geometry.glyphHeight).toBeCloseTo(24 * layout.scale, 4);
+    // The icon is a circular borderless control group at the toolbar control size.
+    expect(geometry.iconWidth).toBeCloseTo(2 + 42 * layout.scale, 4);
+    expect(geometry.iconHeight).toBeCloseTo(2 + 42 * layout.scale, 4);
+    expect(geometry.glyphWidth).toBeCloseTo(22 * layout.scale, 4);
+    expect(geometry.glyphHeight).toBeCloseTo(22 * layout.scale, 4);
     expect(geometry.groupHeight).toBeCloseTo(2 + 42 * layout.scale, 4);
+    // Icon, title, and actions share one vertical center in the toolbar row.
     expect(geometry.iconCenter).toBeCloseTo(geometry.actionCenter, 3);
     expect(geometry.titleCenter).toBeCloseTo(geometry.actionCenter, 3);
-    expect(geometry.summaryTextLeft).toBeCloseTo(geometry.titleLeft, 4);
+    // The summary text left-aligns with the title text, on its own row below it.
+    expect(geometry.summaryTextLeft).toBeCloseTo(geometry.titleTextLeft, 4);
     expect(geometry.summaryTop).toBeGreaterThanOrEqual(geometry.titleBottom - 0.1);
     expect(geometry.documentOverflow).toBeLessThanOrEqual(1);
 

@@ -245,7 +245,11 @@ test('keeps the composer on one labeled surface with shared field and action gut
     expect(measured.documentOverflow).toBeLessThanOrEqual(1);
     expect(measured.fieldsGap).toBeCloseTo(8 * scale, 0);
     expect(measured.hintCountOverlap).toBe(false);
-    for (const inset of [measured.actionStart, measured.fieldStart, measured.fieldsStart, measured.fieldsEnd, measured.footerStart, measured.footerEnd, measured.headerStart, measured.headerEnd]) expect(inset).toBeCloseTo(1 + (8 * scale), 0);
+    for (const inset of [measured.actionStart, measured.fieldStart, measured.fieldsStart, measured.fieldsEnd, measured.footerStart, measured.footerEnd]) expect(inset).toBeCloseTo(1 + (8 * scale), 0);
+    // The redesigned DialogHeader is a flush toolbar and no longer replicates the
+    // content-item gutter, so it sits at the surface edge rather than the 9px inset.
+    expect(measured.headerStart).toBeLessThanOrEqual(1 + (2 * scale));
+    expect(measured.headerEnd).toBeLessThanOrEqual(1 + (2 * scale));
     for (const padding of [measured.inputLabelPadding, measured.inputHintPadding, measured.textareaLabelPadding, measured.textareaHintPadding, measured.selectLabelPadding]) {
       expect(padding.start).toBeCloseTo(8 * scale, 0);
       expect(padding.end).toBeCloseTo(8 * scale, 0);

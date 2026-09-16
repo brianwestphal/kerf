@@ -68,10 +68,13 @@ Toolbar groups reserve a real 1px outer border around a 42px inner area, even
 when their border and background are transparent.
 `PageHeader` keeps its title on the shared inset while its action border aligns
 with the logical edge of the following `.kui-content-item` border.
-`DialogHeader` applies the same rule internally: its icon/title identity is a
-borderless group in a top toolbar, its direct action children are wrapped in a
-contained group, and its optional subtitle is a separate row aligned below the
-title. The icon visual is 24px inside a 34px circular background.
+`DialogHeader` is itself a top `Toolbar` and owns no inline padding or border of
+its own — its sub-elements carry their geometry. The leading zone holds the
+optional icon (a borderless `ToolbarControlGroup` with an overridden circular
+background at the toolbar control size, a 22px glyph) and the title as large
+`ToolbarText`; direct action children are wrapped in a contained group in the
+trailing zone. The optional subtitle is a separate row below the toolbar, its
+text left-aligned with the title text.
 
 ## Spacing scale
 
