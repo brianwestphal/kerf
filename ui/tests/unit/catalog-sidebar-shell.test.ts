@@ -17,6 +17,13 @@ describe('UX catalog sidebar shell', () => {
     expect(source).not.toContain('<span class="catalog-mark" aria-hidden="true">K</span>');
   });
 
+  it('links the brand favicon in the catalog page head', async () => {
+    const html = await readFile(resolve(import.meta.dirname, '../../ux-demo/index.html'), 'utf8');
+    // A static <link> (not a kerf-rendered src) so it needs no ?no-inline; Vite
+    // bundles the repo-owned favicon and rewrites the href against `base: './'`.
+    expect(html).toContain('<link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg" />');
+  });
+
   it('serves the repo-owned logo in development and builds relative asset URLs for nested preview paths', async () => {
     const source = await readFile(resolve(import.meta.dirname, '../../ux-demo/vite.config.ts'), 'utf8');
 
