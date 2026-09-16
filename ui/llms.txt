@@ -101,8 +101,12 @@ maintain a central style list. Configure JSX with `"jsxImportSource": "kerfjs"`.
 `LoadingSpinner`, `Skeleton`, `ValueTable`, `ValueTableRow`. Whole-screen layouts (opt-in,
 tree-shakeable, declarative with `wire…` helpers, each with a companion CSS import):
 `NavStack`, `SplitView`, `Workbench`, `TabScaffold`, driven by `deviceClass()` from
-`@kerfjs/ui/device-class`. `@kerfjs/ui/webawesome` is a type-only boundary for
-`wa-*` JSX; `@kerfjs/ui/select/register` and the CSS are the declared side effects.
+`@kerfjs/ui/device-class`. `@kerfjs/ui/catalog` is another opt-in shell — a
+`Catalog` component + `wireCatalog` helper for building a component-gallery catalog
+(collapsible category sidebar + preview stage + resources footer) from your own
+entries; controlled/stateless like the layouts. `@kerfjs/ui/webawesome` is a
+type-only boundary for `wa-*` JSX; `@kerfjs/ui/select/register` and the CSS are the
+declared side effects.
 
 ## Reference
 

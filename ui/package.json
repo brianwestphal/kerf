@@ -97,6 +97,14 @@
       "browser": "./dist/browser/app-tab.js",
       "import": "./dist/app-tab.js"
     },
+    "./catalog": {
+      "types": "./dist/catalog.d.ts",
+      "import": "./dist/catalog.js"
+    },
+    "./wire-catalog": {
+      "types": "./dist/wire-catalog.d.ts",
+      "import": "./dist/wire-catalog.js"
+    },
     "./tab-bar": {
       "types": "./dist/tab-bar.d.ts",
       "browser": "./dist/browser/tab-bar.js",
@@ -205,6 +213,7 @@
     "./menu-header.css": "./dist/styles/menu-header.css",
     "./resizable-region.css": "./dist/styles/resizable-region.css",
     "./app-tab.css": "./dist/styles/app-tab.css",
+    "./catalog.css": "./dist/styles/catalog.css",
     "./tab-bar.css": "./dist/styles/tab-bar.css",
     "./nav-stack.css": "./dist/styles/nav-stack.css",
     "./split-view.css": "./dist/styles/split-view.css",

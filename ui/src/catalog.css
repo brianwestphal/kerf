@@ -1,0 +1,385 @@
+.kui-catalog {
+  /* Collapsing the sidebar changes its grid column, which reflows the detail
+     pane. Animating that width relayouts the whole shell per frame, so the column
+     snaps instantly (one reflow) and the fixed-width sidebar slides via transform
+     only (composited, clipped by this shell's overflow). */
+  --kui-catalog-sidebar-width: remify(288px);
+  --kui-catalog-content-measure: remify(1120px);
+
+  display: grid;
+  height: 100vh;
+  grid-template-columns: var(--kui-catalog-sidebar-width) minmax(0, 1fr);
+  overflow: hidden;
+}
+
+.kui-catalog[data-sidebar-collapsed="true"] {
+  grid-template-columns: 0 minmax(0, 1fr);
+}
+
+.kui-catalog__sidebar {
+  width: var(--kui-catalog-sidebar-width);
+  min-width: var(--kui-catalog-sidebar-width);
+  height: 100%;
+  padding: 0;
+  overflow: hidden;
+  justify-self: start;
+  border-inline-end: 1px solid var(--kui-color-border);
+  background: var(--kui-color-surface);
+  transition:
+    transform 200ms ease,
+    visibility 0s linear 0s;
+}
+
+.kui-catalog[data-sidebar-collapsed="true"] .kui-catalog__sidebar {
+  border-inline-end: 0;
+  /* Slide out first, then hide, so the panel animates offscreen and only then
+     leaves the tab order rather than snapping invisible mid-slide. */
+  transform: translateX(-100%);
+  visibility: hidden;
+  transition:
+    transform 200ms ease,
+    visibility 0s linear 200ms;
+}
+
+.kui-catalog__brand {
+  border-block-end: 1px solid var(--kui-color-border);
+}
+
+.kui-catalog__brand .kui-toolbar {
+  padding: var(--kui-space-xs);
+}
+
+.kui-catalog__identity {
+  min-width: 0;
+  gap: var(--kui-layout-control-gap, remify(8px));
+}
+
+.kui-catalog__identity h1,
+.kui-catalog__subtitle {
+  margin: 0;
+}
+
+.kui-catalog__identity h1 {
+  overflow: hidden;
+  font-size: var(--kui-font-m);
+  letter-spacing: 0.07em;
+  line-height: 1.15;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.kui-catalog__subtitle {
+  overflow: hidden;
+  margin-block-start: calc(-1 * var(--kui-space-xs));
+  padding-block-end: var(--kui-space-xs);
+  padding-inline: calc(
+      var(--kui-space-xs) + remify(2px) + remify(34px) +
+        var(--kui-layout-control-gap, remify(8px))
+    )
+    var(--kui-space-xs);
+  color: var(--kui-color-text-quiet);
+  font-size: var(--kui-font-xs);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.kui-catalog__mark {
+  display: block;
+  width: remify(34px);
+  height: remify(34px);
+  flex: 0 0 auto;
+}
+
+.kui-catalog__group {
+  margin-block-start: var(--kui-space-m);
+}
+
+.kui-catalog__group:first-child {
+  margin-block-start: var(--kui-space-2xs);
+}
+
+.kui-catalog__items {
+  display: grid;
+  gap: var(--kui-space-2xs);
+}
+
+.kui-catalog__items .kui-menu-item {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.kui-catalog__detail {
+  min-width: 0;
+  height: 100%;
+  grid-column: 2;
+}
+
+.kui-catalog__header {
+  border-block-end: 1px solid var(--kui-color-border);
+  background: var(--kui-color-surface);
+}
+
+.kui-catalog__header .kui-toolbar {
+  padding-block-end: 0;
+}
+
+.kui-catalog__title {
+  min-width: 0;
+}
+
+.kui-catalog__title h2,
+.kui-catalog__description {
+  margin: 0;
+}
+
+.kui-catalog__title h2 {
+  overflow: hidden;
+  font-size: var(--kui-font-l);
+  letter-spacing: -0.025em;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.kui-catalog__description {
+  max-width: var(--kui-catalog-content-measure, remify(1120px));
+  margin-block: 0 var(--kui-space-xs);
+  color: var(--kui-color-text-quiet);
+  background: transparent;
+  line-height: 1.45;
+}
+
+.kui-catalog__header-actions {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: var(--kui-layout-control-gap);
+}
+
+.kui-catalog__settings {
+  box-shadow: none;
+}
+
+.kui-catalog__settings > button {
+  display: inline-flex;
+  align-items: center;
+  gap: remify(6px);
+}
+
+.kui-catalog__settings > button:focus-visible {
+  outline: var(--kui-focus-ring);
+  outline-offset: 2px;
+}
+
+.kui-catalog__settings svg {
+  width: remify(16px);
+  height: remify(16px);
+}
+
+.kui-catalog__stage {
+  width: 100%;
+  background-color: var(--kui-color-surface-lowered);
+  background-image:
+    linear-gradient(
+      45deg,
+      color-mix(in srgb, var(--kui-color-border-quiet) 42%, transparent) 25%,
+      transparent 25%
+    ),
+    linear-gradient(
+      -45deg,
+      color-mix(in srgb, var(--kui-color-border-quiet) 42%, transparent) 25%,
+      transparent 25%
+    ),
+    linear-gradient(
+      45deg,
+      transparent 75%,
+      color-mix(in srgb, var(--kui-color-border-quiet) 42%, transparent) 75%
+    ),
+    linear-gradient(
+      -45deg,
+      transparent 75%,
+      color-mix(in srgb, var(--kui-color-border-quiet) 42%, transparent) 75%
+    );
+  background-position:
+    0 0,
+    0 remify(12px),
+    remify(12px) remify(-12px),
+    remify(-12px) 0;
+  background-size: remify(24px) remify(24px);
+}
+
+.kui-catalog__canvas {
+  position: relative;
+  display: grid;
+  width: min(100%, var(--kui-catalog-content-measure, remify(1120px)));
+  min-width: 0;
+  min-height: 100%;
+  margin-inline: auto;
+  padding: var(--kui-layout-content-gap);
+  box-sizing: border-box;
+  place-items: center;
+}
+
+.kui-catalog__footer {
+  --kui-toolbar-gap: remify(4px);
+  --kui-toolbar-group-size: remify(32px);
+
+  border-block-start: 1px solid var(--kui-color-border);
+  background: color-mix(
+    in srgb,
+    var(--kui-color-surface-lowered) 72%,
+    var(--kui-color-surface)
+  );
+}
+
+.kui-catalog__status {
+  display: flex;
+  min-height: remify(26px);
+  padding: remify(6px) remify(12px) 0;
+  color: var(--kui-color-text-quiet);
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--kui-layout-control-gap);
+  font-size: var(--kui-font-xs);
+}
+
+.kui-catalog__footer .kui-toolbar {
+  min-height: remify(40px);
+  padding: remify(4px) remify(8px) remify(8px);
+}
+
+.kui-catalog__footer .kui-toolbar-control-group {
+  height: remify(32px);
+  min-width: remify(32px);
+}
+
+.kui-catalog__resources {
+  min-width: 0;
+}
+
+.kui-catalog__resource-group {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.kui-catalog__resource {
+  position: relative;
+  display: inline-flex;
+  flex: 0 0 auto;
+  min-width: 0;
+  height: remify(30px);
+  padding: 0 var(--kui-space-xs);
+  border: 1px solid transparent;
+  border-radius: var(--kui-radius-pill);
+  color: var(--kui-color-text);
+  background: transparent;
+  text-decoration: none;
+  white-space: nowrap;
+  align-items: center;
+  gap: var(--kui-space-2xs);
+}
+
+.kui-catalog__resource:hover {
+  border-color: var(--kui-color-border);
+  background: var(--kui-color-surface);
+}
+
+.kui-catalog__resource:focus-visible {
+  outline: var(--kui-focus-ring);
+  outline-offset: 2px;
+}
+
+.kui-catalog__resource svg {
+  width: remify(14px);
+  height: remify(14px);
+}
+
+/* The optional monospace detail is a visually-hidden accessible affordance. */
+.kui-catalog__resource code {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.kui-catalog__related-group {
+  padding: 0;
+}
+
+.kui-catalog__related-select {
+  width: min(remify(260px), 100%);
+}
+
+@media (max-width: remify(1024px)) {
+  .kui-catalog__settings button span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: remify(832px)) {
+  .kui-catalog {
+    height: auto;
+    min-height: 100vh;
+    grid-template-columns: 1fr;
+  }
+  .kui-catalog[data-sidebar-collapsed="true"] {
+    grid-template-columns: 1fr;
+  }
+  .kui-catalog[data-sidebar-collapsed="true"] .kui-catalog__sidebar {
+    display: none;
+  }
+  .kui-catalog__sidebar {
+    width: 100%;
+    min-width: 0;
+    height: auto;
+    justify-self: stretch;
+    /* Narrow layout collapses via display:none, not the desktop slide. */
+    transform: none;
+    border-inline-end: 0;
+    border-block-end: 1px solid var(--kui-color-border);
+  }
+  .kui-catalog__detail {
+    height: auto;
+    min-height: auto;
+    grid-column: 1;
+  }
+  .kui-catalog__sidebar nav {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    gap: remify(8px) remify(16px);
+  }
+  .kui-catalog__group,
+  .kui-catalog__group:first-child {
+    min-width: 0;
+    margin: 0;
+  }
+  .kui-catalog__stage {
+    min-height: remify(384px);
+  }
+  .kui-catalog__canvas {
+    min-height: remify(256px);
+  }
+  .kui-catalog__status {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: remify(4px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kui-catalog__sidebar {
+    transition-duration: 0s;
+  }
+}

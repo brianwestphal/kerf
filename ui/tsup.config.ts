@@ -14,6 +14,8 @@ const entries = [
   'wire-resizable-regions',
   'device-class',
   'app-tab',
+  'catalog',
+  'wire-catalog',
   'tab-bar',
   'wire-tab-bars',
   'nav-stack',

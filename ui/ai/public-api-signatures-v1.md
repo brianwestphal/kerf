@@ -686,6 +686,105 @@ declare function deviceClass(options?: DeviceClassOptions): ReadonlySignal<Devic
 export { DEFAULT_BREAKPOINTS, type DeviceBreakpoints, type DeviceClass, type DeviceClassOptions, type DeviceOrientation, type DeviceSize, type Viewport, classifyViewport, deviceClass };
 ```
 
+## `@kerfjs/ui/catalog`
+
+```ts
+import { SafeHtml } from 'kerfjs';
+
+/** A reference link shown in the detail footer for the active entry. */
+interface CatalogResource {
+    label: string;
+    href: string;
+    /** Optional monospace detail (e.g. a file path) shown after the label. */
+    detail?: string;
+}
+/** A related entry offered in the detail footer's "Related" selector. */
+interface CatalogRelated {
+    id: string;
+    name: string;
+    /** Group heading in the selector, e.g. "Uses" / "Used by". */
+    group: string;
+}
+interface CatalogEntry {
+    id: string;
+    name: string;
+    description?: string;
+    resources?: readonly CatalogResource[];
+    related?: readonly CatalogRelated[];
+}
+interface CatalogSection {
+    category: string;
+    entries: readonly CatalogEntry[];
+}
+interface CatalogBrand {
+    title: string;
+    subtitle?: string;
+    /** Logo image URL (rendered decorative). Omit for a text-only brand. */
+    logoUrl?: string;
+}
+interface CatalogProps {
+    brand: CatalogBrand;
+    sections: readonly CatalogSection[];
+    /** The controlled active entry id — the app owns this signal. */
+    active: string;
+    /** The rendered preview for the active entry; the app computes it from `active`. */
+    content: SafeHtml;
+    /** Whether the sidebar is collapsed (controlled). */
+    collapsed?: boolean;
+    /** Current theme; when set, a theme toggle is shown that switches to the opposite. Omit to hide it. */
+    theme?: 'light' | 'dark';
+    /** Extra header controls placed before the theme toggle (each a `ToolbarControlGroup`). */
+    headerActions?: SafeHtml;
+    /** Extra sidebar content below the category groups (e.g. an ecosystem section). */
+    sidebarFooter?: SafeHtml;
+    /** Status line content shown at the start of the detail footer. */
+    status?: SafeHtml;
+    selectAction?: string;
+    toggleSidebarAction?: string;
+    toggleThemeAction?: string;
+    className?: string;
+}
+/**
+ * A reusable component-catalog shell: a collapsible category sidebar, a titled
+ * detail stage that renders the active entry's preview, and a footer with
+ * reference links and a related-entry selector. Built entirely from public
+ * `@kerfjs/ui` primitives. Controlled and stateless — the app owns the `active`,
+ * `collapsed`, and `theme` signals and computes `content` from `active` in its own
+ * render; wire the sidebar/collapse/theme actions with `wireCatalog`.
+ */
+declare function Catalog({ brand, sections, active, content, collapsed, theme, headerActions, sidebarFooter, status, selectAction, toggleSidebarAction, toggleThemeAction, className, }: CatalogProps): SafeHtml;
+
+export { Catalog, type CatalogBrand, type CatalogEntry, type CatalogProps, type CatalogRelated, type CatalogResource, type CatalogSection };
+```
+
+## `@kerfjs/ui/wire-catalog`
+
+```ts
+interface WireCatalogOptions {
+    /** Invoked with the entry id when a sidebar item or a related-entry option is chosen. */
+    onSelect: (id: string) => void;
+    /** Invoked when the sidebar collapse/expand control is activated. */
+    onToggleSidebar?: () => void;
+    /** Invoked when the theme toggle is activated. */
+    onToggleTheme?: () => void;
+    /** When set, `?<urlParam>=<id>` is written on select via `history.replaceState`. */
+    urlParam?: string;
+    selectAction?: string;
+    toggleSidebarAction?: string;
+    toggleThemeAction?: string;
+}
+/**
+ * Wire a {@link Catalog}'s interactions with one delegated listener set: sidebar
+ * item selection (and the related-entry selector), the sidebar collapse toggle, and
+ * the theme toggle. The app owns the `active`/`collapsed`/`theme` signals and updates
+ * them in the callbacks; optionally mirror the active id into the URL via `urlParam`.
+ * Returns a disposer.
+ */
+declare function wireCatalog(root: HTMLElement, { onSelect, onToggleSidebar, onToggleTheme, urlParam, selectAction, toggleSidebarAction, toggleThemeAction, }: WireCatalogOptions): () => void;
+
+export { type WireCatalogOptions, wireCatalog };
+```
+
 ## `@kerfjs/ui/segmented-control`
 
 ```ts

@@ -133,6 +133,7 @@ instead of retaining stale content.
 | Search | `TokenSearchField`, `readTokenSearchField`, `placeTokenSearchCaret`, `wireTokenSearchFields` | DOM-owned free text plus controlled ordered atomic filter chips; optional animated standalone or toolbar-group collapse; DOM reading, Enter submission, and caret-preserving keyboard deletion without application query grammar |
 | Feedback | `StateBanner`, `EmptyState`, `LoadingSpinner`, `Skeleton` | Status/alert, empty/busy, meaningful/decorative progress, and a subtle unanimated loading-placeholder block |
 | Loading placeholder | a component's `placeholder` prop | Value-bearing components (`Select`, `MenuHeader`, `MenuItem`, `ValueTableRow`, `PanelHeader`, `SegmentedControl`, `StateBanner`, `AppTab`, `ToolbarText`, `MenuActionRow`) render their real chrome with value slots as `Skeleton` blocks and interactivity disabled, so a parent composes a faithful loading view (e.g. an inspector) without hand-rebuilding markup |
+| Component catalog shell | `Catalog` + `wireCatalog` (`@kerfjs/ui/catalog`) | An opt-in, subpath-only whole-screen shell — collapsible category sidebar + titled preview stage + resources footer + related-entry selector — for building a component gallery from your own entries; controlled/stateless (the app owns `active`/`collapsed`/`theme` and computes the preview `content`). See `ui/docs/catalog.md` |
 
 ## 21.4 Accessibility contract
 
