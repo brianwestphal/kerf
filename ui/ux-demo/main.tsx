@@ -87,6 +87,7 @@ const bannerTone = signal<'neutral' | 'info' | 'success' | 'warning' | 'danger'>
 const toolbarChoice = signal<'list' | 'columns' | 'settings'>('list');
 const toolbarFindQuery = signal('');
 const toolbarFindOpen = signal(false);
+const collapsibleSearchOpen = signal(false);
 const menuActionCurrent = signal('src/main.ts');
 const menuActionPressed = signal(false);
 const inspectorSection = signal<'summary' | 'activity' | 'files'>('summary');
@@ -290,6 +291,11 @@ function TokenSearchFieldDemo() {
       <p class="demo-example__note">Text and atomic filters remain in one keyboard-focusable editor.</p>
       <TokenSearchField id="catalog-search" label="Search tickets" query={tokenSearchQuery.value} tokens={tokenSearchTokens.value} autofocus editorAttributes={{ 'data-demo-token-search': 'true' }} />
       <output aria-live="polite" class="demo-example__note">{tokenSearchTokens.value.length} filters · {tokenSearchQuery.value || 'No free text'}</output>
+    </section>
+    <section class="demo-example">
+      <MenuHeader label="Collapsible" />
+      <p class="demo-example__note">Empty and unfocused, it collapses to one iconic action; activating it reveals the editor and focuses it, and it re-collapses when focus leaves while empty. <code>wireTokenSearchFields</code> manages the expand/collapse/focus.</p>
+      <div class="token-search-demo__collapsible"><TokenSearchField id="collapsible-search" label="Find records" collapsible expanded={collapsibleSearchOpen.value} placeholder="Find records" expandLabel="Open find" /></div>
     </section>
     <section class="demo-example">
       <MenuHeader label="Disabled" />
@@ -893,13 +899,14 @@ const stopTokenSearch = delegate(app, 'input', '[data-demo-token-search="true"]'
 const stopToolbarFind = delegate(app, 'input', '[data-demo-toolbar-find="true"]', (_event, element) => {
   toolbarFindQuery.value = readTokenSearchField(element as HTMLElement).query;
 });
-// The collapsible field's expand/collapse/focus is managed by the wire helper (on by
-// default). The app only adopts its `toolbarFindOpen` signal so the render reflects it.
+// The collapsible fields' expand/collapse/focus is managed by the wire helper (on by
+// default). The app only adopts each field's open signal so the render reflects it;
+// the standalone collapsible field tracks no query — the helper reads live DOM.
 const stopTokenSearchSubmits = wireTokenSearchFields(app, {
   onSubmit: ({ id }) => {
     actionLog.value = id === 'toolbar-find' ? 'Find submitted' : 'Search submitted';
   },
-  collapsible: { signals: { 'toolbar-find': toolbarFindOpen } },
+  collapsible: { signals: { 'toolbar-find': toolbarFindOpen, 'collapsible-search': collapsibleSearchOpen } },
 });
 const stopMenuItemDragOver = delegate(app, 'dragover', '[data-demo-drop-status="ready"]', (event, element) => {
   event.preventDefault();
