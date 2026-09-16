@@ -282,6 +282,9 @@ describe('consumer bundle boundaries', () => {
     expect(pkg.exports['./nav-stack']).not.toHaveProperty('browser');
     expect(pkg.exports['./nav-stack.css']).toBe('./dist/styles/nav-stack.css');
     expect(pkg.exports['./wire-nav-stack']).toMatchObject({ import: './dist/wire-nav-stack.js' });
+    expect(pkg.exports['./split-view']).toMatchObject({ types: './dist/split-view.d.ts', import: './dist/split-view.js' });
+    expect(pkg.exports['./split-view']).not.toHaveProperty('browser');
+    expect(pkg.exports['./split-view.css']).toBe('./dist/styles/split-view.css');
     expect(pkg.exports['./toolbar.css']).toBe('./dist/styles/toolbar.css');
     expect(pkg.exports['./menu-action-row.css']).toBe('./dist/styles/menu-action-row.css');
     expect(pkg.exports['./sidebar.css']).toBeUndefined();

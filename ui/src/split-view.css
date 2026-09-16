@@ -1,0 +1,35 @@
+.kui-split-view {
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  overflow: hidden;
+  background: var(--kui-color-surface);
+}
+
+/* The list pane; when not resizable it takes an intrinsic column and the detail
+   grows to fill. A resizable list is sized by ResizableRegion instead. */
+.kui-split-view__list {
+  min-width: 0;
+  min-height: 0;
+  flex: 0 0 auto;
+  width: var(--kui-split-view-list-width, remify(320px));
+  border-inline-end: 1px solid var(--kui-color-border);
+}
+
+.kui-split-view > .kui-resizable-region .kui-split-view__list {
+  width: 100%;
+  border-inline-end: 0;
+}
+
+.kui-split-view__detail {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+}
+
+/* Compact mode is a full-bleed NavStack. */
+.kui-split-view--compact {
+  display: block;
+  height: 100%;
+}

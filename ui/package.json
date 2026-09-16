@@ -114,6 +114,10 @@
       "types": "./dist/wire-nav-stack.d.ts",
       "import": "./dist/wire-nav-stack.js"
     },
+    "./split-view": {
+      "types": "./dist/split-view.d.ts",
+      "import": "./dist/split-view.js"
+    },
     "./page-header": {
       "types": "./dist/page-header.d.ts",
       "browser": "./dist/browser/page-header.js",
@@ -191,6 +195,7 @@
     "./app-tab.css": "./dist/styles/app-tab.css",
     "./tab-bar.css": "./dist/styles/tab-bar.css",
     "./nav-stack.css": "./dist/styles/nav-stack.css",
+    "./split-view.css": "./dist/styles/split-view.css",
     "./page-header.css": "./dist/styles/page-header.css",
     "./loading-spinner.css": "./dist/styles/loading-spinner.css",
     "./select.css": "./dist/styles/select.css",

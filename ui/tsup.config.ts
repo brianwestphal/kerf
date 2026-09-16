@@ -18,6 +18,7 @@ const entries = [
   'wire-tab-bars',
   'nav-stack',
   'wire-nav-stack',
+  'split-view',
   'page-header',
   'loading-spinner',
   'select',

@@ -406,6 +406,53 @@ declare function wireNavStack(root: Element, options?: WireNavStackOptions): () 
 export { type WireNavStackOptions, wireNavStack };
 ```
 
+## `@kerfjs/ui/split-view`
+
+```ts
+import { SafeHtml } from 'kerfjs';
+
+interface SplitViewResizable {
+    size: number;
+    min: number;
+    max: number;
+}
+interface SplitViewProps {
+    id: string;
+    label: string;
+    /** The list (primary) pane. */
+    list: SafeHtml;
+    /** The detail (secondary) pane. */
+    detail: SafeHtml;
+    /**
+     * Compact ("one pane at a time") classes — a handset or portrait tablet.
+     * Derive from `deviceClass().value.compact`. When true the split collapses to
+     * a `NavStack`: the list is the root and the detail is pushed over it.
+     */
+    compact?: boolean;
+    /** In compact mode, whether the detail is currently pushed over the list. */
+    detailActive?: boolean;
+    /** Title/label for the list (compact NavStack root + region label). */
+    listTitle?: string;
+    /** Title/label for the detail (compact NavStack pushed view + region label). */
+    detailTitle?: string;
+    /** Back label for the compact NavStack (default "Back"). */
+    backLabel?: string;
+    /** A resizable separator on roomy classes (min/max px). Omit for a fixed split. */
+    resizable?: SplitViewResizable;
+    className?: string;
+}
+/**
+ * A list-detail (master-detail) split. On roomy classes it shows both panes side
+ * by side with an optional resizable separator; on compact classes it collapses
+ * to a `NavStack` (list → detail). See `docs/23-app-layouts.md` §3.2. Compose the
+ * resizable wiring with `wireResizableRegions` and the compact back with
+ * `wireNavStack`.
+ */
+declare function SplitView({ id, label, list, detail, compact, detailActive, listTitle, detailTitle, backLabel, resizable, className }: SplitViewProps): SafeHtml;
+
+export { SplitView, type SplitViewProps, type SplitViewResizable };
+```
+
 ## `@kerfjs/ui/resizable-region`
 
 ```ts
