@@ -119,15 +119,23 @@ function LucideIconDemo() {
 }
 
 function DisclosureArrowDemo() {
-  return <div class="demo-disclosure-grid" data-demo="disclosure-arrow">
-    <button type="button" data-action="toggle-disclosure" aria-expanded={String(disclosureOpen.value)}>
-      <DisclosureArrow open={disclosureOpen.value} />
-      <span>Default: closed right, open down</span>
-    </button>
-    <button type="button" data-action="toggle-custom-disclosure" aria-expanded={String(customDisclosureOpen.value)}>
-      <DisclosureArrow open={customDisclosureOpen.value} openDirection="up" closedDirection="left" icon={icon(ArrowRight, 'arrow-right')} />
-      <span>Replacement: closed left, open up</span>
-    </button>
+  return <div class="demo-stack demo-stack--labeled" data-demo="disclosure-arrow">
+    <section class="demo-example">
+      <MenuHeader label="Default" />
+      <p class="demo-example__note">Closed points right, open points down. Toggle to animate.</p>
+      <button type="button" class="demo-disclosure-toggle" data-action="toggle-disclosure" aria-expanded={String(disclosureOpen.value)}>
+        <DisclosureArrow open={disclosureOpen.value} />
+        <span>Details</span>
+      </button>
+    </section>
+    <section class="demo-example">
+      <MenuHeader label="Replacement icon" />
+      <p class="demo-example__note">A replacement glyph, closed left and open up.</p>
+      <button type="button" class="demo-disclosure-toggle" data-action="toggle-custom-disclosure" aria-expanded={String(customDisclosureOpen.value)}>
+        <DisclosureArrow open={customDisclosureOpen.value} openDirection="up" closedDirection="left" icon={icon(ArrowRight, 'arrow-right')} />
+        <span>Preview</span>
+      </button>
+    </section>
   </div>;
 }
 

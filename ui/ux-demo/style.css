@@ -1863,3 +1863,18 @@ button {
 .demo-example .kui-menu-header {
   width: auto;
 }
+.demo-disclosure-toggle {
+  display: inline-flex;
+  padding: var(--kui-space-xs);
+  border: 0;
+  border-radius: var(--kui-radius-m);
+  color: var(--kui-color-text);
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+  align-items: center;
+  gap: var(--kui-space-xs);
+}
+.demo-disclosure-toggle:hover {
+  background: var(--kui-color-neutral-fill-normal);
+}

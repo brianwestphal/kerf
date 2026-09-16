@@ -584,11 +584,11 @@ test('sizes and rotates the first-class disclosure arrow while Select keeps its 
   await expect(arrow).toHaveAttribute('data-open', 'false');
   await expect(arrow).toHaveAttribute('data-direction', 'right');
   await expect(arrow).toHaveCSS('transform', 'matrix(1, 0, 0, 1, 0, 0)');
-  await expect(button).toHaveAccessibleName('Default: closed right, open down');
+  await expect(button).toHaveAccessibleName('Details');
   expect(await arrowSize()).toEqual({ width: 18, height: 18 });
   if (browserName === 'chromium') await button.screenshot({ path: 'test-results/disclosure-arrow-default-18px.png' });
   await expect(customButton).toHaveAttribute('aria-expanded', 'false');
-  await expect(customButton).toHaveAccessibleName('Replacement: closed left, open up');
+  await expect(customButton).toHaveAccessibleName('Preview');
   await expect(customArrow).toHaveAttribute('data-direction', 'left');
   await expect(customArrow.locator('[data-lucide="arrow-right"]')).toBeVisible();
   await expect(customArrow).toHaveCSS('transform', 'matrix(-1, 0, 0, -1, 0, 0)');
@@ -613,7 +613,7 @@ test('sizes and rotates the first-class disclosure arrow while Select keeps its 
   });
   await customButton.click();
   await expect(customButton).toHaveAttribute('aria-expanded', 'true');
-  await expect(customButton).toHaveAccessibleName('Replacement: closed left, open up');
+  await expect(customButton).toHaveAccessibleName('Preview');
   await expect(customArrow).toHaveAttribute('data-open', 'true');
   await expect(customArrow).toHaveAttribute('data-direction', 'up');
   const midpoint = await customArrow.evaluate(async (element) => {
