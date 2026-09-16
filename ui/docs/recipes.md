@@ -109,6 +109,18 @@ visible exclusive choices, `Select` for a longer value list, and an ordinary
 button for an independent command. The app owns values, actions, persistence,
 and responsive priority.
 
+## Navigation stack
+
+[Open the recipe](../ux-demo/?component=recipe-navigation-stack) · [TSX source](../ux-demo/recipes/navigation-stack.tsx)
+
+Drill from a library list into a detail and back with `NavStack`
+(`@kerfjs/ui/nav-stack`): the app owns the stack as a signal of views and
+pushes/pops it, `NavStack` renders it, and `wireNavStack` slides the content and
+settles the chrome (reduced motion collapses the slide to instant). A live
+`deviceClass()` badge shows the current size/orientation. See the layout guide
+[`app-layouts.md`](app-layouts.md) for choosing among `NavStack`, `SplitView`,
+`Workbench`, and `TabScaffold`.
+
 ## Rules shared by every recipe
 
 - Import `@kerfjs/ui/layout.css`; keep every pane unpadded and use exactly one

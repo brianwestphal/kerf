@@ -29,6 +29,7 @@ application boundary:
 | Composer form | [Catalog](../ux-demo/) · `?component=recipe-composer-form` |
 | List workspace states | [Catalog](../ux-demo/) · `?component=recipe-list-workspace-states` |
 | Compact toolbar choices and actions | [Catalog](../ux-demo/) · `?component=recipe-compact-toolbar` |
+| Navigation stack | [Catalog](../ux-demo/) · `?component=recipe-navigation-stack` |
 
 Recipes use public production exports and show ownership boundaries; they are
 copyable reference compositions, not new monolithic components.

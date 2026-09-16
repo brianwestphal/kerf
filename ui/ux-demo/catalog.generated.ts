@@ -542,6 +542,22 @@ export const generatedKerfCatalog = [
     ],
     "demoSource": "ui/ux-demo/recipes/compact-toolbar.tsx",
     "documentation": "ui/docs/recipes.md#compact-toolbar-choices-and-actions"
+  },
+  {
+    "id": "recipe-navigation-stack",
+    "name": "Navigation stack",
+    "category": "Recipes",
+    "kind": "recipe",
+    "source": "kerf",
+    "description": "A push/pop navigation stack drill-down with animated slides and a live device class.",
+    "uses": [
+      "menu-header",
+      "menu-item",
+      "lucide-icon",
+      "layout"
+    ],
+    "demoSource": "ui/ux-demo/recipes/navigation-stack.tsx",
+    "documentation": "ui/docs/recipes.md#navigation-stack"
   }
 ] as const;
 

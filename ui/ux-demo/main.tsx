@@ -23,10 +23,11 @@ import { Toolbar } from '@kerfjs/ui/toolbar';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
 import { ValueTable, ValueTableRow } from '@kerfjs/ui/value-table';
+import { wireNavStack } from '@kerfjs/ui/wire-nav-stack';
 import { wireResizableRegions } from '@kerfjs/ui/wire-resizable-regions';
 import { reorderTabs, wireTabBars } from '@kerfjs/ui/wire-tab-bars';
 import { wireTokenSearchFields } from '@kerfjs/ui/wire-token-search-fields';
-import { batch, delegate, delegateCapture, mount, signal } from 'kerfjs';
+import { batch, delegate, delegateCapture, effect, mount, signal } from 'kerfjs';
 import { delegateActions } from 'kerfjs/actions';
 import { ArrowDownAZ, ArrowRight, Bell, Check, ChevronLeft, ChevronRight, CircleHelp, Columns3, Contrast, ExternalLink, Folder, GitCompare, GripVertical, Inbox, List, Moon, MoreHorizontal, PanelLeft, PanelLeftClose, PanelLeftOpen, Pin, Plus, Search, Settings, SlidersHorizontal, Star, StickyNote, Sun, Wrench, X, ZapOff } from 'lucide';
 
@@ -777,6 +778,24 @@ const stopSelect = delegate(app, 'change', 'wa-select', (_event, element) => {
   const value = (element as HTMLElement & { value?: string }).value;
   if (value === 'quiet' || value === 'balanced' || value === 'explicit') selectedChoice.value = value;
 });
+// Wire the active recipe's NavStack (slide animation + back control). The
+// nav-stack element persists across pushes/pops, so we only re-wire when the
+// selected recipe (or its freshly-loaded controller) changes.
+let stopRecipeNav: (() => void) | null = null;
+const stopRecipeNavEffect = effect(() => {
+  void recipeRevision.value;
+  const id = selectedDemo.value;
+  window.requestAnimationFrame(() => {
+    stopRecipeNav?.();
+    stopRecipeNav = null;
+    if (!isRecipeId(id)) return;
+    const controller = recipeControllers.get(id);
+    const canvas = document.querySelector<HTMLElement>('.catalog-canvas');
+    if (controller && canvas?.querySelector('[data-component="nav-stack"]')) {
+      stopRecipeNav = wireNavStack(canvas, { onBack: () => controller.action('nav-back', canvas) });
+    }
+  });
+});
 const dispatchRecipeChange = (_event: Event, element: Element) => {
   if (isRecipeId(selectedDemo.value)) recipeControllers.get(selectedDemo.value)?.change?.(element as HTMLElement);
 };
@@ -875,4 +894,4 @@ const syncSystemTheme = (event: MediaQueryListEvent): void => {
 };
 systemDarkTheme.addEventListener('change', syncSystemTheme);
 
-window.addEventListener('pagehide', () => { stopActions(); stopResize(); stopSelect(); stopRecipeChanges(); stopRecipeInputs(); stopRecipeDialogs(); stopTokenSearch(); stopToolbarFind(); stopTokenSearchSubmits(); stopToolbarFindClearPointer(); stopToolbarFindFocus(); stopMenuItemDragOver(); stopMenuItemDrop(); stopMenuActionRowDoubleClick(); stopMenuActionRowContextMenu(); stopRelationships(); stopAnimationSelects(); stopAnimationRanges(); stopAnimationEvents.forEach((dispose) => dispose()); stopIntersectionObserver(); stopMutationObserver(); stopResizeObserver(); stopTabBars(); systemDarkTheme.removeEventListener('change', syncSystemTheme); }, { once: true });
+window.addEventListener('pagehide', () => { stopActions(); stopResize(); stopSelect(); stopRecipeNav?.(); stopRecipeNavEffect(); stopRecipeChanges(); stopRecipeInputs(); stopRecipeDialogs(); stopTokenSearch(); stopToolbarFind(); stopTokenSearchSubmits(); stopToolbarFindClearPointer(); stopToolbarFindFocus(); stopMenuItemDragOver(); stopMenuItemDrop(); stopMenuActionRowDoubleClick(); stopMenuActionRowContextMenu(); stopRelationships(); stopAnimationSelects(); stopAnimationRanges(); stopAnimationEvents.forEach((dispose) => dispose()); stopIntersectionObserver(); stopMutationObserver(); stopResizeObserver(); stopTabBars(); systemDarkTheme.removeEventListener('change', syncSystemTheme); }, { once: true });

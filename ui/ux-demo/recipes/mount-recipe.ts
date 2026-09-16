@@ -1,3 +1,4 @@
+import { wireNavStack } from '@kerfjs/ui/wire-nav-stack';
 import { wireResizableRegions } from '@kerfjs/ui/wire-resizable-regions';
 import { delegate, mount } from 'kerfjs';
 import { delegateActions } from 'kerfjs/actions';
@@ -23,11 +24,13 @@ export function mountRecipe(root: HTMLElement, controller: RecipeController): ()
   const stopResize = wireResizableRegions(root, {
     onCommit: ({ id, size }) => controller.resize?.(id, size),
   });
+  const stopNav = wireNavStack(root, { onBack: () => controller.action('nav-back', root) });
 
   let disposed = false;
   return () => {
     if (disposed) return;
     disposed = true;
+    stopNav();
     stopResize();
     stopDialogs();
     stopInputs();

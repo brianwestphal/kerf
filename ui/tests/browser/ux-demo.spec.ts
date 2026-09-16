@@ -64,7 +64,7 @@ test('omits the removed command-palette recipe and safely falls back from its st
     await page.goto('/?component=recipe-compact-toolbar');
     const recipes = page.locator('.catalog-group').filter({ has: page.getByText('Recipes', { exact: true }) });
     const rows = recipes.locator('[data-component="menu-item"]');
-    await expect(rows).toHaveCount(7);
+    await expect(rows).toHaveCount(8);
     await expect(rows).toHaveText([
       /Desktop application shell/,
       /Navigation sidebar/,
@@ -73,6 +73,7 @@ test('omits the removed command-palette recipe and safely falls back from its st
       /Composer form/,
       /List workspace states/,
       /Compact toolbar choices and actions/,
+      /Navigation stack/,
     ]);
     await expect(page.locator('[data-item-id="recipe-command-palette"]')).toHaveCount(0);
     await expect(page.locator('[data-recipe="recipe-command-palette"]')).toHaveCount(0);
@@ -89,6 +90,45 @@ test('omits the removed command-palette recipe and safely falls back from its st
 
   await openRemainingRecipes(390, 844);
   if (browserName === 'chromium') await page.screenshot({ path: 'test-results/catalog-without-command-palette-narrow.png' });
+});
+
+test('drills through the navigation-stack recipe with animated push/pop, reduced motion, and a live device class', async ({ page, browserName }) => {
+  await page.setViewportSize({ width: 1100, height: 820 });
+  await page.goto('/?component=recipe-navigation-stack');
+  const recipe = page.locator('[data-recipe="recipe-navigation-stack"]');
+  await expect(recipe).toBeVisible();
+  const nav = recipe.locator('[data-component="nav-stack"]');
+
+  // Root: one entry, no back control; the views ride a transform transition.
+  await expect(nav).toHaveAttribute('data-depth', '1');
+  await expect(nav.locator('[data-nav-back]')).toHaveCount(0);
+  await expect(nav.locator('.kui-nav-stack__view').first()).toHaveCSS('transition-property', /transform/);
+  // The live device-class badge reflects the (desktop-width) viewport.
+  const badge = recipe.locator('[data-recipe-device]');
+  await expect(badge).toContainText('desktop');
+
+  // Push a detail: back control appears and the title cross-fades to the item.
+  await recipe.locator('[data-item-id="layouts"]').click();
+  await expect(nav).toHaveAttribute('data-depth', '2');
+  await expect(nav.locator('[data-nav-back]')).toBeVisible();
+  await expect(nav.locator('[data-nav-stack-title]')).toHaveText('App layouts');
+  if (browserName === 'chromium') await recipe.screenshot({ path: 'test-results/recipe-navigation-stack.png' });
+
+  // Pop via the back control returns to the root.
+  await nav.locator('[data-nav-back]').click();
+  await expect(nav).toHaveAttribute('data-depth', '1');
+  await expect(nav.locator('[data-nav-back]')).toHaveCount(0);
+
+  // Reduced motion collapses the slide to instant.
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await expect
+    .poll(() => nav.locator('.kui-nav-stack__view').first().evaluate((el) => Number.parseFloat(window.getComputedStyle(el).transitionDuration)))
+    .toBeLessThanOrEqual(0.001);
+  await page.emulateMedia({ reducedMotion: null });
+
+  // The device class updates reactively when the viewport crosses a breakpoint.
+  await page.setViewportSize({ width: 380, height: 820 });
+  await expect(badge).toContainText('mobile');
 });
 
 test('slides the catalog sidebar out and back via a composited transform, not a width animation', async ({ page, browserName }) => {
