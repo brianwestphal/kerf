@@ -290,6 +290,7 @@ function TokenSearchFieldDemo() {
 
 function ToolbarTextDemo() {
   return <div class="demo-stack demo-stack--labeled" data-demo="toolbar-text">
+    <section class="demo-example"><MenuHeader label="Extra large" /><ToolbarText text="Workspace settings" size="xlarge" /></section>
     <section class="demo-example"><MenuHeader label="Large" /><ToolbarText text="Component library" size="large" /></section>
     <section class="demo-example"><MenuHeader label="Default" /><ToolbarText text="Saved just now" /></section>
     <section class="demo-example"><MenuHeader label="Small" /><ToolbarText text="read-only" size="small" /></section>

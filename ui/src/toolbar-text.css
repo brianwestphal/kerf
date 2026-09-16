@@ -14,6 +14,16 @@
   align-items: center;
 }
 
+.kui-toolbar-text[data-size="xlarge"] {
+  /* Matches the page/panel title: the same responsive clamp so a PanelHeader
+     title reads at the page-title scale without a bespoke override. Height grows
+     to the larger text (the fixed 40px would clip its ascenders). */
+  height: auto;
+  min-height: remify(44px);
+  font-size: clamp(var(--kui-font-l), 2.3vw, var(--kui-font-2xl));
+  letter-spacing: -0.025em;
+}
+
 .kui-toolbar-text[data-size="large"] {
   font-size: var(--kui-font-m);
   letter-spacing: -0.015em;

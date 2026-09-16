@@ -44,7 +44,7 @@ export { Toolbar, type ToolbarProps };
 ```ts
 import * as kerfjs from 'kerfjs';
 
-type ToolbarTextSize = 'large' | 'default' | 'small';
+type ToolbarTextSize = 'xlarge' | 'large' | 'default' | 'small';
 interface ToolbarTextProps {
     text: string;
     size?: ToolbarTextSize;

@@ -1,4 +1,4 @@
-export type ToolbarTextSize = 'large' | 'default' | 'small';
+export type ToolbarTextSize = 'xlarge' | 'large' | 'default' | 'small';
 
 export interface ToolbarTextProps {
   text: string;
