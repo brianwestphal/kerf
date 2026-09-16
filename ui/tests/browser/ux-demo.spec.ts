@@ -226,6 +226,21 @@ test('hovers a lone control-group button as a whole, but keeps inner highlights 
   })).not.toBe(transparent);
 });
 
+test('aligns the layout demo action buttons with the card border above them', async ({ page, browserName }) => {
+  await page.setViewportSize({ width: 1200, height: 900 });
+  await page.goto('/?component=layout');
+  const surface = page.locator('.demo-layout__surface');
+  const primary = page.locator('.demo-layout__actions .demo-button').first();
+  await expect(surface).toBeVisible();
+  const [surfaceLeft, buttonLeft] = await Promise.all([
+    surface.evaluate((el) => el.getBoundingClientRect().left),
+    primary.evaluate((el) => el.getBoundingClientRect().left),
+  ]);
+  // The primary action button's border-left aligns with the card border above it.
+  expect(Math.abs(buttonLeft - surfaceLeft)).toBeLessThanOrEqual(0.5);
+  if (browserName === 'chromium') await page.locator('[data-demo="layout"]').screenshot({ path: 'test-results/layout-demo-action-alignment.png' });
+});
+
 test('links catalog details to their first-party source and existing guidance', async ({ page, browserName }) => {
   for (const [id, name, sourcePath, componentPath, documentationPath, guidanceLabel] of [
     ['toolbar', 'Toolbar', 'ui/ux-demo/main.tsx', 'ui/src/toolbar.tsx', 'ui/docs/component-selection.md', 'Read guidance'],

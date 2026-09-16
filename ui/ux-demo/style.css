@@ -588,6 +588,13 @@ button {
   --kui-content-item-border: var(--kui-color-border);
   --kui-content-item-background: var(--kui-color-surface);
 }
+/* The action row's buttons own their own borders, so sit the cluster on the
+   shared 8px gutter rather than nesting it in a content item — otherwise the
+   content item's border + padding inset the primary button past the card
+   border above it. */
+.demo-layout__actions {
+  margin-inline: var(--kui-layout-inline-margin, remify(8px));
+}
 .demo-layout__surface p {
   margin: var(--kui-layout-metadata-gap) 0 0;
   color: var(--kui-color-text-muted);
