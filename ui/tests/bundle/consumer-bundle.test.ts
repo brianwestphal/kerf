@@ -272,6 +272,10 @@ describe('consumer bundle boundaries', () => {
     expect(pkg.exports['./segmented-control']).toBeDefined();
     expect(pkg.exports['./token-search-field']).toBeDefined();
     expect(pkg.exports['./wire-tab-bars']).toBeDefined();
+    // device-class is signals-only: no browser CSS entry, no stylesheet subpath.
+    expect(pkg.exports['./device-class']).toMatchObject({ types: './dist/device-class.d.ts', import: './dist/device-class.js' });
+    expect(pkg.exports['./device-class']).not.toHaveProperty('browser');
+    expect(pkg.exports['./device-class.css']).toBeUndefined();
     expect(pkg.exports['./toolbar.css']).toBe('./dist/styles/toolbar.css');
     expect(pkg.exports['./menu-action-row.css']).toBe('./dist/styles/menu-action-row.css');
     expect(pkg.exports['./sidebar.css']).toBeUndefined();

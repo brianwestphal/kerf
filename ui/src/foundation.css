@@ -43,6 +43,14 @@
   --kui-space-m: var(--wa-space-m, remify(16px));
   --kui-space-l: var(--wa-space-l, remify(24px));
   --kui-space-xl: var(--wa-space-xl, remify(32px));
+  /* Device-class breakpoints, mirrored from @kerfjs/ui/device-class's
+     DEFAULT_BREAKPOINTS so CSS media queries and the reactive deviceClass()
+     signal read the same minimum widths. Authored as literal px (a media-query
+     boundary is a physical width, not a scalable length). */
+  --kui-bp-mobile: 360px;
+  --kui-bp-tablet: 720px;
+  --kui-bp-desktop: 1024px;
+  --kui-bp-xl-desktop: 1440px;
   --kui-layout-inline-margin: var(--kui-space-xs);
   --kui-layout-item-border-width: 1px;
   --kui-layout-item-padding: var(--kui-space-xs);

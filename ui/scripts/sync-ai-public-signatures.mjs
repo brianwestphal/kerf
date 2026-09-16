@@ -23,6 +23,7 @@ const entries = [
   ['@kerfjs/ui/wire-tab-bars', 'dist/wire-tab-bars.d.ts'],
   ['@kerfjs/ui/resizable-region', 'dist/resizable-region.d.ts'],
   ['@kerfjs/ui/wire-resizable-regions', 'dist/wire-resizable-regions.d.ts'],
+  ['@kerfjs/ui/device-class', 'dist/device-class.d.ts'],
   ['@kerfjs/ui/segmented-control', 'dist/segmented-control.d.ts'],
   ['@kerfjs/ui/state-banner', 'dist/state-banner.d.ts'],
   ['@kerfjs/ui/empty-state', 'dist/empty-state.d.ts'],

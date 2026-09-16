@@ -391,6 +391,73 @@ declare function wireResizableRegions(root: HTMLElement, { step, largeStep, onPr
 export { type ResizeCommit, type WireResizableRegionsOptions, wireResizableRegions };
 ```
 
+## `@kerfjs/ui/device-class`
+
+```ts
+import { ReadonlySignal } from 'kerfjs';
+
+/**
+ * Reactive device-class detection for `@kerfjs/ui` (see `docs/23-app-layouts.md`
+ * §2). `deviceClass()` returns a `ReadonlySignal<DeviceClass>` describing the
+ * current viewport as a size bucket × orientation × viewport-segment count, so a
+ * layout can pick its presentation reactively instead of hand-wiring `matchMedia`.
+ *
+ * One shared viewport source backs every reader; the pure `classifyViewport`
+ * core is DOM-free and directly unit-tested.
+ */
+type DeviceSize = 'xs-mobile' | 'mobile' | 'tablet' | 'desktop' | 'xl-desktop';
+type DeviceOrientation = 'portrait' | 'landscape';
+/** Minimum widths (px) at which each larger bucket begins. `xs-mobile` is 0. */
+interface DeviceBreakpoints {
+    mobile: number;
+    tablet: number;
+    desktop: number;
+    'xl-desktop': number;
+}
+interface DeviceClass {
+    size: DeviceSize;
+    orientation: DeviceOrientation;
+    /** Horizontal viewport segments (foldables / dual-screen); 1 on ordinary devices. */
+    segments: number;
+    /** Vertical viewport segments; 1 on ordinary devices. */
+    verticalSegments: number;
+    /** Small phones — `xs-mobile` or `mobile`. */
+    handset: boolean;
+    /** "One pane at a time" — a handset or a portrait tablet. */
+    compact: boolean;
+    /** True when the current size is `size` or larger, e.g. `atLeast('tablet')`. */
+    atLeast(size: DeviceSize): boolean;
+}
+/** A raw viewport snapshot, before breakpoints are applied. */
+interface Viewport {
+    width: number;
+    height: number;
+    segments: number;
+    verticalSegments: number;
+}
+interface DeviceClassOptions {
+    /** Override any of the default bucket thresholds. */
+    breakpoints?: Partial<DeviceBreakpoints>;
+    /** The viewport assumed when there is no DOM (SSR). Defaults to 1024×768, one segment. */
+    ssr?: Partial<Viewport>;
+}
+declare const DEFAULT_BREAKPOINTS: DeviceBreakpoints;
+/**
+ * Classify a raw viewport into a {@link DeviceClass}. Pure and DOM-free — the
+ * single source of truth for the bucketing rules.
+ */
+declare function classifyViewport(width: number, orientation: DeviceOrientation, segments?: number, verticalSegments?: number, breakpoints?: DeviceBreakpoints): DeviceClass;
+/**
+ * A reactive signal of the current {@link DeviceClass}. Reading it inside an
+ * `effect`/`computed` re-runs when the viewport crosses a breakpoint, rotates,
+ * or changes its segment count. Without a DOM it resolves to `options.ssr`
+ * (default 1024×768, landscape, one segment).
+ */
+declare function deviceClass(options?: DeviceClassOptions): ReadonlySignal<DeviceClass>;
+
+export { DEFAULT_BREAKPOINTS, type DeviceBreakpoints, type DeviceClass, type DeviceClassOptions, type DeviceOrientation, type DeviceSize, type Viewport, classifyViewport, deviceClass };
+```
+
 ## `@kerfjs/ui/segmented-control`
 
 ```ts

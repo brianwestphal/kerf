@@ -88,6 +88,10 @@
       "types": "./dist/wire-resizable-regions.d.ts",
       "import": "./dist/wire-resizable-regions.js"
     },
+    "./device-class": {
+      "types": "./dist/device-class.d.ts",
+      "import": "./dist/device-class.js"
+    },
     "./app-tab": {
       "types": "./dist/app-tab.d.ts",
       "browser": "./dist/browser/app-tab.js",
