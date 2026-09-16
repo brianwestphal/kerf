@@ -309,6 +309,16 @@ test('renders non-composition demos on the grid with a bounds/margin overlay, an
   await expect.poll(() => overlay.locator('.demo-overlay__margin').count()).toBeGreaterThan(0);
   if (browserName === 'chromium') await canvas.screenshot({ path: 'test-results/component-demo-overlay.png' });
 
+  // The overlay marks the demoed SPECIMEN, not the example's MenuHeader label or
+  // note. In a labeled demo the two transparent LucideIcon specimens each get a
+  // bound and no margin; the labels (which have their own 8px inline margins and
+  // transparent background) must not be marked, so there are exactly two bounds
+  // and zero margin bands — not four bounds and label side-bands.
+  await page.goto('/?component=lucide-icon');
+  await expect(canvas).toHaveAttribute('data-demo-mode', 'component');
+  await expect.poll(() => overlay.locator('.demo-overlay__bound').count()).toBe(2);
+  await expect.poll(() => overlay.locator('.demo-overlay__margin').count()).toBe(0);
+
   // A composition demo keeps its layout and gets no overlay.
   await page.goto('/?component=menu');
   await expect(canvas).toHaveAttribute('data-demo-mode', 'composition');

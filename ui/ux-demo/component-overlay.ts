@@ -23,12 +23,50 @@ function isTransparent(color: string): boolean {
   return normalized === 'transparent' || /,0\)$/.test(normalized);
 }
 
-function topLevelComponents(root: HTMLElement): HTMLElement[] {
-  return Array.from(root.querySelectorAll<HTMLElement>('[data-component]')).filter((element) => {
-    if (element.closest('[data-demo-overlay]')) return false;
+/**
+ * A MenuHeader used as an example LABEL (chrome), not a demoed component: the
+ * first element child of a labeled example. A MenuHeader that is itself the
+ * demoed component lives in an unlabeled `.demo-stack` and is NOT a label.
+ */
+function isExampleLabel(el: Element): boolean {
+  const parent = el.parentElement;
+  return (
+    el.classList.contains('kui-menu-header') &&
+    parent?.classList.contains('demo-example') === true &&
+    parent.closest('.demo-stack--labeled') !== null &&
+    el === parent.firstElementChild
+  );
+}
+
+/**
+ * The demoed specimens to outline: the actual component in each example (not
+ * its MenuHeader label or note text), plus the top-level component of any demo
+ * that isn't wrapped in `.demo-example` (toolbar, dialog-header, resize). A
+ * specimen may be a bare `<svg>` (a LucideIcon) with no `data-component`, so
+ * selection is positional, not attribute-based.
+ */
+function specimens(root: HTMLElement): Element[] {
+  const seen = new Set<Element>();
+  const result: Element[] = [];
+  const push = (el: Element): void => {
+    if (seen.has(el)) return;
+    seen.add(el);
+    result.push(el);
+  };
+  for (const example of root.querySelectorAll<HTMLElement>('.demo-example')) {
+    if (example.closest('[data-demo-overlay]')) continue;
+    for (const child of example.children) {
+      if (child.classList.contains('demo-example__note') || isExampleLabel(child)) continue;
+      push(child);
+    }
+  }
+  for (const element of root.querySelectorAll<HTMLElement>('[data-component]')) {
+    if (element.closest('[data-demo-overlay]') || element.closest('.demo-example')) continue;
     const parent = element.parentElement?.closest<HTMLElement>('[data-component]');
-    return !parent || !root.contains(parent);
-  });
+    if (parent && root.contains(parent)) continue;
+    push(element);
+  }
+  return result;
 }
 
 function box(className: string, left: number, top: number, width: number, height: number): HTMLElement {
@@ -47,7 +85,7 @@ export function createComponentOverlay(canvas: HTMLElement, layer: HTMLElement):
     layer.textContent = '';
     if (!active) return;
     const base = canvas.getBoundingClientRect();
-    for (const element of topLevelComponents(canvas)) {
+    for (const element of specimens(canvas)) {
       const rect = element.getBoundingClientRect();
       const style = window.getComputedStyle(element);
       const mt = px(style.marginTop);
