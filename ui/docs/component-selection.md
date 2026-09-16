@@ -79,6 +79,46 @@ an upstream component or recipe request.
 - `ResizableRegion` is an interactive controlled pane. CSS grid is the right answer when columns do not need a user-operable separator.
 - `TokenSearchField` is a structured editor. A native input or `wa-input` is the right answer for ordinary text.
 
+## Toolbar composition
+
+A `Toolbar` has three zones — `leading`, `center`, and `trailing`. In almost
+every case the only things that go **directly** in a zone are `ToolbarText`
+(identity/title text) and `ToolbarControlGroup` (any control or cluster of
+controls). Do not drop bare buttons, inputs, links, or arbitrary markup straight
+into a zone; wrap controls in a `ToolbarControlGroup` so they get the shared
+toolbar geometry, hover/pressed treatment, and grouping. `SegmentedControl`,
+`Select`, a collapsible `TokenSearchField`, and Web Awesome controls all live
+**inside** a `ToolbarControlGroup`, not loose in the zone. `PanelHeader` is the
+one wrapper that composes these for you as a panel/dialog/page heading.
+
+Common toolbar patterns:
+
+| Want | Put in the zone | Notes |
+| --- | --- | --- |
+| Identity or title text | `<ToolbarText text="…" size="large" />` (or `xlarge` for a page/panel title) | Wrap in a `single` borderless group only when it must align with adjacent control pills |
+| One or more icon/text buttons | `<ToolbarControlGroup>{buttons}</ToolbarControlGroup>` | Use `buttonAppearance="push"` for toggle buttons with `aria-pressed`; `single` for a lone control |
+| An exclusive view switch | `<ToolbarControlGroup><SegmentedControl … /></ToolbarControlGroup>` | Not `TabBar`, which switches tabpanels |
+| A value list | `<ToolbarControlGroup><Select … /></ToolbarControlGroup>` | Register `@kerfjs/ui/select/register` once |
+| A collapsible search box | `<ToolbarControlGroup single><TokenSearchField collapsible … /></ToolbarControlGroup>` | The group animates the iconic ↔ expanded states |
+
+A **popup menu in a toolbar** is a `single` `ToolbarControlGroup` wrapping a Web
+Awesome `wa-dropdown`: its `slot="trigger"` `wa-button` is the toolbar button and
+the `wa-dropdown-item`s are the menu. Keep the dropdown's managed light-DOM
+children under `data-morph-skip-children` so kerf does not reconcile Web Awesome's
+own DOM.
+
+```tsx
+<ToolbarControlGroup single>
+  <wa-dropdown placement="bottom-start" data-morph-skip-children>
+    <wa-button slot="trigger" appearance="plain" with-caret aria-label="Sort">
+      <LucideIcon icon={ArrowDownAZ} name="arrow-down-a-z" />
+    </wa-button>
+    <wa-dropdown-item data-action="sort-recent">Recently updated</wa-dropdown-item>
+    <wa-dropdown-item data-action="sort-priority">Priority</wa-dropdown-item>
+  </wa-dropdown>
+</ToolbarControlGroup>
+```
+
 ## Correct composition and duplicated-markup trap
 
 Correct: let the pane stay unpadded while its children own the shared 8/1/8
