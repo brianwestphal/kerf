@@ -221,7 +221,7 @@ function ToolbarDemo() {
       label="Document controls"
       className="demo-toolbar-find-row"
       leading={<ToolbarControlGroup appearance="borderless" single><ToolbarText text="Component library" size="large" /></ToolbarControlGroup>}
-      center={<ToolbarControlGroup className="demo-toolbar-find" expanded={findExpanded} single={!findExpanded}><TokenSearchField id="toolbar-find" label="Find in workspace" query={toolbarFindQuery.value} collapsible expanded={toolbarFindOpen.value} placeholder="Find in workspace" className="demo-toolbar-find-field" expandAction="open-toolbar-find" expandLabel="Open find" clearAction="clear-toolbar-find" editorAttributes={{ 'data-demo-toolbar-find': 'true' }} trailing={icon(CircleHelp, 'circle-help')} /></ToolbarControlGroup>}
+      center={<ToolbarControlGroup className="demo-toolbar-find" expanded={findExpanded} single={!findExpanded}><TokenSearchField id="toolbar-find" label="Find in workspace" query={toolbarFindQuery.value} collapsible expanded={toolbarFindOpen.value} placeholder="Find in workspace" className="demo-toolbar-find-field" expandLabel="Open find" clearAction="clear-toolbar-find" editorAttributes={{ 'data-demo-toolbar-find': 'true' }} trailing={icon(CircleHelp, 'circle-help')} /></ToolbarControlGroup>}
       trailing={<ToolbarControlGroup label="View controls" buttonAppearance="push"><button type="button" aria-label="Toggle inspector" aria-pressed="true">{icon(SlidersHorizontal, 'sliders-horizontal')}</button><button type="button" aria-label="Settings">{icon(Settings, 'settings')}</button></ToolbarControlGroup>}
     />
     <Toolbar label="Compact toolbar" divider={false} leading={<ToolbarControlGroup appearance="borderless" single><ToolbarText text="Borderless" size="small" /></ToolbarControlGroup>} trailing={<ToolbarControlGroup appearance="borderless" single>{button('Add', 'log-add')}</ToolbarControlGroup>} />
@@ -761,12 +761,6 @@ const stopActions = delegateActions(app, 'click', {
     });
     actionLog.value = 'Search cleared';
   },
-  'open-toolbar-find': () => {
-    toolbarFindOpen.value = true;
-    window.requestAnimationFrame(() => {
-      document.querySelector<HTMLElement>('[data-demo-toolbar-find="true"]')?.focus();
-    });
-  },
   'clear-toolbar-find': (_event, element) => {
     const editor = element.closest('[data-component="token-search-field"]')?.querySelector<HTMLElement>('[data-token-search-editor]');
     if (editor) editor.textContent = '';
@@ -868,19 +862,13 @@ const stopTokenSearch = delegate(app, 'input', '[data-demo-token-search="true"]'
 const stopToolbarFind = delegate(app, 'input', '[data-demo-toolbar-find="true"]', (_event, element) => {
   toolbarFindQuery.value = readTokenSearchField(element as HTMLElement).query;
 });
-const stopTokenSearchSubmits = wireTokenSearchFields(app, { onSubmit: ({ id }) => {
-  actionLog.value = id === 'toolbar-find' ? 'Find submitted' : 'Search submitted';
-} });
-const stopToolbarFindClearPointer = delegate(app, 'mousedown', '[data-action="clear-toolbar-find"]', (event) => {
-  event.preventDefault();
-});
-const stopToolbarFindFocus = delegate(app, 'focusout', '[data-demo-toolbar-find="true"]', (event, element) => {
-  const field = element.closest('.demo-toolbar-find-field');
-  const next = (event as FocusEvent).relatedTarget;
-  if (next instanceof Node && field?.contains(next)) return;
-  window.queueMicrotask(() => {
-    if (!field?.matches(':focus-within')) toolbarFindOpen.value = false;
-  });
+// The collapsible field's expand/collapse/focus is managed by the wire helper (on by
+// default). The app only adopts its `toolbarFindOpen` signal so the render reflects it.
+const stopTokenSearchSubmits = wireTokenSearchFields(app, {
+  onSubmit: ({ id }) => {
+    actionLog.value = id === 'toolbar-find' ? 'Find submitted' : 'Search submitted';
+  },
+  collapsible: { signals: { 'toolbar-find': toolbarFindOpen } },
 });
 const stopMenuItemDragOver = delegate(app, 'dragover', '[data-demo-drop-status="ready"]', (event, element) => {
   event.preventDefault();
@@ -950,4 +938,4 @@ const syncSystemTheme = (event: MediaQueryListEvent): void => {
 };
 systemDarkTheme.addEventListener('change', syncSystemTheme);
 
-window.addEventListener('pagehide', () => { stopActions(); stopResize(); stopSelect(); componentOverlay?.dispose(); stopOverlayEffect(); stopRecipeNav?.(); stopRecipeNavEffect(); stopRecipeChanges(); stopRecipeInputs(); stopRecipeDialogs(); stopTokenSearch(); stopToolbarFind(); stopTokenSearchSubmits(); stopToolbarFindClearPointer(); stopToolbarFindFocus(); stopMenuItemDragOver(); stopMenuItemDrop(); stopMenuActionRowDoubleClick(); stopMenuActionRowContextMenu(); stopRelationships(); stopAnimationSelects(); stopAnimationRanges(); stopAnimationEvents.forEach((dispose) => dispose()); stopIntersectionObserver(); stopMutationObserver(); stopResizeObserver(); stopTabBars(); systemDarkTheme.removeEventListener('change', syncSystemTheme); }, { once: true });
+window.addEventListener('pagehide', () => { stopActions(); stopResize(); stopSelect(); componentOverlay?.dispose(); stopOverlayEffect(); stopRecipeNav?.(); stopRecipeNavEffect(); stopRecipeChanges(); stopRecipeInputs(); stopRecipeDialogs(); stopTokenSearch(); stopToolbarFind(); stopTokenSearchSubmits(); stopMenuItemDragOver(); stopMenuItemDrop(); stopMenuActionRowDoubleClick(); stopMenuActionRowContextMenu(); stopRelationships(); stopAnimationSelects(); stopAnimationRanges(); stopAnimationEvents.forEach((dispose) => dispose()); stopIntersectionObserver(); stopMutationObserver(); stopResizeObserver(); stopTabBars(); systemDarkTheme.removeEventListener('change', syncSystemTheme); }, { once: true });

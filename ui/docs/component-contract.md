@@ -153,7 +153,13 @@ overrides load later in the cascade or set scoped `--kui-*` variables. JavaScrip
 modules are pure except the browser style wrappers and `@kerfjs/ui/select/register`,
 which registers exactly the Web Awesome elements used by `Select`. Eventful
 helpers such as `wireResizableRegions` and `wireTabBars` attach listeners only
-when called and return disposers. CSS, the generated wrappers that make it
+when called and return disposers. `wireTokenSearchFields` goes one step further:
+by default it also owns the collapsible field's transient expand/collapse/focus
+(activate to reveal and focus, Escape or empty blur to collapse), holding that
+state in a signal it exposes on the returned handle. An app reads that signal in
+render, hands in its own via `collapsible.signals`, drives it through
+`handle.open`/`handle.close`, or disables any individual behavior — so transient
+UI is consistent by default without every app reinventing it. CSS, the generated wrappers that make it
 reachable, and the registration module are the package's only declared side
 effects.
 

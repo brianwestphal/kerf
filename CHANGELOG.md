@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Made `@kerfjs/ui`'s `wireTokenSearchFields` manage the collapsible `TokenSearchField`'s transient expand/collapse/focus by default (activate to reveal and focus, Escape or empty blur to collapse), holding that state in a signal exposed on the returned handle so an app can bind it in render, adopt its own via `collapsible.signals`, drive it through `open`/`close`, or opt any behavior out individually — removing the per-app boilerplate that had caused inconsistent transient-UI variation. `onSubmit` is now optional and the helper returns a `TokenSearchFieldsHandle` (a disposer that also exposes `expanded(id)`/`open`/`close`).
 - Made the UX catalog's theme action follow the operating system's initial light/dark appearance, label itself with the appearance it will switch to, and explicitly override either direction when activated.
 - Corrected the UX catalog's project-details dialog gutters so its header uses less side inset, its selected title uses the full content gutter, its value table fills the available detail width between the usual margins, and its record actions avoid a doubled left inset.
 - Fixed the UI catalog's Kerf logo in the Vite development server and kept emitted assets working when the demo is hosted below a preview or proxy path.

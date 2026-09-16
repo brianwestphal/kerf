@@ -158,8 +158,13 @@ instead of retaining stale content.
   icon, first text line, clear action, and trailing slot share a fixed vertical
   center and remain pinned there as content wraps. Its optional `collapsible`
   mode owns an animated iconic closed state, works standalone or inside a
-  toolbar group, and keeps populated fields expanded. Applications own the
-  transient focused/open signal and focus transfer into the revealed field.
+  toolbar group, and keeps populated fields expanded. `wireTokenSearchFields`
+  manages that transient expand/collapse/focus by default (activate to reveal and
+  focus, Escape or empty blur to collapse), holding the `expanded` state in a
+  signal exposed on its returned handle; an application binds that signal in
+  render, adopts its own via `collapsible.signals`, drives it through
+  `open`/`close`, or disables any behavior individually — so the transient UI is
+  consistent without every app reimplementing it.
 - `AppTab` renders `role="tab"`, `aria-selected`, roving `tabindex`, and keyboard
   shortcut metadata. `rootAttributes` accepts runtime-filtered application
   `data-*` metadata while component- and wiring-owned case variants stay

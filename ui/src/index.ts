@@ -57,6 +57,8 @@ export {
   type WireTabBarsOptions,
 } from './wire-tab-bars.js';
 export {
+  type TokenSearchCollapsibleOptions,
+  type TokenSearchFieldsHandle,
   type TokenSearchSubmit,
   wireTokenSearchFields,
   type WireTokenSearchFieldsOptions,

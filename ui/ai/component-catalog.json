@@ -1347,7 +1347,7 @@
         "tokens",
         "query execution",
         "results",
-        "transient focused/open state and focus transfer"
+        "optional override of the collapsible expand/collapse/focus, which wireTokenSearchFields manages by default (adopt an app expanded signal, opt out per behavior, or drive it via the returned handle)"
       ],
       "variants": [
         "tokens",
@@ -1359,7 +1359,7 @@
         "Announce result changes when useful and keep tokens atomic during editing.",
         "Keep leading and trailing controls aligned to the first text line while content wraps.",
         "Wire Enter to submit without inserting a contenteditable line break and preserve focus plus the text-relative caret across controlled keyboard chip deletion; visual wrapping remains available.",
-        "In collapsible mode, transfer focus from the named trigger into the revealed searchbox and clear expanded only after focus leaves the component."
+        "In collapsible mode, wireTokenSearchFields manages this by default: activating the trigger reveals the searchbox and moves focus into it, Escape on an empty field collapses and returns focus to the trigger, and focus leaving an empty field collapses it; each behavior is individually opt-out."
       ],
       "delivery": {
         "browserImport": "@kerfjs/ui/token-search-field",

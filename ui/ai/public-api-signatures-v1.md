@@ -793,17 +793,59 @@ export { TokenSearchField, type TokenSearchFieldProps, type TokenSearchFieldValu
 ## `@kerfjs/ui/wire-token-search-fields`
 
 ```ts
+import { Signal } from 'kerfjs';
+
 interface TokenSearchSubmit {
     id: string;
     editor: HTMLElement;
 }
-interface WireTokenSearchFieldsOptions {
-    onSubmit: (submission: TokenSearchSubmit) => void;
+/**
+ * Managed collapsible behavior for the iconic TokenSearchField. Every piece is on
+ * by default; disable a specific one to own it in the app. Provide `signals` to
+ * drive app-owned `expanded` signals per field id instead of helper-created ones.
+ */
+interface TokenSearchCollapsibleOptions {
+    /** Expand the field and focus its editor when the iconic trigger is activated. Default: true. */
+    expandOnActivate?: boolean;
+    /** Collapse the field when focus leaves it while it is empty. Default: true. */
+    collapseOnEmptyBlur?: boolean;
+    /** Collapse an empty field on Escape and restore focus to its trigger. Default: true. */
+    collapseOnEscape?: boolean;
+    /** Focus the editor on expand and the trigger on Escape-collapse. Default: true. */
+    manageFocus?: boolean;
+    /** App-owned `expanded` signals keyed by field id; adopted instead of helper-created. */
+    signals?: Readonly<Record<string, Signal<boolean>>>;
 }
-/** Keep TokenSearchField wrapping, submit Enter, and preserve its caret across controlled token deletion. */
-declare function wireTokenSearchFields(root: HTMLElement, { onSubmit }: WireTokenSearchFieldsOptions): () => void;
+interface WireTokenSearchFieldsOptions {
+    onSubmit?: (submission: TokenSearchSubmit) => void;
+    /** Managed collapsible transient behavior. `true`/omitted = on with defaults; `false` = fully off. */
+    collapsible?: boolean | TokenSearchCollapsibleOptions;
+}
+/**
+ * The value returned from {@link wireTokenSearchFields}: call it (or `dispose()`) to
+ * tear down. When collapsible behavior is managed, it also exposes the transient
+ * `expanded` state per field id so the app can read it in render, hand in its own
+ * signal, or drive it imperatively.
+ */
+interface TokenSearchFieldsHandle {
+    (): void;
+    dispose(): void;
+    /** The managed `expanded` signal for a field id (adopted or helper-created); undefined when unmanaged. */
+    expanded(id: string): Signal<boolean> | undefined;
+    /** Expand the field (and, when focus is managed, focus its editor). */
+    open(id: string): void;
+    /** Collapse the field (and, when focus is managed, restore focus to its trigger). */
+    close(id: string): void;
+}
+/**
+ * Wire every TokenSearchField under `root`: submit on Enter, preserve the caret across
+ * controlled token deletion, and (by default) manage the collapsible field's transient
+ * expand/collapse/focus. Returns a {@link TokenSearchFieldsHandle} — a disposer that also
+ * exposes the managed `expanded` state per field id.
+ */
+declare function wireTokenSearchFields(root: HTMLElement, { onSubmit, collapsible }?: WireTokenSearchFieldsOptions): TokenSearchFieldsHandle;
 
-export { type TokenSearchSubmit, type WireTokenSearchFieldsOptions, wireTokenSearchFields };
+export { type TokenSearchCollapsibleOptions, type TokenSearchFieldsHandle, type TokenSearchSubmit, type WireTokenSearchFieldsOptions, wireTokenSearchFields };
 ```
 
 ## `kerfjs/actions`

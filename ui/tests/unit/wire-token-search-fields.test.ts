@@ -1,6 +1,8 @@
+import { mount, type Signal,signal } from 'kerfjs';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { wireTokenSearchFields } from '../../src/wire-token-search-fields.js';
+import { TokenSearchField } from '../../src/token-search-field.js';
+import { type TokenSearchCollapsibleOptions, wireTokenSearchFields } from '../../src/wire-token-search-fields.js';
 
 function focusAt(editor: HTMLElement, node: Node, offset: number) {
   const selection = document.getSelection()!;
@@ -146,5 +148,344 @@ describe('wireTokenSearchFields', () => {
 
     expect(document.activeElement).toBe(editor);
     stop();
+  });
+});
+
+const raf = () => new Promise<void>((resolve) => window.requestAnimationFrame(() => resolve()));
+const micro = () => new Promise<void>((resolve) => window.queueMicrotask(() => resolve()));
+
+function focusoutEvent(relatedTarget: EventTarget | null): FocusEvent {
+  const event = new FocusEvent('focusout', { bubbles: true });
+  Object.defineProperty(event, 'relatedTarget', { value: relatedTarget, configurable: true });
+  return event;
+}
+
+interface MountedField {
+  root: HTMLElement;
+  expandedSignal: Signal<boolean>;
+  query: Signal<string>;
+  editor(): HTMLElement | null;
+  trigger(): HTMLElement | null;
+}
+
+/** Mount a collapsible TokenSearchField whose `expanded` prop tracks `boundTo`, so a
+ *  signal the helper drives re-renders the field the way a real app would. */
+function mountCollapsibleField(boundTo?: Signal<boolean>): MountedField {
+  const expandedSignal = boundTo ?? signal(false);
+  const query = signal('');
+  const root = document.createElement('div');
+  document.body.append(root);
+  mount(root, () =>
+    TokenSearchField({
+      id: 'find',
+      label: 'Find in workspace',
+      collapsible: true,
+      expanded: expandedSignal.value,
+      query: query.value,
+      expandLabel: 'Open find',
+    }),
+  );
+  return {
+    root,
+    expandedSignal,
+    query,
+    editor: () => root.querySelector<HTMLElement>('[data-token-search-editor]'),
+    trigger: () => root.querySelector<HTMLElement>('.kui-token-search__expand'),
+  };
+}
+
+function wireCollapsible(
+  field: MountedField,
+  collapsible: boolean | TokenSearchCollapsibleOptions = { signals: { find: field.expandedSignal } },
+  onSubmit?: (submission: { id: string; editor: HTMLElement }) => void,
+) {
+  return wireTokenSearchFields(field.root, { onSubmit, collapsible });
+}
+
+describe('wireTokenSearchFields — managed collapsible behavior', () => {
+  afterEach(() => {
+    document.body.replaceChildren();
+    document.getSelection()?.removeAllRanges();
+  });
+
+  it('expands and focuses the editor when the iconic trigger is activated', async () => {
+    const field = mountCollapsibleField();
+    const handle = wireCollapsible(field);
+    expect(field.editor()).toBeNull();
+
+    field.trigger()!.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+
+    expect(field.expandedSignal.value).toBe(true);
+    await raf();
+    expect(document.activeElement).toBe(field.editor());
+    handle();
+  });
+
+  it('collapses an empty field on Escape and returns focus to the trigger', async () => {
+    const field = mountCollapsibleField(signal(true));
+    const handle = wireCollapsible(field);
+    const editor = field.editor()!;
+    editor.focus();
+
+    editor.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }));
+
+    expect(field.expandedSignal.value).toBe(false);
+    await raf();
+    expect(document.activeElement).toBe(field.trigger());
+    handle();
+  });
+
+  it('leaves a non-empty field open on Escape', () => {
+    const field = mountCollapsibleField(signal(true));
+    const handle = wireCollapsible(field);
+    const editor = field.editor()!;
+    editor.textContent = 'priority';
+    const event = new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true });
+
+    editor.dispatchEvent(event);
+
+    expect(field.expandedSignal.value).toBe(true);
+    expect(event.defaultPrevented).toBe(false);
+    handle();
+  });
+
+  it('collapses when focus leaves an empty field', async () => {
+    const field = mountCollapsibleField(signal(true));
+    const handle = wireCollapsible(field);
+    const editor = field.editor()!;
+    const outside = document.createElement('button');
+    document.body.append(outside);
+    editor.focus();
+
+    outside.focus();
+    editor.dispatchEvent(focusoutEvent(outside));
+    await micro();
+
+    expect(field.expandedSignal.value).toBe(false);
+    handle();
+  });
+
+  it('does not collapse while focus stays on an in-field control', async () => {
+    const field = mountCollapsibleField(signal(true));
+    const handle = wireCollapsible(field);
+    const editor = field.editor()!;
+    const trailing = document.createElement('button');
+    trailing.className = 'kui-token-search__trailing-probe';
+    editor.closest('.kui-token-search')!.append(trailing);
+    editor.focus();
+
+    // relatedTarget is inside the field → early return, no collapse scheduled.
+    editor.dispatchEvent(focusoutEvent(trailing));
+    await micro();
+    expect(field.expandedSignal.value).toBe(true);
+
+    // relatedTarget null, but focus lands back in the field before the microtask runs.
+    editor.dispatchEvent(focusoutEvent(null));
+    trailing.focus();
+    await micro();
+    expect(field.expandedSignal.value).toBe(true);
+    handle();
+  });
+
+  it('does not collapse when focus leaves a non-empty field', async () => {
+    const field = mountCollapsibleField(signal(true));
+    const handle = wireCollapsible(field);
+    const editor = field.editor()!;
+    editor.textContent = 'query';
+    const outside = document.createElement('button');
+    document.body.append(outside);
+
+    outside.focus();
+    editor.dispatchEvent(focusoutEvent(outside));
+    await micro();
+
+    expect(field.expandedSignal.value).toBe(true);
+    handle();
+  });
+
+  it('keeps the editor focused when an in-field control is pressed', () => {
+    const field = mountCollapsibleField(signal(true));
+    const handle = wireCollapsible(field);
+    const button = document.createElement('button');
+    field.editor()!.closest('.kui-token-search')!.append(button);
+
+    const event = new MouseEvent('mousedown', { bubbles: true, cancelable: true });
+    button.dispatchEvent(event);
+
+    expect(event.defaultPrevented).toBe(true);
+    handle();
+  });
+
+  it('adopts an app-provided signal and exposes it from the handle', () => {
+    const appOpen = signal(false);
+    const field = mountCollapsibleField(appOpen);
+    const handle = wireCollapsible(field);
+
+    expect(handle.expanded('find')).toBe(appOpen);
+    handle.open('find');
+    expect(appOpen.value).toBe(true);
+    handle.close('find');
+    expect(appOpen.value).toBe(false);
+    handle();
+  });
+
+  it('creates and reuses an expanded signal per field id when none is provided', async () => {
+    const field = mountCollapsibleField(signal(false));
+    const handle = wireTokenSearchFields(field.root, {});
+    const created = handle.expanded('find');
+    expect(created).toBeDefined();
+    expect(handle.expanded('find')).toBe(created);
+
+    // The helper owns the state; without the app binding it into render the field
+    // stays collapsed, so the managed focus step finds no editor and safely no-ops.
+    field.trigger()!.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    expect(created!.value).toBe(true);
+    await raf();
+    expect(field.editor()).toBeNull();
+    expect(document.activeElement).not.toBe(field.trigger());
+
+    handle.open('find');
+    expect(created!.value).toBe(true);
+    handle.close('find');
+    expect(created!.value).toBe(false);
+    handle();
+  });
+
+  it('expands without focusing when focus is not managed', async () => {
+    const field = mountCollapsibleField(signal(false));
+    const handle = wireCollapsible(field, { signals: { find: field.expandedSignal }, manageFocus: false });
+
+    field.trigger()!.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+
+    expect(field.expandedSignal.value).toBe(true);
+    await raf();
+    expect(field.editor()).not.toBeNull();
+    expect(document.activeElement).not.toBe(field.editor());
+
+    // close() flips the state without moving focus to the trigger.
+    handle.close('find');
+    await raf();
+    expect(field.expandedSignal.value).toBe(false);
+    expect(document.activeElement).not.toBe(field.trigger());
+    handle();
+  });
+
+  it('opt-out: fully disables managed behavior and exposes no state', () => {
+    const field = mountCollapsibleField(signal(false));
+    const handle = wireCollapsible(field, false);
+
+    field.trigger()!.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    expect(field.expandedSignal.value).toBe(false);
+    expect(handle.expanded('find')).toBeUndefined();
+    expect(() => {
+      handle.open('find');
+      handle.close('find');
+    }).not.toThrow();
+    expect(field.expandedSignal.value).toBe(false);
+    handle();
+  });
+
+  it('opt-out: disabling expandOnActivate leaves Escape-collapse intact', () => {
+    const field = mountCollapsibleField(signal(true));
+    const handle = wireCollapsible(field, { signals: { find: field.expandedSignal }, expandOnActivate: false });
+    const editor = field.editor()!;
+
+    editor.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }));
+    expect(field.expandedSignal.value).toBe(false);
+    handle();
+  });
+
+  it('opt-out: disabling collapseOnEmptyBlur and collapseOnEscape keeps an empty field open', async () => {
+    const field = mountCollapsibleField(signal(true));
+    const handle = wireCollapsible(field, {
+      signals: { find: field.expandedSignal },
+      collapseOnEmptyBlur: false,
+      collapseOnEscape: false,
+    });
+    const editor = field.editor()!;
+    const outside = document.createElement('button');
+    document.body.append(outside);
+
+    editor.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }));
+    outside.focus();
+    editor.dispatchEvent(focusoutEvent(outside));
+    await micro();
+
+    expect(field.expandedSignal.value).toBe(true);
+    // With collapse disabled, no mousedown guard is installed either.
+    const button = document.createElement('button');
+    editor.closest('.kui-token-search')!.append(button);
+    const press = new MouseEvent('mousedown', { bubbles: true, cancelable: true });
+    button.dispatchEvent(press);
+    expect(press.defaultPrevented).toBe(false);
+    handle();
+  });
+
+  it('submits Enter when a handler is given and no-ops safely without one', () => {
+    const field = mountCollapsibleField(signal(true));
+    const onSubmit = vi.fn();
+    const handle = wireCollapsible(field, { signals: { find: field.expandedSignal } }, onSubmit);
+    const editor = field.editor()!;
+
+    editor.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }));
+    expect(onSubmit).toHaveBeenCalledWith({ id: 'find', editor });
+    handle();
+
+    const bare = wireTokenSearchFields(field.root);
+    const event = new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true });
+    expect(() => editor.dispatchEvent(event)).not.toThrow();
+    expect(event.defaultPrevented).toBe(true);
+    bare.dispose();
+  });
+
+  it('stops responding after disposal via either the callable or dispose()', () => {
+    const first = mountCollapsibleField(signal(false));
+    const firstHandle = wireCollapsible(first);
+    firstHandle();
+    first.trigger()!.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    expect(first.expandedSignal.value).toBe(false);
+
+    const second = mountCollapsibleField(signal(false));
+    const secondHandle = wireCollapsible(second);
+    secondHandle.dispose();
+    second.trigger()!.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    expect(second.expandedSignal.value).toBe(false);
+  });
+
+  it('ignores activation on a collapsible field with no id', () => {
+    const root = document.createElement('div');
+    root.innerHTML =
+      '<div class="kui-token-search" data-component="token-search-field" data-collapsible="true" data-expanded="false"><button type="button" class="kui-token-search__expand"></button></div>';
+    document.body.append(root);
+    const handle = wireTokenSearchFields(root);
+
+    expect(() =>
+      root.querySelector<HTMLElement>('.kui-token-search__expand')!.dispatchEvent(new MouseEvent('click', { bubbles: true })),
+    ).not.toThrow();
+    handle();
+  });
+
+  it('ignores activation and Escape on a disabled collapsible field', async () => {
+    const query = signal('');
+    const open = signal(false);
+    const root = document.createElement('div');
+    document.body.append(root);
+    mount(root, () =>
+      TokenSearchField({
+        id: 'find',
+        label: 'Find',
+        collapsible: true,
+        disabled: true,
+        expanded: open.value,
+        query: query.value,
+        expandLabel: 'Open find',
+      }),
+    );
+    const handle = wireTokenSearchFields(root, { collapsible: { signals: { find: open } } });
+
+    root.querySelector<HTMLElement>('.kui-token-search__expand')!.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    await raf();
+    expect(open.value).toBe(false);
+    handle();
   });
 });

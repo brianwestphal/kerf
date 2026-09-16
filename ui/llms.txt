@@ -69,6 +69,12 @@ maintain a central style list. Configure JSX with `"jsxImportSource": "kerfjs"`.
   or the disposer-returning `wire…` helpers, and own domain copy, transport, and
   policy in a thin adapter. Every element must earn its place — cut chrome, labels,
   and readouts that do not help a person decide or act.
+- **Let the `wire…` helpers own common transient UI.** Domain state is the app's;
+  routine transient interaction is not something each app should reinvent.
+  `wireTokenSearchFields` manages the collapsible field's expand/collapse/focus by
+  default (on, per-behavior opt-out) and exposes the `expanded` signal on its handle
+  — bind it in render or hand in your own via `collapsible.signals`. Do not
+  hand-roll open/collapse/focus that a helper already provides.
 
 ## Public exports
 
