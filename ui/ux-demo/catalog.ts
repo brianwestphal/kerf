@@ -36,9 +36,15 @@ export type WebAwesomeCatalogId = typeof webAwesomeCatalog[number]['id'];
 export const catalog = [...kerfCatalog.filter((entry) => entry.kind !== 'recipe'), ...webAwesomeCatalog, ...recipeCatalog] as const satisfies readonly CatalogEntry[];
 export type CatalogId = typeof catalog[number]['id'];
 
+// Within each sidebar section, list the single-component demos first and the
+// composition demos last — components are the building blocks, compositions show
+// how they combine (KF-0M719X). Stable so each kind keeps its authored order.
+const sectionKindRank = (entry: CatalogEntry): number => (entry.kind === 'component' ? 0 : 1);
 export const catalogSections = catalogCategories.map((category) => ({
   category,
-  entries: kerfCatalog.filter((entry) => entry.category === category),
+  entries: kerfCatalog
+    .filter((entry) => entry.category === category)
+    .sort((left, right) => sectionKindRank(left) - sectionKindRank(right)),
 }));
 
 export const webAwesomeCatalogSections = webAwesomeCategories.map((category) => ({
