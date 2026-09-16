@@ -43,7 +43,7 @@ describe('SplitView', () => {
     expect(html).toContain('data-depth="2"');
     expect(html).toContain('data-nav-back');
     expect(html).toContain('aria-label="Threads"');
-    expect(html).toContain('>Message</h2>');
+    expect(html).toContain('kui-nav-stack__title" data-component="toolbar-text" data-size="large">Message</span>');
   });
 
   it('applies a custom className', () => {

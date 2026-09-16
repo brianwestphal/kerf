@@ -1,5 +1,7 @@
 import type { SafeHtml } from 'kerfjs';
 
+import { ToolbarText } from './toolbar-text.js';
+
 /**
  * One entry in a {@link NavStack}. The app owns the stack as an array (usually a
  * signal); `NavStack` renders it and `wireNavStack` animates the transitions.
@@ -45,7 +47,7 @@ export function NavStack({ id, label, views, backLabel = 'Back', hideToolbar = f
         {canPop && <button type="button" class="kui-nav-stack__back" data-nav-back aria-label={backLabel}>
           <svg class="kui-nav-stack__back-icon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6" /></svg>
         </button>}
-        <h2 class="kui-nav-stack__title" data-nav-stack-title>{top?.title ?? ''}</h2>
+        <ToolbarText text={top?.title ?? ''} size="large" className="kui-nav-stack__title" />
       </div>
       {top?.toolbar && <div class="kui-nav-stack__actions">{top.toolbar}</div>}
     </header>}

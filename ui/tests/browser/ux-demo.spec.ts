@@ -108,7 +108,7 @@ test('drills through the navigation-stack recipe with animated push/pop and redu
   await recipe.locator('[data-item-id="layouts"]').click();
   await expect(nav).toHaveAttribute('data-depth', '2');
   await expect(nav.locator('[data-nav-back]')).toBeVisible();
-  await expect(nav.locator('[data-nav-stack-title]')).toHaveText('App layouts');
+  await expect(nav.locator('.kui-nav-stack__title')).toHaveText('App layouts');
   if (browserName === 'chromium') await recipe.screenshot({ path: 'test-results/recipe-navigation-stack.png' });
 
   // Pop via the back control returns to the root.

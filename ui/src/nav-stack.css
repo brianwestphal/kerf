@@ -54,14 +54,11 @@
   display: block;
 }
 
+/* The title is ToolbarText (which owns its font, height, and ellipsis); it just
+   needs to flex to fill the lead zone beside the back control. */
 .kui-nav-stack__title {
+  flex: 1 1 auto;
   min-width: 0;
-  margin: 0;
-  overflow: hidden;
-  font-size: var(--kui-font-m);
-  line-height: 1.2;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .kui-nav-stack__actions {

@@ -1,5 +1,6 @@
 import '@kerfjs/ui/layout.css';
 import '@kerfjs/ui/nav-stack.css';
+import '@kerfjs/ui/toolbar-text.css';
 import './recipes.css';
 
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';

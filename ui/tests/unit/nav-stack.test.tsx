@@ -26,14 +26,14 @@ describe('NavStack markup', () => {
     expect(html).toContain('data-depth="1"');
     expect(html).not.toContain('data-nav-back');
     expect(html).toContain('data-nav-active="true"');
-    expect(html).toContain('>Home</h2>');
+    expect(html).toContain('kui-nav-stack__title" data-component="toolbar-text" data-size="large">Home</span>');
   });
 
   it('shows the back control and the top title once the stack has depth', () => {
     const html = String(NavStack({ id: 'nav', label: 'Flow', views: [view('home', 'Home'), view('detail', 'Detail')] }));
     expect(html).toContain('data-nav-back');
     expect(html).toContain('aria-label="Back"');
-    expect(html).toContain('>Detail</h2>');
+    expect(html).toContain('kui-nav-stack__title" data-component="toolbar-text" data-size="large">Detail</span>');
     // Non-top views are hidden but kept mounted.
     expect(html).toContain('data-nav-key="home" data-nav-active="false" aria-hidden="true"');
   });
@@ -58,7 +58,7 @@ describe('NavStack markup', () => {
     expect(html).toContain('data-depth="0"');
     expect(html).not.toContain('data-nav-back');
     expect(html).not.toContain('kui-nav-stack__actions');
-    expect(html).toContain('></h2>');
+    expect(html).toContain('kui-nav-stack__title" data-component="toolbar-text" data-size="large"></span>');
   });
 
   it('omits the chrome when hideToolbar is set', () => {

@@ -54,13 +54,23 @@ export function wireNavStack(root: Element, options: WireNavStackOptions = {}): 
 
   const play = (el: HTMLElement, kind: 'entering' | 'exiting'): void => {
     const animated = duration > 0 && !reducedMotion(view);
-    el.classList.add(`kui-nav-stack__view--${kind}`);
-    if (animated) {
-      // Force a reflow so the starting transform applies before we clear it.
-      void el.offsetWidth;
-      view.requestAnimationFrame(() => el.classList.remove(`kui-nav-stack__view--${kind}`));
+    if (kind === 'entering') {
+      // Push: start the incoming view off the trailing edge, then release it so
+      // it slides to rest (translateX(100%) → 0).
+      el.classList.add('kui-nav-stack__view--entering');
+      if (animated) {
+        // Force a reflow so the starting transform applies before we clear it.
+        void el.offsetWidth;
+        view.requestAnimationFrame(() => el.classList.remove('kui-nav-stack__view--entering'));
+      } else {
+        el.classList.remove('kui-nav-stack__view--entering');
+      }
+    } else if (animated) {
+      // Pop: the outgoing view is at rest; add the off-edge class on the next
+      // frame so it slides OUT (translateX(0) → 100%), not in.
+      view.requestAnimationFrame(() => el.classList.add('kui-nav-stack__view--exiting'));
     } else {
-      el.classList.remove(`kui-nav-stack__view--${kind}`);
+      el.classList.add('kui-nav-stack__view--exiting');
     }
   };
 

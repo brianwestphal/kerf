@@ -349,5 +349,7 @@
   height: 24rem;
 }
 .recipe-navstack__view {
-  padding: var(--kui-space-s);
+  /* The view is a .kui-content stack whose rows own their 8px margins; add only a
+     little block breathing room, not an inline pad that would double-inset them. */
+  padding-block: var(--kui-space-2xs);
 }
