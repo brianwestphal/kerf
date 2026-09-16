@@ -1772,14 +1772,41 @@ button {
     .demo-value-table,
     .demo-tab-bar-frame,
     .demo-text-variants,
-    .demo-select-selected
+    .demo-select-selected,
+    .demo-icon-grid,
+    .demo-icon-grid article,
+    .demo-disclosure-grid,
+    .demo-disclosure-grid > button,
+    .toolbar-control-group-demo,
+    .demo-tabs,
+    .demo-spinner-grid,
+    .demo-spinner-row,
+    .demo-empty-grid,
+    .demo-state-banner-grid
   ) {
   border-color: transparent;
   background: transparent;
   box-shadow: none;
 }
-.catalog-canvas[data-demo-mode="component"] .demo-value-table {
+.catalog-canvas[data-demo-mode="component"]
+  :is(.demo-value-table, .toolbar-control-group-demo) {
   padding: 0;
+}
+/* The toolbar-control-group demo stacks its examples in one left-aligned column
+   on the grid; each per-example cell loses its card border and left-aligns. */
+.catalog-canvas[data-demo-mode="component"] .toolbar-control-group-demo {
+  display: flex;
+  width: min(remify(736px), 100%);
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--kui-space-m);
+}
+.catalog-canvas[data-demo-mode="component"] .toolbar-control-group-demo > div {
+  min-height: 0;
+  padding: 0;
+  border-color: transparent;
+  justify-content: flex-start;
+  gap: var(--kui-space-m);
 }
 
 /* Debug overlay: a gray dashed outline at each transparent component's outer
@@ -1803,4 +1830,36 @@ button {
 }
 .demo-overlay__margin {
   background: color-mix(in srgb, #f6a94c 55%, transparent);
+}
+
+/* KF-S5G8NC: a consistent labeled-example layout for non-composition demos.
+   Each example is a left-aligned vertical stack — an optional MenuHeader label
+   and note, then the component — with 8px between unlabeled examples and 16px
+   between labeled ones. Components sit directly on the grid (no card). */
+.demo-stack {
+  display: flex;
+  width: min(remify(736px), 100%);
+  flex-direction: column;
+  align-items: flex-start;
+  gap: remify(8px);
+}
+.demo-stack--labeled {
+  gap: remify(16px);
+}
+.demo-example {
+  display: flex;
+  min-width: 0;
+  max-width: 100%;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: remify(8px);
+}
+.demo-example__note {
+  margin: 0;
+  padding-inline: var(--kui-layout-item-padding, remify(8px));
+  color: var(--kui-color-text-quiet);
+  font-size: var(--kui-font-s);
+}
+.demo-example .kui-menu-header {
+  width: auto;
 }

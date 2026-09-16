@@ -102,9 +102,19 @@ function animationDemoFrom(element: Element): { animation: AnimationElement; out
 }
 
 function LucideIconDemo() {
-  return <div class="demo-icon-grid" data-demo="lucide-icon">
-    <article><span class="demo-icon-grid__sample">{icon(Wrench, 'wrench')}</span><strong>Decorative</strong><span>Hidden from assistive technology</span></article>
-    <article><span class="demo-icon-grid__sample"><LucideIcon icon={Bell} name="notification" label="Notifications ready" /></span><strong>Meaningful</strong><span>Named when the icon carries meaning</span></article>
+  // Both render the same glyph — LucideIcon's two modes differ in semantics, not
+  // appearance — so the labels/notes carry the distinction.
+  return <div class="demo-stack demo-stack--labeled" data-demo="lucide-icon">
+    <section class="demo-example">
+      <MenuHeader label="Decorative" />
+      <p class="demo-example__note">No name — hidden from assistive technology (<code>aria-hidden</code>).</p>
+      {icon(Bell, 'bell')}
+    </section>
+    <section class="demo-example">
+      <MenuHeader label="Meaningful" />
+      <p class="demo-example__note">Named with a label — announced when the icon carries meaning.</p>
+      <LucideIcon icon={Bell} name="notification" label="Notifications ready" />
+    </section>
   </div>;
 }
 

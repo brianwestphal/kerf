@@ -226,6 +226,24 @@ test('hovers a lone control-group button as a whole, but keeps inner highlights 
   })).not.toBe(transparent);
 });
 
+test('presents the LucideIcon modes as labeled examples that differ only in semantics', async ({ page }) => {
+  await page.goto('/?component=lucide-icon');
+  const demo = page.locator('[data-demo="lucide-icon"]');
+  await expect(demo).toHaveClass(/demo-stack/);
+  const examples = demo.locator('.demo-example');
+  await expect(examples).toHaveCount(2);
+  // Each example is a MenuHeader label + a note + the icon (left-aligned stack).
+  await expect(examples.nth(0).locator('.kui-menu-header')).toHaveText(/Decorative/);
+  await expect(examples.nth(1).locator('.kui-menu-header')).toHaveText(/Meaningful/);
+  await expect(examples.locator('.demo-example__note')).toHaveCount(2);
+  // Both render the same glyph — the difference is semantics, not appearance:
+  // the decorative icon is hidden from AT; the meaningful one is labeled.
+  await expect(examples.nth(0).locator('svg[data-lucide]')).toHaveAttribute('aria-hidden', 'true');
+  await expect(examples.nth(1).locator('svg[data-lucide]')).toHaveAttribute('aria-label', 'Notifications ready');
+  const glyphs = await examples.locator('svg[data-lucide]').evaluateAll((nodes) => nodes.map((node) => node.innerHTML));
+  expect(glyphs[0]).toBe(glyphs[1]);
+});
+
 test('renders non-composition demos on the grid with a bounds/margin overlay, and leaves composition demos alone', async ({ page, browserName }) => {
   await page.setViewportSize({ width: 1200, height: 900 });
 
