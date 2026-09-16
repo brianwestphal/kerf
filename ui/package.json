@@ -122,6 +122,14 @@
       "types": "./dist/workbench.d.ts",
       "import": "./dist/workbench.js"
     },
+    "./tab-scaffold": {
+      "types": "./dist/tab-scaffold.d.ts",
+      "import": "./dist/tab-scaffold.js"
+    },
+    "./wire-tab-scaffold": {
+      "types": "./dist/wire-tab-scaffold.d.ts",
+      "import": "./dist/wire-tab-scaffold.js"
+    },
     "./page-header": {
       "types": "./dist/page-header.d.ts",
       "browser": "./dist/browser/page-header.js",
@@ -201,6 +209,7 @@
     "./nav-stack.css": "./dist/styles/nav-stack.css",
     "./split-view.css": "./dist/styles/split-view.css",
     "./workbench.css": "./dist/styles/workbench.css",
+    "./tab-scaffold.css": "./dist/styles/tab-scaffold.css",
     "./page-header.css": "./dist/styles/page-header.css",
     "./loading-spinner.css": "./dist/styles/loading-spinner.css",
     "./select.css": "./dist/styles/select.css",

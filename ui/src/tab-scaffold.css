@@ -1,0 +1,84 @@
+.kui-tab-scaffold {
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  overflow: hidden;
+  flex-direction: column;
+  background: var(--kui-color-surface);
+}
+
+.kui-tab-scaffold__scenes {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* Every tab stays mounted (its NavStack keeps its stack and scroll); only the
+   active scene is shown. */
+.kui-tab-scaffold__scene {
+  position: absolute;
+  overflow: auto;
+  inset: 0;
+}
+
+.kui-tab-scaffold__scene[data-active="false"] {
+  visibility: hidden;
+}
+
+.kui-tab-scaffold__bar {
+  display: flex;
+  flex: 0 0 auto;
+  padding-block-start: var(--kui-space-2xs);
+  /* Respect the home-indicator safe area on iOS-class devices. */
+  padding-block-end: calc(
+    var(--kui-space-2xs) + env(safe-area-inset-bottom, 0px)
+  );
+  border-block-start: 1px solid var(--kui-color-border);
+  background: var(--kui-color-surface);
+}
+
+.kui-tab-scaffold__tab {
+  display: flex;
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: remify(44px);
+  padding: var(--kui-space-2xs) var(--kui-space-xs);
+  border: 0;
+  color: var(--kui-color-text-quiet);
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: remify(2px);
+}
+
+.kui-tab-scaffold__tab[aria-selected="true"] {
+  color: var(--kui-color-accent-text);
+}
+
+.kui-tab-scaffold__tab:focus-visible {
+  outline: var(--kui-focus-ring);
+  outline-offset: -2px;
+}
+
+.kui-tab-scaffold__tab-icon {
+  display: grid;
+  place-items: center;
+}
+
+.kui-tab-scaffold__tab-icon svg {
+  width: remify(22px);
+  height: remify(22px);
+}
+
+.kui-tab-scaffold__tab-label {
+  max-width: 100%;
+  overflow: hidden;
+  font-size: var(--kui-font-2xs);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

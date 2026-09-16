@@ -491,6 +491,57 @@ declare function Workbench({ id, label, main, leftRail, rightRail, bottomDrawer,
 export { Workbench, type WorkbenchPanel, type WorkbenchProps };
 ```
 
+## `@kerfjs/ui/tab-scaffold`
+
+```ts
+import { SafeHtml } from 'kerfjs';
+
+interface TabScaffoldTab {
+    id: string;
+    label: string;
+    /** Decorative icon shown above the label in the bottom bar. */
+    icon?: SafeHtml;
+    /** The tab's content — typically a `NavStack` so each tab keeps its own stack. */
+    content: SafeHtml;
+}
+interface TabScaffoldProps {
+    id: string;
+    /** Accessible name for the tab bar. */
+    label: string;
+    tabs: TabScaffoldTab[];
+    /** The controlled active tab id (the app owns selection). */
+    active: string;
+    className?: string;
+}
+/**
+ * A mobile-first, iOS-like bottom tab scaffold: a bottom tab bar that switches
+ * between major sections, each tab keeping its own content (usually a `NavStack`)
+ * mounted so its stack and scroll survive a switch. Controlled — the app owns
+ * `active`; wire selection with `@kerfjs/ui/wire-tab-scaffold`'s `wireTabScaffold`.
+ * On larger classes, promote the tabs to a `Workbench` rail or sidebar instead of
+ * a bottom bar. See `docs/23-app-layouts.md` §3.4.
+ */
+declare function TabScaffold({ id, label, tabs, active, className }: TabScaffoldProps): SafeHtml;
+
+export { TabScaffold, type TabScaffoldProps, type TabScaffoldTab };
+```
+
+## `@kerfjs/ui/wire-tab-scaffold`
+
+```ts
+interface WireTabScaffoldOptions {
+    /** Invoked with the selected tab id when a bottom-bar tab is activated. */
+    onSelect: (tabId: string) => void;
+}
+/**
+ * Wire a `TabScaffold`'s bottom tab bar: clicking a tab calls `onSelect` with its
+ * id (the app then updates its controlled `active`). Returns a disposer.
+ */
+declare function wireTabScaffold(root: Element, options: WireTabScaffoldOptions): () => void;
+
+export { type WireTabScaffoldOptions, wireTabScaffold };
+```
+
 ## `@kerfjs/ui/resizable-region`
 
 ```ts

@@ -20,6 +20,8 @@ const entries = [
   'wire-nav-stack',
   'split-view',
   'workbench',
+  'tab-scaffold',
+  'wire-tab-scaffold',
   'page-header',
   'loading-spinner',
   'select',
