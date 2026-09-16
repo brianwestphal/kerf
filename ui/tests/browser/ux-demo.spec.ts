@@ -195,7 +195,7 @@ test('keeps an icon-only control-group wa-button highlight at least square (min-
 
   if (browserName === 'chromium') {
     await page.locator('wa-button[aria-label="Favorite view"]').hover();
-    await page.locator('h3:has-text("Button group")').locator('xpath=following-sibling::*[1]').screenshot({ path: 'test-results/button-group-highlight.png' });
+    await page.locator('.demo-example', { has: page.locator('.kui-menu-header:has-text("Button group")') }).locator('[data-component="toolbar-control-group"]').screenshot({ path: 'test-results/button-group-highlight.png' });
   }
 });
 
@@ -267,7 +267,7 @@ test('renders non-composition demos on the grid with a bounds/margin overlay, an
   await page.goto('/?component=menu-header');
   const canvas = page.locator('.catalog-canvas');
   await expect(canvas).toHaveAttribute('data-demo-mode', 'component');
-  const wrapper = page.locator('.demo-menu').first();
+  const wrapper = page.locator('.demo-menu-demo').first();
   await expect.poll(() => wrapper.evaluate((el) => window.getComputedStyle(el).backgroundColor)).toBe('rgba(0, 0, 0, 0)');
   const overlay = page.locator('[data-demo-overlay]');
   await expect.poll(() => overlay.locator('.demo-overlay__bound').count()).toBeGreaterThan(0);
@@ -992,7 +992,7 @@ test('keeps token-search focus and caret when Delete removes a controlled token'
   await page.keyboard.type('owner ');
   await expect(editor).toContainText('NOT owner is:active AND parser');
   await expect(demo.locator('output')).toContainText('1 filters · NOT owner  AND parser');
-  if (browserName === 'chromium') await demo.locator('article').first().screenshot({ path: 'test-results/token-search-field-delete-caret.png' });
+  if (browserName === 'chromium') await demo.locator('.demo-example').first().screenshot({ path: 'test-results/token-search-field-delete-caret.png' });
 });
 
 test('edits, removes, and clears controlled token search content', async ({ page, browserName }) => {
@@ -1058,7 +1058,7 @@ test('edits, removes, and clears controlled token search content', async ({ page
   expect(Math.abs(singleLine.firstLineCenter - singleLine.height / 2)).toBeLessThan(0.1);
   expect(Math.abs(singleLine.clearCenter - singleLine.height / 2)).toBeLessThan(0.1);
   await page.mouse.move(0, 0);
-  if (browserName === 'chromium') await demo.locator('article').first().screenshot({ path: 'test-results/token-search-field-alignment-single-line-wide.png' });
+  if (browserName === 'chromium') await demo.locator('.demo-example').first().screenshot({ path: 'test-results/token-search-field-alignment-single-line-wide.png' });
 
   await editor.pressSequentially(' across a deliberately long second line that proves the first-line controls stay pinned while editable content wraps naturally through the available width');
   const multiline = await alignment();
@@ -1066,7 +1066,7 @@ test('edits, removes, and clears controlled token search content', async ({ page
   expect(multiline.leadingCenter).toBeCloseTo(singleLine.leadingCenter, 1);
   expect(multiline.firstLineCenter).toBeCloseTo(singleLine.firstLineCenter, 1);
   expect(multiline.clearCenter).toBeCloseTo(singleLine.clearCenter, 1);
-  if (browserName === 'chromium') await demo.locator('article').first().screenshot({ path: 'test-results/token-search-field-alignment-multiline-wide.png' });
+  if (browserName === 'chromium') await demo.locator('.demo-example').first().screenshot({ path: 'test-results/token-search-field-alignment-multiline-wide.png' });
 
   await page.reload();
   await page.locator('[data-action="toggle-theme"]').click();
@@ -1622,7 +1622,7 @@ test('catalog routes every production component family and supports its stateful
   await expect(page.locator('html')).toHaveClass(/demo-reduced-motion/);
 
   await page.locator('.catalog-sidebar [data-item-id="tabs"]').click();
-  await expect(page.locator('[data-demo="tabs"] > [data-component="tab-bar"]')).toHaveAttribute('data-tab-bar-id', 'focused-app-tabs');
+  await expect(page.locator('[data-demo="tabs"] [data-component="tab-bar"]')).toHaveAttribute('data-tab-bar-id', 'focused-app-tabs');
   await expect(page.locator('[data-demo="tabs"] [data-kui-tab-list]')).toHaveAttribute('aria-label', 'Open documents');
   const guidelinesRoot = page.locator('[data-demo="tabs"] .kui-app-tab[data-tab-id="guidelines"]');
   await expect(guidelinesRoot).toHaveAttribute('data-demo-tab-source', 'workspace');
@@ -2323,7 +2323,7 @@ test('matches shared menu, content-item, and toolbar geometry', async ({ page, b
   await page.goto('/?component=toolbar-control-group');
   const demo = page.getByRole('region', { name: 'ToolbarControlGroup demo' });
   await expect.poll(() => page.evaluate(() => customElements.get('wa-dropdown') !== undefined)).toBe(true);
-  await expect(demo.getByRole('heading', { level: 3 })).toHaveText([
+  await expect(demo.locator('.kui-menu-header__label')).toHaveText([
     'Segmented choices', 'Popup menu', 'Button group', 'Single button', 'Borderless group',
     'Push button, resting', 'Push button, pressed', 'Dark group',
   ]);
@@ -2575,7 +2575,7 @@ test('renders controlled toolbar, rounded, and pill SegmentedControl variants', 
   const demo = page.getByRole('region', { name: 'SegmentedControl variants' });
   const controls = demo.locator('[data-component="segmented-control"]');
   await expect(controls).toHaveCount(3);
-  await expect(demo.getByRole('heading', { level: 3 })).toHaveText(['Toolbar', 'Rounded rectangle', 'Pill']);
+  await expect(demo.locator('.kui-menu-header__label')).toHaveText(['Toolbar', 'Rounded rectangle', 'Pill']);
 
   const toolbar = demo.locator('[data-segmented-control-id="standalone-toolbar-view"]');
   const rounded = demo.locator('[data-segmented-control-id="inspector-section"]');
@@ -2635,11 +2635,11 @@ test('ships semantic banner palettes with scoped overrides', async ({ page, brow
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/?component=state-banner');
   const banners = page.locator('[data-demo="state-banner"] [data-component="state-banner"]');
-  const articles = page.locator('[data-demo="state-banner"] article');
+  const articles = page.locator('[data-demo="state-banner"] .demo-example');
   await expect(banners).toHaveCount(6);
   await expect(articles).toHaveCount(6);
   const labelIconOffsets = () => articles.evaluateAll((nodes) => nodes.map((node) => {
-    const label = node.querySelector('h3')!;
+    const label = node.querySelector('.kui-menu-header__label')!;
     const icon = node.querySelector('.kui-state-banner__icon')!;
     return Math.abs(label.getBoundingClientRect().left - icon.getBoundingClientRect().left);
   }));

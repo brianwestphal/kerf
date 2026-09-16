@@ -4,20 +4,20 @@ import { resolve } from 'node:path';
 import postcss from 'postcss';
 import { describe, expect, it } from 'vitest';
 
-describe('StateBanner demo label alignment', () => {
-  it('insets specimen chrome by the banner margin, border, and content padding', async () => {
+describe('labeled-example note alignment', () => {
+  it('insets a demo example note by the margin, border, and content padding so it lines up with the MenuHeader label and a content-item component', async () => {
     const file = resolve(import.meta.dirname, '../../ux-demo/style.css');
     const root = postcss.parse(await readFile(file, 'utf8'), { from: file });
     const rule = root.nodes.find(
-      (node) => node.type === 'rule' && node.selector === '.demo-state-banner-grid h3',
+      (node) => node.type === 'rule' && node.selector === '.demo-example__note',
     );
 
-    if (!rule || rule.type !== 'rule') throw new Error('Missing StateBanner demo label rule');
+    if (!rule || rule.type !== 'rule') throw new Error('Missing demo example note rule');
     const inset = rule.nodes.find(
-      (node) => node.type === 'decl' && node.prop === 'margin-inline-start',
+      (node) => node.type === 'decl' && node.prop === 'padding-inline',
     );
 
-    if (!inset || inset.type !== 'decl') throw new Error('Missing StateBanner demo label inset');
+    if (!inset || inset.type !== 'decl') throw new Error('Missing demo example note inset');
     expect(inset.value.replace(/\s+/g, ' ')).toBe(
       'calc( var(--kui-layout-inline-margin, remify(8px)) + 1px + var(--kui-layout-item-padding, remify(8px)) )',
     );

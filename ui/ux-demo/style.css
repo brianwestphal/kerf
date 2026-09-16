@@ -611,6 +611,12 @@ button {
 .demo-control-stack > label {
   font-weight: 700;
 }
+/* The Select fills a comfortable width in its example so the selected content
+   and the trailing caret sit at opposite ends of the combobox. */
+.demo-control-stack .demo-example,
+.demo-control-stack wa-select {
+  width: min(remify(360px), 100%);
+}
 .demo-select-selected {
   display: inline-flex;
   min-width: 0;
@@ -631,149 +637,9 @@ button {
   align-items: center;
   gap: remify(8px);
 }
-.demo-icon-grid,
-.demo-spinner-grid,
-.demo-empty-grid {
-  display: grid;
-  width: min(remify(736px), 100%);
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: remify(16px);
-}
-.demo-icon-grid article,
-.demo-spinner-grid article,
-.demo-empty-grid article {
-  display: grid;
-  min-width: 0;
-  padding: remify(20px);
-  border: 1px solid var(--kui-color-border);
-  border-radius: var(--kui-radius-m);
-  background: var(--kui-color-surface);
-  box-shadow: var(--kui-shadow-s);
-  align-content: center;
-  justify-items: center;
-  gap: remify(7.2px);
-  text-align: center;
-}
-.demo-icon-grid article > span:last-child,
-.demo-spinner-grid article > span:last-child,
-.demo-empty-grid article > span:first-child {
-  color: var(--kui-color-text-quiet);
-  font-size: var(--kui-font-xs);
-}
-.demo-icon-grid__sample {
-  display: grid;
-  width: remify(52px);
-  height: remify(52px);
-  border-radius: var(--kui-radius-pill);
-  color: var(--kui-color-accent-text);
-  background: var(--kui-color-accent);
-  place-items: center;
-}
-.demo-icon-grid__sample svg {
-  width: remify(24px);
-  height: remify(24px);
-}
-.demo-disclosure-grid {
-  display: grid;
-  width: min(remify(544px), 100%);
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: remify(16px);
-}
-.demo-disclosure-grid > button {
-  display: flex;
-  min-height: remify(96px);
-  padding: remify(20px);
-  border: 1px solid var(--kui-color-border);
-  border-radius: var(--kui-radius-m);
-  color: var(--kui-color-text);
-  background: var(--kui-color-surface);
-  font: inherit;
-  align-items: center;
-  gap: remify(12px);
-  text-align: start;
-  cursor: pointer;
-}
-.demo-disclosure-grid > button > span:last-child {
-  min-width: 0;
-  overflow-wrap: anywhere;
-  white-space: normal;
-}
-.demo-spinner-grid article {
-  min-height: remify(160px);
-}
-.demo-empty-grid article {
-  padding: remify(12px);
-  align-content: start;
-}
-.demo-empty-grid .kui-empty-state {
-  min-height: remify(240px);
-}
-.demo-variant-stack,
-.demo-text-variants {
-  display: grid;
-  width: min(remify(608px), 100%);
-  padding: remify(16px);
-  border: 1px solid var(--kui-color-border);
-  border-radius: var(--kui-radius-m);
-  background: var(--kui-color-surface);
-  box-shadow: var(--kui-shadow-s);
-  gap: remify(16px);
-}
-.demo-variant-stack > div,
-.demo-text-variants > div {
-  display: flex;
-  min-width: 0;
-  min-height: remify(56px);
-  padding: remify(12px);
-  border: 1px solid var(--kui-color-border-quiet);
-  border-radius: var(--kui-radius-s);
-  align-items: center;
-  justify-content: space-between;
-  gap: remify(16px);
-}
-.demo-variant-stack > div > span,
-.demo-text-variants > div > span:first-child {
-  color: var(--kui-color-text-quiet);
-  font-size: var(--kui-font-xs);
-  font-weight: 650;
-}
 .demo-dark-swatch {
   color: #fff;
   background: #252527;
-}
-.toolbar-control-group-demo {
-  display: grid;
-  width: min(remify(736px), 100%);
-  padding: remify(16px);
-  border: 1px solid var(--kui-color-border);
-  border-radius: var(--kui-radius-l);
-  background: var(--kui-color-surface);
-  box-shadow: var(--kui-shadow-s);
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: remify(16px);
-}
-.toolbar-control-group-demo > div {
-  display: flex;
-  min-width: 0;
-  min-height: remify(88px);
-  padding: remify(12px);
-  border: 1px solid var(--kui-color-border-quiet);
-  border-radius: remify(8px);
-  align-items: center;
-  justify-content: space-between;
-  gap: remify(16px);
-}
-.toolbar-control-group-demo h3,
-.demo-state-banner-grid h3 {
-  margin: 0;
-  color: var(--kui-color-neutral-on-quiet);
-  font-size: var(--kui-font-xs);
-}
-.demo-state-banner-grid h3 {
-  margin-inline-start: calc(
-    var(--kui-layout-inline-margin, remify(8px)) + 1px +
-      var(--kui-layout-item-padding, remify(8px))
-  );
 }
 .toolbar-control-group-demo wa-button::part(base) {
   width: remify(32px);
@@ -788,88 +654,11 @@ button {
 .toolbar-control-group-demo wa-button::part(caret) {
   margin-inline-start: 2px;
 }
-.segmented-control-demo {
-  display: grid;
-  width: min(remify(768px), 100%);
-  gap: remify(16px);
-}
-.segmented-control-demo article {
-  display: grid;
-  min-width: 0;
-  padding: remify(16px);
-  border: 1px solid var(--kui-color-border);
-  border-radius: var(--kui-radius-l);
-  background: var(--kui-color-surface);
-  box-shadow: var(--kui-shadow-s);
-  align-items: center;
-  grid-template-columns: minmax(remify(160px), 0.75fr) minmax(0, 1.25fr);
-  gap: remify(20px);
-}
-.segmented-control-demo article > header {
-  display: grid;
-  gap: remify(3.2px);
-}
-.segmented-control-demo h3,
-.segmented-control-demo p {
-  margin: 0;
-}
-.segmented-control-demo h3 {
-  font-size: var(--kui-font-s);
-}
-.segmented-control-demo p {
-  color: var(--kui-color-text-quiet);
-  font-size: var(--kui-font-xs);
-  line-height: 1.4;
-}
-.segmented-control-demo .kui-segmented-control {
-  justify-self: end;
-}
-.segmented-control-demo article > .kui-toolbar-control-group {
-  justify-self: end;
-}
 .segmented-control-demo [data-layout="equal"] {
   min-width: min(remify(384px), 100%);
 }
-.token-search-demo {
-  display: grid;
-  width: min(remify(768px), 100%);
-  gap: remify(16px);
-}
-.token-search-demo article {
-  display: grid;
-  min-width: 0;
-  padding: remify(16px);
-  border: 1px solid var(--kui-color-border);
-  border-radius: var(--kui-radius-l);
-  background: var(--kui-color-surface);
-  box-shadow: var(--kui-shadow-s);
-  gap: remify(12px);
-}
-.token-search-demo header {
-  display: grid;
-  gap: remify(3.2px);
-}
-.token-search-demo h3,
-.token-search-demo p {
-  margin: 0;
-}
-.token-search-demo h3 {
-  font-size: var(--kui-font-s);
-}
-.token-search-demo p,
-.token-search-demo output {
-  color: var(--kui-color-text-quiet);
-  font-size: var(--kui-font-xs);
-  line-height: 1.4;
-}
-.demo-state-banner-grid {
-  display: grid;
-  width: min(remify(864px), 100%);
-  gap: remify(12px);
-}
-.demo-state-banner-grid article {
-  display: grid;
-  gap: remify(4.8px);
+.token-search-demo .kui-token-search {
+  width: min(remify(480px), 100%);
 }
 .demo-state-banner--override {
   --kui-state-banner-background: light-dark(#f6efff, #2e203d);
@@ -1612,9 +1401,6 @@ button {
   .catalog-relationships__select {
     width: 100%;
   }
-  .demo-disclosure-grid {
-    grid-template-columns: 1fr;
-  }
   .demo-resize-shell {
     overflow-x: auto;
   }
@@ -1624,9 +1410,6 @@ button {
   }
   .wa-demo-animation {
     grid-template-columns: 1fr;
-  }
-  .token-search-demo article {
-    padding: remify(12px);
   }
 }
 
@@ -1666,37 +1449,6 @@ button {
   }
   .demo-spinner-row {
     flex-wrap: wrap;
-  }
-  .demo-icon-grid,
-  .demo-spinner-grid,
-  .demo-empty-grid {
-    grid-template-columns: 1fr;
-  }
-  .demo-variant-stack > div,
-  .demo-text-variants > div {
-    align-items: flex-start;
-    flex-direction: column;
-  }
-  .toolbar-control-group-demo {
-    grid-template-columns: 1fr;
-  }
-  .toolbar-control-group-demo > div {
-    min-height: remify(72px);
-  }
-  .segmented-control-demo article {
-    align-items: start;
-    grid-template-columns: 1fr;
-  }
-  .segmented-control-demo .kui-segmented-control {
-    max-width: 100%;
-    justify-self: stretch;
-  }
-  .segmented-control-demo article > .kui-toolbar-control-group {
-    justify-self: start;
-  }
-  .segmented-control-demo
-    [data-segmented-control-id="standalone-toolbar-view"] {
-    justify-self: start;
   }
   .webawesome-theme-demo__callouts {
     grid-template-columns: 1fr;
@@ -1771,42 +1523,17 @@ button {
     .demo-dialog--standalone,
     .demo-value-table,
     .demo-tab-bar-frame,
-    .demo-text-variants,
     .demo-select-selected,
-    .demo-icon-grid,
-    .demo-icon-grid article,
-    .demo-disclosure-grid,
-    .demo-disclosure-grid > button,
-    .toolbar-control-group-demo,
     .demo-tabs,
-    .demo-spinner-grid,
     .demo-spinner-row,
-    .demo-empty-grid,
     .demo-state-banner-grid
   ) {
   border-color: transparent;
   background: transparent;
   box-shadow: none;
 }
-.catalog-canvas[data-demo-mode="component"]
-  :is(.demo-value-table, .toolbar-control-group-demo) {
+.catalog-canvas[data-demo-mode="component"] .demo-value-table {
   padding: 0;
-}
-/* The toolbar-control-group demo stacks its examples in one left-aligned column
-   on the grid; each per-example cell loses its card border and left-aligns. */
-.catalog-canvas[data-demo-mode="component"] .toolbar-control-group-demo {
-  display: flex;
-  width: min(remify(736px), 100%);
-  flex-direction: column;
-  align-items: flex-start;
-  gap: var(--kui-space-m);
-}
-.catalog-canvas[data-demo-mode="component"] .toolbar-control-group-demo > div {
-  min-height: 0;
-  padding: 0;
-  border-color: transparent;
-  justify-content: flex-start;
-  gap: var(--kui-space-m);
 }
 
 /* Debug overlay: a gray dashed outline at each transparent component's outer
@@ -1848,6 +1575,7 @@ button {
 }
 .demo-example {
   display: flex;
+  width: 100%;
   min-width: 0;
   max-width: 100%;
   flex-direction: column;
@@ -1855,12 +1583,21 @@ button {
   gap: remify(8px);
 }
 .demo-example__note {
+  /* Align the note's text with the MenuHeader label above it and a content-item
+     component's content below it: all three land at 8px margin + 1px border +
+     8px padding from the example's left edge. */
   margin: 0;
-  padding-inline: var(--kui-layout-item-padding, remify(8px));
+  padding-inline: calc(
+    var(--kui-layout-inline-margin, remify(8px)) + 1px +
+      var(--kui-layout-item-padding, remify(8px))
+  );
   color: var(--kui-color-text-quiet);
   font-size: var(--kui-font-s);
 }
-.demo-example .kui-menu-header {
+/* The MenuHeader used as an example LABEL (first child of a labeled example)
+   shrinks to its title; a MenuHeader that is itself the demoed component keeps
+   its default full width. */
+.demo-stack--labeled .demo-example > .kui-menu-header:first-child {
   width: auto;
 }
 .demo-disclosure-toggle {
