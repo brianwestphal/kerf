@@ -159,6 +159,33 @@ test('keeps an icon-only control-group wa-button highlight at least square (min-
   }
 });
 
+test('hovers a lone control-group button as a whole, but keeps inner highlights in a real group', async ({ page, browserName }) => {
+  await page.setViewportSize({ width: 1200, height: 900 });
+
+  // A DialogHeader's single action: hovering fills the whole pill, not an inner
+  // layer inset from the border. The button background stays transparent while
+  // the group takes the hover background.
+  await page.goto('/?component=dialog-header');
+  const soloGroup = page.locator('.kui-dialog-header__actions').first();
+  const soloButton = soloGroup.locator('button').first();
+  const transparent = 'rgba(0, 0, 0, 0)';
+  await expect(soloButton).toHaveCSS('background-color', transparent);
+  await soloButton.hover();
+  await expect(soloButton).toHaveCSS('background-color', transparent);
+  await expect.poll(() => soloGroup.evaluate((g) => window.getComputedStyle(g).backgroundColor)).not.toBe(transparent);
+  if (browserName === 'chromium') await soloGroup.screenshot({ path: 'test-results/dialog-header-solo-hover.png' });
+
+  // A genuine multi-button group still highlights the hovered button itself.
+  await page.goto('/?component=toolbar-control-group');
+  const multiGroup = page.locator('.kui-toolbar-control-group[label="View actions"], .kui-toolbar-control-group').filter({ has: page.locator('wa-button[aria-label="Favorite view"]') }).first();
+  const favorite = multiGroup.locator('wa-button[aria-label="Favorite view"]');
+  await favorite.hover();
+  await expect.poll(() => favorite.evaluate((host) => {
+    const base = (host as unknown as { shadowRoot: ShadowRoot | null }).shadowRoot?.querySelector('[part~="base"]');
+    return base ? window.getComputedStyle(base as Element).backgroundColor : '';
+  })).not.toBe(transparent);
+});
+
 test('links catalog details to their first-party source and existing guidance', async ({ page, browserName }) => {
   for (const [id, name, sourcePath, componentPath, documentationPath, guidanceLabel] of [
     ['toolbar', 'Toolbar', 'ui/ux-demo/main.tsx', 'ui/src/toolbar.tsx', 'ui/docs/component-selection.md', 'Read guidance'],

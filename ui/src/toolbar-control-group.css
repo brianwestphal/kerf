@@ -137,6 +137,28 @@
   background: transparent;
 }
 
+/* A group holding exactly one control behaves like `single` even without the
+   flag: the whole group background changes on hover instead of highlighting an
+   inner layer inset from the border (KF-J9P1ZD — a DialogHeader's lone Close/
+   Done action). */
+.kui-toolbar-control-group:not([data-single="true"]):has(
+    > :is(button, wa-button):only-child
+  ):hover {
+  background: var(--kui-toolbar-control-hover-background);
+}
+
+.kui-toolbar-control-group:not([data-single="true"]):has(
+    > :is(button, wa-button):only-child
+  )
+  > :is(button, wa-button):hover,
+.kui-toolbar-control-group:not([data-single="true"]):has(
+    > :is(button, wa-button):only-child
+  )
+  wa-button:hover::part(base) {
+  border-color: transparent;
+  background: transparent;
+}
+
 .kui-toolbar-control-group[data-single="false"]
   > :is(button, wa-button)[aria-pressed="true"] {
   border-color: var(--kui-toolbar-control-selected-border);
