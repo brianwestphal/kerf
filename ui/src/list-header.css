@@ -1,8 +1,8 @@
-.kui-menu-header {
-  --kui-menu-header-color: var(--kui-color-neutral-on-quiet);
-  --kui-menu-header-hover-background: var(--kui-color-neutral-border-quiet);
-  --_kui-menu-header-action-icon-size: var(
-    --kui-menu-header-action-icon-size,
+.kui-list-header {
+  --kui-list-header-color: var(--kui-color-neutral-on-quiet);
+  --kui-list-header-hover-background: var(--kui-color-neutral-border-quiet);
+  --_kui-list-header-action-icon-size: var(
+    --kui-list-header-action-icon-size,
     remify(18px)
   );
   display: flex;
@@ -12,14 +12,14 @@
   margin-inline: var(--kui-layout-inline-margin, remify(8px));
   padding: 0;
   box-sizing: border-box;
-  color: var(--kui-menu-header-color);
+  color: var(--kui-list-header-color);
   background: transparent;
   align-items: stretch;
   gap: var(--kui-layout-item-gap, remify(8px));
 }
 
-.kui-menu-header__title,
-.kui-menu-header__action {
+.kui-list-header__title,
+.kui-list-header__action {
   box-sizing: border-box;
   border: 1px solid transparent;
   border-radius: var(--kui-layout-rounded-radius, calc(1px + remify(11px)));
@@ -27,7 +27,7 @@
   background: transparent;
 }
 
-.kui-menu-header__title {
+.kui-list-header__title {
   display: flex;
   min-width: 0;
   min-height: remify(44px);
@@ -39,7 +39,7 @@
   text-align: start;
 }
 
-.kui-menu-header__label {
+.kui-list-header__label {
   min-width: 0;
   margin: 0;
   overflow: hidden;
@@ -51,7 +51,7 @@
   white-space: nowrap;
 }
 
-.kui-menu-header__badge {
+.kui-list-header__badge {
   display: inline-flex;
   min-height: remify(24px);
   padding-inline: var(--kui-layout-item-padding, remify(8px));
@@ -66,7 +66,7 @@
   line-height: 1;
 }
 
-.kui-menu-header__count {
+.kui-list-header__count {
   display: inline-grid;
   min-width: remify(21.6px);
   height: remify(21.6px);
@@ -78,7 +78,7 @@
   place-items: center;
   flex: none;
   font-size: var(
-    --kui-menu-header-count-font-size,
+    --kui-list-header-count-font-size,
     var(--wa-font-size-3xs, remify(10px))
   );
   font-weight: 700;
@@ -86,26 +86,26 @@
   line-height: 1;
 }
 
-.kui-menu-header__action,
-.kui-menu-header__action-layer {
+.kui-list-header__action,
+.kui-list-header__action-layer {
   display: grid;
   place-items: center;
 }
 
-.kui-menu-header__action {
+.kui-list-header__action {
   /* A fitted square: the icon size plus its padding and 1px border, instead of a
      forced 44px box that left an oversized halo around the ~18px icon and, via the
      parent's align-items: stretch, a vertically stretched oval. `align-self:
      center` keeps it centered in the header's 44px row without stretching. Sizing
      off the icon variable keeps it square and correct at any icon size. */
-  --_kui-menu-header-action-size: calc(
-    var(--_kui-menu-header-action-icon-size) +
+  --_kui-list-header-action-size: calc(
+    var(--_kui-list-header-action-icon-size) +
       (2 * var(--kui-layout-item-padding, remify(8px))) + 2px
   );
   appearance: none;
   display: inline-flex;
-  width: var(--_kui-menu-header-action-size);
-  height: var(--_kui-menu-header-action-size);
+  width: var(--_kui-list-header-action-size);
+  height: var(--_kui-list-header-action-size);
   padding: var(--kui-layout-item-padding, remify(8px));
   align-items: center;
   justify-content: center;
@@ -114,47 +114,47 @@
   flex: none;
 }
 
-.kui-menu-header__toggle {
+.kui-list-header__toggle {
   appearance: none;
   width: 100%;
   cursor: pointer;
 }
 
-.kui-menu-header__action-layer {
+.kui-list-header__action-layer {
   width: remify(24px);
   height: remify(24px);
   margin-inline-start: auto;
   flex: none;
 }
 
-.kui-menu-header__action:hover,
-.kui-menu-header__toggle:hover {
+.kui-list-header__action:hover,
+.kui-list-header__toggle:hover {
   border-color: var(--kui-color-neutral-border-normal);
-  background: var(--kui-menu-header-hover-background);
+  background: var(--kui-list-header-hover-background);
 }
 
-.kui-menu-header__action:focus-visible,
-.kui-menu-header__toggle:focus-visible {
+.kui-list-header__action:focus-visible,
+.kui-list-header__toggle:focus-visible {
   outline: var(--kui-focus-ring);
   outline-offset: 1px;
 }
 
-.kui-menu-header__action:disabled {
+.kui-list-header__action:disabled {
   cursor: not-allowed;
   opacity: 0.48;
 }
 
-.kui-menu-header__action:disabled:hover {
+.kui-list-header__action:disabled:hover {
   border-color: transparent;
   background: transparent;
 }
 
-.kui-menu-header__action > svg,
-.kui-menu-header__action-layer > svg {
+.kui-list-header__action > svg,
+.kui-list-header__action-layer > svg {
   /* min-block-size: 0 overrides the flex item's automatic minimum, which would
      otherwise resolve to the icon SVG's intrinsic 24px viewBox height and stretch
      the button past its used icon size. */
-  width: var(--_kui-menu-header-action-icon-size);
-  height: var(--_kui-menu-header-action-icon-size);
+  width: var(--_kui-list-header-action-icon-size);
+  height: var(--_kui-list-header-action-icon-size);
   min-block-size: 0;
 }

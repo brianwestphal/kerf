@@ -64,20 +64,20 @@
       "browser": "./dist/browser/toolbar-text.js",
       "import": "./dist/toolbar-text.js"
     },
-    "./menu-action-row": {
-      "types": "./dist/menu-action-row.d.ts",
-      "browser": "./dist/browser/menu-action-row.js",
-      "import": "./dist/menu-action-row.js"
+    "./list-action-row": {
+      "types": "./dist/list-action-row.d.ts",
+      "browser": "./dist/browser/list-action-row.js",
+      "import": "./dist/list-action-row.js"
     },
-    "./menu-item": {
-      "types": "./dist/menu-item.d.ts",
-      "browser": "./dist/browser/menu-item.js",
-      "import": "./dist/menu-item.js"
+    "./list-item": {
+      "types": "./dist/list-item.d.ts",
+      "browser": "./dist/browser/list-item.js",
+      "import": "./dist/list-item.js"
     },
-    "./menu-header": {
-      "types": "./dist/menu-header.d.ts",
-      "browser": "./dist/browser/menu-header.js",
-      "import": "./dist/menu-header.js"
+    "./list-header": {
+      "types": "./dist/list-header.d.ts",
+      "browser": "./dist/browser/list-header.js",
+      "import": "./dist/list-header.js"
     },
     "./resizable-region": {
       "types": "./dist/resizable-region.d.ts",
@@ -208,9 +208,9 @@
     "./toolbar.css": "./dist/styles/toolbar.css",
     "./toolbar-control-group.css": "./dist/styles/toolbar-control-group.css",
     "./toolbar-text.css": "./dist/styles/toolbar-text.css",
-    "./menu-action-row.css": "./dist/styles/menu-action-row.css",
-    "./menu-item.css": "./dist/styles/menu-item.css",
-    "./menu-header.css": "./dist/styles/menu-header.css",
+    "./list-action-row.css": "./dist/styles/list-action-row.css",
+    "./list-item.css": "./dist/styles/list-item.css",
+    "./list-header.css": "./dist/styles/list-header.css",
     "./resizable-region.css": "./dist/styles/resizable-region.css",
     "./app-tab.css": "./dist/styles/app-tab.css",
     "./catalog.css": "./dist/styles/catalog.css",

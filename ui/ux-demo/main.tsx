@@ -6,11 +6,11 @@ import './style.css';
 import { AppTab } from '@kerfjs/ui/app-tab';
 import { DisclosureArrow } from '@kerfjs/ui/disclosure-arrow';
 import { EmptyState } from '@kerfjs/ui/empty-state';
+import { ListActionRow } from '@kerfjs/ui/list-action-row';
+import { ListHeader } from '@kerfjs/ui/list-header';
+import { ListItem } from '@kerfjs/ui/list-item';
 import { LoadingSpinner } from '@kerfjs/ui/loading-spinner';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
-import { MenuActionRow } from '@kerfjs/ui/menu-action-row';
-import { MenuHeader } from '@kerfjs/ui/menu-header';
-import { MenuItem } from '@kerfjs/ui/menu-item';
 import { PanelHeader } from '@kerfjs/ui/panel-header';
 import { ResizableRegion } from '@kerfjs/ui/resizable-region';
 import { SegmentedControl } from '@kerfjs/ui/segmented-control';
@@ -121,12 +121,12 @@ function LucideIconDemo() {
   // appearance — so the labels/notes carry the distinction.
   return <div class="demo-stack demo-stack--labeled" data-demo="lucide-icon">
     <section class="demo-example">
-      <MenuHeader label="Decorative" />
+      <ListHeader label="Decorative" />
       <p class="demo-example__note">No name — hidden from assistive technology (<code>aria-hidden</code>).</p>
       {icon(Bell, 'bell')}
     </section>
     <section class="demo-example">
-      <MenuHeader label="Meaningful" />
+      <ListHeader label="Meaningful" />
       <p class="demo-example__note">Named with a label — announced when the icon carries meaning.</p>
       <LucideIcon icon={Bell} name="notification" label="Notifications ready" />
     </section>
@@ -136,7 +136,7 @@ function LucideIconDemo() {
 function DisclosureArrowDemo() {
   return <div class="demo-stack demo-stack--labeled" data-demo="disclosure-arrow">
     <section class="demo-example">
-      <MenuHeader label="Default" />
+      <ListHeader label="Default" />
       <p class="demo-example__note">Closed points right, open points down. Toggle to animate.</p>
       <button type="button" class="demo-disclosure-toggle" data-action="toggle-disclosure" aria-expanded={String(disclosureOpen.value)}>
         <DisclosureArrow open={disclosureOpen.value} />
@@ -144,7 +144,7 @@ function DisclosureArrowDemo() {
       </button>
     </section>
     <section class="demo-example">
-      <MenuHeader label="Replacement icon" />
+      <ListHeader label="Replacement icon" />
       <p class="demo-example__note">A replacement glyph, closed left and open up.</p>
       <button type="button" class="demo-disclosure-toggle" data-action="toggle-custom-disclosure" aria-expanded={String(customDisclosureOpen.value)}>
         <DisclosureArrow open={customDisclosureOpen.value} openDirection="up" closedDirection="left" icon={icon(ArrowRight, 'arrow-right')} />
@@ -232,30 +232,30 @@ function ToolbarDemo() {
 
 function ToolbarControlGroupDemo() {
   return <section class="toolbar-control-group-demo demo-stack demo-stack--labeled" data-demo="toolbar-control-group" aria-label="ToolbarControlGroup demo">
-    <section class="demo-example"><MenuHeader label="Segmented choices" /><ToolbarControlGroup><SegmentedControl id="toolbar-view" label="View mode" value={toolbarChoice.value} action="select-segment-demo" appearance="toolbar" shape="pill" size="small" choices={[
+    <section class="demo-example"><ListHeader label="Segmented choices" /><ToolbarControlGroup><SegmentedControl id="toolbar-view" label="View mode" value={toolbarChoice.value} action="select-segment-demo" appearance="toolbar" shape="pill" size="small" choices={[
       { value: 'list', label: 'List view', content: icon(List, 'list') },
       { value: 'columns', label: 'Columns view', content: icon(Columns3, 'columns-3') },
       { value: 'settings', label: 'Settings view', content: icon(Settings, 'settings') },
     ]} /></ToolbarControlGroup></section>
-    <section class="demo-example"><MenuHeader label="Popup menu" /><ToolbarControlGroup single>
+    <section class="demo-example"><ListHeader label="Popup menu" /><ToolbarControlGroup single>
       <wa-dropdown placement="bottom-start" data-morph-skip-children><wa-button slot="trigger" appearance="plain" with-caret aria-label="Sort tickets">{icon(ArrowDownAZ, 'arrow-down-a-z')}</wa-button><wa-dropdown-item data-action="sort-recent">Recently updated</wa-dropdown-item><wa-dropdown-item data-action="sort-priority">Priority</wa-dropdown-item></wa-dropdown>
     </ToolbarControlGroup></section>
-    <section class="demo-example"><MenuHeader label="Button group" /><ToolbarControlGroup label="View actions">
+    <section class="demo-example"><ListHeader label="Button group" /><ToolbarControlGroup label="View actions">
       <wa-button appearance="plain" aria-label="Favorite view" data-action="log-favorite">{icon(Star, 'star')}</wa-button>
       <wa-button appearance="plain" aria-label="More actions" data-action="log-more">{icon(MoreHorizontal, 'ellipsis')}</wa-button>
     </ToolbarControlGroup></section>
-    <section class="demo-example"><MenuHeader label="Single button" /><ToolbarControlGroup single><wa-button appearance="plain" aria-label="Pin view" data-action="log-pin">{icon(Pin, 'pin')}</wa-button></ToolbarControlGroup></section>
-    <section class="demo-example"><MenuHeader label="Borderless group" /><ToolbarControlGroup appearance="borderless" single><button type="button" aria-label="Show sidebar" data-action="log-sidebar">{icon(PanelLeftOpen, 'panel-left-open')}</button></ToolbarControlGroup></section>
-    <section class="demo-example"><MenuHeader label="Push button, resting" /><ToolbarControlGroup buttonAppearance="push" single><button type="button" aria-label="Resting comparison" aria-pressed="false" data-action="log-resting">{icon(GitCompare, 'git-compare')}</button></ToolbarControlGroup></section>
-    <section class="demo-example"><MenuHeader label="Push button, pressed" /><ToolbarControlGroup buttonAppearance="push" single><button type="button" aria-label="Pressed comparison" aria-pressed="true" data-action="log-pressed">{icon(GitCompare, 'git-compare')}</button></ToolbarControlGroup></section>
-    <section class="demo-example"><MenuHeader label="Dark group" /><ToolbarControlGroup label="Dark navigation" tone="dark"><button type="button" aria-label="Previous" data-action="log-previous">{icon(ChevronLeft, 'chevron-left')}</button><button type="button" aria-label="Next" data-action="log-next">{icon(ChevronRight, 'chevron-right')}</button></ToolbarControlGroup></section>
+    <section class="demo-example"><ListHeader label="Single button" /><ToolbarControlGroup single><wa-button appearance="plain" aria-label="Pin view" data-action="log-pin">{icon(Pin, 'pin')}</wa-button></ToolbarControlGroup></section>
+    <section class="demo-example"><ListHeader label="Borderless group" /><ToolbarControlGroup appearance="borderless" single><button type="button" aria-label="Show sidebar" data-action="log-sidebar">{icon(PanelLeftOpen, 'panel-left-open')}</button></ToolbarControlGroup></section>
+    <section class="demo-example"><ListHeader label="Push button, resting" /><ToolbarControlGroup buttonAppearance="push" single><button type="button" aria-label="Resting comparison" aria-pressed="false" data-action="log-resting">{icon(GitCompare, 'git-compare')}</button></ToolbarControlGroup></section>
+    <section class="demo-example"><ListHeader label="Push button, pressed" /><ToolbarControlGroup buttonAppearance="push" single><button type="button" aria-label="Pressed comparison" aria-pressed="true" data-action="log-pressed">{icon(GitCompare, 'git-compare')}</button></ToolbarControlGroup></section>
+    <section class="demo-example"><ListHeader label="Dark group" /><ToolbarControlGroup label="Dark navigation" tone="dark"><button type="button" aria-label="Previous" data-action="log-previous">{icon(ChevronLeft, 'chevron-left')}</button><button type="button" aria-label="Next" data-action="log-next">{icon(ChevronRight, 'chevron-right')}</button></ToolbarControlGroup></section>
   </section>;
 }
 
 function SegmentedControlDemo() {
   return <section class="segmented-control-demo demo-stack demo-stack--labeled" data-demo="segmented-control" aria-label="SegmentedControl variants">
     <section class="demo-example">
-      <MenuHeader label="Toolbar" />
+      <ListHeader label="Toolbar" />
       <p class="demo-example__note">Pill controls share a toolbar group’s chrome.</p>
       <ToolbarControlGroup><SegmentedControl id="standalone-toolbar-view" label="Toolbar view mode" value={toolbarChoice.value} action="select-segment-demo" appearance="toolbar" shape="pill" size="small" choices={[
         { value: 'list', label: 'List view', content: icon(List, 'list') },
@@ -264,7 +264,7 @@ function SegmentedControlDemo() {
       ]} /></ToolbarControlGroup>
     </section>
     <section class="demo-example">
-      <MenuHeader label="Rounded rectangle" />
+      <ListHeader label="Rounded rectangle" />
       <p class="demo-example__note">An equal-width inspector switcher with labels.</p>
       <SegmentedControl id="inspector-section" label="Inspector section" value={inspectorSection.value} action="select-segment-demo" shape="rounded" layout="equal" choices={[
         { value: 'summary', label: 'Summary', content: <>{icon(List, 'list')}<span>Summary</span></> },
@@ -273,7 +273,7 @@ function SegmentedControlDemo() {
       ]} />
     </section>
     <section class="demo-example">
-      <MenuHeader label="Pill" />
+      <ListHeader label="Pill" />
       <p class="demo-example__note">A compact standalone choice with a disabled option.</p>
       <SegmentedControl id="display-density" label="Display density" value={displayDensity.value} action="select-segment-demo" appearance="outlined" shape="pill" size="small" choices={[
         { value: 'compact', label: 'Compact' },
@@ -282,7 +282,7 @@ function SegmentedControlDemo() {
       ]} />
     </section>
     <section class="demo-example">
-      <MenuHeader label="Placeholder" />
+      <ListHeader label="Placeholder" />
       <p class="demo-example__note">A loading switcher renders inert pill chrome with skeleton labels.</p>
       <SegmentedControl id="segmented-placeholder" label="Loading view mode" value="" choices={[
         { value: 'list', label: 'List view' },
@@ -296,18 +296,18 @@ function SegmentedControlDemo() {
 function TokenSearchFieldDemo() {
   return <section class="token-search-demo demo-stack demo-stack--labeled" data-demo="token-search-field" aria-label="TokenSearchField states">
     <section class="demo-example">
-      <MenuHeader label="Structured ticket search" />
+      <ListHeader label="Structured ticket search" />
       <p class="demo-example__note">Text and atomic filters remain in one keyboard-focusable editor.</p>
       <TokenSearchField id="catalog-search" label="Search tickets" query={tokenSearchQuery.value} tokens={tokenSearchTokens.value} autofocus editorAttributes={{ 'data-demo-token-search': 'true' }} />
       <output aria-live="polite" class="demo-example__note">{tokenSearchTokens.value.length} filters · {tokenSearchQuery.value || 'No free text'}</output>
     </section>
     <section class="demo-example">
-      <MenuHeader label="Collapsible" />
+      <ListHeader label="Collapsible" />
       <p class="demo-example__note">Empty and unfocused, it collapses to one iconic action; activating it reveals the editor and focuses it, and it re-collapses when focus leaves while empty. <code>wireTokenSearchFields</code> manages the expand/collapse/focus.</p>
       <div class="token-search-demo__collapsible"><TokenSearchField id="collapsible-search" label="Find records" collapsible expanded={collapsibleSearchOpen.value} placeholder="Find records" expandLabel="Open find" /></div>
     </section>
     <section class="demo-example">
-      <MenuHeader label="Disabled" />
+      <ListHeader label="Disabled" />
       <p class="demo-example__note">Controlled read-only state preserves the complete expression.</p>
       <TokenSearchField id="disabled-search" label="Saved search" query="release" tokens={[{ value: 'tag:design-system', label: 'tag:design-system', offset: 7 }]} disabled />
     </section>
@@ -316,29 +316,29 @@ function TokenSearchFieldDemo() {
 
 function ToolbarTextDemo() {
   return <div class="demo-stack demo-stack--labeled" data-demo="toolbar-text">
-    <section class="demo-example"><MenuHeader label="Extra large" /><ToolbarText text="Workspace settings" size="xlarge" /></section>
-    <section class="demo-example"><MenuHeader label="Large" /><ToolbarText text="Component library" size="large" /></section>
-    <section class="demo-example"><MenuHeader label="Default" /><ToolbarText text="Saved just now" /></section>
-    <section class="demo-example"><MenuHeader label="Small" /><ToolbarText text="read-only" size="small" /></section>
-    <section class="demo-example"><MenuHeader label="Placeholder" /><p class="demo-example__note">A loading label skeletons its text while keeping its type slot.</p><ToolbarText text="" size="large" placeholder /></section>
+    <section class="demo-example"><ListHeader label="Extra large" /><ToolbarText text="Workspace settings" size="xlarge" /></section>
+    <section class="demo-example"><ListHeader label="Large" /><ToolbarText text="Component library" size="large" /></section>
+    <section class="demo-example"><ListHeader label="Default" /><ToolbarText text="Saved just now" /></section>
+    <section class="demo-example"><ListHeader label="Small" /><ToolbarText text="read-only" size="small" /></section>
+    <section class="demo-example"><ListHeader label="Placeholder" /><p class="demo-example__note">A loading label skeletons its text while keeping its type slot.</p><ToolbarText text="" size="large" placeholder /></section>
   </div>;
 }
 
-function MenuDemo() {
-  return <div class="demo-menu kui-pane" data-demo="menu">
+function ListDemo() {
+  return <div class="demo-list kui-pane" data-demo="list">
     <div class="kui-pane__toolbar"><Toolbar label="Sidebar toolbar" divider={false} leading={<ToolbarControlGroup appearance="borderless" single><ToolbarText text="Workspace" size="small" /></ToolbarControlGroup>} trailing={<ToolbarControlGroup appearance="borderless" single><button type="button" aria-label="Add workspace" data-action="log-add">{icon(Plus, 'plus')}</button></ToolbarControlGroup>} /></div>
-    <div class="demo-menu__content kui-pane__content kui-content" data-content-stack>
+    <div class="demo-list__content kui-pane__content kui-content" data-content-stack>
       <section>
-        <MenuHeader label="Workspace" count={3} countLabel="3 workspaces" action="log-add" actionLabel="Add workspace" actionIcon={icon(Plus, 'plus')} />
-        <MenuItem action="log-inbox" itemId="inbox" label="Inbox" icon={icon(Inbox, 'inbox')} trailing={<span>12</span>} selected />
-        <MenuItem action="log-projects" itemId="projects" label="Projects" icon={icon(Folder, 'folder')} />
-        <MenuItem action="log-drafts" itemId="drafts" label="Drafts without a visible icon" />
+        <ListHeader label="Workspace" count={3} countLabel="3 workspaces" action="log-add" actionLabel="Add workspace" actionIcon={icon(Plus, 'plus')} />
+        <ListItem action="log-inbox" itemId="inbox" label="Inbox" icon={icon(Inbox, 'inbox')} trailing={<span>12</span>} selected />
+        <ListItem action="log-projects" itemId="projects" label="Projects" icon={icon(Folder, 'folder')} />
+        <ListItem action="log-drafts" itemId="drafts" label="Drafts without a visible icon" />
       </section>
       <section>
-        <MenuHeader label="Tools" toggle expanded={menuToolsOpen.value} action="toggle-menu-tools" triggerAttributes={{ 'aria-controls': 'menu-tools-content' }} />
+        <ListHeader label="Tools" toggle expanded={menuToolsOpen.value} action="toggle-menu-tools" triggerAttributes={{ 'aria-controls': 'menu-tools-content' }} />
         <div id="menu-tools-content" hidden={!menuToolsOpen.value}>
-          <MenuItem action="log-settings" label="A multiline item demonstrates content that wraps without clipping" icon={icon(Wrench, 'wrench')} multiline />
-          <MenuItem action="disabled" label="Unavailable" icon={icon(CircleHelp, 'circle-help')} disabled />
+          <ListItem action="log-settings" label="A multiline item demonstrates content that wraps without clipping" icon={icon(Wrench, 'wrench')} multiline />
+          <ListItem action="disabled" label="Unavailable" icon={icon(CircleHelp, 'circle-help')} disabled />
           <div class="kui-content-item" data-content-item><strong>Shared item geometry</strong><p>The child owns its margin, border, and padding.</p></div>
         </div>
       </section>
@@ -347,70 +347,70 @@ function MenuDemo() {
   </div>;
 }
 
-function MenuHeaderDemo() {
-  return <div class="demo-menu-demo demo-stack" data-demo="menu-header">
-    <section class="demo-example"><MenuHeader label="Attachments" count={12} countLabel="12 attachments" action="log-add" actionLabel="Add attachment" actionIcon={icon(Plus, 'plus')} triggerAttributes={{ popoverTarget: 'menu-header-attachments-popover', popoverTargetAction: 'toggle', 'aria-controls': 'menu-header-attachments-popover', 'aria-haspopup': 'dialog' }} /></section>
-    <section class="demo-example"><MenuHeader label="Notes" count={0} countLabel="0 notes" /></section>
-    <section class="demo-example"><MenuHeader label="Duplicates" count={2} countLabel="2 duplicates" /></section>
-    <section class="demo-example"><MenuHeader label="Preview" badge={<span>New</span>} /></section>
-    <section class="demo-example"><MenuHeader label="Unavailable" action="log-add" actionLabel="Unavailable action" actionIcon={icon(Plus, 'plus')} actionDisabled /></section>
-    <section class="demo-example"><MenuHeader label="Attachments" count={0} countLabel="Loading attachments" placeholder /></section>
-    <div id="menu-header-attachments-popover" class="demo-menu-popover" popover="auto" role="dialog" aria-label="Attachment action details">Application-owned popover content.</div>
+function ListHeaderDemo() {
+  return <div class="demo-list-demo demo-stack" data-demo="list-header">
+    <section class="demo-example"><ListHeader label="Attachments" count={12} countLabel="12 attachments" action="log-add" actionLabel="Add attachment" actionIcon={icon(Plus, 'plus')} triggerAttributes={{ popoverTarget: 'list-header-attachments-popover', popoverTargetAction: 'toggle', 'aria-controls': 'list-header-attachments-popover', 'aria-haspopup': 'dialog' }} /></section>
+    <section class="demo-example"><ListHeader label="Notes" count={0} countLabel="0 notes" /></section>
+    <section class="demo-example"><ListHeader label="Duplicates" count={2} countLabel="2 duplicates" /></section>
+    <section class="demo-example"><ListHeader label="Preview" badge={<span>New</span>} /></section>
+    <section class="demo-example"><ListHeader label="Unavailable" action="log-add" actionLabel="Unavailable action" actionIcon={icon(Plus, 'plus')} actionDisabled /></section>
+    <section class="demo-example"><ListHeader label="Attachments" count={0} countLabel="Loading attachments" placeholder /></section>
+    <div id="list-header-attachments-popover" class="demo-list-popover" popover="auto" role="dialog" aria-label="Attachment action details">Application-owned popover content.</div>
   </div>;
 }
 
-function MenuActionRowDemo() {
-  return <div class="demo-menu-demo demo-stack" data-demo="menu-action-row">
+function ListActionRowDemo() {
+  return <div class="demo-list-demo demo-stack" data-demo="list-action-row">
     <section class="demo-example">
-      <MenuActionRow
+      <ListActionRow
         label="src/main.ts"
         icon={icon(Folder, 'folder')}
-        action="select-menu-action-row"
+        action="select-list-action-row"
         itemId="src/main.ts"
         selected={menuActionCurrent.value === 'src/main.ts'}
         accessibleLabel="Select src/main.ts"
-        trailingAction="open-menu-action-row-actions"
+        trailingAction="open-list-action-row-actions"
         trailingActionLabel="Actions for src/main.ts"
         trailingActionIcon={icon(MoreHorizontal, 'more-horizontal')}
         rootAttributes={{ 'data-demo-action-row': 'selected' }}
-        trailingActionAttributes={{ popoverTarget: 'menu-action-row-popover', popoverTargetAction: 'toggle', 'aria-controls': 'menu-action-row-popover', 'aria-haspopup': 'dialog', 'data-demo-trailing-action': 'selected' }}
+        trailingActionAttributes={{ popoverTarget: 'list-action-row-popover', popoverTargetAction: 'toggle', 'aria-controls': 'list-action-row-popover', 'aria-haspopup': 'dialog', 'data-demo-trailing-action': 'selected' }}
       />
     </section>
     <section class="demo-example">
-      <MenuActionRow
+      <ListActionRow
         label="packages/application/src/components/a-long-file-name-that-wraps-at-narrow-width.tsx"
         icon={icon(Folder, 'folder')}
-        action="toggle-menu-action-row"
+        action="toggle-list-action-row"
         itemId="long-file"
         pressed={menuActionPressed.value}
         accessibleLabel="Select long file"
         multiline
-        trailingAction="open-menu-action-row-actions"
+        trailingAction="open-list-action-row-actions"
         trailingActionLabel="Actions for long file"
         trailingActionIcon={icon(MoreHorizontal, 'more-horizontal')}
         rootAttributes={{ 'data-demo-action-row': 'multiline' }}
       />
     </section>
     <section class="demo-example">
-      <MenuActionRow label="Unavailable primary" action="select-menu-action-row" itemId="disabled-primary" selected={menuActionCurrent.value === 'disabled-primary'} disabled trailingAction="open-menu-action-row-actions" trailingActionLabel="Actions for unavailable primary" trailingActionIcon={icon(MoreHorizontal, 'more-horizontal')} rootAttributes={{ 'data-demo-action-row': 'disabled-primary' }} />
+      <ListActionRow label="Unavailable primary" action="select-list-action-row" itemId="disabled-primary" selected={menuActionCurrent.value === 'disabled-primary'} disabled trailingAction="open-list-action-row-actions" trailingActionLabel="Actions for unavailable primary" trailingActionIcon={icon(MoreHorizontal, 'more-horizontal')} rootAttributes={{ 'data-demo-action-row': 'disabled-primary' }} />
     </section>
     <section class="demo-example">
-      <MenuActionRow label="Unavailable trailing action" action="select-menu-action-row" itemId="disabled-trailing" selected={menuActionCurrent.value === 'disabled-trailing'} trailingAction="open-menu-action-row-actions" trailingActionLabel="Unavailable actions" trailingActionIcon={icon(MoreHorizontal, 'more-horizontal')} trailingActionDisabled trailingActionTitle="Actions unavailable" rootAttributes={{ 'data-demo-action-row': 'disabled-trailing' }} />
+      <ListActionRow label="Unavailable trailing action" action="select-list-action-row" itemId="disabled-trailing" selected={menuActionCurrent.value === 'disabled-trailing'} trailingAction="open-list-action-row-actions" trailingActionLabel="Unavailable actions" trailingActionIcon={icon(MoreHorizontal, 'more-horizontal')} trailingActionDisabled trailingActionTitle="Actions unavailable" rootAttributes={{ 'data-demo-action-row': 'disabled-trailing' }} />
     </section>
     <section class="demo-example">
-      <MenuActionRow label="Loading file" icon={icon(Folder, 'folder')} action="select-menu-action-row" itemId="placeholder" placeholder trailingAction="open-menu-action-row-actions" trailingActionLabel="Actions" trailingActionIcon={icon(MoreHorizontal, 'more-horizontal')} rootAttributes={{ 'data-demo-action-row': 'placeholder' }} />
+      <ListActionRow label="Loading file" icon={icon(Folder, 'folder')} action="select-list-action-row" itemId="placeholder" placeholder trailingAction="open-list-action-row-actions" trailingActionLabel="Actions" trailingActionIcon={icon(MoreHorizontal, 'more-horizontal')} rootAttributes={{ 'data-demo-action-row': 'placeholder' }} />
     </section>
-    <div id="menu-action-row-popover" class="demo-menu-popover" popover="auto" role="dialog" aria-label="File actions"><button type="button" data-action="log-more">Open details</button></div>
+    <div id="list-action-row-popover" class="demo-list-popover" popover="auto" role="dialog" aria-label="File actions"><button type="button" data-action="log-more">Open details</button></div>
   </div>;
 }
 
-function MenuItemDemo() {
-  return <div class="demo-menu-demo demo-stack" data-demo="menu-item">
-    <section class="demo-example"><MenuItem action="log-inbox" itemId="selected" label="Selected item" icon={icon(Inbox, 'inbox')} trailing={<span>12</span>} selected rootAttributes={{ 'data-demo-drop-status': 'ready' }} /></section>
-    <section class="demo-example"><MenuItem action="log-projects" itemId="default" label="Default item" icon={icon(Folder, 'folder')} /></section>
-    <section class="demo-example"><MenuItem action="log-settings" itemId="multiline" label="A multiline item demonstrates content that wraps without clipping" icon={icon(Wrench, 'wrench')} multiline /></section>
-    <section class="demo-example"><MenuItem action="disabled" itemId="disabled" label="Unavailable item" icon={icon(CircleHelp, 'circle-help')} disabled /></section>
-    <section class="demo-example"><MenuItem action="log-projects" itemId="placeholder" label="Loading item" icon={icon(Folder, 'folder')} trailing={<span>0</span>} placeholder /></section>
+function ListItemDemo() {
+  return <div class="demo-list-demo demo-stack" data-demo="list-item">
+    <section class="demo-example"><ListItem action="log-inbox" itemId="selected" label="Selected item" icon={icon(Inbox, 'inbox')} trailing={<span>12</span>} selected rootAttributes={{ 'data-demo-drop-status': 'ready' }} /></section>
+    <section class="demo-example"><ListItem action="log-projects" itemId="default" label="Default item" icon={icon(Folder, 'folder')} /></section>
+    <section class="demo-example"><ListItem action="log-settings" itemId="multiline" label="A multiline item demonstrates content that wraps without clipping" icon={icon(Wrench, 'wrench')} multiline /></section>
+    <section class="demo-example"><ListItem action="disabled" itemId="disabled" label="Unavailable item" icon={icon(CircleHelp, 'circle-help')} disabled /></section>
+    <section class="demo-example"><ListItem action="log-projects" itemId="placeholder" label="Loading item" icon={icon(Folder, 'folder')} trailing={<span>0</span>} placeholder /></section>
   </div>;
 }
 
@@ -454,16 +454,16 @@ function HeadersDemo() {
 
 function PanelHeaderDemo() {
   return <div class="demo-stack demo-stack--labeled" data-demo="panel-header">
-    <section class="demo-example"><MenuHeader label="Page title (h1 heading)" /><p class="demo-example__note">Pass <code>headingLevel</code> for a page/view title so it is a real heading landmark (<code>role="heading"</code> + <code>aria-level</code>).</p><PanelHeader title="UI foundations" titleId="panel-page-title" headingLevel={1} actions={button('New pattern', 'log-add')} /></section>
-    <section class="demo-example"><MenuHeader label="Panel heading with icon and subtitle" /><p class="demo-example__note">A dialog/panel title omits <code>headingLevel</code> and is instead referenced by <code>aria-labelledby</code> pointing at its <code>titleId</code>.</p><PanelHeader title="Package details" titleId="panel-standalone-title" summary="Production-backed primitives with explicit contracts." summaryId="panel-standalone-summary" icon={icon(Wrench, 'wrench')} actions={button('Done', 'log-done')} /></section>
-    <section class="demo-example"><MenuHeader label="Placeholder" /><p class="demo-example__note">While a record loads, the header keeps its chrome and skeletons the title and subtitle.</p><PanelHeader title="Package details" titleId="panel-placeholder-title" summary="Production-backed primitives with explicit contracts." summaryId="panel-placeholder-summary" icon={icon(Wrench, 'wrench')} placeholder /></section>
+    <section class="demo-example"><ListHeader label="Page title (h1 heading)" /><p class="demo-example__note">Pass <code>headingLevel</code> for a page/view title so it is a real heading landmark (<code>role="heading"</code> + <code>aria-level</code>).</p><PanelHeader title="UI foundations" titleId="panel-page-title" headingLevel={1} actions={button('New pattern', 'log-add')} /></section>
+    <section class="demo-example"><ListHeader label="Panel heading with icon and subtitle" /><p class="demo-example__note">A dialog/panel title omits <code>headingLevel</code> and is instead referenced by <code>aria-labelledby</code> pointing at its <code>titleId</code>.</p><PanelHeader title="Package details" titleId="panel-standalone-title" summary="Production-backed primitives with explicit contracts." summaryId="panel-standalone-summary" icon={icon(Wrench, 'wrench')} actions={button('Done', 'log-done')} /></section>
+    <section class="demo-example"><ListHeader label="Placeholder" /><p class="demo-example__note">While a record loads, the header keeps its chrome and skeletons the title and subtitle.</p><PanelHeader title="Package details" titleId="panel-placeholder-title" summary="Production-backed primitives with explicit contracts." summaryId="panel-placeholder-summary" icon={icon(Wrench, 'wrench')} placeholder /></section>
   </div>;
 }
 
 function ValueTableDemo() {
   return <div class="demo-value-table demo-stack demo-stack--labeled" data-demo="value-table">
-    <section class="demo-example"><MenuHeader label="Populated" /><ValueTable label="Package metadata"><ValueTableRow label="Package" value="@kerfjs/ui" /><ValueTableRow label="Rendering" value="Kerf SafeHtml" icon={icon(Wrench, 'wrench')} /><ValueTableRow label="Styles" value="Explicit CSS subpaths" /></ValueTable></section>
-    <section class="demo-example"><MenuHeader label="Placeholder" /><p class="demo-example__note">Rows accept <code>placeholder</code> to skeleton their values while a record loads.</p><ValueTable label="Loading metadata"><ValueTableRow label="Package" value="" placeholder /><ValueTableRow label="Rendering" value="" icon={icon(Wrench, 'wrench')} placeholder /><ValueTableRow label="Styles" value="" placeholder /></ValueTable></section>
+    <section class="demo-example"><ListHeader label="Populated" /><ValueTable label="Package metadata"><ValueTableRow label="Package" value="@kerfjs/ui" /><ValueTableRow label="Rendering" value="Kerf SafeHtml" icon={icon(Wrench, 'wrench')} /><ValueTableRow label="Styles" value="Explicit CSS subpaths" /></ValueTable></section>
+    <section class="demo-example"><ListHeader label="Placeholder" /><p class="demo-example__note">Rows accept <code>placeholder</code> to skeleton their values while a record loads.</p><ValueTable label="Loading metadata"><ValueTableRow label="Package" value="" placeholder /><ValueTableRow label="Rendering" value="" icon={icon(Wrench, 'wrench')} placeholder /><ValueTableRow label="Styles" value="" placeholder /></ValueTable></section>
   </div>;
 }
 
@@ -476,7 +476,7 @@ function ResizeDemo() {
 function SelectDemo() {
   return <div class="demo-control-stack demo-stack demo-stack--labeled" data-demo="select">
     <section class="demo-example">
-      <MenuHeader label="Rendering balance" />
+      <ListHeader label="Rendering balance" />
       <Select name="rendering-balance" value={selectedChoice.value} ariaLabel="Rendering balance" choices={[
         { value: 'quiet', label: 'Quiet', icon: Bell, iconName: 'bell', group: 'Attention' },
         { value: 'balanced', label: 'Balanced', icon: SlidersHorizontal, iconName: 'sliders-horizontal', group: 'Attention' },
@@ -485,7 +485,7 @@ function SelectDemo() {
       <p class="demo-example__note">Live value: <strong data-select-value>{selectedChoice.value}</strong></p>
     </section>
     <section class="demo-example">
-      <MenuHeader label="Placeholder" />
+      <ListHeader label="Placeholder" />
       <p class="demo-example__note">Loading renders a static, inert box in place of the interactive control.</p>
       <Select name="select-placeholder" value="" label="Rendering balance" ariaLabel="Rendering balance" choices={[]} placeholder />
     </section>
@@ -510,23 +510,23 @@ function StateBannerDemo() {
     { tone: 'danger', title: 'Authentication required' },
   ] as const;
   return <div class="demo-state-banner-grid demo-stack demo-stack--labeled" data-demo="state-banner">
-    {specimens.map(({ tone, title }) => <section class="demo-example"><MenuHeader label={tone} /><StateBanner tone={tone} urgency={tone === 'danger' ? 'alert' : 'status'} title={title} detail="Semantic defaults remain overridable." icon={tone === 'danger' ? icon(CircleHelp, 'circle-help') : icon(Check, 'check')} action={button('Act', `log-${tone}`)} /></section>)}
-    <section class="demo-example"><MenuHeader label="Scoped override" /><StateBanner className="demo-state-banner--override" tone="info" title="Consumer palette" detail="Only this instance uses the override." icon={icon(Check, 'check')} /></section>
-    <section class="demo-example"><MenuHeader label="Placeholder" /><StateBanner tone="neutral" title="" detail="" placeholder /></section>
+    {specimens.map(({ tone, title }) => <section class="demo-example"><ListHeader label={tone} /><StateBanner tone={tone} urgency={tone === 'danger' ? 'alert' : 'status'} title={title} detail="Semantic defaults remain overridable." icon={tone === 'danger' ? icon(CircleHelp, 'circle-help') : icon(Check, 'check')} action={button('Act', `log-${tone}`)} /></section>)}
+    <section class="demo-example"><ListHeader label="Scoped override" /><StateBanner className="demo-state-banner--override" tone="info" title="Consumer palette" detail="Only this instance uses the override." icon={icon(Check, 'check')} /></section>
+    <section class="demo-example"><ListHeader label="Placeholder" /><StateBanner tone="neutral" title="" detail="" placeholder /></section>
   </div>;
 }
 
 function EmptyStateDemo() {
   return <div class="demo-stack demo-stack--labeled" data-demo="empty-state">
-    <section class="demo-example"><MenuHeader label="Actionable" /><p class="demo-example__note">An empty state that offers a recovery action.</p><EmptyState title="Nothing here yet" detail="Create the first item when you are ready." icon={icon(Search, 'search')} action={button('Create item', 'log-add')} /></section>
-    <section class="demo-example"><MenuHeader label="Busy" /><p class="demo-example__note">A busy state; the current view stays stable while loading.</p><EmptyState title="Loading items" detail="The current view will remain stable." busy /></section>
+    <section class="demo-example"><ListHeader label="Actionable" /><p class="demo-example__note">An empty state that offers a recovery action.</p><EmptyState title="Nothing here yet" detail="Create the first item when you are ready." icon={icon(Search, 'search')} action={button('Create item', 'log-add')} /></section>
+    <section class="demo-example"><ListHeader label="Busy" /><p class="demo-example__note">A busy state; the current view stays stable while loading.</p><EmptyState title="Loading items" detail="The current view will remain stable." busy /></section>
   </div>;
 }
 
 function LoadingSpinnerDemo() {
   return <div class="demo-stack demo-stack--labeled" data-demo="loading-spinner">
-    <section class="demo-example"><MenuHeader label="Meaningful" /><p class="demo-example__note">Exposes its supplied label to assistive technology.</p><LoadingSpinner label="Loading preview" /></section>
-    <section class="demo-example"><MenuHeader label="Decorative" /><p class="demo-example__note">No label — hidden from assistive technology.</p><LoadingSpinner /></section>
+    <section class="demo-example"><ListHeader label="Meaningful" /><p class="demo-example__note">Exposes its supplied label to assistive technology.</p><LoadingSpinner label="Loading preview" /></section>
+    <section class="demo-example"><ListHeader label="Decorative" /><p class="demo-example__note">No label — hidden from assistive technology.</p><LoadingSpinner /></section>
   </div>;
 }
 
@@ -543,7 +543,7 @@ function LayoutDemo() {
 
 function SkeletonDemo() {
   return <div class="demo-stack demo-stack--labeled" data-demo="skeleton">
-    <section class="demo-example"><MenuHeader label="Primitive" /><p class="demo-example__note">Subtle, unanimated blocks that hold a value's space. Decorative unless labeled.</p>
+    <section class="demo-example"><ListHeader label="Primitive" /><p class="demo-example__note">Subtle, unanimated blocks that hold a value's space. Decorative unless labeled.</p>
       <div class="demo-skeleton-blocks">
         <Skeleton width="12em" />
         <Skeleton width="8em" height="1.5em" />
@@ -551,7 +551,7 @@ function SkeletonDemo() {
         <Skeleton width="6em" label="Loading value" />
       </div>
     </section>
-    <section class="demo-example" data-demo-overlay-skip><MenuHeader label="In composition" /><p class="demo-example__note">Value-bearing components accept a <code>placeholder</code> prop that renders their real chrome with skeleton value slots. See the <strong>Loading inspector</strong> recipe for a full composition.</p>
+    <section class="demo-example" data-demo-overlay-skip><ListHeader label="In composition" /><p class="demo-example__note">Value-bearing components accept a <code>placeholder</code> prop that renders their real chrome with skeleton value slots. See the <strong>Loading inspector</strong> recipe for a full composition.</p>
       <ValueTable label="Placeholder rows"><ValueTableRow label="Status" value="" placeholder /><ValueTableRow label="Owner" value="" placeholder /></ValueTable>
     </section>
   </div>;
@@ -567,10 +567,10 @@ const demos: Record<Exclude<KerfCatalogId, RecipeId>, () => ReturnType<typeof To
   'segmented-control': SegmentedControlDemo,
   'token-search-field': TokenSearchFieldDemo,
   'toolbar-text': ToolbarTextDemo,
-  menu: MenuDemo,
-  'menu-header': MenuHeaderDemo,
-  'menu-action-row': MenuActionRowDemo,
-  'menu-item': MenuItemDemo,
+  list: ListDemo,
+  'list-header': ListHeaderDemo,
+  'list-action-row': ListActionRowDemo,
+  'list-item': ListItemDemo,
   tabs: TabsDemo,
   'tab-bar': TabBarDemo,
   headers: HeadersDemo,
@@ -669,18 +669,18 @@ mount(app, () => {
       </header>
       <nav class="kui-pane__content kui-content">
         {catalogSections.map((section) => <section class="catalog-group">
-          <MenuHeader label={section.category} />
+          <ListHeader label={section.category} />
           <div class="catalog-group__items">
-            {section.entries.map((entry) => <MenuItem action="select-demo" itemId={entry.id} label={entry.name} selected={selectedDemo.value === entry.id} title={entry.description} multiline />)}
+            {section.entries.map((entry) => <ListItem action="select-demo" itemId={entry.id} label={entry.name} selected={selectedDemo.value === entry.id} title={entry.description} multiline />)}
           </div>
         </section>)}
         <section class="catalog-group catalog-group--ecosystem">
-          <MenuHeader label="Web Awesome" count={webAwesomeCatalog.length} countLabel={`${webAwesomeCatalog.length} Web Awesome components`} toggle action="toggle-webawesome-catalog" expanded={webAwesomeExpanded.value} />
+          <ListHeader label="Web Awesome" count={webAwesomeCatalog.length} countLabel={`${webAwesomeCatalog.length} Web Awesome components`} toggle action="toggle-webawesome-catalog" expanded={webAwesomeExpanded.value} />
           {webAwesomeExpanded.value && <div class="catalog-ecosystem" data-webawesome-catalog>
             {webAwesomeCatalogSections.map((section) => <section class="catalog-ecosystem__group">
               <h3>{section.category}</h3>
               <div class="catalog-group__items">
-                {section.entries.map((entry) => <MenuItem action="select-demo" itemId={entry.id} label={entry.name} selected={selectedDemo.value === entry.id} title={entry.description} multiline />)}
+                {section.entries.map((entry) => <ListItem action="select-demo" itemId={entry.id} label={entry.name} selected={selectedDemo.value === entry.id} title={entry.description} multiline />)}
               </div>
             </section>)}
           </div>}
@@ -839,9 +839,9 @@ const stopActions = delegateActions(app, 'click', {
   'log-projects': () => { actionLog.value = 'Projects selected'; },
   'log-drafts': () => { actionLog.value = 'Drafts selected'; },
   'log-settings': () => { actionLog.value = 'Settings selected'; },
-  'select-menu-action-row': (_event, element) => { const itemId = (element as HTMLElement).dataset.itemId ?? ''; menuActionCurrent.value = itemId; actionLog.value = `${itemId} selected`; },
-  'toggle-menu-action-row': (_event, element) => { const itemId = (element as HTMLElement).dataset.itemId ?? ''; menuActionPressed.value = !menuActionPressed.value; actionLog.value = `${itemId} ${menuActionPressed.value ? 'pressed' : 'not pressed'}`; },
-  'open-menu-action-row-actions': (_event, element) => { actionLog.value = `Actions requested for ${(element as HTMLElement).dataset.itemId ?? 'row'}`; },
+  'select-list-action-row': (_event, element) => { const itemId = (element as HTMLElement).dataset.itemId ?? ''; menuActionCurrent.value = itemId; actionLog.value = `${itemId} selected`; },
+  'toggle-list-action-row': (_event, element) => { const itemId = (element as HTMLElement).dataset.itemId ?? ''; menuActionPressed.value = !menuActionPressed.value; actionLog.value = `${itemId} ${menuActionPressed.value ? 'pressed' : 'not pressed'}`; },
+  'open-list-action-row-actions': (_event, element) => { actionLog.value = `Actions requested for ${(element as HTMLElement).dataset.itemId ?? 'row'}`; },
   'log-done': () => { actionLog.value = 'Done'; },
   'sort-recent': () => { actionLog.value = 'Sorted by recently updated'; },
   'sort-priority': () => { actionLog.value = 'Sorted by priority'; },
@@ -923,19 +923,19 @@ const stopTokenSearchSubmits = wireTokenSearchFields(app, {
   },
   collapsible: { signals: { 'toolbar-find': toolbarFindOpen, 'collapsible-search': collapsibleSearchOpen } },
 });
-const stopMenuItemDragOver = delegate(app, 'dragover', '[data-demo-drop-status="ready"]', (event, element) => {
+const stopListItemDragOver = delegate(app, 'dragover', '[data-demo-drop-status="ready"]', (event, element) => {
   event.preventDefault();
   (element as HTMLElement).dataset.demoDropStatus = 'over';
   app.querySelector<HTMLOutputElement>('.catalog-log')?.replaceChildren('Drop target ready');
 });
-const stopMenuItemDrop = delegate(app, 'drop', '[data-demo-drop-status="over"]', (event, element) => {
+const stopListItemDrop = delegate(app, 'drop', '[data-demo-drop-status="over"]', (event, element) => {
   event.preventDefault();
   actionLog.value = `Dropped on ${(element as HTMLElement).dataset.itemId ?? 'menu item'}`;
 });
-const stopMenuActionRowDoubleClick = delegate(app, 'dblclick', '[data-component="menu-action-row"] > [data-action="select-menu-action-row"]', (_event, element) => {
+const stopListActionRowDoubleClick = delegate(app, 'dblclick', '[data-component="list-action-row"] > [data-action="select-list-action-row"]', (_event, element) => {
   actionLog.value = `Double-clicked ${(element as HTMLElement).dataset.itemId ?? 'row'} primary`;
 });
-const stopMenuActionRowContextMenu = delegate(app, 'contextmenu', '[data-component="menu-action-row"] > [data-action="select-menu-action-row"]', (event, element) => {
+const stopListActionRowContextMenu = delegate(app, 'contextmenu', '[data-component="list-action-row"] > [data-action="select-list-action-row"]', (event, element) => {
   event.preventDefault();
   actionLog.value = `Context menu for ${(element as HTMLElement).dataset.itemId ?? 'row'} primary`;
 });
@@ -991,4 +991,4 @@ const syncSystemTheme = (event: MediaQueryListEvent): void => {
 };
 systemDarkTheme.addEventListener('change', syncSystemTheme);
 
-window.addEventListener('pagehide', () => { stopActions(); stopResize(); stopSelect(); componentOverlay?.dispose(); stopOverlayEffect(); stopRecipeNav?.(); stopRecipeNavEffect(); stopRecipeChanges(); stopRecipeInputs(); stopRecipeDialogs(); stopTokenSearch(); stopToolbarFind(); stopTokenSearchSubmits(); stopMenuItemDragOver(); stopMenuItemDrop(); stopMenuActionRowDoubleClick(); stopMenuActionRowContextMenu(); stopRelationships(); stopAnimationSelects(); stopAnimationRanges(); stopAnimationEvents.forEach((dispose) => dispose()); stopIntersectionObserver(); stopMutationObserver(); stopResizeObserver(); stopTabBars(); systemDarkTheme.removeEventListener('change', syncSystemTheme); }, { once: true });
+window.addEventListener('pagehide', () => { stopActions(); stopResize(); stopSelect(); componentOverlay?.dispose(); stopOverlayEffect(); stopRecipeNav?.(); stopRecipeNavEffect(); stopRecipeChanges(); stopRecipeInputs(); stopRecipeDialogs(); stopTokenSearch(); stopToolbarFind(); stopTokenSearchSubmits(); stopListItemDragOver(); stopListItemDrop(); stopListActionRowDoubleClick(); stopListActionRowContextMenu(); stopRelationships(); stopAnimationSelects(); stopAnimationRanges(); stopAnimationEvents.forEach((dispose) => dispose()); stopIntersectionObserver(); stopMutationObserver(); stopResizeObserver(); stopTabBars(); systemDarkTheme.removeEventListener('change', syncSystemTheme); }, { once: true });

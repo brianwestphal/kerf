@@ -4,12 +4,12 @@
     {
       "id": "application-shell",
       "prompt": "prompts/application-shell.md",
-      "requiredComponentIds": ["toolbar", "menu-header", "menu-item", "resize", "layout", "menu"],
-      "requiredImports": ["@kerfjs/ui/toolbar", "@kerfjs/ui/menu-header", "@kerfjs/ui/menu-item", "@kerfjs/ui/resizable-region", "@kerfjs/ui/layout.css"],
+      "requiredComponentIds": ["toolbar", "list-header", "list-item", "resize", "layout", "list"],
+      "requiredImports": ["@kerfjs/ui/toolbar", "@kerfjs/ui/list-header", "@kerfjs/ui/list-item", "@kerfjs/ui/resizable-region", "@kerfjs/ui/layout.css"],
       "requiredClasses": ["kui-pane", "kui-pane__content", "kui-content"],
       "requiredWiring": [{ "name": "wireResizableRegions", "specifier": "@kerfjs/ui/resizable-region", "captured": true }],
       "forbiddenComponentIds": ["wa-split-panel"],
-      "forbiddenPatterns": ["menu-row-copy", "resize-handle-copy"],
+      "forbiddenPatterns": ["list-row-copy", "resize-handle-copy"],
       "forbidHardcodedSpacing": true,
       "maxScrollOwners": 3,
       "requiresFollowUp": false
@@ -30,12 +30,12 @@
     {
       "id": "navigation-sections",
       "prompt": "prompts/navigation-sections.md",
-      "requiredComponentIds": ["menu-header", "menu-item", "menu"],
-      "requiredImports": ["@kerfjs/ui/menu-header", "@kerfjs/ui/menu-item", "@kerfjs/ui/layout.css"],
+      "requiredComponentIds": ["list-header", "list-item", "list"],
+      "requiredImports": ["@kerfjs/ui/list-header", "@kerfjs/ui/list-item", "@kerfjs/ui/layout.css"],
       "requiredClasses": ["kui-pane", "kui-content", "kui-content-item"],
       "requiredWiring": [{ "name": "delegateActions", "specifier": "kerfjs/actions", "captured": true }],
       "forbiddenComponentIds": [],
-      "forbiddenPatterns": ["menu-header-copy", "menu-row-copy"],
+      "forbiddenPatterns": ["list-header-copy", "list-row-copy"],
       "forbidHardcodedSpacing": true,
       "maxScrollOwners": 1,
       "requiresFollowUp": false
@@ -56,8 +56,8 @@
     {
       "id": "master-detail-dialog",
       "prompt": "prompts/master-detail-dialog.md",
-      "requiredComponentIds": ["panel-header", "menu-item", "value-table", "layout", "menu"],
-      "requiredImports": ["@kerfjs/ui/panel-header", "@kerfjs/ui/menu-item", "@kerfjs/ui/value-table", "@kerfjs/ui/layout.css"],
+      "requiredComponentIds": ["panel-header", "list-item", "value-table", "layout", "list"],
+      "requiredImports": ["@kerfjs/ui/panel-header", "@kerfjs/ui/list-item", "@kerfjs/ui/value-table", "@kerfjs/ui/layout.css"],
       "requiredClasses": ["kui-pane", "kui-pane__content", "kui-content"],
       "requiredWiring": [{ "name": "delegateActions", "specifier": "kerfjs/actions", "captured": true }],
       "forbiddenComponentIds": [],

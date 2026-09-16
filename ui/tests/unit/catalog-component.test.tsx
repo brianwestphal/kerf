@@ -38,8 +38,8 @@ describe('Catalog', () => {
     expect(html).toContain('<h1>Acme UI</h1>');
     expect(html).toContain('kui-catalog__subtitle">Design system');
     expect(html).toContain('src="/logo.svg"');
-    // Category groups + items (MenuHeader per section, MenuItem per entry)
-    expect(html).toContain('data-component="menu-header"');
+    // Category groups + items (ListHeader per section, ListItem per entry)
+    expect(html).toContain('data-component="list-header"');
     expect(html).toContain('data-action="catalog-select" data-item-id="button"');
     expect(html).toContain('data-action="catalog-select" data-item-id="select"');
     // Active item marked selected

@@ -721,21 +721,21 @@
       }
     },
     {
-      "id": "menu",
-      "name": "Menu composition",
+      "id": "list",
+      "name": "List composition",
       "category": "Navigation",
       "kind": "composition",
       "source": "kerf",
       "description": "Navigation rows and section headers composed as ordinary content items inside a pane.",
       "uses": [
-        "menu-header",
-        "menu-action-row",
-        "menu-item"
+        "list-header",
+        "list-action-row",
+        "list-item"
       ],
-      "purpose": "Compose navigation with the same pane, content stack, item, and toolbar geometry used throughout the application, including a controlled MenuHeader disclosure only when it reveals real content.",
+      "purpose": "Compose navigation with the same pane, content stack, item, and toolbar geometry used throughout the application, including a controlled ListHeader disclosure only when it reveals real content.",
       "publicExports": [],
       "useWhen": [
-        "Compose navigation sections in a .kui-content stack, using MenuHeader, MenuItem, and MenuActionRow children plus optional .kui-content-item surfaces."
+        "Compose navigation sections in a .kui-content stack, using ListHeader, ListItem, and ListActionRow children plus optional .kui-content-item surfaces."
       ],
       "avoidWhen": [
         "Do not add sidebar-specific wrapper padding or use the pattern for unrelated inline controls.",
@@ -755,8 +755,8 @@
         "pane toolbar or footer"
       ],
       "accessibility": [
-        "Use native links for link navigation, retain MenuItem button semantics for actions, and keep standalone header and toolbar actions at least 44px square.",
-        "A MenuHeader disclosure controls real content, keeps a stable accessible name and aria-expanded state, and uses the production DisclosureArrow visual."
+        "Use native links for link navigation, retain ListItem button semantics for actions, and keep standalone header and toolbar actions at least 44px square.",
+        "A ListHeader disclosure controls real content, keeps a stable accessible name and aria-expanded state, and uses the production DisclosureArrow visual."
       ],
       "delivery": {
         "manualCssImport": "@kerfjs/ui/layout.css",
@@ -777,14 +777,14 @@
         "--kui-layout-rounded-radius"
       ],
       "links": {
-        "catalogRoute": "?component=menu",
+        "catalogRoute": "?component=list",
         "documentation": "docs/component-selection.md",
         "recipe": "docs/component-selection.md#correct-composition-and-duplicated-markup-trap"
       }
     },
     {
-      "id": "menu-header",
-      "name": "MenuHeader",
+      "id": "list-header",
+      "name": "ListHeader",
       "category": "Navigation",
       "kind": "component",
       "source": "kerf",
@@ -795,7 +795,7 @@
       ],
       "purpose": "Fill the available section width while splitting a dormant title and mutually exclusive semantic count or legacy badge from an optional logical-end 44px action with an 18px visual, or render that title cluster as a disclosure button with a default production DisclosureArrow.",
       "publicExports": [
-        "MenuHeader"
+        "ListHeader"
       ],
       "useWhen": [
         "Label a navigation section with an optional semantic count, non-count badge, action, or disclosure state; toggle mode supplies an 18px DisclosureArrow unless actionIcon replaces it."
@@ -832,22 +832,22 @@
         "The application controls and updates disclosure state and the revealed content; the default DisclosureArrow mirrors expanded while the button name stays stable. triggerAttributes can describe the controlled relationship but cannot replace the owned accessible name or expanded state."
       ],
       "delivery": {
-        "browserImport": "@kerfjs/ui/menu-header",
-        "manualCssImport": "@kerfjs/ui/menu-header.css",
+        "browserImport": "@kerfjs/ui/list-header",
+        "manualCssImport": "@kerfjs/ui/list-header.css",
         "sideEffects": [
           "browser-condition-css"
         ]
       },
       "wiring": [],
       "publicClasses": [
-        "kui-menu-header",
-        "kui-menu-header__action",
-        "kui-menu-header__action-layer",
-        "kui-menu-header__badge",
-        "kui-menu-header__count",
-        "kui-menu-header__label",
-        "kui-menu-header__title",
-        "kui-menu-header__toggle"
+        "kui-list-header",
+        "kui-list-header__action",
+        "kui-list-header__action-layer",
+        "kui-list-header__badge",
+        "kui-list-header__count",
+        "kui-list-header__label",
+        "kui-list-header__title",
+        "kui-list-header__toggle"
       ],
       "publicTokens": [
         "--kui-color-neutral-border-quiet",
@@ -855,24 +855,24 @@
         "--kui-color-neutral-on-quiet",
         "--kui-focus-ring",
         "--kui-font-xs",
-        "--kui-menu-header-action-icon-size",
-        "--kui-menu-header-color",
+        "--kui-list-header-action-icon-size",
+        "--kui-list-header-color",
         "--kui-layout-inline-margin",
         "--kui-layout-item-gap",
         "--kui-layout-item-padding",
         "--kui-layout-pill-radius",
-        "--kui-menu-header-count-font-size",
-        "--kui-menu-header-hover-background"
+        "--kui-list-header-count-font-size",
+        "--kui-list-header-hover-background"
       ],
       "links": {
-        "catalogRoute": "?component=menu-header",
+        "catalogRoute": "?component=list-header",
         "documentation": "docs/component-selection.md",
         "recipe": "docs/component-selection.md#problem-to-component-matrix"
       }
     },
     {
-      "id": "menu-action-row",
-      "name": "MenuActionRow",
+      "id": "list-action-row",
+      "name": "ListActionRow",
       "category": "Navigation",
       "kind": "component",
       "source": "kerf",
@@ -882,17 +882,17 @@
       ],
       "purpose": "Keep a selectable primary row action and an independently named trailing action as sibling native controls inside one noninteractive visual row.",
       "publicExports": [
-        "MenuActionRow"
+        "ListActionRow"
       ],
       "useWhen": [
         "A navigation or item row needs both a primary selectable action and an independently focusable trailing action."
       ],
       "avoidWhen": [
-        "Use MenuItem when trailing content is dormant metadata; use AppTab only for tablist semantics and ToolbarControlGroup only for toolbar controls."
+        "Use ListItem when trailing content is dormant metadata; use AppTab only for tablist semantics and ToolbarControlGroup only for toolbar controls."
       ],
       "alternatives": [
         {
-          "id": "menu-item",
+          "id": "list-item",
           "relationship": "nearest",
           "when": "Trailing content is noninteractive."
         },
@@ -919,22 +919,22 @@
       ],
       "accessibility": [
         "The noninteractive root contains two sibling native buttons in primary-then-trailing focus order; each button has its own action, item identity, accessible name, and disabled state.",
-        "Selection semantics are exposed only by the primary button; label, icon, and trailingActionIcon are dormant SafeHtml and must not contain interactive descendants; never place an interactive descendant in MenuItem.trailing."
+        "Selection semantics are exposed only by the primary button; label, icon, and trailingActionIcon are dormant SafeHtml and must not contain interactive descendants; never place an interactive descendant in ListItem.trailing."
       ],
       "delivery": {
-        "browserImport": "@kerfjs/ui/menu-action-row",
-        "manualCssImport": "@kerfjs/ui/menu-action-row.css",
+        "browserImport": "@kerfjs/ui/list-action-row",
+        "manualCssImport": "@kerfjs/ui/list-action-row.css",
         "sideEffects": [
           "browser-condition-css"
         ]
       },
       "wiring": [],
       "publicClasses": [
-        "kui-menu-action-row",
-        "kui-menu-action-row__icon",
-        "kui-menu-action-row__label",
-        "kui-menu-action-row__primary",
-        "kui-menu-action-row__trailing-action"
+        "kui-list-action-row",
+        "kui-list-action-row__icon",
+        "kui-list-action-row__label",
+        "kui-list-action-row__primary",
+        "kui-list-action-row__trailing-action"
       ],
       "publicTokens": [
         "--kui-color-brand-border-quiet",
@@ -950,25 +950,25 @@
         "--kui-layout-item-padding",
         "--kui-layout-rounded-radius",
         "--kui-radius-pill",
-        "--kui-menu-action-row-background",
-        "--kui-menu-action-row-border",
-        "--kui-menu-action-row-color",
-        "--kui-menu-action-row-hover-background",
-        "--kui-menu-action-row-hover-border",
-        "--kui-menu-action-row-selected-background",
-        "--kui-menu-action-row-selected-border",
-        "--kui-menu-action-row-selected-color",
-        "--kui-menu-action-row-trailing-hover-background"
+        "--kui-list-action-row-background",
+        "--kui-list-action-row-border",
+        "--kui-list-action-row-color",
+        "--kui-list-action-row-hover-background",
+        "--kui-list-action-row-hover-border",
+        "--kui-list-action-row-selected-background",
+        "--kui-list-action-row-selected-border",
+        "--kui-list-action-row-selected-color",
+        "--kui-list-action-row-trailing-hover-background"
       ],
       "links": {
-        "catalogRoute": "?component=menu-action-row",
+        "catalogRoute": "?component=list-action-row",
         "documentation": "docs/component-selection.md",
         "recipe": "docs/component-selection.md#problem-to-component-matrix"
       }
     },
     {
-      "id": "menu-item",
-      "name": "MenuItem",
+      "id": "list-item",
+      "name": "ListItem",
       "category": "Navigation",
       "kind": "component",
       "source": "kerf",
@@ -978,17 +978,17 @@
       ],
       "purpose": "Selectable, disabled, trailing, and multiline navigation rows.",
       "publicExports": [
-        "MenuItem"
+        "ListItem"
       ],
       "useWhen": [
         "Render a selectable, disabled, trailing, or multiline sidebar/navigation action row."
       ],
       "avoidWhen": [
-        "Do not use for an ordinary inline link, form button, isolated ARIA menuitem, or an interactive trailing action; use MenuActionRow for sibling row actions."
+        "Do not use for an ordinary inline link, form button, isolated ARIA menuitem, or an interactive trailing action; use ListActionRow for sibling row actions."
       ],
       "alternatives": [
         {
-          "id": "menu-action-row",
+          "id": "list-action-row",
           "relationship": "nearest",
           "when": "The trailing region must be independently interactive."
         }
@@ -1012,18 +1012,18 @@
         "Uses native button activation; selected maps to aria-current and pressed to aria-pressed; rootAttributes cannot add role=menuitem or replace owned ARIA; trailing is dormant content and must not contain controls."
       ],
       "delivery": {
-        "browserImport": "@kerfjs/ui/menu-item",
-        "manualCssImport": "@kerfjs/ui/menu-item.css",
+        "browserImport": "@kerfjs/ui/list-item",
+        "manualCssImport": "@kerfjs/ui/list-item.css",
         "sideEffects": [
           "browser-condition-css"
         ]
       },
       "wiring": [],
       "publicClasses": [
-        "kui-menu-item",
-        "kui-menu-item__icon",
-        "kui-menu-item__label",
-        "kui-menu-item__trailing"
+        "kui-list-item",
+        "kui-list-item__icon",
+        "kui-list-item__label",
+        "kui-list-item__trailing"
       ],
       "publicTokens": [
         "--kui-color-brand-fill-normal",
@@ -1032,17 +1032,17 @@
         "--kui-color-neutral-on-normal",
         "--kui-color-neutral-on-quiet",
         "--kui-focus-ring",
-        "--kui-menu-item-color",
-        "--kui-menu-item-hover-background",
-        "--kui-menu-item-selected-background",
-        "--kui-menu-item-selected-color",
+        "--kui-list-item-color",
+        "--kui-list-item-hover-background",
+        "--kui-list-item-selected-background",
+        "--kui-list-item-selected-color",
         "--kui-layout-inline-margin",
         "--kui-layout-item-gap",
         "--kui-layout-item-padding",
         "--kui-layout-rounded-radius"
       ],
       "links": {
-        "catalogRoute": "?component=menu-item",
+        "catalogRoute": "?component=list-item",
         "documentation": "docs/component-selection.md",
         "recipe": "docs/component-selection.md#problem-to-component-matrix"
       }
@@ -4362,8 +4362,8 @@
         "toolbar",
         "toolbar-text",
         "toolbar-control-group",
-        "menu-header",
-        "menu-item",
+        "list-header",
+        "list-item",
         "panel-header",
         "resize",
         "value-table",
@@ -4403,8 +4403,8 @@
       "source": "kerf",
       "purpose": "Navigation sections with icon and iconless rows, a content-item surface, disclosure, and pane footer actions.",
       "uses": [
-        "menu-header",
-        "menu-item",
+        "list-header",
+        "list-item",
         "toolbar",
         "toolbar-control-group"
       ],
@@ -4481,8 +4481,8 @@
       "purpose": "Production modal containing a PanelHeader, navigable record master list, and ValueTable detail.",
       "uses": [
         "panel-header",
-        "menu-header",
-        "menu-item",
+        "list-header",
+        "list-item",
         "value-table",
         "wa-dialog",
         "wa-button"
@@ -4647,8 +4647,8 @@
       "source": "kerf",
       "purpose": "A push/pop navigation stack drill-down with animated slides and a live device class.",
       "uses": [
-        "menu-header",
-        "menu-item",
+        "list-header",
+        "list-item",
         "lucide-icon",
         "layout"
       ],
@@ -4690,7 +4690,7 @@
         "value-table",
         "select",
         "segmented-control",
-        "menu-item",
+        "list-item",
         "state-banner",
         "skeleton",
         "lucide-icon"

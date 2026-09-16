@@ -15,20 +15,20 @@ async function declarationsFor(file: string, selector: string) {
 }
 
 describe('menu row icon alignment contract', () => {
-  it('aligns a multiline MenuItem icon to the first inherited line box', async () => {
+  it('aligns a multiline ListItem icon to the first inherited line box', async () => {
     await expect(declarationsFor(
-      'menu-item.css',
-      '.kui-menu-item[data-multiline="true"] .kui-menu-item__icon',
+      'list-item.css',
+      '.kui-list-item[data-multiline="true"] .kui-list-item__icon',
     )).resolves.toEqual({
       'align-self': 'start',
       'margin-block-start': 'calc((1lh - remify(24px)) / 2)',
     });
   });
 
-  it('positions a multiline MenuActionRow icon at the first inherited line center', async () => {
+  it('positions a multiline ListActionRow icon at the first inherited line center', async () => {
     await expect(declarationsFor(
-      'menu-action-row.css',
-      '.kui-menu-action-row[data-multiline="true"] .kui-menu-action-row__icon',
+      'list-action-row.css',
+      '.kui-list-action-row[data-multiline="true"] .kui-list-action-row__icon',
     )).resolves.toEqual({
       'inset-block-start': 'calc(\n    var(--kui-layout-item-padding, remify(8px)) + (1lh / 2)\n  )',
     });

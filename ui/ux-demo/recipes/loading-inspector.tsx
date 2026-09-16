@@ -2,8 +2,8 @@ import '@kerfjs/ui/layout.css';
 import '@kerfjs/ui/select/register';
 import './recipes.css';
 
+import { ListItem } from '@kerfjs/ui/list-item';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
-import { MenuItem } from '@kerfjs/ui/menu-item';
 import { PanelHeader } from '@kerfjs/ui/panel-header';
 import { SegmentedControl } from '@kerfjs/ui/segmented-control';
 import { Select } from '@kerfjs/ui/select';
@@ -57,8 +57,8 @@ export const createRecipe: RecipeFactory = (announce) => {
           { value: 'files', label: 'Files', content: icon(FileText, 'file-text') },
         ]} />
         <section>
-          <MenuItem action="recipe-action" itemId="reassign" label="Reassign ticket" icon={icon(Inbox, 'inbox')} placeholder={p} />
-          <MenuItem action="recipe-action" itemId="watch" label="Watch for changes" placeholder={p} />
+          <ListItem action="recipe-action" itemId="reassign" label="Reassign ticket" icon={icon(Inbox, 'inbox')} placeholder={p} />
+          <ListItem action="recipe-action" itemId="watch" label="Watch for changes" placeholder={p} />
         </section>
         {p
           ? <StateBanner tone="info" title="" detail="" icon={icon(FileText, 'file-text')} placeholder />

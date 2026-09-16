@@ -54,7 +54,7 @@ npm install @kerfjs/ui
 
 ```ts
 import { AppTab } from '@kerfjs/ui/app-tab';
-import { MenuActionRow } from '@kerfjs/ui/menu-action-row';
+import { ListActionRow } from '@kerfjs/ui/list-action-row';
 import { SegmentedControl } from '@kerfjs/ui/segmented-control';
 import { StateBanner } from '@kerfjs/ui/state-banner';
 import { TabBar } from '@kerfjs/ui/tab-bar';
@@ -75,31 +75,31 @@ custom pipelines. App overrides belong later in the cascade or on a scoped
 `--kui-*` owner.
 
 Menu adapters may pass product event/drop metadata through the typed
-`rootAttributes` `data-*` slot on MenuItem, MenuHeader, MenuActionRow, and AppTab instead
-of copying their markup. `MenuHeader.triggerAttributes` and
-`MenuActionRow.trailingActionAttributes` are the narrow exceptions for native
+`rootAttributes` `data-*` slot on ListItem, ListHeader, ListActionRow, and AppTab instead
+of copying their markup. `ListHeader.triggerAttributes` and
+`ListActionRow.trailingActionAttributes` are the narrow exceptions for native
 popover target/action and `aria-controls`/`aria-haspopup` relationships. Do not pass
 roles or override the component's action, selection, disclosure, accessible
 name, disabled, or icon contract; a complete ARIA menu remains application
 widget work.
-For counted navigation sections, pass `MenuHeader` both a non-negative safe-
+For counted navigation sections, pass `ListHeader` both a non-negative safe-
 integer `count` and the localized full spoken `countLabel`, for example
 `count={3} countLabel="3 notes"`. Do not concatenate the number into `label` or
 put numeric content in the legacy `badge` SafeHtml slot.
-When `MenuHeader` is a real disclosure, pass controlled `toggle` and `expanded`
+When `ListHeader` is a real disclosure, pass controlled `toggle` and `expanded`
 and reveal matching content. Omitting `actionIcon` supplies the production 18px
 `DisclosureArrow`; a custom icon replaces it. Do not put disclosure chevrons on
 ordinary navigation rows. The header fills its available inline width and keeps
 a separate action at the logical end in a 44px target; its visible glyph defaults
-to 18px through `--kui-menu-header-action-icon-size`. Configured arrow
+to 18px through `--kui-list-header-action-icon-size`. Configured arrow
 directions animate over the shortest path; a 180-degree closed-to-open tie uses
 counterclockwise rotation.
 AppTab additionally protects tab identity plus transient drag/drop markers at
 runtime. Its `closeIcon` and ResizableRegion's `handleIcon` replace decorative,
 noninteractive content only; the existing named controls and wiring retain
 their lifecycle ownership.
-`MenuItem.trailing` is dormant content. When the trailing region must be a
-separate native control, use `MenuActionRow`; its noninteractive root contains
+`ListItem.trailing` is dormant content. When the trailing region must be a
+separate native control, use `ListActionRow`; its noninteractive root contains
 primary and trailing sibling buttons with independent action, name, disabled,
 focus, and click ownership while the application controls selection and any
 popover or context-menu lifecycle. Its `label`, `icon`, and

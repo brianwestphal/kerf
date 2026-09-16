@@ -22,11 +22,11 @@ and check: is the component/pane/content-item already handling this?
 probably wrong:**
 
 - `padding` / `margin` on a wrapper around a `.kui-content-item`, a pane, a
-  `MenuItem`, `StateBanner`, `PanelHeader`, etc. — they own their own 8px inset.
+  `ListItem`, `StateBanner`, `PanelHeader`, etc. — they own their own 8px inset.
   Adding more **double-insets** it (the single most-repeated bug).
 - `width` / `height` on a component to make it "the right size" — components size
   to their content and tokens. A forced box leaves a halo or a stretched oval
-  (the MenuHeader action was forced to 44px around an 18px icon and became an
+  (the ListHeader action was forced to 44px around an 18px icon and became an
   oval). Change the icon-size or spacing token instead.
 - A **card / border / background / dashed outline / folded corner** to make a demo
   or region "look contained." Hierarchy comes from alignment, spacing, and type
@@ -80,7 +80,7 @@ primitives.
 The catalog renders the same exports and CSS consumers get, so a demo that needs
 custom chrome to look right is a signal the *component or composition* is wrong —
 fix that, don't dress the demo. Single-component demos sit directly on the grid
-(no cards); label examples with a `MenuHeader` + optional note, left-aligned and
+(no cards); label examples with a `ListHeader` + optional note, left-aligned and
 vertically stacked. Recipes compose public primitives and show ownership
 boundaries; they are reference compositions, not new styled components.
 

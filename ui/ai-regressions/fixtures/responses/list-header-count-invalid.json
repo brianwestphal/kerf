@@ -1,0 +1,6 @@
+{
+  "caseId": "list-header-count-contract",
+  "files": {
+    "app.tsx": "import { ListHeader } from '@kerfjs/ui/list-header';\nexport const competingIndicators = <ListHeader label=\"Notes\" count={3} countLabel=\"3 notes\" badge={<span>New</span>} />;\n"
+  }
+}

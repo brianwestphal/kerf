@@ -44,12 +44,12 @@ Adapt only public `--kui-layout-*` and component variables.
 [Open the recipe](../ux-demo/?component=recipe-navigation-sidebar) · [TSX source](../ux-demo/recipes/navigation-sidebar.tsx)
 
 One unpadded `.kui-pane` owns toolbar/content/footer structure. Its
-`.kui-content` uses 24px major gaps; `MenuHeader`, `MenuItem`, and other
+`.kui-content` uses 24px major gaps; `ListHeader`, `ListItem`, and other
 `.kui-content-item` children own their 8px margin, 1px border, and 8px padding.
 Rows and footer toolbar groups remain 44px tall. The app owns routes,
 permissions, labels, selection, valid section counts and their localized
 `countLabel` phrases, non-count badge content, disclosure state, and revealed
-content. A toggled `MenuHeader` supplies the production `DisclosureArrow` when
+content. A toggled `ListHeader` supplies the production `DisclosureArrow` when
 no custom `actionIcon` is needed; ordinary navigation rows stay chevron-free.
 
 ## Workspace header
@@ -66,7 +66,7 @@ controls relocate without changing focus order.
 
 The production Web Awesome dialog owns modal focus and Escape; the thin recipe
 adapter restores the invoking control consistently after the hide event.
-`PanelHeader`, `MenuHeader`, `MenuItem`, and `ValueTable` own their included
+`PanelHeader`, `ListHeader`, `ListItem`, and `ValueTable` own their included
 anatomy. The application owns open state, selection, dismissal policy, and
 record actions. `PanelHeader` places the trailing controls the app passes
 directly into its top toolbar's trailing zone.
@@ -127,7 +127,7 @@ settles the chrome (reduced motion collapses the slide to instant). A live
 
 A record inspector whose per-record values load asynchronously. Every
 value-bearing component (`PanelHeader`, `ValueTable`/`ValueTableRow`, `Select`,
-`SegmentedControl`, `MenuItem`, `StateBanner`) takes its `placeholder` from one
+`SegmentedControl`, `ListItem`, `StateBanner`) takes its `placeholder` from one
 loading flag, so the same real chrome renders a faithful loading state and then
 the populated record — no separate skeleton markup. The composition is the point;
 `Skeleton` is the primitive it builds on. The app owns the loading lifecycle and

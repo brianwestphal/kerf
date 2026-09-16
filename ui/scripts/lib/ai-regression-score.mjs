@@ -107,7 +107,7 @@ function analyzeTypeScript(files) {
   let nativeButtons = 0;
   let nativeButtonsInNav = 0;
   let nativeSearchEditors = 0;
-  const menuHeaderCountViolations = {
+  const listHeaderCountViolations = {
     competingBadge: [],
     concatenatedLabel: [],
     invalidCount: [],
@@ -133,22 +133,22 @@ function analyzeTypeScript(files) {
       }
     }
 
-    function inspectMenuHeader(properties, location) {
+    function inspectListHeader(properties, location) {
       const count = properties('count');
       const countLabel = properties('countLabel');
       const badge = properties('badge');
       const label = staticStringValue(properties('label'));
       const literalCount = staticNumberValue(count);
-      if (count && !countLabel) menuHeaderCountViolations.missingCountLabel.push(location);
-      if (count && badge) menuHeaderCountViolations.competingBadge.push(location);
+      if (count && !countLabel) listHeaderCountViolations.missingCountLabel.push(location);
+      if (count && badge) listHeaderCountViolations.competingBadge.push(location);
       if (literalCount !== null && (!Number.isSafeInteger(literalCount) || literalCount < 0)) {
-        menuHeaderCountViolations.invalidCount.push(location);
+        listHeaderCountViolations.invalidCount.push(location);
       }
       if (badge) {
         const badgeText = staticJsxText(propertyValue(badge)).trim();
-        if (/^\d+(?:[.,]\d+)?$/.test(badgeText)) menuHeaderCountViolations.numericBadge.push(location);
+        if (/^\d+(?:[.,]\d+)?$/.test(badgeText)) listHeaderCountViolations.numericBadge.push(location);
       }
-      if (label && /\(\s*\d+\s*\)\s*$/.test(label)) menuHeaderCountViolations.concatenatedLabel.push(location);
+      if (label && /\(\s*\d+\s*\)\s*$/.test(label)) listHeaderCountViolations.concatenatedLabel.push(location);
     }
 
     function visit(node) {
@@ -159,9 +159,9 @@ function analyzeTypeScript(files) {
         const captured = ts.isVariableDeclaration(node.parent) || (ts.isBinaryExpression(node.parent) && node.parent.right === node);
         const key = `${binding.specifier}:${binding.imported}`;
         calls.set(key, (calls.get(key) ?? false) || captured);
-        if (binding.imported === 'MenuHeader' && binding.specifier.startsWith('@kerfjs/ui') && node.arguments[0]) {
+        if (binding.imported === 'ListHeader' && binding.specifier.startsWith('@kerfjs/ui') && node.arguments[0]) {
           const location = `${name}:${file.getLineAndCharacterOfPosition(node.pos).line + 1}`;
-          inspectMenuHeader((property) => objectProperty(node.arguments[0], property, file), location);
+          inspectListHeader((property) => objectProperty(node.arguments[0], property, file), location);
         }
       }
       if (ts.isJsxOpeningElement(node) || ts.isJsxSelfClosingElement(node)) {
@@ -169,9 +169,9 @@ function analyzeTypeScript(files) {
         tags.add(tag);
         const binding = bindings.get(tag);
         if (/^[A-Z]/.test(tag) && binding) invoked.add(binding.imported);
-        if (binding?.imported === 'MenuHeader' && binding.specifier.startsWith('@kerfjs/ui')) {
+        if (binding?.imported === 'ListHeader' && binding.specifier.startsWith('@kerfjs/ui')) {
           const location = `${name}:${file.getLineAndCharacterOfPosition(node.pos).line + 1}`;
-          inspectMenuHeader((property) => jsxAttribute(node, property, file), location);
+          inspectListHeader((property) => jsxAttribute(node, property, file), location);
         }
         const classes = node.attributes.properties
           .filter(ts.isJsxAttribute)
@@ -198,7 +198,7 @@ function analyzeTypeScript(files) {
     }
     visit(file);
   }
-  return { imports, invoked, tags, classSets, calls, unnamedButtons, syntaxErrors, nativeButtons, nativeButtonsInNav, nativeSearchEditors, menuHeaderCountViolations };
+  return { imports, invoked, tags, classSets, calls, unnamedButtons, syntaxErrors, nativeButtons, nativeButtonsInNav, nativeSearchEditors, listHeaderCountViolations };
 }
 
 function selectorCompounds(selector) {
@@ -389,28 +389,28 @@ export function scoreAiRegression(caseDefinition, response, catalog, options = {
     addCheck(checks, 'duplicate:competing-native-options', analysis.nativeButtons < 3, `declares ${analysis.nativeButtons} native buttons alongside the package choice contract`);
   }
   if (caseDefinition.id === 'navigation-sections') {
-    addCheck(checks, 'duplicate:navigation-native-row', analysis.nativeButtonsInNav === 0, `declares ${analysis.nativeButtonsInNav} native navigation buttons instead of MenuItem rows`);
+    addCheck(checks, 'duplicate:navigation-native-row', analysis.nativeButtonsInNav === 0, `declares ${analysis.nativeButtonsInNav} native navigation buttons instead of ${options.legacyPublicBoundary ? 'MenuItem' : 'ListItem'} rows`);
   }
   if (caseDefinition.id === 'tokenized-search') {
     addCheck(checks, 'duplicate:search-editor', analysis.nativeSearchEditors === 0, `declares ${analysis.nativeSearchEditors} competing native search editors`);
   }
   if (!options.legacyPublicBoundary) {
-    const countViolations = analysis.menuHeaderCountViolations;
-    addCheck(checks, 'a11y:menu-header-count-label', countViolations.missingCountLabel.length === 0, countViolations.missingCountLabel.length
-      ? `MenuHeader count is missing countLabel at ${countViolations.missingCountLabel.join(', ')}`
-      : 'every MenuHeader count supplies its localized countLabel');
-    addCheck(checks, 'duplicate:menu-header-count-badge', countViolations.competingBadge.length === 0, countViolations.competingBadge.length
-      ? `MenuHeader mixes count and badge at ${countViolations.competingBadge.join(', ')}`
-      : 'MenuHeader count and legacy badge slots remain mutually exclusive');
-    addCheck(checks, 'a11y:menu-header-count-value', countViolations.invalidCount.length === 0, countViolations.invalidCount.length
-      ? `MenuHeader uses a statically invalid count at ${countViolations.invalidCount.join(', ')}`
-      : 'statically known MenuHeader counts are non-negative safe integers');
-    addCheck(checks, 'duplicate:menu-header-numeric-badge', countViolations.numericBadge.length === 0, countViolations.numericBadge.length
-      ? `MenuHeader uses a numeric badge at ${countViolations.numericBadge.join(', ')}`
-      : 'section quantities use MenuHeader count rather than badge');
-    addCheck(checks, 'duplicate:menu-header-label-count', countViolations.concatenatedLabel.length === 0, countViolations.concatenatedLabel.length
-      ? `MenuHeader concatenates a count into label at ${countViolations.concatenatedLabel.join(', ')}`
-      : 'MenuHeader labels exclude parenthesized section counts');
+    const countViolations = analysis.listHeaderCountViolations;
+    addCheck(checks, 'a11y:list-header-count-label', countViolations.missingCountLabel.length === 0, countViolations.missingCountLabel.length
+      ? `ListHeader count is missing countLabel at ${countViolations.missingCountLabel.join(', ')}`
+      : 'every ListHeader count supplies its localized countLabel');
+    addCheck(checks, 'duplicate:list-header-count-badge', countViolations.competingBadge.length === 0, countViolations.competingBadge.length
+      ? `ListHeader mixes count and badge at ${countViolations.competingBadge.join(', ')}`
+      : 'ListHeader count and legacy badge slots remain mutually exclusive');
+    addCheck(checks, 'a11y:list-header-count-value', countViolations.invalidCount.length === 0, countViolations.invalidCount.length
+      ? `ListHeader uses a statically invalid count at ${countViolations.invalidCount.join(', ')}`
+      : 'statically known ListHeader counts are non-negative safe integers');
+    addCheck(checks, 'duplicate:list-header-numeric-badge', countViolations.numericBadge.length === 0, countViolations.numericBadge.length
+      ? `ListHeader uses a numeric badge at ${countViolations.numericBadge.join(', ')}`
+      : 'section quantities use ListHeader count rather than badge');
+    addCheck(checks, 'duplicate:list-header-label-count', countViolations.concatenatedLabel.length === 0, countViolations.concatenatedLabel.length
+      ? `ListHeader concatenates a count into label at ${countViolations.concatenatedLabel.join(', ')}`
+      : 'ListHeader labels exclude parenthesized section counts');
   }
 
   const scrollOwners = analysis.classSets.filter((classes) => classes.includes('kui-scroll-owner')).length;

@@ -19,7 +19,7 @@ const PROTECTED_TRAILING_DATA_ATTRIBUTES = new Set([
   'data-item-id',
 ]);
 
-type MenuActionRowRootAttributes = Readonly<
+type ListActionRowRootAttributes = Readonly<
   Record<`data-${string}`, string | undefined> & {
     'data-component'?: never;
     'data-action'?: never;
@@ -32,7 +32,7 @@ type MenuActionRowRootAttributes = Readonly<
   }
 >;
 
-type MenuActionRowTrailingAttributes = Readonly<
+type ListActionRowTrailingAttributes = Readonly<
   Record<`data-${string}`, string | undefined> & {
     'data-component'?: never;
     'data-action'?: never;
@@ -44,7 +44,7 @@ type MenuActionRowTrailingAttributes = Readonly<
   }
 >;
 
-export interface MenuActionRowProps {
+export interface ListActionRowProps {
   /** Visible dormant content for the primary button. Must not contain interactive descendants. */
   label: string | SafeHtml;
   /** Decorative dormant content for the primary button. Must not contain interactive descendants. */
@@ -69,19 +69,19 @@ export interface MenuActionRowProps {
   trailingActionTitle?: string;
   className?: string;
   style?: string;
-  rootAttributes?: MenuActionRowRootAttributes;
-  trailingActionAttributes?: MenuActionRowTrailingAttributes;
+  rootAttributes?: ListActionRowRootAttributes;
+  trailingActionAttributes?: ListActionRowTrailingAttributes;
 }
 
-export function MenuActionRow({ label, icon, action, itemId, selected = false, pressed, accessibleLabel, title, multiline = false, state, disabled = false, tabIndex, placeholder = false, trailingAction, trailingActionLabel, trailingActionIcon, trailingActionDisabled = false, trailingActionTitle, className = '', style, rootAttributes = {}, trailingActionAttributes = {} }: MenuActionRowProps) {
+export function ListActionRow({ label, icon, action, itemId, selected = false, pressed, accessibleLabel, title, multiline = false, state, disabled = false, tabIndex, placeholder = false, trailingAction, trailingActionLabel, trailingActionIcon, trailingActionDisabled = false, trailingActionTitle, className = '', style, rootAttributes = {}, trailingActionAttributes = {} }: ListActionRowProps) {
   const extensionRootAttributes = filterDataAttributes(rootAttributes, PROTECTED_ROOT_DATA_ATTRIBUTES);
   const extensionTrailingAttributes = filterControlAttributes(trailingActionAttributes, PROTECTED_TRAILING_DATA_ATTRIBUTES);
 
-  return <div {...extensionRootAttributes} class={`kui-menu-action-row ${className}`.trim()} style={style} data-component="menu-action-row" data-item-id={itemId} data-has-icon={String(Boolean(icon))} data-multiline={multiline ? 'true' : undefined} data-state={state} data-selected={String(selected)} data-pressed={pressed === undefined ? undefined : String(pressed)} data-placeholder={placeholder ? 'true' : undefined} aria-busy={placeholder ? 'true' : undefined}>
-    <button type="button" class="kui-menu-action-row__primary" title={placeholder ? undefined : title} disabled={disabled || placeholder} tabindex={placeholder ? -1 : tabIndex} data-action={placeholder ? undefined : action} data-item-id={itemId} aria-label={accessibleLabel} aria-current={selected ? 'page' : undefined} aria-pressed={pressed === undefined ? undefined : String(pressed)}>
-      {icon && <span class="kui-menu-action-row__icon">{placeholder ? <Skeleton width="1em" height="1em" /> : icon}</span>}
-      <span class="kui-menu-action-row__label">{placeholder ? <Skeleton width="9em" /> : label}</span>
+  return <div {...extensionRootAttributes} class={`kui-list-action-row ${className}`.trim()} style={style} data-component="list-action-row" data-item-id={itemId} data-has-icon={String(Boolean(icon))} data-multiline={multiline ? 'true' : undefined} data-state={state} data-selected={String(selected)} data-pressed={pressed === undefined ? undefined : String(pressed)} data-placeholder={placeholder ? 'true' : undefined} aria-busy={placeholder ? 'true' : undefined}>
+    <button type="button" class="kui-list-action-row__primary" title={placeholder ? undefined : title} disabled={disabled || placeholder} tabindex={placeholder ? -1 : tabIndex} data-action={placeholder ? undefined : action} data-item-id={itemId} aria-label={accessibleLabel} aria-current={selected ? 'page' : undefined} aria-pressed={pressed === undefined ? undefined : String(pressed)}>
+      {icon && <span class="kui-list-action-row__icon">{placeholder ? <Skeleton width="1em" height="1em" /> : icon}</span>}
+      <span class="kui-list-action-row__label">{placeholder ? <Skeleton width="9em" /> : label}</span>
     </button>
-    <button {...extensionTrailingAttributes} type="button" class="kui-menu-action-row__trailing-action" data-action={placeholder ? undefined : trailingAction} data-item-id={itemId} aria-label={trailingActionLabel} title={trailingActionTitle ?? trailingActionLabel} disabled={trailingActionDisabled || placeholder || undefined}>{trailingActionIcon}</button>
+    <button {...extensionTrailingAttributes} type="button" class="kui-list-action-row__trailing-action" data-action={placeholder ? undefined : trailingAction} data-item-id={itemId} aria-label={trailingActionLabel} title={trailingActionTitle ?? trailingActionLabel} disabled={trailingActionDisabled || placeholder || undefined}>{trailingActionIcon}</button>
   </div>;
 }

@@ -26,11 +26,11 @@ remains authored rather than generated.
 - A reusable component never owns per-instance mutable module state.
 - Consumers style through `--kui-*` semantic tokens and public component classes. Foundation tokens provide opinionated neutral, brand/info, success, warning, and danger fill/border/foreground roles. Stateful components expose local override variables; prefer an equivalent prop or token before writing a selector.
 
-`MenuItem.rootAttributes`, `MenuActionRow.rootAttributes`,
-`MenuHeader.rootAttributes`, and `AppTab.rootAttributes` accept
+`ListItem.rootAttributes`, `ListActionRow.rootAttributes`,
+`ListHeader.rootAttributes`, and `AppTab.rootAttributes` accept
 application-owned `data-*` metadata without
-adding product fields to the shared API. A `MenuActionRow` trailing action uses
-`trailingActionAttributes`, and a `MenuHeader` action/disclosure uses
+adding product fields to the shared API. A `ListActionRow` trailing action uses
+`trailingActionAttributes`, and a `ListHeader` action/disclosure uses
 `triggerAttributes`, for `data-*`, native popover target/action attributes, and
 the corresponding `aria-controls`/`aria-haspopup` relationship. These slots do
 not accept roles or component-owned action, selection, disclosure, accessible
@@ -46,10 +46,10 @@ component continues to own the named close button or focusable separator, and
 `wireTabBars()` / `wireResizableRegions()` continue to own transient behavior
 and disposal.
 
-`MenuItem.trailing`, `MenuActionRow.label`, `MenuActionRow.icon`, and
-`MenuActionRow.trailingActionIcon` are dormant SafeHtml slots. They must not
+`ListItem.trailing`, `ListActionRow.label`, `ListActionRow.icon`, and
+`ListActionRow.trailingActionIcon` are dormant SafeHtml slots. They must not
 contain controls. When a row needs an independently interactive trailing
-region, `MenuActionRow` owns the noninteractive root and the two sibling native
+region, `ListActionRow` owns the noninteractive root and the two sibling native
 buttons; the application owns their delegated behavior and controlled state.
 Both row components align a leading icon with the first label line when
 `multiline` allows the label to wrap; additional lines extend below that fixed
@@ -67,7 +67,7 @@ ownership to the application.
 
 Do not select a component's descendant by element name, id, attribute alone, or
 an unlisted implementation class. Selectors such as `.kui-state-banner span`,
-`.kui-menu-item [data-state]`, and `.kui-menu-item .local-label` depend on
+`.kui-list-item [data-state]`, and `.kui-list-item .local-label` depend on
 private structure. If no prop, token, or cataloged class expresses a recurring
 need, request a supported hook instead of inferring one from rendered markup.
 
@@ -78,13 +78,13 @@ glyph contract, `--kui-disclosure-icon-scale: .5`; changing one contract does
 not implicitly change the other. Direction changes take the shortest rotation
 path; a 180-degree closed-to-open tie uses counterclockwise rotation.
 
-In `MenuHeader` toggle mode, omitting `actionIcon` composes the production
+In `ListHeader` toggle mode, omitting `actionIcon` composes the production
 `DisclosureArrow` and derives its visual direction from `expanded`. The app
 must update that controlled state and reveal or hide real content. Passing a
 custom `actionIcon` replaces the default rather than layering or rotating both.
 The root fills the available inline width after its standard margins. A
 separate action stays at the logical end in its 44px target while the visible
-glyph defaults to 18px through `--kui-menu-header-action-icon-size`.
+glyph defaults to 18px through `--kui-list-header-action-icon-size`.
 
 `StateBanner` exposes instance-level `--kui-state-banner-background`,
 `--kui-state-banner-border`, `--kui-state-banner-foreground`,
@@ -113,7 +113,7 @@ changing geometry. `.kui-content-item--pill` selects the 22px radius.
 
 `ToolbarControlGroup` is the unit of toolbar organization, even for dormant
 text. Each group reserves `calc(2px + remify(42px))`, or 44px, with 8px between
-groups and inside items. `MenuHeader` similarly separates its dormant title and
+groups and inside items. `ListHeader` similarly separates its dormant title and
 optional count or badge from its optional 44px action. Use the mutually
 exclusive `count`/`countLabel` pair for non-negative safe-integer section
 quantities; reserve `badge` for non-count `SafeHtml`. Do not concatenate counts
@@ -172,7 +172,7 @@ and tab order are data, a `ResizableRegion`'s committed size and a
 Each helper already owns only the *ephemeral mechanics* around that state —
 `wireNavStack` the push/pop animation, `wireTabBars` the overflow autoscroll and
 drag preview, `wireResizableRegions` the live drag preview — and reports committed
-changes through callbacks. A `MenuHeader` `toggle` disclosure's `expanded` is
+changes through callbacks. A `ListHeader` `toggle` disclosure's `expanded` is
 likewise app-owned: it is a one-line boolean the app already tracks and must read to
 render the section body, so a managed helper would remove no real complexity. Reach
 for a managed default only when the transient behavior is substantial enough that

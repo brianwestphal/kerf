@@ -87,26 +87,26 @@ declare function ToolbarControlGroup({ children, label, className, expanded, sin
 export { ToolbarControlGroup, type ToolbarControlGroupProps };
 ```
 
-## `@kerfjs/ui/menu-header`
+## `@kerfjs/ui/list-header`
 
 ```ts
 import { SafeHtml } from 'kerfjs';
 
-type MenuHeaderRootAttributes = Readonly<Record<`data-${string}`, string | undefined> & {
+type ListHeaderRootAttributes = Readonly<Record<`data-${string}`, string | undefined> & {
     'data-component'?: never;
     'data-action'?: never;
     'data-has-badge'?: never;
     'data-has-count'?: never;
     'data-toggle'?: never;
 }>;
-type MenuHeaderTriggerAttributes = Readonly<Record<`data-${string}`, string | undefined> & {
+type ListHeaderTriggerAttributes = Readonly<Record<`data-${string}`, string | undefined> & {
     'data-action'?: never;
     popoverTarget?: string;
     popoverTargetAction?: 'toggle' | 'show' | 'hide';
     'aria-controls'?: string;
     'aria-haspopup'?: 'dialog' | 'menu' | 'listbox' | 'tree' | 'grid' | 'true';
 }>;
-interface MenuHeaderBaseProps {
+interface ListHeaderBaseProps {
     label: string;
     action?: string;
     actionLabel?: string;
@@ -117,10 +117,10 @@ interface MenuHeaderBaseProps {
     toggle?: boolean;
     /** Render as an unanimated loading skeleton: keep the label and action affordance, disable interaction. */
     placeholder?: boolean;
-    rootAttributes?: MenuHeaderRootAttributes;
-    triggerAttributes?: MenuHeaderTriggerAttributes;
+    rootAttributes?: ListHeaderRootAttributes;
+    triggerAttributes?: ListHeaderTriggerAttributes;
 }
-type MenuHeaderIndicatorProps = {
+type ListHeaderIndicatorProps = {
     count: number;
     countLabel: string;
     badge?: never;
@@ -129,18 +129,18 @@ type MenuHeaderIndicatorProps = {
     countLabel?: never;
     badge?: SafeHtml;
 };
-type MenuHeaderProps = MenuHeaderBaseProps & MenuHeaderIndicatorProps;
-declare function MenuHeader({ label, count, countLabel, badge, action, actionLabel, actionIcon, actionDisabled, disabledReason, expanded, toggle, placeholder, rootAttributes, triggerAttributes }: MenuHeaderProps): SafeHtml;
+type ListHeaderProps = ListHeaderBaseProps & ListHeaderIndicatorProps;
+declare function ListHeader({ label, count, countLabel, badge, action, actionLabel, actionIcon, actionDisabled, disabledReason, expanded, toggle, placeholder, rootAttributes, triggerAttributes }: ListHeaderProps): SafeHtml;
 
-export { MenuHeader, type MenuHeaderProps };
+export { ListHeader, type ListHeaderProps };
 ```
 
-## `@kerfjs/ui/menu-action-row`
+## `@kerfjs/ui/list-action-row`
 
 ```ts
 import { SafeHtml } from 'kerfjs';
 
-type MenuActionRowRootAttributes = Readonly<Record<`data-${string}`, string | undefined> & {
+type ListActionRowRootAttributes = Readonly<Record<`data-${string}`, string | undefined> & {
     'data-component'?: never;
     'data-action'?: never;
     'data-item-id'?: never;
@@ -150,7 +150,7 @@ type MenuActionRowRootAttributes = Readonly<Record<`data-${string}`, string | un
     'data-selected'?: never;
     'data-pressed'?: never;
 }>;
-type MenuActionRowTrailingAttributes = Readonly<Record<`data-${string}`, string | undefined> & {
+type ListActionRowTrailingAttributes = Readonly<Record<`data-${string}`, string | undefined> & {
     'data-component'?: never;
     'data-action'?: never;
     'data-item-id'?: never;
@@ -159,7 +159,7 @@ type MenuActionRowTrailingAttributes = Readonly<Record<`data-${string}`, string 
     'aria-controls'?: string;
     'aria-haspopup'?: 'dialog' | 'menu' | 'listbox' | 'tree' | 'grid' | 'true';
 }>;
-interface MenuActionRowProps {
+interface ListActionRowProps {
     /** Visible dormant content for the primary button. Must not contain interactive descendants. */
     label: string | SafeHtml;
     /** Decorative dormant content for the primary button. Must not contain interactive descendants. */
@@ -184,20 +184,20 @@ interface MenuActionRowProps {
     trailingActionTitle?: string;
     className?: string;
     style?: string;
-    rootAttributes?: MenuActionRowRootAttributes;
-    trailingActionAttributes?: MenuActionRowTrailingAttributes;
+    rootAttributes?: ListActionRowRootAttributes;
+    trailingActionAttributes?: ListActionRowTrailingAttributes;
 }
-declare function MenuActionRow({ label, icon, action, itemId, selected, pressed, accessibleLabel, title, multiline, state, disabled, tabIndex, placeholder, trailingAction, trailingActionLabel, trailingActionIcon, trailingActionDisabled, trailingActionTitle, className, style, rootAttributes, trailingActionAttributes }: MenuActionRowProps): SafeHtml;
+declare function ListActionRow({ label, icon, action, itemId, selected, pressed, accessibleLabel, title, multiline, state, disabled, tabIndex, placeholder, trailingAction, trailingActionLabel, trailingActionIcon, trailingActionDisabled, trailingActionTitle, className, style, rootAttributes, trailingActionAttributes }: ListActionRowProps): SafeHtml;
 
-export { MenuActionRow, type MenuActionRowProps };
+export { ListActionRow, type ListActionRowProps };
 ```
 
-## `@kerfjs/ui/menu-item`
+## `@kerfjs/ui/list-item`
 
 ```ts
 import { SafeHtml } from 'kerfjs';
 
-type MenuItemRootAttributes = Readonly<Record<`data-${string}`, string | undefined> & {
+type ListItemRootAttributes = Readonly<Record<`data-${string}`, string | undefined> & {
     'data-component'?: never;
     'data-action'?: never;
     'data-item-id'?: never;
@@ -205,7 +205,7 @@ type MenuItemRootAttributes = Readonly<Record<`data-${string}`, string | undefin
     'data-multiline'?: never;
     'data-state'?: never;
 }>;
-interface MenuItemProps {
+interface ListItemProps {
     label: string | SafeHtml;
     icon?: SafeHtml;
     trailing?: SafeHtml;
@@ -223,11 +223,11 @@ interface MenuItemProps {
     tabIndex?: number;
     /** Render the row as an unanimated loading skeleton, disabling its action. */
     placeholder?: boolean;
-    rootAttributes?: MenuItemRootAttributes;
+    rootAttributes?: ListItemRootAttributes;
 }
-declare function MenuItem({ label, icon, trailing, selected, action, itemId, className, style, pressed, accessibleLabel, title, multiline, state, disabled, tabIndex, placeholder, rootAttributes }: MenuItemProps): SafeHtml;
+declare function ListItem({ label, icon, trailing, selected, action, itemId, className, style, pressed, accessibleLabel, title, multiline, state, disabled, tabIndex, placeholder, rootAttributes }: ListItemProps): SafeHtml;
 
-export { MenuItem, type MenuItemProps };
+export { ListItem, type ListItemProps };
 ```
 
 ## `@kerfjs/ui/panel-header`

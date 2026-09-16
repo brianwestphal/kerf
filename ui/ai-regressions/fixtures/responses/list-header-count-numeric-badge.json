@@ -1,0 +1,6 @@
+{
+  "caseId": "list-header-count-contract",
+  "files": {
+    "app.tsx": "import { ListHeader } from '@kerfjs/ui/list-header';\nexport const notes = <ListHeader label=\"Notes\" badge={<span>3</span>} />;\n"
+  }
+}

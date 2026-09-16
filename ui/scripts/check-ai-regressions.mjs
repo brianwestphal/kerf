@@ -48,7 +48,7 @@ if (!packageJson.scripts?.['ai:regressions:compile']?.includes('compile-ai-regre
 const catalogIds = new Set(catalog.entries.map(({ id }) => id));
 for (const testCase of corpus.cases) {
   const prompt = await readFile(resolve(root, 'ai-regressions', testCase.prompt), 'utf8');
-  if (/@kerfjs|\bkui-|\b(?:Toolbar|MenuItem|MenuHeader|SegmentedControl|TokenSearchField|ResizableRegion|StateBanner|EmptyState)\b/.test(prompt)) {
+  if (/@kerfjs|\bkui-|\b(?:Toolbar|ListItem|ListHeader|ListActionRow|SegmentedControl|TokenSearchField|ResizableRegion|StateBanner|EmptyState)\b/.test(prompt)) {
     fail(`${testCase.id} prompt leaks an implementation hint`);
   }
   if (/\b(?:password|api[_ -]?key|secret|token)\s*[:=]/i.test(prompt)) fail(`${testCase.id} prompt appears to contain a secret`);

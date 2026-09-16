@@ -1,0 +1,6 @@
+{
+  "caseId": "list-header-count-contract",
+  "files": {
+    "app.tsx": "import { ListHeader } from '@kerfjs/ui/list-header';\nexport const negative = ListHeader({ label: \"Invalid negative\", count: -1, countLabel: \"Invalid count\" });\nexport const fractional = <ListHeader label=\"Invalid fraction\" count={1.5} countLabel=\"Invalid count\" />;\nexport const unsafe = ListHeader({ label: \"Invalid unsafe integer\", count: 9007199254740992, countLabel: \"Invalid count\" });\n"
+  }
+}

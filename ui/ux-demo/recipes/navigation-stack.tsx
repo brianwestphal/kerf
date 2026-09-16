@@ -3,9 +3,9 @@ import '@kerfjs/ui/nav-stack.css';
 import '@kerfjs/ui/toolbar-text.css';
 import './recipes.css';
 
+import { ListHeader } from '@kerfjs/ui/list-header';
+import { ListItem } from '@kerfjs/ui/list-item';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
-import { MenuHeader } from '@kerfjs/ui/menu-header';
-import { MenuItem } from '@kerfjs/ui/menu-item';
 import { NavStack, type NavStackView } from '@kerfjs/ui/nav-stack';
 import { signal } from 'kerfjs';
 import { ChevronRight, FileText, Folder } from 'lucide';
@@ -30,8 +30,8 @@ export const createRecipe: RecipeFactory = (announce) => {
     title: 'Library',
     content: <div class="recipe-navstack__view kui-pane__content kui-content">
       <section>
-        <MenuHeader label="Components" />
-        {ITEMS.map((item) => <MenuItem action="recipe-action" itemId={item.id} label={item.label} icon={<LucideIcon icon={Folder} name="folder" />} trailing={<LucideIcon icon={ChevronRight} name="chevron-right" />} />)}
+        <ListHeader label="Components" />
+        {ITEMS.map((item) => <ListItem action="recipe-action" itemId={item.id} label={item.label} icon={<LucideIcon icon={Folder} name="folder" />} trailing={<LucideIcon icon={ChevronRight} name="chevron-right" />} />)}
       </section>
       <p class="kui-recipe__ownership kui-content-item">The recipe owns the stack as a signal of views and pushes/pops it; `NavStack` renders the stack and `wireNavStack` slides the content and settles the chrome. The app owns selection, data, and routing.</p>
     </div>,

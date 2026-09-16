@@ -1,0 +1,160 @@
+.kui-list-action-row {
+  --kui-list-action-row-color: var(--kui-color-neutral-on-normal);
+  --kui-list-action-row-border: transparent;
+  --kui-list-action-row-background: transparent;
+  --kui-list-action-row-hover-border: var(--kui-color-neutral-border-normal);
+  --kui-list-action-row-hover-background: var(--kui-color-neutral-fill-quiet);
+  --kui-list-action-row-selected-color: var(--kui-color-brand-on-quiet);
+  --kui-list-action-row-selected-border: var(--kui-color-brand-border-quiet);
+  --kui-list-action-row-selected-background: var(--kui-color-brand-fill-normal);
+  --kui-list-action-row-trailing-hover-background: var(
+    --kui-color-neutral-fill-normal
+  );
+  display: flex;
+  width: calc(100% - (2 * var(--kui-layout-inline-margin, remify(8px))));
+  min-height: remify(44px);
+  margin-inline: var(--kui-layout-inline-margin, remify(8px));
+  border-radius: var(--kui-layout-rounded-radius, calc(1px + remify(11px)));
+  color: var(--kui-list-action-row-color);
+  background: var(--kui-list-action-row-background);
+  box-shadow: inset 0 0 0 1px var(--kui-list-action-row-border);
+  align-items: stretch;
+}
+
+.kui-list-action-row:has(.kui-list-action-row__primary:hover) {
+  --kui-list-action-row-border: var(--kui-list-action-row-hover-border);
+  --kui-list-action-row-background: var(--kui-list-action-row-hover-background);
+}
+
+.kui-list-action-row[data-selected="true"],
+.kui-list-action-row[data-pressed="true"] {
+  --kui-list-action-row-border: var(--kui-list-action-row-selected-border);
+  --kui-list-action-row-background: var(
+    --kui-list-action-row-selected-background
+  );
+  color: var(--kui-list-action-row-selected-color);
+  font-weight: 650;
+}
+
+.kui-list-action-row:has(.kui-list-action-row__primary:focus-visible) {
+  outline: var(--kui-focus-ring);
+  outline-offset: 1px;
+}
+
+.kui-list-action-row__primary,
+.kui-list-action-row__trailing-action {
+  height: auto !important;
+  min-height: remify(44px);
+  padding: 0;
+  border: 0;
+  appearance: none;
+  color: inherit;
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+}
+
+.kui-list-action-row__primary {
+  position: relative;
+  display: block;
+  flex: 1 1 auto;
+  min-width: remify(44px);
+  padding: var(--kui-layout-item-padding, remify(8px));
+  padding-inline-start: calc(1px + var(--kui-layout-item-padding, remify(8px)));
+  text-align: start;
+}
+
+.kui-list-action-row__primary:focus-visible {
+  outline: none;
+}
+
+.kui-list-action-row__primary:disabled,
+.kui-list-action-row__trailing-action:disabled {
+  cursor: not-allowed;
+  opacity: 0.58;
+}
+
+.kui-list-action-row__icon {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-start: calc(1px + var(--kui-layout-item-padding, remify(8px)));
+  display: grid;
+  width: remify(24px);
+  height: remify(24px);
+  color: currentColor;
+  transform: translateY(-50%);
+  place-items: center;
+}
+
+.kui-list-action-row__icon svg {
+  display: block;
+  width: remify(24px);
+  height: remify(24px);
+}
+
+.kui-list-action-row__label {
+  display: grid;
+  min-width: 0;
+  min-height: calc(
+    remify(44px) - (2 * var(--kui-layout-item-padding, remify(8px)))
+  );
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  align-items: center;
+}
+
+.kui-list-action-row[data-has-icon="true"] .kui-list-action-row__label {
+  margin-inline-start: calc(
+    remify(24px) + var(--kui-layout-item-gap, remify(8px))
+  );
+}
+
+.kui-list-action-row[data-multiline="true"] .kui-list-action-row__label {
+  display: block;
+  overflow: visible;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+.kui-list-action-row[data-multiline="true"] .kui-list-action-row__icon {
+  inset-block-start: calc(
+    var(--kui-layout-item-padding, remify(8px)) + (1lh / 2)
+  );
+}
+
+.kui-list-action-row__trailing-action {
+  display: grid;
+  width: remify(44px);
+  min-width: remify(44px);
+  border-radius: var(--kui-radius-pill);
+  place-items: center;
+}
+
+.kui-list-action-row__trailing-action:hover:not(:disabled) {
+  background: var(--kui-list-action-row-trailing-hover-background);
+}
+
+.kui-list-action-row__trailing-action:focus-visible {
+  outline: var(--kui-focus-ring);
+  outline-offset: -2px;
+}
+
+.kui-list-action-row__trailing-action > svg {
+  width: remify(16px);
+  height: remify(16px);
+}
+
+@media (forced-colors: active) {
+  .kui-list-action-row {
+    --kui-list-action-row-border: ButtonText;
+    outline: 1px solid ButtonText;
+    outline-offset: -1px;
+  }
+
+  .kui-list-action-row[data-selected="true"],
+  .kui-list-action-row[data-pressed="true"] {
+    --kui-list-action-row-selected-color: HighlightText;
+    --kui-list-action-row-selected-background: Highlight;
+  }
+}

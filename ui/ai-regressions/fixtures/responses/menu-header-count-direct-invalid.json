@@ -1,6 +1,0 @@
-{
-  "caseId": "menu-header-count-contract",
-  "files": {
-    "app.tsx": "import { MenuHeader } from '@kerfjs/ui/menu-header';\nexport const competing = MenuHeader({ label: \"Notes\", count: 3, countLabel: \"3 notes\", badge: <span>New</span> });\nexport const missingLabel = MenuHeader({ label: \"Tasks\", count: 2 });\nexport const numericBadge = MenuHeader({ label: \"Archive\", badge: <span>12</span> });\nexport const labelCount = MenuHeader({ label: \"Alerts (4)\" });\n"
-  }
-}

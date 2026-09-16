@@ -141,7 +141,7 @@ button {
   display: grid;
   gap: var(--kui-space-2xs);
 }
-.catalog-group__items .kui-menu-item {
+.catalog-group__items .kui-list-item {
   grid-template-columns: minmax(0, 1fr);
 }
 .catalog-group--ecosystem {
@@ -167,11 +167,11 @@ button {
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
-.catalog-ecosystem__group .kui-menu-item {
+.catalog-ecosystem__group .kui-list-item {
   padding-inline-start: remify(16px);
 }
 
-.demo-menu-popover {
+.demo-list-popover {
   max-width: remify(320px);
   padding: var(--kui-space-m);
   border: 1px solid var(--kui-color-border);
@@ -182,11 +182,11 @@ button {
   font: inherit;
 }
 
-.demo-menu-popover:not(:popover-open) {
+.demo-list-popover:not(:popover-open) {
   display: none;
 }
 
-.kui-menu-item[data-demo-drop-status="over"] {
+.kui-list-item[data-demo-drop-status="over"] {
   outline: var(--kui-focus-ring);
   outline-offset: -3px;
 }
@@ -497,7 +497,7 @@ button {
 .demo-button:hover {
   background: var(--kui-color-surface-lowered);
 }
-.demo-menu {
+.demo-list {
   width: min(remify(480px), 100%);
   overflow: hidden;
   border: 1px solid var(--kui-color-border);
@@ -505,17 +505,17 @@ button {
   background: var(--kui-color-surface);
   box-shadow: var(--kui-shadow-s);
 }
-.demo-menu__content {
+.demo-list__content {
   max-height: remify(448px);
 }
-.demo-menu .kui-content-item strong,
-.demo-menu .kui-content-item p {
+.demo-list .kui-content-item strong,
+.demo-list .kui-content-item p {
   margin: 0;
 }
-.demo-menu .kui-content-item strong {
+.demo-list .kui-content-item strong {
   font-size: var(--kui-font-s);
 }
-.demo-menu .kui-content-item p {
+.demo-list .kui-content-item p {
   margin-block-start: remify(3.2px);
   color: var(--kui-color-text-quiet);
   font-size: var(--kui-font-xs);
@@ -913,7 +913,7 @@ button {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.wa-demo-menu {
+.wa-demo-list {
   width: min(remify(320px), 100%);
   padding: var(--wa-space-2xs);
   border: 1px solid var(--wa-color-neutral-border-normal);
@@ -1490,7 +1490,7 @@ button {
   .demo-frame,
   .demo-feedback,
   .demo-control-stack,
-  .demo-menu,
+  .demo-list,
   .demo-tabs,
   .demo-resize-shell {
     forced-color-adjust: auto;
@@ -1505,7 +1505,7 @@ button {
     .demo-frame,
     .demo-feedback,
     .demo-control-stack,
-    .demo-menu,
+    .demo-list,
     .demo-value-table,
     .demo-tab-bar-frame,
     .demo-select-selected,
@@ -1545,7 +1545,7 @@ button {
 }
 
 /* KF-S5G8NC: a consistent labeled-example layout for non-composition demos.
-   Each example is a left-aligned vertical stack — an optional MenuHeader label
+   Each example is a left-aligned vertical stack — an optional ListHeader label
    and note, then the component — with 8px between unlabeled examples and 16px
    between labeled ones. Components sit directly on the grid (no card). */
 .demo-stack {
@@ -1568,7 +1568,7 @@ button {
   gap: remify(8px);
 }
 .demo-example__note {
-  /* Align the note's text with the MenuHeader label above it and a content-item
+  /* Align the note's text with the ListHeader label above it and a content-item
      component's content below it: all three land at 8px margin + 1px border +
      8px padding from the example's left edge. */
   margin: 0;
@@ -1579,13 +1579,13 @@ button {
   color: var(--kui-color-text-quiet);
   font-size: var(--kui-font-s);
 }
-/* The MenuHeader used as an example LABEL (first child of a labeled example)
-   shrinks to its title; a MenuHeader that is itself the demoed component keeps
+/* The ListHeader used as an example LABEL (first child of a labeled example)
+   shrinks to its title; a ListHeader that is itself the demoed component keeps
    its default full width. */
-.demo-stack--labeled .demo-example > .kui-menu-header:first-child {
+.demo-stack--labeled .demo-example > .kui-list-header:first-child {
   width: auto;
 }
-/* Align each demoed component's visible left edge with its MenuHeader label text,
+/* Align each demoed component's visible left edge with its ListHeader label text,
    which sits 16px from the example's left edge (8px title padding + 8px label
    padding). Components that render bare (no inline geometry) inset the full 16px;
    components that carry ~8px of their own inline padding inset 8px so their
@@ -1597,13 +1597,13 @@ button {
    band (the component's intrinsic geometry is what the overlay teaches). */
 [data-demo="lucide-icon"]
   .demo-example
-  > :not(.kui-menu-header):not(.demo-example__note),
+  > :not(.kui-list-header):not(.demo-example__note),
 [data-demo="disclosure-arrow"]
   .demo-example
-  > :not(.kui-menu-header):not(.demo-example__note),
+  > :not(.kui-list-header):not(.demo-example__note),
 [data-demo="loading-spinner"]
   .demo-example
-  > :not(.kui-menu-header):not(.demo-example__note),
+  > :not(.kui-list-header):not(.demo-example__note),
 /* Skeleton scopes the inset to the bare primitive blocks only. The demo's
    composition example (a ValueTable) carries its own content-item geometry, so
    it must keep its intrinsic margins — its label already lands on the 16px line —
@@ -1619,19 +1619,19 @@ button {
 }
 [data-demo="toolbar-control-group"]
   .demo-example
-  > :not(.kui-menu-header):not(.demo-example__note),
+  > :not(.kui-list-header):not(.demo-example__note),
 [data-demo="toolbar-text"]
   .demo-example
-  > :not(.kui-menu-header):not(.demo-example__note),
+  > :not(.kui-list-header):not(.demo-example__note),
 [data-demo="segmented-control"]
   .demo-example
-  > :not(.kui-menu-header):not(.demo-example__note),
+  > :not(.kui-list-header):not(.demo-example__note),
 [data-demo="token-search-field"]
   .demo-example
-  > :not(.kui-menu-header):not(.demo-example__note),
+  > :not(.kui-list-header):not(.demo-example__note),
 [data-demo="select"]
   .demo-example
-  > :not(.kui-menu-header):not(.demo-example__note) {
+  > :not(.kui-list-header):not(.demo-example__note) {
   --demo-align-inset: remify(8px);
   margin-inline-start: var(--demo-align-inset);
 }

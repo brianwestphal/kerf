@@ -6,8 +6,8 @@
       "source": "kerf.claude-skill.md",
       "bundle": "ai/skill.md",
       "dest": ".claude/skills/kerf-app/SKILL.md",
-      "version": "1.21.0",
-      "sha256": "265b747eeb9c3d445c60d66a1109eec42705075b7cd154d107bd79d543c1e7e5",
+      "version": "1.22.0",
+      "sha256": "5eb6631671faefeb273c93dee492eecf35dfc567fecba799374ac8af6c9a0dc3",
       "history": {
         "1.0.0": "bef982cb743fd4c73e666ee5cf774112e57c93ebb13b24bbacbf08577db0930a",
         "1.1.0": "f2aadb21e33dd389028951ae1ecbd9f8ba68648b3c5beba43fb4dfa2ab29f195",
@@ -35,7 +35,8 @@
         "1.18.0": "d2d092b1e4d4d71012f9ec36921b3f5c1421f0a8b2ced50351d56daa9e35f79b",
         "1.19.0": "bbbe87446cc4e1be250d27152adfd385431f4498cde320534f65f10f853ab7f9",
         "1.20.0": "aa88ccdbf969624bbc6cefadba76ada1f090fae436597a7bab564e24c467287f",
-        "1.21.0": "265b747eeb9c3d445c60d66a1109eec42705075b7cd154d107bd79d543c1e7e5"
+        "1.21.0": "265b747eeb9c3d445c60d66a1109eec42705075b7cd154d107bd79d543c1e7e5",
+        "1.22.0": "5eb6631671faefeb273c93dee492eecf35dfc567fecba799374ac8af6c9a0dc3"
       }
     },
     {

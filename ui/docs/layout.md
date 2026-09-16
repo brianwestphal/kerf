@@ -23,7 +23,7 @@ omits the footer; a navigation pane commonly uses all three. Fixed chrome stays
 outside `.kui-pane__content`, which is the pane's scroll owner.
 
 `.kui-content` is a vertical stack with a 24px gap between major children.
-Sections may contain adjacent `MenuItem` rows without adding another major gap.
+Sections may contain adjacent `ListItem` rows without adding another major gap.
 Ordinary surface-like children use `.kui-content-item` and own their complete
 geometry:
 
@@ -57,8 +57,8 @@ semantic status.
 | Inline metadata | `.kui-inline-metadata` | `--kui-layout-metadata-gap: 4px` |
 | Explicit scroll owner outside a pane | `.kui-scroll-owner` | `overflow: auto` |
 
-The component layer applies the same contract to `Toolbar`, `MenuHeader`,
-`MenuItem`, `PanelHeader`, `StateBanner`, `ValueTable`,
+The component layer applies the same contract to `Toolbar`, `ListHeader`,
+`ListItem`, `PanelHeader`, `StateBanner`, `ValueTable`,
 `ValueTableRow`, tabs, and form controls. A value-table row separator starts at
 the row's 8px content inset, or at 40px when the row contains its 24px leading
 icon and 8px gap, and always ends 8px from the right edge. Each value-table row
@@ -83,7 +83,7 @@ fixed 16px baseline, so it delivers as `rem`.
 
 | Value | Token | Relationship — when to use |
 | --- | --- | --- |
-| 0px | `--kui-space-none` | No separation. The elements read as a single unit (a control and its own affordance, adjacent `MenuItem` rows). |
+| 0px | `--kui-space-none` | No separation. The elements read as a single unit (a control and its own affordance, adjacent `ListItem` rows). |
 | 4px | `--kui-space-2xs` | Very minor. Still one connected cluster, but readability or aesthetics demand a hair of air (inline metadata, an icon beside its label). |
 | 8px | `--kui-space-xs` | Standard. Between elements **within a group** — the content-item padding/gutter, gaps between toolbar controls in a group. |
 | 16px | `--kui-space-m` | Minor. Between **homogeneous groups** — two lists, two sibling sections of the same kind. |
@@ -109,14 +109,14 @@ consistent across every surface.
 4. Keep one scrolling content owner per pane. Toolbar and footer siblings stay
    fixed while the content scrolls.
 5. A split item keeps dormant and interactive regions separate. For example,
-   `MenuHeader` renders its title/count-or-badge cluster separately from its optional
+   `ListHeader` renders its title/count-or-badge cluster separately from its optional
    logical-end 44px action. The header fills the available inline width and its
    action glyph defaults to 18px; disclosure mode makes the title cluster itself
    the button and supplies the production `DisclosureArrow` unless `actionIcon`
    replaces it.
-   `MenuActionRow` uses a noninteractive row root around sibling 44px primary
-   and trailing buttons. `MenuItem.trailing` remains dormant content.
-   In multiline `MenuItem` and `MenuActionRow` rows, the leading icon stays
+   `ListActionRow` uses a noninteractive row root around sibling 44px primary
+   and trailing buttons. `ListItem.trailing` remains dormant content.
+   In multiline `ListItem` and `ListActionRow` rows, the leading icon stays
    centered on the label's first line rather than the full wrapped label.
 6. Reading width, column placement, and responsive relocation remain application
    decisions. The shared classes define local geometry, not the whole shell.

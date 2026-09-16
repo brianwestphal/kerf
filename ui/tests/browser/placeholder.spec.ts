@@ -29,7 +29,7 @@ test('every placeholder-supporting component demos its placeholder case', async 
   // Each single-component demo (AppTab via `tabs`, ValueTableRow via `value-table`)
   // must surface its placeholder=true variant so the loading state is discoverable
   // where the component is evaluated, not only inside the loading-inspector recipe.
-  const components = ['segmented-control', 'toolbar-text', 'menu-header', 'menu-action-row', 'menu-item', 'panel-header', 'value-table', 'select', 'state-banner', 'tabs'];
+  const components = ['segmented-control', 'toolbar-text', 'list-header', 'list-action-row', 'list-item', 'panel-header', 'value-table', 'select', 'state-banner', 'tabs'];
   for (const id of components) {
     await page.goto(`/?component=${id}`);
     const demo = page.locator(`[data-demo="${id}"]`);
@@ -57,7 +57,7 @@ test('the Loading inspector recipe composes placeholder chrome and swaps to load
   await expect(inspector.locator('.kui-select--placeholder')).toBeVisible();
   expect(await inspector.locator('wa-select').count()).toBe(0);
   // A placeholder menu item is disabled and carries no action.
-  const item = inspector.locator('.kui-menu-item[data-placeholder="true"]').first();
+  const item = inspector.locator('.kui-list-item[data-placeholder="true"]').first();
   await expect(item).toBeDisabled();
   expect(await item.getAttribute('data-action')).toBeNull();
 

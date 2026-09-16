@@ -207,23 +207,23 @@ export const generatedKerfCatalog = [
     "documentation": "ui/docs/component-selection.md"
   },
   {
-    "id": "menu",
-    "name": "Menu composition",
+    "id": "list",
+    "name": "List composition",
     "category": "Navigation",
     "kind": "composition",
     "source": "kerf",
-    "description": "Compose navigation with the same pane, content stack, item, and toolbar geometry used throughout the application, including a controlled MenuHeader disclosure only when it reveals real content.",
+    "description": "Compose navigation with the same pane, content stack, item, and toolbar geometry used throughout the application, including a controlled ListHeader disclosure only when it reveals real content.",
     "uses": [
-      "menu-header",
-      "menu-action-row",
-      "menu-item"
+      "list-header",
+      "list-action-row",
+      "list-item"
     ],
     "demoSource": "ui/ux-demo/main.tsx",
     "documentation": "ui/docs/component-selection.md"
   },
   {
-    "id": "menu-header",
-    "name": "MenuHeader",
+    "id": "list-header",
+    "name": "ListHeader",
     "category": "Navigation",
     "kind": "component",
     "source": "kerf",
@@ -233,12 +233,12 @@ export const generatedKerfCatalog = [
       "disclosure-arrow"
     ],
     "demoSource": "ui/ux-demo/main.tsx",
-    "componentSource": "ui/src/menu-header.tsx",
+    "componentSource": "ui/src/list-header.tsx",
     "documentation": "ui/docs/component-selection.md"
   },
   {
-    "id": "menu-action-row",
-    "name": "MenuActionRow",
+    "id": "list-action-row",
+    "name": "ListActionRow",
     "category": "Navigation",
     "kind": "component",
     "source": "kerf",
@@ -247,12 +247,12 @@ export const generatedKerfCatalog = [
       "lucide-icon"
     ],
     "demoSource": "ui/ux-demo/main.tsx",
-    "componentSource": "ui/src/menu-action-row.tsx",
+    "componentSource": "ui/src/list-action-row.tsx",
     "documentation": "ui/docs/component-selection.md"
   },
   {
-    "id": "menu-item",
-    "name": "MenuItem",
+    "id": "list-item",
+    "name": "ListItem",
     "category": "Navigation",
     "kind": "component",
     "source": "kerf",
@@ -261,7 +261,7 @@ export const generatedKerfCatalog = [
       "lucide-icon"
     ],
     "demoSource": "ui/ux-demo/main.tsx",
-    "componentSource": "ui/src/menu-item.tsx",
+    "componentSource": "ui/src/list-item.tsx",
     "documentation": "ui/docs/component-selection.md"
   },
   {
@@ -430,8 +430,8 @@ export const generatedKerfCatalog = [
       "toolbar",
       "toolbar-text",
       "toolbar-control-group",
-      "menu-header",
-      "menu-item",
+      "list-header",
+      "list-item",
       "panel-header",
       "resize",
       "value-table",
@@ -448,8 +448,8 @@ export const generatedKerfCatalog = [
     "source": "kerf",
     "description": "Navigation sections with icon and iconless rows, a content-item surface, disclosure, and pane footer actions.",
     "uses": [
-      "menu-header",
-      "menu-item",
+      "list-header",
+      "list-item",
       "toolbar",
       "toolbar-control-group"
     ],
@@ -480,8 +480,8 @@ export const generatedKerfCatalog = [
     "description": "Production modal containing a PanelHeader, navigable record master list, and ValueTable detail.",
     "uses": [
       "panel-header",
-      "menu-header",
-      "menu-item",
+      "list-header",
+      "list-item",
       "value-table",
       "wa-dialog",
       "wa-button"
@@ -551,8 +551,8 @@ export const generatedKerfCatalog = [
     "source": "kerf",
     "description": "A push/pop navigation stack drill-down with animated slides and a live device class.",
     "uses": [
-      "menu-header",
-      "menu-item",
+      "list-header",
+      "list-item",
       "lucide-icon",
       "layout"
     ],
@@ -571,7 +571,7 @@ export const generatedKerfCatalog = [
       "value-table",
       "select",
       "segmented-control",
-      "menu-item",
+      "list-item",
       "state-banner",
       "skeleton",
       "lucide-icon"

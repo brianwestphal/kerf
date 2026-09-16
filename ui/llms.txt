@@ -9,7 +9,7 @@
 npm install kerfjs @kerfjs/ui   # kerfjs is a peer; Web Awesome is an optional peer
 ```
 
-Import each component from its own subpath (`@kerfjs/ui/menu-item`, `@kerfjs/ui/toolbar`,
+Import each component from its own subpath (`@kerfjs/ui/list-item`, `@kerfjs/ui/toolbar`,
 …); the browser build pulls that component's reachable CSS automatically, so do not
 maintain a central style list. Configure JSX with `"jsxImportSource": "kerfjs"`.
 
@@ -82,9 +82,9 @@ maintain a central style list. Configure JSX with `"jsxImportSource": "kerfjs"`.
   provides; but do keep a plain disclosure toggle (a one-line boolean the app already
   renders from) in the app.
 - **Placeholder loading state, don't rebuild it.** For a value or component that is
-  still loading, set `placeholder` on the component (`Select`, `MenuHeader`,
-  `MenuItem`, `ValueTableRow`, `PanelHeader`, `SegmentedControl`, `StateBanner`,
-  `AppTab`, `ToolbarText`, `MenuActionRow`): it renders its real chrome with value
+  still loading, set `placeholder` on the component (`Select`, `ListHeader`,
+  `ListItem`, `ValueTableRow`, `PanelHeader`, `SegmentedControl`, `StateBanner`,
+  `AppTab`, `ToolbarText`, `ListActionRow`): it renders its real chrome with value
   slots as subtle **unanimated** skeleton blocks and interactivity disabled, so a
   parent composes a faithful loading view (e.g. an inspector) without hand-rebuilding
   markup. Use the standalone `Skeleton` for a custom slot. Prefer it over `wa-skeleton`
@@ -94,7 +94,7 @@ maintain a central style list. Configure JSX with `"jsxImportSource": "kerfjs"`.
 ## Public exports
 
 `LucideIcon`, `DisclosureArrow`, `Toolbar`, `ToolbarControlGroup`, `ToolbarText`,
-`PanelHeader`, `MenuItem`, `MenuActionRow`, `MenuHeader`, `SegmentedControl`,
+`PanelHeader`, `ListItem`, `ListActionRow`, `ListHeader`, `SegmentedControl`,
 `Select`, `TokenSearchField` (+ `readTokenSearchField`, `placeTokenSearchCaret`,
 `wireTokenSearchFields`), `AppTab`, `TabBar` (+ `wireTabBars`, `reorderTabs`),
 `ResizableRegion` (+ `wireResizableRegions`), `StateBanner`, `EmptyState`,

@@ -360,9 +360,9 @@ test('supports keyboard shell/sidebar controls and controlled toolbar interactio
   const sidebar = await openRecipe(page, 'recipe-navigation-sidebar');
   const sidebarGeometry = () => sidebar.evaluate((node) => {
     const body = node.querySelector<HTMLElement>('.kui-pane__content')!.getBoundingClientRect();
-    const icon = node.querySelector<HTMLElement>('[data-item-id="inbox"] .kui-menu-item__icon')!.getBoundingClientRect();
-    const iconLabel = node.querySelector<HTMLElement>('[data-item-id="inbox"] .kui-menu-item__label')!.getBoundingClientRect();
-    const plainLabel = node.querySelector<HTMLElement>('[data-item-id="drafts"] .kui-menu-item__label')!.getBoundingClientRect();
+    const icon = node.querySelector<HTMLElement>('[data-item-id="inbox"] .kui-list-item__icon')!.getBoundingClientRect();
+    const iconLabel = node.querySelector<HTMLElement>('[data-item-id="inbox"] .kui-list-item__label')!.getBoundingClientRect();
+    const plainLabel = node.querySelector<HTMLElement>('[data-item-id="drafts"] .kui-list-item__label')!.getBoundingClientRect();
     const surfaceContent = node.querySelector<HTMLElement>('.kui-content-item strong')!.getBoundingClientRect();
     const footerActions = [...node.querySelectorAll<HTMLElement>('.kui-pane__footer .kui-toolbar-control-group')].map((element) => element.getBoundingClientRect());
     return { iconStart: icon.left - body.left, iconWidth: icon.width, iconLabelStart: iconLabel.left - body.left, plainStart: plainLabel.left - body.left, surfaceStart: surfaceContent.left - body.left, footerTargets: footerActions.map(({ width, height }) => [width, height]) };

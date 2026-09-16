@@ -28,14 +28,14 @@ function isTransparent(color: string): boolean {
 }
 
 /**
- * A MenuHeader used as an example LABEL (chrome), not a demoed component: the
- * first element child of a labeled example. A MenuHeader that is itself the
+ * A ListHeader used as an example LABEL (chrome), not a demoed component: the
+ * first element child of a labeled example. A ListHeader that is itself the
  * demoed component lives in an unlabeled `.demo-stack` and is NOT a label.
  */
 function isExampleLabel(el: Element): boolean {
   const parent = el.parentElement;
   return (
-    el.classList.contains('kui-menu-header') &&
+    el.classList.contains('kui-list-header') &&
     parent?.classList.contains('demo-example') === true &&
     parent.closest('.demo-stack--labeled') !== null &&
     el === parent.firstElementChild
@@ -44,7 +44,7 @@ function isExampleLabel(el: Element): boolean {
 
 /**
  * The demoed specimens to outline: the actual component in each example (not
- * its MenuHeader label or note text), plus the top-level component of any demo
+ * its ListHeader label or note text), plus the top-level component of any demo
  * that isn't wrapped in `.demo-example` (toolbar, panel-header, resize). A
  * specimen may be a bare `<svg>` (a LucideIcon) with no `data-component`, so
  * selection is positional, not attribute-based.

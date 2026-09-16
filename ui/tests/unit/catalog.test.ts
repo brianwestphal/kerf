@@ -98,9 +98,9 @@ describe('UX catalog metadata', () => {
       'ToolbarText',
       'PanelHeader',
       'ValueTable',
-      'MenuHeader',
-      'MenuActionRow',
-      'MenuItem',
+      'ListHeader',
+      'ListActionRow',
+      'ListItem',
       'AppTab',
       'TabBar',
       'SegmentedControl',
@@ -112,7 +112,7 @@ describe('UX catalog metadata', () => {
       'LoadingSpinner',
       'Skeleton',
     ]);
-    expect(kerfCatalog.filter((entry) => entry.kind === 'composition').map((entry) => entry.id)).toEqual(['webawesome-theme', 'layout', 'headers', 'menu', 'feedback']);
+    expect(kerfCatalog.filter((entry) => entry.kind === 'composition').map((entry) => entry.id)).toEqual(['webawesome-theme', 'layout', 'headers', 'list', 'feedback']);
     expect(webAwesomeCatalog).toHaveLength(70);
     expect(webAwesomeCatalog.every((entry) => entry.source === 'webawesome' && entry.kind === 'component')).toBe(true);
     expect(webAwesomeCatalog.map((entry) => entry.id)).toContain('wa-button');
@@ -130,9 +130,9 @@ describe('UX catalog metadata', () => {
     expect(catalogEntriesUsing('wa-carousel-item').map((entry) => entry.id)).toEqual(['webawesome-theme', 'wa-carousel']);
     expect(catalogEntriesUsing('segmented-control').map((entry) => entry.id)).toEqual(['toolbar-control-group', 'recipe-compact-toolbar', 'recipe-loading-inspector']);
     expect(findCatalogEntry('token-search-field')?.uses).toEqual(['lucide-icon']);
-    expect(findCatalogEntry('menu-action-row')?.uses).toEqual(['lucide-icon']);
+    expect(findCatalogEntry('list-action-row')?.uses).toEqual(['lucide-icon']);
     expect(findCatalogEntry('panel-header')?.uses).toEqual(['lucide-icon', 'toolbar', 'toolbar-control-group', 'toolbar-text']);
-    expect(catalogEntriesUsing('menu-action-row').map((entry) => entry.id)).toEqual(['menu']);
+    expect(catalogEntriesUsing('list-action-row').map((entry) => entry.id)).toEqual(['list']);
   });
 
   it('marks supported ecosystem alternatives without presenting them as defaults', () => {

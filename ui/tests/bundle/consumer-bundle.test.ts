@@ -55,7 +55,7 @@ describe('consumer bundle boundaries', () => {
     expect(inputs).not.toContain('dist/browser');
     expect(javascript).toContain('kui-toolbar');
     expect(javascript).not.toContain('kui-select');
-    expect(javascript).not.toContain('kui-menu-item');
+    expect(javascript).not.toContain('kui-list-item');
     expect(output(result, '.css')).toBe('');
     expect(inputs).not.toContain('select-register');
     expect(inputs).not.toContain('@awesome.me/webawesome');
@@ -72,7 +72,7 @@ describe('consumer bundle boundaries', () => {
     expect(css).toContain('--kui-color-text');
     expect(css).not.toContain('.kui-tab-bar');
     expect(css).not.toContain('.kui-state-banner');
-    expect(css).not.toContain('.kui-menu-item');
+    expect(css).not.toContain('.kui-list-item');
     expect(css).not.toContain('remify(');
   });
 
@@ -88,7 +88,7 @@ describe('consumer bundle boundaries', () => {
     expect(css).toContain('.kui-toolbar');
     expect(css).toContain('.kui-toolbar-control-group');
     expect(css).not.toContain('.kui-value-table');
-    expect(css).not.toContain('.kui-menu-item');
+    expect(css).not.toContain('.kui-list-item');
     expect(css).not.toContain('remify(');
   });
 
@@ -131,33 +131,33 @@ describe('consumer bundle boundaries', () => {
     expect(inputs).not.toContain('@awesome.me/webawesome');
   });
 
-  it('keeps MenuActionRow CSS isolated from other row and tab components', async () => {
-    const result = await bundle("import { MenuActionRow } from '@kerfjs/ui/menu-action-row'; console.log(MenuActionRow);");
+  it('keeps ListActionRow CSS isolated from other row and tab components', async () => {
+    const result = await bundle("import { ListActionRow } from '@kerfjs/ui/list-action-row'; console.log(ListActionRow);");
     const inputs = Object.keys(result.metafile!.inputs).join('\n');
     const css = output(result, '.css');
-    expect(inputs).toContain('dist/browser/menu-action-row.js');
-    expect(inputs).toContain('dist/styles/menu-action-row.css');
-    expect(css).toContain('.kui-menu-action-row');
+    expect(inputs).toContain('dist/browser/list-action-row.js');
+    expect(inputs).toContain('dist/styles/list-action-row.css');
+    expect(css).toContain('.kui-list-action-row');
     expect(css).toContain('--kui-color-text');
-    expect(css).not.toContain('.kui-menu-item');
+    expect(css).not.toContain('.kui-list-item');
     expect(css).not.toContain('.kui-app-tab');
     expect(css).not.toContain('remify(');
     expect(inputs).not.toContain('@awesome.me/webawesome');
   });
 
-  it('ships the MenuHeader count contract through its styled browser subpath', async () => {
-    const result = await bundle("import { MenuHeader } from '@kerfjs/ui/menu-header'; console.log(String(MenuHeader({ label: 'Notes', count: 0, countLabel: '0 notes' }))); ");
+  it('ships the ListHeader count contract through its styled browser subpath', async () => {
+    const result = await bundle("import { ListHeader } from '@kerfjs/ui/list-header'; console.log(String(ListHeader({ label: 'Notes', count: 0, countLabel: '0 notes' }))); ");
     const inputs = Object.keys(result.metafile!.inputs).join('\n');
     const css = output(result, '.css');
-    expect(inputs).toContain('dist/browser/menu-header.js');
-    expect(inputs).toContain('dist/styles/menu-header.css');
+    expect(inputs).toContain('dist/browser/list-header.js');
+    expect(inputs).toContain('dist/styles/list-header.css');
     expect(inputs).toContain('dist/styles/disclosure-arrow.css');
     expect(inputs).toContain('dist/styles/lucide-icon.css');
-    expect(css).toContain('.kui-menu-header__count');
+    expect(css).toContain('.kui-list-header__count');
     expect(css).toContain('.kui-disclosure-arrow');
     expect(css).toContain('--kui-color-neutral-fill-quiet');
-    expect(css).not.toContain('.kui-menu-item');
-    expect(css).not.toContain('.kui-menu-action-row');
+    expect(css).not.toContain('.kui-list-item');
+    expect(css).not.toContain('.kui-list-action-row');
     expect(css).not.toContain('remify(');
     expect(inputs).not.toContain('@awesome.me/webawesome');
   });
@@ -274,7 +274,7 @@ describe('consumer bundle boundaries', () => {
     expect(pkg.sideEffects).toEqual(['**/*.css', './dist/browser/*.js', './dist/select-register.js']);
     expect(pkg.exports['.']).toMatchObject({ import: './dist/index.js' });
     expect(pkg.exports['./toolbar']).toMatchObject({ browser: './dist/browser/toolbar.js', import: './dist/toolbar.js' });
-    expect(pkg.exports['./menu-action-row']).toMatchObject({ browser: './dist/browser/menu-action-row.js', import: './dist/menu-action-row.js' });
+    expect(pkg.exports['./list-action-row']).toMatchObject({ browser: './dist/browser/list-action-row.js', import: './dist/list-action-row.js' });
     expect(pkg.exports['./unstyled']).toBeDefined();
     expect(pkg.exports['./webawesome.css']).toBe('./dist/styles/webawesome.css');
     expect(pkg.exports['./webawesome']).toMatchObject({ types: './dist/webawesome.d.ts', import: './dist/webawesome.js' });
@@ -306,7 +306,7 @@ describe('consumer bundle boundaries', () => {
     expect(pkg.exports['./tab-scaffold.css']).toBe('./dist/styles/tab-scaffold.css');
     expect(pkg.exports['./wire-tab-scaffold']).toMatchObject({ import: './dist/wire-tab-scaffold.js' });
     expect(pkg.exports['./toolbar.css']).toBe('./dist/styles/toolbar.css');
-    expect(pkg.exports['./menu-action-row.css']).toBe('./dist/styles/menu-action-row.css');
+    expect(pkg.exports['./list-action-row.css']).toBe('./dist/styles/list-action-row.css');
     expect(pkg.exports['./sidebar.css']).toBeUndefined();
     expect(pkg.exports['./layout.css']).toBe('./dist/styles/layout.css');
     expect(pkg.exports['./tab-bar.css']).toBe('./dist/styles/tab-bar.css');
@@ -320,8 +320,8 @@ describe('consumer bundle boundaries', () => {
     const built = await readFile(new URL('../../dist/styles/toolbar-control-group.css', import.meta.url), 'utf8');
     const disclosureSource = await readFile(new URL('../../src/disclosure-arrow.css', import.meta.url), 'utf8');
     const disclosureBuilt = await readFile(new URL('../../dist/styles/disclosure-arrow.css', import.meta.url), 'utf8');
-    const menuHeaderSource = await readFile(new URL('../../src/menu-header.css', import.meta.url), 'utf8');
-    const menuHeaderBuilt = await readFile(new URL('../../dist/styles/menu-header.css', import.meta.url), 'utf8');
+    const menuHeaderSource = await readFile(new URL('../../src/list-header.css', import.meta.url), 'utf8');
+    const menuHeaderBuilt = await readFile(new URL('../../dist/styles/list-header.css', import.meta.url), 'utf8');
     const selectBuilt = await readFile(new URL('../../dist/styles/select.css', import.meta.url), 'utf8');
     const valueTableSource = await readFile(new URL('../../src/value-table.css', import.meta.url), 'utf8');
     const valueTableBuilt = await readFile(new URL('../../dist/styles/value-table.css', import.meta.url), 'utf8');
@@ -336,15 +336,15 @@ describe('consumer bundle boundaries', () => {
     expect(menuHeaderBuilt).toContain('min-width: 1.35rem');
     expect(menuHeaderSource).toContain('width: calc(100% - (2 * var(--kui-layout-inline-margin, remify(8px))))');
     expect(menuHeaderBuilt).toContain('width: calc(100% - (2 * var(--kui-layout-inline-margin, 0.5rem)))');
-    expect(menuHeaderSource).toContain('--kui-menu-header-action-icon-size,');
+    expect(menuHeaderSource).toContain('--kui-list-header-action-icon-size,');
     expect(menuHeaderSource).toContain('remify(18px)');
-    expect(menuHeaderBuilt).toContain('--kui-menu-header-action-icon-size,');
+    expect(menuHeaderBuilt).toContain('--kui-list-header-action-icon-size,');
     expect(menuHeaderBuilt).toContain('1.125rem');
-    expect(menuHeaderBuilt).toContain('.kui-menu-header__count');
+    expect(menuHeaderBuilt).toContain('.kui-list-header__count');
     expect(menuHeaderBuilt).toContain('var(--kui-color-neutral-fill-quiet)');
-    expect(menuHeaderSource).toContain('.kui-menu-header__action-layer > svg');
-    expect(menuHeaderSource).not.toContain('.kui-menu-header__toggle[aria-expanded');
-    expect(menuHeaderBuilt).not.toContain('.kui-menu-header__toggle[aria-expanded');
+    expect(menuHeaderSource).toContain('.kui-list-header__action-layer > svg');
+    expect(menuHeaderSource).not.toContain('.kui-list-header__toggle[aria-expanded');
+    expect(menuHeaderBuilt).not.toContain('.kui-list-header__toggle[aria-expanded');
     expect(menuHeaderBuilt).not.toContain('remify(');
     expect(selectBuilt).toContain('scale(var(--kui-disclosure-icon-scale, 0.5))');
     expect(valueTableSource).toContain('padding-block: remify(8px)');

@@ -1,0 +1,6 @@
+{
+  "caseId": "list-header-count-contract",
+  "files": {
+    "app.tsx": "import { ListHeader as SectionHeader } from '@kerfjs/ui/list-header';\nexport const notes = SectionHeader({ label: \"Notes\", count: 0, countLabel: \"0 notes\" });\nexport const preview = SectionHeader({ label: \"Preview\", badge: <span>New</span> });\n"
+  }
+}

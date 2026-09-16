@@ -23,9 +23,9 @@ npm install kerfjs @kerfjs/ui
 ```
 
 ```tsx
-import { MenuItem } from '@kerfjs/ui/menu-item';
-import { MenuHeader } from '@kerfjs/ui/menu-header';
-import { MenuActionRow } from '@kerfjs/ui/menu-action-row';
+import { ListItem } from '@kerfjs/ui/list-item';
+import { ListHeader } from '@kerfjs/ui/list-header';
+import { ListActionRow } from '@kerfjs/ui/list-action-row';
 import { Toolbar } from '@kerfjs/ui/toolbar';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
@@ -33,7 +33,7 @@ import { ToolbarText } from '@kerfjs/ui/toolbar-text';
 mount(root, () => <>
   <Toolbar label="Document" leading={<ToolbarControlGroup appearance="borderless" single><ToolbarText text="Notes" /></ToolbarControlGroup>} />
   <section>
-    <MenuHeader
+    <ListHeader
       label="Workspace"
       action="show-workspace-actions"
       actionLabel="Workspace actions"
@@ -45,13 +45,13 @@ mount(root, () => <>
         'aria-haspopup': 'dialog',
       }}
     />
-    <MenuItem
+    <ListItem
       action="open-notes"
       label="Notes"
       selected
       rootAttributes={{ 'data-command-color': 'blue', 'data-drop-status': 'ready' }}
     />
-    <MenuActionRow
+    <ListActionRow
       action="open-file"
       itemId="src/main.ts"
       label="src/main.ts"
@@ -66,17 +66,17 @@ mount(root, () => <>
 
 Components return Kerf `SafeHtml`. They do not own application state or attach transient listeners. Actions are stable `data-action` hooks; the application wires them once with `delegate()` or `delegateActions()` and retains the disposer.
 
-`MenuItem.rootAttributes`, `MenuHeader.rootAttributes`,
-`MenuActionRow.rootAttributes`, and `AppTab.rootAttributes` carry typed
+`ListItem.rootAttributes`, `ListHeader.rootAttributes`,
+`ListActionRow.rootAttributes`, and `AppTab.rootAttributes` carry typed
 application `data-*` metadata without
-teaching the package domain fields. `MenuHeader.triggerAttributes` and
-`MenuActionRow.trailingActionAttributes` additionally support native popover
+teaching the package domain fields. `ListHeader.triggerAttributes` and
+`ListActionRow.trailingActionAttributes` additionally support native popover
 target and relationship attributes. Roles and component-owned action, selection,
 disclosure, naming, disabled, and icon semantics remain protected props; an
 isolated `role="menuitem"` is not an extension shortcut.
 The slots are also filtered at runtime, so structurally widened objects and
 JavaScript callers cannot bypass those protections with case-variant names.
-`MenuItem.trailing` is dormant metadata. Use `MenuActionRow` when a row needs
+`ListItem.trailing` is dormant metadata. Use `ListActionRow` when a row needs
 sibling primary and trailing native-button actions with independent names,
 disabled states, focus, and click ownership. Its `label`, `icon`, and
 `trailingActionIcon` slots are dormant content and must not contain controls.
@@ -99,9 +99,9 @@ as a `New` marker.
 | `Toolbar` | `@kerfjs/ui/toolbar` | `@kerfjs/ui/toolbar.css` |
 | `ToolbarControlGroup` | `@kerfjs/ui/toolbar-control-group` | `@kerfjs/ui/toolbar-control-group.css` |
 | `ToolbarText` | `@kerfjs/ui/toolbar-text` | `@kerfjs/ui/toolbar-text.css` |
-| `MenuActionRow` | `@kerfjs/ui/menu-action-row` | `@kerfjs/ui/menu-action-row.css` |
-| `MenuItem` | `@kerfjs/ui/menu-item` | `@kerfjs/ui/menu-item.css` |
-| `MenuHeader` | `@kerfjs/ui/menu-header` | `@kerfjs/ui/menu-header.css` |
+| `ListActionRow` | `@kerfjs/ui/list-action-row` | `@kerfjs/ui/list-action-row.css` |
+| `ListItem` | `@kerfjs/ui/list-item` | `@kerfjs/ui/list-item.css` |
+| `ListHeader` | `@kerfjs/ui/list-header` | `@kerfjs/ui/list-header.css` |
 | Pane, content, and navigation composition | — | `@kerfjs/ui/layout.css` |
 | `ResizableRegion` | `@kerfjs/ui/resizable-region` | `@kerfjs/ui/resizable-region.css` |
 | `wireResizableRegions` | `@kerfjs/ui/wire-resizable-regions` | — |
@@ -135,14 +135,14 @@ scale of `.5` through `--kui-disclosure-icon-scale`. Author replacement
 transform is applied. Direction changes take the shortest rotation path; a
 180-degree closed-to-open tie uses counterclockwise rotation.
 
-`MenuHeader` supplies that production `DisclosureArrow` automatically when
+`ListHeader` supplies that production `DisclosureArrow` automatically when
 `toggle` is true and `actionIcon` is omitted. Keep `expanded` synchronized with
 real controlled content and preserve the button's stable label; ordinary
 navigation must not display a disclosure arrow. A custom `actionIcon` remains
 an escape hatch and replaces the default arrow entirely. The header fills its
 available inline width, keeping a separate action at the logical end in a 44px
 target. Its visible action glyph defaults to 18px through
-`--kui-menu-header-action-icon-size`.
+`--kui-list-header-action-icon-size`.
 
 ## Machine-readable catalog
 
@@ -205,9 +205,9 @@ Add `.kui-content` to make its major children a vertical stack with 24px gaps.
   <div class="kui-pane__toolbar"><Toolbar label="Workspace" ... /></div>
   <nav class="kui-pane__content kui-content">
     <section>
-      <MenuHeader label="Workspace" count={3} countLabel="3 workspaces" />
-      <MenuItem action="open" label="Inbox" icon={inboxIcon} />
-      <MenuItem action="open" label="Drafts" />
+      <ListHeader label="Workspace" count={3} countLabel="3 workspaces" />
+      <ListItem action="open" label="Inbox" icon={inboxIcon} />
+      <ListItem action="open" label="Drafts" />
     </section>
     <div class="kui-content-item">Workspace details</div>
   </nav>
@@ -217,7 +217,7 @@ Add `.kui-content` to make its major children a vertical stack with 24px gaps.
 Ordinary children use `.kui-content-item`: 8px inline margin, a real 1px border
 (transparent by default), 8px padding, and 12px rounded corners. The pill
 modifier uses a 22px radius. A component can expose a transparent border or
-background without changing layout. `MenuHeader` follows the same rule while
+background without changing layout. `ListHeader` follows the same rule while
 keeping its dormant title and count-or-badge cluster separate from its optional
 44px action.
 

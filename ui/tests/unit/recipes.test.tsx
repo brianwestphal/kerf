@@ -42,7 +42,7 @@ describe('production composition recipes', () => {
 
   it('controls sidebar disclosure, dialog selection, form validation, and toolbar choices', () => {
     const sidebar = createNavigationSidebar(() => {});
-    const toggle = target(); toggle.className = 'kui-menu-header__toggle';
+    const toggle = target(); toggle.className = 'kui-list-header__toggle';
     sidebar.action('', toggle);
     expect(html(sidebar.render())).not.toContain('Design system rollout');
 
@@ -131,7 +131,7 @@ describe('production composition recipes', () => {
     const recipe = createNavigationSidebar((message) => announcements.push(message));
     const stop = mountRecipe(root, recipe);
 
-    root.querySelector<HTMLElement>('[data-item-id="shared"] .kui-menu-item__label')?.click();
+    root.querySelector<HTMLElement>('[data-item-id="shared"] .kui-list-item__label')?.click();
     expect(root.querySelector('[data-item-id="shared"]')?.getAttribute('aria-current')).toBe('page');
     expect(announcements).toContain('Selected shared');
 

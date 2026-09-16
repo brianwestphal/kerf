@@ -2,10 +2,10 @@ import { Columns3, List, Settings } from 'lucide';
 import { describe, expect, it } from 'vitest';
 
 import { AppTab } from '../../src/app-tab.js';
+import { ListActionRow } from '../../src/list-action-row.js';
+import { ListHeader } from '../../src/list-header.js';
+import { ListItem } from '../../src/list-item.js';
 import { LucideIcon } from '../../src/lucide-icon.js';
-import { MenuActionRow } from '../../src/menu-action-row.js';
-import { MenuHeader } from '../../src/menu-header.js';
-import { MenuItem } from '../../src/menu-item.js';
 import { PanelHeader } from '../../src/panel-header.js';
 import { SegmentedControl } from '../../src/segmented-control.js';
 import { Select } from '../../src/select.js';
@@ -83,8 +83,8 @@ describe('component placeholder mode', () => {
     expect(html).not.toContain('A concise summary');
   });
 
-  it('MenuItem disables the button, drops its action, and skeletons label + icon', () => {
-    const html = asHtml(MenuItem({ label: 'Inbox', icon, action: 'open-inbox', itemId: 'inbox', placeholder: true }));
+  it('ListItem disables the button, drops its action, and skeletons label + icon', () => {
+    const html = asHtml(ListItem({ label: 'Inbox', icon, action: 'open-inbox', itemId: 'inbox', placeholder: true }));
     expect(html).toContain('data-placeholder="true"');
     expect(html).toContain('disabled');
     expect(html).not.toContain('data-action="open-inbox"');
@@ -92,23 +92,23 @@ describe('component placeholder mode', () => {
     expect(html.match(/class="kui-skeleton"/g)?.length ?? 0).toBeGreaterThanOrEqual(2);
   });
 
-  it('MenuItem skeletons a trailing slot when present', () => {
-    const html = asHtml(MenuItem({ label: 'Drafts', action: 'open', trailing: <span>12</span>, placeholder: true }));
-    expect(html).toContain('kui-menu-item__trailing');
+  it('ListItem skeletons a trailing slot when present', () => {
+    const html = asHtml(ListItem({ label: 'Drafts', action: 'open', trailing: <span>12</span>, placeholder: true }));
+    expect(html).toContain('kui-list-item__trailing');
     expect(html).not.toContain('>12<');
     expect(html).toContain('kui-skeleton');
   });
 
-  it('MenuActionRow disables both buttons and drops their actions', () => {
-    const html = asHtml(MenuActionRow({ label: 'Task', action: 'open', itemId: 'task', trailingAction: 'more', trailingActionLabel: 'More', trailingActionIcon: icon, placeholder: true }));
+  it('ListActionRow disables both buttons and drops their actions', () => {
+    const html = asHtml(ListActionRow({ label: 'Task', action: 'open', itemId: 'task', trailingAction: 'more', trailingActionLabel: 'More', trailingActionIcon: icon, placeholder: true }));
     expect(html).toContain('data-placeholder="true"');
     expect(html).not.toContain('data-action="open"');
     expect(html).not.toContain('data-action="more"');
     expect(html).toContain('kui-skeleton');
   });
 
-  it('MenuHeader keeps the label and action affordance but disables interaction', () => {
-    const html = asHtml(MenuHeader({ label: 'Projects', action: 'add', actionLabel: 'Add', actionIcon: icon, count: 4, countLabel: '4 projects', placeholder: true }));
+  it('ListHeader keeps the label and action affordance but disables interaction', () => {
+    const html = asHtml(ListHeader({ label: 'Projects', action: 'add', actionLabel: 'Add', actionIcon: icon, count: 4, countLabel: '4 projects', placeholder: true }));
     expect(html).toContain('data-placeholder="true"');
     expect(html).toContain('Projects');
     expect(html).not.toContain('data-action="add"');
@@ -118,8 +118,8 @@ describe('component placeholder mode', () => {
     expect(html).not.toContain('>4<');
   });
 
-  it('MenuHeader toggle placeholder keeps the label and disables the toggle', () => {
-    const html = asHtml(MenuHeader({ label: 'Metadata', toggle: true, action: 'toggle-meta', expanded: true, placeholder: true }));
+  it('ListHeader toggle placeholder keeps the label and disables the toggle', () => {
+    const html = asHtml(ListHeader({ label: 'Metadata', toggle: true, action: 'toggle-meta', expanded: true, placeholder: true }));
     expect(html).toContain('data-toggle="true"');
     expect(html).toContain('data-placeholder="true"');
     expect(html).toContain('Metadata');
@@ -127,8 +127,8 @@ describe('component placeholder mode', () => {
     expect(html).toContain('disabled');
   });
 
-  it('MenuHeader placeholder without a count or badge shows no indicator skeleton', () => {
-    const html = asHtml(MenuHeader({ label: 'Details', placeholder: true }));
+  it('ListHeader placeholder without a count or badge shows no indicator skeleton', () => {
+    const html = asHtml(ListHeader({ label: 'Details', placeholder: true }));
     expect(html).toContain('data-placeholder="true"');
     expect(html).toContain('Details');
     expect(html).not.toContain('kui-skeleton');

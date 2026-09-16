@@ -54,65 +54,65 @@ async function expectFirstLineAlignment(
   return row;
 }
 
-test('aligns multiline MenuItem and MenuActionRow icons with the first text line', async ({ page, browserName }) => {
-  const wideMenuItem = await expectFirstLineAlignment(
+test('aligns multiline ListItem and ListActionRow icons with the first text line', async ({ page, browserName }) => {
+  const wideListItem = await expectFirstLineAlignment(
     page,
-    'menu-item',
-    '[data-demo="menu-item"] [data-item-id="multiline"]',
-    '.kui-menu-item__icon',
-    '.kui-menu-item__label',
+    'list-item',
+    '[data-demo="list-item"] [data-item-id="multiline"]',
+    '.kui-list-item__icon',
+    '.kui-list-item__label',
     { width: 1100, height: 760 },
     false,
   );
   if (browserName === 'chromium') {
-    await wideMenuItem.hover();
-    await wideMenuItem.screenshot({ path: 'test-results/menu-item-first-line-alignment-wide.png' });
+    await wideListItem.hover();
+    await wideListItem.screenshot({ path: 'test-results/list-item-first-line-alignment-wide.png' });
   }
   const menuItem = await expectFirstLineAlignment(
     page,
-    'menu-item',
-    '[data-demo="menu-item"] [data-item-id="multiline"]',
-    '.kui-menu-item__icon',
-    '.kui-menu-item__label',
+    'list-item',
+    '[data-demo="list-item"] [data-item-id="multiline"]',
+    '.kui-list-item__icon',
+    '.kui-list-item__label',
     { width: 390, height: 844 },
   );
   if (browserName === 'chromium') {
     await menuItem.hover();
-    await menuItem.screenshot({ path: 'test-results/menu-item-first-line-alignment-narrow.png' });
+    await menuItem.screenshot({ path: 'test-results/list-item-first-line-alignment-narrow.png' });
   }
 
   const wideActionRow = await expectFirstLineAlignment(
     page,
-    'menu-action-row',
+    'list-action-row',
     '[data-demo-action-row="multiline"]',
-    '.kui-menu-action-row__icon',
-    '.kui-menu-action-row__label',
+    '.kui-list-action-row__icon',
+    '.kui-list-action-row__label',
     { width: 1100, height: 760 },
     false,
   );
   if (browserName === 'chromium') {
-    await wideActionRow.locator('.kui-menu-action-row__primary').hover();
-    await wideActionRow.screenshot({ path: 'test-results/menu-action-row-first-line-alignment-wide.png' });
+    await wideActionRow.locator('.kui-list-action-row__primary').hover();
+    await wideActionRow.screenshot({ path: 'test-results/list-action-row-first-line-alignment-wide.png' });
   }
   const actionRow = await expectFirstLineAlignment(
     page,
-    'menu-action-row',
+    'list-action-row',
     '[data-demo-action-row="multiline"]',
-    '.kui-menu-action-row__icon',
-    '.kui-menu-action-row__label',
+    '.kui-list-action-row__icon',
+    '.kui-list-action-row__label',
     { width: 390, height: 844 },
   );
   if (browserName === 'chromium') {
-    await actionRow.locator('.kui-menu-action-row__primary').hover();
-    await actionRow.screenshot({ path: 'test-results/menu-action-row-first-line-alignment-narrow.png' });
+    await actionRow.locator('.kui-list-action-row__primary').hover();
+    await actionRow.screenshot({ path: 'test-results/list-action-row-first-line-alignment-narrow.png' });
   }
 
   await page.setViewportSize({ width: 720, height: 900 });
   await page.locator('html').evaluate((element) => { element.style.fontSize = '200%'; });
   const zoomGeometry = await rowGeometry(
     actionRow,
-    '.kui-menu-action-row__icon',
-    '.kui-menu-action-row__label',
+    '.kui-list-action-row__icon',
+    '.kui-list-action-row__label',
   );
   expect(zoomGeometry.lineCount).toBeGreaterThan(1);
   expect(zoomGeometry.centerDelta).toBeLessThanOrEqual(1);

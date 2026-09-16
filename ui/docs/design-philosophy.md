@@ -53,9 +53,9 @@ Use the package composition so the geometry has one owner:
 <aside class="kui-pane">
   <nav class="kui-pane__content kui-content">
     <section>
-    <MenuHeader label="Workspace" />
-    <MenuItem action="open" label="Inbox" icon={inboxIcon} />
-    <MenuItem action="open" label="Drafts" />
+    <ListHeader label="Workspace" />
+    <ListItem action="open" label="Inbox" icon={inboxIcon} />
+    <ListItem action="open" label="Drafts" />
     </section>
     <div class="kui-content-item">Panel contents</div>
   </nav>
@@ -68,7 +68,7 @@ and makes transparent borders behave differently from visible ones:
 ```tsx
 <aside class="pane padded">
   <section class="padded">
-    <MenuHeader label="Workspace" />
+    <ListHeader label="Workspace" />
     <div class="panel padded-again">Panel contents</div>
   </section>
 </aside>

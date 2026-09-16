@@ -63,7 +63,7 @@ test('omits the removed command-palette recipe and safely falls back from its st
     await page.setViewportSize({ width, height });
     await page.goto('/?component=recipe-compact-toolbar');
     const recipes = page.locator('.catalog-group').filter({ has: page.getByText('Recipes', { exact: true }) });
-    const rows = recipes.locator('[data-component="menu-item"]');
+    const rows = recipes.locator('[data-component="list-item"]');
     await expect(rows).toHaveCount(8);
     await expect(rows).toHaveText([
       /Desktop application shell/,
@@ -188,7 +188,7 @@ test('keeps an icon-only control-group wa-button highlight at least square (min-
 
   if (browserName === 'chromium') {
     await page.locator('wa-button[aria-label="Favorite view"]').hover();
-    await page.locator('.demo-example', { has: page.locator('.kui-menu-header:has-text("Button group")') }).locator('[data-component="toolbar-control-group"]').screenshot({ path: 'test-results/button-group-highlight.png' });
+    await page.locator('.demo-example', { has: page.locator('.kui-list-header:has-text("Button group")') }).locator('[data-component="toolbar-control-group"]').screenshot({ path: 'test-results/button-group-highlight.png' });
   }
 });
 
@@ -272,9 +272,9 @@ test('presents the LucideIcon modes as labeled examples that differ only in sema
   await expect(demo).toHaveClass(/demo-stack/);
   const examples = demo.locator('.demo-example');
   await expect(examples).toHaveCount(2);
-  // Each example is a MenuHeader label + a note + the icon (left-aligned stack).
-  await expect(examples.nth(0).locator('.kui-menu-header')).toHaveText(/Decorative/);
-  await expect(examples.nth(1).locator('.kui-menu-header')).toHaveText(/Meaningful/);
+  // Each example is a ListHeader label + a note + the icon (left-aligned stack).
+  await expect(examples.nth(0).locator('.kui-list-header')).toHaveText(/Decorative/);
+  await expect(examples.nth(1).locator('.kui-list-header')).toHaveText(/Meaningful/);
   await expect(examples.locator('.demo-example__note')).toHaveCount(2);
   // Both render the same glyph — the difference is semantics, not appearance:
   // the decorative icon is hidden from AT; the meaningful one is labeled.
@@ -290,17 +290,17 @@ test('renders non-composition demos on the grid with a bounds/margin overlay, an
   // A single-component demo: the wrapper card is stripped (transparent) so the
   // component sits on the grid, and the overlay marks each component's outer
   // bound (gray) and non-zero default margins (orange).
-  await page.goto('/?component=menu-header');
+  await page.goto('/?component=list-header');
   const canvas = page.locator('.catalog-canvas');
   await expect(canvas).toHaveAttribute('data-demo-mode', 'component');
-  const wrapper = page.locator('.demo-menu-demo').first();
+  const wrapper = page.locator('.demo-list-demo').first();
   await expect.poll(() => wrapper.evaluate((el) => window.getComputedStyle(el).backgroundColor)).toBe('rgba(0, 0, 0, 0)');
   const overlay = page.locator('[data-demo-overlay]');
   await expect.poll(() => overlay.locator('.demo-overlay__bound').count()).toBeGreaterThan(0);
   await expect.poll(() => overlay.locator('.demo-overlay__margin').count()).toBeGreaterThan(0);
   if (browserName === 'chromium') await canvas.screenshot({ path: 'test-results/component-demo-overlay.png' });
 
-  // The overlay marks the demoed SPECIMEN, not the example's MenuHeader label or
+  // The overlay marks the demoed SPECIMEN, not the example's ListHeader label or
   // note. In a labeled demo the two transparent LucideIcon specimens each get a
   // bound and no margin; the labels (which have their own 8px inline margins and
   // transparent background) must not be marked, so there are exactly two bounds
@@ -311,7 +311,7 @@ test('renders non-composition demos on the grid with a bounds/margin overlay, an
   await expect.poll(() => overlay.locator('.demo-overlay__margin').count()).toBe(0);
 
   // A composition demo keeps its layout and gets no overlay.
-  await page.goto('/?component=menu');
+  await page.goto('/?component=list');
   await expect(canvas).toHaveAttribute('data-demo-mode', 'composition');
   await expect.poll(() => overlay.locator('.demo-overlay__bound, .demo-overlay__margin').count()).toBe(0);
 });
@@ -737,7 +737,7 @@ test('applies shared pane and content-item geometry across responsive and 200% z
     });
     expect(geometry).toMatchObject({ panePadding: 0, contentGap: 24 * layout.scale, itemMargin: 8 * layout.scale, itemPadding: 8 * layout.scale, itemBorder: 1, itemRadius: 1 + 11 * layout.scale, scrollOwners: 1, sidebarOverflow: 'auto' });
     expect(geometry.horizontalOverflow).toBeLessThanOrEqual(1);
-    await expect(page.locator('.catalog-group__items [data-component="menu-item"]').first()).toHaveAttribute('data-multiline', 'true');
+    await expect(page.locator('.catalog-group__items [data-component="list-item"]').first()).toHaveAttribute('data-multiline', 'true');
 
     if (browserName === 'chromium') await page.screenshot({ path: `test-results/layout-${layout.name}.png`, fullPage: true });
   }
@@ -1550,14 +1550,14 @@ test('observer specimens expose visible, user-driven events', async ({ page, bro
 test('catalog routes every production component family and supports its stateful controls', async ({ page, browserName }) => {
   test.setTimeout(90_000);
   await page.goto('/');
-  await expect(page.locator('.catalog-sidebar [data-component="menu-header"]')).toHaveCount(catalogSections.length + 1);
-  await expect(page.locator('.catalog-sidebar [data-component="menu-item"]')).toHaveCount(kerfCatalog.length);
+  await expect(page.locator('.catalog-sidebar [data-component="list-header"]')).toHaveCount(catalogSections.length + 1);
+  await expect(page.locator('.catalog-sidebar [data-component="list-item"]')).toHaveCount(kerfCatalog.length);
   const ecosystemToggle = page.getByRole('button', { name: `Web Awesome, ${webAwesomeCatalog.length} Web Awesome components` });
-  await expect(ecosystemToggle.locator('.kui-menu-header__count')).toHaveText(String(webAwesomeCatalog.length));
+  await expect(ecosystemToggle.locator('.kui-list-header__count')).toHaveText(String(webAwesomeCatalog.length));
   await expect(ecosystemToggle).toHaveAttribute('aria-expanded', 'false');
   await ecosystemToggle.click();
   await expect(ecosystemToggle).toHaveAttribute('aria-expanded', 'true');
-  await expect(page.locator('.catalog-sidebar [data-component="menu-item"]')).toHaveCount(catalog.length);
+  await expect(page.locator('.catalog-sidebar [data-component="list-item"]')).toHaveCount(catalog.length);
   await expect(page.locator('[data-webawesome-catalog] h3')).toHaveText(['Actions', 'Forms', 'Layout', 'Navigation', 'Feedback', 'Media', 'Helpers']);
   await ecosystemToggle.click();
   await expect(page.locator('[data-webawesome-catalog]')).toHaveCount(0);
@@ -1572,11 +1572,11 @@ test('catalog routes every production component family and supports its stateful
     }
   }
 
-  await page.locator('.catalog-sidebar [data-item-id="menu"]').click();
-  await expect(page).toHaveURL(/component=menu/);
-  await expect(page.locator('[data-demo="menu"]')).toBeVisible();
-  await expect(page.locator('.catalog-sidebar [data-item-id="menu"]')).toHaveAttribute('aria-current', 'page');
-  const menuRelationships = page.locator('[data-relationships-for="menu"]');
+  await page.locator('.catalog-sidebar [data-item-id="list"]').click();
+  await expect(page).toHaveURL(/component=list/);
+  await expect(page.locator('[data-demo="list"]')).toBeVisible();
+  await expect(page.locator('.catalog-sidebar [data-item-id="list"]')).toHaveAttribute('aria-current', 'page');
+  const menuRelationships = page.locator('[data-relationships-for="list"]');
   await expect(menuRelationships.locator('[name="related-component"]')).toHaveCount(1);
   await expect(page.getByText('Related components', { exact: true })).toHaveCount(1);
   await menuRelationships.locator('[name="related-component"]').click();
@@ -1584,11 +1584,11 @@ test('catalog routes every production component family and supports its stateful
   await page.keyboard.press('Escape');
   await page.locator('[name="related-component"]').evaluate((element) => {
     const select = element as HTMLElement & { value: string };
-    select.value = 'menu-item';
+    select.value = 'list-item';
     select.dispatchEvent(new Event('change', { bubbles: true }));
   });
-  await expect(page).toHaveURL(/component=menu-item/);
-  await expect(page.locator('[data-demo="menu-item"]')).toBeVisible();
+  await expect(page).toHaveURL(/component=list-item/);
+  await expect(page.locator('[data-demo="list-item"]')).toBeVisible();
   await page.locator('[name="related-component"]').click();
   await expect(page.getByRole('group', { name: 'Used by' })).toBeVisible();
   await page.keyboard.press('Escape');
@@ -1673,13 +1673,13 @@ test('catalog routes every production component family and supports its stateful
   }
 });
 
-test('renders MenuHeader counts as accessible neutral pills across scale and theme', async ({ page, browserName }) => {
+test('renders ListHeader counts as accessible neutral pills across scale and theme', async ({ page, browserName }) => {
   await page.setViewportSize({ width: 1100, height: 760 });
-  await page.goto('/?component=menu-header');
-  const demo = page.locator('[data-demo="menu-header"]');
-  const headerWithHeading = (name: string) => demo.locator('.kui-menu-header').filter({ has: page.getByRole('heading', { name }) });
+  await page.goto('/?component=list-header');
+  const demo = page.locator('[data-demo="list-header"]');
+  const headerWithHeading = (name: string) => demo.locator('.kui-list-header').filter({ has: page.getByRole('heading', { name }) });
   const attachments = headerWithHeading('Attachments, 12 attachments');
-  const count = attachments.locator('.kui-menu-header__count');
+  const count = attachments.locator('.kui-list-header__count');
   const notes = headerWithHeading('Notes, 0 notes');
   const duplicates = headerWithHeading('Duplicates, 2 duplicates');
   const preview = headerWithHeading('Preview');
@@ -1691,12 +1691,12 @@ test('renders MenuHeader counts as accessible neutral pills across scale and the
   await expect(count).toHaveText('12');
   await expect(count).toHaveAttribute('aria-hidden', 'true');
   await expect(notes.getByRole('heading', { name: 'Notes, 0 notes' })).toBeVisible();
-  await expect(notes.locator('.kui-menu-header__count')).toHaveText('0');
+  await expect(notes.locator('.kui-list-header__count')).toHaveText('0');
   await expect(duplicates.getByRole('heading', { name: 'Duplicates, 2 duplicates' })).toBeVisible();
-  await expect(duplicates.locator('.kui-menu-header__count')).toHaveText('2');
+  await expect(duplicates.locator('.kui-list-header__count')).toHaveText('2');
   await expect(preview).toHaveAttribute('data-has-count', 'false');
   await expect(preview).toHaveAttribute('data-has-badge', 'true');
-  await expect(preview.locator('.kui-menu-header__badge')).toHaveText('New');
+  await expect(preview.locator('.kui-list-header__badge')).toHaveText('New');
 
   const countGeometry = () => count.evaluate((element) => {
     const bounds = element.getBoundingClientRect();
@@ -1711,9 +1711,9 @@ test('renders MenuHeader counts as accessible neutral pills across scale and the
   });
   const containment = () => attachments.evaluate((header) => {
     const root = header.getBoundingClientRect();
-    const title = header.querySelector<HTMLElement>('.kui-menu-header__title')!.getBoundingClientRect();
-    const countBounds = header.querySelector<HTMLElement>('.kui-menu-header__count')!.getBoundingClientRect();
-    const action = header.querySelector<HTMLElement>('.kui-menu-header__action')!.getBoundingClientRect();
+    const title = header.querySelector<HTMLElement>('.kui-list-header__title')!.getBoundingClientRect();
+    const countBounds = header.querySelector<HTMLElement>('.kui-list-header__count')!.getBoundingClientRect();
+    const action = header.querySelector<HTMLElement>('.kui-list-header__action')!.getBoundingClientRect();
     return {
       actionAfterCount: action.left >= countBounds.right,
       countInsideRoot: countBounds.left >= root.left && countBounds.right <= root.right,
@@ -1733,7 +1733,7 @@ test('renders MenuHeader counts as accessible neutral pills across scale and the
   expect(baseline.width).toBeGreaterThanOrEqual(baseline.height);
   await expectContained();
   if (browserName === 'chromium') {
-    await attachments.locator('.kui-menu-header__title').screenshot({ path: 'test-results/menu-header-count-wide.png' });
+    await attachments.locator('.kui-list-header__title').screenshot({ path: 'test-results/list-header-count-wide.png' });
   }
 
   await page.setViewportSize({ width: 390, height: 844 });
@@ -1741,7 +1741,7 @@ test('renders MenuHeader counts as accessible neutral pills across scale and the
   await expect(attachments.getByRole('heading', { name: 'Attachments, 12 attachments' })).toBeVisible();
   await expectContained();
   if (browserName === 'chromium') {
-    await notes.locator('.kui-menu-header__title').screenshot({ path: 'test-results/menu-header-count-narrow.png' });
+    await notes.locator('.kui-list-header__title').screenshot({ path: 'test-results/list-header-count-narrow.png' });
   }
 
   await page.setViewportSize({ width: 720, height: 900 });
@@ -1752,36 +1752,36 @@ test('renders MenuHeader counts as accessible neutral pills across scale and the
   expect(scaled.width).toBeGreaterThanOrEqual(scaled.height);
   await expectContained();
   if (browserName === 'chromium') {
-    await duplicates.locator('.kui-menu-header__title').screenshot({ path: 'test-results/menu-header-count-zoom-200.png' });
+    await duplicates.locator('.kui-list-header__title').screenshot({ path: 'test-results/list-header-count-zoom-200.png' });
   }
 
-  await page.goto('/?component=menu-header');
+  await page.goto('/?component=list-header');
   await page.setViewportSize({ width: 1100, height: 760 });
   await page.locator('[data-action="toggle-theme"]').click();
   await expect(count).toBeVisible();
   expect((await countGeometry()).background).not.toBe('rgba(0, 0, 0, 0)');
   if (browserName === 'chromium') {
-    await attachments.locator('.kui-menu-header__title').screenshot({ path: 'test-results/menu-header-count-dark.png' });
+    await attachments.locator('.kui-list-header__title').screenshot({ path: 'test-results/list-header-count-dark.png' });
   }
 });
 
-test('fills MenuHeader rows and keeps 18px action visuals at the logical end', async ({ page, browserName }) => {
+test('fills ListHeader rows and keeps 18px action visuals at the logical end', async ({ page, browserName }) => {
   await page.setViewportSize({ width: 1100, height: 900 });
-  await page.goto('/?component=menu-header');
-  const demo = page.locator('[data-demo="menu-header"]');
-  const headers = demo.locator('.kui-menu-header');
-  const attachments = demo.locator('.kui-menu-header').filter({ has: page.getByRole('heading', { name: 'Attachments, 12 attachments' }) });
-  const unavailable = demo.locator('.kui-menu-header').filter({ has: page.getByRole('button', { name: 'Unavailable action' }) });
+  await page.goto('/?component=list-header');
+  const demo = page.locator('[data-demo="list-header"]');
+  const headers = demo.locator('.kui-list-header');
+  const attachments = demo.locator('.kui-list-header').filter({ has: page.getByRole('heading', { name: 'Attachments, 12 attachments' }) });
+  const unavailable = demo.locator('.kui-list-header').filter({ has: page.getByRole('button', { name: 'Unavailable action' }) });
 
   const geometry = (header: typeof attachments) => header.evaluate((root) => {
     const wrapper = root.parentElement!;
     const wrapperBounds = wrapper.getBoundingClientRect();
     const wrapperStyle = window.getComputedStyle(wrapper);
     const rootBounds = root.getBoundingClientRect();
-    const titleBounds = root.querySelector<HTMLElement>('.kui-menu-header__title')!.getBoundingClientRect();
-    const action = root.querySelector<HTMLElement>('.kui-menu-header__action');
+    const titleBounds = root.querySelector<HTMLElement>('.kui-list-header__title')!.getBoundingClientRect();
+    const action = root.querySelector<HTMLElement>('.kui-list-header__action');
     const actionBounds = action?.getBoundingClientRect();
-    const visual = root.querySelector<HTMLElement>('.kui-menu-header__action > svg, [data-component="disclosure-arrow"]');
+    const visual = root.querySelector<HTMLElement>('.kui-list-header__action > svg, [data-component="disclosure-arrow"]');
     const visualBounds = visual?.getBoundingClientRect();
     const direction = window.getComputedStyle(root).direction;
     const contentLeft = wrapperBounds.left + parseFloat(wrapperStyle.borderLeftWidth) + parseFloat(wrapperStyle.paddingLeft);
@@ -1848,64 +1848,64 @@ test('fills MenuHeader rows and keeps 18px action visuals at the logical end', a
     }
   };
 
-  await expect(demo.locator('.kui-menu-header[data-toggle="true"]')).toHaveCount(0);
+  await expect(demo.locator('.kui-list-header[data-toggle="true"]')).toHaveCount(0);
 
   await expectLayout(1);
-  await attachments.evaluate((element) => element.style.setProperty('--kui-menu-header-action-icon-size', '20px'));
+  await attachments.evaluate((element) => element.style.setProperty('--kui-list-header-action-icon-size', '20px'));
   // A larger icon grows the fitted square with it (20 + 8 + 8 + 1 + 1 = 38).
   expect(await geometry(attachments)).toMatchObject({ actionHeight: 38, actionWidth: 38, visualHeight: 20, visualWidth: 20 });
-  await attachments.evaluate((element) => element.style.removeProperty('--kui-menu-header-action-icon-size'));
+  await attachments.evaluate((element) => element.style.removeProperty('--kui-list-header-action-icon-size'));
   await expectLayout(1);
-  if (browserName === 'chromium') await demo.screenshot({ path: 'test-results/menu-header-layout-wide.png' });
+  if (browserName === 'chromium') await demo.screenshot({ path: 'test-results/list-header-layout-wide.png' });
 
   await page.setViewportSize({ width: 390, height: 900 });
   await demo.scrollIntoViewIfNeeded();
   await expectLayout(1);
-  if (browserName === 'chromium') await demo.screenshot({ path: 'test-results/menu-header-layout-narrow.png' });
+  if (browserName === 'chromium') await demo.screenshot({ path: 'test-results/list-header-layout-narrow.png' });
 
   await page.setViewportSize({ width: 1100, height: 900 });
   await page.locator('[data-action="toggle-theme"]').click();
   await expectLayout(1);
-  if (browserName === 'chromium') await demo.screenshot({ path: 'test-results/menu-header-layout-dark.png' });
+  if (browserName === 'chromium') await demo.screenshot({ path: 'test-results/list-header-layout-dark.png' });
 
   await page.locator('[data-action="toggle-theme"]').click();
   await demo.evaluate((element) => element.setAttribute('dir', 'rtl'));
   await expectLayout(1);
-  if (browserName === 'chromium') await demo.screenshot({ path: 'test-results/menu-header-layout-rtl.png' });
+  if (browserName === 'chromium') await demo.screenshot({ path: 'test-results/list-header-layout-rtl.png' });
   await demo.evaluate((element) => element.removeAttribute('dir'));
 
   await page.setViewportSize({ width: 720, height: 1100 });
   await page.locator('html').evaluate((element) => { element.style.fontSize = '200%'; });
   await demo.scrollIntoViewIfNeeded();
   await expectLayout(2);
-  if (browserName === 'chromium') await demo.screenshot({ path: 'test-results/menu-header-layout-zoom-200.png' });
+  if (browserName === 'chromium') await demo.screenshot({ path: 'test-results/list-header-layout-zoom-200.png' });
 });
 
 test('preserves menu extension metadata without surrendering native semantics', async ({ page, browserName }) => {
   await page.setViewportSize({ width: 1100, height: 760 });
-  await page.goto('/?component=menu-header');
-  const headerDemo = page.locator('[data-demo="menu-header"]');
+  await page.goto('/?component=list-header');
+  const headerDemo = page.locator('[data-demo="list-header"]');
   await expect(headerDemo.getByRole('heading', { name: 'Attachments, 12 attachments' })).toHaveCount(1);
   const popoverTrigger = headerDemo.getByRole('button', { name: 'Add attachment' });
-  await expect(popoverTrigger).toHaveAttribute('popovertarget', 'menu-header-attachments-popover');
+  await expect(popoverTrigger).toHaveAttribute('popovertarget', 'list-header-attachments-popover');
   await expect(popoverTrigger).toHaveAttribute('popovertargetaction', 'toggle');
-  await expect(popoverTrigger).toHaveAttribute('aria-controls', 'menu-header-attachments-popover');
+  await expect(popoverTrigger).toHaveAttribute('aria-controls', 'list-header-attachments-popover');
   await expect(popoverTrigger).toHaveAttribute('aria-haspopup', 'dialog');
   await popoverTrigger.press('Enter');
-  const popover = page.locator('#menu-header-attachments-popover');
+  const popover = page.locator('#list-header-attachments-popover');
   await expect.poll(() => popover.evaluate((element) => element.matches(':popover-open'))).toBe(true);
   await expect(page.locator('.catalog-log')).toHaveText('Add action requested');
   if (browserName === 'chromium') {
-    await page.screenshot({ path: 'test-results/menu-header-popover-wide.png', fullPage: true });
+    await page.screenshot({ path: 'test-results/list-header-popover-wide.png', fullPage: true });
     await page.setViewportSize({ width: 390, height: 844 });
     await headerDemo.scrollIntoViewIfNeeded();
-    await page.screenshot({ path: 'test-results/menu-header-popover-narrow.png' });
+    await page.screenshot({ path: 'test-results/list-header-popover-narrow.png' });
     await page.setViewportSize({ width: 1100, height: 760 });
   }
   await page.keyboard.press('Escape');
   await expect.poll(() => popover.evaluate((element) => element.matches(':popover-open'))).toBe(false);
 
-  await expect(headerDemo.locator('.kui-menu-header[data-toggle="true"]')).toHaveCount(0);
+  await expect(headerDemo.locator('.kui-list-header[data-toggle="true"]')).toHaveCount(0);
   const disabled = headerDemo.getByRole('button', { name: 'Unavailable action' });
   await expect(disabled).toBeDisabled();
   expect(await disabled.evaluate((button) => {
@@ -1917,10 +1917,10 @@ test('preserves menu extension metadata without surrendering native semantics', 
   await expect(page.locator('.catalog-log')).toHaveText('Add action requested');
   await expect.poll(() => popover.evaluate((element) => element.matches(':popover-open'))).toBe(false);
   await expect.poll(() => popover.evaluate((element) => window.getComputedStyle(element).display)).toBe('none');
-  if (browserName === 'chromium') await page.screenshot({ path: 'test-results/menu-header-disabled-action-wide.png', fullPage: true });
+  if (browserName === 'chromium') await page.screenshot({ path: 'test-results/list-header-disabled-action-wide.png', fullPage: true });
 
-  await page.goto('/?component=menu-item');
-  const row = page.locator('[data-demo="menu-item"] [data-item-id="selected"]');
+  await page.goto('/?component=list-item');
+  const row = page.locator('[data-demo="list-item"] [data-item-id="selected"]');
   await expect(row).toHaveAttribute('data-demo-drop-status', 'ready');
   await expect(row).toHaveAttribute('data-action', 'log-inbox');
   await row.press('Enter');
@@ -1930,20 +1930,20 @@ test('preserves menu extension metadata without surrendering native semantics', 
   await row.dispatchEvent('dragover');
   await expect(row).toHaveAttribute('data-demo-drop-status', 'over');
   await expect(page.locator('.catalog-log')).toHaveText('Drop target ready');
-  if (browserName === 'chromium') await page.screenshot({ path: 'test-results/menu-item-drop-feedback-wide.png', fullPage: true });
+  if (browserName === 'chromium') await page.screenshot({ path: 'test-results/list-item-drop-feedback-wide.png', fullPage: true });
   await row.dispatchEvent('drop');
   await expect(page.locator('.catalog-log')).toHaveText('Dropped on selected');
   await expect(row).toHaveAttribute('data-demo-drop-status', 'ready');
   if (browserName === 'chromium') {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.screenshot({ path: 'test-results/menu-item-extension-narrow.png', fullPage: true });
+    await page.screenshot({ path: 'test-results/list-item-extension-narrow.png', fullPage: true });
   }
 });
 
-test('keeps MenuActionRow primary and trailing controls independent across interaction and layout states', async ({ page, browserName }) => {
+test('keeps ListActionRow primary and trailing controls independent across interaction and layout states', async ({ page, browserName }) => {
   await page.setViewportSize({ width: 1100, height: 760 });
-  await page.goto('/?component=menu-action-row');
-  const demo = page.locator('[data-demo="menu-action-row"]');
+  await page.goto('/?component=list-action-row');
+  const demo = page.locator('[data-demo="list-action-row"]');
   const selectedRow = demo.locator('[data-demo-action-row="selected"]');
   const primary = selectedRow.getByRole('button', { name: 'Select src/main.ts' });
   const trailing = selectedRow.getByRole('button', { name: 'Actions for src/main.ts' });
@@ -1953,8 +1953,8 @@ test('keeps MenuActionRow primary and trailing controls independent across inter
   await expect(selectedRow.locator(':scope > button')).toHaveCount(2);
   await expect(selectedRow).not.toHaveAttribute('role');
   await expect(selectedRow).not.toHaveAttribute('data-action');
-  await expect(primary).toHaveAttribute('data-action', 'select-menu-action-row');
-  await expect(trailing).toHaveAttribute('data-action', 'open-menu-action-row-actions');
+  await expect(primary).toHaveAttribute('data-action', 'select-list-action-row');
+  await expect(trailing).toHaveAttribute('data-action', 'open-list-action-row-actions');
   await expect(primary).toHaveAttribute('data-item-id', 'src/main.ts');
   await expect(trailing).toHaveAttribute('data-item-id', 'src/main.ts');
   await expect(selectedRow).toHaveAttribute('data-selected', 'true');
@@ -1971,7 +1971,7 @@ test('keeps MenuActionRow primary and trailing controls independent across inter
 
   await primary.focus();
   await expect(primary).toBeFocused();
-  if (browserName === 'chromium') await page.screenshot({ path: 'test-results/menu-action-row-primary-focus-wide.png', fullPage: true });
+  if (browserName === 'chromium') await page.screenshot({ path: 'test-results/list-action-row-primary-focus-wide.png', fullPage: true });
   expect(await selectedRow.locator(':scope > button').evaluateAll((buttons) => buttons.map((button) => ({ name: button.getAttribute('aria-label'), tabIndex: (button as HTMLButtonElement).tabIndex })))).toEqual([
     { name: 'Select src/main.ts', tabIndex: 0 },
     { name: 'Actions for src/main.ts', tabIndex: 0 },
@@ -1979,7 +1979,7 @@ test('keeps MenuActionRow primary and trailing controls independent across inter
   if (browserName === 'webkit') await trailing.focus();
   else await page.keyboard.press('Tab');
   await expect(trailing).toBeFocused();
-  if (browserName === 'chromium') await page.screenshot({ path: 'test-results/menu-action-row-trailing-focus-wide.png', fullPage: true });
+  if (browserName === 'chromium') await page.screenshot({ path: 'test-results/list-action-row-trailing-focus-wide.png', fullPage: true });
 
   await primary.press('Enter');
   await expect(page.locator('.catalog-log')).toHaveText('src/main.ts selected');
@@ -1987,7 +1987,7 @@ test('keeps MenuActionRow primary and trailing controls independent across inter
   await expect(page.locator('.catalog-log')).toHaveText('src/main.ts selected');
   await expect(selectedRow).toHaveAttribute('data-selected', 'true');
 
-  const popover = page.locator('#menu-action-row-popover');
+  const popover = page.locator('#list-action-row-popover');
   await trailing.press('Enter');
   await expect(page.locator('.catalog-log')).toHaveText('Actions requested for src/main.ts');
   await expect(selectedRow).toHaveAttribute('data-selected', 'true');
@@ -2024,7 +2024,7 @@ test('keeps MenuActionRow primary and trailing controls independent across inter
   await expect(selectedRow).toHaveAttribute('data-selected', 'true');
 
   const disabledPrimary = demo.locator('[data-demo-action-row="disabled-primary"]');
-  await expect(disabledPrimary.locator('.kui-menu-action-row__primary')).toBeDisabled();
+  await expect(disabledPrimary.locator('.kui-list-action-row__primary')).toBeDisabled();
   const availableTrailing = disabledPrimary.getByRole('button', { name: 'Actions for unavailable primary' });
   await expect(availableTrailing).toBeEnabled();
   await availableTrailing.click();
@@ -2042,7 +2042,7 @@ test('keeps MenuActionRow primary and trailing controls independent across inter
 
   await pressedPrimary.click();
   await expect(pressedRow).toHaveAttribute('data-pressed', 'false');
-  const resolveMenuActionRowColors = () => pressedRow.evaluate((element) => {
+  const resolveListActionRowColors = () => pressedRow.evaluate((element) => {
     const resolveBackground = (property: string) => {
       const probe = document.createElement('span');
       probe.style.backgroundColor = `var(${property})`;
@@ -2052,33 +2052,33 @@ test('keeps MenuActionRow primary and trailing controls independent across inter
       return color;
     };
     return {
-      trailingHover: resolveBackground('--kui-menu-action-row-trailing-hover-background'),
+      trailingHover: resolveBackground('--kui-list-action-row-trailing-hover-background'),
       neutralFill: resolveBackground('--kui-color-neutral-fill-normal'),
     };
   });
-  const lightColors = await resolveMenuActionRowColors();
+  const lightColors = await resolveListActionRowColors();
   expect(lightColors.trailingHover).toBe(lightColors.neutralFill);
   const themeButton = page.locator('[data-action="toggle-theme"]');
   await themeButton.click();
-  const darkColors = await resolveMenuActionRowColors();
+  const darkColors = await resolveListActionRowColors();
   expect(darkColors.trailingHover).toBe(darkColors.neutralFill);
   expect(darkColors.trailingHover).not.toBe(lightColors.trailingHover);
   await pressedTrailing.hover();
   await expect.poll(() => pressedTrailing.evaluate((element) => window.getComputedStyle(element).backgroundColor)).toBe(darkColors.trailingHover);
-  if (browserName === 'chromium') await page.screenshot({ path: 'test-results/menu-action-row-dark-hover-wide.png', fullPage: true });
+  if (browserName === 'chromium') await page.screenshot({ path: 'test-results/list-action-row-dark-hover-wide.png', fullPage: true });
   await themeButton.click();
   await page.mouse.move(0, 0);
 
   const geometry = () => demo.evaluate((node) => {
     const row = node.querySelector<HTMLElement>('[data-demo-action-row="selected"]')!;
     const parent = row.parentElement!;
-    const primaryControl = row.querySelector<HTMLElement>(':scope > .kui-menu-action-row__primary')!;
-    const trailingControl = row.querySelector<HTMLElement>(':scope > .kui-menu-action-row__trailing-action')!;
-    const icon = row.querySelector<HTMLElement>('.kui-menu-action-row__icon')!;
+    const primaryControl = row.querySelector<HTMLElement>(':scope > .kui-list-action-row__primary')!;
+    const trailingControl = row.querySelector<HTMLElement>(':scope > .kui-list-action-row__trailing-action')!;
+    const icon = row.querySelector<HTMLElement>('.kui-list-action-row__icon')!;
     const multilineRow = node.querySelector<HTMLElement>('[data-demo-action-row="multiline"]')!;
-    const multilinePrimary = multilineRow.querySelector<HTMLElement>(':scope > .kui-menu-action-row__primary')!;
-    const multilineTrailing = multilineRow.querySelector<HTMLElement>(':scope > .kui-menu-action-row__trailing-action')!;
-    const longLabel = multilineRow.querySelector<HTMLElement>('.kui-menu-action-row__label')!;
+    const multilinePrimary = multilineRow.querySelector<HTMLElement>(':scope > .kui-list-action-row__primary')!;
+    const multilineTrailing = multilineRow.querySelector<HTMLElement>(':scope > .kui-list-action-row__trailing-action')!;
+    const longLabel = multilineRow.querySelector<HTMLElement>('.kui-list-action-row__label')!;
     const rowBox = row.getBoundingClientRect();
     const parentBox = parent.getBoundingClientRect();
     const primaryBox = primaryControl.getBoundingClientRect();
@@ -2149,32 +2149,32 @@ test('keeps MenuActionRow primary and trailing controls independent across inter
   expectGeometry(await geometry(), 1);
   await demo.evaluate((node) => node.setAttribute('dir', 'rtl'));
   expectGeometry(await geometry(), 1);
-  if (browserName === 'chromium') await page.screenshot({ path: 'test-results/menu-action-row-rtl-wide.png', fullPage: true });
+  if (browserName === 'chromium') await page.screenshot({ path: 'test-results/list-action-row-rtl-wide.png', fullPage: true });
   await demo.evaluate((node) => node.removeAttribute('dir'));
 
   await page.setViewportSize({ width: 390, height: 844 });
   await demo.scrollIntoViewIfNeeded();
   expectGeometry(await geometry(), 1);
-  if (browserName === 'chromium') await page.screenshot({ path: 'test-results/menu-action-row-narrow.png', fullPage: true });
+  if (browserName === 'chromium') await page.screenshot({ path: 'test-results/list-action-row-narrow.png', fullPage: true });
 
   await page.setViewportSize({ width: 720, height: 900 });
   await page.locator('html').evaluate((element) => { element.style.fontSize = '200%'; });
   await demo.scrollIntoViewIfNeeded();
   expectGeometry(await geometry(), 2);
-  if (browserName === 'chromium') await page.screenshot({ path: 'test-results/menu-action-row-zoom-200.png', fullPage: true });
+  if (browserName === 'chromium') await page.screenshot({ path: 'test-results/list-action-row-zoom-200.png', fullPage: true });
   if (browserName === 'chromium') {
     await page.emulateMedia({ forcedColors: 'active' });
     await expect(selectedRow).toHaveCSS('outline-style', 'solid');
     await expect(selectedRow).toHaveCSS('outline-width', '1px');
-    await page.screenshot({ path: 'test-results/menu-action-row-forced-colors.png', fullPage: true });
+    await page.screenshot({ path: 'test-results/list-action-row-forced-colors.png', fullPage: true });
     await page.emulateMedia({ forcedColors: 'none' });
   }
 });
 
 test('composes one truthful production disclosure in the menu', async ({ page, browserName }) => {
   await page.setViewportSize({ width: 1100, height: 820 });
-  await page.goto('/?component=menu');
-  const menu = page.locator('[data-demo="menu"]');
+  await page.goto('/?component=list');
+  const menu = page.locator('[data-demo="list"]');
   const toggle = menu.getByRole('button', { name: 'Tools' });
   const panel = menu.locator('#menu-tools-content');
   const arrow = toggle.locator('[data-component="disclosure-arrow"]');
@@ -2193,7 +2193,7 @@ test('composes one truthful production disclosure in the menu', async ({ page, b
   });
 
   await expect(menu.locator('[data-component="disclosure-arrow"]')).toHaveCount(1);
-  await expect(menu.locator('[data-item-id="projects"] .kui-menu-item__trailing')).toHaveCount(0);
+  await expect(menu.locator('[data-item-id="projects"] .kui-list-item__trailing')).toHaveCount(0);
   await expect(toggle).toHaveAttribute('aria-expanded', 'true');
   await expect(toggle).toHaveAttribute('aria-controls', 'menu-tools-content');
   await expect(arrow).toHaveAttribute('data-open', 'true');
@@ -2246,25 +2246,25 @@ test('composes one truthful production disclosure in the menu', async ({ page, b
 
 test('matches shared menu, content-item, and toolbar geometry', async ({ page, browserName }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
-  await page.goto('/?component=menu');
-  const menu = page.locator('[data-demo="menu"]');
+  await page.goto('/?component=list');
+  const menu = page.locator('[data-demo="list"]');
   const paneGeometry = () => menu.evaluate((node) => {
     const content = node.querySelector<HTMLElement>('[data-content-stack]')!.getBoundingClientRect();
     const toolbar = node.querySelector<HTMLElement>('.kui-pane__footer .kui-toolbar')!.getBoundingClientRect();
     const direction = window.getComputedStyle(node).direction;
     const start = (container: DOMRect, item: DOMRect) => direction === 'rtl' ? container.right - item.right : item.left - container.left;
     const end = (container: DOMRect, item: DOMRect) => direction === 'rtl' ? item.left - container.left : container.right - item.right;
-    const action = node.querySelector<HTMLElement>('.kui-menu-header button')!.getBoundingClientRect();
+    const action = node.querySelector<HTMLElement>('.kui-list-header button')!.getBoundingClientRect();
     const row = node.querySelector<HTMLElement>('[data-item-id="projects"]')!.getBoundingClientRect();
-    const rowLabel = node.querySelector<HTMLElement>('[data-item-id="projects"] .kui-menu-item__label')!.getBoundingClientRect();
-    const rowIcon = node.querySelector<HTMLElement>('[data-item-id="projects"] .kui-menu-item__icon')!.getBoundingClientRect();
-    const trailing = node.querySelector<HTMLElement>('[data-item-id="inbox"] .kui-menu-item__trailing')!.getBoundingClientRect();
-    const iconlessLabel = node.querySelector<HTMLElement>('[data-item-id="drafts"] .kui-menu-item__label')!.getBoundingClientRect();
-    const sectionLabel = node.querySelector<HTMLElement>('.kui-menu-header h2')!.getBoundingClientRect();
+    const rowLabel = node.querySelector<HTMLElement>('[data-item-id="projects"] .kui-list-item__label')!.getBoundingClientRect();
+    const rowIcon = node.querySelector<HTMLElement>('[data-item-id="projects"] .kui-list-item__icon')!.getBoundingClientRect();
+    const trailing = node.querySelector<HTMLElement>('[data-item-id="inbox"] .kui-list-item__trailing')!.getBoundingClientRect();
+    const iconlessLabel = node.querySelector<HTMLElement>('[data-item-id="drafts"] .kui-list-item__label')!.getBoundingClientRect();
+    const sectionLabel = node.querySelector<HTMLElement>('.kui-list-header h2')!.getBoundingClientRect();
     const surfaceElement = node.querySelector<HTMLElement>('[data-content-item]')!;
     const surface = surfaceElement.getBoundingClientRect();
     const surfaceLabel = node.querySelector<HTMLElement>('[data-content-item] strong')!.getBoundingClientRect();
-    const toggleLayer = node.querySelector<HTMLElement>('.kui-menu-header__action-layer')!.getBoundingClientRect();
+    const toggleLayer = node.querySelector<HTMLElement>('.kui-list-header__action-layer')!.getBoundingClientRect();
     const toolbarText = node.querySelector<HTMLElement>('.kui-pane__footer .kui-toolbar-text')!.getBoundingClientRect();
     const toolbarAction = node.querySelector<HTMLElement>('.kui-pane__footer .kui-toolbar__trailing .kui-toolbar-control-group')!.getBoundingClientRect();
     return {
@@ -2290,7 +2290,7 @@ test('matches shared menu, content-item, and toolbar geometry', async ({ page, b
     near('surfacePadding', geometry.surfacePadding, 8);
     near('surfaceBorder', geometry.surfaceBorder, 1);
     for (const name of ['toolbarActionWidth', 'toolbarActionHeight'] as const) near(name, geometry[name], 44);
-    // The MenuHeader action is a fitted square (18px icon + 8px padding + 1px
+    // The ListHeader action is a fitted square (18px icon + 8px padding + 1px
     // border each side = 36px), not the toolbar control group's 44px.
     for (const name of ['headerActionWidth', 'headerActionHeight'] as const) near(name, geometry[name], 36);
     near('toggleLayerWidth', geometry.toggleLayerWidth, 24);
@@ -2305,11 +2305,11 @@ test('matches shared menu, content-item, and toolbar geometry', async ({ page, b
   expect(await paneGeometry()).toEqual(baseline);
   if (browserName === 'chromium') {
     await menu.screenshot({ path: 'test-results/pane-content-geometry-wide.png' });
-    await page.locator('[data-relationships-for="menu"]').screenshot({ path: 'test-results/related-components-selector-wide.png' });
+    await page.locator('[data-relationships-for="list"]').screenshot({ path: 'test-results/related-components-selector-wide.png' });
     await page.setViewportSize({ width: 390, height: 844 });
     expectPaneGeometry(await paneGeometry());
     await menu.screenshot({ path: 'test-results/pane-content-geometry-narrow.png' });
-    await page.locator('[data-relationships-for="menu"]').screenshot({ path: 'test-results/related-components-selector-narrow.png' });
+    await page.locator('[data-relationships-for="list"]').screenshot({ path: 'test-results/related-components-selector-narrow.png' });
     await page.setViewportSize({ width: 1440, height: 900 });
   }
   await menu.evaluate((node) => node.setAttribute('dir', 'rtl'));
@@ -2319,7 +2319,7 @@ test('matches shared menu, content-item, and toolbar geometry', async ({ page, b
   await page.goto('/?component=toolbar-control-group');
   const demo = page.getByRole('region', { name: 'ToolbarControlGroup demo' });
   await expect.poll(() => page.evaluate(() => customElements.get('wa-dropdown') !== undefined)).toBe(true);
-  await expect(demo.locator('.kui-menu-header__label')).toHaveText([
+  await expect(demo.locator('.kui-list-header__label')).toHaveText([
     'Segmented choices', 'Popup menu', 'Button group', 'Single button', 'Borderless group',
     'Push button, resting', 'Push button, pressed', 'Dark group',
   ]);
@@ -2571,7 +2571,7 @@ test('renders controlled toolbar, rounded, and pill SegmentedControl variants', 
   const demo = page.getByRole('region', { name: 'SegmentedControl variants' });
   const controls = demo.locator('[data-component="segmented-control"]');
   await expect(controls).toHaveCount(3);
-  await expect(demo.locator('.kui-menu-header__label')).toHaveText(['Toolbar', 'Rounded rectangle', 'Pill']);
+  await expect(demo.locator('.kui-list-header__label')).toHaveText(['Toolbar', 'Rounded rectangle', 'Pill']);
 
   const toolbar = demo.locator('[data-segmented-control-id="standalone-toolbar-view"]');
   const rounded = demo.locator('[data-segmented-control-id="inspector-section"]');
@@ -2635,7 +2635,7 @@ test('ships semantic banner palettes with scoped overrides', async ({ page, brow
   await expect(banners).toHaveCount(6);
   await expect(articles).toHaveCount(6);
   const labelIconOffsets = () => articles.evaluateAll((nodes) => nodes.map((node) => {
-    const label = node.querySelector('.kui-menu-header__label')!;
+    const label = node.querySelector('.kui-list-header__label')!;
     const icon = node.querySelector('.kui-state-banner__icon')!;
     return Math.abs(label.getBoundingClientRect().left - icon.getBoundingClientRect().left);
   }));

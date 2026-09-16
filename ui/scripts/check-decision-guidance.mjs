@@ -71,9 +71,9 @@ for (const phrase of requiredPhrases) {
   if (!selection.includes(phrase)) fail(`component-selection.md is missing required decision guidance: ${phrase}`);
 }
 
-const menuEntry = componentCatalog.entries.find((entry) => entry.id === 'menu');
+const menuEntry = componentCatalog.entries.find((entry) => entry.id === 'list');
 for (const className of ['kui-pane', 'kui-content', 'kui-content-item']) {
-  if (!menuEntry?.publicClasses.includes(className)) fail(`menu catalog entry is missing public class ${className}`);
+  if (!menuEntry?.publicClasses.includes(className)) fail(`list catalog entry is missing public class ${className}`);
 }
 for (const token of [
   '--kui-layout-content-gap',
@@ -81,7 +81,7 @@ for (const token of [
   '--kui-layout-item-padding',
   '--kui-layout-rounded-radius',
 ]) {
-  if (!menuEntry?.publicTokens.includes(token)) fail(`menu catalog entry is missing public token ${token}`);
+  if (!menuEntry?.publicTokens.includes(token)) fail(`list catalog entry is missing public token ${token}`);
 }
 const layoutGuidance = `${selection}\n${await readFile(resolve(root, 'ai/skill.md'), 'utf8')}\n${await readFile(resolve(root, 'README.md'), 'utf8')}`;
 for (const phrase of ['24px', '8px', '44px', 'content item']) {
@@ -92,8 +92,8 @@ for (const phrase of ['publicClasses', 'public-class-to-public-class', 'descenda
 }
 
 const demoSource = await readFile(resolve(root, 'ux-demo/main.tsx'), 'utf8');
-const catalogRows = demoSource.match(/<MenuItem action="select-demo"[^>]+multiline \/>/g) ?? [];
-if (catalogRows.length !== 2) fail('catalog navigation must use the MenuItem multiline prop instead of descendant CSS overrides');
+const catalogRows = demoSource.match(/<ListItem action="select-demo"[^>]+multiline \/>/g) ?? [];
+if (catalogRows.length !== 2) fail('catalog navigation must use the ListItem multiline prop instead of descendant CSS overrides');
 
 const missingConceptSource = ts.createSourceFile('command-palette-adapter.tsx', missingConcept, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
 if (missingConceptSource.parseDiagnostics.length) fail('command-palette adapter example must parse as TSX');

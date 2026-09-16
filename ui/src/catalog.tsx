@@ -1,9 +1,9 @@
 import type { SafeHtml } from 'kerfjs';
 import { ExternalLink, Moon, PanelLeftClose, PanelLeftOpen, Sun } from 'lucide';
 
+import { ListHeader } from './list-header.js';
+import { ListItem } from './list-item.js';
 import { LucideIcon } from './lucide-icon.js';
-import { MenuHeader } from './menu-header.js';
-import { MenuItem } from './menu-item.js';
 import { Select } from './select.js';
 import { Toolbar } from './toolbar.js';
 import { ToolbarControlGroup } from './toolbar-control-group.js';
@@ -116,9 +116,9 @@ export function Catalog({
       </header>
       <nav class="kui-pane__content kui-content" aria-label={`${brand.title} components`}>
         {sections.map((section) => <section class="kui-catalog__group">
-          <MenuHeader label={section.category} />
+          <ListHeader label={section.category} />
           <div class="kui-catalog__items">
-            {section.entries.map((entry) => <MenuItem action={selectAction} itemId={entry.id} label={entry.name} selected={active === entry.id} title={entry.description} multiline />)}
+            {section.entries.map((entry) => <ListItem action={selectAction} itemId={entry.id} label={entry.name} selected={active === entry.id} title={entry.description} multiline />)}
           </div>
         </section>)}
         {sidebarFooter}

@@ -1,0 +1,6 @@
+{
+  "caseId": "list-header-count-contract",
+  "files": {
+    "app.tsx": "import { ListHeader } from '@kerfjs/ui/list-header';\nexport const competing = ListHeader({ label: \"Notes\", count: 3, countLabel: \"3 notes\", badge: <span>New</span> });\nexport const missingLabel = ListHeader({ label: \"Tasks\", count: 2 });\nexport const numericBadge = ListHeader({ label: \"Archive\", badge: <span>12</span> });\nexport const labelCount = ListHeader({ label: \"Alerts (4)\" });\n"
+  }
+}

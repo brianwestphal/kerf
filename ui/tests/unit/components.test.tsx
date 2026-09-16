@@ -4,11 +4,11 @@ import { describe, expect, it } from 'vitest';
 import { AppTab } from '../../src/app-tab.js';
 import { DisclosureArrow } from '../../src/disclosure-arrow.js';
 import { EmptyState } from '../../src/empty-state.js';
+import { ListActionRow } from '../../src/list-action-row.js';
+import { ListHeader, type ListHeaderProps } from '../../src/list-header.js';
+import { ListItem } from '../../src/list-item.js';
 import { LoadingSpinner } from '../../src/loading-spinner.js';
 import { LucideIcon } from '../../src/lucide-icon.js';
-import { MenuActionRow } from '../../src/menu-action-row.js';
-import { MenuHeader, type MenuHeaderProps } from '../../src/menu-header.js';
-import { MenuItem } from '../../src/menu-item.js';
 import { PanelHeader } from '../../src/panel-header.js';
 import { clampRegionSize, ResizableRegion, resizeRegionFromPointer } from '../../src/resizable-region.js';
 import { SegmentedControl } from '../../src/segmented-control.js';
@@ -74,7 +74,7 @@ describe('production UI primitives', () => {
   });
 
   it('renders menu navigation, toggle, action, disabled, and multiline states', () => {
-    const item = asHtml(MenuItem({ label: 'Projects', icon, trailing: icon, selected: true, action: 'open', itemId: 'projects', className: 'project', style: 'color:blue', pressed: false, accessibleLabel: 'Open projects', title: 'Projects', multiline: true, state: 'ready', tabIndex: -1, rootAttributes: { 'data-command-color': '#123456', 'data-optional': undefined } }));
+    const item = asHtml(ListItem({ label: 'Projects', icon, trailing: icon, selected: true, action: 'open', itemId: 'projects', className: 'project', style: 'color:blue', pressed: false, accessibleLabel: 'Open projects', title: 'Projects', multiline: true, state: 'ready', tabIndex: -1, rootAttributes: { 'data-command-color': '#123456', 'data-optional': undefined } }));
     expect(item).toContain('data-action="open"');
     expect(item).toContain('data-item-id="projects"');
     expect(item).toContain('data-has-icon="true"');
@@ -86,30 +86,30 @@ describe('production UI primitives', () => {
     expect(item).toContain('aria-label="Open projects"');
     expect(item).toContain('aria-current="page"');
     expect(item).toContain('aria-pressed="false"');
-    const iconless = asHtml(MenuItem({ label: 'Disabled', action: 'none', disabled: true }));
+    const iconless = asHtml(ListItem({ label: 'Disabled', action: 'none', disabled: true }));
     expect(iconless).toContain('data-has-icon="false"');
     expect(iconless).toContain('disabled');
-    const toggle = asHtml(MenuHeader({ label: 'Tools', count: 2, countLabel: '2 tools', action: 'toggle', expanded: false, toggle: true, rootAttributes: { 'data-command-group': 'tools' }, triggerAttributes: { 'aria-controls': 'tools-panel' } }));
+    const toggle = asHtml(ListHeader({ label: 'Tools', count: 2, countLabel: '2 tools', action: 'toggle', expanded: false, toggle: true, rootAttributes: { 'data-command-group': 'tools' }, triggerAttributes: { 'aria-controls': 'tools-panel' } }));
     expect(toggle).toContain('aria-expanded="false"');
     expect(toggle).toContain('data-command-group="tools"');
     expect(toggle).toContain('aria-controls="tools-panel"');
     expect(toggle).not.toContain('data-action="ignored"');
     expect(toggle).not.toContain('aria-expanded="true"');
     expect(toggle).toContain('aria-label="Tools, 2 tools" aria-expanded="false"');
-    expect(toggle).toContain('class="kui-menu-header__count" aria-hidden="true">2</span>');
+    expect(toggle).toContain('class="kui-list-header__count" aria-hidden="true">2</span>');
     expect(toggle).toContain('data-has-badge="false" data-has-count="true"');
-    expect(toggle).toContain('class="kui-menu-header__action-layer"');
+    expect(toggle).toContain('class="kui-list-header__action-layer"');
     expect(toggle.match(/data-component="disclosure-arrow"/g)).toHaveLength(1);
     expect(toggle).toContain('data-open="false" data-direction="right" aria-hidden="true"');
-    const openToggle = asHtml(MenuHeader({ label: 'Tools', action: 'toggle', expanded: true, toggle: true }));
+    const openToggle = asHtml(ListHeader({ label: 'Tools', action: 'toggle', expanded: true, toggle: true }));
     expect(openToggle).toContain('aria-expanded="true"');
     expect(openToggle).toContain('data-open="true" data-direction="down" aria-hidden="true"');
-    const customToggle = asHtml(MenuHeader({ label: 'Custom tools', action: 'toggle', actionIcon: <span>Custom</span>, expanded: false, toggle: true }));
+    const customToggle = asHtml(ListHeader({ label: 'Custom tools', action: 'toggle', actionIcon: <span>Custom</span>, expanded: false, toggle: true }));
     expect(customToggle).toContain('<span>Custom</span>');
     expect(customToggle).not.toContain('data-component="disclosure-arrow"');
-    const header = asHtml(MenuHeader({ label: 'Workspace', count: 0, countLabel: '0 workspaces', action: 'add', actionLabel: 'Add', actionIcon: icon, actionDisabled: true, disabledReason: 'Unavailable', rootAttributes: { 'data-section-id': 'workspace' }, triggerAttributes: { popoverTarget: 'workspace-popover', popoverTargetAction: 'show', 'aria-controls': 'workspace-popover', 'aria-haspopup': 'dialog' } }));
-    expect(header).toContain('<h2 class="kui-menu-header__label" aria-label="Workspace, 0 workspaces">Workspace</h2>');
-    expect(header).toContain('class="kui-menu-header__count" aria-hidden="true">0</span>');
+    const header = asHtml(ListHeader({ label: 'Workspace', count: 0, countLabel: '0 workspaces', action: 'add', actionLabel: 'Add', actionIcon: icon, actionDisabled: true, disabledReason: 'Unavailable', rootAttributes: { 'data-section-id': 'workspace' }, triggerAttributes: { popoverTarget: 'workspace-popover', popoverTargetAction: 'show', 'aria-controls': 'workspace-popover', 'aria-haspopup': 'dialog' } }));
+    expect(header).toContain('<h2 class="kui-list-header__label" aria-label="Workspace, 0 workspaces">Workspace</h2>');
+    expect(header).toContain('class="kui-list-header__count" aria-hidden="true">0</span>');
     expect(header).toContain('data-has-badge="false" data-has-count="true"');
     expect(header).toContain('data-section-id="workspace"');
     expect(header).toContain('popoverTarget="workspace-popover" popoverTargetAction="show" aria-controls="workspace-popover" aria-haspopup="dialog"');
@@ -119,37 +119,37 @@ describe('production UI primitives', () => {
     expect(header).toContain('aria-label="Add"');
     expect(header).not.toContain('data-action="ignored"');
     expect(header).not.toContain('aria-label="Ignored"');
-    const badge = asHtml(MenuHeader({ label: 'Preview', badge: <span>New</span> }));
+    const badge = asHtml(ListHeader({ label: 'Preview', badge: <span>New</span> }));
     expect(badge).toContain('data-has-badge="true" data-has-count="false"');
-    expect(badge).toContain('class="kui-menu-header__badge"><span>New</span>');
-    expect(asHtml(MenuHeader({ label: 'Enabled', action: 'add', actionLabel: 'Add', actionIcon: icon }))).toContain('title="Add"');
-    expect(asHtml(MenuHeader({ label: 'Plain' }))).not.toContain('<button');
+    expect(badge).toContain('class="kui-list-header__badge"><span>New</span>');
+    expect(asHtml(ListHeader({ label: 'Enabled', action: 'add', actionLabel: 'Add', actionIcon: icon }))).toContain('title="Add"');
+    expect(asHtml(ListHeader({ label: 'Plain' }))).not.toContain('<button');
     // @ts-expect-error A lone role=menuitem does not provide a complete menu widget.
-    MenuItem({ label: 'Unsafe menu role', action: 'unsafe', rootAttributes: { role: 'menuitem' } });
-    // @ts-expect-error Selection semantics remain owned by MenuItem props.
-    MenuItem({ label: 'Unsafe selection', action: 'unsafe', rootAttributes: { 'aria-current': 'false' } });
-    // @ts-expect-error Action dispatch remains owned by MenuItem.action.
-    MenuItem({ label: 'Unsafe action', action: 'safe', rootAttributes: { 'data-action': 'unsafe' } });
-    // @ts-expect-error Disclosure state remains owned by MenuHeader.expanded.
-    MenuHeader({ label: 'Unsafe disclosure', toggle: true, triggerAttributes: { 'aria-expanded': 'true' } });
-    // @ts-expect-error Action dispatch remains owned by MenuHeader.action.
-    MenuHeader({ label: 'Unsafe action', action: 'safe', triggerAttributes: { 'data-action': 'unsafe' } });
-    // @ts-expect-error Dormant MenuHeader roots cannot become delegated actions.
-    MenuHeader({ label: 'Unsafe root action', rootAttributes: { 'data-action': 'unsafe' } });
+    ListItem({ label: 'Unsafe menu role', action: 'unsafe', rootAttributes: { role: 'menuitem' } });
+    // @ts-expect-error Selection semantics remain owned by ListItem props.
+    ListItem({ label: 'Unsafe selection', action: 'unsafe', rootAttributes: { 'aria-current': 'false' } });
+    // @ts-expect-error Action dispatch remains owned by ListItem.action.
+    ListItem({ label: 'Unsafe action', action: 'safe', rootAttributes: { 'data-action': 'unsafe' } });
+    // @ts-expect-error Disclosure state remains owned by ListHeader.expanded.
+    ListHeader({ label: 'Unsafe disclosure', toggle: true, triggerAttributes: { 'aria-expanded': 'true' } });
+    // @ts-expect-error Action dispatch remains owned by ListHeader.action.
+    ListHeader({ label: 'Unsafe action', action: 'safe', triggerAttributes: { 'data-action': 'unsafe' } });
+    // @ts-expect-error Dormant ListHeader roots cannot become delegated actions.
+    ListHeader({ label: 'Unsafe root action', rootAttributes: { 'data-action': 'unsafe' } });
     // @ts-expect-error Count labels are required for counted headers.
-    MenuHeader({ label: 'Missing count label', count: 2 });
+    ListHeader({ label: 'Missing count label', count: 2 });
     // @ts-expect-error Count labels cannot be supplied without a count.
-    MenuHeader({ label: 'Orphan count label', countLabel: '2 items' });
+    ListHeader({ label: 'Orphan count label', countLabel: '2 items' });
     // @ts-expect-error Count metadata and legacy badge content are mutually exclusive.
-    MenuHeader({ label: 'Competing indicators', count: 2, countLabel: '2 items', badge: <span>New</span> });
+    ListHeader({ label: 'Competing indicators', count: 2, countLabel: '2 items', badge: <span>New</span> });
     // @ts-expect-error Legacy badges cannot carry an orphaned count label.
-    MenuHeader({ label: 'Badge with count label', countLabel: '2 items', badge: <span>New</span> });
+    ListHeader({ label: 'Badge with count label', countLabel: '2 items', badge: <span>New</span> });
     // @ts-expect-error Component-owned count presence cannot be overridden.
-    MenuHeader({ label: 'Unsafe count presence', rootAttributes: { 'data-has-count': 'false' } });
+    ListHeader({ label: 'Unsafe count presence', rootAttributes: { 'data-has-count': 'false' } });
   });
 
-  it('normalizes MenuHeader counts and keeps widened legacy badges safe', () => {
-    const widened = (props: Record<string, unknown>) => MenuHeader(props as unknown as MenuHeaderProps);
+  it('normalizes ListHeader counts and keeps widened legacy badges safe', () => {
+    const widened = (props: Record<string, unknown>) => ListHeader(props as unknown as ListHeaderProps);
     const valid = asHtml(widened({
       label: 'Notes <unsafe>',
       count: 12,
@@ -165,7 +165,7 @@ describe('production UI primitives', () => {
     for (const count of [-1, 1.5, Number.NaN, Number.POSITIVE_INFINITY, Number.MAX_SAFE_INTEGER + 1, '4', null]) {
       const invalid = asHtml(widened({ label: 'Invalid count', count, countLabel: 'invalid', badge: <span>{'<script>alert(1)</script>'}</span> }));
       expect(invalid, String(count)).toContain('data-has-badge="true" data-has-count="false"');
-      expect(invalid, String(count)).not.toContain('kui-menu-header__count');
+      expect(invalid, String(count)).not.toContain('kui-list-header__count');
       expect(invalid, String(count)).toContain('&lt;script&gt;alert(1)&lt;/script&gt;');
       expect(invalid, String(count)).not.toContain('<script>alert(1)</script>');
     }
@@ -185,7 +185,7 @@ describe('production UI primitives', () => {
       'aria-current': 'false',
       disabled: 'disabled',
     };
-    const itemHtml = asHtml(MenuItem({
+    const itemHtml = asHtml(ListItem({
       label: 'Projects',
       action: 'open',
       itemId: 'projects',
@@ -199,7 +199,7 @@ describe('production UI primitives', () => {
     expect(itemHtml).not.toContain('role="menuitem"');
     expect(itemHtml).not.toContain('data-="malformed"');
     document.body.innerHTML = itemHtml;
-    const item = document.body.querySelector<HTMLButtonElement>('[data-component="menu-item"]');
+    const item = document.body.querySelector<HTMLButtonElement>('[data-component="list-item"]');
     expect(item?.getAttribute('data-action')).toBe('open');
     expect(item?.getAttribute('data-item-id')).toBe('projects');
     expect(item?.getAttribute('data-command-color')).toBe('#123456');
@@ -227,7 +227,7 @@ describe('production UI primitives', () => {
       'aria-expanded': 'true',
       disabled: 'disabled',
     };
-    const headerHtml = asHtml(MenuHeader({
+    const headerHtml = asHtml(ListHeader({
       label: 'Workspace',
       action: 'add',
       actionLabel: 'Add workspace',
@@ -246,7 +246,7 @@ describe('production UI primitives', () => {
     expect(headerHtml).not.toContain('role="menuitem"');
     expect(headerHtml).not.toContain('Injected label');
     document.body.innerHTML = headerHtml;
-    const header = document.body.querySelector<HTMLElement>('[data-component="menu-header"]');
+    const header = document.body.querySelector<HTMLElement>('[data-component="list-header"]');
     const trigger = header?.querySelector<HTMLButtonElement>('button');
     expect(header?.getAttribute('data-action')).toBeNull();
     expect(header?.getAttribute('data-toggle')).toBe('false');
@@ -281,7 +281,7 @@ describe('production UI primitives', () => {
       'aria-label': 'Injected label',
       disabled: 'disabled',
     };
-    const html = asHtml(MenuActionRow({
+    const html = asHtml(ListActionRow({
       label: <span>src/main.ts</span>,
       icon,
       action: 'select-file',
@@ -297,7 +297,7 @@ describe('production UI primitives', () => {
       trailingActionAttributes: widenedTrailingAttributes,
     }));
 
-    expect(html).toContain('data-component="menu-action-row"');
+    expect(html).toContain('data-component="list-action-row"');
     expect(html).toContain('data-file-kind="source"');
     expect(html).toContain('data-menu-source="repository"');
     expect(html).not.toContain('injected-root-action');
@@ -306,7 +306,7 @@ describe('production UI primitives', () => {
     expect(html).not.toContain('role="menuitem"');
 
     document.body.innerHTML = html;
-    const root = document.body.querySelector<HTMLElement>('[data-component="menu-action-row"]');
+    const root = document.body.querySelector<HTMLElement>('[data-component="list-action-row"]');
     const controls = root?.querySelectorAll<HTMLButtonElement>(':scope > button');
     const primary = controls?.[0];
     const trailing = controls?.[1];
@@ -333,7 +333,7 @@ describe('production UI primitives', () => {
     expect(trailing?.getAttribute('role')).toBeNull();
     expect(trailing?.disabled).toBe(false);
 
-    const independentlyDisabled = asHtml(MenuActionRow({
+    const independentlyDisabled = asHtml(ListActionRow({
       label: 'Unavailable primary',
       action: 'select-disabled',
       disabled: true,
@@ -342,11 +342,11 @@ describe('production UI primitives', () => {
       trailingActionIcon: icon,
     }));
     document.body.innerHTML = independentlyDisabled;
-    const disabledControls = document.body.querySelectorAll<HTMLButtonElement>('[data-component="menu-action-row"] > button');
+    const disabledControls = document.body.querySelectorAll<HTMLButtonElement>('[data-component="list-action-row"] > button');
     expect(disabledControls[0]?.disabled).toBe(true);
     expect(disabledControls[1]?.disabled).toBe(false);
 
-    const disabledTrailing = asHtml(MenuActionRow({
+    const disabledTrailing = asHtml(ListActionRow({
       label: 'Available primary',
       action: 'select-available',
       selected: true,
@@ -361,9 +361,9 @@ describe('production UI primitives', () => {
     expect(disabledTrailing).toContain('title="Actions unavailable" disabled');
 
     // @ts-expect-error The noninteractive row root cannot own delegated actions.
-    MenuActionRow({ label: 'Unsafe', action: 'safe', trailingAction: 'more', trailingActionLabel: 'More', trailingActionIcon: icon, rootAttributes: { 'data-action': 'unsafe' } });
+    ListActionRow({ label: 'Unsafe', action: 'safe', trailingAction: 'more', trailingActionLabel: 'More', trailingActionIcon: icon, rootAttributes: { 'data-action': 'unsafe' } });
     // @ts-expect-error The trailing action's accessible name is component-owned.
-    MenuActionRow({ label: 'Unsafe', action: 'safe', trailingAction: 'more', trailingActionLabel: 'More', trailingActionIcon: icon, trailingActionAttributes: { 'aria-label': 'unsafe' } });
+    ListActionRow({ label: 'Unsafe', action: 'safe', trailingAction: 'more', trailingActionLabel: 'More', trailingActionIcon: icon, trailingActionAttributes: { 'aria-label': 'unsafe' } });
   });
 
   it('renders generalized tabs with roving tabindex and optional close affordances', () => {

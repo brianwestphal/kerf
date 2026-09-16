@@ -1,6 +1,0 @@
-{
-  "caseId": "menu-header-count-contract",
-  "files": {
-    "app.tsx": "import { MenuHeader } from '@kerfjs/ui/menu-header';\nexport const competingIndicators = <MenuHeader label=\"Notes\" count={3} countLabel=\"3 notes\" badge={<span>New</span>} />;\n"
-  }
-}

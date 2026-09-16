@@ -22,8 +22,8 @@ npm install @kerfjs/ui   # kerfjs is a peer; @kerfjs/ui/select/register is neede
 ## What you supply
 
 - **`sections`** — category-grouped entries: `{ category, entries: [{ id, name,
-  description?, resources?, related? }] }`. Each entry becomes a sidebar `MenuItem`
-  under a `MenuHeader` for its category.
+  description?, resources?, related? }] }`. Each entry becomes a sidebar `ListItem`
+  under a `ListHeader` for its category.
 - **`content`** — the rendered preview for the active entry. Keep a map of `id →
   () => SafeHtml` in your app and call `renderers[active]()` in your render.
 - **`brand`** — `{ title, subtitle?, logoUrl? }` for the sidebar header.
@@ -112,7 +112,7 @@ matching options on `wireCatalog`) if they collide with your own action table.
 
 ## CSS
 
-`Catalog` composes public primitives (`Toolbar`, `MenuHeader`, `MenuItem`, `Select`,
+`Catalog` composes public primitives (`Toolbar`, `ListHeader`, `ListItem`, `Select`,
 …). Import `@kerfjs/ui/styles.css` for the whole layer, or `@kerfjs/ui/catalog.css`
 plus each composed primitive's CSS. The shell is theme-aware and responsive: it
 stacks the sidebar above the detail below ~832px and hides it when collapsed.

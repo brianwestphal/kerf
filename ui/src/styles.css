@@ -5,9 +5,9 @@
 @import "./toolbar.css";
 @import "./toolbar-control-group.css";
 @import "./toolbar-text.css";
-@import "./menu-action-row.css";
-@import "./menu-item.css";
-@import "./menu-header.css";
+@import "./list-action-row.css";
+@import "./list-item.css";
+@import "./list-header.css";
 @import "./resizable-region.css";
 @import "./app-tab.css";
 @import "./catalog.css";

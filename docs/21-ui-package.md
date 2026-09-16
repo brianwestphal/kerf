@@ -62,7 +62,7 @@ uses a separate Web Awesome expand-glyph contract with
 independent of the shared arrow's box size. Configured directions animate over
 the shortest path; a 180-degree closed-to-open tie uses counterclockwise
 rotation.
-`MenuHeader` toggle mode composes that production arrow automatically when no
+`ListHeader` toggle mode composes that production arrow automatically when no
 custom `actionIcon` is supplied; its controlled `expanded` value must correspond
 to real revealed content, and ordinary navigation does not borrow the
 disclosure affordance. The header fills its available inline width and keeps a
@@ -78,14 +78,14 @@ geometry, and the pill modifier selects 22px corners.
 
 `ToolbarControlGroup` is the unit of toolbar organization, even for dormant
 text. Groups stay 44px outside (`calc(2px + remify(42px))`) with 8px between
-groups and inside items. `MenuHeader` fills the available inline width and
+groups and inside items. `ListHeader` fills the available inline width and
 separates a dormant title and count-or-badge cluster from its optional
 logical-end 44px action with an 18px visual. Non-negative safe-integer section
 counts use the required localized `count`/`countLabel` pair and the shared
 neutral pill; non-count `SafeHtml` remains available through the mutually
-exclusive legacy `badge` slot. `MenuActionRow` keeps independently interactive
+exclusive legacy `badge` slot. `ListActionRow` keeps independently interactive
 primary and trailing 44px controls as sibling buttons inside a noninteractive
-full-width row; `MenuItem.trailing` remains dormant. The layer does not specify product reading width
+full-width row; `ListItem.trailing` remains dormant. The layer does not specify product reading width
 or responsive pane placement; consumers adapt public `--kui-layout-*` tokens
 instead of adding wrapper padding, negative margins, or duplicated offsets.
 
@@ -125,14 +125,14 @@ instead of retaining stale content.
 | --- | --- | --- |
 | Icons | `LucideIcon` | Render Lucide icon-node data; decorative by default, labeled on request |
 | Toolbars | `Toolbar`, `ToolbarControlGroup`, `ToolbarText` | Leading/center/trailing structure and grouped controls |
-| Menus | `MenuItem`, `MenuActionRow`, `MenuHeader` | Navigation/action rows, sibling primary/trailing row actions, and section headings with semantic count/countLabel pills, plus narrow typed `data-*` and popover-relationship extension slots but no domain commands |
+| Menus | `ListItem`, `ListActionRow`, `ListHeader` | Navigation/action rows, sibling primary/trailing row actions, and section headings with semantic count/countLabel pills, plus narrow typed `data-*` and popover-relationship extension slots but no domain commands |
 | Tabs | `AppTab`, `TabBar`, `wireTabBars`, `reorderTabs` | Controlled tab/close markup with runtime-safe domain metadata and an optional decorative close glyph, fixed rails, horizontal overflow, edge autoscroll, pointer/keyboard reorder, and focus restoration; the app owns state and persistence |
 | Layout | `PanelHeader`, `ValueTable`, `ValueTableRow` | Panel/dialog/page headings as plain toolbars with an optional bordered icon group, an extra-large title, trailing controls, and an optional subtitle; and typed semantic definition-list rows with optional leading icons |
 | Resize | `ResizableRegion`, `wireResizableRegions` | Pointer-captured resize plus arrows, Shift acceleration, Home, End, and an optional decorative handle glyph |
 | Choice controls | `SegmentedControl`, `Select` | Controlled exclusive buttons with toolbar/rounded/pill presentation; grouped Web Awesome popup choices with optional Lucide icons |
 | Search | `TokenSearchField`, `readTokenSearchField`, `placeTokenSearchCaret`, `wireTokenSearchFields` | DOM-owned free text plus controlled ordered atomic filter chips; optional animated standalone or toolbar-group collapse; DOM reading, Enter submission, and caret-preserving keyboard deletion without application query grammar |
 | Feedback | `StateBanner`, `EmptyState`, `LoadingSpinner`, `Skeleton` | Status/alert, empty/busy, meaningful/decorative progress, and a subtle unanimated loading-placeholder block |
-| Loading placeholder | a component's `placeholder` prop | Value-bearing components (`Select`, `MenuHeader`, `MenuItem`, `ValueTableRow`, `PanelHeader`, `SegmentedControl`, `StateBanner`, `AppTab`, `ToolbarText`, `MenuActionRow`) render their real chrome with value slots as `Skeleton` blocks and interactivity disabled, so a parent composes a faithful loading view (e.g. an inspector) without hand-rebuilding markup |
+| Loading placeholder | a component's `placeholder` prop | Value-bearing components (`Select`, `ListHeader`, `ListItem`, `ValueTableRow`, `PanelHeader`, `SegmentedControl`, `StateBanner`, `AppTab`, `ToolbarText`, `ListActionRow`) render their real chrome with value slots as `Skeleton` blocks and interactivity disabled, so a parent composes a faithful loading view (e.g. an inspector) without hand-rebuilding markup |
 | Component catalog shell | `Catalog` + `wireCatalog` (`@kerfjs/ui/catalog`) | An opt-in, subpath-only whole-screen shell — collapsible category sidebar + titled preview stage + resources footer + related-entry selector — for building a component gallery from your own entries; controlled/stateless (the app owns `active`/`collapsed`/`theme` and computes the preview `content`). See `ui/docs/catalog.md` |
 
 ## 21.4 Accessibility contract
@@ -176,10 +176,10 @@ instead of retaining stale content.
   proximity-based horizontal edge autoscroll, `Alt+Shift+Arrow` reorder, focus
   restoration, and a disposer. The app applies changes and owns order,
   selection, panels, routing, close policy, and persistence.
-- A `MenuItem` is a native button, not an isolated `role="menuitem"`; callers
+- A `ListItem` is a native button, not an isolated `role="menuitem"`; callers
   should add a full menu widget only when they also implement its complete
   keyboard model. Menu row/header `rootAttributes` accept only domain `data-*`
-  metadata. `MenuHeader.triggerAttributes` additionally accepts native popover
+  metadata. `ListHeader.triggerAttributes` additionally accepts native popover
   target/action and `aria-controls`/`aria-haspopup`; action, selection,
   disclosure, accessible-name, disabled, and icon semantics remain component
   owned.
@@ -306,7 +306,7 @@ use their recorded stricter descendant rule so their hashes, scores, and
 findings remain unchanged; the current oracle accepts public-class-to-public-
 class composition selectors while rejecting private anatomy.
 Suite-v2 overrides separately accept equivalent supported resize and delegated
-action import paths. MenuHeader count scoring covers canonical JSX and equivalent
+action import paths. ListHeader count scoring covers canonical JSX and equivalent
 direct object-literal calls, including statically invalid numeric counts. An
 opt-in, non-executing TypeScript probe records separate
 schema-described compile evidence against fixed compiler options and hashed

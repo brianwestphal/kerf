@@ -5,7 +5,7 @@ import postcss from 'postcss';
 import { describe, expect, it } from 'vitest';
 
 describe('labeled-example note alignment', () => {
-  it('insets a demo example note by the margin, border, and content padding so it lines up with the MenuHeader label and a content-item component', async () => {
+  it('insets a demo example note by the margin, border, and content padding so it lines up with the ListHeader label and a content-item component', async () => {
     const file = resolve(import.meta.dirname, '../../ux-demo/style.css');
     const root = postcss.parse(await readFile(file, 'utf8'), { from: file });
     const rule = root.nodes.find(
