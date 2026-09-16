@@ -92,6 +92,19 @@ describe('consumer bundle boundaries', () => {
     expect(css).not.toContain('remify(');
   });
 
+  it('keeps a re-exported component’s CSS reachable (ValueTableRow placeholder pulls skeleton.css)', async () => {
+    // value-table.tsx re-exports ValueTableRow via `export { … } from './value-table-row.js'`;
+    // the browser-entry scanner must follow that re-export to the row's Skeleton dependency so
+    // its placeholder CSS ships. Guards against the silent CSS gap re-exports used to cause.
+    const result = await bundle("import { ValueTableRow } from '@kerfjs/ui/value-table'; console.log(String(ValueTableRow({ label: 'Owner', value: '', placeholder: true }))); ");
+    const inputs = Object.keys(result.metafile!.inputs).join('\n');
+    const css = output(result, '.css');
+    expect(inputs).toContain('dist/browser/value-table.js');
+    expect(inputs).toContain('dist/styles/skeleton.css');
+    expect(css).toContain('.kui-value-table');
+    expect(css).toContain('.kui-skeleton');
+  });
+
   it('keeps SegmentedControl CSS reachable without retaining unrelated controls', async () => {
     const result = await bundle("import { SegmentedControl } from '@kerfjs/ui/segmented-control'; console.log(String(SegmentedControl({ id: 'view', label: 'View', value: 'list', choices: [{ value: 'list', label: 'List' }] }))); ");
     const inputs = Object.keys(result.metafile!.inputs).join('\n');

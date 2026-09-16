@@ -36,8 +36,14 @@ async function reachableStyles(moduleName, seen = new Set()) {
   seen.add(moduleName);
 
   const source = await readFile(await sourceFor(moduleName), 'utf8');
-  const dependencies = [...source.matchAll(/import\s+(?!type\b)[^'"]*from\s+['"]\.\/([^'"]+)\.js['"]/g)]
-    .map((match) => match[1]);
+  // Follow both value imports AND value re-exports (`export { X } from './x.js'`,
+  // `export * from …`) — a re-exported sibling pulls its runtime, so its CSS must be
+  // reachable too. Skip type-only forms (`import type …`, `export type …`), which
+  // erase at build and reference no CSS.
+  const dependencies = [
+    ...source.matchAll(/import\s+(?!type\b)[^'"]*from\s+['"]\.\/([^'"]+)\.js['"]/g),
+    ...source.matchAll(/export\s+(?!type\b)(?:\*|\{[^}]*\})\s+from\s+['"]\.\/([^'"]+)\.js['"]/g),
+  ].map((match) => match[1]);
   const styles = [];
   for (const dependency of dependencies) {
     styles.push(...await reachableStyles(dependency, seen));
