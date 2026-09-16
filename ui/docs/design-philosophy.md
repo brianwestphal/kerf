@@ -18,7 +18,7 @@ A reference image defines hierarchy, relationships, and intended feel. It does n
 
 ### Continuity is correctness
 
-Unrelated updates must not close controls, move focus, reset a draft, replace a selection, or jump scroll. Give every durable and transient state an explicit owner. Preserve DOM identity when meaning has not changed. Distinguish blocking foreground work from background synchronization.
+Unrelated updates must not close controls, move focus, reset a draft, replace a selection, or jump scroll. Give every durable and transient state an explicit owner. The default owner is the application: domain data and persisted layout preferences — a navigation stack, a selection, a tab order, a pane size, a `collapsed`/`expanded` disclosure flag — are the app's signals, which it reads to render. A `wire…` helper owns only the *ephemeral mechanics* around that state (a push/pop animation, overflow autoscroll, a live resize preview) and reports committed changes through callbacks. A helper takes over a piece of transient state itself only when hand-rolling that behavior is substantial and error-prone enough to cause real, inconsistent variation across apps — `wireTokenSearchFields`'s collapsible reveal/focus/Escape/blur-collapse is the bar; a one-line boolean toggle is not. Preserve DOM identity when meaning has not changed. Distinguish blocking foreground work from background synchronization.
 
 ### Hierarchy precedes decoration
 

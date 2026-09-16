@@ -159,7 +159,26 @@ by default it also owns the collapsible field's transient expand/collapse/focus
 state in a signal it exposes on the returned handle. An app reads that signal in
 render, hands in its own via `collapsible.signals`, drives it through
 `handle.open`/`handle.close`, or disables any individual behavior — so transient
-UI is consistent by default without every app reinventing it. CSS, the generated wrappers that make it
+UI is consistent by default without every app reinventing it.
+
+`wireTokenSearchFields` is a deliberate exception, not the rule for `wire…`
+helpers. Its collapse behavior was *rich and error-prone* — reveal, focus
+transfer, Escape, empty-blur collapse, focus return — the kind of transient chrome
+apps kept reimplementing inconsistently, so the helper owns it. Everywhere else the
+app's state is **domain or persisted, not transient chrome, and stays app-owned**: a
+`NavStack`'s view stack is navigation history, a `TabBar`/`TabScaffold`'s selection
+and tab order are data, a `ResizableRegion`'s committed size and a
+`Workbench`/`SplitView` rail's `collapsed` flag are persisted layout preferences.
+Each helper already owns only the *ephemeral mechanics* around that state —
+`wireNavStack` the push/pop animation, `wireTabBars` the overflow autoscroll and
+drag preview, `wireResizableRegions` the live drag preview — and reports committed
+changes through callbacks. A `MenuHeader` `toggle` disclosure's `expanded` is
+likewise app-owned: it is a one-line boolean the app already tracks and must read to
+render the section body, so a managed helper would remove no real complexity. Reach
+for a managed default only when the transient behavior is substantial enough that
+hand-rolling it produces genuine, inconsistent variation.
+
+CSS, the generated wrappers that make it
 reachable, and the registration module are the package's only declared side
 effects.
 
