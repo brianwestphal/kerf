@@ -1,47 +1,97 @@
 # @kerfjs/ui
 
-Accessible, production-backed UI primitives for kerf applications.
+> Accessible, production-backed UI primitives for [kerf](https://github.com/brianwestphal/kerf)
+> applications. Components are plain functions returning `SafeHtml`; the app owns
+> state and wires stable `data-action` hooks once. This file orients an LLM to
+> generate correct, good-looking kerf UI — it is not a catalog to browse.
 
-- [Package guide](./README.md)
-- [AI skill](./ai/skill.md)
-- [Machine-readable component catalog](./ai/component-catalog.json)
-- [Public API signature snapshot](./ai/public-api-signatures-v1.md)
-- [Web Awesome JSX signature snapshot](./ai/webawesome-jsx-signatures-v1.md)
-- [Need-first component selection matrix](./docs/component-selection.md)
-- [Production composition recipes](./docs/recipes.md)
-- [Component contract](./docs/component-contract.md)
-- [Web Awesome theme contract](./docs/webawesome-theme.md)
-- [Accessibility and keyboard contracts](./docs/accessibility.md)
-- [Design philosophy](./docs/design-philosophy.md)
-- [Apple HIG translation](./docs/apple-hig.md)
-- [UX catalog](./docs/ux-demo.md)
+```bash
+npm install kerfjs @kerfjs/ui   # kerfjs is a peer; Web Awesome is an optional peer
+```
 
-The UX catalog is a category-grouped master/detail review surface with a focused route for every public visual component plus composition demos. Its collapsible ecosystem section also lists all 70 free Web Awesome 3.12 components, each with a focused themed route. Related entries use one grouped `Uses` / `Used by` selector across both sets; the shell, display preferences, and selected component share one semantic theme.
+Import each component from its own subpath (`@kerfjs/ui/menu-item`, `@kerfjs/ui/toolbar`,
+…); the browser build pulls that component's reachable CSS automatically, so do not
+maintain a central style list. Configure JSX with `"jsxImportSource": "kerfjs"`.
 
-Choose from the interface need: search the catalog, reuse a semantic match, compose existing primitives, add a thin application adapter for product concerns, and use custom markup only for a genuinely different contract. The selection matrix covers every public visual/helper export and the supported-but-not-preferred Web Awesome overlaps, including required wiring, application ownership, import subpaths, alternatives, and recipe links.
+## How to build a screen (retrieval order)
 
-There is no `@kerfjs/ui` command-palette runtime export or production recipe. The typed application-local example at `docs/examples/command-palette-adapter.tsx` demonstrates how a missing concept can reuse public layout vocabulary without inventing a package API. Ranking, history, permissions, availability, focus policy, actions, and copy stay in the app; propose recurring behavior upstream.
+1. **Pick the component from the interface need**, not by appearance — read
+   [component-selection.md](./docs/component-selection.md) (the problem→component
+   matrix, with imports, wiring, ownership, and alternatives).
+2. **Get exact signatures before emitting code** — read
+   [public-api-signatures-v1.md](./ai/public-api-signatures-v1.md) (real prop names,
+   callback shapes, disposer return types).
+3. **For exhaustive, structured facts** (ids, exports, variants, `publicClasses`,
+   relationships, side effects) load the
+   [Machine-readable component catalog](./ai/component-catalog.json) — the
+   canonical checked-in source; its schema is alongside it.
+4. **Apply the rules below and in** [skill.md](./ai/skill.md).
 
-AI tools that need exhaustive retrieval should load `@kerfjs/ui/ai/component-catalog.json`. It is the canonical checked-in source for stable ids, exports, purpose, selection guidance, relationships, delivery and side effects, wiring, application ownership, variants, accessibility, public CSS hooks, catalog routes, and current documentation/recipe links. Its adjacent JSON Schema describes the format.
+## Core rules (do the right thing)
 
-Prefer an equivalent component prop or `--kui-*` token for customization. When composition-specific layout needs CSS, the catalog's `publicClasses` arrays are the exact supported anatomy boundary: selectors may join documented public classes, but must not reach into a component by tag, id, attribute alone, or an unlisted class.
+- **Reach for the primitive, not for CSS.** The package is built to look right
+  *unstyled*. Before adding `padding`, `margin`, `width`, `height`, `border`,
+  `background`, a wrapper card, or a decoration, check whether the component, the
+  pane, or the content-item already owns it — it almost always does. Prefer a
+  component prop or a `--kui-*` token; write CSS only for genuinely new structure,
+  and then only join a component's documented `publicClasses` (never reach in by
+  tag/id/attribute or an unlisted class).
+- **Never double-inset.** A `.kui-pane` has no padding; its `.kui-content` children
+  own the geometry (8px inline margin + 1px border + 8px padding). Do not add a
+  container padding on top of a content-item's own margin — pick one owner. Use
+  `.kui-content` for 24px major vertical rhythm.
+- **Trust the defaults.** Render a control at its natural size and color (a
+  `LucideIcon` is 24px); if it looks wrong, fix the surrounding layout, not the
+  control. Never force a component's width/height to size it — that leaves a halo
+  or a stretched oval.
+- **Toolbars hold only `ToolbarText` and `ToolbarControlGroup`.** Never put a bare
+  button, input, link, or loose markup in a `leading`/`center`/`trailing` zone.
+  Wrap every control — `SegmentedControl`, `Select`, a collapsible
+  `TokenSearchField`, Web Awesome controls — inside a `ToolbarControlGroup`. A
+  toolbar popup menu is a `single` `ToolbarControlGroup` around a `wa-dropdown`
+  (its `slot="trigger"` `wa-button` is the toolbar button, kept under
+  `data-morph-skip-children`).
+- **`PanelHeader` is *the* panel/dialog/page heading.** A plain toolbar with an
+  optional bordered icon group, an extra-large `ToolbarText` title, the trailing
+  controls you pass, and an optional subtitle below — do not hand-build a heading
+  row or restyle a toolbar into one.
+- **Space by the five-step scale, by relationship not by eye.** `0`
+  `--kui-space-none`, `4px` `--kui-space-2xs`, `8px` `--kui-space-xs` (inside a
+  group), `16px` `--kui-space-m`, `24px` `--kui-space-l` (between major differing
+  regions). 12px/32px are off-scale exceptions.
+- **Panes share one child-owned geometry.** Sidebars, main areas, inspectors, and
+  dialogs all use an unpadded `.kui-pane` (optional `.kui-pane__toolbar`, one
+  scrolling `.kui-pane__content`, optional `.kui-pane__footer`). A visible pane owns
+  its collapse control; a hidden pane's restore moves to the adjacent main
+  toolbar's matching edge — no icon-only rail. Keep one scroll owner per region.
+- **State and behavior live in the app.** Components take semantic `data-action`
+  strings and controlled values; wire them once with `delegate()`/`delegateActions()`
+  or the disposer-returning `wire…` helpers, and own domain copy, transport, and
+  policy in a thin adapter. Every element must earn its place — cut chrome, labels,
+  and readouts that do not help a person decide or act.
 
-Before emitting code, load `@kerfjs/ui/ai/public-api-signatures-v1.md` for the exact declaration signatures used by the authoring corpus. It records accepted import paths, prop names, callback shapes, and disposer return types from emitted declarations rather than prose examples.
+## Public exports
 
-Public components: `LucideIcon`, `DisclosureArrow`, `Toolbar`, `ToolbarControlGroup`, `ToolbarText`, `SegmentedControl`, `TokenSearchField`, `readTokenSearchField`, `placeTokenSearchCaret`, `wireTokenSearchFields`, `MenuItem`, `MenuActionRow`, `MenuHeader`, `ResizableRegion`, `wireResizableRegions`, `AppTab`, `TabBar`, `wireTabBars`, `reorderTabs`, `LoadingSpinner`, `Select`, `StateBanner`, `EmptyState`, `PanelHeader`, `ValueTable`, and `ValueTableRow`. `MenuItem`, `MenuActionRow`, `MenuHeader`, and `AppTab` accept typed, runtime-filtered application `data-*` metadata through `rootAttributes`; MenuActionRow `trailingActionAttributes` and MenuHeader `triggerAttributes` additionally support native popover target/action and `aria-controls`/`aria-haspopup`, while component-owned action, identity, selection, disclosure, naming, disabled, icon, and role semantics stay protected. `MenuHeader` uses the mutually exclusive `count` plus required localized `countLabel` pair for non-negative safe-integer section quantities, including zero; it renders the shared neutral pill and joins the spoken phrase to the owning heading or disclosure button. Never concatenate a count into `label` or put numeric content in the legacy non-count `badge` SafeHtml slot. In real toggle mode, omitting `actionIcon` supplies one production 18px `DisclosureArrow` driven by `expanded`; a custom icon replaces it, and the app must reveal matching content. Ordinary navigation must not borrow a disclosure chevron. `AppTab.closeIcon` and `ResizableRegion.handleIcon` replace decorative dormant glyphs without taking control ownership. `MenuItem.trailing` is dormant; use `MenuActionRow` for sibling primary/trailing native buttons, keeping its `label`, `icon`, and `trailingActionIcon` SafeHtml dormant too. `ValueTableRow` owns semantic `dt`/`dd` markup, 8px of root-scaled top and bottom padding, and an optional 24px leading icon; its separator begins 8px from the left without an icon or 40px with one and ends 8px from the right. `DisclosureArrow` is a decorative, controlled open/closed indicator with configurable directions, shortest-path rotation (counterclockwise for a 180-degree closed-to-open tie), replaceable right-oriented icon content, an 18px root-scaled default, and a scoped `--kui-disclosure-arrow-size` override; the owning control retains interaction and expanded-state semantics. `SegmentedControl` is controlled and supports toolbar, rounded-rectangle, and pill presentations with native pressed buttons in sequential Tab order. `Select` preserves icon-bearing option slots across Kerf rerenders, keys custom selected content by the controlled value, and separately keeps its intrinsic Web Awesome expand glyph at `--kui-disclosure-icon-scale: .5`. `TokenSearchField` controls tokens while keeping editable text DOM-owned between token changes, combining free text with ordered atomic filter chips while leaving query parsing and results to the application; its leading icon, first text line, clear action, and trailing slot stay aligned to one fixed row when text wraps. Its optional `collapsible` mode animates between an empty iconic action and the complete field, works standalone or inside `ToolbarControlGroup`, and keeps populated searches expanded while the app controls transient focus/open state. Call `wireTokenSearchFields` once to make Enter submit without inserting a contenteditable line break and to preserve focus plus the text-relative caret across controlled keyboard chip deletion; visual wrapping remains available. Semantic state palettes are opinionated, Web Awesome-compatible, and overridable globally, by tone, or per instance.
+`LucideIcon`, `DisclosureArrow`, `Toolbar`, `ToolbarControlGroup`, `ToolbarText`,
+`PanelHeader`, `MenuItem`, `MenuActionRow`, `MenuHeader`, `SegmentedControl`,
+`Select`, `TokenSearchField` (+ `readTokenSearchField`, `placeTokenSearchCaret`,
+`wireTokenSearchFields`), `AppTab`, `TabBar` (+ `wireTabBars`, `reorderTabs`),
+`ResizableRegion` (+ `wireResizableRegions`), `StateBanner`, `EmptyState`,
+`LoadingSpinner`, `ValueTable`, `ValueTableRow`. Whole-screen layouts (opt-in,
+tree-shakeable, declarative with `wire…` helpers, each with a companion CSS import):
+`NavStack`, `SplitView`, `Workbench`, `TabScaffold`, driven by `deviceClass()` from
+`@kerfjs/ui/device-class`. `@kerfjs/ui/webawesome` is a type-only boundary for
+`wa-*` JSX; `@kerfjs/ui/select/register` and the CSS are the declared side effects.
 
-In a `Toolbar`, the only direct children of a zone (`leading`/`center`/`trailing`) are `ToolbarText` (identity text) and `ToolbarControlGroup`; wrap every control — including `SegmentedControl`, `Select`, a collapsible `TokenSearchField`, and Web Awesome controls — in a `ToolbarControlGroup` rather than dropping it loose. A toolbar popup menu is a `single` `ToolbarControlGroup` around a `wa-dropdown` (its `slot="trigger"` `wa-button` is the toolbar button, kept under `data-morph-skip-children`).
+## Reference
 
-`PanelHeader` is a plain top `Toolbar` used as a panel, dialog, or page heading and overrides no Toolbar styles. Its leading zone holds the optional icon (a normal bordered `ToolbarControlGroup` given a brand fill with a matching border, a 22px glyph) and the title as extra-large `ToolbarText`; the app's trailing controls (typically a `ToolbarControlGroup`) go straight in the trailing zone. When no icon is provided the icon group is omitted. The optional `summary`/`summaryId` row sits below the toolbar, its text left-aligned with the title; the application owns modal focus, dismissal, commands, and action handling.
-
-Pane and navigation composition: import `@kerfjs/ui/layout.css` and use an unpadded `.kui-pane` with optional `.kui-pane__toolbar`, one scrolling `.kui-pane__content`, and optional `.kui-pane__footer`. Add `.kui-content` for 24px major vertical gaps. Use `.kui-content-item` for children that own 8px inline margin, 1px transparent-or-visible border, 8px padding, and 12px rounded corners; the pill modifier uses 22px. This vocabulary applies equally to sidebars, main areas, inspectors, and dialogs. A visible collapsible pane owns collapse in its own toolbar. When hidden, move restore into the adjacent main toolbar on the same logical edge—leading for an inline-start pane, trailing for inline-end—and remove the pane instead of leaving an icon-only rail. Spacing follows one official five-step scale, chosen by how connected two elements are: 0 (`--kui-space-none`, no separation), 4px (`--kui-space-2xs`, very minor air on a connected cluster), 8px (`--kui-space-xs`, standard within a group), 16px (`--kui-space-m`, between homogeneous groups), and 24px (`--kui-space-l`, major between heterogeneous groups); 8px is inside-a-group and 24px is between-major-differing-regions. `--kui-space-s` (12px) and `--kui-space-xl` (32px) are off-scale exceptions; prefer the five canonical remify-authored tokens. Four opt-in, tree-shakeable whole-screen layouts pick presentation from `@kerfjs/ui/device-class`'s reactive `deviceClass()` (`compact` = handset or portrait tablet): `NavStack` (`@kerfjs/ui/nav-stack`, push/pop; a single pane is a one-entry stack), `SplitView` (`@kerfjs/ui/split-view`, list-detail, collapsing to a NavStack on compact), `Workbench` (`@kerfjs/ui/workbench`, collapsible left/right rails + bottom drawer, desktop-class), and `TabScaffold` (`@kerfjs/ui/tab-scaffold`, iOS bottom tabs, each tab its own NavStack). All declarative with disposer-returning `wire…` helpers, delivered as non-barrel subpaths with companion CSS imports. Pick by data + interaction + device; see `docs/app-layouts.md` for the decision matrix and dialog rules.
-
-Composer form recipe: keep the form as one visible surface, use `PanelHeader` title/summary ids to label and describe it, and align field and action control edges on the shared 8px inline gutter without a second content-item padding inset. Retain 24px major rhythm. A conditional `StateBanner` is the only nested semantic surface. Do not make every form section another card. When resetting controlled upgraded Web Awesome fields, synchronize their live `value` properties as well as the rendered value attributes.
-
-Toolbar and split-item geometry: wrap every toolbar item, including dormant text, in `ToolbarControlGroup`. Groups stay 44px outside (`calc(2px + remify(42px))`) even when their border and background are transparent, with 8px between groups and inside items. `MenuHeader` fills the available inline width and separates its dormant title/count-or-badge cluster from its optional logical-end 44px action; the visible action glyph defaults to 18px through `--kui-menu-header-action-icon-size`, while disclosure mode makes the title cluster the action. `MenuActionRow` keeps primary and trailing 44px actions as sibling native buttons inside a noninteractive row. Multiline `MenuItem` and `MenuActionRow` leading icons stay centered on the first text line while later lines extend below. Do not pad pane shells or add competing wrapper insets. See `docs/layout.md`.
-
-Import visual components from explicit JavaScript subpaths. A CSS-aware browser bundler selects generated wrappers that bring in the foundation, the component CSS, and styles for reachable UI subcomponents; unrelated CSS stays out. The root barrel and `@kerfjs/ui/unstyled` are CSS-free; use `styles.css` with the root barrel only when the complete layer is intentional. Manual CSS exports remain available for custom pipelines, and application overrides follow package styles in the cascade. Direct `wa-*` JSX uses `import type {} from '@kerfjs/ui/webawesome'`, the side-effect-free declaration boundary synchronized with all 70 catalog-supported elements. `@kerfjs/ui/webawesome.css` is the optional CSS-only theme; it includes Web Awesome's base stylesheet, registers no elements, and remains overridable through public `--wa-*` tokens. CSS, its generated browser wrappers, and `@kerfjs/ui/select/register` are the declared side effects. `kerfjs` is an external peer. The Web Awesome peer is optional and needed for its components. `wireTabBars` includes proximity-based horizontal edge autoscroll during same-bar drag reordering.
-
-The Web Awesome theme renders Tooltip and Popover without pointer arrows by default. Restore them only when the anchor relationship needs the pointer, using `--wa-tooltip-arrow-size`, `--kui-wa-popover-arrow-size`, or one popover's public `--arrow-size`; `without-arrow` remains available for explicit local intent.
-
-Web Awesome catalog coverage means themed and inspectable, not preferred. Consider Popup when it replaces custom anchored positioning. Prefer Kerf Select over direct Dropdown/Dropdown Item/Select/Option composition, SegmentedControl over Button Group, TabBar or SegmentedControl over Web Awesome Tabs, LucideIcon over Web Awesome Icon, and ResizableRegion over Split Panel. ResizableRegion carries Hot Sheet 2's 1px separator plus hover/focus grip. Use Tree/Tree Item, Animated Image, and Comparison only for a specific required behavior; avoid Zoomable Frame.
+- [skill.md](./ai/skill.md): the full rule set + a common-mistakes table (the shipped AI skill).
+- [design-philosophy.md](./docs/design-philosophy.md): why kerf UI is shaped this way — the decision principles behind the rules above.
+- [layout.md](./docs/layout.md): the pane/content-item geometry, public roles/tokens, and the spacing scale.
+- [component-contract.md](./docs/component-contract.md): what a component owns vs. what the app owns.
+- [accessibility.md](./docs/accessibility.md): keyboard and ARIA contracts per component.
+- [recipes.md](./docs/recipes.md): production compositions (app shell, master-detail dialog, composer form, …) as copyable references.
+- [app-layouts.md](./docs/app-layouts.md): choosing `NavStack`/`SplitView`/`Workbench`/`TabScaffold` by data + interaction + device, and dialog presentation.
+- [webawesome-theme.md](./docs/webawesome-theme.md): the optional Web Awesome theme; catalog coverage means themed-and-supported, not preferred (prefer the Kerf primitive when one exists).
+- [component-catalog.json](./ai/component-catalog.json) + [public-api-signatures-v1.md](./ai/public-api-signatures-v1.md) + [webawesome-jsx-signatures-v1.md](./ai/webawesome-jsx-signatures-v1.md): machine-readable facts and exact signatures.
+- [README.md](./README.md): package overview and the component subpath table.
