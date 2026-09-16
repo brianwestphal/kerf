@@ -22,9 +22,14 @@
     --kui-panel-header-icon-foreground,
     var(--kui-color-brand-on-quiet)
   );
+  /* The icon is a raw svg child (not a button), so the group's default
+     flex-start alignment would pin it to the left of the filled tile. Center it
+     on both axes inside the circle. */
+  justify-content: center;
 }
 
 .kui-panel-header__icon svg {
+  display: block;
   width: remify(22px);
   height: remify(22px);
 }
