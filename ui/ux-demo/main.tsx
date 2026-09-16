@@ -236,7 +236,7 @@ function ToolbarControlGroupDemo() {
     <section class="demo-example"><MenuHeader label="Borderless group" /><ToolbarControlGroup appearance="borderless" single><button type="button" aria-label="Show sidebar" data-action="log-sidebar">{icon(PanelLeftOpen, 'panel-left-open')}</button></ToolbarControlGroup></section>
     <section class="demo-example"><MenuHeader label="Push button, resting" /><ToolbarControlGroup buttonAppearance="push" single><button type="button" aria-label="Resting comparison" aria-pressed="false" data-action="log-resting">{icon(GitCompare, 'git-compare')}</button></ToolbarControlGroup></section>
     <section class="demo-example"><MenuHeader label="Push button, pressed" /><ToolbarControlGroup buttonAppearance="push" single><button type="button" aria-label="Pressed comparison" aria-pressed="true" data-action="log-pressed">{icon(GitCompare, 'git-compare')}</button></ToolbarControlGroup></section>
-    <section class="demo-example demo-dark-swatch"><MenuHeader label="Dark group" /><ToolbarControlGroup label="Dark navigation" tone="dark"><button type="button" aria-label="Previous" data-action="log-previous">{icon(ChevronLeft, 'chevron-left')}</button><button type="button" aria-label="Next" data-action="log-next">{icon(ChevronRight, 'chevron-right')}</button></ToolbarControlGroup></section>
+    <section class="demo-example"><MenuHeader label="Dark group" /><ToolbarControlGroup label="Dark navigation" tone="dark"><button type="button" aria-label="Previous" data-action="log-previous">{icon(ChevronLeft, 'chevron-left')}</button><button type="button" aria-label="Next" data-action="log-next">{icon(ChevronRight, 'chevron-right')}</button></ToolbarControlGroup></section>
   </section>;
 }
 
@@ -429,7 +429,7 @@ function ValueTableDemo() {
 }
 
 function ResizeDemo() {
-  return <div class="demo-resize-shell" data-demo="resize">
+  return <div class="demo-resize-shell" data-demo="resize" data-demo-overlay-skip>
     <ResizableRegion id="catalog-panel" label="Catalog panel" size={regionSize.value} min={180} max={420} handleIcon={icon(GripVertical, 'custom-resize-handle')}><div class="demo-resize-panel kui-pane"><div class="demo-resize-panel__copy kui-content-item"><strong>Resizable panel</strong><span>Use the handle with a pointer, arrow keys, Home, or End.</span></div></div></ResizableRegion>
   </div>;
 }

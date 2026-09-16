@@ -410,19 +410,6 @@ button {
   background: var(--kui-color-warning-fill-quiet);
   box-shadow: var(--kui-shadow-l);
 }
-.catalog-stage[data-recipe-notes-visible="true"] .kui-recipe__ownership::after {
-  position: absolute;
-  inset-block-start: -1px;
-  inset-inline-end: -1px;
-  width: remify(24px);
-  height: remify(24px);
-  border-inline-start: 1px solid var(--kui-color-warning-border-normal);
-  border-block-end: 1px solid var(--kui-color-warning-border-normal);
-  background: var(--kui-color-surface-lowered);
-  clip-path: polygon(100% 0, 0 0, 100% 100%);
-  content: "";
-}
-
 .demo-frame,
 .demo-feedback,
 .demo-control-stack {
@@ -438,6 +425,16 @@ button {
 }
 .demo-frame {
   gap: 0;
+}
+/* The Toolbar demo stacks two toolbars — separate them by one spacing unit. */
+[data-demo="toolbar"].demo-frame {
+  row-gap: remify(8px);
+}
+/* Show the demoed LucideIcon at its representative 24px design size (the
+   component itself is font-relative at 1em). */
+[data-demo="lucide-icon"] .demo-example [data-lucide] {
+  width: remify(24px);
+  height: remify(24px);
 }
 .demo-toolbar-find-row .kui-toolbar__center {
   justify-content: stretch;
@@ -466,9 +463,19 @@ button {
     flex-basis: 100%;
   }
 }
-.demo-feedback,
 .demo-control-stack {
   padding: remify(16px);
+}
+/* The feedback composition holds content-items (StateBanner, EmptyState) that own
+   their 8px inline margin, so the container adds no inline padding — otherwise the
+   banner is double-inset (container padding + its own margin). The non-content-item
+   spinner row gets a matching inline margin so every child lines up at 8px. */
+.demo-feedback {
+  padding-block: remify(16px);
+  padding-inline: 0;
+}
+.demo-feedback .demo-spinner-row {
+  margin-inline: remify(8px);
 }
 .demo-center-copy {
   display: block;
@@ -636,10 +643,6 @@ button {
   border-radius: var(--kui-radius-m);
   align-items: center;
   gap: remify(8px);
-}
-.demo-dark-swatch {
-  color: #fff;
-  background: #252527;
 }
 .toolbar-control-group-demo wa-button::part(base) {
   width: remify(32px);

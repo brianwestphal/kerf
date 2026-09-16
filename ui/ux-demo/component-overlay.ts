@@ -54,14 +54,14 @@ function specimens(root: HTMLElement): Element[] {
     result.push(el);
   };
   for (const example of root.querySelectorAll<HTMLElement>('.demo-example')) {
-    if (example.closest('[data-demo-overlay]')) continue;
+    if (example.closest('[data-demo-overlay]') || example.closest('[data-demo-overlay-skip]')) continue;
     for (const child of example.children) {
       if (child.classList.contains('demo-example__note') || isExampleLabel(child)) continue;
       push(child);
     }
   }
   for (const element of root.querySelectorAll<HTMLElement>('[data-component]')) {
-    if (element.closest('[data-demo-overlay]') || element.closest('.demo-example')) continue;
+    if (element.closest('[data-demo-overlay]') || element.closest('[data-demo-overlay-skip]') || element.closest('.demo-example')) continue;
     const parent = element.parentElement?.closest<HTMLElement>('[data-component]');
     if (parent && root.contains(parent)) continue;
     push(element);
