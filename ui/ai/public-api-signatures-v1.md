@@ -51,8 +51,10 @@ interface ToolbarTextProps {
     className?: string;
     /** Optional id, e.g. so a dialog can reference the title via aria-labelledby. */
     id?: string;
+    /** Render the text as an unanimated loading skeleton instead of its value. */
+    placeholder?: boolean;
 }
-declare function ToolbarText({ text, size, className, id }: ToolbarTextProps): kerfjs.SafeHtml;
+declare function ToolbarText({ text, size, className, id, placeholder }: ToolbarTextProps): kerfjs.SafeHtml;
 
 export { ToolbarText, type ToolbarTextProps, type ToolbarTextSize };
 ```
@@ -105,6 +107,8 @@ interface MenuHeaderBaseProps {
     disabledReason?: string;
     expanded?: boolean;
     toggle?: boolean;
+    /** Render as an unanimated loading skeleton: keep the label and action affordance, disable interaction. */
+    placeholder?: boolean;
     rootAttributes?: MenuHeaderRootAttributes;
     triggerAttributes?: MenuHeaderTriggerAttributes;
 }
@@ -118,7 +122,7 @@ type MenuHeaderIndicatorProps = {
     badge?: SafeHtml;
 };
 type MenuHeaderProps = MenuHeaderBaseProps & MenuHeaderIndicatorProps;
-declare function MenuHeader({ label, count, countLabel, badge, action, actionLabel, actionIcon, actionDisabled, disabledReason, expanded, toggle, rootAttributes, triggerAttributes }: MenuHeaderProps): SafeHtml;
+declare function MenuHeader({ label, count, countLabel, badge, action, actionLabel, actionIcon, actionDisabled, disabledReason, expanded, toggle, placeholder, rootAttributes, triggerAttributes }: MenuHeaderProps): SafeHtml;
 
 export { MenuHeader, type MenuHeaderProps };
 ```
@@ -162,6 +166,8 @@ interface MenuActionRowProps {
     state?: string;
     disabled?: boolean;
     tabIndex?: number;
+    /** Render as an unanimated loading skeleton, disabling both actions. */
+    placeholder?: boolean;
     trailingAction: string;
     trailingActionLabel: string;
     /** Decorative dormant content for the trailing button. Must not contain interactive descendants. */
@@ -173,7 +179,7 @@ interface MenuActionRowProps {
     rootAttributes?: MenuActionRowRootAttributes;
     trailingActionAttributes?: MenuActionRowTrailingAttributes;
 }
-declare function MenuActionRow({ label, icon, action, itemId, selected, pressed, accessibleLabel, title, multiline, state, disabled, tabIndex, trailingAction, trailingActionLabel, trailingActionIcon, trailingActionDisabled, trailingActionTitle, className, style, rootAttributes, trailingActionAttributes }: MenuActionRowProps): SafeHtml;
+declare function MenuActionRow({ label, icon, action, itemId, selected, pressed, accessibleLabel, title, multiline, state, disabled, tabIndex, placeholder, trailingAction, trailingActionLabel, trailingActionIcon, trailingActionDisabled, trailingActionTitle, className, style, rootAttributes, trailingActionAttributes }: MenuActionRowProps): SafeHtml;
 
 export { MenuActionRow, type MenuActionRowProps };
 ```
@@ -207,9 +213,11 @@ interface MenuItemProps {
     state?: string;
     disabled?: boolean;
     tabIndex?: number;
+    /** Render the row as an unanimated loading skeleton, disabling its action. */
+    placeholder?: boolean;
     rootAttributes?: MenuItemRootAttributes;
 }
-declare function MenuItem({ label, icon, trailing, selected, action, itemId, className, style, pressed, accessibleLabel, title, multiline, state, disabled, tabIndex, rootAttributes }: MenuItemProps): SafeHtml;
+declare function MenuItem({ label, icon, trailing, selected, action, itemId, className, style, pressed, accessibleLabel, title, multiline, state, disabled, tabIndex, placeholder, rootAttributes }: MenuItemProps): SafeHtml;
 
 export { MenuItem, type MenuItemProps };
 ```
@@ -227,6 +235,8 @@ interface PanelHeaderProps {
     icon?: SafeHtml;
     iconClassName?: string;
     actions?: SafeHtml;
+    /** Render the title and summary as unanimated loading skeletons, keeping the icon and actions. */
+    placeholder?: boolean;
 }
 /**
  * The heading of a panel, dialog, or page: a plain `Toolbar` whose leading zone
@@ -240,7 +250,7 @@ interface PanelHeaderProps {
  * is passed straight into the toolbar's trailing zone; the app supplies whatever
  * trailing controls it needs (typically a `ToolbarControlGroup`).
  */
-declare function PanelHeader({ title, titleId, summary, summaryId, icon, iconClassName, actions }: PanelHeaderProps): SafeHtml;
+declare function PanelHeader({ title, titleId, summary, summaryId, icon, iconClassName, actions, placeholder }: PanelHeaderProps): SafeHtml;
 
 export { PanelHeader, type PanelHeaderProps };
 ```
@@ -255,8 +265,10 @@ interface ValueTableRowProps {
     value: string | SafeHtml;
     icon?: SafeHtml;
     className?: string;
+    /** Render the value as an unanimated loading skeleton, keeping the field label. */
+    placeholder?: boolean;
 }
-declare function ValueTableRow({ label, value, icon, className }: ValueTableRowProps): SafeHtml;
+declare function ValueTableRow({ label, value, icon, className, placeholder }: ValueTableRowProps): SafeHtml;
 
 interface ValueTableProps {
     label: string;
@@ -294,9 +306,11 @@ interface AppTabProps {
     selectAction?: string;
     closeAction?: string;
     className?: string;
+    /** Render as an unanimated loading skeleton, disabling select/close and dragging. */
+    placeholder?: boolean;
     rootAttributes?: AppTabRootAttributes;
 }
-declare function AppTab({ id, name, selected, closable, draggable, leading, trailing, closeIcon, selectAction, closeAction, className, rootAttributes }: AppTabProps): SafeHtml;
+declare function AppTab({ id, name, selected, closable, draggable, leading, trailing, closeIcon, selectAction, closeAction, className, placeholder, rootAttributes }: AppTabProps): SafeHtml;
 
 export { AppTab, type AppTabProps };
 ```
@@ -683,8 +697,10 @@ interface SegmentedControlProps {
     size?: SegmentedControlSize;
     layout?: SegmentedControlLayout;
     className?: string;
+    /** Render as an unanimated loading skeleton, disabling every segment. */
+    placeholder?: boolean;
 }
-declare function SegmentedControl({ id, label, value, choices, action, appearance, shape, size, layout, className, }: SegmentedControlProps): SafeHtml;
+declare function SegmentedControl({ id, label, value, choices, action, appearance, shape, size, layout, className, placeholder, }: SegmentedControlProps): SafeHtml;
 
 export { SegmentedControl, type SegmentedControlAppearance, type SegmentedControlChoice, type SegmentedControlLayout, type SegmentedControlProps, type SegmentedControlShape, type SegmentedControlSize };
 ```
@@ -703,8 +719,10 @@ interface StateBannerProps {
     tone?: StateBannerTone;
     urgency?: 'status' | 'alert';
     className?: string;
+    /** Render the title and detail as unanimated loading skeletons, keeping the icon and tone. */
+    placeholder?: boolean;
 }
-declare function StateBanner({ title, detail, icon, action, tone, urgency, className }: StateBannerProps): SafeHtml;
+declare function StateBanner({ title, detail, icon, action, tone, urgency, className, placeholder }: StateBannerProps): SafeHtml;
 
 export { StateBanner, type StateBannerProps, type StateBannerTone };
 ```
@@ -740,6 +758,35 @@ interface LoadingSpinnerProps {
 declare function LoadingSpinner({ className, label }: LoadingSpinnerProps): kerfjs.SafeHtml;
 
 export { LoadingSpinner, type LoadingSpinnerProps };
+```
+
+## `@kerfjs/ui/skeleton`
+
+```ts
+import * as kerfjs from 'kerfjs';
+
+interface SkeletonProps {
+    /** Width as any CSS length (e.g. `remify(120px)`, `60%`). Defaults to filling its slot. */
+    width?: string;
+    /** Height as any CSS length. Defaults to a single text line. */
+    height?: string;
+    /** Corner radius override (a CSS length). Defaults to the small radius token. */
+    radius?: string;
+    /** Render this many stacked lines (the last one shorter), for multi-line text. */
+    lines?: number;
+    /** Accessible label. Omit to keep the block decorative (`aria-hidden`). */
+    label?: string;
+    className?: string;
+}
+/**
+ * A subtle, deliberately **unanimated** loading placeholder block. Use it for a
+ * value slot whose content is not yet known, on its own or via a component's
+ * `placeholder` prop. Decorative by default (`aria-hidden`); pass `label` to
+ * announce it. Sizes to its slot unless `width`/`height` are given.
+ */
+declare function Skeleton({ width, height, radius, lines, label, className }: SkeletonProps): kerfjs.SafeHtml;
+
+export { Skeleton, type SkeletonProps };
 ```
 
 ## `@kerfjs/ui/token-search-field`

@@ -487,7 +487,7 @@ describe('production UI primitives', () => {
     expect(grouped).toContain('data-key="mode:balanced:custom-selected" slot="start" class="kui-select__custom-selected"');
     expect(grouped).toContain('data-key="mode:balanced:option" data-morph-skip slot="start" class="kui-select__icon"');
     expect(grouped).toContain('data-key="mode:manual:option" data-morph-skip slot="start" class="kui-select__icon"');
-    const plain = asHtml(Select({ name: 'plain', value: 'one', ariaLabel: 'Plain', placeholder: 'Choose', disabled: true, choices: [{ value: 'one', label: 'One', icon: Plus }] }));
+    const plain = asHtml(Select({ name: 'plain', value: 'one', ariaLabel: 'Plain', placeholderText: 'Choose', disabled: true, choices: [{ value: 'one', label: 'One', icon: Plus }] }));
     expect(plain).toContain('aria-label="Plain" value="one" placeholder="Choose" disabled');
     expect(plain).toContain('data-key="plain:one:selected" data-morph-skip slot="start" class="kui-select__icon kui-select__icon--selected"');
     expect(plain).toContain('data-key="plain:one:option" data-morph-skip slot="start" class="kui-select__icon"');

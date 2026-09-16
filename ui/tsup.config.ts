@@ -23,6 +23,7 @@ const entries = [
   'tab-scaffold',
   'wire-tab-scaffold',
   'loading-spinner',
+  'skeleton',
   'select',
   'segmented-control',
   'token-search-field',

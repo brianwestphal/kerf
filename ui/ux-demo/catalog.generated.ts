@@ -408,6 +408,18 @@ export const generatedKerfCatalog = [
     "documentation": "ui/docs/component-selection.md"
   },
   {
+    "id": "skeleton",
+    "name": "Skeleton",
+    "category": "Feedback",
+    "kind": "component",
+    "source": "kerf",
+    "description": "A subtle, unanimated loading placeholder block for a not-yet-known value slot.",
+    "uses": [],
+    "demoSource": "ui/ux-demo/main.tsx",
+    "componentSource": "ui/src/skeleton.tsx",
+    "documentation": "ui/docs/component-selection.md"
+  },
+  {
     "id": "recipe-app-shell",
     "name": "Desktop application shell",
     "category": "Recipes",

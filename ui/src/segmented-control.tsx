@@ -1,5 +1,7 @@
 import type { SafeHtml } from 'kerfjs';
 
+import { Skeleton } from './skeleton.js';
+
 export type SegmentedControlAppearance = 'filled' | 'outlined' | 'toolbar';
 export type SegmentedControlShape = 'rounded' | 'pill';
 export type SegmentedControlSize = 'small' | 'default';
@@ -24,6 +26,8 @@ export interface SegmentedControlProps {
   size?: SegmentedControlSize;
   layout?: SegmentedControlLayout;
   className?: string;
+  /** Render as an unanimated loading skeleton, disabling every segment. */
+  placeholder?: boolean;
 }
 
 export function SegmentedControl({
@@ -37,6 +41,7 @@ export function SegmentedControl({
   size = 'default',
   layout = 'content',
   className = '',
+  placeholder = false,
 }: SegmentedControlProps) {
   return <div
     class={`kui-segmented-control ${className}`.trim()}
@@ -47,23 +52,25 @@ export function SegmentedControl({
     data-shape={shape}
     data-size={size}
     data-layout={layout}
+    data-placeholder={placeholder ? 'true' : undefined}
     role="group"
     aria-label={label}
+    aria-busy={placeholder ? 'true' : undefined}
   >
     {choices.map((choice) => {
       const selected = choice.value === value;
       return <button
         type="button"
         class="kui-segmented-control__item"
-        data-action={action}
+        data-action={placeholder ? undefined : action}
         data-segment-value={choice.value}
         data-selected={String(selected)}
         aria-label={choice.label}
         aria-pressed={String(selected)}
-        title={choice.title}
-        disabled={choice.disabled}
-        tabindex="0"
-      >{choice.content ?? <span>{choice.label}</span>}</button>;
+        title={placeholder ? undefined : choice.title}
+        disabled={choice.disabled || placeholder}
+        tabindex={placeholder ? '-1' : '0'}
+      >{placeholder ? <Skeleton width="4em" /> : choice.content ?? <span>{choice.label}</span>}</button>;
     })}
   </div>;
 }

@@ -29,6 +29,7 @@ export {
   type SegmentedControlSize,
 } from './segmented-control.js';
 export { Select, type SelectChoice, type SelectProps } from './select.js';
+export { Skeleton, type SkeletonProps } from './skeleton.js';
 export { StateBanner, type StateBannerProps, type StateBannerTone } from './state-banner.js';
 export { TabBar, type TabBarProps } from './tab-bar.js';
 export {

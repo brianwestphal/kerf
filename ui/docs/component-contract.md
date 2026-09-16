@@ -182,6 +182,18 @@ CSS, the generated wrappers that make it
 reachable, and the registration module are the package's only declared side
 effects.
 
+A value-bearing component's `placeholder` prop is a first-class loading mode: the
+component renders its own real chrome (labels, icon and action affordances,
+container geometry) while replacing each **value** slot with a subtle, deliberately
+unanimated `Skeleton` block and disabling its own interactive controls
+(`aria-busy`, dropped `data-action`, disabled buttons). Sizes and shapes stay
+identical to the populated component, so a parent composes a faithful loading view —
+an inspector, a detail pane — from placeholder children without hand-rebuilding
+markup. The application still owns the loading lifecycle (when to pass `placeholder`)
+and which slots are unknown; the standalone `Skeleton` covers custom slots. It is a
+placeholder, not progress: use `LoadingSpinner` for known busy activity, and never
+animate the skeleton.
+
 Package source styles express root-scaled geometry with `remify(<px>)`; the
 build converts it against the 16px authoring baseline and exposes only ordinary
 `rem` CSS. Literal pixels remain for intentional hairlines, and `em` remains

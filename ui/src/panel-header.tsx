@@ -1,5 +1,6 @@
 import type { SafeHtml } from 'kerfjs';
 
+import { Skeleton } from './skeleton.js';
 import { Toolbar } from './toolbar.js';
 import { ToolbarControlGroup } from './toolbar-control-group.js';
 import { ToolbarText } from './toolbar-text.js';
@@ -12,6 +13,8 @@ export interface PanelHeaderProps {
   icon?: SafeHtml;
   iconClassName?: string;
   actions?: SafeHtml;
+  /** Render the title and summary as unanimated loading skeletons, keeping the icon and actions. */
+  placeholder?: boolean;
 }
 
 /**
@@ -26,14 +29,14 @@ export interface PanelHeaderProps {
  * is passed straight into the toolbar's trailing zone; the app supplies whatever
  * trailing controls it needs (typically a `ToolbarControlGroup`).
  */
-export function PanelHeader({ title, titleId, summary, summaryId, icon, iconClassName = '', actions }: PanelHeaderProps) {
+export function PanelHeader({ title, titleId, summary, summaryId, icon, iconClassName = '', actions, placeholder = false }: PanelHeaderProps) {
   const identity = <>
     {icon && <ToolbarControlGroup single className={`kui-panel-header__icon ${iconClassName}`.trim()}>{icon}</ToolbarControlGroup>}
-    <ToolbarText text={title} size="xlarge" id={titleId} className="kui-panel-header__title" />
+    <ToolbarText text={title} size="xlarge" id={titleId} className="kui-panel-header__title" placeholder={placeholder} />
   </>;
 
-  return <div class="kui-panel-header" data-component="panel-header" data-has-icon={String(Boolean(icon))} data-has-actions={String(Boolean(actions))} data-has-summary={String(Boolean(summary))}>
+  return <div class="kui-panel-header" data-component="panel-header" data-has-icon={String(Boolean(icon))} data-has-actions={String(Boolean(actions))} data-has-summary={String(Boolean(summary))} data-placeholder={placeholder ? 'true' : undefined}>
     <Toolbar leading={identity} trailing={actions} divider={false} />
-    {summary && <p class="kui-panel-header__summary" id={summaryId}>{summary}</p>}
+    {summary && <p class="kui-panel-header__summary" id={summaryId}>{placeholder ? <Skeleton width="18em" /> : summary}</p>}
   </div>;
 }

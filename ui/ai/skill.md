@@ -32,6 +32,7 @@ Quick routing:
 | Page, panel, or dialog heading | `Toolbar` or `PanelHeader` | Toolbar is persistent chrome; `PanelHeader` heads a panel, dialog, or page. |
 | Exclusive choice | `TabBar`, `SegmentedControl`, or `Select` | Tabs switch tabpanels; segments expose a few choices; Select handles a longer value list. |
 | Status or absent content | `StateBanner` or `EmptyState` | Web Awesome callouts suit ecosystem content; toasts are transient and never the only record of important state. |
+| Loading placeholder | a component's `placeholder` prop, or `Skeleton` | Set `placeholder` on a value-bearing component (`Select`, `MenuHeader`, `MenuItem`, `ValueTableRow`, `PanelHeader`, `SegmentedControl`, `StateBanner`, `AppTab`, `ToolbarText`, `MenuActionRow`) to render its real chrome with value slots as subtle **unanimated** skeletons and interactivity disabled — do not hand-rebuild an empty state. `Skeleton` is the standalone block for a custom slot. Use `LoadingSpinner` for known busy activity, not a skeleton; never animate a skeleton; prefer it over `wa-skeleton`. |
 | Adjustable or static columns | `ResizableRegion` or CSS grid | Use the component only for a user-operable controlled separator. |
 | Structured or ordinary search | `TokenSearchField` or an input | Use token search only when text and ordered filter chips form one editor. |
 | Key/value facts | `ValueTable` with `ValueTableRow` | Use rows with `icon` only when the optional 24px leading visual adds context. |

@@ -109,6 +109,7 @@ as a `New` marker.
 | `TabBar` | `@kerfjs/ui/tab-bar` | `@kerfjs/ui/tab-bar.css` |
 | `wireTabBars`, `reorderTabs` | `@kerfjs/ui/wire-tab-bars` | — |
 | `LoadingSpinner` | `@kerfjs/ui/loading-spinner` | `@kerfjs/ui/loading-spinner.css` |
+| `Skeleton` | `@kerfjs/ui/skeleton` | `@kerfjs/ui/skeleton.css` |
 | `Select` | `@kerfjs/ui/select` | `@kerfjs/ui/select.css` |
 | `SegmentedControl` | `@kerfjs/ui/segmented-control` | `@kerfjs/ui/segmented-control.css` |
 | `TokenSearchField`, `readTokenSearchField`, `placeTokenSearchCaret` | `@kerfjs/ui/token-search-field` | `@kerfjs/ui/token-search-field.css` |

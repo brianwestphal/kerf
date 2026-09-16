@@ -15,6 +15,7 @@ import { PanelHeader } from '@kerfjs/ui/panel-header';
 import { ResizableRegion } from '@kerfjs/ui/resizable-region';
 import { SegmentedControl } from '@kerfjs/ui/segmented-control';
 import { Select } from '@kerfjs/ui/select';
+import { Skeleton } from '@kerfjs/ui/skeleton';
 import { StateBanner } from '@kerfjs/ui/state-banner';
 import { TabBar } from '@kerfjs/ui/tab-bar';
 import { readTokenSearchField, TokenSearchField, type TokenSearchToken } from '@kerfjs/ui/token-search-field';
@@ -506,6 +507,35 @@ function LayoutDemo() {
   </div>;
 }
 
+function SkeletonDemo() {
+  return <div class="demo-stack demo-stack--labeled" data-demo="skeleton">
+    <section class="demo-example"><MenuHeader label="Primitive" /><p class="demo-example__note">Subtle, unanimated blocks that hold a value's space. Decorative unless labeled.</p>
+      <div class="demo-skeleton-blocks">
+        <Skeleton width="12em" />
+        <Skeleton width="8em" height="1.5em" />
+        <Skeleton lines={3} />
+        <Skeleton width="6em" label="Loading value" />
+      </div>
+    </section>
+    <section class="demo-example"><MenuHeader label="Loading inspector" /><p class="demo-example__note">The same chrome as a populated inspector, with unknown values as skeletons and controls disabled — no hand-rebuilt markup.</p>
+      <div class="demo-skeleton-inspector kui-pane">
+        <PanelHeader title="Ticket title" titleId="skeleton-inspector-title" summary="Loading summary" summaryId="skeleton-inspector-summary" icon={icon(Wrench, 'wrench')} placeholder />
+        <div class="kui-pane__content kui-content">
+          <ValueTable label="Ticket details">
+            <ValueTableRow label="Status" value="" placeholder />
+            <ValueTableRow label="Owner" value="" icon={icon(Inbox, 'inbox')} placeholder />
+            <ValueTableRow label="Updated" value="" placeholder />
+          </ValueTable>
+          <Select name="skeleton-status" value="" label="Status" choices={[]} placeholder />
+          <SegmentedControl id="skeleton-view" label="View" value="" choices={[{ value: 'list', label: 'List' }, { value: 'board', label: 'Board' }, { value: 'timeline', label: 'Timeline' }]} placeholder />
+          <section><MenuItem action="noop" label="" icon={icon(Folder, 'folder')} placeholder /><MenuItem action="noop" label="" placeholder /></section>
+          <StateBanner tone="info" title="" detail="" icon={icon(Search, 'search')} placeholder />
+        </div>
+      </div>
+    </section>
+  </div>;
+}
+
 const demos: Record<Exclude<KerfCatalogId, RecipeId>, () => ReturnType<typeof ToolbarDemo>> = {
   'lucide-icon': LucideIconDemo,
   'disclosure-arrow': DisclosureArrowDemo,
@@ -531,6 +561,7 @@ const demos: Record<Exclude<KerfCatalogId, RecipeId>, () => ReturnType<typeof To
   'state-banner': StateBannerDemo,
   'empty-state': EmptyStateDemo,
   'loading-spinner': LoadingSpinnerDemo,
+  skeleton: SkeletonDemo,
 };
 
 function ensureWebAwesomeDemos(): Promise<void> {
@@ -582,7 +613,7 @@ function DemoRelationships({ entry }: { entry: CatalogEntry }) {
     ...usedBy.map((related) => ({ value: related.id, label: related.name, group: 'Used by' })),
   ];
   if (choices.length === 0) return null;
-  return <div class="catalog-relationships" data-relationships-for={entry.id}><ToolbarControlGroup className="catalog-footer__related" label="Related components"><Select className="catalog-relationships__select" name="related-component" value="" label="Related components" placeholder="Related components" choices={choices} /></ToolbarControlGroup></div>;
+  return <div class="catalog-relationships" data-relationships-for={entry.id}><ToolbarControlGroup className="catalog-footer__related" label="Related components"><Select className="catalog-relationships__select" name="related-component" value="" label="Related components" placeholderText="Related components" choices={choices} /></ToolbarControlGroup></div>;
 }
 
 function selectDemo(id: string): void {

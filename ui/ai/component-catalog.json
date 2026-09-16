@@ -485,7 +485,8 @@
       "variants": [
         "large",
         "default",
-        "small"
+        "small",
+        "placeholder (loading)"
       ],
       "accessibility": [],
       "delivery": {
@@ -612,7 +613,8 @@
         "title",
         "optional summary",
         "icon",
-        "actions"
+        "actions",
+        "placeholder (loading)"
       ],
       "accessibility": [
         "Connect the title id and any provided summary id to the dialog or panel host.",
@@ -674,7 +676,8 @@
       ],
       "variants": [
         "icon rows",
-        "iconless rows"
+        "iconless rows",
+        "placeholder (loading)"
       ],
       "accessibility": [
         "Name ValueTable with its label; ValueTableRow supplies dt/dd semantics, and row icons stay decorative unless meaning requires an accessible label."
@@ -817,7 +820,8 @@
         "count",
         "badge",
         "action",
-        "toggle"
+        "toggle",
+        "placeholder (loading)"
       ],
       "accessibility": [
         "A valid count is hidden as duplicate visual text and its required localized countLabel joins the owned heading or disclosure-button accessible name; zero remains visible.",
@@ -906,7 +910,8 @@
         "pressed",
         "disabled primary",
         "disabled trailing action",
-        "multiline"
+        "multiline",
+        "placeholder (loading)"
       ],
       "accessibility": [
         "The noninteractive root contains two sibling native buttons in primary-then-trailing focus order; each button has its own action, item identity, accessible name, and disabled state.",
@@ -996,7 +1001,8 @@
         "pressed",
         "disabled",
         "trailing",
-        "multiline"
+        "multiline",
+        "placeholder (loading)"
       ],
       "accessibility": [
         "Uses native button activation; selected maps to aria-current and pressed to aria-pressed; rootAttributes cannot add role=menuitem or replace owned ARIA; trailing is dormant content and must not contain controls."
@@ -1261,7 +1267,8 @@
         "rounded",
         "pill",
         "equal width",
-        "small"
+        "small",
+        "placeholder (loading)"
       ],
       "accessibility": [
         "Keep choice labels meaningful and every enabled native button in sequential Tab order."
@@ -1566,7 +1573,8 @@
         "disabled",
         "fit menu",
         "grouped",
-        "custom selected content"
+        "custom selected content",
+        "placeholder (loading)"
       ],
       "accessibility": [
         "Verify the live value, standard events, focus, and rendered output."
@@ -1717,7 +1725,8 @@
         "warning",
         "danger",
         "status",
-        "alert"
+        "alert",
+        "placeholder (loading)"
       ],
       "accessibility": [
         "Use alert urgency only for an attention-requiring failure."
@@ -1915,6 +1924,66 @@
       "publicTokens": [],
       "links": {
         "catalogRoute": "?component=loading-spinner",
+        "documentation": "docs/component-selection.md",
+        "recipe": "docs/component-selection.md#problem-to-component-matrix"
+      }
+    },
+    {
+      "id": "skeleton",
+      "name": "Skeleton",
+      "category": "Feedback",
+      "kind": "component",
+      "source": "kerf",
+      "description": "A subtle, unanimated loading placeholder block for a not-yet-known value slot.",
+      "uses": [],
+      "purpose": "A subtle, unanimated loading placeholder block for a not-yet-known value slot.",
+      "publicExports": [
+        "Skeleton"
+      ],
+      "useWhen": [
+        "Stand in for a value that is still loading, on its own or via a component's placeholder prop, keeping the surrounding layout stable.",
+        "Placeholder a custom or free-text slot with the same visual the components' placeholder mode uses."
+      ],
+      "avoidWhen": [
+        "Do not use for known progress or a busy spinner; use LoadingSpinner.",
+        "Do not animate it or use it as decorative filler."
+      ],
+      "alternatives": [
+        {
+          "id": "wa-skeleton",
+          "relationship": "prefer-over"
+        }
+      ],
+      "appOwns": [
+        "loading lifecycle",
+        "which slots are unknown",
+        "announcing the loading region"
+      ],
+      "variants": [
+        "block",
+        "lines",
+        "labeled"
+      ],
+      "accessibility": [
+        "Decorative by default (aria-hidden); pass label to announce it as an image. A component in placeholder mode marks itself aria-busy and disables its own controls."
+      ],
+      "delivery": {
+        "browserImport": "@kerfjs/ui/skeleton",
+        "manualCssImport": "@kerfjs/ui/skeleton.css",
+        "sideEffects": [
+          "browser-condition-css"
+        ]
+      },
+      "wiring": [],
+      "publicClasses": [
+        "kui-skeleton",
+        "kui-skeleton-lines"
+      ],
+      "publicTokens": [
+        "--kui-skeleton-radius"
+      ],
+      "links": {
+        "catalogRoute": "?component=skeleton",
         "documentation": "docs/component-selection.md",
         "recipe": "docs/component-selection.md#problem-to-component-matrix"
       }

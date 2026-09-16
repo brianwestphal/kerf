@@ -1600,3 +1600,14 @@ button {
 .demo-disclosure-toggle:hover {
   background: var(--kui-color-neutral-fill-normal);
 }
+
+.demo-skeleton-blocks {
+  display: flex;
+  max-width: 320px;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.demo-skeleton-inspector {
+  max-width: 420px;
+}

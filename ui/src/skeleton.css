@@ -1,0 +1,31 @@
+.kui-skeleton {
+  --kui-skeleton-radius: var(--kui-radius-s);
+
+  display: inline-block;
+  width: 100%;
+  max-width: 100%;
+  height: 1em;
+  min-width: remify(24px);
+  border-radius: var(--kui-skeleton-radius);
+  /* Deliberately unanimated: a flat, subtle fill that reads as "not yet loaded"
+     without drawing the eye or implying progress. */
+  background: color-mix(in srgb, var(--kui-color-text) 12%, transparent);
+  vertical-align: middle;
+}
+
+.kui-skeleton-lines {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  gap: var(--kui-space-2xs);
+}
+
+.kui-skeleton-lines .kui-skeleton {
+  height: 0.8em;
+}
+
+@media (forced-colors: active) {
+  .kui-skeleton {
+    background: GrayText;
+  }
+}

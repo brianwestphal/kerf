@@ -140,6 +140,11 @@
       "browser": "./dist/browser/select.js",
       "import": "./dist/select.js"
     },
+    "./skeleton": {
+      "types": "./dist/skeleton.d.ts",
+      "browser": "./dist/browser/skeleton.js",
+      "import": "./dist/skeleton.js"
+    },
     "./segmented-control": {
       "types": "./dist/segmented-control.d.ts",
       "browser": "./dist/browser/segmented-control.js",
@@ -207,6 +212,7 @@
     "./tab-scaffold.css": "./dist/styles/tab-scaffold.css",
     "./loading-spinner.css": "./dist/styles/loading-spinner.css",
     "./select.css": "./dist/styles/select.css",
+    "./skeleton.css": "./dist/styles/skeleton.css",
     "./segmented-control.css": "./dist/styles/segmented-control.css",
     "./token-search-field.css": "./dist/styles/token-search-field.css",
     "./state-banner.css": "./dist/styles/state-banner.css",

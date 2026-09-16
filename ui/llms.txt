@@ -81,6 +81,15 @@ maintain a central style list. Configure JSX with `"jsxImportSource": "kerfjs"`.
   via `collapsible.signals`. Do not hand-roll open/collapse/focus that helper
   provides; but do keep a plain disclosure toggle (a one-line boolean the app already
   renders from) in the app.
+- **Placeholder loading state, don't rebuild it.** For a value or component that is
+  still loading, set `placeholder` on the component (`Select`, `MenuHeader`,
+  `MenuItem`, `ValueTableRow`, `PanelHeader`, `SegmentedControl`, `StateBanner`,
+  `AppTab`, `ToolbarText`, `MenuActionRow`): it renders its real chrome with value
+  slots as subtle **unanimated** skeleton blocks and interactivity disabled, so a
+  parent composes a faithful loading view (e.g. an inspector) without hand-rebuilding
+  markup. Use the standalone `Skeleton` for a custom slot. Prefer it over `wa-skeleton`
+  (the pure-Kerf primitives avoid Web Awesome), and never animate it — use
+  `LoadingSpinner` for known busy activity instead.
 
 ## Public exports
 
@@ -89,7 +98,7 @@ maintain a central style list. Configure JSX with `"jsxImportSource": "kerfjs"`.
 `Select`, `TokenSearchField` (+ `readTokenSearchField`, `placeTokenSearchCaret`,
 `wireTokenSearchFields`), `AppTab`, `TabBar` (+ `wireTabBars`, `reorderTabs`),
 `ResizableRegion` (+ `wireResizableRegions`), `StateBanner`, `EmptyState`,
-`LoadingSpinner`, `ValueTable`, `ValueTableRow`. Whole-screen layouts (opt-in,
+`LoadingSpinner`, `Skeleton`, `ValueTable`, `ValueTableRow`. Whole-screen layouts (opt-in,
 tree-shakeable, declarative with `wire…` helpers, each with a companion CSS import):
 `NavStack`, `SplitView`, `Workbench`, `TabScaffold`, driven by `deviceClass()` from
 `@kerfjs/ui/device-class`. `@kerfjs/ui/webawesome` is a type-only boundary for

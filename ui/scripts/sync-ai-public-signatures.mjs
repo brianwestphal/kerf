@@ -33,6 +33,7 @@ const entries = [
   ['@kerfjs/ui/state-banner', 'dist/state-banner.d.ts'],
   ['@kerfjs/ui/empty-state', 'dist/empty-state.d.ts'],
   ['@kerfjs/ui/loading-spinner', 'dist/loading-spinner.d.ts'],
+  ['@kerfjs/ui/skeleton', 'dist/skeleton.d.ts'],
   ['@kerfjs/ui/token-search-field', 'dist/token-search-field.d.ts'],
   ['@kerfjs/ui/wire-token-search-fields', 'dist/wire-token-search-fields.d.ts'],
   ['kerfjs/actions', 'node_modules/kerfjs/dist/actions.d.ts'],

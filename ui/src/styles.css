@@ -12,6 +12,7 @@
 @import "./app-tab.css";
 @import "./tab-bar.css";
 @import "./loading-spinner.css";
+@import "./skeleton.css";
 @import "./select.css";
 @import "./segmented-control.css";
 @import "./token-search-field.css";
