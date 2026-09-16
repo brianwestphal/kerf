@@ -33,16 +33,25 @@
   gap: var(--kui-toolbar-gap, remify(8px));
 }
 
+/* Pin each zone to its column so a display:none (empty) leading or center zone
+   doesn't let the trailing zone auto-place into the first column — which left an
+   extra gap + empty track to the trailing zone's right (KF-5BEF2M). The trailing
+   zone anchors to the last column via -2/-1, so it stays flush right for both
+   the 3- and 2-column layouts, and still stacks under the leading zone when a
+   consumer collapses the toolbar to a single column. */
 .kui-toolbar__leading {
+  grid-column: 1;
   overflow: hidden;
 }
 
 .kui-toolbar__center {
   justify-content: center;
+  grid-column: 2;
 }
 
 .kui-toolbar__trailing {
   justify-content: flex-end;
+  grid-column: -2 / -1;
 }
 
 .kui-toolbar[data-has-center="false"] .kui-toolbar__center,

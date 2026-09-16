@@ -248,6 +248,37 @@ test('renders non-composition demos on the grid with a bounds/margin overlay, an
   await expect.poll(() => overlay.locator('.demo-overlay__bound, .demo-overlay__margin').count()).toBe(0);
 });
 
+test('keeps a toolbar trailing zone flush right when leading and center are empty', async ({ page }) => {
+  await page.goto('/?component=toolbar');
+  const gaps = await page.evaluate(() => {
+    const host = document.querySelector('.catalog-canvas') ?? document.body;
+    const measure = (hasCenter: string, leading: string): number => {
+      const bar = document.createElement('header');
+      bar.className = 'kui-toolbar';
+      bar.setAttribute('data-has-center', hasCenter);
+      bar.style.width = '400px';
+      bar.innerHTML = `<div class="kui-toolbar__leading">${leading}</div><div class="kui-toolbar__center"></div><div class="kui-toolbar__trailing"><button type="button" style="width:80px;height:40px">Trailing</button></div>`;
+      host.append(bar);
+      const barRect = bar.getBoundingClientRect();
+      const button = bar.querySelector('.kui-toolbar__trailing button')!.getBoundingClientRect();
+      const paddingRight = Number.parseFloat(window.getComputedStyle(bar).paddingRight);
+      const gap = barRect.right - button.right - paddingRight;
+      bar.remove();
+      return Math.round(gap * 10) / 10;
+    };
+    return {
+      emptyLeadingNoCenter: measure('false', ''),
+      emptyLeadingWithCenter: measure('true', ''),
+      normal: measure('false', '<button type="button">Lead</button>'),
+    };
+  });
+  // The trailing zone sits flush against the toolbar's right padding — no extra
+  // gap from an empty leading/center zone (KF-5BEF2M).
+  expect(gaps.emptyLeadingNoCenter).toBeLessThanOrEqual(0.5);
+  expect(gaps.emptyLeadingWithCenter).toBeLessThanOrEqual(0.5);
+  expect(gaps.normal).toBeLessThanOrEqual(0.5);
+});
+
 test('aligns the layout demo action buttons with the card border above them', async ({ page, browserName }) => {
   await page.setViewportSize({ width: 1200, height: 900 });
   await page.goto('/?component=layout');
