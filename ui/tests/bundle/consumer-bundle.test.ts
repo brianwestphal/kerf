@@ -285,6 +285,9 @@ describe('consumer bundle boundaries', () => {
     expect(pkg.exports['./split-view']).toMatchObject({ types: './dist/split-view.d.ts', import: './dist/split-view.js' });
     expect(pkg.exports['./split-view']).not.toHaveProperty('browser');
     expect(pkg.exports['./split-view.css']).toBe('./dist/styles/split-view.css');
+    expect(pkg.exports['./workbench']).toMatchObject({ types: './dist/workbench.d.ts', import: './dist/workbench.js' });
+    expect(pkg.exports['./workbench']).not.toHaveProperty('browser');
+    expect(pkg.exports['./workbench.css']).toBe('./dist/styles/workbench.css');
     expect(pkg.exports['./toolbar.css']).toBe('./dist/styles/toolbar.css');
     expect(pkg.exports['./menu-action-row.css']).toBe('./dist/styles/menu-action-row.css');
     expect(pkg.exports['./sidebar.css']).toBeUndefined();

@@ -118,6 +118,10 @@
       "types": "./dist/split-view.d.ts",
       "import": "./dist/split-view.js"
     },
+    "./workbench": {
+      "types": "./dist/workbench.d.ts",
+      "import": "./dist/workbench.js"
+    },
     "./page-header": {
       "types": "./dist/page-header.d.ts",
       "browser": "./dist/browser/page-header.js",
@@ -196,6 +200,7 @@
     "./tab-bar.css": "./dist/styles/tab-bar.css",
     "./nav-stack.css": "./dist/styles/nav-stack.css",
     "./split-view.css": "./dist/styles/split-view.css",
+    "./workbench.css": "./dist/styles/workbench.css",
     "./page-header.css": "./dist/styles/page-header.css",
     "./loading-spinner.css": "./dist/styles/loading-spinner.css",
     "./select.css": "./dist/styles/select.css",

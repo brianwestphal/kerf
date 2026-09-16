@@ -1,0 +1,94 @@
+.kui-workbench {
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  overflow: hidden;
+  background: var(--kui-color-surface);
+}
+
+/* Side rails. Collapsing snaps the flex track to zero (one reflow) while the
+   fixed-width content slides out via transform (composited, clipped) — never a
+   per-frame width animation. See docs/18 / the KF-7QKJRK catalog sidebar. */
+.kui-workbench__rail {
+  flex: 0 0 var(--kui-workbench-rail-width, remify(280px));
+  min-width: 0;
+  overflow: hidden;
+  background: var(--kui-color-surface);
+}
+
+.kui-workbench__rail--left {
+  border-inline-end: 1px solid var(--kui-color-border);
+}
+
+.kui-workbench__rail--right {
+  border-inline-start: 1px solid var(--kui-color-border);
+}
+
+.kui-workbench__rail[data-collapsed="true"] {
+  flex-basis: 0;
+  border-inline: 0;
+}
+
+.kui-workbench__center {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  flex-direction: column;
+}
+
+.kui-workbench__main {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+}
+
+/* Bottom drawer — the vertical analogue of a rail. */
+.kui-workbench__drawer {
+  flex: 0 0 var(--kui-workbench-drawer-height, remify(220px));
+  min-height: 0;
+  overflow: hidden;
+  border-block-start: 1px solid var(--kui-color-border);
+  background: var(--kui-color-surface);
+}
+
+.kui-workbench__drawer[data-collapsed="true"] {
+  flex-basis: 0;
+  border-block-start: 0;
+}
+
+/* The fixed-size sliding content. The rail/drawer keeps a definite size on its
+   content so the transform reads as a slide, not a squeeze. */
+.kui-workbench__rail .kui-workbench__panel-content {
+  width: var(--kui-workbench-rail-width, remify(280px));
+  height: 100%;
+  transition: transform 200ms ease;
+}
+
+.kui-workbench__drawer .kui-workbench__panel-content {
+  width: 100%;
+  height: var(--kui-workbench-drawer-height, remify(220px));
+  transition: transform 200ms ease;
+}
+
+.kui-workbench__rail--left[data-collapsed="true"]
+  .kui-workbench__panel-content {
+  transform: translateX(-100%);
+}
+
+.kui-workbench__rail--right[data-collapsed="true"]
+  .kui-workbench__panel-content {
+  transform: translateX(100%);
+}
+
+.kui-workbench__drawer[data-collapsed="true"] .kui-workbench__panel-content {
+  transform: translateY(100%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kui-workbench__panel-content {
+    transition: none;
+  }
+}

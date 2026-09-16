@@ -19,6 +19,7 @@ const entries = [
   'nav-stack',
   'wire-nav-stack',
   'split-view',
+  'workbench',
   'page-header',
   'loading-spinner',
   'select',

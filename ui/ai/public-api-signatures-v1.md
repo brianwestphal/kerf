@@ -453,6 +453,44 @@ declare function SplitView({ id, label, list, detail, compact, detailActive, lis
 export { SplitView, type SplitViewProps, type SplitViewResizable };
 ```
 
+## `@kerfjs/ui/workbench`
+
+```ts
+import { SafeHtml } from 'kerfjs';
+
+/** A collapsible Workbench panel — a side rail or the bottom drawer. */
+interface WorkbenchPanel {
+    content: SafeHtml;
+    /** Whether the panel is currently collapsed (the app owns this). */
+    collapsed?: boolean;
+    /** Rail width, or drawer height, in px. Overrides the CSS default. */
+    size?: number;
+    /** Accessible name for the panel region. */
+    label?: string;
+}
+interface WorkbenchProps {
+    id: string;
+    label: string;
+    /** The central work area. */
+    main: SafeHtml;
+    leftRail?: WorkbenchPanel;
+    rightRail?: WorkbenchPanel;
+    bottomDrawer?: WorkbenchPanel;
+    className?: string;
+}
+/**
+ * The Xcode-like multi-panel workspace: a collapsible left rail, right rail, and
+ * bottom drawer around a central work area (any absent). Collapsing snaps the
+ * panel's track to zero in one reflow while its fixed-size content slides out via
+ * a composited transform — the instant-width / sliding-content technique, so the
+ * work area relayouts once, not per frame. The app owns each `collapsed` flag;
+ * the collapse is pure CSS (no wire). See `docs/23-app-layouts.md` §3.3.
+ */
+declare function Workbench({ id, label, main, leftRail, rightRail, bottomDrawer, className }: WorkbenchProps): SafeHtml;
+
+export { Workbench, type WorkbenchPanel, type WorkbenchProps };
+```
+
 ## `@kerfjs/ui/resizable-region`
 
 ```ts
