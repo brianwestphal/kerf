@@ -1,11 +1,14 @@
 # 23. App and dialog layouts
 
-**Status: Proposed (design only).** This document is the design source of truth
-for a family of `@kerfjs/ui` layout primitives plus a reactive device-class
-mechanism and the AI guidance that tells an assistant which layout to reach for.
-Nothing here is implemented yet; each section names the implementation ticket
-that will build it, and the responsive rules and public names below are
-proposals to be ratified as each ticket lands.
+**Status: Shipped.** The device-class foundation and all four layouts
+(`NavStack`, `SplitView`, `Workbench`, `TabScaffold`) plus the AI
+layout-selection guidance are implemented as opt-in `@kerfjs/ui` subpaths. This
+document remains the design source of truth; the ratified public names and the
+declarative + wire model below match what shipped. The consumer-facing decision
+guide is [`ui/docs/app-layouts.md`](../ui/docs/app-layouts.md), and each layout
+has its own consumer doc under `ui/docs/`. Still open: the UX-demo recipes +
+three-engine Playwright coverage and the AI-catalog promotion decision (tracked
+as a follow-up).
 
 ## 1. Motivation
 
@@ -294,17 +297,21 @@ stylesheet explicitly. Node/SSR paths stay DOM- and CSS-free (device-class SSR
 resolves to the caller default without touching `matchMedia`). The package's
 bundle/CSS tree-shaking gates extend to cover the new subpaths.
 
-## 7. Open decisions (maintainer)
+## 7. Resolved decisions
 
-1. **`Workbench` name** for the multi-panel/IDE layout (alternatives: `AppShell`,
-   `PanelGroup`, `IdeLayout`, `Studio`).
-2. **`TabScaffold` name** for the bottom-tab container (alternatives: `AppTabs`,
-   `BottomTabs`, `TabScene`) — must stay clearly distinct from the existing
-   `TabBar`.
-3. **Default breakpoint values** in §2.1 (proposed, tunable) — confirm the five
-   bucket thresholds.
-4. Whether the device-class module lives at `@kerfjs/ui/device-class` or folds
-   into a broader `@kerfjs/ui/responsive` surface alongside future helpers.
+1. **`Workbench`** — shipped as the multi-panel/IDE layout name.
+2. **`TabScaffold`** — shipped as the bottom-tab container name, kept distinct
+   from `TabBar`.
+3. **Default breakpoints** — shipped as proposed in §2.1 (mobile 360, tablet 720,
+   desktop 1024, xl-desktop 1440), tunable per reader and mirrored as `--kui-bp-*`.
+4. **Subpath** — the module shipped at `@kerfjs/ui/device-class`. A broader
+   `@kerfjs/ui/responsive` umbrella can still be introduced later if more
+   responsive helpers appear.
+
+Still open (follow-up, not blocking): the UX-demo recipes + three-engine
+Playwright coverage for the layouts, and whether to promote them into the
+machine-readable component catalog (they currently ship as non-barrel,
+manual-CSS subpaths, which the catalog gates do not require).
 
 These are recorded on the implementation tickets so they are resolved as each
 lands rather than blocking the design.

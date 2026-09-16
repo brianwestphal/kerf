@@ -1,7 +1,7 @@
 ---
 name: kerf-ui
 description: Build interfaces with kerfjs and the @kerfjs/ui production component package. Use whenever code imports @kerfjs/ui or a task asks for Kerf UI components.
-kerf-ui-skill-version: 1.33.0
+kerf-ui-skill-version: 1.34.0
 ---
 
 # Building with @kerfjs/ui
@@ -67,6 +67,7 @@ Hard rules:
 18. Compose `ValueTable` from typed `ValueTableRow` entries instead of handwritten `dt`/`dd` wrappers. Pass `icon` for the optional 24px leading visual; the row owns 8px of root-scaled top and bottom padding, the 8px iconless or 40px icon-bearing separator start, and the common 8px right inset.
 19. Use `DialogHeader` for dialog hierarchy, not a custom heading row. Its real top `Toolbar` puts the optional 24px icon in a 34px circular background and the first title line in a borderless `ToolbarControlGroup`, centered against the automatic action `ToolbarControlGroup`; pass action children directly and add a localized `actionsLabel` when that group needs a name. Its optional `summary`/`summaryId` row stays below the title. The app owns modal behavior, focus, dismissal, command policy, and action handling.
 20. Space with the official five-step scale, picked by how connected two elements are — not by eye. `0` `--kui-space-none` = no separation (one unit); `4px` `--kui-space-2xs` = very minor air on a connected cluster; `8px` `--kui-space-xs` = standard, between elements within a group; `16px` `--kui-space-m` = minor, between homogeneous groups; `24px` `--kui-space-l` = major, between heterogeneous groups (the `.kui-content` rhythm). The 8px-vs-24px distinction is inside-a-group vs between-major-differing-regions. `--kui-space-s` (12px) and `--kui-space-xl` (32px) are off-scale exceptions; prefer the five canonical remify-authored tokens. See `docs/layout.md` "Spacing scale".
+21. Pick a whole-screen layout from the opt-in, tree-shakeable subpaths by data + interaction + device, and derive responsiveness from `@kerfjs/ui/device-class`'s `deviceClass()` (`compact` = handset or portrait tablet = one pane at a time). Simple/flat → `NavStack` with one entry (single pane), plus `TabScaffold` (`@kerfjs/ui/tab-scaffold`, iOS bottom tabs, each tab its own `NavStack`) for 2–5 co-equal sections on `compact`. Drill-down → `NavStack` (`@kerfjs/ui/nav-stack`), upgrading to `SplitView` (`@kerfjs/ui/split-view`, list-detail) once both panes fit (`atLeast('tablet')` landscape); `SplitView` collapses to a `NavStack` on `compact`. Complex tool with peripheral panels → `Workbench` (`@kerfjs/ui/workbench`, collapsible rails + drawer) `atLeast('desktop')`, degrading to `NavStack`/overlays below. These are declarative (the app owns the stack/selection/collapsed/active state as signals) with disposer-returning `wire…` helpers; each ships a companion CSS import and stays out of the barrel. Dialogs pick the same inner layout, then present per device class (full-screen modal on `compact`, inline on desktop). See `docs/app-layouts.md`.
 
 Common mistakes:
 
