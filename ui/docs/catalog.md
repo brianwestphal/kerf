@@ -27,12 +27,47 @@ npm install @kerfjs/ui   # kerfjs is a peer; @kerfjs/ui/select/register is neede
 - **`content`** — the rendered preview for the active entry. Keep a map of `id →
   () => SafeHtml` in your app and call `renderers[active]()` in your render.
 - **`brand`** — `{ title, subtitle?, logoUrl? }` for the sidebar header.
-- Optional slots: `headerActions` (extra header controls), `sidebarFooter` (e.g. an
-  ecosystem section), and `status` (a footer status line).
+- **`secondarySections`** — an optional secondary "ecosystem" group shown below the
+  primary sections with a quieter treatment: `{ label, sections, collapsible?,
+  expanded? }`. When `collapsible`, the label is a disclosure toggle controlling
+  `expanded` (the app owns it; wire it with `wireCatalog`'s `onToggleSecondary`).
+- Optional slots: `headerActions` (extra header controls), `sidebarFooter` (extra
+  sidebar content), and `status` (a footer status line).
 
 Per-entry `resources` render as "open in new tab" links in the footer, and
 `related` renders a "Related entries" selector (a `Select`, so register it with
 `@kerfjs/ui/select/register` when you use it).
+
+## Preview examples
+
+Compose each entry's `content` from `CatalogExample` (and `CatalogExampleStack`)
+instead of hand-rolled example markup, so labels, notes, and left-edge alignment
+stay consistent:
+
+```tsx
+import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
+
+const buttonPreview = (
+  <CatalogExampleStack label="Button variants">
+    <CatalogExample label="Icon" note="A bare glyph." align="glyph">
+      <LucideIcon icon={Plus} name="plus" />
+    </CatalogExample>
+    <CatalogExample label="Control" align="inline-control">
+      <SegmentedControl id="view" label="View" value="list" choices={choices} />
+    </CatalogExample>
+    <CatalogExample label="In composition">
+      <ValueTable label="Metadata">{rows}</ValueTable>
+    </CatalogExample>
+  </CatalogExampleStack>
+);
+```
+
+`align` lines a specimen's visible left edge up with its label text: `'glyph'`
+(16px) for a bare glyph/text specimen, `'inline-control'` (8px) for a control that
+already carries ~8px of its own inline padding, and `'none'` (the default) for a
+content-item/composition that already owns its geometry. The inset is published as
+the `--kui-catalog-example-align` custom property so a debug overlay can exclude it
+from a specimen's measured margin.
 
 ## Complete example
 

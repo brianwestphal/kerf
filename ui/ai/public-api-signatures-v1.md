@@ -716,6 +716,20 @@ interface CatalogSection {
     category: string;
     entries: readonly CatalogEntry[];
 }
+/**
+ * A secondary group of sections shown below the primary sidebar sections with a
+ * quieter "ecosystem" treatment (e.g. third-party components). Optionally
+ * collapsible — the app owns `expanded` and toggles it from `wireCatalog`'s
+ * `onToggleSecondary`.
+ */
+interface CatalogSecondaryGroup {
+    label: string;
+    sections: readonly CatalogSection[];
+    /** When true, the group's label is a disclosure toggle controlling `expanded`. */
+    collapsible?: boolean;
+    /** Whether the group is expanded (controlled). Ignored unless `collapsible`. */
+    expanded?: boolean;
+}
 interface CatalogBrand {
     title: string;
     subtitle?: string;
@@ -735,13 +749,17 @@ interface CatalogProps {
     theme?: 'light' | 'dark';
     /** Extra header controls placed before the theme toggle (each a `ToolbarControlGroup`). */
     headerActions?: SafeHtml;
-    /** Extra sidebar content below the category groups (e.g. an ecosystem section). */
+    /** A secondary "ecosystem" group of sections below the primary category groups. */
+    secondarySections?: CatalogSecondaryGroup;
+    /** Extra sidebar content below the category groups (and the secondary group). */
     sidebarFooter?: SafeHtml;
     /** Status line content shown at the start of the detail footer. */
     status?: SafeHtml;
     selectAction?: string;
     toggleSidebarAction?: string;
     toggleThemeAction?: string;
+    /** Action fired by the secondary group's disclosure toggle (when collapsible). */
+    toggleSecondaryAction?: string;
     className?: string;
 }
 /**
@@ -752,9 +770,44 @@ interface CatalogProps {
  * `collapsed`, and `theme` signals and computes `content` from `active` in its own
  * render; wire the sidebar/collapse/theme actions with `wireCatalog`.
  */
-declare function Catalog({ brand, sections, active, content, collapsed, theme, headerActions, sidebarFooter, status, selectAction, toggleSidebarAction, toggleThemeAction, className, }: CatalogProps): SafeHtml;
+declare function Catalog({ brand, sections, active, content, collapsed, theme, headerActions, secondarySections, sidebarFooter, status, selectAction, toggleSidebarAction, toggleThemeAction, toggleSecondaryAction, className, }: CatalogProps): SafeHtml;
+/**
+ * How a {@link CatalogExample}'s content aligns its visible left edge with the
+ * example's `ListHeader` label (which sits 16px in — 8px title + 8px label):
+ * - `'glyph'` — a bare glyph/text specimen with no inline geometry insets the full 16px.
+ * - `'inline-control'` — a control that already carries ~8px of its own inline padding insets 8px so its content lands on the same line.
+ * - `'none'` — a content-item / composition that owns its geometry and already aligns; no inset (default).
+ */
+type CatalogExampleAlign = 'glyph' | 'inline-control' | 'none';
+interface CatalogExampleProps {
+    /** The example's label, shown as a `ListHeader` above the specimen. */
+    label: string;
+    /** Optional explanatory note between the label and the specimen. */
+    note?: SafeHtml | string;
+    /** Alignment inset for the specimen — see {@link CatalogExampleAlign}. Default `'none'`. */
+    align?: CatalogExampleAlign;
+    className?: string;
+    children?: SafeHtml | readonly SafeHtml[];
+}
+/**
+ * One labeled example in a catalog preview: a `ListHeader` label, an optional
+ * note, and the specimen. `align` insets the specimen so its visible left edge
+ * lines up with the label text, encoding the catalog's alignment rules as a
+ * first-class prop instead of per-demo CSS. The inset is published as the
+ * `--kui-catalog-example-align` custom property so a debug overlay can exclude it
+ * from a specimen's measured margin.
+ */
+declare function CatalogExample({ label, note, align, className, children }: CatalogExampleProps): SafeHtml;
+interface CatalogExampleStackProps {
+    /** Accessible label for the stack region. */
+    label?: string;
+    className?: string;
+    children?: SafeHtml | readonly SafeHtml[];
+}
+/** A vertically-stacked group of {@link CatalogExample}s with the catalog's example rhythm. */
+declare function CatalogExampleStack({ label, className, children }: CatalogExampleStackProps): SafeHtml;
 
-export { Catalog, type CatalogBrand, type CatalogEntry, type CatalogProps, type CatalogRelated, type CatalogResource, type CatalogSection };
+export { Catalog, type CatalogBrand, type CatalogEntry, CatalogExample, type CatalogExampleAlign, type CatalogExampleProps, CatalogExampleStack, type CatalogExampleStackProps, type CatalogProps, type CatalogRelated, type CatalogResource, type CatalogSecondaryGroup, type CatalogSection };
 ```
 
 ## `@kerfjs/ui/wire-catalog`
@@ -767,11 +820,14 @@ interface WireCatalogOptions {
     onToggleSidebar?: () => void;
     /** Invoked when the theme toggle is activated. */
     onToggleTheme?: () => void;
+    /** Invoked when the secondary (ecosystem) group's disclosure toggle is activated. */
+    onToggleSecondary?: () => void;
     /** When set, `?<urlParam>=<id>` is written on select via `history.replaceState`. */
     urlParam?: string;
     selectAction?: string;
     toggleSidebarAction?: string;
     toggleThemeAction?: string;
+    toggleSecondaryAction?: string;
 }
 /**
  * Wire a {@link Catalog}'s interactions with one delegated listener set: sidebar
@@ -780,7 +836,7 @@ interface WireCatalogOptions {
  * them in the callbacks; optionally mirror the active id into the URL via `urlParam`.
  * Returns a disposer.
  */
-declare function wireCatalog(root: HTMLElement, { onSelect, onToggleSidebar, onToggleTheme, urlParam, selectAction, toggleSidebarAction, toggleThemeAction, }: WireCatalogOptions): () => void;
+declare function wireCatalog(root: HTMLElement, { onSelect, onToggleSidebar, onToggleTheme, onToggleSecondary, urlParam, selectAction, toggleSidebarAction, toggleThemeAction, toggleSecondaryAction, }: WireCatalogOptions): () => void;
 
 export { type WireCatalogOptions, wireCatalog };
 ```

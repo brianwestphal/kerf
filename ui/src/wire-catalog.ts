@@ -7,11 +7,14 @@ export interface WireCatalogOptions {
   onToggleSidebar?: () => void;
   /** Invoked when the theme toggle is activated. */
   onToggleTheme?: () => void;
+  /** Invoked when the secondary (ecosystem) group's disclosure toggle is activated. */
+  onToggleSecondary?: () => void;
   /** When set, `?<urlParam>=<id>` is written on select via `history.replaceState`. */
   urlParam?: string;
   selectAction?: string;
   toggleSidebarAction?: string;
   toggleThemeAction?: string;
+  toggleSecondaryAction?: string;
 }
 
 /**
@@ -27,10 +30,12 @@ export function wireCatalog(
     onSelect,
     onToggleSidebar,
     onToggleTheme,
+    onToggleSecondary,
     urlParam,
     selectAction = 'catalog-select',
     toggleSidebarAction = 'catalog-toggle-sidebar',
     toggleThemeAction = 'catalog-toggle-theme',
+    toggleSecondaryAction = 'catalog-toggle-secondary',
   }: WireCatalogOptions,
 ): () => void {
   const select = (id: string) => {
@@ -58,6 +63,9 @@ export function wireCatalog(
   }
   if (onToggleTheme) {
     disposers.push(delegate(root, 'click', `[data-action="${toggleThemeAction}"]`, () => onToggleTheme()));
+  }
+  if (onToggleSecondary) {
+    disposers.push(delegate(root, 'click', `[data-action="${toggleSecondaryAction}"]`, () => onToggleSecondary()));
   }
   return () => {
     for (const dispose of disposers.splice(0)) dispose();

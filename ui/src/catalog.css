@@ -108,6 +108,87 @@
   grid-template-columns: minmax(0, 1fr);
 }
 
+.kui-catalog__group--secondary {
+  padding-block-start: var(--kui-space-s);
+  border-block-start: 1px solid var(--kui-color-border-quiet);
+}
+
+.kui-catalog__secondary {
+  display: grid;
+  padding-block: var(--kui-space-xs);
+  gap: var(--kui-space-s);
+}
+
+.kui-catalog__secondary-group {
+  display: grid;
+  min-width: 0;
+  gap: var(--kui-space-2xs);
+}
+
+.kui-catalog__secondary-heading {
+  margin: 0;
+  padding: remify(1.6px) remify(8.8px);
+  color: var(--kui-color-text-quiet);
+  font-size: var(--kui-font-2xs);
+  font-weight: 650;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.kui-catalog__secondary-group .kui-list-item {
+  padding-inline-start: remify(16px);
+}
+
+/* Labeled, aligned preview examples (CatalogExample / CatalogExampleStack). */
+.kui-catalog-example-stack {
+  display: flex;
+  flex-direction: column;
+  gap: remify(16px);
+}
+
+.kui-catalog-example {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: remify(8px);
+}
+
+/* A ListHeader used as an example label shrinks to its title; one that is itself
+   the demoed specimen keeps its default full width. */
+.kui-catalog-example > .kui-list-header:first-child {
+  width: auto;
+}
+
+.kui-catalog-example__note {
+  /* Align the note text with the label above and a content-item specimen below:
+     all land at 8px margin + 1px border + 8px padding from the example's edge. */
+  margin: 0;
+  padding-inline: calc(
+    var(--kui-layout-inline-margin, remify(8px)) + 1px +
+      var(--kui-layout-item-padding, remify(8px))
+  );
+  color: var(--kui-color-text-quiet);
+  font-size: var(--kui-font-s);
+}
+
+/* The inset is published as --kui-catalog-example-align and applied as the
+   specimen's leading margin, so a debug overlay can exclude it from the measured
+   margin and never paint the alignment device as intrinsic geometry. */
+.kui-catalog-example[data-align="glyph"]
+  > :not(.kui-list-header):not(.kui-catalog-example__note) {
+  --kui-catalog-example-align: remify(16px);
+  margin-inline-start: var(--kui-catalog-example-align);
+}
+
+.kui-catalog-example[data-align="inline-control"]
+  > :not(.kui-list-header):not(.kui-catalog-example__note) {
+  --kui-catalog-example-align: remify(8px);
+  margin-inline-start: var(--kui-catalog-example-align);
+}
+
 .kui-catalog__detail {
   min-width: 0;
   height: 100%;

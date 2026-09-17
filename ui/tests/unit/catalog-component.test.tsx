@@ -1,7 +1,7 @@
 import { raw } from 'kerfjs';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { Catalog, type CatalogSection } from '../../src/catalog.js';
+import { Catalog, CatalogExample, CatalogExampleStack, type CatalogSection } from '../../src/catalog.js';
 import { wireCatalog } from '../../src/wire-catalog.js';
 
 const asHtml = (value: unknown) => String(value);
@@ -102,6 +102,50 @@ describe('Catalog', () => {
     expect(html).toContain('class="ecosystem">Ecosystem');
     expect(html).toContain('kui-catalog__status"><output>Ready');
   });
+
+  it('renders a collapsible secondary (ecosystem) section group', () => {
+    const secondarySections = {
+      label: 'Ecosystem',
+      collapsible: true,
+      expanded: true,
+      sections: [{ category: 'Forms', entries: [{ id: 'wa-input', name: 'Input' }] }],
+    };
+    const open = asHtml(Catalog({ brand: { title: 'X' }, sections, active: 'button', content: raw('<b/>'), secondarySections }));
+    expect(open).toContain('kui-catalog__group--secondary');
+    expect(open).toContain('data-catalog-secondary');
+    expect(open).toContain('kui-catalog__secondary-heading">Forms');
+    expect(open).toContain('data-action="catalog-select" data-item-id="wa-input"');
+    // The group label is a disclosure toggle when collapsible.
+    expect(open).toContain('data-action="catalog-toggle-secondary"');
+    // Collapsed hides the entries but keeps the toggle.
+    const collapsed = asHtml(Catalog({ brand: { title: 'X' }, sections, active: 'button', content: raw('<b/>'), secondarySections: { ...secondarySections, expanded: false } }));
+    expect(collapsed).not.toContain('data-catalog-secondary');
+    expect(collapsed).toContain('data-action="catalog-toggle-secondary"');
+  });
+});
+
+describe('CatalogExample', () => {
+  it('renders a labeled, noted example with an alignment inset', () => {
+    const html = asHtml(CatalogExample({ label: 'Default', note: 'A note.', align: 'glyph', children: raw('<svg data-icon />') }));
+    expect(html).toContain('data-catalog-example');
+    expect(html).toContain('data-align="glyph"');
+    expect(html).toContain('data-component="list-header"');
+    expect(html).toContain('kui-catalog-example__note">A note.');
+    expect(html).toContain('<svg data-icon />');
+  });
+
+  it('defaults to no inset and omits the note when absent', () => {
+    const html = asHtml(CatalogExample({ label: 'Bare', children: raw('<b/>') }));
+    expect(html).toContain('data-align="none"');
+    expect(html).not.toContain('kui-catalog-example__note');
+  });
+
+  it('stacks examples under a labeled region', () => {
+    const html = asHtml(CatalogExampleStack({ label: 'Variants', children: raw('<section/>') }));
+    expect(html).toContain('data-catalog-example-stack');
+    expect(html).toContain('aria-label="Variants"');
+    expect(html).toContain('<section/>');
+  });
 });
 
 describe('wireCatalog', () => {
@@ -150,6 +194,22 @@ describe('wireCatalog', () => {
     (select as HTMLElement & { value: string }).value = 'button';
     select.dispatchEvent(new Event('change', { bubbles: true }));
     expect(onSelect).toHaveBeenCalledWith('button');
+    stop();
+  });
+
+  it('reports the secondary-group disclosure toggle', () => {
+    const root = mountShell(asHtml(Catalog({
+      brand: { title: 'X' },
+      sections,
+      active: 'button',
+      content: raw('<b/>'),
+      secondarySections: { label: 'Eco', collapsible: true, expanded: false, sections: [] },
+    })));
+    const onSelect = vi.fn();
+    const onToggleSecondary = vi.fn();
+    const stop = wireCatalog(root, { onSelect, onToggleSecondary });
+    root.querySelector<HTMLElement>('[data-action="catalog-toggle-secondary"]')!.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    expect(onToggleSecondary).toHaveBeenCalledTimes(1);
     stop();
   });
 
