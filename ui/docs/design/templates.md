@@ -7,6 +7,22 @@ tokens and styles, representative sample data). They're for design review,
 documentation, figma/paste hand-off, and any surface that wants an accurate
 component picture without running the app.
 
+## Coverage
+
+Templated components (each with light + dark variants): `PanelHeader`,
+`ToolbarControlGroup`, `Toolbar`, `ToolbarText`, `ListItem`, `ListHeader`,
+`ListActionRow`, `ValueTable`, `StateBanner`, `EmptyState`, `Skeleton`,
+`SegmentedControl`, `TabBar`/`AppTab`, and `TokenSearchField`.
+
+Deliberately **not** templated (they don't read as a single static component
+picture): `Select` renders a Web Awesome custom element that needs its runtime
+registered, so it has no faithful static capture; `LucideIcon` and
+`DisclosureArrow` are decorative primitives best seen inside the components that
+use them; `ResizableRegion` and the whole-screen layouts (`NavStack`,
+`SplitView`, `Workbench`, `TabScaffold`) and the `Catalog` shell are
+interaction-/viewport-driven screens rather than component cards — the live UX
+catalog and the app-layouts docs cover those.
+
 ## Layout
 
 ```
@@ -59,6 +75,14 @@ tokens and representative sample data) into a standalone page and captures it wi
 gains or changes a presentation combination (e.g. a new `PanelHeader` slot), add
 or adjust its variant there and re-run the build. Cover the common cases: if a
 component can render with or without an icon, include both.
+
+`npm run check:design-templates` (part of `npm run check`) is an offline gate
+that verifies every component + variant in the manifest has its committed output —
+a light and dark SVG per variant plus the two per-component library files — and
+that no stray template files linger for a removed component. It does **not**
+re-render (that needs domotion + a browser), so it catches a manifest entry whose
+templates were never generated or a half-regenerated set; deeper visual drift is
+caught by reviewing the captured SVGs on every component change.
 
 ## Templating your own components
 
