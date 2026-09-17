@@ -258,8 +258,12 @@ persistence hook. The app owns each `collapsed` signal, the panels, sizes, and
 content; drag-resize composes `ResizableRegion`. Subpath-only with a companion
 CSS import. See [`ui/docs/collapsible-panel.md`](../../ui/docs/collapsible-panel.md).
 
-**Implementation:** shipped (KF-T17Q1X); UX-demo recipe + 3-engine e2e pending
-(KF-JP6KVY).
+**Implementation:** shipped (KF-T17Q1X). UX-demo recipe (the "Collapsible sidebar"
+recipe: a left rail + bottom drawer with toggles, compact overlay, and persistence)
+and three-engine Playwright coverage of collapse/expand, focus move/restore, the
+compact overlay + Escape/backdrop dismiss, and Tab trap shipped in KF-JP6KVY
+(`ui/tests/browser/collapsible-sidebar-recipe.spec.ts`). The whole-screen layouts'
+own recipes + e2e remain pending.
 
 ## 4. Responsive presentation matrix
 

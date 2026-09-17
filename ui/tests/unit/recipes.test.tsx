@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { mountCommandPaletteAdapter } from '../../docs/examples/command-palette-adapter.js';
 import { createRecipe as createAppShell } from '../../ux-demo/recipes/app-shell.js';
+import { createRecipe as createCollapsibleSidebar } from '../../ux-demo/recipes/collapsible-sidebar.js';
 import { createRecipe as createCompactToolbar } from '../../ux-demo/recipes/compact-toolbar.js';
 import { createRecipe as createComposerForm } from '../../ux-demo/recipes/composer-form.js';
 import { createRecipe as createMasterDetail } from '../../ux-demo/recipes/list-detail-dialog.js';
@@ -139,6 +140,29 @@ describe('production composition recipes', () => {
     stop();
     root.querySelector<HTMLElement>('[data-recipe-command="settings"]')?.click();
     expect(announcements).toHaveLength(1);
+    root.remove();
+  });
+
+  it('wires the collapsible sidebar so a toggle collapses its panel and disposes', () => {
+    const root = document.createElement('div');
+    document.body.append(root);
+    const recipe = createCollapsibleSidebar(() => {});
+    expect(html(recipe.render())).toContain('data-recipe="recipe-collapsible-sidebar"');
+    const stop = mountRecipe(root, recipe);
+
+    const rail = root.querySelector('[data-collapsible-panel="sidebar-rail"]')!;
+    expect(rail.getAttribute('data-collapsed')).toBe('false');
+    const reveal = root.querySelector<HTMLButtonElement>('.recipe-collapsible-sidebar__reveal')!;
+    reveal.click();
+    expect(root.querySelector('[data-collapsible-panel="sidebar-rail"]')?.getAttribute('data-collapsed')).toBe('true');
+    reveal.click();
+    expect(root.querySelector('[data-collapsible-panel="sidebar-rail"]')?.getAttribute('data-collapsed')).toBe('false');
+
+    stop();
+    stop();
+    root.querySelector<HTMLButtonElement>('.recipe-collapsible-sidebar__reveal')?.click();
+    // After disposal the toggle no longer flips the panel.
+    expect(root.querySelector('[data-collapsible-panel="sidebar-rail"]')?.getAttribute('data-collapsed')).toBe('false');
     root.remove();
   });
 

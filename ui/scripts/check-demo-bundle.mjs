@@ -5,9 +5,10 @@ import { fileURLToPath } from 'node:url';
 const assetsDir = fileURLToPath(new URL('../dist-demo/assets/', import.meta.url));
 const limits = {
   largestJavaScriptGzip: 150_000,
-  // Measured at 256.29 kB after dogfooding the demo shell onto @kerfjs/ui/catalog
-  // (Catalog + wireCatalog); keep only narrow headroom and preserve the split.
-  totalJavaScriptGzip: 257_000,
+  // Measured at 260.59 kB after adding the collapsible-sidebar recipe (its lazy
+  // chunk pulls in @kerfjs/ui/collapsible-panel + @kerfjs/ui/wire-sidebar, not used
+  // elsewhere in the demo); keep only narrow headroom and preserve the split.
+  totalJavaScriptGzip: 261_000,
 };
 
 const javascript = (await readdir(assetsDir)).filter((name) => name.endsWith('.js'));

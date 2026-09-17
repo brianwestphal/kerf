@@ -866,6 +866,24 @@ const stopRecipeNavEffect = effect(() => {
     }
   });
 });
+// Wire the active recipe's own imperative helpers (e.g. `wireSidebar` for the
+// collapsible-sidebar recipe: toggle, focus, compact overlay, persistence). Like
+// the nav-stack wiring, the recipe root persists across the recipe's own state
+// changes, so we only re-wire when the selected recipe (or its freshly-loaded
+// controller) changes.
+let stopRecipeWire: (() => void) | null = null;
+const stopRecipeWireEffect = effect(() => {
+  void recipeRevision.value;
+  const id = selectedDemo.value;
+  window.requestAnimationFrame(() => {
+    stopRecipeWire?.();
+    stopRecipeWire = null;
+    if (!isRecipeId(id)) return;
+    const controller = recipeControllers.get(id);
+    const canvas = document.querySelector<HTMLElement>('.kui-catalog__canvas');
+    if (controller?.wire && canvas) stopRecipeWire = controller.wire(canvas);
+  });
+});
 const dispatchRecipeChange = (_event: Event, element: Element) => {
   if (isRecipeId(selectedDemo.value)) recipeControllers.get(selectedDemo.value)?.change?.(element as HTMLElement);
 };
@@ -955,4 +973,4 @@ const syncSystemTheme = (event: MediaQueryListEvent): void => {
 };
 systemDarkTheme.addEventListener('change', syncSystemTheme);
 
-window.addEventListener('pagehide', () => { stopActions(); stopCatalog(); stopResize(); stopSelect(); componentOverlay?.dispose(); stopOverlayEffect(); stopRecipeNav?.(); stopRecipeNavEffect(); stopRecipeChanges(); stopRecipeInputs(); stopRecipeDialogs(); stopTokenSearch(); stopToolbarFind(); stopTokenSearchSubmits(); stopListItemDragOver(); stopListItemDrop(); stopListActionRowDoubleClick(); stopListActionRowContextMenu(); stopAnimationSelects(); stopAnimationRanges(); stopAnimationEvents.forEach((dispose) => dispose()); stopIntersectionObserver(); stopMutationObserver(); stopResizeObserver(); stopTabBars(); systemDarkTheme.removeEventListener('change', syncSystemTheme); }, { once: true });
+window.addEventListener('pagehide', () => { stopActions(); stopCatalog(); stopResize(); stopSelect(); componentOverlay?.dispose(); stopOverlayEffect(); stopRecipeNav?.(); stopRecipeNavEffect(); stopRecipeWire?.(); stopRecipeWireEffect(); stopRecipeChanges(); stopRecipeInputs(); stopRecipeDialogs(); stopTokenSearch(); stopToolbarFind(); stopTokenSearchSubmits(); stopListItemDragOver(); stopListItemDrop(); stopListActionRowDoubleClick(); stopListActionRowContextMenu(); stopAnimationSelects(); stopAnimationRanges(); stopAnimationEvents.forEach((dispose) => dispose()); stopIntersectionObserver(); stopMutationObserver(); stopResizeObserver(); stopTabBars(); systemDarkTheme.removeEventListener('change', syncSystemTheme); }, { once: true });

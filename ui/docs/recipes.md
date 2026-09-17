@@ -133,6 +133,25 @@ the populated record — no separate skeleton markup. The composition is the poi
 `Skeleton` is the primitive it builds on. The app owns the loading lifecycle and
 which values are still unknown.
 
+## Collapsible sidebar
+
+[Open the recipe](../ux-demo/?component=recipe-collapsible-sidebar) · [TSX source](../ux-demo/recipes/collapsible-sidebar.tsx)
+
+A mini app frame whose left navigation rail and bottom activity drawer are
+standalone `CollapsiblePanel`s (`@kerfjs/ui/collapsible-panel`) driven by
+`wireSidebar` (`@kerfjs/ui/wire-sidebar`). `CollapsiblePanelToggle` supplies the
+standard per-side glyph: a collapse toggle lives inside each panel and an expand
+toggle lives in the always-visible main header, so a collapsed panel is still
+reachable. `wireSidebar` owns the toggle delegation, moves focus into a panel on
+open and restores it to the trigger on close, and — when a `deviceClass()` reports
+`compact` — switches the open panel to a dismissable **overlay** (backdrop, Escape
+and backdrop-click collapse, and a trapped Tab ring, the ARIA dialog pattern). It
+also persists each panel's collapsed state through a supplied storage hook. The app
+owns each `collapsed` signal, the panel sizes, and the content; the wire owns the
+ephemeral interaction. For a full three-pane shell use `Workbench` instead — see
+[`app-layouts.md`](app-layouts.md). This recipe is covered end-to-end across
+Chromium, Firefox, and WebKit by `tests/browser/collapsible-sidebar-recipe.spec.ts`.
+
 ## Rules shared by every recipe
 
 - Import `@kerfjs/ui/layout.css`; keep every pane unpadded and use exactly one

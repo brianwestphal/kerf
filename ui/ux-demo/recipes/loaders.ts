@@ -10,6 +10,7 @@ export const recipeIds = [
   'recipe-compact-toolbar',
   'recipe-navigation-stack',
   'recipe-loading-inspector',
+  'recipe-collapsible-sidebar',
 ] as const;
 
 export type RecipeId = typeof recipeIds[number];
@@ -24,6 +25,7 @@ export const recipeLoaders: Record<RecipeId, () => Promise<{ createRecipe: Recip
   'recipe-compact-toolbar': () => import('./compact-toolbar.js'),
   'recipe-navigation-stack': () => import('./navigation-stack.js'),
   'recipe-loading-inspector': () => import('./loading-inspector.js'),
+  'recipe-collapsible-sidebar': () => import('./collapsible-sidebar.js'),
 };
 
 export function isRecipeId(value: string): value is RecipeId {

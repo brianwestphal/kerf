@@ -89,3 +89,14 @@ const stop = wireSidebar(app, {
 
 The app still owns everything domain-specific — which panels exist, their order,
 sizes, content, and any per-project persistence — exactly as with the other layouts.
+
+## Recipe and coverage
+
+The catalog ships a runnable **Collapsible sidebar** recipe — a left rail and a
+bottom drawer with the standard toggles, the compact overlay, and per-panel
+persistence: [open it](../ux-demo/?component=recipe-collapsible-sidebar) or read
+[`recipes.md`](recipes.md#collapsible-sidebar) · [TSX source](../ux-demo/recipes/collapsible-sidebar.tsx).
+It is covered end-to-end across Chromium, Firefox, and WebKit by
+`tests/browser/collapsible-sidebar-recipe.spec.ts` (collapse/expand, focus
+move/restore, the compact overlay + Escape/backdrop dismiss, and the Tab trap),
+alongside the component/wire unit tests.

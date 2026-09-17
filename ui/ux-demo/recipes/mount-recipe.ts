@@ -25,11 +25,13 @@ export function mountRecipe(root: HTMLElement, controller: RecipeController): ()
     onCommit: ({ id, size }) => controller.resize?.(id, size),
   });
   const stopNav = wireNavStack(root, { onBack: () => controller.action('nav-back', root) });
+  const stopWire = controller.wire?.(root);
 
   let disposed = false;
   return () => {
     if (disposed) return;
     disposed = true;
+    stopWire?.();
     stopNav();
     stopResize();
     stopDialogs();

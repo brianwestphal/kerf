@@ -578,6 +578,24 @@ export const generatedKerfCatalog = [
     ],
     "demoSource": "ui/ux-demo/recipes/loading-inspector.tsx",
     "documentation": "ui/docs/recipes.md#loading-inspector"
+  },
+  {
+    "id": "recipe-collapsible-sidebar",
+    "name": "Collapsible sidebar",
+    "category": "Recipes",
+    "kind": "recipe",
+    "source": "kerf",
+    "description": "A mini app frame whose left navigation rail and bottom activity drawer are standalone CollapsiblePanels driven by wireSidebar: per-side collapse/expand toggles, focus move-in and restore, a dismissable compact overlay, and per-panel persistence.",
+    "uses": [
+      "panel-header",
+      "list-header",
+      "list-item",
+      "toolbar",
+      "toolbar-control-group",
+      "toolbar-text"
+    ],
+    "demoSource": "ui/ux-demo/recipes/collapsible-sidebar.tsx",
+    "documentation": "ui/docs/recipes.md#collapsible-sidebar"
   }
 ] as const;
 

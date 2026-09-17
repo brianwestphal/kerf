@@ -40,6 +40,7 @@ application boundary:
 | Compact toolbar choices and actions | [Catalog](../ux-demo/) · `?component=recipe-compact-toolbar` |
 | Navigation stack | [Catalog](../ux-demo/) · `?component=recipe-navigation-stack` |
 | Loading inspector | [Catalog](../ux-demo/) · `?component=recipe-loading-inspector` |
+| Collapsible sidebar | [Catalog](../ux-demo/) · `?component=recipe-collapsible-sidebar` |
 
 Recipes use public production exports and show ownership boundaries; they are
 copyable reference compositions, not new monolithic components.

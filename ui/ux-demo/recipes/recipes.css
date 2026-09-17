@@ -371,3 +371,78 @@
   margin-inline: var(--kui-layout-inline-margin, remify(8px));
   gap: var(--kui-space-s);
 }
+
+/* Collapsible-sidebar recipe: a mini app frame with a left rail (CollapsiblePanel)
+   full-height at the leading edge, the main pane, and a bottom drawer under it.
+   `contain: paint` bounds the wire's compact overlay (a viewport-`fixed` panel +
+   backdrop) to this frame so the embedded demo does not cover the whole catalog. */
+.recipe-collapsible-sidebar {
+  display: grid;
+  height: min(34rem, 70vh);
+  contain: paint;
+  grid-template-areas:
+    "rail main"
+    "rail drawer";
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr) auto;
+}
+.recipe-collapsible-sidebar__rail {
+  grid-area: rail;
+  display: flex;
+  min-height: 0;
+  flex-direction: column;
+}
+.recipe-collapsible-sidebar__rail-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--kui-space-2xs) var(--kui-layout-inline-margin, remify(8px));
+  border-block-end: 1px solid var(--kui-color-border);
+}
+.recipe-collapsible-sidebar__nav {
+  min-height: 0;
+}
+.recipe-collapsible-sidebar__main {
+  display: grid;
+  grid-area: main;
+  min-width: 0;
+  min-height: 0;
+  grid-template-rows: auto minmax(0, 1fr);
+  background: var(--kui-color-surface-lowered);
+}
+.recipe-collapsible-sidebar__body {
+  min-height: 0;
+}
+.recipe-collapsible-sidebar__card strong {
+  display: block;
+}
+.recipe-collapsible-sidebar__drawer {
+  grid-area: drawer;
+  display: flex;
+  min-height: 0;
+  flex-direction: column;
+}
+.recipe-collapsible-sidebar__drawer-body {
+  min-height: 0;
+}
+.recipe-collapsible-sidebar__log {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  margin: 0;
+  margin-inline: var(--kui-layout-inline-margin, remify(8px));
+  padding: 0;
+  list-style: none;
+  gap: var(--kui-space-xs);
+}
+.recipe-collapsible-sidebar__log li {
+  display: flex;
+  align-items: center;
+  color: var(--kui-color-text-quiet);
+  font-size: var(--kui-font-s);
+  gap: var(--kui-space-xs);
+}
+.recipe-collapsible-sidebar__log svg {
+  width: remify(16px);
+  height: remify(16px);
+}

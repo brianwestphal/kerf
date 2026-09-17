@@ -4684,7 +4684,7 @@
       "category": "Recipes",
       "kind": "recipe",
       "source": "kerf",
-      "purpose": "A record inspector whose per-record values load asynchronously \u2014 every value-bearing component takes a shared placeholder flag, so the same chrome renders a faithful loading state and then the populated record.",
+      "purpose": "A record inspector whose per-record values load asynchronously — every value-bearing component takes a shared placeholder flag, so the same chrome renders a faithful loading state and then the populated record.",
       "uses": [
         "panel-header",
         "value-table",
@@ -4699,7 +4699,7 @@
         "A detail or inspector view must render its real chrome while its per-record values are still loading, then swap to the populated record without duplicating markup."
       ],
       "avoidWhen": [
-        "Do not hand-build a separate empty-state layout, and do not use it for known progress \u2014 use LoadingSpinner for that."
+        "Do not hand-build a separate empty-state layout, and do not use it for known progress — use LoadingSpinner for that."
       ],
       "appOwns": [
         "loading lifecycle",
@@ -4719,6 +4719,47 @@
         "catalogRoute": "?component=recipe-loading-inspector",
         "documentation": "docs/recipes.md#loading-inspector",
         "recipe": "docs/recipes.md#loading-inspector"
+      }
+    },
+    {
+      "id": "recipe-collapsible-sidebar",
+      "name": "Collapsible sidebar",
+      "category": "Recipes",
+      "kind": "recipe",
+      "source": "kerf",
+      "purpose": "A mini app frame whose left navigation rail and bottom activity drawer are standalone CollapsiblePanels driven by wireSidebar: per-side collapse/expand toggles, focus move-in and restore, a dismissable compact overlay, and per-panel persistence.",
+      "uses": [
+        "panel-header",
+        "list-header",
+        "list-item",
+        "toolbar",
+        "toolbar-control-group",
+        "toolbar-text"
+      ],
+      "useWhen": [
+        "A rail or drawer must collapse and expand outside a full Workbench shell, keeping the app's collapsed signals, sizes, and content while the wire owns toggle, focus, the compact overlay, and persistence."
+      ],
+      "avoidWhen": [
+        "Use the Workbench layout when the whole screen is a three-pane shell; use an ordinary always-visible sidebar when it never collapses."
+      ],
+      "appOwns": [
+        "each panel's collapsed signal",
+        "panel sizes",
+        "routing and selection",
+        "content"
+      ],
+      "accessibility": [
+        "Each panel is a labeled aside that is aria-hidden while collapsed; toggles carry aria-expanded and the standard per-side glyph; while compact an open panel is an overlay with a backdrop, Escape and backdrop-click dismiss, and a trapped Tab ring."
+      ],
+      "delivery": {
+        "sideEffects": [
+          "lazy-recipe-css"
+        ]
+      },
+      "links": {
+        "catalogRoute": "?component=recipe-collapsible-sidebar",
+        "documentation": "docs/recipes.md#collapsible-sidebar",
+        "recipe": "docs/recipes.md#collapsible-sidebar"
       }
     }
   ]
