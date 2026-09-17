@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="552" height="552" viewBox="0 0 552 552">
+  <rect width="552" height="552" fill="#ffffff"/>
+  <text x="16" y="30" font-family="system-ui, sans-serif" font-size="12" font-weight="600" fill="#6e6e73">Bordered group of icon buttons</text>
+  <image href="toolbar-control-group/icon-buttons.svg" x="16" y="38" width="520" height="96"/>
+  <text x="16" y="164" font-family="system-ui, sans-serif" font-size="12" font-weight="600" fill="#6e6e73">Borderless single control</text>
+  <image href="toolbar-control-group/borderless-single.svg" x="16" y="172" width="520" height="96"/>
+  <text x="16" y="298" font-family="system-ui, sans-serif" font-size="12" font-weight="600" fill="#6e6e73">Label text beside a control</text>
+  <image href="toolbar-control-group/with-text.svg" x="16" y="306" width="520" height="96"/>
+  <text x="16" y="432" font-family="system-ui, sans-serif" font-size="12" font-weight="600" fill="#6e6e73">Push-appearance buttons</text>
+  <image href="toolbar-control-group/push-buttons.svg" x="16" y="440" width="520" height="96"/>
+</svg>

@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="752" height="806" viewBox="0 0 752 806">
+  <rect width="752" height="806" fill="#ffffff"/>
+  <text x="16" y="30" font-family="system-ui, sans-serif" font-size="12" font-weight="600" fill="#6e6e73">Icon, summary, and action</text>
+  <image href="panel-header/icon-summary-actions.svg" x="16" y="38" width="720" height="136"/>
+  <text x="16" y="204" font-family="system-ui, sans-serif" font-size="12" font-weight="600" fill="#6e6e73">Icon and action, no summary</text>
+  <image href="panel-header/icon-actions.svg" x="16" y="212" width="720" height="112"/>
+  <text x="16" y="354" font-family="system-ui, sans-serif" font-size="12" font-weight="600" fill="#6e6e73">No icon, summary and action</text>
+  <image href="panel-header/no-icon.svg" x="16" y="362" width="720" height="136"/>
+  <text x="16" y="528" font-family="system-ui, sans-serif" font-size="12" font-weight="600" fill="#6e6e73">Title only</text>
+  <image href="panel-header/title-only.svg" x="16" y="536" width="720" height="104"/>
+  <text x="16" y="670" font-family="system-ui, sans-serif" font-size="12" font-weight="600" fill="#6e6e73">Page heading (h1) with action</text>
+  <image href="panel-header/page-heading.svg" x="16" y="678" width="720" height="112"/>
+</svg>
