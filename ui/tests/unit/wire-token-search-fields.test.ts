@@ -571,8 +571,11 @@ describe('wireTokenSearchFields — onEdit callback', () => {
     const onEdit = vi.fn();
     const handle = wireTokenSearchFields(root, { onEdit });
 
-    editor.dispatchEvent(inputEvent('input', 'insertText'));
-    expect(onEdit).toHaveBeenCalledWith({ id: 'tickets', editor });
+    const typed = inputEvent('input', 'insertText');
+    editor.dispatchEvent(typed);
+    // onEdit exposes the originating InputEvent so a caller can read inputType/data.
+    expect(onEdit).toHaveBeenCalledWith({ id: 'tickets', editor, event: typed });
+    expect(onEdit.mock.calls[0][0].event.inputType).toBe('insertText');
 
     onEdit.mockClear();
     root.querySelector<HTMLElement>('[data-component="token-search-field"]')!.dataset.disabled = 'true';

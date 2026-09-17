@@ -7,6 +7,16 @@ export interface TokenSearchSubmit {
   editor: HTMLElement;
 }
 
+/** Reported to {@link WireTokenSearchFieldsOptions.onEdit} on every editor input. */
+export interface TokenSearchEdit extends TokenSearchSubmit {
+  /**
+   * The `InputEvent` that mutated the editor — read `event.inputType` / `event.data`
+   * to gate commit behavior (e.g. only parse a chip on whitespace-terminated input)
+   * without keeping a separate `input` listener.
+   */
+  event: InputEvent;
+}
+
 /** Reported when adjacent-token keyboard deletion asks the app to drop a chip. */
 export interface TokenSearchTokenRemoval {
   id: string;
@@ -70,7 +80,7 @@ export interface TokenSearchCollapsibleOptions {
 export interface WireTokenSearchFieldsOptions {
   onSubmit?: (submission: TokenSearchSubmit) => void;
   /** Fired on every editor `input`, after the browser mutates it, so a caller can drop its own `input` listener. */
-  onEdit?: (edit: TokenSearchSubmit) => void;
+  onEdit?: (edit: TokenSearchEdit) => void;
   /** Managed collapsible transient behavior. `true`/omitted = on with defaults; `false` = fully off. */
   collapsible?: boolean | TokenSearchCollapsibleOptions;
   /** Opt-in atomic-chip keyboard behavior (off by default). `true` = on with defaults. */
@@ -294,7 +304,7 @@ export function wireTokenSearchFields(
     if (onEdit) {
       const field = editor.closest<HTMLElement>('[data-component="token-search-field"]');
       const id = field?.dataset.tokenSearchId;
-      if (id && field?.dataset.disabled !== 'true') onEdit({ id, editor });
+      if (id && field?.dataset.disabled !== 'true') onEdit({ id, editor, event: event as InputEvent });
     }
     const deletion = pending.get(editor);
     pending.delete(editor);

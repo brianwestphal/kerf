@@ -1191,6 +1191,15 @@ interface TokenSearchSubmit {
     id: string;
     editor: HTMLElement;
 }
+/** Reported to {@link WireTokenSearchFieldsOptions.onEdit} on every editor input. */
+interface TokenSearchEdit extends TokenSearchSubmit {
+    /**
+     * The `InputEvent` that mutated the editor — read `event.inputType` / `event.data`
+     * to gate commit behavior (e.g. only parse a chip on whitespace-terminated input)
+     * without keeping a separate `input` listener.
+     */
+    event: InputEvent;
+}
 /** Reported when adjacent-token keyboard deletion asks the app to drop a chip. */
 interface TokenSearchTokenRemoval {
     id: string;
@@ -1251,7 +1260,7 @@ interface TokenSearchCollapsibleOptions {
 interface WireTokenSearchFieldsOptions {
     onSubmit?: (submission: TokenSearchSubmit) => void;
     /** Fired on every editor `input`, after the browser mutates it, so a caller can drop its own `input` listener. */
-    onEdit?: (edit: TokenSearchSubmit) => void;
+    onEdit?: (edit: TokenSearchEdit) => void;
     /** Managed collapsible transient behavior. `true`/omitted = on with defaults; `false` = fully off. */
     collapsible?: boolean | TokenSearchCollapsibleOptions;
     /** Opt-in atomic-chip keyboard behavior (off by default). `true` = on with defaults. */
@@ -1281,7 +1290,7 @@ interface TokenSearchFieldsHandle {
  */
 declare function wireTokenSearchFields(root: HTMLElement, { onSubmit, onEdit, collapsible, keyboard }?: WireTokenSearchFieldsOptions): TokenSearchFieldsHandle;
 
-export { type TokenSearchCollapsibleOptions, type TokenSearchFieldsHandle, type TokenSearchKeyboardOptions, type TokenSearchSubmit, type TokenSearchTokenRemoval, type WireTokenSearchFieldsOptions, wireTokenSearchFields };
+export { type TokenSearchCollapsibleOptions, type TokenSearchEdit, type TokenSearchFieldsHandle, type TokenSearchKeyboardOptions, type TokenSearchSubmit, type TokenSearchTokenRemoval, type WireTokenSearchFieldsOptions, wireTokenSearchFields };
 ```
 
 ## `kerfjs/actions`

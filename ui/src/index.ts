@@ -60,6 +60,7 @@ export {
 } from './wire-tab-bars.js';
 export {
   type TokenSearchCollapsibleOptions,
+  type TokenSearchEdit,
   type TokenSearchFieldsHandle,
   type TokenSearchSubmit,
   wireTokenSearchFields,

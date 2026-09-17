@@ -140,7 +140,8 @@ can also, opt-in via `keyboard`, own atomic-chip editing keys: from a collapsed
 caret with no selection, Backspace removes the token before the caret and Delete
 the token after it (reported through `onRemoveToken` for the app to apply to its
 controlled state), and ArrowRight moves the caret past a trailing chip so typed
-text lands after it. An optional `onEdit({ id, editor })` fires on every editor
+text lands after it. An optional `onEdit({ id, editor, event })` — with the
+originating `InputEvent` so a caller can gate on `inputType`/`data` — fires on every editor
 `input`, letting a caller drop its own `input` listener; the application still
 owns query parsing and result-count/loading announcements.
 

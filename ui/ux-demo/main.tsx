@@ -986,10 +986,12 @@ const stopAdoptionKeyboardEffect = effect(() => {
     if (!container) return;
     stopAdoptionKeyboard = wireTokenSearchFields(container, {
       collapsible: false,
-      onEdit: ({ editor }) => {
+      onEdit: ({ editor, event }) => {
         const value = readTokenSearchField(editor, adoptionTokens.value);
         adoptionQuery.value = value.query;
-        adoptionReadout.value = `Editing: ${value.query ? `"${value.query}"` : 'empty'} · ${adoptionTokens.value.length} filters`;
+        // The originating InputEvent lets the app gate on how the edit happened
+        // (typed vs. pasted, whitespace-terminated, …) without a second listener.
+        adoptionReadout.value = `Editing: ${value.query ? `"${value.query}"` : 'empty'} · ${adoptionTokens.value.length} filters · ${event.inputType}`;
       },
       keyboard: {
         onRemoveToken: ({ value, direction }) => {
