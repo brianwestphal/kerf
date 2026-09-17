@@ -146,6 +146,10 @@ jobs:
             playwright-ui-${{ runner.os }}-
       - run: npx playwright install --with-deps chromium firefox webkit
       - run: npm run test:e2e
+      # KF-MCM28T: re-render every design template in the browser and fail on
+      # visual drift (a component changed but its template was not regenerated) —
+      # the heavy check the offline `npm run check` cannot do.
+      - run: npm run check:design-templates:drift
 
   # KF-118: browser tests run on every push/PR alongside the unit suites.
   # The happy-dom unit tests can't model SVG/MathML namespacing, IME

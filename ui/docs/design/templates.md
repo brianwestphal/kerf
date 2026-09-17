@@ -81,8 +81,15 @@ that verifies every component + variant in the manifest has its committed output
 a light and dark SVG per variant plus the two per-component library files — and
 that no stray template files linger for a removed component. It does **not**
 re-render (that needs domotion + a browser), so it catches a manifest entry whose
-templates were never generated or a half-regenerated set; deeper visual drift is
-caught by reviewing the captured SVGs on every component change.
+templates were never generated or a half-regenerated set.
+
+Deeper **visual drift** — a component changed but its template was not regenerated —
+is caught by `npm run check:design-templates:drift`, a CI-only gate (it runs in the
+browser-capable `ui` job, **not** in the offline `npm run check`). It regenerates
+every template into a throwaway directory and fails if any regenerated SVG differs
+from the committed one, after normalizing the bits that legitimately vary between
+runs (XML comments and the auto-minted element ids / font names). If it fails, run
+`npm run design-templates:build` and commit the updated SVGs.
 
 ## Templating your own components
 

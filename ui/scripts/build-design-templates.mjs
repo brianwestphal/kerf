@@ -50,7 +50,11 @@ import { ValueTable, ValueTableRow } from '../dist/value-table.js';
 
 const execFileAsync = promisify(execFile);
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const outRoot = resolve(root, 'docs/design/templates');
+// Defaults to the committed template directory; the CI drift gate points this at a
+// throwaway directory (DESIGN_TEMPLATES_OUT) to regenerate without clobbering.
+const outRoot = process.env.DESIGN_TEMPLATES_OUT
+  ? resolve(process.env.DESIGN_TEMPLATES_OUT)
+  : resolve(root, 'docs/design/templates');
 
 async function resolveDomotion() {
   if (process.env.DOMOTION_BIN) return process.env.DOMOTION_BIN;

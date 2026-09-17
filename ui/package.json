@@ -283,6 +283,7 @@
     "check": "npm run check:format && npm run check:catalog && npm run check:recipes && npm run check:guidance && npm run check:ai-regressions && npm run lint && npm run typecheck && npm test && npm run test:consumer-types && npm run check:ai-signatures && npm run demo:build && npm run check:design-templates && npm pack --dry-run",
     "prepublishOnly": "npm run check",
     "check:design-templates": "node scripts/check-design-templates.mjs",
+    "check:design-templates:drift": "node scripts/check-design-templates-drift.mjs",
     "design-templates:build": "node scripts/build-design-templates.mjs"
   },
   "peerDependencies": {
