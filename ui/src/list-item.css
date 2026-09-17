@@ -4,7 +4,7 @@
   --kui-list-item-background: transparent;
   --kui-list-item-hover-border: var(--kui-color-neutral-border-normal);
   --kui-list-item-hover-background: var(--kui-color-neutral-fill-quiet);
-  --kui-list-item-selected-color: var(--kui-color-brand-on-quiet);
+  --kui-list-item-selected-color: var(--kui-color-neutral-on-normal);
   --kui-list-item-selected-border: var(--kui-color-brand-border-quiet);
   --kui-list-item-selected-background: var(--kui-color-brand-fill-normal);
   display: grid;

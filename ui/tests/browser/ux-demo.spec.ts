@@ -1974,6 +1974,7 @@ test('fills ListHeader rows and keeps 18px action visuals at the logical end', a
 });
 
 test('preserves menu extension metadata without surrendering native semantics', async ({ page, browserName }) => {
+  await page.emulateMedia({ colorScheme: 'light' });
   await page.setViewportSize({ width: 1100, height: 760 });
   await page.goto('/?component=list-header');
   const headerDemo = page.locator('[data-demo="list-header"]');
@@ -2015,6 +2016,30 @@ test('preserves menu extension metadata without surrendering native semantics', 
   const row = page.locator('[data-demo="list-item"] [data-item-id="selected"]');
   await expect(row).toHaveAttribute('data-demo-drop-status', 'ready');
   await expect(row).toHaveAttribute('data-action', 'log-inbox');
+  const selectedContrast = () => row.evaluate((element) => {
+    const context = document.createElement('canvas').getContext('2d');
+    const colors = window.getComputedStyle(element);
+    const luminance = (color: string): number => {
+      if (!context) return 0;
+      context.canvas.width = 1;
+      context.canvas.height = 1;
+      context.fillStyle = color;
+      context.fillRect(0, 0, 1, 1);
+      const channels = [...context.getImageData(0, 0, 1, 1).data.slice(0, 3)].map((channel) => {
+        const value = channel / 255;
+        return value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4;
+      });
+      return 0.2126 * (channels[0] ?? 0) + 0.7152 * (channels[1] ?? 0) + 0.0722 * (channels[2] ?? 0);
+    };
+    const foreground = luminance(colors.color);
+    const background = luminance(colors.backgroundColor);
+    return (Math.max(foreground, background) + 0.05) / (Math.min(foreground, background) + 0.05);
+  });
+  expect(await selectedContrast(), 'light selected ListItem contrast').toBeGreaterThanOrEqual(4.5);
+  await page.locator('[data-action="toggle-theme"]').click();
+  await expect(page.locator('html')).toHaveClass(/demo-dark/);
+  expect(await selectedContrast(), 'dark selected ListItem contrast').toBeGreaterThanOrEqual(4.5);
+  await page.locator('[data-action="toggle-theme"]').click();
   await row.press('Enter');
   await expect(page.locator('.catalog-log')).toHaveText('Inbox selected');
   await row.press('Space');
