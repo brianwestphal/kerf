@@ -122,6 +122,21 @@ trigger into the revealed editor, and clear `expanded` only after focus leaves
 the complete component. Text or tokens keep the field expanded even when that
 transient state is false. Width animation is disabled under reduced motion.
 
+## CollapsiblePanel / sidebar
+
+`CollapsiblePanel` is a labeled `aside` region that is `aria-hidden` while
+collapsed; its content slides via transform (disabled under reduced motion).
+`CollapsiblePanelToggle` is a named button carrying `aria-expanded` and the
+standard per-side collapse/expand glyph (`PanelLeft*` / `PanelRight*` /
+`PanelBottom*`); place a collapse toggle inside the panel and an expand toggle in
+an always-visible location so it is reachable while collapsed. `wireSidebar()`
+moves focus into the panel when it opens and restores it to the trigger when it
+closes. When a `deviceClass()` reports `compact`, an open panel becomes an overlay
+with a dismissable backdrop, Escape and backdrop-click collapse it, and Tab is
+trapped within it (the ARIA dialog pattern). The application owns each `collapsed`
+signal, the panels, their sizes, and content; the wire may persist the collapsed
+state per panel.
+
 ## Verification matrix
 
 For each changed component, inspect default, hover, focus, disabled, selected/pressed, busy/error, long-content, wide, narrow, light, dark, increased-contrast, reduced-motion, keyboard-only, and 200%-zoom states where applicable. DOM order must match reading and focus order, with no clipping or unreachable action.

@@ -24,6 +24,8 @@ const entries = [
   ['@kerfjs/ui/wire-nav-stack', 'dist/wire-nav-stack.d.ts'],
   ['@kerfjs/ui/split-view', 'dist/split-view.d.ts'],
   ['@kerfjs/ui/workbench', 'dist/workbench.d.ts'],
+  ['@kerfjs/ui/collapsible-panel', 'dist/collapsible-panel.d.ts'],
+  ['@kerfjs/ui/wire-sidebar', 'dist/wire-sidebar.d.ts'],
   ['@kerfjs/ui/tab-scaffold', 'dist/tab-scaffold.d.ts'],
   ['@kerfjs/ui/wire-tab-scaffold', 'dist/wire-tab-scaffold.d.ts'],
   ['@kerfjs/ui/resizable-region', 'dist/resizable-region.d.ts'],

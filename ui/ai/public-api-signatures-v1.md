@@ -540,6 +540,125 @@ declare function Workbench({ id, label, main, leftRail, rightRail, bottomDrawer,
 export { Workbench, type WorkbenchPanel, type WorkbenchProps };
 ```
 
+## `@kerfjs/ui/collapsible-panel`
+
+```ts
+import { SafeHtml } from 'kerfjs';
+import { LucideIcon } from './lucide-icon.js';
+import 'lucide';
+
+/** Which edge a {@link CollapsiblePanel} docks to. */
+type CollapsiblePanelSide = 'left' | 'right' | 'bottom';
+/**
+ * The standard collapse/expand icon for a panel `side` and `collapsed` state,
+ * so every app's sidebars and drawers use one recognizable convention:
+ * `PanelLeft*` for a left rail, `PanelRight*` for a right rail, `PanelBottom*`
+ * for a bottom drawer — the `Close` glyph while open, the `Open` glyph while
+ * collapsed. Exposed so an app can render its own toggle affordance.
+ */
+declare function collapsiblePanelToggleIcon(side: CollapsiblePanelSide, collapsed: boolean): {
+    icon: Parameters<typeof LucideIcon>[0]['icon'];
+    name: string;
+};
+interface CollapsiblePanelToggleProps {
+    /** The panel this toggle controls. */
+    side: CollapsiblePanelSide;
+    /** The panel's current collapsed state (drives the icon direction). */
+    collapsed: boolean;
+    /** `data-action` the button carries so `wireSidebar` can delegate its click. */
+    action: string;
+    /** The panel id the button targets (`data-tab-panel`-style: `data-collapsible-panel`). */
+    panelId?: string;
+    /** Accessible label; defaults to "Collapse"/"Expand". */
+    label?: string;
+    className?: string;
+}
+/**
+ * A standard collapse/expand toggle button for a {@link CollapsiblePanel}: the
+ * recognizable per-side icon (see {@link collapsiblePanelToggleIcon}) plus the
+ * `data-action` / `aria-expanded` `wireSidebar` reads. Placement is the app's —
+ * put it in the panel's own header (to collapse) and somewhere always-visible
+ * (to expand while collapsed).
+ */
+declare function CollapsiblePanelToggle({ side, collapsed, action, panelId, label, className }: CollapsiblePanelToggleProps): SafeHtml;
+interface CollapsiblePanelProps {
+    /** A stable id for the panel — `wireSidebar` targets it and toggles reference it. */
+    id: string;
+    /** Which edge the panel docks to: a left/right rail or a bottom drawer. */
+    side: CollapsiblePanelSide;
+    /** Whether the panel is currently collapsed (the app owns this signal). */
+    collapsed?: boolean;
+    /** Rail width or drawer height in px. Overrides the CSS default. */
+    size?: number;
+    /** Accessible label for the panel region. */
+    label?: string;
+    /** Panel content. */
+    children?: SafeHtml | readonly SafeHtml[];
+    className?: string;
+}
+/**
+ * A standalone collapsible side rail or bottom drawer, outside the full
+ * {@link Workbench} shell. It owns only the presentation: a fixed-size content
+ * area that stays laid out while the panel's track snaps to zero and the content
+ * slides out via `transform` (one reflow, composited — the same technique
+ * `Workbench` and the catalog sidebar use). The app owns the `collapsed` signal;
+ * pair it with `wireSidebar` for the toggle, focus, compact-overlay, keyboard,
+ * and persistence semantics, and with `CollapsiblePanelToggle` for the standard
+ * affordance. See `docs/24-collapsible-panel.md`.
+ */
+declare function CollapsiblePanel({ id, side, collapsed, size, label, children, className }: CollapsiblePanelProps): SafeHtml;
+
+export { CollapsiblePanel, type CollapsiblePanelProps, type CollapsiblePanelSide, CollapsiblePanelToggle, type CollapsiblePanelToggleProps, collapsiblePanelToggleIcon };
+```
+
+## `@kerfjs/ui/wire-sidebar`
+
+```ts
+import { Signal, ReadonlySignal } from 'kerfjs';
+import { DeviceClass } from './device-class.js';
+
+/** Minimal `localStorage`-shaped store, so the persistence hook is testable. */
+interface SidebarStorage {
+    getItem(key: string): string | null;
+    setItem(key: string, value: string): void;
+}
+interface WireSidebarPanel {
+    /** The panel id — matches `CollapsiblePanel`'s `id` and a toggle's `panelId`. */
+    id: string;
+    /** The app-owned collapsed signal. `wireSidebar` reads it (focus, overlay) and
+     *  writes it (toggle, Escape, backdrop, persistence). */
+    collapsed: Signal<boolean>;
+    /** `data-action` value the panel's toggle button(s) carry. */
+    toggleAction: string;
+    /** When set, the collapsed state is loaded from and saved to `storage` under
+     *  this key (a persistence hook), so the panel remembers its state. */
+    storageKey?: string;
+}
+interface WireSidebarOptions {
+    panels: readonly WireSidebarPanel[];
+    /**
+     * When provided, the sidebar adopts a compact **overlay** presentation while
+     * `deviceClass.compact` is true: an open panel floats over the content with a
+     * dismissable backdrop, Escape and backdrop-click collapse it, and focus is
+     * trapped within the open panel (the ARIA dialog pattern). Without it the panel
+     * is always inline.
+     */
+    deviceClass?: ReadonlySignal<DeviceClass>;
+    /** Persistence store (default `globalThis.localStorage`, if present). */
+    storage?: SidebarStorage;
+}
+/**
+ * The reusable sidebar-semantics layer for {@link CollapsiblePanel}s: toggle
+ * delegation with focus restore, focus-into on open, an optional compact overlay
+ * (backdrop + Escape + focus trap) driven by {@link deviceClass}, and an optional
+ * persistence hook. The app owns each `collapsed` signal and the layout; this wire
+ * owns the interaction. Returns a disposer. See `docs/24-collapsible-panel.md`.
+ */
+declare function wireSidebar(root: HTMLElement, { panels, deviceClass, storage }: WireSidebarOptions): () => void;
+
+export { type SidebarStorage, type WireSidebarOptions, type WireSidebarPanel, wireSidebar };
+```
+
 ## `@kerfjs/ui/tab-scaffold`
 
 ```ts

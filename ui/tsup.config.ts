@@ -22,6 +22,8 @@ const entries = [
   'wire-nav-stack',
   'split-view',
   'workbench',
+  'collapsible-panel',
+  'wire-sidebar',
   'tab-scaffold',
   'wire-tab-scaffold',
   'loading-spinner',

@@ -130,6 +130,14 @@
       "types": "./dist/workbench.d.ts",
       "import": "./dist/workbench.js"
     },
+    "./collapsible-panel": {
+      "types": "./dist/collapsible-panel.d.ts",
+      "import": "./dist/collapsible-panel.js"
+    },
+    "./wire-sidebar": {
+      "types": "./dist/wire-sidebar.d.ts",
+      "import": "./dist/wire-sidebar.js"
+    },
     "./tab-scaffold": {
       "types": "./dist/tab-scaffold.d.ts",
       "import": "./dist/tab-scaffold.js"
@@ -218,6 +226,7 @@
     "./nav-stack.css": "./dist/styles/nav-stack.css",
     "./split-view.css": "./dist/styles/split-view.css",
     "./workbench.css": "./dist/styles/workbench.css",
+    "./collapsible-panel.css": "./dist/styles/collapsible-panel.css",
     "./tab-scaffold.css": "./dist/styles/tab-scaffold.css",
     "./loading-spinner.css": "./dist/styles/loading-spinner.css",
     "./select.css": "./dist/styles/select.css",

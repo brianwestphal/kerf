@@ -1,0 +1,146 @@
+/* A standalone collapsible rail / drawer. Collapsing snaps the panel's own size
+   to zero (one reflow, no per-frame width/height animation) while the fixed-size
+   content slides out via transform (composited, clipped by overflow). The same
+   technique as Workbench and the catalog sidebar (docs/18). */
+.kui-collapsible-panel {
+  overflow: hidden;
+  background: var(--kui-color-surface);
+}
+
+.kui-collapsible-panel--left,
+.kui-collapsible-panel--right {
+  width: var(--kui-collapsible-panel-width, remify(280px));
+  min-width: 0;
+  height: 100%;
+}
+
+.kui-collapsible-panel--left {
+  border-inline-end: 1px solid var(--kui-color-border);
+}
+
+.kui-collapsible-panel--right {
+  border-inline-start: 1px solid var(--kui-color-border);
+}
+
+.kui-collapsible-panel--bottom {
+  width: 100%;
+  height: var(--kui-collapsible-panel-height, remify(220px));
+  min-height: 0;
+  border-block-start: 1px solid var(--kui-color-border);
+}
+
+.kui-collapsible-panel[data-collapsed="true"] {
+  border: 0;
+}
+
+.kui-collapsible-panel--left[data-collapsed="true"],
+.kui-collapsible-panel--right[data-collapsed="true"] {
+  width: 0;
+}
+
+.kui-collapsible-panel--bottom[data-collapsed="true"] {
+  height: 0;
+}
+
+/* The fixed-size sliding content: it keeps a definite size so the transform
+   reads as a slide, not a squeeze. */
+.kui-collapsible-panel__content {
+  height: 100%;
+  transition: transform 200ms ease;
+}
+
+.kui-collapsible-panel--left .kui-collapsible-panel__content,
+.kui-collapsible-panel--right .kui-collapsible-panel__content {
+  width: var(--kui-collapsible-panel-width, remify(280px));
+}
+
+.kui-collapsible-panel--bottom .kui-collapsible-panel__content {
+  width: 100%;
+  height: var(--kui-collapsible-panel-height, remify(220px));
+}
+
+.kui-collapsible-panel--left[data-collapsed="true"]
+  .kui-collapsible-panel__content {
+  transform: translateX(-100%);
+}
+
+.kui-collapsible-panel--right[data-collapsed="true"]
+  .kui-collapsible-panel__content {
+  transform: translateX(100%);
+}
+
+.kui-collapsible-panel--bottom[data-collapsed="true"]
+  .kui-collapsible-panel__content {
+  transform: translateY(100%);
+}
+
+/* Compact presentation: wireSidebar marks the host so the panel floats over the
+   content as an overlay with a dismissable backdrop instead of taking layout
+   space. The panel is fixed to its edge and slides in from off-screen. */
+[data-collapsible-overlay="true"] .kui-collapsible-panel {
+  position: fixed;
+  z-index: var(--kui-collapsible-panel-overlay-z, 40);
+  box-shadow: var(--kui-shadow-l, 0 8px 32px rgb(0 0 0 / 24%));
+}
+
+[data-collapsible-overlay="true"] .kui-collapsible-panel--left {
+  inset-block: 0;
+  inset-inline-start: 0;
+}
+
+[data-collapsible-overlay="true"] .kui-collapsible-panel--right {
+  inset-block: 0;
+  inset-inline-end: 0;
+}
+
+[data-collapsible-overlay="true"] .kui-collapsible-panel--bottom {
+  inset-inline: 0;
+  inset-block-end: 0;
+}
+
+.kui-collapsible-panel__backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: var(--kui-collapsible-panel-backdrop-z, 39);
+  border: 0;
+  padding: 0;
+  background: var(--kui-color-scrim, rgb(0 0 0 / 32%));
+  cursor: pointer;
+}
+
+/* The standard toggle affordance: a plain icon button carrying the per-side
+   collapse/expand glyph. */
+.kui-collapsible-panel__toggle {
+  display: grid;
+  width: remify(40px);
+  height: remify(40px);
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: var(--kui-layout-rounded-radius, calc(1px + remify(11px)));
+  color: inherit;
+  background: transparent;
+  cursor: pointer;
+  place-items: center;
+}
+
+.kui-collapsible-panel__toggle:hover {
+  border-color: var(--kui-color-border);
+  background: var(--kui-color-neutral-fill-normal);
+}
+
+.kui-collapsible-panel__toggle:focus-visible {
+  outline: var(--kui-focus-ring);
+  outline-offset: 1px;
+}
+
+.kui-collapsible-panel__toggle svg {
+  display: block;
+  width: remify(18px);
+  height: remify(18px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kui-collapsible-panel__content {
+    transition: none;
+  }
+}

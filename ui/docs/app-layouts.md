@@ -10,6 +10,10 @@ changes. The layouts:
 - [`SplitView`](split-view.md) — list-detail (two panes, collapsing to a stack).
 - [`Workbench`](workbench.md) — the Xcode-like collapsible rails + drawer.
 - [`TabScaffold`](tab-scaffold.md) — the iOS bottom tab bar (each tab a stack).
+- [`CollapsiblePanel` + `wireSidebar`](collapsible-panel.md) — a standalone
+  collapsible rail or bottom drawer (with `CollapsiblePanelToggle`), outside a full
+  shell: the standard collapse animation, icon convention, and `wireSidebar`
+  semantics (focus, compact overlay, persistence).
 
 Derive responsiveness from `deviceClass()`: `compact` (a handset or portrait
 tablet) means "one pane at a time"; `atLeast('tablet')` / `atLeast('desktop')`
