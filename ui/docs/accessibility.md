@@ -57,6 +57,16 @@ Keep the levels meaningful and non-skipping within a view. Pass the trailing
 controls as a labeled `ToolbarControlGroup` when that group needs an accessible
 name.
 
+## FloatingToolbar
+
+`FloatingToolbar` is a `role="toolbar"` region with a **required** accessible
+`label`; it floats over the content of its nearest positioned ancestor and is
+forced to a dark color scheme, but it is **not** in the top layer, so it never
+covers dialogs, popovers, or other overlays. Its children are the app's controls
+(normally `ToolbarControlGroup`s), which keep their own names, focus, and
+keyboard behavior; the application owns their actions, the toolbar's visibility,
+and — via `position` and `--kui-floating-toolbar-inset` — where it sits.
+
 ## Tabs
 
 `AppTab` renders one controlled tab. `TabBar` supplies the containing tab list,

@@ -1,0 +1,38 @@
+.kui-floating-toolbar {
+  /* Inset from the container edges: a top toolbar sits 8px in, so this floats an
+     extra 8px past that (--kui-space-m = 16px). Override the token to reposition. */
+  --kui-floating-toolbar-inset: var(--kui-space-m, remify(16px));
+
+  /* Floats above the main content of its nearest positioned ancestor. z-index
+     stays low so it never covers dialogs/overlays (it is not top-layer). Forced
+     dark so the controls read as one distinct floating layer over any theme. */
+  position: absolute;
+  z-index: 4;
+  display: flex;
+  color-scheme: dark;
+  align-items: center;
+  gap: var(--kui-space-xs, remify(8px));
+}
+
+.kui-floating-toolbar[data-position^="bottom"] {
+  inset-block-end: var(--kui-floating-toolbar-inset);
+}
+
+.kui-floating-toolbar[data-position^="top"] {
+  inset-block-start: var(--kui-floating-toolbar-inset);
+}
+
+.kui-floating-toolbar[data-position$="-end"] {
+  inset-inline-end: var(--kui-floating-toolbar-inset);
+}
+
+.kui-floating-toolbar[data-position$="-start"] {
+  inset-inline-start: var(--kui-floating-toolbar-inset);
+}
+
+/* The centered edges span from the middle rather than an inline edge. */
+.kui-floating-toolbar[data-position="bottom"],
+.kui-floating-toolbar[data-position="top"] {
+  inset-inline-start: 50%;
+  transform: translateX(-50%);
+}

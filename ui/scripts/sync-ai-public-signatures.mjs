@@ -12,6 +12,7 @@ const entries = [
   ['@kerfjs/ui/toolbar', 'dist/toolbar.d.ts'],
   ['@kerfjs/ui/toolbar-text', 'dist/toolbar-text.d.ts'],
   ['@kerfjs/ui/toolbar-control-group', 'dist/toolbar-control-group.d.ts'],
+  ['@kerfjs/ui/floating-toolbar', 'dist/floating-toolbar.d.ts'],
   ['@kerfjs/ui/list-header', 'dist/list-header.d.ts'],
   ['@kerfjs/ui/list-action-row', 'dist/list-action-row.d.ts'],
   ['@kerfjs/ui/list-item', 'dist/list-item.d.ts'],

@@ -152,6 +152,18 @@ export const generatedKerfCatalog = [
     "documentation": "ui/docs/component-selection.md"
   },
   {
+    "id": "floating-toolbar",
+    "name": "FloatingToolbar",
+    "category": "Structure",
+    "kind": "component",
+    "source": "kerf",
+    "description": "A transparent, forced-dark toolbar that floats over its container's content.",
+    "uses": [],
+    "demoSource": "ui/ux-demo/main.tsx",
+    "componentSource": "ui/src/floating-toolbar.tsx",
+    "documentation": "ui/docs/component-selection.md"
+  },
+  {
     "id": "toolbar-text",
     "name": "ToolbarText",
     "category": "Structure",

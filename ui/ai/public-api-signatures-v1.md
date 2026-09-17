@@ -89,6 +89,39 @@ declare function ToolbarControlGroup({ children, label, className, expanded, sin
 export { ToolbarControlGroup, type ToolbarControlGroupProps };
 ```
 
+## `@kerfjs/ui/floating-toolbar`
+
+```ts
+import { SafeHtml } from 'kerfjs';
+
+/** Where a {@link FloatingToolbar} floats within its positioned container. */
+type FloatingToolbarPosition = 'bottom' | 'bottom-start' | 'bottom-end' | 'top' | 'top-start' | 'top-end';
+interface FloatingToolbarProps {
+    /** Toolbar contents — normally one or more `ToolbarControlGroup`s. */
+    children: SafeHtml | SafeHtml[];
+    /** Accessible name for the toolbar (required — it exposes `role="toolbar"`). */
+    label: string;
+    /**
+     * Corner or edge it floats to inside its nearest positioned ancestor.
+     * Default: `'bottom-end'`.
+     */
+    position?: FloatingToolbarPosition;
+    className?: string;
+}
+/**
+ * A toolbar that floats above the main content of its nearest positioned
+ * ancestor — a transparent, forced-dark cluster of controls (e.g. a drawer
+ * restore button) that sits over the content but NOT over dialogs or overlays
+ * (it is not in the top layer). It is inset from the container edges by
+ * `--kui-floating-toolbar-inset` (default `--kui-space-m`, i.e. 8px more than a
+ * top toolbar's own inset); override that token to move it. The app owns the
+ * controls and their behavior — wire them with `delegate()` as usual.
+ */
+declare function FloatingToolbar({ children, label, position, className }: FloatingToolbarProps): SafeHtml;
+
+export { FloatingToolbar, type FloatingToolbarPosition, type FloatingToolbarProps };
+```
+
 ## `@kerfjs/ui/list-header`
 
 ```ts

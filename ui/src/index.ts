@@ -5,6 +5,7 @@ export {
   type DisclosureDirection,
 } from './disclosure-arrow.js';
 export { EmptyState, type EmptyStateProps } from './empty-state.js';
+export { FloatingToolbar, type FloatingToolbarPosition, type FloatingToolbarProps } from './floating-toolbar.js';
 export { ListActionRow, type ListActionRowProps } from './list-action-row.js';
 export { ListHeader, type ListHeaderProps } from './list-header.js';
 export { ListItem, type ListItemProps } from './list-item.js';

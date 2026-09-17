@@ -59,6 +59,11 @@
       "browser": "./dist/browser/toolbar-control-group.js",
       "import": "./dist/toolbar-control-group.js"
     },
+    "./floating-toolbar": {
+      "types": "./dist/floating-toolbar.d.ts",
+      "browser": "./dist/browser/floating-toolbar.js",
+      "import": "./dist/floating-toolbar.js"
+    },
     "./toolbar-text": {
       "types": "./dist/toolbar-text.d.ts",
       "browser": "./dist/browser/toolbar-text.js",
@@ -215,6 +220,7 @@
     "./disclosure-arrow.css": "./dist/styles/disclosure-arrow.css",
     "./toolbar.css": "./dist/styles/toolbar.css",
     "./toolbar-control-group.css": "./dist/styles/toolbar-control-group.css",
+    "./floating-toolbar.css": "./dist/styles/floating-toolbar.css",
     "./toolbar-text.css": "./dist/styles/toolbar-text.css",
     "./list-action-row.css": "./dist/styles/list-action-row.css",
     "./list-item.css": "./dist/styles/list-item.css",

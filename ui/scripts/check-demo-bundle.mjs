@@ -5,11 +5,10 @@ import { fileURLToPath } from 'node:url';
 const assetsDir = fileURLToPath(new URL('../dist-demo/assets/', import.meta.url));
 const limits = {
   largestJavaScriptGzip: 150_000,
-  // Measured at 261.13 kB after adding the TokenSearchField adoption-knobs example
-  // (keep-open suggestions + chip keyboard + onEdit wiring); 260.59 kB before, which
-  // was itself the collapsible-sidebar recipe's lazy chunk. Keep only narrow
-  // headroom and preserve the split.
-  totalJavaScriptGzip: 261_500,
+  // Grows as demos are added: 260.59 kB (collapsible-sidebar recipe) → 261.13 kB
+  // (TokenSearchField adoption knobs) → 262.10 kB (FloatingToolbar demo). Keep only
+  // narrow headroom and preserve the split.
+  totalJavaScriptGzip: 262_500,
 };
 
 const javascript = (await readdir(assetsDir)).filter((name) => name.endsWith('.js'));

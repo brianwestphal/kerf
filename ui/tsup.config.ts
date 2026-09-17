@@ -7,6 +7,7 @@ const entries = [
   'toolbar',
   'toolbar-control-group',
   'toolbar-text',
+  'floating-toolbar',
   'list-action-row',
   'list-item',
   'list-header',

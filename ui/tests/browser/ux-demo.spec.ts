@@ -254,6 +254,32 @@ test('the ToolbarControlGroup demo shape toggle switches every group between pil
   await expect(roundedGroups).toHaveCount(0);
 });
 
+test('the FloatingToolbar demo toggles a dark floating toolbar and auto-hides on leave', async ({ page }) => {
+  await page.goto('/?component=floating-toolbar');
+  const floating = page.locator('.kui-floating-toolbar');
+  await expect(floating).toHaveCount(0);
+
+  await page.getByRole('button', { name: 'Show floating toolbar' }).click();
+  await expect(floating).toHaveCount(1);
+  await expect(floating).toHaveAttribute('role', 'toolbar');
+  await expect(floating).toHaveAttribute('data-position', 'bottom-end');
+  await expect(floating).toHaveCSS('position', 'absolute');
+  await expect(floating).toHaveCSS('color-scheme', 'dark');
+  // Inset from the stage edges (past a top toolbar's own 8px), not covering it.
+  const insets = await page.evaluate(() => {
+    const stage = document.querySelector('.floating-toolbar-demo__stage')!.getBoundingClientRect();
+    const floater = document.querySelector('.kui-floating-toolbar')!.getBoundingClientRect();
+    return { right: Math.round(stage.right - floater.right), bottom: Math.round(stage.bottom - floater.bottom) };
+  });
+  expect(insets.right).toBeGreaterThan(8);
+  expect(insets.bottom).toBeGreaterThan(8);
+
+  // Leaving and returning to the demo auto-hides it.
+  await page.goto('/?component=toolbar');
+  await page.goto('/?component=floating-toolbar');
+  await expect(floating).toHaveCount(0);
+});
+
 test('paints a selected wa-button control on ::part(base), not the outer host box', async ({ page }) => {
   await page.goto('/?component=toolbar-control-group');
   // Inject a data-single="false" group with a selected wa-button whose ::part(base)
@@ -2366,11 +2392,11 @@ test('matches shared menu, content-item, and toolbar geometry', async ({ page, b
   const demo = page.getByRole('region', { name: 'ToolbarControlGroup demo' });
   await expect.poll(() => page.evaluate(() => customElements.get('wa-dropdown') !== undefined)).toBe(true);
   await expect(demo.locator('.kui-list-header__label')).toHaveText([
-    'Segmented choices', 'Popup menu', 'Button group', 'Single button', 'Borderless group',
+    'Shape', 'Segmented choices', 'Popup menu', 'Button group', 'Single button', 'Borderless group',
     'Push button, resting', 'Push button, pressed', 'Dark group', 'Collapsible search',
   ]);
   const groups = demo.locator('[data-component="toolbar-control-group"]');
-  await expect(groups).toHaveCount(9);
+  await expect(groups).toHaveCount(10);
   const heights = await groups.evaluateAll((nodes) => nodes.map((node) => node.getBoundingClientRect().height));
   expect(new Set(heights).size).toBe(1);
   await demo.getByRole('button', { name: 'Columns view' }).click();
@@ -2397,7 +2423,7 @@ test('matches shared menu, content-item, and toolbar geometry', async ({ page, b
   await expect(demo.getByRole('group', { name: 'Dark navigation' })).toHaveCSS('border-color', 'rgb(53, 53, 54)');
   if (browserName === 'chromium') await page.screenshot({ path: 'test-results/toolbar-control-groups-wide.png', fullPage: true });
   await page.setViewportSize({ width: 390, height: 844 });
-  await expect(groups).toHaveCount(9);
+  await expect(groups).toHaveCount(10);
   if (browserName === 'chromium') await page.screenshot({ path: 'test-results/toolbar-control-groups-narrow.png', fullPage: true });
 });
 

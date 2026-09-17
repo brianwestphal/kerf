@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vitest';
 import { AppTab } from '../../src/app-tab.js';
 import { DisclosureArrow } from '../../src/disclosure-arrow.js';
 import { EmptyState } from '../../src/empty-state.js';
+import { FloatingToolbar } from '../../src/floating-toolbar.js';
 import { ListActionRow } from '../../src/list-action-row.js';
 import { ListHeader, type ListHeaderProps } from '../../src/list-header.js';
 import { ListItem } from '../../src/list-item.js';
@@ -74,6 +75,13 @@ describe('production UI primitives', () => {
     // Corner shape defaults to pill; `rounded` is opt-in.
     expect(asHtml(ToolbarControlGroup({ children: icon }))).toContain('data-shape="pill"');
     expect(asHtml(ToolbarControlGroup({ children: icon, shape: 'rounded' }))).toContain('data-shape="rounded"');
+  });
+
+  it('renders a labeled floating toolbar with a default and custom position', () => {
+    const floating = asHtml(FloatingToolbar({ children: icon, label: 'Drawer' }));
+    expect(floating).toContain('class="kui-floating-toolbar"');
+    expect(floating).toContain('data-component="floating-toolbar" data-position="bottom-end" role="toolbar" aria-label="Drawer"');
+    expect(asHtml(FloatingToolbar({ children: icon, label: 'Drawer', position: 'top-start', className: 'extra' }))).toContain('class="kui-floating-toolbar extra" data-component="floating-toolbar" data-position="top-start"');
   });
 
   it('renders menu navigation, toggle, action, disabled, and multiline states', () => {

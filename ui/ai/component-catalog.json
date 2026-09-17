@@ -455,6 +455,68 @@
       }
     },
     {
+      "id": "floating-toolbar",
+      "name": "FloatingToolbar",
+      "category": "Structure",
+      "kind": "component",
+      "source": "kerf",
+      "description": "A transparent, forced-dark toolbar that floats over its container's content.",
+      "uses": [],
+      "purpose": "A transparent, forced-dark toolbar that floats over its container's content.",
+      "publicExports": [
+        "FloatingToolbar"
+      ],
+      "useWhen": [
+        "Float a small cluster of controls (e.g. a drawer restore) over scrolling content without covering dialogs."
+      ],
+      "avoidWhen": [
+        "Do not use for a primary page or panel toolbar, or for anything that must sit above overlays (it is not top-layer)."
+      ],
+      "alternatives": [
+        {
+          "id": "toolbar",
+          "relationship": "nearest"
+        }
+      ],
+      "appOwns": [
+        "controls",
+        "position",
+        "visibility"
+      ],
+      "variants": [
+        "bottom-end",
+        "bottom-start",
+        "bottom",
+        "top-end",
+        "top-start",
+        "top"
+      ],
+      "accessibility": [
+        "Give the toolbar an accessible name (label is required — it exposes role=\"toolbar\")."
+      ],
+      "delivery": {
+        "browserImport": "@kerfjs/ui/floating-toolbar",
+        "manualCssImport": "@kerfjs/ui/floating-toolbar.css",
+        "sideEffects": [
+          "browser-condition-css"
+        ]
+      },
+      "wiring": [],
+      "publicClasses": [
+        "kui-floating-toolbar"
+      ],
+      "publicTokens": [
+        "--kui-floating-toolbar-inset",
+        "--kui-space-m",
+        "--kui-space-xs"
+      ],
+      "links": {
+        "catalogRoute": "?component=floating-toolbar",
+        "documentation": "docs/component-selection.md",
+        "recipe": "docs/component-selection.md#problem-to-component-matrix"
+      }
+    },
+    {
       "id": "toolbar-text",
       "name": "ToolbarText",
       "category": "Structure",

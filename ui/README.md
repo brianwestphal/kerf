@@ -98,6 +98,7 @@ as a `New` marker.
 | `DisclosureArrow` | `@kerfjs/ui/disclosure-arrow` | `@kerfjs/ui/disclosure-arrow.css` |
 | `Toolbar` | `@kerfjs/ui/toolbar` | `@kerfjs/ui/toolbar.css` |
 | `ToolbarControlGroup` | `@kerfjs/ui/toolbar-control-group` | `@kerfjs/ui/toolbar-control-group.css` |
+| `FloatingToolbar` | `@kerfjs/ui/floating-toolbar` | `@kerfjs/ui/floating-toolbar.css` |
 | `ToolbarText` | `@kerfjs/ui/toolbar-text` | `@kerfjs/ui/toolbar-text.css` |
 | `ListActionRow` | `@kerfjs/ui/list-action-row` | `@kerfjs/ui/list-action-row.css` |
 | `ListItem` | `@kerfjs/ui/list-item` | `@kerfjs/ui/list-item.css` |

@@ -8,6 +8,7 @@ import { AppTab } from '@kerfjs/ui/app-tab';
 import { Catalog, CatalogExample, type CatalogRelated, type CatalogResource, type CatalogSection as KuiCatalogSection } from '@kerfjs/ui/catalog';
 import { DisclosureArrow } from '@kerfjs/ui/disclosure-arrow';
 import { EmptyState } from '@kerfjs/ui/empty-state';
+import { FloatingToolbar } from '@kerfjs/ui/floating-toolbar';
 import { ListActionRow } from '@kerfjs/ui/list-action-row';
 import { ListHeader } from '@kerfjs/ui/list-header';
 import { ListItem } from '@kerfjs/ui/list-item';
@@ -32,7 +33,7 @@ import { reorderTabs, wireTabBars } from '@kerfjs/ui/wire-tab-bars';
 import { wireTokenSearchFields } from '@kerfjs/ui/wire-token-search-fields';
 import { batch, delegate, delegateCapture, effect, mount, signal } from 'kerfjs';
 import { delegateActions } from 'kerfjs/actions';
-import { ArrowDownAZ, ArrowRight, Bell, Check, ChevronLeft, ChevronRight, CircleHelp, Columns3, Contrast, Folder, GitCompare, GripVertical, Inbox, List, MoreHorizontal, PanelLeft, PanelLeftOpen, Pin, Plus, Search, Settings, SlidersHorizontal, Star, StickyNote, Wrench, X, ZapOff } from 'lucide';
+import { ArrowDownAZ, ArrowRight, Bell, Check, ChevronLeft, ChevronRight, CircleHelp, Columns3, Contrast, Folder, GitCompare, GripVertical, Inbox, List, MoreHorizontal, PanelBottomOpen, PanelLeft, PanelLeftOpen, Pin, Plus, Search, Settings, SlidersHorizontal, Star, StickyNote, Terminal, Wrench, X, ZapOff } from 'lucide';
 
 import { catalog, catalogEntriesUsing, type CatalogEntry, type CatalogId, catalogRepositoryHref, catalogSections, findCatalogEntry, isCatalogId, type KerfCatalogId, type WebAwesomeCatalogId, webAwesomeCatalogSections } from './catalog.js';
 import { createComponentOverlay } from './component-overlay.js';
@@ -93,6 +94,7 @@ const toolbarFindOpen = signal(false);
 const collapsibleSearchOpen = signal(false);
 const toolbarGroupSearchOpen = signal(false);
 const toolbarGroupShape = signal<'pill' | 'rounded'>('pill');
+const floatingToolbarOpen = signal(false);
 const adoptionOpen = signal(true);
 const adoptionQuery = signal('');
 const adoptionTokens = signal<TokenSearchToken[]>([]);
@@ -261,6 +263,21 @@ function ToolbarControlGroupDemo() {
     <CatalogExample label="Push button, pressed" align="inline-control"><ToolbarControlGroup buttonAppearance="push" single shape={shape}><button type="button" aria-label="Pressed comparison" aria-pressed="true" data-action="log-pressed">{icon(GitCompare, 'git-compare')}</button></ToolbarControlGroup></CatalogExample>
     <CatalogExample label="Dark group" align="inline-control"><ToolbarControlGroup label="Dark navigation" tone="dark" shape={shape}><button type="button" aria-label="Previous" data-action="log-previous">{icon(ChevronLeft, 'chevron-left')}</button><button type="button" aria-label="Next" data-action="log-next">{icon(ChevronRight, 'chevron-right')}</button></ToolbarControlGroup></CatalogExample>
     <CatalogExample label="Collapsible search" note={<>An empty, unfocused search collapses to one iconic control in the group; activating it expands the group to reveal the editor, and it re-collapses when focus leaves while empty. <code>wireTokenSearchFields</code> manages the expand/collapse/focus.</>} align="inline-control"><div class="demo-toolbar-group-search-wrap"><ToolbarControlGroup className="demo-toolbar-group-search" shape={shape} expanded={toolbarGroupSearchOpen.value} single={!toolbarGroupSearchOpen.value}><TokenSearchField id="toolbar-group-search" label="Search views" collapsible expanded={toolbarGroupSearchOpen.value} placeholder="Search views" expandLabel="Open search" /></ToolbarControlGroup></div></CatalogExample>
+  </section>;
+}
+
+function FloatingToolbarDemo() {
+  const open = floatingToolbarOpen.value;
+  return <section class="floating-toolbar-demo kui-catalog-example-stack" data-demo="floating-toolbar" aria-label="FloatingToolbar demo">
+    <CatalogExample label="Floating over content" note={<>A transparent, forced-dark toolbar floats over its container's content — like a terminal-drawer restore — but never over dialogs (it is not top-layer). It is inset an extra 8px past a top toolbar; override <code>--kui-floating-toolbar-inset</code> or set <code>position</code> to move it. Toggle it on; it hides automatically when you leave this demo.</>} align="none">
+      <div class="floating-toolbar-demo__stage">
+        <Toolbar label="Work area" divider leading={<ToolbarControlGroup appearance="borderless" single><ToolbarText text="Terminals" size="small" /></ToolbarControlGroup>} trailing={<ToolbarControlGroup appearance="borderless" single><button type="button" data-action="toggle-floating-toolbar" aria-pressed={String(open)} aria-label={open ? 'Hide floating toolbar' : 'Show floating toolbar'}>{icon(open ? X : PanelBottomOpen, open ? 'x' : 'panel-bottom-open')}</button></ToolbarControlGroup>} />
+        <div class="floating-toolbar-demo__content">Scrolling content sits behind the floating toolbar.</div>
+        {open
+          ? <FloatingToolbar label="Terminal drawer"><ToolbarControlGroup label="Terminal drawer" single><button type="button" aria-label="Restore terminal drawer" data-action="log-restore-drawer">{icon(Terminal, 'terminal')}</button></ToolbarControlGroup></FloatingToolbar>
+          : <></>}
+      </div>
+    </CatalogExample>
   </section>;
 }
 
@@ -568,6 +585,7 @@ const demos: Record<Exclude<KerfCatalogId, RecipeId>, () => ReturnType<typeof To
   layout: LayoutDemo,
   toolbar: ToolbarDemo,
   'toolbar-control-group': ToolbarControlGroupDemo,
+  'floating-toolbar': FloatingToolbarDemo,
   'segmented-control': SegmentedControlDemo,
   'token-search-field': TokenSearchFieldDemo,
   'toolbar-text': ToolbarTextDemo,
@@ -828,6 +846,8 @@ const stopActions = delegateActions(app, 'click', {
   'toggle-list-action-row': (_event, element) => { const itemId = (element as HTMLElement).dataset.itemId ?? ''; menuActionPressed.value = !menuActionPressed.value; actionLog.value = `${itemId} ${menuActionPressed.value ? 'pressed' : 'not pressed'}`; },
   'open-list-action-row-actions': (_event, element) => { actionLog.value = `Actions requested for ${(element as HTMLElement).dataset.itemId ?? 'row'}`; },
   'log-done': () => { actionLog.value = 'Done'; },
+  'toggle-floating-toolbar': () => { floatingToolbarOpen.value = !floatingToolbarOpen.value; actionLog.value = `Floating toolbar ${floatingToolbarOpen.value ? 'shown' : 'hidden'}`; },
+  'log-restore-drawer': () => { actionLog.value = 'Terminal drawer restored'; },
   'sort-recent': () => { actionLog.value = 'Sorted by recently updated'; },
   'sort-priority': () => { actionLog.value = 'Sorted by priority'; },
   'log-favorite': () => { actionLog.value = 'Favorite requested'; },
@@ -950,6 +970,11 @@ const stopTokenSearchSubmits = wireTokenSearchFields(app, {
 // helper above stays keyboard-free, leaving the other token-search demos on their
 // browser-removal + caret-restore path). Collapse stays owned by the app-wide
 // helper; this scoped one only adds the keyboard + onEdit hooks.
+// The floating toolbar is a manual on/off toggle that auto-hides when the viewer
+// leaves this component demo (it makes no sense floating over another demo).
+const stopFloatingToolbarReset = effect(() => {
+  if (selectedDemo.value !== 'floating-toolbar') floatingToolbarOpen.value = false;
+});
 let stopAdoptionKeyboard: (() => void) | null = null;
 const stopAdoptionKeyboardEffect = effect(() => {
   const id = selectedDemo.value;
@@ -1040,4 +1065,4 @@ const syncSystemTheme = (event: MediaQueryListEvent): void => {
 };
 systemDarkTheme.addEventListener('change', syncSystemTheme);
 
-window.addEventListener('pagehide', () => { stopActions(); stopCatalog(); stopResize(); stopSelect(); componentOverlay?.dispose(); stopOverlayEffect(); stopRecipeNav?.(); stopRecipeNavEffect(); stopRecipeWire?.(); stopRecipeWireEffect(); stopRecipeChanges(); stopRecipeInputs(); stopRecipeDialogs(); stopTokenSearch(); stopToolbarFind(); stopTokenSearchSubmits(); stopAdoptionKeyboard?.(); stopAdoptionKeyboardEffect(); stopListItemDragOver(); stopListItemDrop(); stopListActionRowDoubleClick(); stopListActionRowContextMenu(); stopAnimationSelects(); stopAnimationRanges(); stopAnimationEvents.forEach((dispose) => dispose()); stopIntersectionObserver(); stopMutationObserver(); stopResizeObserver(); stopTabBars(); systemDarkTheme.removeEventListener('change', syncSystemTheme); }, { once: true });
+window.addEventListener('pagehide', () => { stopActions(); stopCatalog(); stopResize(); stopSelect(); componentOverlay?.dispose(); stopOverlayEffect(); stopRecipeNav?.(); stopRecipeNavEffect(); stopRecipeWire?.(); stopRecipeWireEffect(); stopRecipeChanges(); stopRecipeInputs(); stopRecipeDialogs(); stopTokenSearch(); stopToolbarFind(); stopTokenSearchSubmits(); stopAdoptionKeyboard?.(); stopAdoptionKeyboardEffect(); stopFloatingToolbarReset(); stopListItemDragOver(); stopListItemDrop(); stopListActionRowDoubleClick(); stopListActionRowContextMenu(); stopAnimationSelects(); stopAnimationRanges(); stopAnimationEvents.forEach((dispose) => dispose()); stopIntersectionObserver(); stopMutationObserver(); stopResizeObserver(); stopTabBars(); systemDarkTheme.removeEventListener('change', syncSystemTheme); }, { once: true });
