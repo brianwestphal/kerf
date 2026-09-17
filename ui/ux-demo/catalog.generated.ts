@@ -285,6 +285,30 @@ export const generatedKerfCatalog = [
     "documentation": "ui/docs/component-selection.md"
   },
   {
+    "id": "list-inset-control",
+    "name": "ListInsetControl",
+    "category": "Structure",
+    "kind": "component",
+    "source": "kerf",
+    "description": "Insets a self-bordered control into a pane/list content region.",
+    "uses": [],
+    "demoSource": "ui/ux-demo/main.tsx",
+    "componentSource": "ui/src/list-inset-control.tsx",
+    "documentation": "ui/docs/component-selection.md"
+  },
+  {
+    "id": "list-inset-text",
+    "name": "ListInsetText",
+    "category": "Structure",
+    "kind": "component",
+    "source": "kerf",
+    "description": "Gives bare text the content-item geometry so it lines up with bordered items.",
+    "uses": [],
+    "demoSource": "ui/ux-demo/main.tsx",
+    "componentSource": "ui/src/list-inset-text.tsx",
+    "documentation": "ui/docs/component-selection.md"
+  },
+  {
     "id": "tabs",
     "name": "AppTab",
     "category": "Navigation",

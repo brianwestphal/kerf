@@ -1112,6 +1112,104 @@
       }
     },
     {
+      "id": "list-inset-control",
+      "name": "ListInsetControl",
+      "category": "Structure",
+      "kind": "component",
+      "source": "kerf",
+      "description": "Insets a self-bordered control into a pane/list content region.",
+      "uses": [],
+      "purpose": "Insets a self-bordered control into a pane/list content region.",
+      "publicExports": [
+        "ListInsetControl"
+      ],
+      "useWhen": [
+        "Place a control that carries its own border and padding (an input, a wa-* control) in a pane/list content region so its edges align with .kui-content items."
+      ],
+      "avoidWhen": [
+        "Do not wrap a component that already owns its content-item margin (ListItem, StateBanner, …) — that double-insets it. Use ListInsetText for bare text."
+      ],
+      "alternatives": [
+        {
+          "id": "list-inset-text",
+          "relationship": "nearest"
+        }
+      ],
+      "appOwns": [
+        "the wrapped control and its behavior"
+      ],
+      "accessibility": [
+        "A layout wrapper only; it adds no role or name — the wrapped control keeps its own."
+      ],
+      "delivery": {
+        "browserImport": "@kerfjs/ui/list-inset-control",
+        "manualCssImport": "@kerfjs/ui/list-inset-control.css",
+        "sideEffects": [
+          "browser-condition-css"
+        ]
+      },
+      "wiring": [],
+      "publicClasses": [
+        "kui-list-inset-control"
+      ],
+      "publicTokens": [
+        "--kui-layout-inline-margin"
+      ],
+      "links": {
+        "catalogRoute": "?component=list-inset-control",
+        "documentation": "docs/component-selection.md",
+        "recipe": "docs/component-selection.md#problem-to-component-matrix"
+      }
+    },
+    {
+      "id": "list-inset-text",
+      "name": "ListInsetText",
+      "category": "Structure",
+      "kind": "component",
+      "source": "kerf",
+      "description": "Gives bare text the content-item geometry so it lines up with bordered items.",
+      "uses": [],
+      "purpose": "Gives bare text the content-item geometry so it lines up with bordered items.",
+      "publicExports": [
+        "ListInsetText"
+      ],
+      "useWhen": [
+        "Line a plain text element up with bordered .kui-content items — it adds the 8px margin, 1px transparent border, and 8px padding the text lacks."
+      ],
+      "avoidWhen": [
+        "Do not use it to wrap an interactive control (use ListInsetControl), or a component that already owns its content-item geometry."
+      ],
+      "alternatives": [
+        {
+          "id": "list-inset-control",
+          "relationship": "nearest"
+        }
+      ],
+      "appOwns": [
+        "the text content"
+      ],
+      "accessibility": [
+        "A layout wrapper only; it adds no role or name."
+      ],
+      "delivery": {
+        "browserImport": "@kerfjs/ui/list-inset-text",
+        "manualCssImport": "@kerfjs/ui/list-inset-text.css",
+        "sideEffects": [
+          "browser-condition-css"
+        ]
+      },
+      "wiring": [],
+      "publicClasses": [
+        "kui-list-inset-text"
+      ],
+      "publicTokens": [],
+      "links": {
+        "catalogRoute": "?component=list-inset-text",
+        "documentation": "docs/component-selection.md",
+        "recipe": "docs/component-selection.md#problem-to-component-matrix"
+      }
+    },
+    {
       "id": "tabs",
       "name": "AppTab",
       "category": "Navigation",

@@ -103,6 +103,8 @@ as a `New` marker.
 | `ListActionRow` | `@kerfjs/ui/list-action-row` | `@kerfjs/ui/list-action-row.css` |
 | `ListItem` | `@kerfjs/ui/list-item` | `@kerfjs/ui/list-item.css` |
 | `ListHeader` | `@kerfjs/ui/list-header` | `@kerfjs/ui/list-header.css` |
+| `ListInsetControl` | `@kerfjs/ui/list-inset-control` | `@kerfjs/ui/list-inset-control.css` |
+| `ListInsetText` | `@kerfjs/ui/list-inset-text` | `@kerfjs/ui/list-inset-text.css` |
 | Pane, content, and navigation composition | — | `@kerfjs/ui/layout.css` |
 | `ResizableRegion` | `@kerfjs/ui/resizable-region` | `@kerfjs/ui/resizable-region.css` |
 | `wireResizableRegions` | `@kerfjs/ui/wire-resizable-regions` | — |

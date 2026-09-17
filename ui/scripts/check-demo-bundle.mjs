@@ -8,7 +8,7 @@ const limits = {
   // Grows as demos are added: 260.59 kB (collapsible-sidebar recipe) → 261.13 kB
   // (TokenSearchField adoption knobs) → 262.10 kB (FloatingToolbar demo). Keep only
   // narrow headroom and preserve the split.
-  totalJavaScriptGzip: 262_500,
+  totalJavaScriptGzip: 263_000,
 };
 
 const javascript = (await readdir(assetsDir)).filter((name) => name.endsWith('.js'));

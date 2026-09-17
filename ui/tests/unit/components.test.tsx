@@ -7,6 +7,8 @@ import { EmptyState } from '../../src/empty-state.js';
 import { FloatingToolbar } from '../../src/floating-toolbar.js';
 import { ListActionRow } from '../../src/list-action-row.js';
 import { ListHeader, type ListHeaderProps } from '../../src/list-header.js';
+import { ListInsetControl } from '../../src/list-inset-control.js';
+import { ListInsetText } from '../../src/list-inset-text.js';
 import { ListItem } from '../../src/list-item.js';
 import { LoadingSpinner } from '../../src/loading-spinner.js';
 import { LucideIcon } from '../../src/lucide-icon.js';
@@ -183,6 +185,23 @@ describe('production UI primitives', () => {
 
     const fallbackLabel = asHtml(widened({ label: 'Attachments', count: 3, countLabel: '' }));
     expect(fallbackLabel).toContain('aria-label="Attachments, 3"');
+  });
+
+  it('insets a self-bordered control and bare text into a content region', () => {
+    const control = asHtml(ListInsetControl({ children: <input type="search" /> }));
+    expect(control).toContain('class="kui-list-inset-control" data-component="list-inset-control"');
+    expect(control).toContain('<input type="search"');
+
+    const multi = asHtml(ListInsetControl({ children: [icon, icon], className: 'extra' }));
+    expect(multi).toContain('class="kui-list-inset-control extra"');
+
+    const text = asHtml(ListInsetText({ children: 'Sorted by name' }));
+    expect(text).toContain('class="kui-list-inset-text" data-component="list-inset-text"');
+    expect(text).toContain('>Sorted by name</div>');
+
+    const rich = asHtml(ListInsetText({ children: <span>Rich</span>, className: 'note' }));
+    expect(rich).toContain('class="kui-list-inset-text note"');
+    expect(rich).toContain('<span>Rich</span>');
   });
 
   it('filters widened menu extension objects before rendering them', () => {

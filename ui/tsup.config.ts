@@ -11,6 +11,8 @@ const entries = [
   'list-action-row',
   'list-item',
   'list-header',
+  'list-inset-control',
+  'list-inset-text',
   'resizable-region',
   'wire-resizable-regions',
   'device-class',

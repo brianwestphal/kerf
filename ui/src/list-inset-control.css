@@ -1,0 +1,7 @@
+.kui-list-inset-control {
+  display: flex;
+  margin-inline: var(--kui-layout-inline-margin, remify(8px));
+  justify-content: stretch;
+  align-items: stretch;
+  gap: remify(8px);
+}

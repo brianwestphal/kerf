@@ -8,6 +8,8 @@ export { EmptyState, type EmptyStateProps } from './empty-state.js';
 export { FloatingToolbar, type FloatingToolbarPosition, type FloatingToolbarProps } from './floating-toolbar.js';
 export { ListActionRow, type ListActionRowProps } from './list-action-row.js';
 export { ListHeader, type ListHeaderProps } from './list-header.js';
+export { ListInsetControl, type ListInsetControlProps } from './list-inset-control.js';
+export { ListInsetText, type ListInsetTextProps } from './list-inset-text.js';
 export { ListItem, type ListItemProps } from './list-item.js';
 export { LoadingSpinner, type LoadingSpinnerProps } from './loading-spinner.js';
 export { LucideIcon, type LucideIconProps, type LucideNode } from './lucide-icon.js';

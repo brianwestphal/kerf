@@ -11,6 +11,8 @@ import { EmptyState } from '@kerfjs/ui/empty-state';
 import { FloatingToolbar } from '@kerfjs/ui/floating-toolbar';
 import { ListActionRow } from '@kerfjs/ui/list-action-row';
 import { ListHeader } from '@kerfjs/ui/list-header';
+import { ListInsetControl } from '@kerfjs/ui/list-inset-control';
+import { ListInsetText } from '@kerfjs/ui/list-inset-text';
 import { ListItem } from '@kerfjs/ui/list-item';
 import { LoadingSpinner } from '@kerfjs/ui/loading-spinner';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
@@ -276,6 +278,28 @@ function FloatingToolbarDemo() {
         {open
           ? <FloatingToolbar label="Terminal drawer"><ToolbarControlGroup label="Terminal drawer" single><button type="button" aria-label="Restore terminal drawer" data-action="log-restore-drawer">{icon(Terminal, 'terminal')}</button></ToolbarControlGroup></FloatingToolbar>
           : <></>}
+      </div>
+    </CatalogExample>
+  </section>;
+}
+
+function ListInsetControlDemo() {
+  return <section class="list-inset-demo kui-catalog-example-stack" data-demo="list-inset-control" aria-label="ListInsetControl demo">
+    <CatalogExample label="Inset a self-bordered control" note={<>A control that owns its border and padding but no outer margin (an input, a <code>wa-*</code> control) sits flush against the region edge. <code>ListInsetControl</code> gives it the 8px content inset and stretches it across the row.</>} align="none">
+      <div class="list-inset-demo__pane kui-content">
+        <StateBanner tone="info" title="A content item, for reference" detail="Its edges are the alignment reference." icon={icon(Check, 'check')} />
+        <ListInsetControl><input class="list-inset-demo__input" type="text" aria-label="Filter records" placeholder="An input that owns its border and padding" /></ListInsetControl>
+      </div>
+    </CatalogExample>
+  </section>;
+}
+
+function ListInsetTextDemo() {
+  return <section class="list-inset-demo kui-catalog-example-stack" data-demo="list-inset-text" aria-label="ListInsetText demo">
+    <CatalogExample label="Inset bare text" note={<>Plain text has no margin, border, or padding, so it does not line up with bordered items. <code>ListInsetText</code> adds the content-item geometry so its left edge lands at the same inset.</>} align="none">
+      <div class="list-inset-demo__pane kui-content">
+        <StateBanner tone="neutral" title="A content item, for reference" detail="Note where its title text starts." icon={icon(Check, 'check')} />
+        <ListInsetText>Aligned plain text — its left edge lands at the same inset as the item above.</ListInsetText>
       </div>
     </CatalogExample>
   </section>;
@@ -593,6 +617,8 @@ const demos: Record<Exclude<KerfCatalogId, RecipeId>, () => ReturnType<typeof To
   'list-header': ListHeaderDemo,
   'list-action-row': ListActionRowDemo,
   'list-item': ListItemDemo,
+  'list-inset-control': ListInsetControlDemo,
+  'list-inset-text': ListInsetTextDemo,
   tabs: TabsDemo,
   'tab-bar': TabBarDemo,
   headers: HeadersDemo,

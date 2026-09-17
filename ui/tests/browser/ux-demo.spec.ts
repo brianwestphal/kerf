@@ -333,6 +333,26 @@ test('presents the LucideIcon modes as labeled examples that differ only in sema
   expect(glyphs[0]).toBe(glyphs[1]);
 });
 
+test('insets a self-bordered control and bare text so their edges line up in a content region', async ({ page }) => {
+  await page.goto('/?component=list-inset-control');
+  const control = page.locator('[data-component="list-inset-control"]').first();
+  await expect(control).toBeVisible();
+  // The wrapper is a stretch flex row; its child control fills the row width.
+  await expect(control).toHaveCSS('display', 'flex');
+  const [controlBox, childBox] = await Promise.all([
+    control.evaluate((el) => el.getBoundingClientRect().width),
+    control.locator(':scope > *').first().evaluate((el) => el.getBoundingClientRect().width),
+  ]);
+  expect(Math.abs(controlBox - childBox)).toBeLessThanOrEqual(0.5);
+
+  await page.goto('/?component=list-inset-text');
+  const text = page.locator('[data-component="list-inset-text"]').first();
+  await expect(text).toBeVisible();
+  // Bare text carries the content-item geometry: 8px inline margin, 1px border, 8px padding.
+  await expect(text).toHaveCSS('border-top-width', '1px');
+  await expect(text).toHaveCSS('padding-left', '8px');
+});
+
 test('renders non-composition demos on the grid with a bounds/margin overlay, and leaves composition demos alone', async ({ page, browserName }) => {
   await page.setViewportSize({ width: 1200, height: 900 });
 

@@ -103,7 +103,8 @@ maintain a central style list. Configure JSX with `"jsxImportSource": "kerfjs"`.
 ## Public exports
 
 `LucideIcon`, `DisclosureArrow`, `Toolbar`, `ToolbarControlGroup`, `FloatingToolbar`, `ToolbarText`,
-`PanelHeader`, `ListItem`, `ListActionRow`, `ListHeader`, `SegmentedControl`,
+`PanelHeader`, `ListItem`, `ListActionRow`, `ListHeader`, `ListInsetControl`,
+`ListInsetText`, `SegmentedControl`,
 `Select`, `TokenSearchField` (+ `readTokenSearchField`, `placeTokenSearchCaret`,
 `wireTokenSearchFields`), `AppTab`, `TabBar` (+ `wireTabBars`, `reorderTabs`),
 `ResizableRegion` (+ `wireResizableRegions`), `StateBanner`, `EmptyState`,

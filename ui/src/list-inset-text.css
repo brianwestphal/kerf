@@ -1,0 +1,5 @@
+.kui-list-inset-text {
+  margin: 0 remify(8px);
+  border: 1px solid transparent;
+  padding: remify(8px);
+}

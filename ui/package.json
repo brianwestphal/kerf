@@ -84,6 +84,16 @@
       "browser": "./dist/browser/list-header.js",
       "import": "./dist/list-header.js"
     },
+    "./list-inset-control": {
+      "types": "./dist/list-inset-control.d.ts",
+      "browser": "./dist/browser/list-inset-control.js",
+      "import": "./dist/list-inset-control.js"
+    },
+    "./list-inset-text": {
+      "types": "./dist/list-inset-text.d.ts",
+      "browser": "./dist/browser/list-inset-text.js",
+      "import": "./dist/list-inset-text.js"
+    },
     "./resizable-region": {
       "types": "./dist/resizable-region.d.ts",
       "browser": "./dist/browser/resizable-region.js",
@@ -225,6 +235,8 @@
     "./list-action-row.css": "./dist/styles/list-action-row.css",
     "./list-item.css": "./dist/styles/list-item.css",
     "./list-header.css": "./dist/styles/list-header.css",
+    "./list-inset-control.css": "./dist/styles/list-inset-control.css",
+    "./list-inset-text.css": "./dist/styles/list-inset-text.css",
     "./resizable-region.css": "./dist/styles/resizable-region.css",
     "./app-tab.css": "./dist/styles/app-tab.css",
     "./catalog.css": "./dist/styles/catalog.css",

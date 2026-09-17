@@ -265,6 +265,48 @@ declare function ListItem({ label, icon, trailing, selected, action, itemId, cla
 export { ListItem, type ListItemProps };
 ```
 
+## `@kerfjs/ui/list-inset-control`
+
+```ts
+import { SafeHtml } from 'kerfjs';
+
+interface ListInsetControlProps {
+    /** Control(s) that own their own border and padding (e.g. an input, a `wa-*`). */
+    children: SafeHtml | SafeHtml[];
+    className?: string;
+}
+/**
+ * Insets a control into a pane/list content region: an 8px inline margin (so its
+ * edges line up with `.kui-content` items) and a stretch flex row with an 8px gap.
+ * Use it for controls that carry their own border and padding but no outer margin
+ * — the wrapper adds only the alignment margin and layout, not a second inset.
+ */
+declare function ListInsetControl({ children, className }: ListInsetControlProps): SafeHtml;
+
+export { ListInsetControl, type ListInsetControlProps };
+```
+
+## `@kerfjs/ui/list-inset-text`
+
+```ts
+import { SafeHtml } from 'kerfjs';
+
+interface ListInsetTextProps {
+    /** Text (or inline content) that carries no margin, border, or padding of its own. */
+    children: SafeHtml | SafeHtml[] | string;
+    className?: string;
+}
+/**
+ * Gives bare text the content-item geometry — an 8px inline margin, a 1px
+ * transparent border, and 8px padding — so a plain string lines up with
+ * bordered `.kui-content` items (its text edge lands at the same 17px inset).
+ * Use it for text elements that have no margin, border, or padding of their own.
+ */
+declare function ListInsetText({ children, className }: ListInsetTextProps): SafeHtml;
+
+export { ListInsetText, type ListInsetTextProps };
+```
+
 ## `@kerfjs/ui/panel-header`
 
 ```ts

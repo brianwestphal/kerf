@@ -23,7 +23,7 @@ describe('UX catalog metadata', () => {
     expect(artifact.schemaVersion).toBe(1);
     expect(artifact.package).toBe('@kerfjs/ui');
     expect(artifact.entries.map(({ id }) => id)).toEqual(catalog.map(({ id }) => id));
-    expect(artifact.entries).toHaveLength(106);
+    expect(artifact.entries).toHaveLength(108);
     expect(findCatalogEntry('recipe-command-palette')).toBeUndefined();
     expect(isCatalogId('recipe-command-palette')).toBe(false);
     expect(artifact.entries.every((entry) => entry.useWhen.length > 0 && entry.avoidWhen.length > 0)).toBe(true);
@@ -102,6 +102,8 @@ describe('UX catalog metadata', () => {
       'ListHeader',
       'ListActionRow',
       'ListItem',
+      'ListInsetControl',
+      'ListInsetText',
       'AppTab',
       'TabBar',
       'SegmentedControl',
