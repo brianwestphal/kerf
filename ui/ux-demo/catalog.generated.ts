@@ -132,6 +132,7 @@ export const generatedKerfCatalog = [
     ],
     "demoSource": "ui/ux-demo/main.tsx",
     "componentSource": "ui/src/toolbar.tsx",
+    "designTemplate": "ui/docs/design/templates/toolbar.svg",
     "documentation": "ui/docs/component-selection.md"
   },
   {
@@ -147,6 +148,7 @@ export const generatedKerfCatalog = [
     ],
     "demoSource": "ui/ux-demo/main.tsx",
     "componentSource": "ui/src/toolbar-control-group.tsx",
+    "designTemplate": "ui/docs/design/templates/toolbar-control-group.svg",
     "documentation": "ui/docs/component-selection.md"
   },
   {
@@ -159,6 +161,7 @@ export const generatedKerfCatalog = [
     "uses": [],
     "demoSource": "ui/ux-demo/main.tsx",
     "componentSource": "ui/src/toolbar-text.tsx",
+    "designTemplate": "ui/docs/design/templates/toolbar-text.svg",
     "documentation": "ui/docs/component-selection.md"
   },
   {
@@ -190,6 +193,7 @@ export const generatedKerfCatalog = [
     ],
     "demoSource": "ui/ux-demo/main.tsx",
     "componentSource": "ui/src/panel-header.tsx",
+    "designTemplate": "ui/docs/design/templates/panel-header.svg",
     "documentation": "ui/docs/component-selection.md"
   },
   {
@@ -204,6 +208,7 @@ export const generatedKerfCatalog = [
     ],
     "demoSource": "ui/ux-demo/main.tsx",
     "componentSource": "ui/src/value-table.tsx",
+    "designTemplate": "ui/docs/design/templates/value-table.svg",
     "documentation": "ui/docs/component-selection.md"
   },
   {
@@ -234,6 +239,7 @@ export const generatedKerfCatalog = [
     ],
     "demoSource": "ui/ux-demo/main.tsx",
     "componentSource": "ui/src/list-header.tsx",
+    "designTemplate": "ui/docs/design/templates/list-header.svg",
     "documentation": "ui/docs/component-selection.md"
   },
   {
@@ -248,6 +254,7 @@ export const generatedKerfCatalog = [
     ],
     "demoSource": "ui/ux-demo/main.tsx",
     "componentSource": "ui/src/list-action-row.tsx",
+    "designTemplate": "ui/docs/design/templates/list-action-row.svg",
     "documentation": "ui/docs/component-selection.md"
   },
   {
@@ -262,6 +269,7 @@ export const generatedKerfCatalog = [
     ],
     "demoSource": "ui/ux-demo/main.tsx",
     "componentSource": "ui/src/list-item.tsx",
+    "designTemplate": "ui/docs/design/templates/list-item.svg",
     "documentation": "ui/docs/component-selection.md"
   },
   {
@@ -291,6 +299,7 @@ export const generatedKerfCatalog = [
     ],
     "demoSource": "ui/ux-demo/main.tsx",
     "componentSource": "ui/src/tab-bar.tsx",
+    "designTemplate": "ui/docs/design/templates/tab-bar.svg",
     "documentation": "ui/docs/component-selection.md"
   },
   {
@@ -305,6 +314,7 @@ export const generatedKerfCatalog = [
     ],
     "demoSource": "ui/ux-demo/main.tsx",
     "componentSource": "ui/src/segmented-control.tsx",
+    "designTemplate": "ui/docs/design/templates/segmented-control.svg",
     "documentation": "ui/docs/component-selection.md"
   },
   {
@@ -319,6 +329,7 @@ export const generatedKerfCatalog = [
     ],
     "demoSource": "ui/ux-demo/main.tsx",
     "componentSource": "ui/src/token-search-field.tsx",
+    "designTemplate": "ui/docs/design/templates/token-search-field.svg",
     "documentation": "ui/docs/component-selection.md"
   },
   {
@@ -378,6 +389,7 @@ export const generatedKerfCatalog = [
     ],
     "demoSource": "ui/ux-demo/main.tsx",
     "componentSource": "ui/src/state-banner.tsx",
+    "designTemplate": "ui/docs/design/templates/state-banner.svg",
     "documentation": "ui/docs/component-selection.md"
   },
   {
@@ -393,6 +405,7 @@ export const generatedKerfCatalog = [
     ],
     "demoSource": "ui/ux-demo/main.tsx",
     "componentSource": "ui/src/empty-state.tsx",
+    "designTemplate": "ui/docs/design/templates/empty-state.svg",
     "documentation": "ui/docs/component-selection.md"
   },
   {
@@ -417,6 +430,7 @@ export const generatedKerfCatalog = [
     "uses": [],
     "demoSource": "ui/ux-demo/main.tsx",
     "componentSource": "ui/src/skeleton.tsx",
+    "designTemplate": "ui/docs/design/templates/skeleton.svg",
     "documentation": "ui/docs/component-selection.md"
   },
   {

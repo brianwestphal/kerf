@@ -627,6 +627,7 @@ function Stage() {
 function toCatalogResources(entry: CatalogEntry): CatalogResource[] {
   const resources: CatalogResource[] = [{ label: 'Demo source', href: catalogRepositoryHref(entry.demoSource), detail: entry.demoSource }];
   if (entry.componentSource) resources.push({ label: 'Component source', href: catalogRepositoryHref(entry.componentSource), detail: entry.componentSource });
+  if (entry.designTemplate) resources.push({ label: 'Design template', href: catalogRepositoryHref(entry.designTemplate), detail: entry.designTemplate });
   resources.push({ label: entry.source === 'webawesome' ? 'Integration guidance' : 'Guidance', href: catalogRepositoryHref(entry.documentation), detail: entry.documentation });
   return resources;
 }

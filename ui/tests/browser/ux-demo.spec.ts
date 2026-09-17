@@ -366,16 +366,24 @@ test('aligns the layout demo action buttons with the card border above them', as
 });
 
 test('links catalog details to their first-party source and existing guidance', async ({ page, browserName }) => {
-  for (const [id, name, sourcePath, componentPath, documentationPath, guidanceLabel] of [
-    ['toolbar', 'Toolbar', 'ui/ux-demo/main.tsx', 'ui/src/toolbar.tsx', 'ui/docs/component-selection.md', 'Guidance'],
-    ['recipe-app-shell', 'Desktop application shell', 'ui/ux-demo/recipes/app-shell.tsx', undefined, 'ui/docs/recipes.md#desktop-application-shell', 'Guidance'],
-    ['wa-button', 'Button', 'ui/ux-demo/webawesome-demos.tsx', undefined, 'ui/docs/webawesome-theme.md#coverage', 'Integration guidance'],
+  for (const [id, name, sourcePath, componentPath, documentationPath, guidanceLabel, templatePath] of [
+    ['toolbar', 'Toolbar', 'ui/ux-demo/main.tsx', 'ui/src/toolbar.tsx', 'ui/docs/component-selection.md', 'Guidance', 'ui/docs/design/templates/toolbar.svg'],
+    ['recipe-app-shell', 'Desktop application shell', 'ui/ux-demo/recipes/app-shell.tsx', undefined, 'ui/docs/recipes.md#desktop-application-shell', 'Guidance', undefined],
+    ['wa-button', 'Button', 'ui/ux-demo/webawesome-demos.tsx', undefined, 'ui/docs/webawesome-theme.md#coverage', 'Integration guidance', undefined],
   ] as const) {
     await page.goto(`/?component=${id}`);
     const resources = page.getByRole('navigation', { name: `${name} resources` });
     const source = resources.getByRole('link', { name: `${name}: Demo source (opens in new tab)` });
     const componentSource = resources.getByRole("link", { name: `${name}: Component source (opens in new tab)` });
+    const designTemplate = resources.getByRole('link', { name: `${name}: Design template (opens in new tab)` });
     const guidance = resources.getByRole('link', { name: `${name}: ${guidanceLabel} (opens in new tab)` });
+    if (templatePath) {
+      await expect(designTemplate).toHaveAttribute('href', catalogRepositoryHref(templatePath));
+      await expect(designTemplate).toHaveAttribute('target', '_blank');
+      await expect(designTemplate.locator('code')).toHaveText(templatePath);
+    } else {
+      await expect(designTemplate).toHaveCount(0);
+    }
     await expect(source).toHaveAttribute('href', catalogRepositoryHref(sourcePath));
     await expect(guidance).toHaveAttribute('href', catalogRepositoryHref(documentationPath));
     const links = componentPath ? [source, componentSource, guidance] : [source, guidance];
@@ -437,7 +445,9 @@ test('links catalog details to their first-party source and existing guidance', 
       expect(section.right).toBeLessThanOrEqual(layout.width + 1);
       expect(section.width).toBeGreaterThan(0);
     }
-    expect(geometry.links).toHaveLength(isRecipe ? 2 : 3);
+    // A recipe (list-detail-dialog) links demo source + guidance; a component
+    // (toolbar) also links its component source and its design template.
+    expect(geometry.links).toHaveLength(isRecipe ? 2 : 4);
     for (const link of geometry.links) {
       expect(link.height).toBeGreaterThanOrEqual(30);
       expect(link.hiddenLabelInlineOffset).toBeLessThanOrEqual(1);

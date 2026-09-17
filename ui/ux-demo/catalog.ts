@@ -17,6 +17,7 @@ export interface CatalogEntry {
   uses?: readonly string[];
   demoSource: string;
   componentSource?: string;
+  designTemplate?: string;
   documentation: string;
 }
 

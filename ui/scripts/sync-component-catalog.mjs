@@ -1,9 +1,20 @@
 import { readFile, writeFile } from 'node:fs/promises';
 
+import { COMPONENTS } from './build-design-templates.mjs';
+
 const check = process.argv.includes('--check');
 const catalogUrl = new URL('../ai/component-catalog.json', import.meta.url);
 const generatedUrl = new URL('../ux-demo/catalog.generated.ts', import.meta.url);
 const catalog = JSON.parse(await readFile(catalogUrl, 'utf8'));
+
+// A component with a committed SVG design template (docs/design/templates/<id>.svg,
+// keyed by the same slug as the catalog entry id). Kept in sync with the design
+// template manifest so the demo footer links only where a template exists.
+const templateSlugs = new Set(Object.keys(COMPONENTS));
+const designTemplate = (entry) =>
+  entry.source === 'kerf' && entry.kind === 'component' && templateSlugs.has(entry.id)
+    ? `ui/docs/design/templates/${entry.id}.svg`
+    : undefined;
 
 const demoSource = (entry) => {
   if (entry.kind === 'recipe') return `ui/ux-demo/recipes/${entry.id.slice('recipe-'.length)}.tsx`;
@@ -25,6 +36,7 @@ const project = (entry) => ({
   uses: entry.uses ?? [],
   demoSource: demoSource(entry),
   ...(componentSource(entry) ? { componentSource: componentSource(entry) } : {}),
+  ...(designTemplate(entry) ? { designTemplate: designTemplate(entry) } : {}),
   documentation: `ui/${entry.links.documentation}`,
 });
 const kerf = catalog.entries.filter((entry) => entry.source === 'kerf').map(project);
