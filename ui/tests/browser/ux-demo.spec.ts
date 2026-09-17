@@ -2035,10 +2035,12 @@ test('preserves menu extension metadata without surrendering native semantics', 
     const background = luminance(colors.backgroundColor);
     return (Math.max(foreground, background) + 0.05) / (Math.min(foreground, background) + 0.05);
   });
-  expect(await selectedContrast(), 'light selected ListItem contrast').toBeGreaterThanOrEqual(4.5);
+  // poll so the ratio is read only once color-mix()/light-dark() have settled
+  // (Firefox recomputes the mixed background a paint tick after the class flips).
+  await expect.poll(selectedContrast, 'light selected ListItem contrast').toBeGreaterThanOrEqual(4.5);
   await page.locator('[data-action="toggle-theme"]').click();
   await expect(page.locator('html')).toHaveClass(/demo-dark/);
-  expect(await selectedContrast(), 'dark selected ListItem contrast').toBeGreaterThanOrEqual(4.5);
+  await expect.poll(selectedContrast, 'dark selected ListItem contrast').toBeGreaterThanOrEqual(4.5);
   await page.locator('[data-action="toggle-theme"]').click();
   await row.press('Enter');
   await expect(page.locator('.catalog-log')).toHaveText('Inbox selected');
@@ -2079,6 +2081,45 @@ test('keeps ListActionRow primary and trailing controls independent across inter
   await expect(primary).toHaveAttribute('aria-current', 'page');
   await expect(primary).not.toHaveAttribute('aria-pressed');
   await expect(trailing).not.toHaveAttribute('aria-pressed');
+
+  // Selected-row text must clear WCAG AA (4.5:1) over its brand-tinted fill in
+  // both themes, the same guarantee the selected ListItem row makes. Resolve
+  // colors through a canvas so any serialization (rgb()/color(srgb …)) works.
+  const selectedContrast = () =>
+    primary.evaluate((element) => {
+      const context = document.createElement('canvas').getContext('2d');
+      const luminance = (color: string): number => {
+        if (!context) return 0;
+        context.canvas.width = 1;
+        context.canvas.height = 1;
+        context.fillStyle = color;
+        context.fillRect(0, 0, 1, 1);
+        const channels = [...context.getImageData(0, 0, 1, 1).data.slice(0, 3)].map((channel) => {
+          const value = channel / 255;
+          return value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4;
+        });
+        return 0.2126 * (channels[0] ?? 0) + 0.7152 * (channels[1] ?? 0) + 0.0722 * (channels[2] ?? 0);
+      };
+      let backgroundHost: Element | null = element;
+      let background = 'rgba(0, 0, 0, 0)';
+      while (backgroundHost) {
+        const candidate = window.getComputedStyle(backgroundHost).backgroundColor;
+        if (candidate && !/rgba\(0, 0, 0, 0\)|transparent/.test(candidate)) {
+          background = candidate;
+          break;
+        }
+        backgroundHost = backgroundHost.parentElement;
+      }
+      const foreground = luminance(window.getComputedStyle(element).color);
+      const back = luminance(background);
+      return (Math.max(foreground, back) + 0.05) / (Math.min(foreground, back) + 0.05);
+    });
+  await expect.poll(selectedContrast, 'light selected ListActionRow contrast').toBeGreaterThanOrEqual(4.5);
+  await page.locator('[data-action="toggle-theme"]').click();
+  await expect(page.locator('html')).toHaveClass(/demo-dark/);
+  await expect.poll(selectedContrast, 'dark selected ListActionRow contrast').toBeGreaterThanOrEqual(4.5);
+  await page.locator('[data-action="toggle-theme"]').click();
+  await expect(page.locator('html')).not.toHaveClass(/demo-dark/);
   await expect(pressedRow).toHaveAttribute('data-selected', 'false');
   await expect(pressedRow).toHaveAttribute('data-pressed', 'false');
   await expect(pressedPrimary).not.toHaveAttribute('aria-current');

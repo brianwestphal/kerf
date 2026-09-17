@@ -1003,7 +1003,6 @@
       "publicTokens": [
         "--kui-color-brand-border-quiet",
         "--kui-color-brand-fill-normal",
-        "--kui-color-brand-on-quiet",
         "--kui-color-neutral-border-normal",
         "--kui-color-neutral-fill-normal",
         "--kui-color-neutral-fill-quiet",
@@ -1091,7 +1090,6 @@
       ],
       "publicTokens": [
         "--kui-color-brand-fill-normal",
-        "--kui-color-brand-on-quiet",
         "--kui-color-neutral-fill-quiet",
         "--kui-color-neutral-on-normal",
         "--kui-color-neutral-on-quiet",

@@ -25,7 +25,9 @@ the row's item id for application delegation, while the root deliberately has
 no action or role. `label`, `icon`, and `trailingActionIcon` are dormant visual
 content and must not contain buttons, links, interactive roles, or other
 controls. A trailing click, double click, context menu, Enter, or Space
-must never activate the primary control. The application owns controlled
+must never activate the primary control. Selected rows keep the normal
+foreground over their brand-tinted fill so text retains WCAG AA contrast in
+light and dark themes. The application owns controlled
 selection and the lifecycle, focus, and dismissal policy of any related
 popover or context menu.
 

@@ -4,7 +4,7 @@
   --kui-list-action-row-background: transparent;
   --kui-list-action-row-hover-border: var(--kui-color-neutral-border-normal);
   --kui-list-action-row-hover-background: var(--kui-color-neutral-fill-quiet);
-  --kui-list-action-row-selected-color: var(--kui-color-brand-on-quiet);
+  --kui-list-action-row-selected-color: var(--kui-color-neutral-on-normal);
   --kui-list-action-row-selected-border: var(--kui-color-brand-border-quiet);
   --kui-list-action-row-selected-background: var(--kui-color-brand-fill-normal);
   --kui-list-action-row-trailing-hover-background: var(
