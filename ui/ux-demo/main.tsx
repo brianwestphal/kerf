@@ -92,6 +92,15 @@ const toolbarFindQuery = signal('');
 const toolbarFindOpen = signal(false);
 const collapsibleSearchOpen = signal(false);
 const toolbarGroupSearchOpen = signal(false);
+const adoptionOpen = signal(true);
+const adoptionQuery = signal('');
+const adoptionTokens = signal<TokenSearchToken[]>([]);
+const adoptionReadout = signal('No edits yet');
+const ADOPTION_SUGGESTIONS: readonly TokenSearchToken[] = [
+  { value: 'status:open', label: 'status:open' },
+  { value: 'owner:me', label: 'owner:me' },
+  { value: 'due:today', label: 'due:today' },
+];
 const menuActionCurrent = signal('src/main.ts');
 const menuActionPressed = signal(false);
 const inspectorSection = signal<'summary' | 'activity' | 'files'>('summary');
@@ -293,6 +302,15 @@ function TokenSearchFieldDemo() {
     </CatalogExample>
     <CatalogExample label="Disabled" note={<>Controlled read-only state preserves the complete expression.</>} align="inline-control">
       <TokenSearchField id="disabled-search" label="Saved search" query="release" tokens={[{ value: 'tag:design-system', label: 'tag:design-system', offset: 7 }]} disabled />
+    </CatalogExample>
+    <CatalogExample label="Adoption knobs" note={<>The <code>wireTokenSearchFields</code> hooks a real app reaches for: opt-in chip keyboard (Backspace/Delete remove the adjacent chip, ArrowRight moves the caret past it), a <code>data-token-search-keep-open</code> suggestions surface that does not collapse the empty field, and an <code>onEdit</code> readout.</>} align="inline-control">
+      <div class="token-search-adoption">
+        <TokenSearchField id="adoption-search" label="Filter records" collapsible expanded={adoptionOpen.value} query={adoptionQuery.value} tokens={adoptionTokens.value} placeholder="Filter records" tokenPlaceholder="Add a filter…" expandLabel="Open filter" editorAttributes={{ 'data-demo-adoption-search': 'true' }} />
+        <ul class="token-search-adoption__suggestions" data-token-search-keep-open aria-label="Filter suggestions">
+          {ADOPTION_SUGGESTIONS.map((suggestion) => <li><button type="button" class="token-search-adoption__suggestion" data-action="add-adoption-token" data-token-value={suggestion.value}>{suggestion.label}</button></li>)}
+        </ul>
+        <output aria-live="polite" class="kui-catalog-example__note" data-demo-adoption-readout>{adoptionReadout.value}</output>
+      </div>
     </CatalogExample>
   </section>;
 }
@@ -759,6 +777,16 @@ const stopActions = delegateActions(app, 'click', {
     tokenSearchTokens.value = tokenSearchTokens.value.filter((token) => token.value !== value);
     actionLog.value = `Removed ${value}`;
   },
+  'add-adoption-token': (_event, element) => {
+    // Clicking a suggestion in the data-token-search-keep-open surface must not
+    // collapse the empty field — the wire helper's keep-open exception guards it.
+    const value = element.getAttribute('data-token-value');
+    const suggestion = ADOPTION_SUGGESTIONS.find((candidate) => candidate.value === value);
+    if (!suggestion || adoptionTokens.value.some((token) => token.value === value)) return;
+    adoptionTokens.value = [...adoptionTokens.value, { ...suggestion, offset: adoptionQuery.value.length }];
+    adoptionReadout.value = `Added ${suggestion.value} · ${adoptionTokens.value.length} filters`;
+    window.requestAnimationFrame(() => document.querySelector<HTMLElement>('[data-demo-adoption-search="true"]')?.focus());
+  },
   'clear-token-search': (_event, element) => {
     const editor = element.closest('[data-component="token-search-field"]')?.querySelector<HTMLElement>('[data-token-search-editor]');
     if (editor) editor.textContent = '';
@@ -907,7 +935,24 @@ const stopTokenSearchSubmits = wireTokenSearchFields(app, {
   onSubmit: ({ id }) => {
     actionLog.value = id === 'toolbar-find' ? 'Find submitted' : 'Search submitted';
   },
-  collapsible: { signals: { 'toolbar-find': toolbarFindOpen, 'collapsible-search': collapsibleSearchOpen, 'toolbar-group-search': toolbarGroupSearchOpen } },
+  onEdit: ({ id, editor }) => {
+    if (id !== 'adoption-search') return;
+    const value = readTokenSearchField(editor, adoptionTokens.value);
+    adoptionQuery.value = value.query;
+    adoptionReadout.value = `Editing: ${value.query ? `"${value.query}"` : 'empty'} · ${adoptionTokens.value.length} filters`;
+  },
+  keyboard: {
+    onRemoveToken: ({ id, value, direction }) => {
+      if (id === 'adoption-search') {
+        adoptionTokens.value = adoptionTokens.value.filter((token) => token.value !== value);
+        adoptionReadout.value = `Removed ${value} · ${adoptionTokens.value.length} filters`;
+      } else if (id === 'catalog-search') {
+        tokenSearchTokens.value = tokenSearchTokens.value.filter((token) => token.value !== value);
+      }
+      actionLog.value = `Removed ${value} (${direction === 'backward' ? 'Backspace' : 'Delete'})`;
+    },
+  },
+  collapsible: { signals: { 'toolbar-find': toolbarFindOpen, 'collapsible-search': collapsibleSearchOpen, 'toolbar-group-search': toolbarGroupSearchOpen, 'adoption-search': adoptionOpen } },
 });
 const stopListItemDragOver = delegate(app, 'dragover', '[data-demo-drop-status="ready"]', (event, element) => {
   event.preventDefault();

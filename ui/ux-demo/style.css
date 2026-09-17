@@ -363,6 +363,41 @@ button {
 .token-search-demo .kui-token-search {
   width: min(remify(480px), 100%);
 }
+/* The adoption-knobs example stacks the field, its keep-open suggestions surface,
+   and the onEdit readout. The field owns its own chrome; this only lays out the
+   surrounding structure (a plain block column). */
+.token-search-adoption {
+  display: flex;
+  width: min(remify(480px), 100%);
+  flex-direction: column;
+  gap: remify(8px);
+}
+.token-search-adoption__suggestions {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  flex-wrap: wrap;
+  gap: remify(8px);
+  list-style: none;
+}
+.token-search-adoption__suggestion {
+  appearance: none;
+  padding: remify(4px) remify(12px);
+  border: 1px solid var(--kui-color-border);
+  border-radius: var(--kui-radius-pill);
+  color: var(--kui-color-text);
+  background: var(--kui-color-surface);
+  font: inherit;
+  font-size: var(--kui-font-s);
+  cursor: pointer;
+}
+.token-search-adoption__suggestion:hover {
+  background: var(--kui-color-surface-lowered);
+}
+.token-search-adoption__suggestion:focus-visible {
+  outline: var(--kui-focus-ring);
+  outline-offset: 1px;
+}
 .demo-state-banner--override {
   --kui-state-banner-background: light-dark(#f6efff, #2e203d);
   --kui-state-banner-border: light-dark(#b69ad9, #765a98);

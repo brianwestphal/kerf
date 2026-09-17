@@ -5,10 +5,11 @@ import { fileURLToPath } from 'node:url';
 const assetsDir = fileURLToPath(new URL('../dist-demo/assets/', import.meta.url));
 const limits = {
   largestJavaScriptGzip: 150_000,
-  // Measured at 260.59 kB after adding the collapsible-sidebar recipe (its lazy
-  // chunk pulls in @kerfjs/ui/collapsible-panel + @kerfjs/ui/wire-sidebar, not used
-  // elsewhere in the demo); keep only narrow headroom and preserve the split.
-  totalJavaScriptGzip: 261_000,
+  // Measured at 261.13 kB after adding the TokenSearchField adoption-knobs example
+  // (keep-open suggestions + chip keyboard + onEdit wiring); 260.59 kB before, which
+  // was itself the collapsible-sidebar recipe's lazy chunk. Keep only narrow
+  // headroom and preserve the split.
+  totalJavaScriptGzip: 261_500,
 };
 
 const javascript = (await readdir(assetsDir)).filter((name) => name.endsWith('.js'));
