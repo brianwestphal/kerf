@@ -243,6 +243,24 @@ tabScaffold({
 **Implementation:** ticket **TabScaffold (bottom tabs) layout**. Depends on
 NavStack.
 
+### 3.5 Standalone collapsible panel — `CollapsiblePanel` + `wireSidebar` (`@kerfjs/ui/collapsible-panel`, `@kerfjs/ui/wire-sidebar`)
+
+A single collapsible **side rail or bottom drawer** for apps that want one panel
+outside the full `Workbench` shell. `CollapsiblePanel({ id, side, collapsed?,
+size? })` reuses the §3.3 instant-size/sliding-content collapse for a `'left'` /
+`'right'` rail or a `'bottom'` drawer; `CollapsiblePanelToggle` +
+`collapsiblePanelToggleIcon` are the standard toggle affordance and per-side icon
+convention (`PanelLeft*` / `PanelRight*` / `PanelBottom*`). `wireSidebar(root, {
+panels, deviceClass?, storage? })` adds the semantics: toggle delegation with
+focus restore, focus-into on open, a compact overlay (dismissable backdrop +
+Escape + Tab focus trap, driven by a §2 `deviceClass()` signal), and a per-panel
+persistence hook. The app owns each `collapsed` signal, the panels, sizes, and
+content; drag-resize composes `ResizableRegion`. Subpath-only with a companion
+CSS import. See [`ui/docs/collapsible-panel.md`](../../ui/docs/collapsible-panel.md).
+
+**Implementation:** shipped (KF-T17Q1X); UX-demo recipe + 3-engine e2e pending
+(KF-JP6KVY).
+
 ## 4. Responsive presentation matrix
 
 The rule each layout encodes, summarized (`compact` = handset or portrait
