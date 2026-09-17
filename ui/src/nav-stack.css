@@ -13,7 +13,6 @@
   min-width: 0;
   min-height: calc(2px + remify(42px));
   padding-inline: var(--kui-space-xs);
-  border-block-end: 1px solid var(--kui-color-border);
   align-items: center;
   gap: var(--kui-space-xs);
   background: var(--kui-color-surface);
