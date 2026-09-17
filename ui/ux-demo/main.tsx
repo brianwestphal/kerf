@@ -91,6 +91,7 @@ const toolbarChoice = signal<'list' | 'columns' | 'settings'>('list');
 const toolbarFindQuery = signal('');
 const toolbarFindOpen = signal(false);
 const collapsibleSearchOpen = signal(false);
+const toolbarGroupSearchOpen = signal(false);
 const menuActionCurrent = signal('src/main.ts');
 const menuActionPressed = signal(false);
 const inspectorSection = signal<'summary' | 'activity' | 'files'>('summary');
@@ -244,6 +245,7 @@ function ToolbarControlGroupDemo() {
     <CatalogExample label="Push button, resting" align="inline-control"><ToolbarControlGroup buttonAppearance="push" single><button type="button" aria-label="Resting comparison" aria-pressed="false" data-action="log-resting">{icon(GitCompare, 'git-compare')}</button></ToolbarControlGroup></CatalogExample>
     <CatalogExample label="Push button, pressed" align="inline-control"><ToolbarControlGroup buttonAppearance="push" single><button type="button" aria-label="Pressed comparison" aria-pressed="true" data-action="log-pressed">{icon(GitCompare, 'git-compare')}</button></ToolbarControlGroup></CatalogExample>
     <CatalogExample label="Dark group" align="inline-control"><ToolbarControlGroup label="Dark navigation" tone="dark"><button type="button" aria-label="Previous" data-action="log-previous">{icon(ChevronLeft, 'chevron-left')}</button><button type="button" aria-label="Next" data-action="log-next">{icon(ChevronRight, 'chevron-right')}</button></ToolbarControlGroup></CatalogExample>
+    <CatalogExample label="Collapsible search" note={<>An empty, unfocused search collapses to one iconic control in the group; activating it expands the group to reveal the editor, and it re-collapses when focus leaves while empty. <code>wireTokenSearchFields</code> manages the expand/collapse/focus.</>} align="inline-control"><div class="demo-toolbar-group-search-wrap"><ToolbarControlGroup className="demo-toolbar-group-search" expanded={toolbarGroupSearchOpen.value} single={!toolbarGroupSearchOpen.value}><TokenSearchField id="toolbar-group-search" label="Search views" collapsible expanded={toolbarGroupSearchOpen.value} placeholder="Search views" expandLabel="Open search" /></ToolbarControlGroup></div></CatalogExample>
   </section>;
 }
 
@@ -887,7 +889,7 @@ const stopTokenSearchSubmits = wireTokenSearchFields(app, {
   onSubmit: ({ id }) => {
     actionLog.value = id === 'toolbar-find' ? 'Find submitted' : 'Search submitted';
   },
-  collapsible: { signals: { 'toolbar-find': toolbarFindOpen, 'collapsible-search': collapsibleSearchOpen } },
+  collapsible: { signals: { 'toolbar-find': toolbarFindOpen, 'collapsible-search': collapsibleSearchOpen, 'toolbar-group-search': toolbarGroupSearchOpen } },
 });
 const stopListItemDragOver = delegate(app, 'dragover', '[data-demo-drop-status="ready"]', (event, element) => {
   event.preventDefault();

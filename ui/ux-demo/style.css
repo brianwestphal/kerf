@@ -145,6 +145,15 @@ button {
 .demo-toolbar-find {
   --kui-token-search-expanded-width: remify(512px);
 }
+/* A collapsible search inside a ToolbarControlGroup is built for a horizontal
+   toolbar row, where the group's `flex: 0 1 <expanded-width>` sizes its WIDTH.
+   The demo example stack is a flex column, so as a direct flex item that
+   flex-basis would size the group's HEIGHT instead (stretching it tall). A plain
+   block wrapper takes the group out of the column's flex context, so it sizes to
+   content; bound the expanded editor to a comfortable width. */
+.demo-toolbar-group-search {
+  --kui-token-search-expanded-width: remify(320px);
+}
 @container kui-toolbar (max-width: remify(672px)) {
   .kui-toolbar.demo-toolbar-find-row:has(
       .demo-toolbar-find[data-expanded="true"]

@@ -2318,10 +2318,10 @@ test('matches shared menu, content-item, and toolbar geometry', async ({ page, b
   await expect.poll(() => page.evaluate(() => customElements.get('wa-dropdown') !== undefined)).toBe(true);
   await expect(demo.locator('.kui-list-header__label')).toHaveText([
     'Segmented choices', 'Popup menu', 'Button group', 'Single button', 'Borderless group',
-    'Push button, resting', 'Push button, pressed', 'Dark group',
+    'Push button, resting', 'Push button, pressed', 'Dark group', 'Collapsible search',
   ]);
   const groups = demo.locator('[data-component="toolbar-control-group"]');
-  await expect(groups).toHaveCount(8);
+  await expect(groups).toHaveCount(9);
   const heights = await groups.evaluateAll((nodes) => nodes.map((node) => node.getBoundingClientRect().height));
   expect(new Set(heights).size).toBe(1);
   await demo.getByRole('button', { name: 'Columns view' }).click();
@@ -2348,8 +2348,29 @@ test('matches shared menu, content-item, and toolbar geometry', async ({ page, b
   await expect(demo.getByRole('group', { name: 'Dark navigation' })).toHaveCSS('border-color', 'rgb(53, 53, 54)');
   if (browserName === 'chromium') await page.screenshot({ path: 'test-results/toolbar-control-groups-wide.png', fullPage: true });
   await page.setViewportSize({ width: 390, height: 844 });
-  await expect(groups).toHaveCount(8);
+  await expect(groups).toHaveCount(9);
   if (browserName === 'chromium') await page.screenshot({ path: 'test-results/toolbar-control-groups-narrow.png', fullPage: true });
+});
+
+test('expands and collapses the ToolbarControlGroup collapsible search without stretching the group', async ({ page }) => {
+  await page.setViewportSize({ width: 1100, height: 900 });
+  await page.goto('/?component=toolbar-control-group');
+  const group = page.locator('.demo-toolbar-group-search');
+  const field = group.locator('.kui-token-search');
+  const groupHeight = () => group.evaluate((node) => Math.round(node.getBoundingClientRect().height));
+
+  // Collapsed: one iconic control at the toolbar-control height (not a tall box).
+  await expect(field).toHaveAttribute('data-expanded', 'false');
+  await expect(group.locator('.kui-token-search__editor')).toBeHidden();
+  expect(await groupHeight()).toBeLessThanOrEqual(48);
+
+  // Activating the iconic control expands the editor in place; the group stays a
+  // single toolbar row (the group's row-oriented flex-basis must not size its
+  // height in the demo's column layout).
+  await group.locator('.kui-token-search__expand').click();
+  await expect(field).toHaveAttribute('data-expanded', 'true');
+  await expect(group.locator('.kui-token-search__editor')).toBeVisible();
+  expect(await groupHeight()).toBeLessThanOrEqual(48);
 });
 
 test('renders the Hot Sheet split treatment on ResizableRegion', async ({ page, browserName }) => {
