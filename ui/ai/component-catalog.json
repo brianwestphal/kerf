@@ -385,10 +385,12 @@
         "ToolbarControlGroup"
       ],
       "useWhen": [
-        "Group related controls inside a toolbar with a supported visual treatment."
+        "Group related controls inside a toolbar with a supported visual treatment.",
+        "Fill it with plain <button> controls (the group styles > button fully); use wa-button only for a Web Awesome feature such as a wa-dropdown popup trigger."
       ],
       "avoidWhen": [
-        "Do not use merely to align unrelated buttons or to imitate an exclusive choice."
+        "Do not use merely to align unrelated buttons or to imitate an exclusive choice.",
+        "Do not reach for wa-button for an ordinary control inside the group — a plain <button> is the default and avoids the Web Awesome dependency."
       ],
       "alternatives": [
         {

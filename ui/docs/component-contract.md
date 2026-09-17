@@ -113,7 +113,11 @@ changing geometry. `.kui-content-item--pill` selects the 22px radius.
 
 `ToolbarControlGroup` is the unit of toolbar organization, even for dormant
 text. Each group reserves `calc(2px + remify(42px))`, or 44px, with 8px between
-groups and inside items. `ListHeader` similarly separates its dormant title and
+groups and inside items. For an ordinary icon/action control inside a group, use
+a plain `<button>` — the group styles `> button` fully, and it keeps the group
+free of a Web Awesome dependency and shadow DOM. Reach for `wa-button` only when
+you need a Web Awesome feature, chiefly the `slot="trigger"` button of a
+`wa-dropdown` popup menu. `ListHeader` similarly separates its dormant title and
 optional count or badge from its optional 44px action. Use the mutually
 exclusive `count`/`countLabel` pair for non-negative safe-integer section
 quantities; reserve `badge` for non-count `SafeHtml`. Do not concatenate counts
