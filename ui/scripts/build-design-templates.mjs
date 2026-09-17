@@ -4,12 +4,14 @@
 // SafeHtml (with its production CSS + tokens and representative sample data) into
 // a standalone HTML page, capture it to an SVG with `domotion capture
 // --text-mode system-font` (text is emitted as authored <text> painted by the
-// viewer's system fonts — real, selectable, and small), and write one SVG per
-// variant under docs/design/templates/<component>/. A per-component library file
-// (docs/design/templates/<component>.svg) then embeds an inline COPY of each
-// variant (a positioned nested <svg>) — external <image href> / <use href>
-// references render blank in many SVG viewers/rasterizers, so inlining keeps the
-// library self-contained everywhere; the individual variant files stay reusable.
+// viewer's system fonts — real, selectable, and small). Each variant is captured
+// in BOTH themes — light and dark (`--color-scheme`, which foundation.css's
+// light-dark() tokens respond to) — as docs/design/templates/<component>/<variant>.svg
+// and <variant>-dark.svg. Two per-component library files (<component>.svg light,
+// <component>-dark.svg dark) then embed an inline COPY of each variant (a positioned
+// nested <svg>) — external <image href> / <use href> references render blank in many
+// SVG viewers/rasterizers, so inlining keeps each library self-contained everywhere;
+// the individual variant files stay reusable.
 //
 // Maintain this alongside the components: add a variant here when a component
 // gains a presentation combination, and re-run `npm run design-templates:build`.
@@ -93,12 +95,22 @@ const COMPONENTS = {
   },
 };
 
+// The two themes captured for every variant. kerf UI colors are `light-dark()`
+// tokens gated by `color-scheme`, so a dark capture only needs `color-scheme: dark`
+// plus a dark page background (the light/dark page bg matches --kui-color-surface).
+const THEMES = [
+  { id: 'light', suffix: '', pageBackground: '#fff', libraryBackground: '#ffffff', captionColor: '#6e6e73' },
+  { id: 'dark', suffix: '-dark', pageBackground: '#1c1c1e', libraryBackground: '#1c1c1e', captionColor: '#aeaeb2' },
+];
+
 // Demo-only chrome for the raw buttons embedded in variants (production apps
-// supply their own button component; these keep the captures realistic).
-const FRAME_CSS = `
-:root { color-scheme: light; }
+// supply their own button component; these keep the captures realistic). The
+// theme is driven by domotion's `--color-scheme` (prefers-color-scheme), which
+// foundation.css's `color-scheme: light dark` responds to via its `light-dark()`
+// tokens — so we don't override `color-scheme` here.
+const frameCss = (theme) => `
 * { box-sizing: border-box; }
-body { margin: 0; padding: 20px; background: #fff; font-family: system-ui, -apple-system, sans-serif; }
+body { margin: 0; padding: 20px; background: ${theme.pageBackground}; font-family: system-ui, -apple-system, sans-serif; }
 .dt-button { min-height: 32px; padding: 0 12px; border: 1px solid var(--kui-color-border); border-radius: var(--kui-radius-pill); color: var(--kui-color-text); background: var(--kui-color-surface-raised); font: inherit; cursor: pointer; }
 .dt-icon-button { display: inline-grid; place-items: center; width: 32px; height: 32px; border: 0; border-radius: var(--kui-radius-m); color: var(--kui-color-text); background: transparent; cursor: pointer; }
 .dt-icon-button svg { width: 18px; height: 18px; }
@@ -110,39 +122,45 @@ async function buildComponent(domotion, name, spec) {
   await rm(dir, { recursive: true, force: true });
   await mkdir(dir, { recursive: true });
 
+  const frameWidth = typeof spec.frameWidth === 'number' ? `${spec.frameWidth}px` : spec.frameWidth;
   const rendered = [];
   for (const variant of spec.variants) {
-    const frameWidth = typeof spec.frameWidth === 'number' ? `${spec.frameWidth}px` : spec.frameWidth;
-    const page = `<!doctype html><html><head><meta charset="utf-8"><style>${FRAME_CSS}${cssText}</style></head><body><div id="frame" style="width:${frameWidth};display:inline-block">${html(variant.render())}</div></body></html>`;
-    const pagePath = resolve(dir, `${variant.id}.html`);
-    const svgPath = resolve(dir, `${variant.id}.svg`);
-    await writeFile(pagePath, page);
-    await execFileAsync(process.execPath, [domotion, 'capture', pagePath, '-o', svgPath, '--selector', spec.selector, '--width', String(spec.width), '--height', String(variant.height + 40), '--text-mode', 'system-font', '--optimize'], { env: { ...process.env, DOMOTION_NO_OPEN: '1' } });
-    await rm(pagePath);
-    const svg = await readFile(svgPath, 'utf8');
-    const dims = /viewBox="0 0 (\d+(?:\.\d+)?) (\d+(?:\.\d+)?)"/.exec(svg);
-    rendered.push({ ...variant, file: `${variant.id}.svg`, content: svg, width: dims ? Number(dims[1]) : spec.width, height: dims ? Number(dims[2]) : variant.height });
-    console.log(`  ${name}/${variant.id}.svg`);
+    const themed = {};
+    for (const theme of THEMES) {
+      const page = `<!doctype html><html><head><meta charset="utf-8"><style>${frameCss(theme)}${cssText}</style></head><body><div id="frame" style="width:${frameWidth};display:inline-block">${html(variant.render())}</div></body></html>`;
+      const pagePath = resolve(dir, `${variant.id}${theme.suffix}.html`);
+      const svgPath = resolve(dir, `${variant.id}${theme.suffix}.svg`);
+      await writeFile(pagePath, page);
+      await execFileAsync(process.execPath, [domotion, 'capture', pagePath, '-o', svgPath, '--selector', spec.selector, '--width', String(spec.width), '--height', String(variant.height + 40), '--color-scheme', theme.id, '--text-mode', 'system-font', '--optimize'], { env: { ...process.env, DOMOTION_NO_OPEN: '1' } });
+      await rm(pagePath);
+      themed[theme.id] = await readFile(svgPath, 'utf8');
+      console.log(`  ${name}/${variant.id}${theme.suffix}.svg`);
+    }
+    const dims = /viewBox="0 0 (\d+(?:\.\d+)?) (\d+(?:\.\d+)?)"/.exec(themed.light);
+    rendered.push({ ...variant, content: themed, width: dims ? Number(dims[1]) : spec.width, height: dims ? Number(dims[2]) : variant.height });
   }
 
-  // Library file: embed a COPY of each variant inline (a positioned nested <svg>)
+  // One library file per theme (`<component>.svg` light, `<component>-dark.svg`
+  // dark). Each embeds a COPY of every variant inline (a positioned nested <svg>)
   // with a caption. External <image href="…"> / <use href="…"> references render
   // blank in many SVG viewers/rasterizers; inlining keeps the one file
   // self-contained everywhere. Each variant's own ids and domotion font-family
   // names are namespaced first so inlined copies don't collide in the one document.
   const gap = 16;
   const captionH = 22;
-  let y = gap;
-  const rows = rendered.map((v, index) => {
-    const top = y;
-    y += captionH + v.height + gap;
-    const inner = nestVariant(namespaceSvg(v.content, `v${index}-`), gap, top + captionH);
-    return `  <text x="${gap}" y="${top + 14}" font-family="system-ui, sans-serif" font-size="12" font-weight="600" fill="#6e6e73">${v.label}</text>\n${inner}`;
-  });
   const libW = Math.max(...rendered.map((v) => v.width)) + gap * 2;
-  const library = `<svg xmlns="http://www.w3.org/2000/svg" width="${libW}" height="${y}" viewBox="0 0 ${libW} ${y}">\n  <rect width="${libW}" height="${y}" fill="#ffffff"/>\n${rows.join('\n')}\n</svg>\n`;
-  await writeFile(resolve(outRoot, `${name}.svg`), library);
-  console.log(`  ${name}.svg (library, ${rendered.length} variants inlined)`);
+  for (const theme of THEMES) {
+    let y = gap;
+    const rows = rendered.map((v, index) => {
+      const top = y;
+      y += captionH + v.height + gap;
+      const inner = nestVariant(namespaceSvg(v.content[theme.id], `v${index}-`), gap, top + captionH);
+      return `  <text x="${gap}" y="${top + 14}" font-family="system-ui, sans-serif" font-size="12" font-weight="600" fill="${theme.captionColor}">${v.label}</text>\n${inner}`;
+    });
+    const library = `<svg xmlns="http://www.w3.org/2000/svg" width="${libW}" height="${y}" viewBox="0 0 ${libW} ${y}">\n  <rect width="${libW}" height="${y}" fill="${theme.libraryBackground}"/>\n${rows.join('\n')}\n</svg>\n`;
+    await writeFile(resolve(outRoot, `${name}${theme.suffix}.svg`), library);
+    console.log(`  ${name}${theme.suffix}.svg (library, ${rendered.length} variants inlined)`);
+  }
 }
 
 /**

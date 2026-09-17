@@ -11,31 +11,36 @@ component picture without running the app.
 
 ```
 docs/design/templates/
-  panel-header.svg              ← library: every variant, inlined
+  panel-header.svg              ← library: every variant, inlined (light)
+  panel-header-dark.svg         ← library: dark theme
   panel-header/
-    icon-summary-actions.svg    ← one self-contained variant
+    icon-summary-actions.svg    ← one self-contained variant (light)
+    icon-summary-actions-dark.svg ← the same variant, dark theme
     icon-actions.svg
-    no-icon.svg
-    title-only.svg
-    page-heading.svg
+    icon-actions-dark.svg
+    …
   toolbar-control-group.svg
+  toolbar-control-group-dark.svg
   toolbar-control-group/
     …
 ```
 
-- Each **variant** file is a standalone SVG — scales crisply and drops into an
-  `<img>` anywhere. Captured with `--text-mode system-font`, so text is emitted as
-  authored `<text>` painted by the viewer's system fonts: real, selectable, and
-  small (no embedded font data). The kerf UI design font stack is system-based, so
-  the picture matches; a viewer without those fonts falls back to its own.
-- The **library** file (`<component>.svg`) lays the variants out with captions and
-  embeds an inline **copy** of each variant as a positioned nested `<svg>`. It is
-  fully self-contained and renders everywhere — a browser, an `<img>`, GitHub, or
-  a static rasterizer. (External `<use href="…#id">` and `<image href="…">`
-  references render blank in many SVG viewers, so the library inlines copies
-  instead. Each copy's local ids and domotion font-family names are namespaced so
-  the inlined variants don't collide in the one document; the individual variant
-  files stay individually reusable.)
+- Each **variant** is captured in both themes — `<variant>.svg` (light) and
+  `<variant>-dark.svg` (dark) — a standalone SVG that scales crisply and drops
+  into an `<img>` anywhere. Dark is driven by domotion's `--color-scheme`, which
+  foundation.css's `light-dark()` tokens respond to. Captured with
+  `--text-mode system-font`, so text is emitted as authored `<text>` painted by the
+  viewer's system fonts: real, selectable, and small (no embedded font data). The
+  kerf UI design font stack is system-based, so the picture matches; a viewer
+  without those fonts falls back to its own.
+- The **library** files (`<component>.svg` light, `<component>-dark.svg` dark) lay
+  the variants out with captions and embed an inline **copy** of each variant as a
+  positioned nested `<svg>`. Each is fully self-contained and renders everywhere —
+  a browser, an `<img>`, GitHub, or a static rasterizer. (External
+  `<use href="…#id">` and `<image href="…">` references render blank in many SVG
+  viewers, so the library inlines copies instead. Each copy's local ids and
+  domotion font-family names are namespaced so the inlined variants don't collide
+  in the one document; the individual variant files stay individually reusable.)
 
 ## Building
 
@@ -68,9 +73,11 @@ starting point and:
    tokens and `layout.css`), and any of your own component CSS.
 3. Enumerate the presentation combinations in the per-component manifest.
 4. Capture each variant with `domotion capture <page.html> --selector <css>
-   --text-mode system-font -o <variant>.svg`, then write a library file that embeds an inline
-   copy of each variant (namespacing each copy's ids/font-family names so they
-   don't collide) rather than referencing them, so it renders everywhere.
+   --text-mode system-font -o <variant>.svg`, once per theme with
+   `--color-scheme light` / `--color-scheme dark` (if your components theme with
+   `light-dark()`), then write a light and a dark library file that each embed an
+   inline copy of every variant (namespacing each copy's ids/font-family names so
+   they don't collide) rather than referencing them, so they render everywhere.
 
 Maintaining these next to the components — and reviewing the captured SVGs on
 every component change — keeps the design source of truth honest.
