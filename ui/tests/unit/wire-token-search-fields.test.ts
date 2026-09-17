@@ -488,4 +488,396 @@ describe('wireTokenSearchFields — managed collapsible behavior', () => {
     expect(open.value).toBe(false);
     handle();
   });
+
+  it('keeps an empty field open when focus moves to a data-token-search-keep-open region', async () => {
+    const field = mountCollapsibleField(signal(true));
+    const handle = wireCollapsible(field);
+    const editor = field.editor()!;
+    const suggestions = document.createElement('div');
+    suggestions.setAttribute('data-token-search-keep-open', '');
+    const option = document.createElement('button');
+    suggestions.append(option);
+    document.body.append(suggestions);
+
+    option.focus();
+    editor.dispatchEvent(focusoutEvent(option));
+    await micro();
+
+    expect(field.expandedSignal.value).toBe(true);
+    handle();
+  });
+
+  it('keeps an empty field open when keepOpenOn approves the focus target, else collapses', async () => {
+    const field = mountCollapsibleField(signal(true));
+    const picker = document.createElement('button');
+    document.body.append(picker);
+    const handle = wireCollapsible(field, {
+      signals: { find: field.expandedSignal },
+      keepOpenOn: (node) => node === picker,
+    });
+    const editor = field.editor()!;
+
+    picker.focus();
+    editor.dispatchEvent(focusoutEvent(picker));
+    await micro();
+    expect(field.expandedSignal.value).toBe(true);
+
+    // A target the predicate rejects still collapses.
+    const outside = document.createElement('button');
+    document.body.append(outside);
+    outside.focus();
+    editor.dispatchEvent(focusoutEvent(outside));
+    await micro();
+    expect(field.expandedSignal.value).toBe(false);
+    handle();
+  });
+});
+
+/** A field rendered with a leading text run, one atomic chip, and a trailing run. */
+function tokenedField(): { root: HTMLElement; editor: HTMLElement; chip: HTMLElement; lead: Text; tail: Text } {
+  const root = document.createElement('div');
+  root.innerHTML =
+    '<div data-component="token-search-field" data-token-search-id="tickets" data-disabled="false">' +
+    '<div data-token-search-editor="tickets" contenteditable="true">' +
+    '<span data-token-search-text>due </span>' +
+    '<span data-component="token-search-token" data-token-value="tag:client" contenteditable="false">' +
+    '<button type="button">tag:client</button><button type="button" aria-label="Remove">x</button></span>' +
+    '<span data-token-search-text> soon</span>' +
+    '</div></div>';
+  document.body.append(root);
+  const editor = root.querySelector<HTMLElement>('[data-token-search-editor]')!;
+  const spans = editor.querySelectorAll('[data-token-search-text]');
+  return {
+    root,
+    editor,
+    chip: editor.querySelector<HTMLElement>('[data-component="token-search-token"]')!,
+    lead: spans[0].firstChild as Text,
+    tail: spans[1].firstChild as Text,
+  };
+}
+
+function keydown(key: string): KeyboardEvent {
+  return new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true });
+}
+
+describe('wireTokenSearchFields — onEdit callback', () => {
+  afterEach(() => {
+    document.body.replaceChildren();
+    document.getSelection()?.removeAllRanges();
+  });
+
+  it('fires onEdit for editor input and ignores disabled fields and non-editor input', () => {
+    const { root, editor } = tokenedField();
+    const onEdit = vi.fn();
+    const handle = wireTokenSearchFields(root, { onEdit });
+
+    editor.dispatchEvent(inputEvent('input', 'insertText'));
+    expect(onEdit).toHaveBeenCalledWith({ id: 'tickets', editor });
+
+    onEdit.mockClear();
+    root.querySelector<HTMLElement>('[data-component="token-search-field"]')!.dataset.disabled = 'true';
+    editor.dispatchEvent(inputEvent('input', 'insertText'));
+    expect(onEdit).not.toHaveBeenCalled();
+
+    // Input that does not originate in an editor is ignored.
+    root.dispatchEvent(inputEvent('input', 'insertText'));
+    expect(onEdit).not.toHaveBeenCalled();
+    handle();
+  });
+});
+
+describe('wireTokenSearchFields — opt-in chip keyboard', () => {
+  afterEach(() => {
+    document.body.replaceChildren();
+    document.getSelection()?.removeAllRanges();
+  });
+
+  it('is off by default (no keyboard option)', () => {
+    const { root, editor, tail } = tokenedField();
+    const handle = wireTokenSearchFields(root);
+
+    focusAt(editor, tail, 0);
+    const event = keydown('Backspace');
+    editor.dispatchEvent(event);
+    expect(event.defaultPrevented).toBe(false);
+    handle();
+  });
+
+  it('Backspace removes the token before the caret and Delete the token after', () => {
+    const { root, editor, lead, tail } = tokenedField();
+    const onRemoveToken = vi.fn();
+    const handle = wireTokenSearchFields(root, { keyboard: { onRemoveToken } });
+
+    // Caret at the start of the trailing run — immediately after the chip.
+    focusAt(editor, tail, 0);
+    const back = keydown('Backspace');
+    editor.dispatchEvent(back);
+    expect(back.defaultPrevented).toBe(true);
+    expect(onRemoveToken).toHaveBeenCalledWith({ id: 'tickets', value: 'tag:client', editor, direction: 'backward' });
+
+    // Caret at the end of the leading run — immediately before the chip.
+    onRemoveToken.mockClear();
+    focusAt(editor, lead, lead.length);
+    const del = keydown('Delete');
+    editor.dispatchEvent(del);
+    expect(del.defaultPrevented).toBe(true);
+    expect(onRemoveToken).toHaveBeenCalledWith({ id: 'tickets', value: 'tag:client', editor, direction: 'forward' });
+    handle();
+  });
+
+  it('does not remove a chip when a real character separates it from the caret', () => {
+    const { root, editor, lead } = tokenedField();
+    const onRemoveToken = vi.fn();
+    const handle = wireTokenSearchFields(root, { keyboard: { onRemoveToken } });
+
+    // Caret amid the leading text: Backspace deletes a character, not the chip.
+    focusAt(editor, lead, 2);
+    const back = keydown('Backspace');
+    editor.dispatchEvent(back);
+    expect(back.defaultPrevented).toBe(false);
+    expect(onRemoveToken).not.toHaveBeenCalled();
+    handle();
+  });
+
+  it('does not act on a ranged selection', () => {
+    const { root, editor, lead, tail } = tokenedField();
+    const onRemoveToken = vi.fn();
+    const handle = wireTokenSearchFields(root, { keyboard: { onRemoveToken } });
+
+    const selection = document.getSelection()!;
+    const range = document.createRange();
+    range.setStart(lead, 0);
+    range.setEnd(tail, 1);
+    selection.removeAllRanges();
+    selection.addRange(range);
+    editor.focus();
+    const back = keydown('Backspace');
+    editor.dispatchEvent(back);
+    expect(back.defaultPrevented).toBe(false);
+    expect(onRemoveToken).not.toHaveBeenCalled();
+    handle();
+  });
+
+  it('ArrowRight moves the caret past a trailing chip', () => {
+    const { root, editor, lead, chip } = tokenedField();
+    const handle = wireTokenSearchFields(root, { keyboard: true });
+
+    focusAt(editor, lead, lead.length);
+    const event = keydown('ArrowRight');
+    editor.dispatchEvent(event);
+
+    expect(event.defaultPrevented).toBe(true);
+    // The chip is now behind the caret: everything from the editor start to the
+    // caret includes the chip.
+    const selection = document.getSelection()!;
+    const range = selection.getRangeAt(0);
+    const before = document.createRange();
+    before.setStart(editor, 0);
+    before.setEnd(range.startContainer, range.startOffset);
+    expect(before.cloneContents().querySelector('[data-component="token-search-token"]')).not.toBeNull();
+    expect(chip.dataset.tokenValue).toBe('tag:client');
+    handle();
+  });
+
+  it('ArrowRight is inert when no chip follows the caret', () => {
+    const { root, editor, tail } = tokenedField();
+    const handle = wireTokenSearchFields(root, { keyboard: true });
+
+    focusAt(editor, tail, 1);
+    const event = keydown('ArrowRight');
+    editor.dispatchEvent(event);
+    expect(event.defaultPrevented).toBe(false);
+    handle();
+  });
+
+  it('respects per-behavior opt-out within keyboard', () => {
+    const { root, editor, tail, lead } = tokenedField();
+    const onRemoveToken = vi.fn();
+    const handle = wireTokenSearchFields(root, { keyboard: { removeAdjacentToken: false, moveCaretPastToken: false, onRemoveToken } });
+
+    focusAt(editor, tail, 0);
+    const back = keydown('Backspace');
+    editor.dispatchEvent(back);
+    expect(back.defaultPrevented).toBe(false);
+    expect(onRemoveToken).not.toHaveBeenCalled();
+
+    focusAt(editor, lead, lead.length);
+    const arrow = keydown('ArrowRight');
+    editor.dispatchEvent(arrow);
+    expect(arrow.defaultPrevented).toBe(false);
+    handle();
+  });
+
+  it('does nothing without a caret range', () => {
+    const { root, editor } = tokenedField();
+    const handle = wireTokenSearchFields(root, { keyboard: true });
+    editor.focus();
+    document.getSelection()!.removeAllRanges();
+
+    const back = keydown('Backspace');
+    editor.dispatchEvent(back);
+    expect(back.defaultPrevented).toBe(false);
+    handle();
+  });
+
+  it('finds an adjacent chip when the caret sits directly in the editor between blocks', () => {
+    const { root, editor, chip } = tokenedField();
+    const onRemoveToken = vi.fn();
+    const handle = wireTokenSearchFields(root, { keyboard: { onRemoveToken } });
+
+    // Caret directly in the editor, just after the chip (child index 2 = trailing run).
+    focusAt(editor, editor, 2);
+    editor.dispatchEvent(keydown('Backspace'));
+    expect(onRemoveToken).toHaveBeenLastCalledWith({ id: 'tickets', value: chip.dataset.tokenValue, editor, direction: 'backward' });
+
+    // Caret at the end of the leading run element (no child at that offset) — the chip is the next block.
+    onRemoveToken.mockClear();
+    const lead = editor.querySelector('[data-token-search-text]')!;
+    focusAt(editor, lead, lead.childNodes.length);
+    editor.dispatchEvent(keydown('Delete'));
+    expect(onRemoveToken).toHaveBeenLastCalledWith({ id: 'tickets', value: chip.dataset.tokenValue, editor, direction: 'forward' });
+    handle();
+  });
+
+  it('does nothing when the caret sits past the last block', () => {
+    const { root, editor } = tokenedField();
+    const onRemoveToken = vi.fn();
+    const handle = wireTokenSearchFields(root, { keyboard: { onRemoveToken } });
+
+    focusAt(editor, editor, editor.childNodes.length);
+    const del = keydown('Delete');
+    editor.dispatchEvent(del);
+    expect(del.defaultPrevented).toBe(false);
+    expect(onRemoveToken).not.toHaveBeenCalled();
+    handle();
+  });
+
+  it('skips blank spacer nodes between the caret and the chip', () => {
+    const root = document.createElement('div');
+    root.innerHTML =
+      '<div data-component="token-search-field" data-token-search-id="tickets" data-disabled="false">' +
+      '<div data-token-search-editor="tickets" contenteditable="true">' +
+      '<span data-token-search-text>due </span>' +
+      '<span data-component="token-search-token" data-token-value="tag:client" contenteditable="false"><button type="button">tag:client</button></span>' +
+      '​' +
+      '<span data-token-search-text> soon</span>' +
+      '</div></div>';
+    document.body.append(root);
+    const editor = root.querySelector<HTMLElement>('[data-token-search-editor]')!;
+    const tail = editor.querySelectorAll('[data-token-search-text]')[1].firstChild as Text;
+    const onRemoveToken = vi.fn();
+    const handle = wireTokenSearchFields(root, { keyboard: { onRemoveToken } });
+
+    focusAt(editor, tail, 0);
+    editor.dispatchEvent(keydown('Backspace'));
+    expect(onRemoveToken).toHaveBeenCalledWith({ id: 'tickets', value: 'tag:client', editor, direction: 'backward' });
+    handle();
+  });
+
+  it('skips a blank text-span child when the caret sits in the editor', () => {
+    const root = document.createElement('div');
+    root.innerHTML =
+      '<div data-component="token-search-field" data-token-search-id="tickets" data-disabled="false">' +
+      '<div data-token-search-editor="tickets" contenteditable="true">' +
+      '<span data-token-search-text>due </span>' +
+      '<span data-component="token-search-token" data-token-value="tag:client" contenteditable="false"><button type="button">tag:client</button></span>' +
+      '<span data-token-search-text>​</span>' +
+      '<span data-token-search-text> soon</span>' +
+      '</div></div>';
+    document.body.append(root);
+    const editor = root.querySelector<HTMLElement>('[data-token-search-editor]')!;
+    const onRemoveToken = vi.fn();
+    const handle = wireTokenSearchFields(root, { keyboard: { onRemoveToken } });
+
+    // Caret directly in the editor just after the blank span (child index 3 back → the blank span).
+    focusAt(editor, editor, 3);
+    editor.dispatchEvent(keydown('Backspace'));
+    expect(onRemoveToken).toHaveBeenCalledWith({ id: 'tickets', value: 'tag:client', editor, direction: 'backward' });
+    handle();
+  });
+
+  it('skips a blank spacer ahead of the caret for a forward (Delete) removal', () => {
+    const root = document.createElement('div');
+    root.innerHTML =
+      '<div data-component="token-search-field" data-token-search-id="tickets" data-disabled="false">' +
+      '<div data-token-search-editor="tickets" contenteditable="true">' +
+      '<span data-token-search-text>due </span>' +
+      '<span data-token-search-text>​</span>' +
+      '<span data-component="token-search-token" data-token-value="tag:client" contenteditable="false"><button type="button">tag:client</button></span>' +
+      '<span data-token-search-text> soon</span>' +
+      '</div></div>';
+    document.body.append(root);
+    const editor = root.querySelector<HTMLElement>('[data-token-search-editor]')!;
+    const lead = editor.querySelector('[data-token-search-text]')!.firstChild as Text;
+    const onRemoveToken = vi.fn();
+    const handle = wireTokenSearchFields(root, { keyboard: { onRemoveToken } });
+
+    // Caret at the end of the leading run; a blank spacer sits before the chip.
+    focusAt(editor, lead, lead.length);
+    editor.dispatchEvent(keydown('Delete'));
+    expect(onRemoveToken).toHaveBeenCalledWith({ id: 'tickets', value: 'tag:client', editor, direction: 'forward' });
+    handle();
+  });
+
+  it('reports an empty value for a chip that carries no token value', () => {
+    const root = document.createElement('div');
+    root.innerHTML =
+      '<div data-component="token-search-field" data-token-search-id="tickets" data-disabled="false">' +
+      '<div data-token-search-editor="tickets" contenteditable="true">' +
+      '<span data-component="token-search-token" contenteditable="false"><button type="button">chip</button></span>' +
+      '<span data-token-search-text> soon</span>' +
+      '</div></div>';
+    document.body.append(root);
+    const editor = root.querySelector<HTMLElement>('[data-token-search-editor]')!;
+    const tail = editor.querySelector('[data-token-search-text]')!.firstChild as Text;
+    const onRemoveToken = vi.fn();
+    const handle = wireTokenSearchFields(root, { keyboard: { onRemoveToken } });
+
+    focusAt(editor, tail, 0);
+    editor.dispatchEvent(keydown('Backspace'));
+    expect(onRemoveToken).toHaveBeenCalledWith({ id: 'tickets', value: '', editor, direction: 'backward' });
+    handle();
+  });
+
+  it('does not treat a bare text run adjacent to the caret as a chip', () => {
+    const root = document.createElement('div');
+    root.innerHTML =
+      '<div data-component="token-search-field" data-token-search-id="tickets" data-disabled="false">' +
+      '<div data-token-search-editor="tickets" contenteditable="true">' +
+      '<span data-component="token-search-token" data-token-value="tag:client" contenteditable="false"><button type="button">tag:client</button></span>' +
+      'AND<span data-token-search-text> soon</span>' +
+      '</div></div>';
+    document.body.append(root);
+    const editor = root.querySelector<HTMLElement>('[data-token-search-editor]')!;
+    const tail = editor.querySelector('[data-token-search-text]')!.firstChild as Text;
+    const onRemoveToken = vi.fn();
+    const handle = wireTokenSearchFields(root, { keyboard: { onRemoveToken } });
+
+    focusAt(editor, tail, 0);
+    const back = keydown('Backspace');
+    editor.dispatchEvent(back);
+    expect(back.defaultPrevented).toBe(false);
+    expect(onRemoveToken).not.toHaveBeenCalled();
+    handle();
+  });
+
+  it('moves the caret past a chip that ends the editor', () => {
+    const root = document.createElement('div');
+    root.innerHTML =
+      '<div data-component="token-search-field" data-token-search-id="tickets" data-disabled="false">' +
+      '<div data-token-search-editor="tickets" contenteditable="true">' +
+      '<span data-token-search-text>due </span>' +
+      '<span data-component="token-search-token" data-token-value="tag:client" contenteditable="false"><button type="button">tag:client</button></span>' +
+      '</div></div>';
+    document.body.append(root);
+    const editor = root.querySelector<HTMLElement>('[data-token-search-editor]')!;
+    const lead = editor.querySelector('[data-token-search-text]')!.firstChild as Text;
+    const handle = wireTokenSearchFields(root, { keyboard: true });
+
+    focusAt(editor, lead, lead.length);
+    const event = keydown('ArrowRight');
+    editor.dispatchEvent(event);
+    expect(event.defaultPrevented).toBe(true);
+    handle();
+  });
 });

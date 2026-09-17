@@ -1156,6 +1156,37 @@ interface TokenSearchSubmit {
     id: string;
     editor: HTMLElement;
 }
+/** Reported when adjacent-token keyboard deletion asks the app to drop a chip. */
+interface TokenSearchTokenRemoval {
+    id: string;
+    /** The `data-token-value` of the token the app should remove from its state. */
+    value: string;
+    editor: HTMLElement;
+    /** `'backward'` = the token before the caret (Backspace); `'forward'` = after (Delete). */
+    direction: 'backward' | 'forward';
+}
+/**
+ * Opt-in keyboard behavior for the atomic token chips. Off unless `keyboard` is
+ * set; each piece defaults on once opted in. The helper never mutates app state:
+ * a removal is reported through {@link TokenSearchKeyboardOptions.onRemoveToken}
+ * for the caller to apply, while caret movement past a chip is a pure ephemeral
+ * mechanic the helper performs itself.
+ */
+interface TokenSearchKeyboardOptions {
+    /**
+     * From a collapsed caret with no selection, Backspace removes the token
+     * immediately before it and Delete the token immediately after — reported via
+     * `onRemoveToken` — instead of deleting a character. Default: true.
+     */
+    removeAdjacentToken?: boolean;
+    /**
+     * ArrowRight moves the caret past a trailing atomic token so text typed next
+     * lands after the chip. Default: true.
+     */
+    moveCaretPastToken?: boolean;
+    /** Apply the reported removal to your controlled state, then re-render. */
+    onRemoveToken?: (removal: TokenSearchTokenRemoval) => void;
+}
 /**
  * Managed collapsible behavior for the iconic TokenSearchField. Every piece is on
  * by default; disable a specific one to own it in the app. Provide `signals` to
@@ -1170,13 +1201,26 @@ interface TokenSearchCollapsibleOptions {
     collapseOnEscape?: boolean;
     /** Focus the editor on expand and the trigger on Escape-collapse. Default: true. */
     manageFocus?: boolean;
+    /**
+     * Keep an empty field expanded when focus moves to a caller-owned surface
+     * rendered outside the field — a suggestions dropdown, date picker, or help
+     * popover shown beside it. Return true for any focus target that must NOT
+     * trigger collapse-on-empty-blur. An element carrying `data-token-search-keep-open`
+     * (or any node inside one) is always exempt, so this predicate is only needed
+     * for surfaces you cannot mark declaratively.
+     */
+    keepOpenOn?: (target: Node | null) => boolean;
     /** App-owned `expanded` signals keyed by field id; adopted instead of helper-created. */
     signals?: Readonly<Record<string, Signal<boolean>>>;
 }
 interface WireTokenSearchFieldsOptions {
     onSubmit?: (submission: TokenSearchSubmit) => void;
+    /** Fired on every editor `input`, after the browser mutates it, so a caller can drop its own `input` listener. */
+    onEdit?: (edit: TokenSearchSubmit) => void;
     /** Managed collapsible transient behavior. `true`/omitted = on with defaults; `false` = fully off. */
     collapsible?: boolean | TokenSearchCollapsibleOptions;
+    /** Opt-in atomic-chip keyboard behavior (off by default). `true` = on with defaults. */
+    keyboard?: boolean | TokenSearchKeyboardOptions;
 }
 /**
  * The value returned from {@link wireTokenSearchFields}: call it (or `dispose()`) to
@@ -1200,9 +1244,9 @@ interface TokenSearchFieldsHandle {
  * expand/collapse/focus. Returns a {@link TokenSearchFieldsHandle} — a disposer that also
  * exposes the managed `expanded` state per field id.
  */
-declare function wireTokenSearchFields(root: HTMLElement, { onSubmit, collapsible }?: WireTokenSearchFieldsOptions): TokenSearchFieldsHandle;
+declare function wireTokenSearchFields(root: HTMLElement, { onSubmit, onEdit, collapsible, keyboard }?: WireTokenSearchFieldsOptions): TokenSearchFieldsHandle;
 
-export { type TokenSearchCollapsibleOptions, type TokenSearchFieldsHandle, type TokenSearchSubmit, type WireTokenSearchFieldsOptions, wireTokenSearchFields };
+export { type TokenSearchCollapsibleOptions, type TokenSearchFieldsHandle, type TokenSearchKeyboardOptions, type TokenSearchSubmit, type TokenSearchTokenRemoval, type WireTokenSearchFieldsOptions, wireTokenSearchFields };
 ```
 
 ## `kerfjs/actions`

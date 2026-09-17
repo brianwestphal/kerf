@@ -80,7 +80,13 @@ maintain a central style list. Configure JSX with `"jsxImportSource": "kerfjs"`.
   exposes the `expanded` signal on its handle — bind it in render or hand in your own
   via `collapsible.signals`. Do not hand-roll open/collapse/focus that helper
   provides; but do keep a plain disclosure toggle (a one-line boolean the app already
-  renders from) in the app.
+  renders from) in the app. For real-app composition it also offers a focusout
+  keep-open exception (`data-token-search-keep-open` regions or `collapsible.keepOpenOn`,
+  so a sibling suggestions/date popover does not collapse an empty field), opt-in
+  atomic-chip keyboard (`keyboard`: Backspace/Delete remove the adjacent chip via
+  `onRemoveToken`, ArrowRight moves the caret past a trailing chip), and an
+  `onEdit({id, editor})` input callback — so the app can drop its own keydown/input
+  boilerplate while still owning parsing and controlled token state.
 - **Placeholder loading state, don't rebuild it.** For a value or component that is
   still loading, set `placeholder` on the component (`Select`, `ListHeader`,
   `ListItem`, `ValueTableRow`, `PanelHeader`, `SegmentedControl`, `StateBanner`,

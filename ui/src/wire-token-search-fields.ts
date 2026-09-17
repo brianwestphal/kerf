@@ -7,6 +7,39 @@ export interface TokenSearchSubmit {
   editor: HTMLElement;
 }
 
+/** Reported when adjacent-token keyboard deletion asks the app to drop a chip. */
+export interface TokenSearchTokenRemoval {
+  id: string;
+  /** The `data-token-value` of the token the app should remove from its state. */
+  value: string;
+  editor: HTMLElement;
+  /** `'backward'` = the token before the caret (Backspace); `'forward'` = after (Delete). */
+  direction: 'backward' | 'forward';
+}
+
+/**
+ * Opt-in keyboard behavior for the atomic token chips. Off unless `keyboard` is
+ * set; each piece defaults on once opted in. The helper never mutates app state:
+ * a removal is reported through {@link TokenSearchKeyboardOptions.onRemoveToken}
+ * for the caller to apply, while caret movement past a chip is a pure ephemeral
+ * mechanic the helper performs itself.
+ */
+export interface TokenSearchKeyboardOptions {
+  /**
+   * From a collapsed caret with no selection, Backspace removes the token
+   * immediately before it and Delete the token immediately after — reported via
+   * `onRemoveToken` — instead of deleting a character. Default: true.
+   */
+  removeAdjacentToken?: boolean;
+  /**
+   * ArrowRight moves the caret past a trailing atomic token so text typed next
+   * lands after the chip. Default: true.
+   */
+  moveCaretPastToken?: boolean;
+  /** Apply the reported removal to your controlled state, then re-render. */
+  onRemoveToken?: (removal: TokenSearchTokenRemoval) => void;
+}
+
 /**
  * Managed collapsible behavior for the iconic TokenSearchField. Every piece is on
  * by default; disable a specific one to own it in the app. Provide `signals` to
@@ -21,14 +54,27 @@ export interface TokenSearchCollapsibleOptions {
   collapseOnEscape?: boolean;
   /** Focus the editor on expand and the trigger on Escape-collapse. Default: true. */
   manageFocus?: boolean;
+  /**
+   * Keep an empty field expanded when focus moves to a caller-owned surface
+   * rendered outside the field — a suggestions dropdown, date picker, or help
+   * popover shown beside it. Return true for any focus target that must NOT
+   * trigger collapse-on-empty-blur. An element carrying `data-token-search-keep-open`
+   * (or any node inside one) is always exempt, so this predicate is only needed
+   * for surfaces you cannot mark declaratively.
+   */
+  keepOpenOn?: (target: Node | null) => boolean;
   /** App-owned `expanded` signals keyed by field id; adopted instead of helper-created. */
   signals?: Readonly<Record<string, Signal<boolean>>>;
 }
 
 export interface WireTokenSearchFieldsOptions {
   onSubmit?: (submission: TokenSearchSubmit) => void;
+  /** Fired on every editor `input`, after the browser mutates it, so a caller can drop its own `input` listener. */
+  onEdit?: (edit: TokenSearchSubmit) => void;
   /** Managed collapsible transient behavior. `true`/omitted = on with defaults; `false` = fully off. */
   collapsible?: boolean | TokenSearchCollapsibleOptions;
+  /** Opt-in atomic-chip keyboard behavior (off by default). `true` = on with defaults. */
+  keyboard?: boolean | TokenSearchKeyboardOptions;
 }
 
 /**
@@ -84,6 +130,83 @@ function editorIsEmpty(editor: HTMLElement): boolean {
   return value.query.length === 0 && value.tokens.length === 0;
 }
 
+const TOKEN_SELECTOR = '[data-component="token-search-token"]';
+const TEXT_SELECTOR = '[data-token-search-text]';
+const stripZwsp = (text: string): string => text.replaceAll('​', '');
+
+/** The collapsed, in-editor caret range, or undefined when there is a selection or none. */
+function collapsedCaret(editor: HTMLElement): Range | undefined {
+  const selection = editor.ownerDocument.getSelection();
+  if (!selection || selection.rangeCount === 0) return;
+  const range = selection.getRangeAt(0);
+  if (!range.collapsed || !editor.contains(range.startContainer)) return;
+  return range;
+}
+
+/** The direct child of `editor` that contains `node` (or `node` itself), else null. */
+function topBlock(editor: HTMLElement, node: Node): Node | null {
+  let current: Node = node;
+  while (current.parentNode && current.parentNode !== editor) current = current.parentNode;
+  return current.parentNode === editor ? current : null;
+}
+
+/** A text node or text span holding no visible character (only zero-width spacers). */
+function isBlankText(node: Node): boolean {
+  if (node.nodeType === Node.TEXT_NODE) return stripZwsp((node as CharacterData).data) === '';
+  return node instanceof Element && node.matches(TEXT_SELECTOR) && stripZwsp(node.textContent ?? '') === '';
+}
+
+/** The nearest sibling block on `direction`, skipping blank text spacers. */
+function meaningfulSibling(block: Node, direction: 'backward' | 'forward'): Node | null {
+  let sibling = direction === 'backward' ? block.previousSibling : block.nextSibling;
+  while (sibling && isBlankText(sibling)) sibling = direction === 'backward' ? sibling.previousSibling : sibling.nextSibling;
+  return sibling;
+}
+
+/** The node immediately on `direction` of the caret, only when no visible character separates them. */
+function caretSideNode(editor: HTMLElement, range: Range, direction: 'backward' | 'forward'): Node | null {
+  const { startContainer: container, startOffset: offset } = range;
+  if (container.nodeType === Node.TEXT_NODE) {
+    const text = (container as CharacterData).data;
+    const side = direction === 'backward' ? text.slice(0, offset) : text.slice(offset);
+    if (stripZwsp(side).length > 0) return null;
+    // An in-editor text node always has a top block (itself or its wrapping span).
+    return meaningfulSibling(topBlock(editor, container)!, direction);
+  }
+  const child = container.childNodes[direction === 'backward' ? offset - 1 : offset] as Node | undefined;
+  if (child) {
+    // `child` is a descendant of the in-editor caret container, so it has a top block.
+    const block = topBlock(editor, child)!;
+    return isBlankText(child) ? meaningfulSibling(block, direction) : block;
+  }
+  const block = topBlock(editor, container);
+  return block ? meaningfulSibling(block, direction) : null;
+}
+
+/** The atomic token chip adjacent to a collapsed caret on `direction`, if any. */
+function adjacentToken(editor: HTMLElement, direction: 'backward' | 'forward'): HTMLElement | undefined {
+  const range = collapsedCaret(editor);
+  if (!range) return;
+  const node = caretSideNode(editor, range, direction);
+  if (!node) return;
+  const base = node instanceof Element ? node : node.parentElement;
+  const chip = base?.closest<HTMLElement>(TOKEN_SELECTOR) ?? null;
+  return chip && editor.contains(chip) ? chip : undefined;
+}
+
+/** Move the caret to just after an atomic token chip so typed text lands after it.
+ *  Only reached after {@link collapsedCaret} already found a live selection, and the
+ *  chip is a direct block of the editor. */
+function placeCaretAfterToken(editor: HTMLElement, chip: HTMLElement): void {
+  const selection = editor.ownerDocument.getSelection()!;
+  const range = editor.ownerDocument.createRange();
+  range.setStartAfter(topBlock(editor, chip)!);
+  range.collapse(true);
+  selection.removeAllRanges();
+  selection.addRange(range);
+  editor.focus({ preventScroll: true });
+}
+
 /**
  * Wire every TokenSearchField under `root`: submit on Enter, preserve the caret across
  * controlled token deletion, and (by default) manage the collapsible field's transient
@@ -92,7 +215,7 @@ function editorIsEmpty(editor: HTMLElement): boolean {
  */
 export function wireTokenSearchFields(
   root: HTMLElement,
-  { onSubmit, collapsible = true }: WireTokenSearchFieldsOptions = {},
+  { onSubmit, onEdit, collapsible = true, keyboard = false }: WireTokenSearchFieldsOptions = {},
 ): TokenSearchFieldsHandle {
   const managed = collapsible !== false;
   const config = typeof collapsible === 'object' ? collapsible : {};
@@ -100,8 +223,21 @@ export function wireTokenSearchFields(
   const collapseOnEmptyBlur = managed && (config.collapseOnEmptyBlur ?? true);
   const collapseOnEscape = managed && (config.collapseOnEscape ?? true);
   const manageFocus = managed && (config.manageFocus ?? true);
+  const keepOpenOn = config.keepOpenOn;
+  const keyboardOn = keyboard !== false;
+  const keyboardConfig = typeof keyboard === 'object' ? keyboard : {};
+  const removeAdjacentToken = keyboardOn && (keyboardConfig.removeAdjacentToken ?? true);
+  const moveCaretPastToken = keyboardOn && (keyboardConfig.moveCaretPastToken ?? true);
+  const onRemoveToken = keyboardConfig.onRemoveToken;
   const adopted = config.signals ?? {};
   const created = new Map<string, Signal<boolean>>();
+
+  /** True when focus moving to `element` should keep an empty field expanded. */
+  const isExemptTarget = (element: Element | null): boolean => {
+    if (!element) return false;
+    if (element.closest('[data-token-search-keep-open]')) return true;
+    return keepOpenOn ? keepOpenOn(element) : false;
+  };
 
   const signalFor = (id: string): Signal<boolean> => {
     const own = adopted[id];
@@ -155,6 +291,11 @@ export function wireTokenSearchFields(
   const onInput = (event: Event) => {
     const editor = editorFromEvent(root, event);
     if (!editor) return;
+    if (onEdit) {
+      const field = editor.closest<HTMLElement>('[data-component="token-search-field"]');
+      const id = field?.dataset.tokenSearchId;
+      if (id && field?.dataset.disabled !== 'true') onEdit({ id, editor });
+    }
     const deletion = pending.get(editor);
     pending.delete(editor);
     if (!deletion || editor.querySelectorAll('[data-component="token-search-token"]').length >= deletion.tokenCount) return;
@@ -186,6 +327,23 @@ export function wireTokenSearchFields(
         keyboardEvent.preventDefault();
         onSubmit?.({ id, editor });
         return;
+      }
+      if (removeAdjacentToken && (keyboardEvent.key === 'Backspace' || keyboardEvent.key === 'Delete')) {
+        const direction = keyboardEvent.key === 'Backspace' ? 'backward' : 'forward';
+        const chip = adjacentToken(editor, direction);
+        if (chip) {
+          keyboardEvent.preventDefault();
+          onRemoveToken?.({ id, value: chip.dataset.tokenValue ?? '', editor, direction });
+          return;
+        }
+      }
+      if (moveCaretPastToken && keyboardEvent.key === 'ArrowRight') {
+        const chip = adjacentToken(editor, 'forward');
+        if (chip) {
+          keyboardEvent.preventDefault();
+          placeCaretAfterToken(editor, chip);
+          return;
+        }
       }
       if (collapseOnEscape && keyboardEvent.key === 'Escape' && field?.dataset.collapsible === 'true' && editorIsEmpty(editor)) {
         keyboardEvent.preventDefault();
@@ -222,9 +380,11 @@ export function wireTokenSearchFields(
         if (!id || field?.dataset.collapsible !== 'true' || field.dataset.disabled === 'true') return;
         const next = (event as FocusEvent).relatedTarget;
         if (next instanceof Node && field.contains(next)) return;
+        if (isExemptTarget(next instanceof Element ? next : null)) return;
         if (!editorIsEmpty(editor)) return;
         view().queueMicrotask(() => {
-          if (!field.contains(field.ownerDocument.activeElement)) setExpanded(id, false);
+          const active = field.ownerDocument.activeElement;
+          if (!field.contains(active) && !isExemptTarget(active)) setExpanded(id, false);
         });
       }),
     );

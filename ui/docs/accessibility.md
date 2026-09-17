@@ -122,6 +122,18 @@ trigger into the revealed editor, and clear `expanded` only after focus leaves
 the complete component. Text or tokens keep the field expanded even when that
 transient state is false. Width animation is disabled under reduced motion.
 
+When the field is composed with a caller-owned surface rendered outside it — a
+suggestions listbox, date picker, or help popover — mark that surface (or wrap
+it) with `data-token-search-keep-open`, or pass `collapsible.keepOpenOn(target)`,
+so focus moving into it does not collapse an empty field. `wireTokenSearchFields`
+can also, opt-in via `keyboard`, own atomic-chip editing keys: from a collapsed
+caret with no selection, Backspace removes the token before the caret and Delete
+the token after it (reported through `onRemoveToken` for the app to apply to its
+controlled state), and ArrowRight moves the caret past a trailing chip so typed
+text lands after it. An optional `onEdit({ id, editor })` fires on every editor
+`input`, letting a caller drop its own `input` listener; the application still
+owns query parsing and result-count/loading announcements.
+
 ## CollapsiblePanel / sidebar
 
 `CollapsiblePanel` is a labeled `aside` region that is `aria-hidden` while
