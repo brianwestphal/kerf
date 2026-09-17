@@ -55,7 +55,7 @@ test('the adoption-knobs demo drives keep-open, chip keyboard, and onEdit', asyn
     const range = document.createRange();
     range.selectNodeContents(element);
     range.collapse(false);
-    const selection = getSelection()!;
+    const selection = document.getSelection()!;
     selection.removeAllRanges();
     selection.addRange(range);
     (element as HTMLElement).focus();
@@ -70,14 +70,14 @@ test('the adoption-knobs demo drives keep-open, chip keyboard, and onEdit', asyn
     const range = document.createRange();
     range.setStart(element, 0);
     range.collapse(true);
-    const selection = getSelection()!;
+    const selection = document.getSelection()!;
     selection.removeAllRanges();
     selection.addRange(range);
     (element as HTMLElement).focus();
   });
   await page.keyboard.press('ArrowRight');
   const chipBehindCaret = await editor.evaluate((element) => {
-    const selection = getSelection()!;
+    const selection = document.getSelection()!;
     const caret = selection.getRangeAt(0);
     const before = document.createRange();
     before.setStart(element, 0);
