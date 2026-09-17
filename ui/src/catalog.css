@@ -41,10 +41,6 @@
     visibility 0s linear 200ms;
 }
 
-.kui-catalog__brand {
-  border-block-end: 1px solid var(--kui-color-border);
-}
-
 .kui-catalog__brand .kui-toolbar {
   padding: var(--kui-space-xs);
 }
