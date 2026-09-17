@@ -122,6 +122,13 @@ describe('Catalog', () => {
     expect(collapsed).not.toContain('data-catalog-secondary');
     expect(collapsed).toContain('data-action="catalog-toggle-secondary"');
   });
+
+  it('finds an active entry inside the secondary group for the detail header', () => {
+    const secondarySections = { label: 'Ecosystem', sections: [{ category: 'Forms', entries: [{ id: 'wa-input', name: 'Input', description: 'A form field.' }] }] };
+    const html = asHtml(Catalog({ brand: { title: 'X' }, sections, active: 'wa-input', content: raw('<b/>'), secondarySections }));
+    expect(html).toContain('<h2>Input</h2>');
+    expect(html).toContain('A form field.');
+  });
 });
 
 describe('CatalogExample', () => {

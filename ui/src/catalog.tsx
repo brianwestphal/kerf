@@ -118,7 +118,7 @@ export function Catalog({
   toggleSecondaryAction = 'catalog-toggle-secondary',
   className = '',
 }: CatalogProps) {
-  const selected = findEntry(sections, active);
+  const selected = findEntry(sections, active) ?? (secondarySections ? findEntry(secondarySections.sections, active) : undefined);
   const name = selected?.name ?? '';
   const nextTheme = theme === 'dark' ? 'light' : 'dark';
   const resources = selected?.resources ?? [];

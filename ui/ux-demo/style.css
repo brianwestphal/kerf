@@ -392,10 +392,17 @@ button {
 .catalog-relationships__select {
   width: min(remify(240px), 35vw);
 }
-.catalog-stage[data-recipe-notes-visible="false"] .kui-recipe__ownership {
+/* The demo stage wrapper sits inside the Catalog's own canvas; `display: contents`
+   lets the demo content and the debug-overlay layer be direct grid children of the
+   canvas (which owns the positioning context) while still carrying the
+   data-demo-mode / data-recipe-notes-visible hooks. */
+.demo-stage-inner {
+  display: contents;
+}
+.demo-stage-inner[data-recipe-notes-visible="false"] .kui-recipe__ownership {
   display: none;
 }
-.catalog-stage[data-recipe-notes-visible="true"] .kui-recipe__ownership {
+.demo-stage-inner[data-recipe-notes-visible="true"] .kui-recipe__ownership {
   position: absolute;
   z-index: 4;
   inset-inline-end: var(--kui-layout-content-gap);
@@ -1500,7 +1507,7 @@ button {
 /* Non-composition (single-component) demos render each component directly on the
    transparency grid: strip the card chrome from the demo wrappers so the grid
    shows through, and let the debug overlay mark each component's bounds/margins. */
-.catalog-canvas[data-demo-mode="component"]
+.demo-stage-inner[data-demo-mode="component"]
   :is(
     .demo-frame,
     .demo-feedback,
@@ -1517,7 +1524,7 @@ button {
   background: transparent;
   box-shadow: none;
 }
-.catalog-canvas[data-demo-mode="component"] .demo-value-table {
+.demo-stage-inner[data-demo-mode="component"] .demo-value-table {
   padding: 0;
 }
 

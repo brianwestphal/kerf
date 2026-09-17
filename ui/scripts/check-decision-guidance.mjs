@@ -91,8 +91,11 @@ for (const phrase of ['publicClasses', 'public-class-to-public-class', 'descenda
   if (!layoutGuidance.includes(phrase)) fail(`CSS decision guidance is missing the ${phrase} boundary`);
 }
 
-const demoSource = await readFile(resolve(root, 'ux-demo/main.tsx'), 'utf8');
-const catalogRows = demoSource.match(/<ListItem action="select-demo"[^>]+multiline \/>/g) ?? [];
+// The UX demo dogfoods the shipped @kerfjs/ui/catalog shell, so its sidebar
+// navigation is rendered by the Catalog component. Verify Catalog itself uses the
+// ListItem multiline prop (primary + secondary groups) rather than CSS overrides.
+const catalogSource = await readFile(resolve(root, 'src/catalog.tsx'), 'utf8');
+const catalogRows = catalogSource.match(/<ListItem action=\{selectAction\}[^>]+multiline \/>/g) ?? [];
 if (catalogRows.length !== 2) fail('catalog navigation must use the ListItem multiline prop instead of descendant CSS overrides');
 
 const missingConceptSource = ts.createSourceFile('command-palette-adapter.tsx', missingConcept, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);

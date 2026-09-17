@@ -49,7 +49,10 @@
   padding: var(--kui-space-xs);
 }
 
-.kui-catalog__identity {
+/* Scoped to the brand so it outranks the ToolbarControlGroup's own gap rule; a
+   single-class selector would lose that specificity and drop the logo→title gap,
+   which then misaligns the subtitle (whose padding assumes the gap is present). */
+.kui-catalog__brand .kui-catalog__identity {
   min-width: 0;
   gap: var(--kui-layout-control-gap, remify(8px));
 }
@@ -456,6 +459,19 @@
     align-items: flex-start;
     flex-direction: column;
     gap: remify(4px);
+  }
+  /* Stack the footer's resource links above the related selector at narrow widths
+     instead of keeping them in one row. */
+  .kui-catalog__footer .kui-toolbar[data-has-center="false"] {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .kui-catalog__footer .kui-toolbar__leading,
+  .kui-catalog__resource-group {
+    width: 100%;
+  }
+  .kui-catalog__footer .kui-toolbar__trailing {
+    width: 100%;
+    justify-content: flex-start;
   }
 }
 

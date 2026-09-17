@@ -1,9 +1,11 @@
 import '@kerfjs/ui/select/register';
 import '@kerfjs/ui/layout.css';
+import '@kerfjs/ui/catalog.css';
 import '@kerfjs/ui/webawesome.css';
 import './style.css';
 
 import { AppTab } from '@kerfjs/ui/app-tab';
+import { Catalog, type CatalogRelated, type CatalogResource, type CatalogSection as KuiCatalogSection } from '@kerfjs/ui/catalog';
 import { DisclosureArrow } from '@kerfjs/ui/disclosure-arrow';
 import { EmptyState } from '@kerfjs/ui/empty-state';
 import { ListActionRow } from '@kerfjs/ui/list-action-row';
@@ -23,15 +25,16 @@ import { Toolbar } from '@kerfjs/ui/toolbar';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
 import { ValueTable, ValueTableRow } from '@kerfjs/ui/value-table';
+import { wireCatalog } from '@kerfjs/ui/wire-catalog';
 import { wireNavStack } from '@kerfjs/ui/wire-nav-stack';
 import { wireResizableRegions } from '@kerfjs/ui/wire-resizable-regions';
 import { reorderTabs, wireTabBars } from '@kerfjs/ui/wire-tab-bars';
 import { wireTokenSearchFields } from '@kerfjs/ui/wire-token-search-fields';
 import { batch, delegate, delegateCapture, effect, mount, signal } from 'kerfjs';
 import { delegateActions } from 'kerfjs/actions';
-import { ArrowDownAZ, ArrowRight, Bell, Check, ChevronLeft, ChevronRight, CircleHelp, Columns3, Contrast, ExternalLink, Folder, GitCompare, GripVertical, Inbox, List, Moon, MoreHorizontal, PanelLeft, PanelLeftClose, PanelLeftOpen, Pin, Plus, Search, Settings, SlidersHorizontal, Star, StickyNote, Sun, Wrench, X, ZapOff } from 'lucide';
+import { ArrowDownAZ, ArrowRight, Bell, Check, ChevronLeft, ChevronRight, CircleHelp, Columns3, Contrast, Folder, GitCompare, GripVertical, Inbox, List, MoreHorizontal, PanelLeft, PanelLeftOpen, Pin, Plus, Search, Settings, SlidersHorizontal, Star, StickyNote, Wrench, X, ZapOff } from 'lucide';
 
-import { catalog, catalogEntriesUsing, type CatalogEntry, type CatalogId, catalogRepositoryHref, catalogSections, findCatalogEntry, isCatalogId, type KerfCatalogId, webAwesomeCatalog, type WebAwesomeCatalogId, webAwesomeCatalogSections } from './catalog.js';
+import { catalog, catalogEntriesUsing, type CatalogEntry, type CatalogId, catalogRepositoryHref, catalogSections, findCatalogEntry, isCatalogId, type KerfCatalogId, type WebAwesomeCatalogId, webAwesomeCatalogSections } from './catalog.js';
 import { createComponentOverlay } from './component-overlay.js';
 import { applyDemoTheme, type DemoTheme, oppositeDemoTheme, preferredDemoTheme } from './demo-theme.js';
 import { isRecipeId, type RecipeId, recipeLoaders } from './recipes/loaders.js';
@@ -624,18 +627,27 @@ function Stage() {
   return demos[selectedDemo.value as Exclude<KerfCatalogId, RecipeId>]();
 }
 
-function DemoRelationships({ entry }: { entry: CatalogEntry }) {
-  const uses = (entry.uses ?? [])
-    .map(findCatalogEntry)
-    .filter((related): related is CatalogEntry => Boolean(related));
-  const usedBy = catalogEntriesUsing(entry.id);
-  const choices = [
-    ...uses.map((related) => ({ value: related.id, label: related.name, group: 'Uses' })),
-    ...usedBy.map((related) => ({ value: related.id, label: related.name, group: 'Used by' })),
-  ];
-  if (choices.length === 0) return null;
-  return <div class="catalog-relationships" data-relationships-for={entry.id}><ToolbarControlGroup className="catalog-footer__related" label="Related components"><Select className="catalog-relationships__select" name="related-component" value="" label="Related components" placeholderText="Related components" fitMenu choices={choices} /></ToolbarControlGroup></div>;
+// Project the ux-demo's rich catalog entries onto the shipped Catalog's shapes so
+// the reusable shell renders the sidebar, resources footer, and related selector.
+function toCatalogResources(entry: CatalogEntry): CatalogResource[] {
+  const resources: CatalogResource[] = [{ label: 'Demo source', href: catalogRepositoryHref(entry.demoSource), detail: entry.demoSource }];
+  if (entry.componentSource) resources.push({ label: 'Component source', href: catalogRepositoryHref(entry.componentSource), detail: entry.componentSource });
+  resources.push({ label: entry.source === 'webawesome' ? 'Integration guidance' : 'Guidance', href: catalogRepositoryHref(entry.documentation), detail: entry.documentation });
+  return resources;
 }
+function toCatalogRelated(entry: CatalogEntry): CatalogRelated[] {
+  const uses = (entry.uses ?? []).map(findCatalogEntry).filter((related): related is CatalogEntry => Boolean(related)).map((related) => ({ id: related.id, name: related.name, group: 'Uses' }));
+  const usedBy = catalogEntriesUsing(entry.id).map((related) => ({ id: related.id, name: related.name, group: 'Used by' }));
+  return [...uses, ...usedBy];
+}
+function toKuiSections(sections: readonly { category: string; entries: readonly CatalogEntry[] }[]): KuiCatalogSection[] {
+  return sections.map((section) => ({
+    category: section.category,
+    entries: section.entries.map((entry) => ({ id: entry.id, name: entry.name, description: entry.description, resources: toCatalogResources(entry), related: toCatalogRelated(entry) })),
+  }));
+}
+const kuiCatalogSections = toKuiSections(catalogSections);
+const kuiWebAwesomeSections = toKuiSections(webAwesomeCatalogSections);
 
 function selectDemo(id: string): void {
   if (!isCatalogId(id)) return;
@@ -660,47 +672,23 @@ function revealSelectedSidebarItem(id: CatalogId, block: ScrollLogicalPosition =
 mount(app, () => {
   const selected = findCatalogEntry(selectedDemo.value)!;
   const isRecipe = selected.kind === 'recipe';
-  const nextTheme = oppositeDemoTheme(effectiveTheme.value);
-  return <main class="catalog-shell" data-sidebar-collapsed={String(sidebarCollapsed.value)}>
-    <aside class="catalog-sidebar kui-pane" aria-label="Component catalog">
-      <header class="catalog-brand kui-pane__toolbar">
-        <Toolbar label="Component catalog header" divider={false} leading={<ToolbarControlGroup appearance="borderless" className="catalog-brand__identity"><img class="catalog-mark" src={kerfLogoUrl} alt="" /><h1>Kerf</h1></ToolbarControlGroup>} trailing={<ToolbarControlGroup appearance="borderless" single><button type="button" data-action="toggle-catalog-sidebar" aria-label="Collapse component catalog">{icon(PanelLeftClose, 'panel-left-close')}</button></ToolbarControlGroup>} />
-        <p class="catalog-brand__subtitle">UI components</p>
-      </header>
-      <nav class="kui-pane__content kui-content">
-        {catalogSections.map((section) => <section class="catalog-group">
-          <ListHeader label={section.category} />
-          <div class="catalog-group__items">
-            {section.entries.map((entry) => <ListItem action="select-demo" itemId={entry.id} label={entry.name} selected={selectedDemo.value === entry.id} title={entry.description} multiline />)}
-          </div>
-        </section>)}
-        <section class="catalog-group catalog-group--ecosystem">
-          <ListHeader label="Web Awesome" count={webAwesomeCatalog.length} countLabel={`${webAwesomeCatalog.length} Web Awesome components`} toggle action="toggle-webawesome-catalog" expanded={webAwesomeExpanded.value} />
-          {webAwesomeExpanded.value && <div class="catalog-ecosystem" data-webawesome-catalog>
-            {webAwesomeCatalogSections.map((section) => <section class="catalog-ecosystem__group">
-              <h3>{section.category}</h3>
-              <div class="catalog-group__items">
-                {section.entries.map((entry) => <ListItem action="select-demo" itemId={entry.id} label={entry.name} selected={selectedDemo.value === entry.id} title={entry.description} multiline />)}
-              </div>
-            </section>)}
-          </div>}
-        </section>
-      </nav>
-    </aside>
-    <article class="catalog-detail kui-pane">
-      <header class="catalog-header kui-pane__toolbar">
-        <Toolbar label={`${selected.name} page header`} divider={false} leading={<>{sidebarCollapsed.value && <ToolbarControlGroup appearance="borderless" single><button type="button" data-action="toggle-catalog-sidebar" aria-label="Expand component catalog">{icon(PanelLeftOpen, 'panel-left-open')}</button></ToolbarControlGroup>}<ToolbarControlGroup appearance="borderless" className="catalog-header__identity"><h2>{selected.name}</h2></ToolbarControlGroup></>} trailing={<div class="catalog-header__actions">{isRecipe && <ToolbarControlGroup appearance="borderless" single buttonAppearance="push"><button type="button" data-action="toggle-recipe-notes" aria-label={recipeNotesVisible.value ? 'Hide recipe notes' : 'Show recipe notes'} aria-pressed={String(recipeNotesVisible.value)}>{icon(StickyNote, 'sticky-note')}</button></ToolbarControlGroup>}<ToolbarControlGroup className="catalog-settings" label="Catalog display settings"><button type="button" data-action="toggle-theme" aria-label={`Use ${nextTheme} theme`} data-effective-theme={effectiveTheme.value}>{nextTheme === 'dark' ? icon(Moon, 'moon') : icon(Sun, 'sun')}<span>{nextTheme === 'dark' ? 'Dark' : 'Light'}</span></button><button type="button" data-action="toggle-contrast" aria-pressed={String(increasedContrast.value)}>{icon(Contrast, 'contrast')}<span>Contrast</span></button><button type="button" data-action="toggle-motion" aria-pressed={String(reducedMotion.value)}>{icon(ZapOff, 'zap-off')}<span>Reduce motion</span></button></ToolbarControlGroup></div>} />
-        <p class="catalog-header__description kui-content-item">{selected.description}</p>
-      </header>
-      <section class="catalog-stage kui-pane__content" aria-label={`${selected.name} preview`} data-recipe-notes-visible={String(isRecipe && recipeNotesVisible.value)}>
-        <div class="catalog-canvas" data-demo-mode={selected.source === 'kerf' && selected.kind === 'component' ? 'component' : 'composition'}><Stage /><div class="demo-overlay" data-demo-overlay data-morph-skip-children aria-hidden="true" /></div>
-      </section>
-      <footer class="catalog-footer kui-pane__footer">
-        <div class="catalog-footer__status"><output class="catalog-log" aria-live="polite">{actionLog.value}</output>{selected.id === 'resize' && <span class="catalog-footer__metric"><span>Committed width</span><strong data-region-size>{regionSize.value}px</strong></span>}<span>{selected.source === 'webawesome' ? 'Web Awesome component · Kerf theme' : selected.kind === 'component' ? 'Kerf first-class component · production CSS' : 'Kerf composition · production CSS'}</span></div>
-        <Toolbar label={`${selected.name} resources`} divider={false} leading={<nav class="catalog-resources" aria-label={`Reference links for ${selected.name}`}><ToolbarControlGroup className="catalog-footer__resource-group" label={`${selected.name} resources`}><a class="catalog-resource" data-catalog-resource="source" href={catalogRepositoryHref(selected.demoSource)} target="_blank" rel="noopener noreferrer" aria-label={`${selected.name}: View demo source (opens in new tab)`}>{icon(ExternalLink, 'external-link')}<span>Demo source</span><code>{selected.demoSource}</code></a>{selected.componentSource ? <a class="catalog-resource" data-catalog-resource="component-source" href={catalogRepositoryHref(selected.componentSource)} target="_blank" rel="noopener noreferrer" aria-label={`${selected.name}: View component source (opens in new tab)`}>{icon(ExternalLink, 'external-link')}<span>Component source</span><code>{selected.componentSource}</code></a> : <></>}<a class="catalog-resource" data-catalog-resource="guidance" href={catalogRepositoryHref(selected.documentation)} target="_blank" rel="noopener noreferrer" aria-label={`${selected.name}: ${selected.source === 'webawesome' ? 'Read Kerf integration guidance' : 'Read guidance'} (opens in new tab)`}>{icon(ExternalLink, 'external-link')}<span>{selected.source === 'webawesome' ? 'Integration guidance' : 'Guidance'}</span><code>{selected.documentation}</code></a></ToolbarControlGroup></nav>} trailing={<DemoRelationships entry={selected} />} />
-      </footer>
-    </article>
-  </main>;
+  const statusLabel = selected.source === 'webawesome' ? 'Web Awesome component · Kerf theme' : selected.kind === 'component' ? 'Kerf first-class component · production CSS' : 'Kerf composition · production CSS';
+  return <Catalog
+    className="demo-catalog"
+    brand={{ title: 'Kerf', subtitle: 'UI components', logoUrl: kerfLogoUrl }}
+    sections={kuiCatalogSections}
+    secondarySections={{ label: 'Web Awesome', collapsible: true, expanded: webAwesomeExpanded.value, sections: kuiWebAwesomeSections }}
+    active={selectedDemo.value}
+    collapsed={sidebarCollapsed.value}
+    theme={effectiveTheme.value === 'dark' ? 'dark' : 'light'}
+    selectAction="select-demo"
+    toggleSidebarAction="toggle-catalog-sidebar"
+    toggleThemeAction="toggle-theme"
+    toggleSecondaryAction="toggle-webawesome-catalog"
+    headerActions={<>{isRecipe ? <ToolbarControlGroup appearance="borderless" single buttonAppearance="push"><button type="button" data-action="toggle-recipe-notes" aria-label={recipeNotesVisible.value ? 'Hide recipe notes' : 'Show recipe notes'} aria-pressed={String(recipeNotesVisible.value)}>{icon(StickyNote, 'sticky-note')}</button></ToolbarControlGroup> : <></>}<ToolbarControlGroup className="catalog-settings" label="Catalog display settings"><button type="button" data-action="toggle-contrast" aria-pressed={String(increasedContrast.value)}>{icon(Contrast, 'contrast')}<span>Contrast</span></button><button type="button" data-action="toggle-motion" aria-pressed={String(reducedMotion.value)}>{icon(ZapOff, 'zap-off')}<span>Reduce motion</span></button></ToolbarControlGroup></>}
+    status={<><output class="catalog-log" aria-live="polite">{actionLog.value}</output>{selected.id === 'resize' ? <span class="catalog-footer__metric"><span>Committed width</span><strong data-region-size>{regionSize.value}px</strong></span> : <></>}<span>{statusLabel}</span></>}
+    content={<div class="demo-stage-inner" data-demo-mode={selected.source === 'kerf' && selected.kind === 'component' ? 'component' : 'composition'} data-recipe-notes-visible={String(isRecipe && recipeNotesVisible.value)}><Stage /><div class="demo-overlay" data-demo-overlay data-morph-skip-children aria-hidden="true" /></div>}
+  />;
 });
 
 if (findCatalogEntry(initialDemo)?.source === 'webawesome') revealSelectedSidebarItem(initialDemo, 'center');
@@ -709,21 +697,11 @@ const stopActions = delegateActions(app, 'click', {
   'toggle-disclosure': () => { disclosureOpen.value = !disclosureOpen.value; actionLog.value = disclosureOpen.value ? 'Disclosure opened' : 'Disclosure closed'; },
   'toggle-menu-tools': () => { menuToolsOpen.value = !menuToolsOpen.value; actionLog.value = menuToolsOpen.value ? 'Tools opened' : 'Tools closed'; },
   'toggle-custom-disclosure': () => { customDisclosureOpen.value = !customDisclosureOpen.value; actionLog.value = customDisclosureOpen.value ? 'Custom disclosure opened' : 'Custom disclosure closed'; },
-  'select-demo': (_event, element) => {
-    const id = element.getAttribute('data-item-id');
-    if (id) selectDemo(id);
-  },
   'recipe-action': (_event, element) => {
     const id = selectedDemo.value;
     if (!isRecipeId(id)) return;
     const target = element as HTMLElement;
     recipeControllers.get(id)?.action(target.dataset.recipeCommand ?? '', target);
-  },
-  'toggle-webawesome-catalog': () => { webAwesomeExpanded.value = !webAwesomeExpanded.value; actionLog.value = webAwesomeExpanded.value ? 'Web Awesome catalog expanded' : 'Web Awesome catalog collapsed'; },
-  'toggle-catalog-sidebar': () => {
-    sidebarCollapsed.value = !sidebarCollapsed.value;
-    actionLog.value = sidebarCollapsed.value ? 'Component catalog collapsed' : 'Component catalog expanded';
-    window.requestAnimationFrame(() => document.querySelector<HTMLButtonElement>(`[aria-label="${sidebarCollapsed.value ? 'Expand' : 'Collapse'} component catalog"]`)?.focus());
   },
   'toggle-recipe-notes': () => { recipeNotesVisible.value = !recipeNotesVisible.value; actionLog.value = recipeNotesVisible.value ? 'Recipe notes shown' : 'Recipe notes hidden'; },
   'show-wa-dialog': () => { actionLog.value = 'Dialog opened'; const dialog = document.querySelector<HTMLElement & { open: boolean }>('#catalog-wa-dialog'); if (dialog) dialog.open = true; },
@@ -826,12 +804,6 @@ const stopActions = delegateActions(app, 'click', {
     actionLog.value = 'Find cleared';
   },
   'cycle-tone': () => { const tones = ['neutral', 'info', 'success', 'warning', 'danger'] as const; bannerTone.value = tones[(tones.indexOf(bannerTone.value) + 1) % tones.length]!; actionLog.value = `Banner tone: ${bannerTone.value}`; },
-  'toggle-theme': () => {
-    explicitTheme = oppositeDemoTheme(effectiveTheme.value);
-    applyDemoTheme(document.documentElement, explicitTheme);
-    effectiveTheme.value = explicitTheme;
-    actionLog.value = `${explicitTheme === 'dark' ? 'Dark' : 'Light'} theme on`;
-  },
   'toggle-contrast': () => { increasedContrast.value = !increasedContrast.value; document.documentElement.classList.toggle('demo-contrast', increasedContrast.value); actionLog.value = increasedContrast.value ? 'Increased contrast on' : 'Increased contrast off'; },
   'toggle-motion': () => { reducedMotion.value = !reducedMotion.value; document.documentElement.classList.toggle('demo-reduced-motion', reducedMotion.value); actionLog.value = reducedMotion.value ? 'Reduced motion on' : 'Reduced motion off'; },
   'log-add': () => { actionLog.value = 'Add action requested'; },
@@ -860,6 +832,25 @@ const stopActions = delegateActions(app, 'click', {
   'log-danger': () => { actionLog.value = 'Danger banner action'; },
 });
 
+const stopCatalog = wireCatalog(app, {
+  onSelect: (id) => selectDemo(id),
+  onToggleSidebar: () => {
+    sidebarCollapsed.value = !sidebarCollapsed.value;
+    actionLog.value = sidebarCollapsed.value ? 'Component catalog collapsed' : 'Component catalog expanded';
+    window.requestAnimationFrame(() => document.querySelector<HTMLButtonElement>(`[aria-label="${sidebarCollapsed.value ? 'Expand' : 'Collapse'} Kerf catalog"]`)?.focus());
+  },
+  onToggleTheme: () => {
+    explicitTheme = oppositeDemoTheme(effectiveTheme.value);
+    applyDemoTheme(document.documentElement, explicitTheme);
+    effectiveTheme.value = explicitTheme;
+    actionLog.value = `${explicitTheme === 'dark' ? 'Dark' : 'Light'} theme on`;
+  },
+  onToggleSecondary: () => { webAwesomeExpanded.value = !webAwesomeExpanded.value; actionLog.value = webAwesomeExpanded.value ? 'Web Awesome catalog expanded' : 'Web Awesome catalog collapsed'; },
+  selectAction: 'select-demo',
+  toggleSidebarAction: 'toggle-catalog-sidebar',
+  toggleThemeAction: 'toggle-theme',
+  toggleSecondaryAction: 'toggle-webawesome-catalog',
+});
 const stopResize = wireResizableRegions(app, { onCommit: ({ id, size }) => {
   if (id.startsWith('recipe-') && isRecipeId(selectedDemo.value)) recipeControllers.get(selectedDemo.value)?.resize?.(id, size);
   else { regionSize.value = size; actionLog.value = `Panel resized to ${size}px`; }
@@ -871,7 +862,7 @@ const stopSelect = delegate(app, 'change', 'wa-select', (_event, element) => {
 // Wire the active recipe's NavStack (slide animation + back control). The
 // nav-stack element persists across pushes/pops, so we only re-wire when the
 // selected recipe (or its freshly-loaded controller) changes.
-const overlayCanvas = app.querySelector<HTMLElement>('.catalog-canvas');
+const overlayCanvas = app.querySelector<HTMLElement>('.kui-catalog__canvas');
 const overlayLayer = app.querySelector<HTMLElement>('[data-demo-overlay]');
 const componentOverlay = overlayCanvas && overlayLayer ? createComponentOverlay(overlayCanvas, overlayLayer) : null;
 const stopOverlayEffect = effect(() => {
@@ -892,7 +883,7 @@ const stopRecipeNavEffect = effect(() => {
     stopRecipeNav = null;
     if (!isRecipeId(id)) return;
     const controller = recipeControllers.get(id);
-    const canvas = document.querySelector<HTMLElement>('.catalog-canvas');
+    const canvas = document.querySelector<HTMLElement>('.kui-catalog__canvas');
     if (controller && canvas?.querySelector('[data-component="nav-stack"]')) {
       stopRecipeNav = wireNavStack(canvas, { onBack: () => controller.action('nav-back', canvas) });
     }
@@ -938,10 +929,6 @@ const stopListActionRowDoubleClick = delegate(app, 'dblclick', '[data-component=
 const stopListActionRowContextMenu = delegate(app, 'contextmenu', '[data-component="list-action-row"] > [data-action="select-list-action-row"]', (event, element) => {
   event.preventDefault();
   actionLog.value = `Context menu for ${(element as HTMLElement).dataset.itemId ?? 'row'} primary`;
-});
-const stopRelationships = delegate(app, 'change', '[name="related-component"]', (_event, element) => {
-  const value = (element as HTMLElement & { value?: string }).value;
-  if (value) selectDemo(value);
 });
 const updateAnimationSetting = (element: Element): void => {
   const demo = animationDemoFrom(element);
@@ -991,4 +978,4 @@ const syncSystemTheme = (event: MediaQueryListEvent): void => {
 };
 systemDarkTheme.addEventListener('change', syncSystemTheme);
 
-window.addEventListener('pagehide', () => { stopActions(); stopResize(); stopSelect(); componentOverlay?.dispose(); stopOverlayEffect(); stopRecipeNav?.(); stopRecipeNavEffect(); stopRecipeChanges(); stopRecipeInputs(); stopRecipeDialogs(); stopTokenSearch(); stopToolbarFind(); stopTokenSearchSubmits(); stopListItemDragOver(); stopListItemDrop(); stopListActionRowDoubleClick(); stopListActionRowContextMenu(); stopRelationships(); stopAnimationSelects(); stopAnimationRanges(); stopAnimationEvents.forEach((dispose) => dispose()); stopIntersectionObserver(); stopMutationObserver(); stopResizeObserver(); stopTabBars(); systemDarkTheme.removeEventListener('change', syncSystemTheme); }, { once: true });
+window.addEventListener('pagehide', () => { stopActions(); stopCatalog(); stopResize(); stopSelect(); componentOverlay?.dispose(); stopOverlayEffect(); stopRecipeNav?.(); stopRecipeNavEffect(); stopRecipeChanges(); stopRecipeInputs(); stopRecipeDialogs(); stopTokenSearch(); stopToolbarFind(); stopTokenSearchSubmits(); stopListItemDragOver(); stopListItemDrop(); stopListActionRowDoubleClick(); stopListActionRowContextMenu(); stopAnimationSelects(); stopAnimationRanges(); stopAnimationEvents.forEach((dispose) => dispose()); stopIntersectionObserver(); stopMutationObserver(); stopResizeObserver(); stopTabBars(); systemDarkTheme.removeEventListener('change', syncSystemTheme); }, { once: true });

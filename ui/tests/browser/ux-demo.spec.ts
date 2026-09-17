@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-import { catalog, catalogRepositoryHref, catalogSections, kerfCatalog, webAwesomeCatalog } from '../../ux-demo/catalog.js';
+import { catalog, catalogRepositoryHref, catalogSections, kerfCatalog } from '../../ux-demo/catalog.js';
 
 test('theme action follows the effective OS appearance and explicitly switches either direction', async ({ page, browserName }) => {
   await page.emulateMedia({ colorScheme: 'light' });
@@ -8,12 +8,12 @@ test('theme action follows the effective OS appearance and explicitly switches e
 
   const themeButton = page.locator('[data-action="toggle-theme"]');
   const lightBackground = await page.locator('body').evaluate((element) => window.getComputedStyle(element).backgroundColor);
-  await expect(themeButton).toHaveAttribute('data-effective-theme', 'light');
+  await expect(themeButton).toHaveAttribute('data-theme-preview', 'light');
   await expect(themeButton).toHaveAttribute('aria-label', 'Use dark theme');
   await expect(themeButton).not.toHaveAttribute('aria-pressed', /.*/);
 
   await page.emulateMedia({ colorScheme: 'dark' });
-  await expect(themeButton).toHaveAttribute('data-effective-theme', 'dark');
+  await expect(themeButton).toHaveAttribute('data-theme-preview', 'dark');
   await expect(themeButton).toHaveAttribute('aria-label', 'Use light theme');
   await expect(themeButton).toContainText('Light');
   await expect(page.locator('html')).not.toHaveClass(/demo-(?:light|dark)/);
@@ -21,7 +21,7 @@ test('theme action follows the effective OS appearance and explicitly switches e
   expect(darkBackground).not.toBe(lightBackground);
 
   await themeButton.click();
-  await expect(themeButton).toHaveAttribute('data-effective-theme', 'light');
+  await expect(themeButton).toHaveAttribute('data-theme-preview', 'light');
   await expect(themeButton).toHaveAttribute('aria-label', 'Use dark theme');
   await expect(themeButton).toContainText('Dark');
   await expect(page.locator('html')).toHaveClass(/demo-light/);
@@ -32,20 +32,20 @@ test('theme action follows the effective OS appearance and explicitly switches e
 
   await page.emulateMedia({ colorScheme: 'light' });
   await page.emulateMedia({ colorScheme: 'dark' });
-  await expect(themeButton).toHaveAttribute('data-effective-theme', 'light');
+  await expect(themeButton).toHaveAttribute('data-theme-preview', 'light');
   await expect(page.locator('html')).toHaveClass(/demo-light/);
   await expect.poll(() => page.locator('body').evaluate((element) => window.getComputedStyle(element).backgroundColor)).toBe(lightBackground);
 
   await page.reload();
-  await expect(themeButton).toHaveAttribute('data-effective-theme', 'dark');
+  await expect(themeButton).toHaveAttribute('data-theme-preview', 'dark');
   await expect(themeButton).toHaveAttribute('aria-label', 'Use light theme');
   await expect(page.locator('html')).not.toHaveClass(/demo-(?:light|dark)/);
 
   await page.emulateMedia({ colorScheme: 'light' });
-  await expect(themeButton).toHaveAttribute('data-effective-theme', 'light');
+  await expect(themeButton).toHaveAttribute('data-theme-preview', 'light');
   await expect(themeButton).toHaveAttribute('aria-label', 'Use dark theme');
   await themeButton.click();
-  await expect(themeButton).toHaveAttribute('data-effective-theme', 'dark');
+  await expect(themeButton).toHaveAttribute('data-theme-preview', 'dark');
   await expect(page.locator('html')).toHaveClass(/demo-dark/);
   await expect(page.locator('html')).not.toHaveClass(/demo-light/);
   await expect(page.locator('.catalog-log')).toHaveText('Dark theme on');
@@ -62,7 +62,7 @@ test('omits the removed command-palette recipe and safely falls back from its st
   const openRemainingRecipes = async (width: number, height: number) => {
     await page.setViewportSize({ width, height });
     await page.goto('/?component=recipe-compact-toolbar');
-    const recipes = page.locator('.catalog-group').filter({ has: page.getByText('Recipes', { exact: true }) });
+    const recipes = page.locator('.kui-catalog__group').filter({ has: page.getByText('Recipes', { exact: true }) });
     const rows = recipes.locator('[data-component="list-item"]');
     await expect(rows).toHaveCount(9);
     await expect(rows).toHaveText([
@@ -129,9 +129,9 @@ test('slides the catalog sidebar out and back via a composited transform, not a 
   await page.setViewportSize({ width: 1200, height: 900 });
   await page.goto('/');
 
-  const shell = page.locator('.catalog-shell');
-  const sidebar = page.locator('.catalog-sidebar');
-  const collapse = page.locator('[data-action="toggle-catalog-sidebar"][aria-label="Collapse component catalog"]');
+  const shell = page.locator('.kui-catalog');
+  const sidebar = page.locator('.kui-catalog__sidebar');
+  const collapse = page.locator('[data-action="toggle-catalog-sidebar"][aria-label="Collapse Kerf catalog"]');
 
   // Expanded: no offset, and the slide rides on a transform transition (so the
   // width can snap instantly while the panel animates — the composited path).
@@ -158,7 +158,7 @@ test('slides the catalog sidebar out and back via a composited transform, not a 
   if (browserName === 'chromium') await page.screenshot({ path: 'test-results/catalog-sidebar-collapsed.png' });
 
   // Expanding restores it: visible again and back to the identity transform.
-  await page.locator('[data-action="toggle-catalog-sidebar"][aria-label="Expand component catalog"]').click();
+  await page.locator('[data-action="toggle-catalog-sidebar"][aria-label="Expand Kerf catalog"]').click();
   await expect(shell).toHaveAttribute('data-sidebar-collapsed', 'false');
   await expect(sidebar).toHaveCSS('visibility', 'visible');
   await expect.poll(() => sidebar.evaluate((element) => new DOMMatrixReadOnly(window.getComputedStyle(element).transform).e)).toBe(0);
@@ -239,7 +239,7 @@ test('paints a selected wa-button control on ::part(base), not the outer host bo
   // land on part(base) (matching the pill) — not the host, which would overflow the
   // group's rounded border as an oversized square (KF-5BDDQ9).
   const measured = await page.evaluate(async () => {
-    const host = document.querySelector('.catalog-canvas') ?? document.body;
+    const host = document.querySelector('.kui-catalog__canvas') ?? document.body;
     const group = document.createElement('div');
     group.className = 'kui-toolbar-control-group';
     group.setAttribute('data-single', 'false');
@@ -292,8 +292,9 @@ test('renders non-composition demos on the grid with a bounds/margin overlay, an
   // component sits on the grid, and the overlay marks each component's outer
   // bound (gray) and non-zero default margins (orange).
   await page.goto('/?component=list-header');
-  const canvas = page.locator('.catalog-canvas');
-  await expect(canvas).toHaveAttribute('data-demo-mode', 'component');
+  const canvas = page.locator('.kui-catalog__canvas');
+  const stageInner = page.locator('.demo-stage-inner');
+  await expect(stageInner).toHaveAttribute('data-demo-mode', 'component');
   const wrapper = page.locator('.demo-list-demo').first();
   await expect.poll(() => wrapper.evaluate((el) => window.getComputedStyle(el).backgroundColor)).toBe('rgba(0, 0, 0, 0)');
   const overlay = page.locator('[data-demo-overlay]');
@@ -307,20 +308,20 @@ test('renders non-composition demos on the grid with a bounds/margin overlay, an
   // transparent background) must not be marked, so there are exactly two bounds
   // and zero margin bands — not four bounds and label side-bands.
   await page.goto('/?component=lucide-icon');
-  await expect(canvas).toHaveAttribute('data-demo-mode', 'component');
+  await expect(stageInner).toHaveAttribute("data-demo-mode", 'component');
   await expect.poll(() => overlay.locator('.demo-overlay__bound').count()).toBe(2);
   await expect.poll(() => overlay.locator('.demo-overlay__margin').count()).toBe(0);
 
   // A composition demo keeps its layout and gets no overlay.
   await page.goto('/?component=list');
-  await expect(canvas).toHaveAttribute('data-demo-mode', 'composition');
+  await expect(stageInner).toHaveAttribute("data-demo-mode", 'composition');
   await expect.poll(() => overlay.locator('.demo-overlay__bound, .demo-overlay__margin').count()).toBe(0);
 });
 
 test('keeps a toolbar trailing zone flush right when leading and center are empty', async ({ page }) => {
   await page.goto('/?component=toolbar');
   const gaps = await page.evaluate(() => {
-    const host = document.querySelector('.catalog-canvas') ?? document.body;
+    const host = document.querySelector('.kui-catalog__canvas') ?? document.body;
     const measure = (hasCenter: string, leading: string): number => {
       const bar = document.createElement('header');
       bar.className = 'kui-toolbar';
@@ -365,14 +366,14 @@ test('aligns the layout demo action buttons with the card border above them', as
 
 test('links catalog details to their first-party source and existing guidance', async ({ page, browserName }) => {
   for (const [id, name, sourcePath, componentPath, documentationPath, guidanceLabel] of [
-    ['toolbar', 'Toolbar', 'ui/ux-demo/main.tsx', 'ui/src/toolbar.tsx', 'ui/docs/component-selection.md', 'Read guidance'],
-    ['recipe-app-shell', 'Desktop application shell', 'ui/ux-demo/recipes/app-shell.tsx', undefined, 'ui/docs/recipes.md#desktop-application-shell', 'Read guidance'],
-    ['wa-button', 'Button', 'ui/ux-demo/webawesome-demos.tsx', undefined, 'ui/docs/webawesome-theme.md#coverage', 'Read Kerf integration guidance'],
+    ['toolbar', 'Toolbar', 'ui/ux-demo/main.tsx', 'ui/src/toolbar.tsx', 'ui/docs/component-selection.md', 'Guidance'],
+    ['recipe-app-shell', 'Desktop application shell', 'ui/ux-demo/recipes/app-shell.tsx', undefined, 'ui/docs/recipes.md#desktop-application-shell', 'Guidance'],
+    ['wa-button', 'Button', 'ui/ux-demo/webawesome-demos.tsx', undefined, 'ui/docs/webawesome-theme.md#coverage', 'Integration guidance'],
   ] as const) {
     await page.goto(`/?component=${id}`);
-    const resources = page.getByRole('navigation', { name: `Reference links for ${name}` });
-    const source = resources.getByRole('link', { name: `${name}: View demo source (opens in new tab)` });
-    const componentSource = resources.locator('[data-catalog-resource="component-source"]');
+    const resources = page.getByRole('navigation', { name: `${name} resources` });
+    const source = resources.getByRole('link', { name: `${name}: Demo source (opens in new tab)` });
+    const componentSource = resources.getByRole("link", { name: `${name}: Component source (opens in new tab)` });
     const guidance = resources.getByRole('link', { name: `${name}: ${guidanceLabel} (opens in new tab)` });
     await expect(source).toHaveAttribute('href', catalogRepositoryHref(sourcePath));
     await expect(guidance).toHaveAttribute('href', catalogRepositoryHref(documentationPath));
@@ -401,23 +402,23 @@ test('links catalog details to their first-party source and existing guidance', 
     await page.setViewportSize({ width: layout.width, height: layout.height });
     await page.goto(`/?component=${isRecipe ? 'recipe-list-detail-dialog' : 'toolbar'}`);
     if (layout.rootFontSize) await page.locator('html').evaluate((element, size) => { element.style.fontSize = size; }, layout.rootFontSize);
-    const resources = page.getByRole('navigation', { name: `Reference links for ${isRecipe ? 'List-detail dialog' : 'Toolbar'}` });
-    const source = resources.locator('[data-catalog-resource="source"]');
-    const guidance = resources.locator('[data-catalog-resource="guidance"]');
+    const resources = page.getByRole('navigation', { name: `${isRecipe ? 'List-detail dialog' : 'Toolbar'} resources` });
+    const source = resources.locator(".kui-catalog__resource").first();
+    const guidance = resources.locator(".kui-catalog__resource").last();
     await expect(resources).toBeVisible();
     await source.focus();
     await expect(source).toBeFocused();
     const geometry = await page.evaluate(() => ({
       documentOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
-      resourceOverflowX: window.getComputedStyle(document.querySelector<HTMLElement>('.catalog-footer__resource-group')!).overflowX,
-      footerSections: [...document.querySelectorAll<HTMLElement>('.catalog-footer .kui-toolbar__leading, .catalog-footer .kui-toolbar__trailing')].map((section) => ({
+      resourceOverflowX: window.getComputedStyle(document.querySelector<HTMLElement>('.kui-catalog__resource-group')!).overflowX,
+      footerSections: [...document.querySelectorAll<HTMLElement>('.kui-catalog__footer .kui-toolbar__leading, .kui-catalog__footer .kui-toolbar__trailing')].map((section) => ({
         top: section.getBoundingClientRect().top,
         bottom: section.getBoundingClientRect().bottom,
         left: section.getBoundingClientRect().left,
         right: section.getBoundingClientRect().right,
         width: section.getBoundingClientRect().width,
       })),
-      links: [...document.querySelectorAll<HTMLElement>('.catalog-resource')].map((link) => {
+      links: [...document.querySelectorAll<HTMLElement>('.kui-catalog__resource')].map((link) => {
         const linkRect = link.getBoundingClientRect();
         const hiddenLabelRect = link.querySelector<HTMLElement>('code')!.getBoundingClientRect();
         return {
@@ -731,14 +732,14 @@ test('applies shared pane and content-item geometry across responsive and 200% z
         itemPadding: number('.demo-layout .kui-content-item', 'padding-left'),
         itemBorder: number('.demo-layout .kui-content-item', 'border-left-width'),
         itemRadius: number('.demo-layout .kui-content-item', 'border-top-left-radius'),
-        scrollOwners: document.querySelectorAll('.catalog-sidebar .kui-pane__content').length,
-        sidebarOverflow: window.getComputedStyle(document.querySelector<HTMLElement>('.catalog-sidebar .kui-pane__content')!).overflowY,
+        scrollOwners: document.querySelectorAll('.kui-catalog__sidebar .kui-pane__content').length,
+        sidebarOverflow: window.getComputedStyle(document.querySelector<HTMLElement>('.kui-catalog__sidebar .kui-pane__content')!).overflowY,
         horizontalOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
       };
     });
     expect(geometry).toMatchObject({ panePadding: 0, contentGap: 24 * layout.scale, itemMargin: 8 * layout.scale, itemPadding: 8 * layout.scale, itemBorder: 1, itemRadius: 1 + 11 * layout.scale, scrollOwners: 1, sidebarOverflow: 'auto' });
     expect(geometry.horizontalOverflow).toBeLessThanOrEqual(1);
-    await expect(page.locator('.catalog-group__items [data-component="list-item"]').first()).toHaveAttribute('data-multiline', 'true');
+    await expect(page.locator('.kui-catalog__items [data-component="list-item"]').first()).toHaveAttribute('data-multiline', 'true');
 
     if (browserName === 'chromium') await page.screenshot({ path: `test-results/layout-${layout.name}.png`, fullPage: true });
   }
@@ -772,11 +773,11 @@ test('uses a collapsible pane shell, toolbar page chrome, and opt-in floating re
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/?component=recipe-app-shell');
 
-  const shell = page.locator('.catalog-shell');
-  const sidebar = page.locator('.catalog-sidebar');
-  const pageHeader = page.locator('.catalog-header');
-  const stage = page.locator('.catalog-stage');
-  const footer = page.locator('.catalog-footer');
+  const shell = page.locator('.kui-catalog');
+  const sidebar = page.locator('.kui-catalog__sidebar');
+  const pageHeader = page.locator('.kui-catalog__header');
+  const stage = page.locator('.kui-catalog__stage');
+  const footer = page.locator('.kui-catalog__footer');
   const note = stage.locator('.kui-recipe__ownership');
 
   await expect(sidebar.getByRole('heading', { level: 1, name: 'Kerf' })).toBeVisible();
@@ -785,20 +786,20 @@ test('uses a collapsible pane shell, toolbar page chrome, and opt-in floating re
   await expect(pageHeader.locator(':scope > [data-component="toolbar"]')).toBeVisible();
   await expect(pageHeader.getByRole('heading', { level: 2, name: 'Desktop application shell' })).toBeVisible();
   await expect(pageHeader.getByText('Recipes', { exact: true })).toHaveCount(0);
-  await expect(footer.getByRole('navigation', { name: 'Reference links for Desktop application shell' })).toBeVisible();
+  await expect(footer.getByRole('navigation', { name: 'Desktop application shell resources' })).toBeVisible();
   await expect(footer.locator('.catalog-log')).toHaveText('Catalog ready');
   await expect(note).toBeHidden();
-  await expect(stage).toHaveAttribute('data-recipe-notes-visible', 'false');
+  await expect(page.locator(".demo-stage-inner")).toHaveAttribute("data-recipe-notes-visible", 'false');
 
   const shellGeometry = await page.evaluate(() => {
     const style = (selector: string) => window.getComputedStyle(document.querySelector<HTMLElement>(selector)!);
-    const stageStyle = style('.catalog-stage');
+    const stageStyle = style('.kui-catalog__stage');
     return {
-      headerBackground: style('.catalog-header').backgroundColor,
-      headerBorder: Number.parseFloat(style('.catalog-header').borderBottomWidth),
+      headerBackground: style('.kui-catalog__header').backgroundColor,
+      headerBorder: Number.parseFloat(style('.kui-catalog__header').borderBottomWidth),
       stageBackgroundImage: stageStyle.backgroundImage,
-      footerBackground: style('.catalog-footer').backgroundColor,
-      footerBorder: Number.parseFloat(style('.catalog-footer').borderTopWidth),
+      footerBackground: style('.kui-catalog__footer').backgroundColor,
+      footerBorder: Number.parseFloat(style('.kui-catalog__footer').borderTopWidth),
     };
   });
   expect(shellGeometry.headerBackground).not.toBe('rgba(0, 0, 0, 0)');
@@ -808,18 +809,18 @@ test('uses a collapsible pane shell, toolbar page chrome, and opt-in floating re
   expect(shellGeometry.footerBorder).toBe(1);
 
   await page.getByRole('button', { name: 'Show recipe notes' }).click();
-  await expect(stage).toHaveAttribute('data-recipe-notes-visible', 'true');
+  await expect(page.locator(".demo-stage-inner")).toHaveAttribute("data-recipe-notes-visible", 'true');
   await expect(note).toBeVisible();
   await expect(note).toHaveCSS('position', 'absolute');
   await expect(page.locator('.catalog-log')).toHaveText('Recipe notes shown');
 
-  await page.getByRole('button', { name: 'Collapse component catalog' }).click();
+  await page.getByRole('button', { name: 'Collapse Kerf catalog' }).click();
   await expect(shell).toHaveAttribute('data-sidebar-collapsed', 'true');
   await expect(sidebar).toBeHidden();
-  await expect(pageHeader.getByRole('button', { name: 'Expand component catalog' })).toBeVisible();
-  await expect.poll(async () => (await page.locator('.catalog-detail').boundingBox())?.x ?? -1).toBeLessThanOrEqual(1);
+  await expect(pageHeader.getByRole('button', { name: 'Expand Kerf catalog' })).toBeVisible();
+  await expect.poll(async () => (await page.locator('.kui-catalog__detail').boundingBox())?.x ?? -1).toBeLessThanOrEqual(1);
   if (browserName === 'chromium') await page.screenshot({ path: 'test-results/catalog-application-shell-collapsed-wide.png', fullPage: true });
-  await page.getByRole('button', { name: 'Expand component catalog' }).click();
+  await page.getByRole('button', { name: 'Expand Kerf catalog' }).click();
   await expect(shell).toHaveAttribute('data-sidebar-collapsed', 'false');
   await expect(sidebar).toBeVisible();
   await expect(sidebar.locator(':scope > nav')).toBeVisible();
@@ -1551,17 +1552,16 @@ test('observer specimens expose visible, user-driven events', async ({ page, bro
 test('catalog routes every production component family and supports its stateful controls', async ({ page, browserName }) => {
   test.setTimeout(90_000);
   await page.goto('/');
-  await expect(page.locator('.catalog-sidebar [data-component="list-header"]')).toHaveCount(catalogSections.length + 1);
-  await expect(page.locator('.catalog-sidebar [data-component="list-item"]')).toHaveCount(kerfCatalog.length);
-  const ecosystemToggle = page.getByRole('button', { name: `Web Awesome, ${webAwesomeCatalog.length} Web Awesome components` });
-  await expect(ecosystemToggle.locator('.kui-list-header__count')).toHaveText(String(webAwesomeCatalog.length));
+  await expect(page.locator('.kui-catalog__sidebar [data-component="list-header"]')).toHaveCount(catalogSections.length + 1);
+  await expect(page.locator('.kui-catalog__sidebar [data-component="list-item"]')).toHaveCount(kerfCatalog.length);
+  const ecosystemToggle = page.getByRole('button', { name: "Web Awesome", exact: true });
   await expect(ecosystemToggle).toHaveAttribute('aria-expanded', 'false');
   await ecosystemToggle.click();
   await expect(ecosystemToggle).toHaveAttribute('aria-expanded', 'true');
-  await expect(page.locator('.catalog-sidebar [data-component="list-item"]')).toHaveCount(catalog.length);
-  await expect(page.locator('[data-webawesome-catalog] h3')).toHaveText(['Actions', 'Forms', 'Layout', 'Navigation', 'Feedback', 'Media', 'Helpers']);
+  await expect(page.locator('.kui-catalog__sidebar [data-component="list-item"]')).toHaveCount(catalog.length);
+  await expect(page.locator('[data-catalog-secondary] h3')).toHaveText(['Actions', 'Forms', 'Layout', 'Navigation', 'Feedback', 'Media', 'Helpers']);
   await ecosystemToggle.click();
-  await expect(page.locator('[data-webawesome-catalog]')).toHaveCount(0);
+  await expect(page.locator('[data-catalog-secondary]')).toHaveCount(0);
   await expect(page.locator('[data-demo="lucide-icon"]')).toBeVisible();
   for (const entry of catalog) {
     await page.goto(`/?component=${entry.id}`);
@@ -1569,40 +1569,40 @@ test('catalog routes every production component family and supports its stateful
     await expect(page.locator(`[${stableRouteMarker}="${entry.id}"]`)).toBeVisible();
     if (entry.source === 'webawesome') {
       await expect(page.locator(entry.id).first()).toBeAttached();
-      await expect(page.locator('[data-webawesome-catalog]')).toBeVisible();
+      await expect(page.locator('[data-catalog-secondary]')).toBeVisible();
     }
   }
 
-  await page.locator('.catalog-sidebar [data-item-id="list"]').click();
+  await page.locator('.kui-catalog__sidebar [data-item-id="list"]').click();
   await expect(page).toHaveURL(/component=list/);
   await expect(page.locator('[data-demo="list"]')).toBeVisible();
-  await expect(page.locator('.catalog-sidebar [data-item-id="list"]')).toHaveAttribute('aria-current', 'page');
-  const menuRelationships = page.locator('[data-relationships-for="list"]');
-  await expect(menuRelationships.locator('[name="related-component"]')).toHaveCount(1);
-  await expect(page.getByText('Related components', { exact: true })).toHaveCount(1);
-  await menuRelationships.locator('[name="related-component"]').click();
+  await expect(page.locator('.kui-catalog__sidebar [data-item-id="list"]')).toHaveAttribute('aria-current', 'page');
+  const menuRelationships = page.locator('[data-catalog-related]');
+  await expect(menuRelationships.locator('[name="catalog-related"]')).toHaveCount(1);
+  await expect(page.getByText('Related entries', { exact: true })).toHaveCount(1);
+  await menuRelationships.locator('[name="catalog-related"]').click();
   await expect(page.getByRole('group', { name: 'Uses' })).toBeVisible();
   await page.keyboard.press('Escape');
-  await page.locator('[name="related-component"]').evaluate((element) => {
+  await page.locator('[name="catalog-related"]').evaluate((element) => {
     const select = element as HTMLElement & { value: string };
     select.value = 'list-item';
     select.dispatchEvent(new Event('change', { bubbles: true }));
   });
   await expect(page).toHaveURL(/component=list-item/);
   await expect(page.locator('[data-demo="list-item"]')).toBeVisible();
-  await page.locator('[name="related-component"]').click();
+  await page.locator('[name="catalog-related"]').click();
   await expect(page.getByRole('group', { name: 'Used by' })).toBeVisible();
   await page.keyboard.press('Escape');
   await page.goto('/?component=resize');
-  const resizeRelationships = page.locator('[data-relationships-for="resize"]');
-  await expect(resizeRelationships.locator('[name="related-component"]')).toHaveCount(1);
-  await resizeRelationships.locator('[name="related-component"]').click();
+  const resizeRelationships = page.locator('[data-catalog-related]');
+  await expect(resizeRelationships.locator('[name="catalog-related"]')).toHaveCount(1);
+  await resizeRelationships.locator('[name="catalog-related"]').click();
   await expect(page.getByRole('group', { name: 'Used by' })).toContainText('Desktop application shell');
   await page.keyboard.press('Escape');
 
   const themeButton = page.locator('[data-action="toggle-theme"]');
   await themeButton.click();
-  await expect(themeButton).toHaveAttribute('data-effective-theme', 'dark');
+  await expect(themeButton).toHaveAttribute('data-theme-preview', 'dark');
   await expect(themeButton).toHaveAttribute('aria-label', 'Use light theme');
   await expect(page.locator('html')).toHaveClass(/demo-dark/);
   await page.locator('[data-action="toggle-contrast"]').click();
@@ -1610,7 +1610,7 @@ test('catalog routes every production component family and supports its stateful
   await page.locator('[data-action="toggle-motion"]').click();
   await expect(page.locator('html')).toHaveClass(/demo-reduced-motion/);
 
-  await page.locator('.catalog-sidebar [data-item-id="tabs"]').click();
+  await page.locator('.kui-catalog__sidebar [data-item-id="tabs"]').click();
   await expect(page.locator('[data-demo="tabs"] [data-component="tab-bar"]').first()).toHaveAttribute('data-tab-bar-id', 'focused-app-tabs');
   await expect(page.locator('[data-demo="tabs"] [data-kui-tab-list]').first()).toHaveAttribute('aria-label', 'Open documents');
   const guidelinesRoot = page.locator('[data-demo="tabs"] .kui-app-tab[data-tab-id="guidelines"]');
@@ -1629,7 +1629,7 @@ test('catalog routes every production component family and supports its stateful
   await expect(page.locator('[data-action="select-tab"][data-tab-id="library"]')).toHaveAttribute('aria-selected', 'true');
   if (browserName === 'chromium') await page.locator('[data-demo="tabs"]').screenshot({ path: 'test-results/app-tab-shared-tab-bar.png' });
 
-  await page.locator('.catalog-sidebar [data-item-id="feedback"]').click();
+  await page.locator('.kui-catalog__sidebar [data-item-id="feedback"]').click();
   await page.locator('[data-action="cycle-tone"]').click();
   await page.locator('[data-action="cycle-tone"]').click();
   await page.locator('[data-action="cycle-tone"]').click();
@@ -2306,11 +2306,11 @@ test('matches shared menu, content-item, and toolbar geometry', async ({ page, b
   expect(await paneGeometry()).toEqual(baseline);
   if (browserName === 'chromium') {
     await menu.screenshot({ path: 'test-results/pane-content-geometry-wide.png' });
-    await page.locator('[data-relationships-for="list"]').screenshot({ path: 'test-results/related-components-selector-wide.png' });
+    await page.locator('[data-catalog-related]').screenshot({ path: 'test-results/related-components-selector-wide.png' });
     await page.setViewportSize({ width: 390, height: 844 });
     expectPaneGeometry(await paneGeometry());
     await menu.screenshot({ path: 'test-results/pane-content-geometry-narrow.png' });
-    await page.locator('[data-relationships-for="list"]').screenshot({ path: 'test-results/related-components-selector-narrow.png' });
+    await page.locator('[data-catalog-related]').screenshot({ path: 'test-results/related-components-selector-narrow.png' });
     await page.setViewportSize({ width: 1440, height: 900 });
   }
   await menu.evaluate((node) => node.setAttribute('dir', 'rtl'));
@@ -2369,7 +2369,7 @@ test('renders the Hot Sheet split treatment on ResizableRegion', async ({ page, 
     const regionElement = element.querySelector<HTMLElement>('[data-component="resizable-region"]')!;
     const panelElement = element.querySelector<HTMLElement>('.demo-resize-panel')!;
     const committedElement = document.querySelector<HTMLElement>('[data-region-size]')!;
-    const statusElement = committedElement.closest<HTMLElement>('.catalog-footer__status')!;
+    const statusElement = committedElement.closest<HTMLElement>('.kui-catalog__status')!;
     const handleElement = element.querySelector<HTMLElement>('[data-kui-resize-handle]')!;
     const shellRect = element.getBoundingClientRect();
     const regionRect = regionElement.getBoundingClientRect();
@@ -2388,7 +2388,7 @@ test('renders the Hot Sheet split treatment on ResizableRegion', async ({ page, 
     };
     return {
       committedFitsFooter: contains(statusRect, committedRect),
-      committedInFooter: committedElement.closest('.catalog-footer__status') === statusElement,
+      committedInFooter: committedElement.closest('.kui-catalog__status') === statusElement,
       documentOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
       handleInsideShell: contains(shellRect, handleRect),
       panelFillsRegion: Math.abs(panelRect.top - regionRect.top) <= 1
@@ -2557,7 +2557,7 @@ test('communicates preferred Kerf patterns on ecosystem alternatives', async ({ 
     ['wa-zoomable-frame', 'Avoid for application UI; keep embedded-media behavior application-owned.'],
   ] as const) {
     await page.goto(`/?component=${route}`);
-    await expect(page.locator('.catalog-header').getByText(description, { exact: true })).toBeVisible();
+    await expect(page.locator('.kui-catalog__header').getByText(description, { exact: true })).toBeVisible();
   }
 
   if (browserName === 'chromium') {

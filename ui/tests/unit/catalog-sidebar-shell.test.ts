@@ -11,9 +11,10 @@ describe('UX catalog sidebar shell', () => {
     // `?no-inline` keeps the logo an emitted file URL — kerf's URL screening drops
     // a script-capable `data:image/svg+xml` src, so the mark must not be inlined.
     expect(source).toContain("const kerfLogoUrl = new URL('../../assets/logo.svg?no-inline', import.meta.url).href;");
-    expect(source).toContain('<img class="catalog-mark" src={kerfLogoUrl} alt="" />');
-    expect(source).toContain('</ToolbarControlGroup>} trailing=');
-    expect(source).toContain('<p class="catalog-brand__subtitle">UI components</p>');
+    // The shell is the reusable @kerfjs/ui/catalog Catalog; it renders the logo,
+    // title, and subtitle from the brand prop (the subtitle stays outside the
+    // toolbar identity by Catalog's own construction).
+    expect(source).toContain("brand={{ title: 'Kerf', subtitle: 'UI components', logoUrl: kerfLogoUrl }}");
     expect(source).not.toContain('<span class="catalog-mark" aria-hidden="true">K</span>');
   });
 
