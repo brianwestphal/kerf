@@ -29,23 +29,31 @@ function isTransparent(color: string): boolean {
 
 /**
  * A ListHeader used as an example LABEL (chrome), not a demoed component: the
- * first element child of a labeled example. A ListHeader that is itself the
- * demoed component lives in an unlabeled `.demo-stack` and is NOT a label.
+ * first element child of a `.kui-catalog-example` that is followed by a separate
+ * specimen. A ListHeader that is itself the demoed component (the ListHeader demo)
+ * is its example's only specimen — no following non-note sibling — and is NOT a
+ * label. (All example stacks now share `.kui-catalog-example-stack`, so the
+ * labeled/unlabeled distinction is read from the example's own contents.)
  */
 function isExampleLabel(el: Element): boolean {
   const parent = el.parentElement;
-  return (
-    el.classList.contains('kui-list-header') &&
-    parent?.classList.contains('demo-example') === true &&
-    parent.closest('.demo-stack--labeled') !== null &&
-    el === parent.firstElementChild
-  );
+  if (
+    !el.classList.contains('kui-list-header') ||
+    parent?.classList.contains('kui-catalog-example') !== true ||
+    el !== parent.firstElementChild
+  ) {
+    return false;
+  }
+  for (let sib = el.nextElementSibling; sib; sib = sib.nextElementSibling) {
+    if (!sib.classList.contains('kui-catalog-example__note')) return true;
+  }
+  return false;
 }
 
 /**
  * The demoed specimens to outline: the actual component in each example (not
  * its ListHeader label or note text), plus the top-level component of any demo
- * that isn't wrapped in `.demo-example` (toolbar, panel-header, resize). A
+ * that isn't wrapped in `.kui-catalog-example` (toolbar, panel-header, resize). A
  * specimen may be a bare `<svg>` (a LucideIcon) with no `data-component`, so
  * selection is positional, not attribute-based.
  */
@@ -57,15 +65,15 @@ function specimens(root: HTMLElement): Element[] {
     seen.add(el);
     result.push(el);
   };
-  for (const example of root.querySelectorAll<HTMLElement>('.demo-example')) {
+  for (const example of root.querySelectorAll<HTMLElement>('.kui-catalog-example')) {
     if (example.closest('[data-demo-overlay]') || example.closest('[data-demo-overlay-skip]')) continue;
     for (const child of example.children) {
-      if (child.classList.contains('demo-example__note') || isExampleLabel(child)) continue;
+      if (child.classList.contains('kui-catalog-example__note') || isExampleLabel(child)) continue;
       push(child);
     }
   }
   for (const element of root.querySelectorAll<HTMLElement>('[data-component]')) {
-    if (element.closest('[data-demo-overlay]') || element.closest('[data-demo-overlay-skip]') || element.closest('.demo-example')) continue;
+    if (element.closest('[data-demo-overlay]') || element.closest('[data-demo-overlay-skip]') || element.closest('.kui-catalog-example')) continue;
     const parent = element.parentElement?.closest<HTMLElement>('[data-component]');
     if (parent && root.contains(parent)) continue;
     push(element);
@@ -92,9 +100,9 @@ export function createComponentOverlay(canvas: HTMLElement, layer: HTMLElement):
     for (const element of specimens(canvas)) {
       const rect = element.getBoundingClientRect();
       const style = window.getComputedStyle(element);
-      // Exclude the demo-only alignment inset (declared as --demo-align-inset and
-      // applied as the leading margin) so it is not drawn as intrinsic margin.
-      const alignInset = px(style.getPropertyValue('--demo-align-inset'));
+      // Exclude the example alignment inset (published as --kui-catalog-example-align
+      // and applied as the leading margin) so it is not drawn as intrinsic margin.
+      const alignInset = px(style.getPropertyValue('--kui-catalog-example-align'));
       const mt = px(style.marginTop);
       const mr = px(style.marginRight);
       const mb = px(style.marginBottom);

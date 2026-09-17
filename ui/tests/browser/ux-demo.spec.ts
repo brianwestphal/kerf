@@ -189,7 +189,7 @@ test('keeps an icon-only control-group wa-button highlight at least square (min-
 
   if (browserName === 'chromium') {
     await page.locator('wa-button[aria-label="Favorite view"]').hover();
-    await page.locator('.demo-example', { has: page.locator('.kui-list-header:has-text("Button group")') }).locator('[data-component="toolbar-control-group"]').screenshot({ path: 'test-results/button-group-highlight.png' });
+    await page.locator('.kui-catalog-example', { has: page.locator('.kui-list-header:has-text("Button group")') }).locator('[data-component="toolbar-control-group"]').screenshot({ path: 'test-results/button-group-highlight.png' });
   }
 });
 
@@ -270,13 +270,13 @@ test('paints a selected wa-button control on ::part(base), not the outer host bo
 test('presents the LucideIcon modes as labeled examples that differ only in semantics', async ({ page }) => {
   await page.goto('/?component=lucide-icon');
   const demo = page.locator('[data-demo="lucide-icon"]');
-  await expect(demo).toHaveClass(/demo-stack/);
-  const examples = demo.locator('.demo-example');
+  await expect(demo).toHaveClass(/kui-catalog-example-stack/);
+  const examples = demo.locator('.kui-catalog-example');
   await expect(examples).toHaveCount(2);
   // Each example is a ListHeader label + a note + the icon (left-aligned stack).
   await expect(examples.nth(0).locator('.kui-list-header')).toHaveText(/Decorative/);
   await expect(examples.nth(1).locator('.kui-list-header')).toHaveText(/Meaningful/);
-  await expect(examples.locator('.demo-example__note')).toHaveCount(2);
+  await expect(examples.locator('.kui-catalog-example__note')).toHaveCount(2);
   // Both render the same glyph — the difference is semantics, not appearance:
   // the decorative icon is hidden from AT; the meaningful one is labeled.
   await expect(examples.nth(0).locator('svg[data-lucide]')).toHaveAttribute('aria-hidden', 'true');
@@ -982,7 +982,7 @@ test('keeps token-search focus and caret when Delete removes a controlled token'
   await page.keyboard.type('owner ');
   await expect(editor).toContainText('NOT owner is:active AND parser');
   await expect(demo.locator('output')).toContainText('1 filters · NOT owner  AND parser');
-  if (browserName === 'chromium') await demo.locator('.demo-example').first().screenshot({ path: 'test-results/token-search-field-delete-caret.png' });
+  if (browserName === 'chromium') await demo.locator('.kui-catalog-example').first().screenshot({ path: 'test-results/token-search-field-delete-caret.png' });
 });
 
 test('edits, removes, and clears controlled token search content', async ({ page, browserName }) => {
@@ -1048,7 +1048,7 @@ test('edits, removes, and clears controlled token search content', async ({ page
   expect(Math.abs(singleLine.firstLineCenter - singleLine.height / 2)).toBeLessThan(0.1);
   expect(Math.abs(singleLine.clearCenter - singleLine.height / 2)).toBeLessThan(0.1);
   await page.mouse.move(0, 0);
-  if (browserName === 'chromium') await demo.locator('.demo-example').first().screenshot({ path: 'test-results/token-search-field-alignment-single-line-wide.png' });
+  if (browserName === 'chromium') await demo.locator('.kui-catalog-example').first().screenshot({ path: 'test-results/token-search-field-alignment-single-line-wide.png' });
 
   await editor.pressSequentially(' across a deliberately long second line that proves the first-line controls stay pinned while editable content wraps naturally through the available width');
   const multiline = await alignment();
@@ -1056,7 +1056,7 @@ test('edits, removes, and clears controlled token search content', async ({ page
   expect(multiline.leadingCenter).toBeCloseTo(singleLine.leadingCenter, 1);
   expect(multiline.firstLineCenter).toBeCloseTo(singleLine.firstLineCenter, 1);
   expect(multiline.clearCenter).toBeCloseTo(singleLine.clearCenter, 1);
-  if (browserName === 'chromium') await demo.locator('.demo-example').first().screenshot({ path: 'test-results/token-search-field-alignment-multiline-wide.png' });
+  if (browserName === 'chromium') await demo.locator('.kui-catalog-example').first().screenshot({ path: 'test-results/token-search-field-alignment-multiline-wide.png' });
 
   await page.reload();
   await page.locator('[data-action="toggle-theme"]').click();
@@ -2628,7 +2628,7 @@ test('ships semantic banner palettes with scoped overrides', async ({ page, brow
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/?component=state-banner');
   const banners = page.locator('[data-demo="state-banner"] [data-component="state-banner"]:not([data-placeholder="true"])');
-  const articles = page.locator('[data-demo="state-banner"] .demo-example:not(:has([data-placeholder="true"]))');
+  const articles = page.locator('[data-demo="state-banner"] .kui-catalog-example:not(:has([data-placeholder="true"]))');
   await expect(banners).toHaveCount(6);
   await expect(articles).toHaveCount(6);
   const labelIconOffsets = () => articles.evaluateAll((nodes) => nodes.map((node) => {

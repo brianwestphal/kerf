@@ -5,7 +5,7 @@ import '@kerfjs/ui/webawesome.css';
 import './style.css';
 
 import { AppTab } from '@kerfjs/ui/app-tab';
-import { Catalog, type CatalogRelated, type CatalogResource, type CatalogSection as KuiCatalogSection } from '@kerfjs/ui/catalog';
+import { Catalog, CatalogExample, type CatalogRelated, type CatalogResource, type CatalogSection as KuiCatalogSection } from '@kerfjs/ui/catalog';
 import { DisclosureArrow } from '@kerfjs/ui/disclosure-arrow';
 import { EmptyState } from '@kerfjs/ui/empty-state';
 import { ListActionRow } from '@kerfjs/ui/list-action-row';
@@ -122,38 +122,30 @@ function animationDemoFrom(element: Element): { animation: AnimationElement; out
 function LucideIconDemo() {
   // Both render the same glyph — LucideIcon's two modes differ in semantics, not
   // appearance — so the labels/notes carry the distinction.
-  return <div class="demo-stack demo-stack--labeled" data-demo="lucide-icon">
-    <section class="demo-example">
-      <ListHeader label="Decorative" />
-      <p class="demo-example__note">No name — hidden from assistive technology (<code>aria-hidden</code>).</p>
+  return <div class="kui-catalog-example-stack" data-demo="lucide-icon">
+    <CatalogExample label="Decorative" note={<>No name — hidden from assistive technology (<code>aria-hidden</code>).</>} align="glyph">
       {icon(Bell, 'bell')}
-    </section>
-    <section class="demo-example">
-      <ListHeader label="Meaningful" />
-      <p class="demo-example__note">Named with a label — announced when the icon carries meaning.</p>
+    </CatalogExample>
+    <CatalogExample label="Meaningful" note={<>Named with a label — announced when the icon carries meaning.</>} align="glyph">
       <LucideIcon icon={Bell} name="notification" label="Notifications ready" />
-    </section>
+    </CatalogExample>
   </div>;
 }
 
 function DisclosureArrowDemo() {
-  return <div class="demo-stack demo-stack--labeled" data-demo="disclosure-arrow">
-    <section class="demo-example">
-      <ListHeader label="Default" />
-      <p class="demo-example__note">Closed points right, open points down. Toggle to animate.</p>
+  return <div class="kui-catalog-example-stack" data-demo="disclosure-arrow">
+    <CatalogExample label="Default" note={<>Closed points right, open points down. Toggle to animate.</>} align="glyph">
       <button type="button" class="demo-disclosure-toggle" data-action="toggle-disclosure" aria-expanded={String(disclosureOpen.value)}>
         <DisclosureArrow open={disclosureOpen.value} />
         <span>Details</span>
       </button>
-    </section>
-    <section class="demo-example">
-      <ListHeader label="Replacement icon" />
-      <p class="demo-example__note">A replacement glyph, closed left and open up.</p>
+    </CatalogExample>
+    <CatalogExample label="Replacement icon" note={<>A replacement glyph, closed left and open up.</>} align="glyph">
       <button type="button" class="demo-disclosure-toggle" data-action="toggle-custom-disclosure" aria-expanded={String(customDisclosureOpen.value)}>
         <DisclosureArrow open={customDisclosureOpen.value} openDirection="up" closedDirection="left" icon={icon(ArrowRight, 'arrow-right')} />
         <span>Preview</span>
       </button>
-    </section>
+    </CatalogExample>
   </div>;
 }
 
@@ -234,96 +226,82 @@ function ToolbarDemo() {
 }
 
 function ToolbarControlGroupDemo() {
-  return <section class="toolbar-control-group-demo demo-stack demo-stack--labeled" data-demo="toolbar-control-group" aria-label="ToolbarControlGroup demo">
-    <section class="demo-example"><ListHeader label="Segmented choices" /><ToolbarControlGroup><SegmentedControl id="toolbar-view" label="View mode" value={toolbarChoice.value} action="select-segment-demo" appearance="toolbar" shape="pill" size="small" choices={[
+  return <section class="toolbar-control-group-demo kui-catalog-example-stack" data-demo="toolbar-control-group" aria-label="ToolbarControlGroup demo">
+    <CatalogExample label="Segmented choices" align="inline-control"><ToolbarControlGroup><SegmentedControl id="toolbar-view" label="View mode" value={toolbarChoice.value} action="select-segment-demo" appearance="toolbar" shape="pill" size="small" choices={[
       { value: 'list', label: 'List view', content: icon(List, 'list') },
       { value: 'columns', label: 'Columns view', content: icon(Columns3, 'columns-3') },
       { value: 'settings', label: 'Settings view', content: icon(Settings, 'settings') },
-    ]} /></ToolbarControlGroup></section>
-    <section class="demo-example"><ListHeader label="Popup menu" /><ToolbarControlGroup single>
+    ]} /></ToolbarControlGroup></CatalogExample>
+    <CatalogExample label="Popup menu" align="inline-control"><ToolbarControlGroup single>
       <wa-dropdown placement="bottom-start" data-morph-skip-children><wa-button slot="trigger" appearance="plain" with-caret aria-label="Sort tickets">{icon(ArrowDownAZ, 'arrow-down-a-z')}</wa-button><wa-dropdown-item data-action="sort-recent">Recently updated</wa-dropdown-item><wa-dropdown-item data-action="sort-priority">Priority</wa-dropdown-item></wa-dropdown>
-    </ToolbarControlGroup></section>
-    <section class="demo-example"><ListHeader label="Button group" /><ToolbarControlGroup label="View actions">
+    </ToolbarControlGroup></CatalogExample>
+    <CatalogExample label="Button group" align="inline-control"><ToolbarControlGroup label="View actions">
       <wa-button appearance="plain" aria-label="Favorite view" data-action="log-favorite">{icon(Star, 'star')}</wa-button>
       <wa-button appearance="plain" aria-label="More actions" data-action="log-more">{icon(MoreHorizontal, 'ellipsis')}</wa-button>
-    </ToolbarControlGroup></section>
-    <section class="demo-example"><ListHeader label="Single button" /><ToolbarControlGroup single><wa-button appearance="plain" aria-label="Pin view" data-action="log-pin">{icon(Pin, 'pin')}</wa-button></ToolbarControlGroup></section>
-    <section class="demo-example"><ListHeader label="Borderless group" /><ToolbarControlGroup appearance="borderless" single><button type="button" aria-label="Show sidebar" data-action="log-sidebar">{icon(PanelLeftOpen, 'panel-left-open')}</button></ToolbarControlGroup></section>
-    <section class="demo-example"><ListHeader label="Push button, resting" /><ToolbarControlGroup buttonAppearance="push" single><button type="button" aria-label="Resting comparison" aria-pressed="false" data-action="log-resting">{icon(GitCompare, 'git-compare')}</button></ToolbarControlGroup></section>
-    <section class="demo-example"><ListHeader label="Push button, pressed" /><ToolbarControlGroup buttonAppearance="push" single><button type="button" aria-label="Pressed comparison" aria-pressed="true" data-action="log-pressed">{icon(GitCompare, 'git-compare')}</button></ToolbarControlGroup></section>
-    <section class="demo-example"><ListHeader label="Dark group" /><ToolbarControlGroup label="Dark navigation" tone="dark"><button type="button" aria-label="Previous" data-action="log-previous">{icon(ChevronLeft, 'chevron-left')}</button><button type="button" aria-label="Next" data-action="log-next">{icon(ChevronRight, 'chevron-right')}</button></ToolbarControlGroup></section>
+    </ToolbarControlGroup></CatalogExample>
+    <CatalogExample label="Single button" align="inline-control"><ToolbarControlGroup single><wa-button appearance="plain" aria-label="Pin view" data-action="log-pin">{icon(Pin, 'pin')}</wa-button></ToolbarControlGroup></CatalogExample>
+    <CatalogExample label="Borderless group" align="inline-control"><ToolbarControlGroup appearance="borderless" single><button type="button" aria-label="Show sidebar" data-action="log-sidebar">{icon(PanelLeftOpen, 'panel-left-open')}</button></ToolbarControlGroup></CatalogExample>
+    <CatalogExample label="Push button, resting" align="inline-control"><ToolbarControlGroup buttonAppearance="push" single><button type="button" aria-label="Resting comparison" aria-pressed="false" data-action="log-resting">{icon(GitCompare, 'git-compare')}</button></ToolbarControlGroup></CatalogExample>
+    <CatalogExample label="Push button, pressed" align="inline-control"><ToolbarControlGroup buttonAppearance="push" single><button type="button" aria-label="Pressed comparison" aria-pressed="true" data-action="log-pressed">{icon(GitCompare, 'git-compare')}</button></ToolbarControlGroup></CatalogExample>
+    <CatalogExample label="Dark group" align="inline-control"><ToolbarControlGroup label="Dark navigation" tone="dark"><button type="button" aria-label="Previous" data-action="log-previous">{icon(ChevronLeft, 'chevron-left')}</button><button type="button" aria-label="Next" data-action="log-next">{icon(ChevronRight, 'chevron-right')}</button></ToolbarControlGroup></CatalogExample>
   </section>;
 }
 
 function SegmentedControlDemo() {
-  return <section class="segmented-control-demo demo-stack demo-stack--labeled" data-demo="segmented-control" aria-label="SegmentedControl variants">
-    <section class="demo-example">
-      <ListHeader label="Toolbar" />
-      <p class="demo-example__note">Pill controls share a toolbar group’s chrome.</p>
+  return <section class="segmented-control-demo kui-catalog-example-stack" data-demo="segmented-control" aria-label="SegmentedControl variants">
+    <CatalogExample label="Toolbar" note={<>Pill controls share a toolbar group’s chrome.</>} align="inline-control">
       <ToolbarControlGroup><SegmentedControl id="standalone-toolbar-view" label="Toolbar view mode" value={toolbarChoice.value} action="select-segment-demo" appearance="toolbar" shape="pill" size="small" choices={[
         { value: 'list', label: 'List view', content: icon(List, 'list') },
         { value: 'columns', label: 'Columns view', content: icon(Columns3, 'columns-3') },
         { value: 'settings', label: 'Settings view', content: icon(Settings, 'settings') },
       ]} /></ToolbarControlGroup>
-    </section>
-    <section class="demo-example">
-      <ListHeader label="Rounded rectangle" />
-      <p class="demo-example__note">An equal-width inspector switcher with labels.</p>
+    </CatalogExample>
+    <CatalogExample label="Rounded rectangle" note={<>An equal-width inspector switcher with labels.</>} align="inline-control">
       <SegmentedControl id="inspector-section" label="Inspector section" value={inspectorSection.value} action="select-segment-demo" shape="rounded" layout="equal" choices={[
         { value: 'summary', label: 'Summary', content: <>{icon(List, 'list')}<span>Summary</span></> },
         { value: 'activity', label: 'Activity', content: <>{icon(Bell, 'bell')}<span>Activity</span></> },
         { value: 'files', label: 'Files', content: <>{icon(Folder, 'folder')}<span>Files</span></> },
       ]} />
-    </section>
-    <section class="demo-example">
-      <ListHeader label="Pill" />
-      <p class="demo-example__note">A compact standalone choice with a disabled option.</p>
+    </CatalogExample>
+    <CatalogExample label="Pill" note={<>A compact standalone choice with a disabled option.</>} align="inline-control">
       <SegmentedControl id="display-density" label="Display density" value={displayDensity.value} action="select-segment-demo" appearance="outlined" shape="pill" size="small" choices={[
         { value: 'compact', label: 'Compact' },
         { value: 'comfortable', label: 'Comfortable' },
         { value: 'roomy', label: 'Roomy', disabled: true, title: 'Roomy density is unavailable' },
       ]} />
-    </section>
-    <section class="demo-example">
-      <ListHeader label="Placeholder" />
-      <p class="demo-example__note">A loading switcher renders inert pill chrome with skeleton labels.</p>
+    </CatalogExample>
+    <CatalogExample label="Placeholder" note={<>A loading switcher renders inert pill chrome with skeleton labels.</>} align="inline-control">
       <SegmentedControl id="segmented-placeholder" label="Loading view mode" value="" choices={[
         { value: 'list', label: 'List view' },
         { value: 'columns', label: 'Columns view' },
         { value: 'settings', label: 'Settings view' },
       ]} placeholder />
-    </section>
+    </CatalogExample>
   </section>;
 }
 
 function TokenSearchFieldDemo() {
-  return <section class="token-search-demo demo-stack demo-stack--labeled" data-demo="token-search-field" aria-label="TokenSearchField states">
-    <section class="demo-example">
-      <ListHeader label="Structured ticket search" />
-      <p class="demo-example__note">Text and atomic filters remain in one keyboard-focusable editor.</p>
+  return <section class="token-search-demo kui-catalog-example-stack" data-demo="token-search-field" aria-label="TokenSearchField states">
+    <CatalogExample label="Structured ticket search" note={<>Text and atomic filters remain in one keyboard-focusable editor.</>} align="inline-control">
       <TokenSearchField id="catalog-search" label="Search tickets" query={tokenSearchQuery.value} tokens={tokenSearchTokens.value} autofocus editorAttributes={{ 'data-demo-token-search': 'true' }} />
-      <output aria-live="polite" class="demo-example__note">{tokenSearchTokens.value.length} filters · {tokenSearchQuery.value || 'No free text'}</output>
-    </section>
-    <section class="demo-example">
-      <ListHeader label="Collapsible" />
-      <p class="demo-example__note">Empty and unfocused, it collapses to one iconic action; activating it reveals the editor and focuses it, and it re-collapses when focus leaves while empty. <code>wireTokenSearchFields</code> manages the expand/collapse/focus.</p>
+      <output aria-live="polite" class="kui-catalog-example__note">{tokenSearchTokens.value.length} filters · {tokenSearchQuery.value || 'No free text'}</output>
+    </CatalogExample>
+    <CatalogExample label="Collapsible" note={<>Empty and unfocused, it collapses to one iconic action; activating it reveals the editor and focuses it, and it re-collapses when focus leaves while empty. <code>wireTokenSearchFields</code> manages the expand/collapse/focus.</>} align="inline-control">
       <div class="token-search-demo__collapsible"><TokenSearchField id="collapsible-search" label="Find records" collapsible expanded={collapsibleSearchOpen.value} placeholder="Find records" expandLabel="Open find" /></div>
-    </section>
-    <section class="demo-example">
-      <ListHeader label="Disabled" />
-      <p class="demo-example__note">Controlled read-only state preserves the complete expression.</p>
+    </CatalogExample>
+    <CatalogExample label="Disabled" note={<>Controlled read-only state preserves the complete expression.</>} align="inline-control">
       <TokenSearchField id="disabled-search" label="Saved search" query="release" tokens={[{ value: 'tag:design-system', label: 'tag:design-system', offset: 7 }]} disabled />
-    </section>
+    </CatalogExample>
   </section>;
 }
 
 function ToolbarTextDemo() {
-  return <div class="demo-stack demo-stack--labeled" data-demo="toolbar-text">
-    <section class="demo-example"><ListHeader label="Extra large" /><ToolbarText text="Workspace settings" size="xlarge" /></section>
-    <section class="demo-example"><ListHeader label="Large" /><ToolbarText text="Component library" size="large" /></section>
-    <section class="demo-example"><ListHeader label="Default" /><ToolbarText text="Saved just now" /></section>
-    <section class="demo-example"><ListHeader label="Small" /><ToolbarText text="read-only" size="small" /></section>
-    <section class="demo-example"><ListHeader label="Placeholder" /><p class="demo-example__note">A loading label skeletons its text while keeping its type slot.</p><ToolbarText text="" size="large" placeholder /></section>
+  return <div class="kui-catalog-example-stack" data-demo="toolbar-text">
+    <CatalogExample label="Extra large" align="inline-control"><ToolbarText text="Workspace settings" size="xlarge" /></CatalogExample>
+    <CatalogExample label="Large" align="inline-control"><ToolbarText text="Component library" size="large" /></CatalogExample>
+    <CatalogExample label="Default" align="inline-control"><ToolbarText text="Saved just now" /></CatalogExample>
+    <CatalogExample label="Small" align="inline-control"><ToolbarText text="read-only" size="small" /></CatalogExample>
+    <CatalogExample label="Placeholder" note={<>A loading label skeletons its text while keeping its type slot.</>} align="inline-control"><ToolbarText text="" size="large" placeholder /></CatalogExample>
   </div>;
 }
 
@@ -351,20 +329,20 @@ function ListDemo() {
 }
 
 function ListHeaderDemo() {
-  return <div class="demo-list-demo demo-stack" data-demo="list-header">
-    <section class="demo-example"><ListHeader label="Attachments" count={12} countLabel="12 attachments" action="log-add" actionLabel="Add attachment" actionIcon={icon(Plus, 'plus')} triggerAttributes={{ popoverTarget: 'list-header-attachments-popover', popoverTargetAction: 'toggle', 'aria-controls': 'list-header-attachments-popover', 'aria-haspopup': 'dialog' }} /></section>
-    <section class="demo-example"><ListHeader label="Notes" count={0} countLabel="0 notes" /></section>
-    <section class="demo-example"><ListHeader label="Duplicates" count={2} countLabel="2 duplicates" /></section>
-    <section class="demo-example"><ListHeader label="Preview" badge={<span>New</span>} /></section>
-    <section class="demo-example"><ListHeader label="Unavailable" action="log-add" actionLabel="Unavailable action" actionIcon={icon(Plus, 'plus')} actionDisabled /></section>
-    <section class="demo-example"><ListHeader label="Attachments" count={0} countLabel="Loading attachments" placeholder /></section>
+  return <div class="demo-list-demo kui-catalog-example-stack" data-demo="list-header">
+    <CatalogExample align="none"><ListHeader label="Attachments" count={12} countLabel="12 attachments" action="log-add" actionLabel="Add attachment" actionIcon={icon(Plus, 'plus')} triggerAttributes={{ popoverTarget: 'list-header-attachments-popover', popoverTargetAction: 'toggle', 'aria-controls': 'list-header-attachments-popover', 'aria-haspopup': 'dialog' }} /></CatalogExample>
+    <CatalogExample align="none"><ListHeader label="Notes" count={0} countLabel="0 notes" /></CatalogExample>
+    <CatalogExample align="none"><ListHeader label="Duplicates" count={2} countLabel="2 duplicates" /></CatalogExample>
+    <CatalogExample align="none"><ListHeader label="Preview" badge={<span>New</span>} /></CatalogExample>
+    <CatalogExample align="none"><ListHeader label="Unavailable" action="log-add" actionLabel="Unavailable action" actionIcon={icon(Plus, 'plus')} actionDisabled /></CatalogExample>
+    <CatalogExample align="none"><ListHeader label="Attachments" count={0} countLabel="Loading attachments" placeholder /></CatalogExample>
     <div id="list-header-attachments-popover" class="demo-list-popover" popover="auto" role="dialog" aria-label="Attachment action details">Application-owned popover content.</div>
   </div>;
 }
 
 function ListActionRowDemo() {
-  return <div class="demo-list-demo demo-stack" data-demo="list-action-row">
-    <section class="demo-example">
+  return <div class="demo-list-demo kui-catalog-example-stack" data-demo="list-action-row">
+    <CatalogExample align="none">
       <ListActionRow
         label="src/main.ts"
         icon={icon(Folder, 'folder')}
@@ -378,8 +356,8 @@ function ListActionRowDemo() {
         rootAttributes={{ 'data-demo-action-row': 'selected' }}
         trailingActionAttributes={{ popoverTarget: 'list-action-row-popover', popoverTargetAction: 'toggle', 'aria-controls': 'list-action-row-popover', 'aria-haspopup': 'dialog', 'data-demo-trailing-action': 'selected' }}
       />
-    </section>
-    <section class="demo-example">
+    </CatalogExample>
+    <CatalogExample align="none">
       <ListActionRow
         label="packages/application/src/components/a-long-file-name-that-wraps-at-narrow-width.tsx"
         icon={icon(Folder, 'folder')}
@@ -393,27 +371,27 @@ function ListActionRowDemo() {
         trailingActionIcon={icon(MoreHorizontal, 'more-horizontal')}
         rootAttributes={{ 'data-demo-action-row': 'multiline' }}
       />
-    </section>
-    <section class="demo-example">
+    </CatalogExample>
+    <CatalogExample align="none">
       <ListActionRow label="Unavailable primary" action="select-list-action-row" itemId="disabled-primary" selected={menuActionCurrent.value === 'disabled-primary'} disabled trailingAction="open-list-action-row-actions" trailingActionLabel="Actions for unavailable primary" trailingActionIcon={icon(MoreHorizontal, 'more-horizontal')} rootAttributes={{ 'data-demo-action-row': 'disabled-primary' }} />
-    </section>
-    <section class="demo-example">
+    </CatalogExample>
+    <CatalogExample align="none">
       <ListActionRow label="Unavailable trailing action" action="select-list-action-row" itemId="disabled-trailing" selected={menuActionCurrent.value === 'disabled-trailing'} trailingAction="open-list-action-row-actions" trailingActionLabel="Unavailable actions" trailingActionIcon={icon(MoreHorizontal, 'more-horizontal')} trailingActionDisabled trailingActionTitle="Actions unavailable" rootAttributes={{ 'data-demo-action-row': 'disabled-trailing' }} />
-    </section>
-    <section class="demo-example">
+    </CatalogExample>
+    <CatalogExample align="none">
       <ListActionRow label="Loading file" icon={icon(Folder, 'folder')} action="select-list-action-row" itemId="placeholder" placeholder trailingAction="open-list-action-row-actions" trailingActionLabel="Actions" trailingActionIcon={icon(MoreHorizontal, 'more-horizontal')} rootAttributes={{ 'data-demo-action-row': 'placeholder' }} />
-    </section>
+    </CatalogExample>
     <div id="list-action-row-popover" class="demo-list-popover" popover="auto" role="dialog" aria-label="File actions"><button type="button" data-action="log-more">Open details</button></div>
   </div>;
 }
 
 function ListItemDemo() {
-  return <div class="demo-list-demo demo-stack" data-demo="list-item">
-    <section class="demo-example"><ListItem action="log-inbox" itemId="selected" label="Selected item" icon={icon(Inbox, 'inbox')} trailing={<span>12</span>} selected rootAttributes={{ 'data-demo-drop-status': 'ready' }} /></section>
-    <section class="demo-example"><ListItem action="log-projects" itemId="default" label="Default item" icon={icon(Folder, 'folder')} /></section>
-    <section class="demo-example"><ListItem action="log-settings" itemId="multiline" label="A multiline item demonstrates content that wraps without clipping" icon={icon(Wrench, 'wrench')} multiline /></section>
-    <section class="demo-example"><ListItem action="disabled" itemId="disabled" label="Unavailable item" icon={icon(CircleHelp, 'circle-help')} disabled /></section>
-    <section class="demo-example"><ListItem action="log-projects" itemId="placeholder" label="Loading item" icon={icon(Folder, 'folder')} trailing={<span>0</span>} placeholder /></section>
+  return <div class="demo-list-demo kui-catalog-example-stack" data-demo="list-item">
+    <CatalogExample align="none"><ListItem action="log-inbox" itemId="selected" label="Selected item" icon={icon(Inbox, 'inbox')} trailing={<span>12</span>} selected rootAttributes={{ 'data-demo-drop-status': 'ready' }} /></CatalogExample>
+    <CatalogExample align="none"><ListItem action="log-projects" itemId="default" label="Default item" icon={icon(Folder, 'folder')} /></CatalogExample>
+    <CatalogExample align="none"><ListItem action="log-settings" itemId="multiline" label="A multiline item demonstrates content that wraps without clipping" icon={icon(Wrench, 'wrench')} multiline /></CatalogExample>
+    <CatalogExample align="none"><ListItem action="disabled" itemId="disabled" label="Unavailable item" icon={icon(CircleHelp, 'circle-help')} disabled /></CatalogExample>
+    <CatalogExample align="none"><ListItem action="log-projects" itemId="placeholder" label="Loading item" icon={icon(Folder, 'folder')} trailing={<span>0</span>} placeholder /></CatalogExample>
   </div>;
 }
 
@@ -426,22 +404,22 @@ function TabsDemo() {
     'data-Tab-Drop-Position': 'before',
     role: 'menuitem',
   };
-  return <div class="demo-tabs demo-stack" data-demo="tabs">
-    <section class="demo-example"><TabBar id="focused-app-tabs" label="Open documents">
+  return <div class="demo-tabs kui-catalog-example-stack" data-demo="tabs">
+    <CatalogExample align="none"><TabBar id="focused-app-tabs" label="Open documents">
       {(['library', 'guidelines', 'catalog'] as const).map((id) => <AppTab id={id} name={id[0]!.toUpperCase() + id.slice(1)} selected={activeTab.value === id} closable={id !== 'library'} leading={id === 'library' ? icon(PanelLeft, 'panel-left') : undefined} closeIcon={id === 'guidelines' ? icon(X, 'custom-tab-close') : undefined} rootAttributes={id === 'guidelines' ? extensionAttributes : undefined} />)}
-    </TabBar></section>
-    <section class="demo-example"><TabBar id="placeholder-app-tabs" label="Loading documents">
+    </TabBar></CatalogExample>
+    <CatalogExample align="none"><TabBar id="placeholder-app-tabs" label="Loading documents">
       {(['first', 'second', 'third'] as const).map((id) => <AppTab id={id} name="" closable={id !== 'first'} placeholder />)}
-    </TabBar></section>
+    </TabBar></CatalogExample>
   </div>;
 }
 
 function TabBarDemo() {
-  return <div class="demo-tab-bar-frame demo-stack" data-demo="tab-bar">
-    <section class="demo-example"><TabBar id="catalog-tabs" label="Open catalog pages" leading={<ToolbarControlGroup appearance="borderless" single><button type="button" aria-label="Show navigation" data-action="log-sidebar">{icon(PanelLeft, 'panel-left')}</button></ToolbarControlGroup>} trailing={<ToolbarControlGroup appearance="borderless" single><button type="button" aria-label="Add tab" data-action="add-demo-tab">{icon(Plus, 'plus')}</button></ToolbarControlGroup>}>
+  return <div class="demo-tab-bar-frame kui-catalog-example-stack" data-demo="tab-bar">
+    <CatalogExample align="none"><TabBar id="catalog-tabs" label="Open catalog pages" leading={<ToolbarControlGroup appearance="borderless" single><button type="button" aria-label="Show navigation" data-action="log-sidebar">{icon(PanelLeft, 'panel-left')}</button></ToolbarControlGroup>} trailing={<ToolbarControlGroup appearance="borderless" single><button type="button" aria-label="Add tab" data-action="add-demo-tab">{icon(Plus, 'plus')}</button></ToolbarControlGroup>}>
       {tabBarTabs.value.map((tab) => <AppTab id={tab.id} name={tab.name} selected={tabBarActive.value === tab.id} draggable selectAction="select-reorder-tab" closeAction="close-reorder-tab" rootAttributes={{ 'data-demo-tab-id': tab.id }} />)}
     </TabBar>
-    <p class="demo-example__note">Order: <strong data-tab-order>{tabBarTabs.value.map((tab) => tab.name).join(' · ')}</strong></p></section>
+    <p class="kui-catalog-example__note">Order: <strong data-tab-order>{tabBarTabs.value.map((tab) => tab.name).join(' · ')}</strong></p></CatalogExample>
   </div>;
 }
 
@@ -456,17 +434,17 @@ function HeadersDemo() {
 }
 
 function PanelHeaderDemo() {
-  return <div class="demo-stack demo-stack--labeled" data-demo="panel-header">
-    <section class="demo-example"><ListHeader label="Page title (h1 heading)" /><p class="demo-example__note">Pass <code>headingLevel</code> for a page/view title so it is a real heading landmark (<code>role="heading"</code> + <code>aria-level</code>).</p><PanelHeader title="UI foundations" titleId="panel-page-title" headingLevel={1} actions={button('New pattern', 'log-add')} /></section>
-    <section class="demo-example"><ListHeader label="Panel heading with icon and subtitle" /><p class="demo-example__note">A dialog/panel title omits <code>headingLevel</code> and is instead referenced by <code>aria-labelledby</code> pointing at its <code>titleId</code>.</p><PanelHeader title="Package details" titleId="panel-standalone-title" summary="Production-backed primitives with explicit contracts." summaryId="panel-standalone-summary" icon={icon(Wrench, 'wrench')} actions={button('Done', 'log-done')} /></section>
-    <section class="demo-example"><ListHeader label="Placeholder" /><p class="demo-example__note">While a record loads, the header keeps its chrome and skeletons the title and subtitle.</p><PanelHeader title="Package details" titleId="panel-placeholder-title" summary="Production-backed primitives with explicit contracts." summaryId="panel-placeholder-summary" icon={icon(Wrench, 'wrench')} placeholder /></section>
+  return <div class="kui-catalog-example-stack" data-demo="panel-header">
+    <CatalogExample label="Page title (h1 heading)" note={<>Pass <code>headingLevel</code> for a page/view title so it is a real heading landmark (<code>role="heading"</code> + <code>aria-level</code>).</>} align="none"><PanelHeader title="UI foundations" titleId="panel-page-title" headingLevel={1} actions={button('New pattern', 'log-add')} /></CatalogExample>
+    <CatalogExample label="Panel heading with icon and subtitle" note={<>A dialog/panel title omits <code>headingLevel</code> and is instead referenced by <code>aria-labelledby</code> pointing at its <code>titleId</code>.</>} align="none"><PanelHeader title="Package details" titleId="panel-standalone-title" summary="Production-backed primitives with explicit contracts." summaryId="panel-standalone-summary" icon={icon(Wrench, 'wrench')} actions={button('Done', 'log-done')} /></CatalogExample>
+    <CatalogExample label="Placeholder" note={<>While a record loads, the header keeps its chrome and skeletons the title and subtitle.</>} align="none"><PanelHeader title="Package details" titleId="panel-placeholder-title" summary="Production-backed primitives with explicit contracts." summaryId="panel-placeholder-summary" icon={icon(Wrench, 'wrench')} placeholder /></CatalogExample>
   </div>;
 }
 
 function ValueTableDemo() {
-  return <div class="demo-value-table demo-stack demo-stack--labeled" data-demo="value-table">
-    <section class="demo-example"><ListHeader label="Populated" /><ValueTable label="Package metadata"><ValueTableRow label="Package" value="@kerfjs/ui" /><ValueTableRow label="Rendering" value="Kerf SafeHtml" icon={icon(Wrench, 'wrench')} /><ValueTableRow label="Styles" value="Explicit CSS subpaths" /></ValueTable></section>
-    <section class="demo-example"><ListHeader label="Placeholder" /><p class="demo-example__note">Rows accept <code>placeholder</code> to skeleton their values while a record loads.</p><ValueTable label="Loading metadata"><ValueTableRow label="Package" value="" placeholder /><ValueTableRow label="Rendering" value="" icon={icon(Wrench, 'wrench')} placeholder /><ValueTableRow label="Styles" value="" placeholder /></ValueTable></section>
+  return <div class="demo-value-table kui-catalog-example-stack" data-demo="value-table">
+    <CatalogExample label="Populated" align="none"><ValueTable label="Package metadata"><ValueTableRow label="Package" value="@kerfjs/ui" /><ValueTableRow label="Rendering" value="Kerf SafeHtml" icon={icon(Wrench, 'wrench')} /><ValueTableRow label="Styles" value="Explicit CSS subpaths" /></ValueTable></CatalogExample>
+    <CatalogExample label="Placeholder" note={<>Rows accept <code>placeholder</code> to skeleton their values while a record loads.</>} align="none"><ValueTable label="Loading metadata"><ValueTableRow label="Package" value="" placeholder /><ValueTableRow label="Rendering" value="" icon={icon(Wrench, 'wrench')} placeholder /><ValueTableRow label="Styles" value="" placeholder /></ValueTable></CatalogExample>
   </div>;
 }
 
@@ -477,21 +455,18 @@ function ResizeDemo() {
 }
 
 function SelectDemo() {
-  return <div class="demo-control-stack demo-stack demo-stack--labeled" data-demo="select">
-    <section class="demo-example">
-      <ListHeader label="Rendering balance" />
+  return <div class="demo-control-stack kui-catalog-example-stack" data-demo="select">
+    <CatalogExample label="Rendering balance" align="inline-control">
       <Select name="rendering-balance" value={selectedChoice.value} ariaLabel="Rendering balance" choices={[
         { value: 'quiet', label: 'Quiet', icon: Bell, iconName: 'bell', group: 'Attention' },
         { value: 'balanced', label: 'Balanced', icon: SlidersHorizontal, iconName: 'sliders-horizontal', group: 'Attention' },
         { value: 'explicit', label: 'Explicit', icon: Wrench, iconName: 'wrench', group: 'Control', separatorBefore: true },
       ]} renderSelected={(choice) => <span class="demo-select-selected">{choice.icon ? <LucideIcon icon={choice.icon} name={choice.iconName ?? choice.label.toLowerCase().replaceAll(' ', '-')} /> : null}<span>{choice.label}</span></span>} />
-      <p class="demo-example__note">Live value: <strong data-select-value>{selectedChoice.value}</strong></p>
-    </section>
-    <section class="demo-example">
-      <ListHeader label="Placeholder" />
-      <p class="demo-example__note">Loading renders a static, inert box in place of the interactive control.</p>
+      <p class="kui-catalog-example__note">Live value: <strong data-select-value>{selectedChoice.value}</strong></p>
+    </CatalogExample>
+    <CatalogExample label="Placeholder" note={<>Loading renders a static, inert box in place of the interactive control.</>} align="inline-control">
       <Select name="select-placeholder" value="" label="Rendering balance" ariaLabel="Rendering balance" choices={[]} placeholder />
-    </section>
+    </CatalogExample>
   </div>;
 }
 
@@ -512,24 +487,24 @@ function StateBannerDemo() {
     { tone: 'warning', title: 'Connection interrupted' },
     { tone: 'danger', title: 'Authentication required' },
   ] as const;
-  return <div class="demo-state-banner-grid demo-stack demo-stack--labeled" data-demo="state-banner">
-    {specimens.map(({ tone, title }) => <section class="demo-example"><ListHeader label={tone} /><StateBanner tone={tone} urgency={tone === 'danger' ? 'alert' : 'status'} title={title} detail="Semantic defaults remain overridable." icon={tone === 'danger' ? icon(CircleHelp, 'circle-help') : icon(Check, 'check')} action={button('Act', `log-${tone}`)} /></section>)}
-    <section class="demo-example"><ListHeader label="Scoped override" /><StateBanner className="demo-state-banner--override" tone="info" title="Consumer palette" detail="Only this instance uses the override." icon={icon(Check, 'check')} /></section>
-    <section class="demo-example"><ListHeader label="Placeholder" /><StateBanner tone="neutral" title="" detail="" placeholder /></section>
+  return <div class="demo-state-banner-grid kui-catalog-example-stack" data-demo="state-banner">
+    {specimens.map(({ tone, title }) => <CatalogExample label={tone} align="none"><StateBanner tone={tone} urgency={tone === 'danger' ? 'alert' : 'status'} title={title} detail="Semantic defaults remain overridable." icon={tone === 'danger' ? icon(CircleHelp, 'circle-help') : icon(Check, 'check')} action={button('Act', `log-${tone}`)} /></CatalogExample>)}
+    <CatalogExample label="Scoped override" align="none"><StateBanner className="demo-state-banner--override" tone="info" title="Consumer palette" detail="Only this instance uses the override." icon={icon(Check, 'check')} /></CatalogExample>
+    <CatalogExample label="Placeholder" align="none"><StateBanner tone="neutral" title="" detail="" placeholder /></CatalogExample>
   </div>;
 }
 
 function EmptyStateDemo() {
-  return <div class="demo-stack demo-stack--labeled" data-demo="empty-state">
-    <section class="demo-example"><ListHeader label="Actionable" /><p class="demo-example__note">An empty state that offers a recovery action.</p><EmptyState title="Nothing here yet" detail="Create the first item when you are ready." icon={icon(Search, 'search')} action={button('Create item', 'log-add')} /></section>
-    <section class="demo-example"><ListHeader label="Busy" /><p class="demo-example__note">A busy state; the current view stays stable while loading.</p><EmptyState title="Loading items" detail="The current view will remain stable." busy /></section>
+  return <div class="kui-catalog-example-stack" data-demo="empty-state">
+    <CatalogExample label="Actionable" note={<>An empty state that offers a recovery action.</>} align="none"><EmptyState title="Nothing here yet" detail="Create the first item when you are ready." icon={icon(Search, 'search')} action={button('Create item', 'log-add')} /></CatalogExample>
+    <CatalogExample label="Busy" note={<>A busy state; the current view stays stable while loading.</>} align="none"><EmptyState title="Loading items" detail="The current view will remain stable." busy /></CatalogExample>
   </div>;
 }
 
 function LoadingSpinnerDemo() {
-  return <div class="demo-stack demo-stack--labeled" data-demo="loading-spinner">
-    <section class="demo-example"><ListHeader label="Meaningful" /><p class="demo-example__note">Exposes its supplied label to assistive technology.</p><LoadingSpinner label="Loading preview" /></section>
-    <section class="demo-example"><ListHeader label="Decorative" /><p class="demo-example__note">No label — hidden from assistive technology.</p><LoadingSpinner /></section>
+  return <div class="kui-catalog-example-stack" data-demo="loading-spinner">
+    <CatalogExample label="Meaningful" note={<>Exposes its supplied label to assistive technology.</>} align="glyph"><LoadingSpinner label="Loading preview" /></CatalogExample>
+    <CatalogExample label="Decorative" note={<>No label — hidden from assistive technology.</>} align="glyph"><LoadingSpinner /></CatalogExample>
   </div>;
 }
 
@@ -545,16 +520,16 @@ function LayoutDemo() {
 }
 
 function SkeletonDemo() {
-  return <div class="demo-stack demo-stack--labeled" data-demo="skeleton">
-    <section class="demo-example"><ListHeader label="Primitive" /><p class="demo-example__note">Subtle, unanimated blocks that hold a value's space. Decorative unless labeled.</p>
+  return <div class="kui-catalog-example-stack" data-demo="skeleton">
+    <CatalogExample label="Primitive" note={<>Subtle, unanimated blocks that hold a value's space. Decorative unless labeled.</>} align="glyph">
       <div class="demo-skeleton-blocks">
         <Skeleton width="12em" />
         <Skeleton width="8em" height="1.5em" />
         <Skeleton lines={3} />
         <Skeleton width="6em" label="Loading value" />
       </div>
-    </section>
-    <section class="demo-example" data-demo-overlay-skip><ListHeader label="In composition" /><p class="demo-example__note">Value-bearing components accept a <code>placeholder</code> prop that renders their real chrome with skeleton value slots. See the <strong>Loading inspector</strong> recipe for a full composition.</p>
+    </CatalogExample>
+    <section class="kui-catalog-example" data-align="none" data-demo-overlay-skip><ListHeader label="In composition" /><p class="kui-catalog-example__note">Value-bearing components accept a <code>placeholder</code> prop that renders their real chrome with skeleton value slots. See the <strong>Loading inspector</strong> recipe for a full composition.</p>
       <ValueTable label="Placeholder rows"><ValueTableRow label="Status" value="" placeholder /><ValueTableRow label="Owner" value="" placeholder /></ValueTable>
     </section>
   </div>;

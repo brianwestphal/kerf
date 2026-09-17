@@ -135,7 +135,7 @@ button {
 }
 /* Show the demoed LucideIcon at its representative 24px design size (the
    component itself is font-relative at 1em). */
-[data-demo="lucide-icon"] .demo-example [data-lucide] {
+[data-demo="lucide-icon"] .kui-catalog-example [data-lucide] {
   width: remify(24px);
   height: remify(24px);
 }
@@ -311,7 +311,7 @@ button {
 }
 /* The Select fills a comfortable width in its example so the selected content
    and the trailing caret sit at opposite ends of the combobox. */
-.demo-control-stack .demo-example,
+.demo-control-stack .kui-catalog-example,
 .demo-control-stack wa-select {
   width: min(remify(360px), 100%);
 }
@@ -1153,96 +1153,25 @@ button {
   background: color-mix(in srgb, #f6a94c 55%, transparent);
 }
 
-/* KF-S5G8NC: a consistent labeled-example layout for non-composition demos.
-   Each example is a left-aligned vertical stack — an optional ListHeader label
-   and note, then the component — with 8px between unlabeled examples and 16px
-   between labeled ones. Components sit directly on the grid (no card). */
-.demo-stack {
-  display: flex;
+/* The labeled-example layout, note alignment, and the glyph/inline-control
+   alignment insets now live in the shipped `.kui-catalog-example*` CSS
+   (@kerfjs/ui/catalog.css). The demos adopt `CatalogExample` /
+   `.kui-catalog-example-stack`; only the two demo-specific tweaks below remain:
+   the stack measure cap and the disclosure toggle's leading padding. */
+.kui-catalog-example-stack[data-demo] {
+  /* The shipped stack fills its stage; cap it to a comfortable measure here. */
   width: min(remify(736px), 100%);
-  flex-direction: column;
-  align-items: flex-start;
-  gap: remify(8px);
 }
-.demo-stack--labeled {
-  gap: remify(16px);
-}
-.demo-example {
-  display: flex;
-  width: 100%;
-  min-width: 0;
-  max-width: 100%;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: remify(8px);
-}
-.demo-example__note {
-  /* Align the note's text with the ListHeader label above it and a content-item
-     component's content below it: all three land at 8px margin + 1px border +
-     8px padding from the example's left edge. */
-  margin: 0;
-  padding-inline: calc(
-    var(--kui-layout-inline-margin, remify(8px)) + 1px +
-      var(--kui-layout-item-padding, remify(8px))
-  );
-  color: var(--kui-color-text-quiet);
-  font-size: var(--kui-font-s);
-}
-/* The ListHeader used as an example LABEL (first child of a labeled example)
-   shrinks to its title; a ListHeader that is itself the demoed component keeps
-   its default full width. */
-.demo-stack--labeled .demo-example > .kui-list-header:first-child {
-  width: auto;
-}
-/* Align each demoed component's visible left edge with its ListHeader label text,
-   which sits 16px from the example's left edge (8px title padding + 8px label
-   padding). Components that render bare (no inline geometry) inset the full 16px;
-   components that carry ~8px of their own inline padding inset 8px so their
-   content lands on the same line. Demo-only — the components are unchanged
-   elsewhere. (KF-4Y0W15) */
-/* The inset is declared as `--demo-align-inset` and applied as the leading margin;
-   the debug overlay reads that variable and excludes it from the component's
-   measured margin, so the alignment device never shows as a false orange margin
-   band (the component's intrinsic geometry is what the overlay teaches). */
-[data-demo="lucide-icon"]
-  .demo-example
-  > :not(.kui-list-header):not(.demo-example__note),
-[data-demo="disclosure-arrow"]
-  .demo-example
-  > :not(.kui-list-header):not(.demo-example__note),
-[data-demo="loading-spinner"]
-  .demo-example
-  > :not(.kui-list-header):not(.demo-example__note),
-/* Skeleton scopes the inset to the bare primitive blocks only. The demo's
-   composition example (a ValueTable) carries its own content-item geometry, so
-   it must keep its intrinsic margins — its label already lands on the 16px line —
-   and is marked data-demo-overlay-skip so the overlay never paints it. */
-[data-demo="skeleton"] .demo-skeleton-blocks {
-  --demo-align-inset: remify(16px);
-  margin-inline-start: var(--demo-align-inset);
-}
-[data-demo="disclosure-arrow"] .demo-example > .demo-disclosure-toggle {
+[data-demo="disclosure-arrow"] .kui-catalog-example > .demo-disclosure-toggle {
   /* The demo's toggle button adds 8px of its own inline padding; drop the leading
-     side so the arrow glyph itself lands on the 16px line. */
+     side so the arrow glyph itself lands on the 16px line under align="glyph". */
   padding-inline-start: 0;
 }
-[data-demo="toolbar-control-group"]
-  .demo-example
-  > :not(.kui-list-header):not(.demo-example__note),
-[data-demo="toolbar-text"]
-  .demo-example
-  > :not(.kui-list-header):not(.demo-example__note),
-[data-demo="segmented-control"]
-  .demo-example
-  > :not(.kui-list-header):not(.demo-example__note),
-[data-demo="token-search-field"]
-  .demo-example
-  > :not(.kui-list-header):not(.demo-example__note),
-[data-demo="select"]
-  .demo-example
-  > :not(.kui-list-header):not(.demo-example__note) {
-  --demo-align-inset: remify(8px);
-  margin-inline-start: var(--demo-align-inset);
+/* In the ListHeader demo the ListHeader IS the specimen, not an example label,
+   so restore its default fill width (100% minus its own 8px inline margins)
+   instead of the CatalogExample first-child label-shrink. */
+[data-demo="list-header"] .kui-catalog-example > .kui-list-header {
+  width: calc(100% - (2 * var(--kui-layout-inline-margin, remify(8px))));
 }
 .demo-disclosure-toggle {
   display: inline-flex;
