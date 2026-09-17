@@ -3,10 +3,13 @@
 // For each component + presentation combination we render the component's real
 // SafeHtml (with its production CSS + tokens and representative sample data) into
 // a standalone HTML page, capture it to a self-contained SVG with `domotion
-// capture`, and write one SVG per variant under docs/design/templates/<component>/.
-// A per-component library file (docs/design/templates/<component>.svg) then
-// references those variants by file (`<image href="…variant.svg">`), so the
-// variants stay individually reusable and the library stays small.
+// capture --real-text` (a paintless authored <text> layer keeps the picture
+// selectable/searchable), and write one SVG per variant under
+// docs/design/templates/<component>/. A per-component library file
+// (docs/design/templates/<component>.svg) then embeds an inline COPY of each
+// variant (a positioned nested <svg>) — external <image href> / <use href>
+// references render blank in many SVG viewers/rasterizers, so inlining keeps the
+// library self-contained everywhere; the individual variant files stay reusable.
 //
 // Maintain this alongside the components: add a variant here when a component
 // gains a presentation combination, and re-run `npm run design-templates:build`.
@@ -114,28 +117,54 @@ async function buildComponent(domotion, name, spec) {
     const pagePath = resolve(dir, `${variant.id}.html`);
     const svgPath = resolve(dir, `${variant.id}.svg`);
     await writeFile(pagePath, page);
-    await execFileAsync(process.execPath, [domotion, 'capture', pagePath, '-o', svgPath, '--selector', spec.selector, '--width', String(spec.width), '--height', String(variant.height + 40), '--optimize'], { env: { ...process.env, DOMOTION_NO_OPEN: '1' } });
+    await execFileAsync(process.execPath, [domotion, 'capture', pagePath, '-o', svgPath, '--selector', spec.selector, '--width', String(spec.width), '--height', String(variant.height + 40), '--real-text', '--optimize'], { env: { ...process.env, DOMOTION_NO_OPEN: '1' } });
     await rm(pagePath);
     const svg = await readFile(svgPath, 'utf8');
     const dims = /viewBox="0 0 (\d+(?:\.\d+)?) (\d+(?:\.\d+)?)"/.exec(svg);
-    rendered.push({ ...variant, file: `${variant.id}.svg`, width: dims ? Number(dims[1]) : spec.width, height: dims ? Number(dims[2]) : variant.height });
+    rendered.push({ ...variant, file: `${variant.id}.svg`, content: svg, width: dims ? Number(dims[1]) : spec.width, height: dims ? Number(dims[2]) : variant.height });
     console.log(`  ${name}/${variant.id}.svg`);
   }
 
-  // Library file: reference each variant by file with a caption. Rendered in a
-  // browser or embedded with <img>; external references keep the variants reusable.
+  // Library file: embed a COPY of each variant inline (a positioned nested <svg>)
+  // with a caption. External <image href="…"> / <use href="…"> references render
+  // blank in many SVG viewers/rasterizers; inlining keeps the one file
+  // self-contained everywhere. Each variant's own ids and domotion font-family
+  // names are namespaced first so inlined copies don't collide in the one document.
   const gap = 16;
   const captionH = 22;
   let y = gap;
-  const rows = rendered.map((v) => {
+  const rows = rendered.map((v, index) => {
     const top = y;
     y += captionH + v.height + gap;
-    return `  <text x="${gap}" y="${top + 14}" font-family="system-ui, sans-serif" font-size="12" font-weight="600" fill="#6e6e73">${v.label}</text>\n  <image href="${name}/${v.file}" x="${gap}" y="${top + captionH}" width="${v.width}" height="${v.height}"/>`;
+    const inner = nestVariant(namespaceSvg(v.content, `v${index}-`), gap, top + captionH);
+    return `  <text x="${gap}" y="${top + 14}" font-family="system-ui, sans-serif" font-size="12" font-weight="600" fill="#6e6e73">${v.label}</text>\n${inner}`;
   });
   const libW = Math.max(...rendered.map((v) => v.width)) + gap * 2;
   const library = `<svg xmlns="http://www.w3.org/2000/svg" width="${libW}" height="${y}" viewBox="0 0 ${libW} ${y}">\n  <rect width="${libW}" height="${y}" fill="#ffffff"/>\n${rows.join('\n')}\n</svg>\n`;
   await writeFile(resolve(outRoot, `${name}.svg`), library);
-  console.log(`  ${name}.svg (library, ${rendered.length} variants by reference)`);
+  console.log(`  ${name}.svg (library, ${rendered.length} variants inlined)`);
+}
+
+/**
+ * Prefix a self-contained variant SVG's local ids and domotion-generated
+ * font-family names (`dmf0`, `dmf1`, …) so multiple copies can be inlined into one
+ * document without colliding. Rewrites `id="X"` definitions plus every `#X`
+ * reference (url(#X), href="#X") and every `dmf<n>` token.
+ */
+function namespaceSvg(svg, prefix) {
+  const ids = [...svg.matchAll(/\bid="([^"]+)"/g)].map((m) => m[1]);
+  let out = svg;
+  // Longest ids first so a shorter id is never a prefix of a longer one mid-rewrite.
+  for (const id of [...new Set(ids)].sort((a, b) => b.length - a.length)) {
+    out = out.replaceAll(`id="${id}"`, `id="${prefix}${id}"`);
+    out = out.replaceAll(`#${id}`, `#${prefix}${id}`);
+  }
+  return out.replace(/\bdmf(\d+)\b/g, `${prefix}dmf$1`);
+}
+
+/** Position a variant SVG as a nested <svg> at (x, y) within the library sheet. */
+function nestVariant(svg, x, y) {
+  return `  ${svg.trim().replace(/<svg\s/, `<svg x="${x}" y="${y}" `)}`;
 }
 
 const domotion = await resolveDomotion();

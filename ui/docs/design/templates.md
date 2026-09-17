@@ -11,7 +11,7 @@ component picture without running the app.
 
 ```
 docs/design/templates/
-  panel-header.svg              ← library: every variant, by reference
+  panel-header.svg              ← library: every variant, inlined
   panel-header/
     icon-summary-actions.svg    ← one self-contained variant
     icon-actions.svg
@@ -24,14 +24,17 @@ docs/design/templates/
 ```
 
 - Each **variant** file is a standalone SVG — embeds its own glyph data and
-  styles, scales crisply, and drops into an `<img>` anywhere.
-- The **library** file (`<component>.svg`) is a small index that lays the variants
-  out with captions and references each one by file
-  (`<image href="<component>/<variant>.svg">`). It renders in a browser or an
-  `<img>`; the variants stay individually reusable and the library stays tiny.
-  (External `<use href="…#id">` is not resolved by static SVG rasterizers, so the
-  library references variants with `<image>`, which browsers resolve relative to
-  the library file.)
+  styles, scales crisply, and drops into an `<img>` anywhere. Captured with
+  `--real-text`, so a paintless authored `<text>` layer keeps the picture
+  selectable and searchable on top of the embedded-font glyphs.
+- The **library** file (`<component>.svg`) lays the variants out with captions and
+  embeds an inline **copy** of each variant as a positioned nested `<svg>`. It is
+  fully self-contained and renders everywhere — a browser, an `<img>`, GitHub, or
+  a static rasterizer. (External `<use href="…#id">` and `<image href="…">`
+  references render blank in many SVG viewers, so the library inlines copies
+  instead. Each copy's local ids and domotion font-family names are namespaced so
+  the inlined variants don't collide in the one document; the individual variant
+  files stay individually reusable.)
 
 ## Building
 
@@ -63,8 +66,10 @@ starting point and:
 2. List the component's CSS (its `@kerfjs/ui` subpaths plus `foundation.css` for
    tokens and `layout.css`), and any of your own component CSS.
 3. Enumerate the presentation combinations in the per-component manifest.
-4. Capture each variant with `domotion capture <page.html> --selector <css> -o
-   <variant>.svg`, then write a library file that references the variants.
+4. Capture each variant with `domotion capture <page.html> --selector <css>
+   --real-text -o <variant>.svg`, then write a library file that embeds an inline
+   copy of each variant (namespacing each copy's ids/font-family names so they
+   don't collide) rather than referencing them, so it renders everywhere.
 
 Maintaining these next to the components — and reviewing the captured SVGs on
 every component change — keeps the design source of truth honest.
