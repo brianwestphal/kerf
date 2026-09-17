@@ -1579,7 +1579,7 @@ test('catalog routes every production component family and supports its stateful
   await expect(page.locator('.kui-catalog__sidebar [data-item-id="list"]')).toHaveAttribute('aria-current', 'page');
   const menuRelationships = page.locator('[data-catalog-related]');
   await expect(menuRelationships.locator('[name="catalog-related"]')).toHaveCount(1);
-  await expect(page.getByText('Related entries', { exact: true })).toHaveCount(1);
+  await expect(menuRelationships.locator('[name="catalog-related"]')).toHaveAttribute('aria-label', 'Related entries');
   await menuRelationships.locator('[name="catalog-related"]').click();
   await expect(page.getByRole('group', { name: 'Uses' })).toBeVisible();
   await page.keyboard.press('Escape');

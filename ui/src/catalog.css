@@ -244,10 +244,14 @@
   box-shadow: none;
 }
 
-.kui-catalog__settings > button {
+/* Scoped under the header-actions container so it outranks the toolbar group's
+   default `display: grid` icon-over-label button — these settings buttons carry a
+   text label and read as icon-beside-label. */
+.kui-catalog__header-actions .kui-catalog__settings > button {
   display: inline-flex;
   align-items: center;
   gap: remify(6px);
+  white-space: nowrap;
 }
 
 .kui-catalog__settings > button:focus-visible {

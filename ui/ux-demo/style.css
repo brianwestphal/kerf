@@ -64,10 +64,11 @@ button {
 .catalog-settings {
   box-shadow: none;
 }
-.catalog-settings > button {
+.kui-catalog__header-actions .catalog-settings > button {
   display: inline-flex;
   align-items: center;
   gap: remify(6px);
+  white-space: nowrap;
 }
 .catalog-settings > button:focus-visible,
 .demo-button:focus-visible {

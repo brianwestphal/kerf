@@ -180,7 +180,7 @@ export function Catalog({
             ? <nav class="kui-catalog__resources" aria-label={`${name} resources`}><ToolbarControlGroup className="kui-catalog__resource-group" label={`${name} resources`}>{resources.map((resource) => <a class="kui-catalog__resource" href={resource.href} target="_blank" rel="noopener noreferrer" aria-label={`${name}: ${resource.label} (opens in new tab)`}><LucideIcon icon={ExternalLink} name="external-link" /><span>{resource.label}</span>{resource.detail ? <code>{resource.detail}</code> : <></>}</a>)}</ToolbarControlGroup></nav>
             : <></>}
           trailing={related.length > 0
-            ? <div class="kui-catalog__related" data-catalog-related><ToolbarControlGroup className="kui-catalog__related-group" label="Related entries"><Select className="kui-catalog__related-select" name="catalog-related" value="" label="Related entries" placeholderText="Related entries" choices={related.map((entry) => ({ value: entry.id, label: entry.name, group: entry.group }))} /></ToolbarControlGroup></div>
+            ? <div class="kui-catalog__related" data-catalog-related><ToolbarControlGroup appearance="borderless" single className="kui-catalog__related-group" label="Related entries"><Select className="kui-catalog__related-select" name="catalog-related" value="" ariaLabel="Related entries" placeholderText="Related entries" fitMenu choices={related.map((entry) => ({ value: entry.id, label: entry.name, group: entry.group }))} /></ToolbarControlGroup></div>
             : <></>}
         />
       </footer>
