@@ -159,7 +159,12 @@
   width: min(var(--kui-token-search-expanded-width, remify(480px)), 100%);
   max-width: 100%;
   overflow: hidden;
-  flex: 0 1 var(--kui-token-search-expanded-width, remify(480px));
+  /* Size the inline axis through `width` only. A `flex-basis` of the expanded
+     width would drive the MAIN axis, which is the field's HEIGHT inside a flex
+     column — stretching the field tall (KF-EPEM88). `flex: 0 1 auto` keeps the
+     no-grow / may-shrink behavior a toolbar row wants without leaking the width
+     into the cross axis. */
+  flex: 0 1 auto;
   transition:
     width 0.25s ease,
     background-color 0.2s ease,
@@ -214,7 +219,10 @@
   height: auto;
   min-width: 0;
   overflow: hidden;
-  flex: 0 1 var(--kui-token-search-expanded-width, remify(480px));
+  /* Same reason as the field above (KF-EPEM88): drive the inline size through
+     `width`, not `flex-basis`, so a group placed in a flex column is not
+     stretched to the expanded width in its cross axis. */
+  flex: 0 1 auto;
   transition:
     width 0.25s ease,
     background-color 0.2s ease,
