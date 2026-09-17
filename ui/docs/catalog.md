@@ -15,7 +15,7 @@ npm install @kerfjs/ui   # kerfjs is a peer; @kerfjs/ui/select/register is neede
   `theme` signals and computes the preview `content` from `active` in its own
   `mount()` render.
 - `wireCatalog(root, options)` wires the interactions (sidebar selection, the
-  related-entry selector, and the collapse/theme toggles) with one delegated
+  related-entry popup menu, and the collapse/theme toggles) with one delegated
   listener set and returns a disposer; it can also mirror the active id into the
   URL.
 
@@ -35,8 +35,9 @@ npm install @kerfjs/ui   # kerfjs is a peer; @kerfjs/ui/select/register is neede
   sidebar content), and `status` (a footer status line).
 
 Per-entry `resources` render as "open in new tab" links in the footer, and
-`related` renders a "Related entries" selector (a `Select`, so register it with
-`@kerfjs/ui/select/register` when you use it).
+`related` renders a "Related entries" popup menu — a `single` `ToolbarControlGroup`
+around a `wa-dropdown` (grouped by each entry's `group`), so register its elements
+with `@kerfjs/ui/select/register` when you use it.
 
 ## Preview examples
 

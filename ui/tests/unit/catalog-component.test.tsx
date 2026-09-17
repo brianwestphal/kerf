@@ -16,7 +16,10 @@ const sections: CatalogSection[] = [
         name: 'Select',
         description: 'A value list.',
         resources: [{ label: 'Source', href: 'https://example.com/select.ts', detail: 'src/select.ts' }],
-        related: [{ id: 'button', name: 'Button', group: 'Used by' }],
+        related: [
+          { id: 'button', name: 'Button', group: 'Used by' },
+          { id: 'banner', name: 'Banner', group: 'Uses' },
+        ],
       },
     ],
   },
@@ -49,10 +52,16 @@ describe('Catalog', () => {
     expect(html).toContain('A value list.');
     // Stage renders the app-provided content
     expect(html).toContain('class="preview">Select preview');
-    // Footer resource link + related selector
+    // Footer resource link + related popup menu (a wa-dropdown, grouped by `group`)
     expect(html).toContain('kui-catalog__resource');
     expect(html).toContain('href="https://example.com/select.ts"');
     expect(html).toContain('data-catalog-related');
+    expect(html).toContain('kui-catalog__related-menu');
+    expect(html).toContain('aria-label="Related entries"');
+    expect(html).toContain('kui-catalog__related-heading">Used by');
+    expect(html).toContain('kui-catalog__related-heading">Uses');
+    expect(html).toContain('<wa-divider></wa-divider>');
+    expect(html).toContain('data-action="catalog-select" data-item-id="banner"');
     // Theme toggle present (theme set), previews the opposite theme
     expect(html).toContain('data-action="catalog-toggle-theme"');
     expect(html).toContain('Use dark theme');
@@ -203,10 +212,8 @@ describe('wireCatalog', () => {
     root.querySelector<HTMLElement>('[data-action="catalog-toggle-theme"]')!.dispatchEvent(new MouseEvent('click', { bubbles: true }));
     expect(onToggleTheme).toHaveBeenCalledTimes(1);
 
-    // A related-entry selection (change on the footer Select) navigates.
-    const select = root.querySelector<HTMLElement>('[data-catalog-related] [data-component="select"]')!;
-    (select as HTMLElement & { value: string }).value = 'button';
-    select.dispatchEvent(new Event('change', { bubbles: true }));
+    // Choosing an item from the footer related-entries popup menu navigates.
+    root.querySelector<HTMLElement>('[data-catalog-related] [data-item-id="button"]')!.dispatchEvent(new MouseEvent('click', { bubbles: true }));
     expect(onSelect).toHaveBeenCalledWith('button');
     stop();
   });
@@ -227,17 +234,13 @@ describe('wireCatalog', () => {
     stop();
   });
 
-  it('ignores a select trigger with no id and an empty related selection', () => {
+  it('ignores a related-menu item with no id', () => {
     const root = mountShell(
-      '<div data-catalog-related><button data-action="catalog-select">no id</button>'
-      + '<select data-component="select"><option value="">none</option></select></div>',
+      '<div data-catalog-related><wa-dropdown-item data-action="catalog-select">no id</wa-dropdown-item></div>',
     );
     const onSelect = vi.fn();
     const stop = wireCatalog(root, { onSelect });
     root.querySelector<HTMLElement>('[data-action="catalog-select"]')!.dispatchEvent(new MouseEvent('click', { bubbles: true }));
-    const select = root.querySelector<HTMLElement>('[data-component="select"]')!;
-    (select as HTMLElement & { value: string }).value = '';
-    select.dispatchEvent(new Event('change', { bubbles: true }));
     expect(onSelect).not.toHaveBeenCalled();
     stop();
   });

@@ -19,7 +19,7 @@ export interface WireCatalogOptions {
 
 /**
  * Wire a {@link Catalog}'s interactions with one delegated listener set: sidebar
- * item selection (and the related-entry selector), the sidebar collapse toggle, and
+ * item selection (and the related-entry popup menu), the sidebar collapse toggle, and
  * the theme toggle. The app owns the `active`/`collapsed`/`theme` signals and updates
  * them in the callbacks; optionally mirror the active id into the URL via `urlParam`.
  * Returns a disposer.
@@ -49,13 +49,11 @@ export function wireCatalog(
   };
 
   const disposers: Array<() => void> = [
+    // Sidebar items AND the footer's related-entry popup-menu items both carry
+    // `data-action={selectAction}` + `data-item-id`, so one delegated click covers both.
     delegate(root, 'click', `[data-action="${selectAction}"]`, (_event, element) => {
       const id = (element as HTMLElement).dataset.itemId;
       if (id) select(id);
-    }),
-    delegate(root, 'change', '[data-catalog-related] [data-component="select"]', (event) => {
-      const value = (event.target as HTMLElement & { value?: string }).value;
-      if (value) select(value);
     }),
   ];
   if (onToggleSidebar) {

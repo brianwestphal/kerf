@@ -1578,26 +1578,22 @@ test('catalog routes every production component family and supports its stateful
   await expect(page.locator('[data-demo="list"]')).toBeVisible();
   await expect(page.locator('.kui-catalog__sidebar [data-item-id="list"]')).toHaveAttribute('aria-current', 'page');
   const menuRelationships = page.locator('[data-catalog-related]');
-  await expect(menuRelationships.locator('[name="catalog-related"]')).toHaveCount(1);
-  await expect(menuRelationships.locator('[name="catalog-related"]')).toHaveAttribute('aria-label', 'Related entries');
-  await menuRelationships.locator('[name="catalog-related"]').click();
-  await expect(page.getByRole('group', { name: 'Uses' })).toBeVisible();
-  await page.keyboard.press('Escape');
-  await page.locator('[name="catalog-related"]').evaluate((element) => {
-    const select = element as HTMLElement & { value: string };
-    select.value = 'list-item';
-    select.dispatchEvent(new Event('change', { bubbles: true }));
-  });
+  const relatedTrigger = menuRelationships.locator('wa-button[slot="trigger"]');
+  await expect(relatedTrigger).toHaveCount(1);
+  await expect(relatedTrigger).toHaveAttribute('aria-label', 'Related entries');
+  await relatedTrigger.click();
+  await expect(menuRelationships.locator('.kui-catalog__related-heading', { hasText: 'Uses' })).toBeVisible();
+  await menuRelationships.locator('wa-dropdown-item[data-item-id="list-item"]').click();
   await expect(page).toHaveURL(/component=list-item/);
   await expect(page.locator('[data-demo="list-item"]')).toBeVisible();
-  await page.locator('[name="catalog-related"]').click();
-  await expect(page.getByRole('group', { name: 'Used by' })).toBeVisible();
+  await menuRelationships.locator('wa-button[slot="trigger"]').click();
+  await expect(menuRelationships.locator('.kui-catalog__related-heading', { hasText: 'Used by' })).toBeVisible();
   await page.keyboard.press('Escape');
   await page.goto('/?component=resize');
   const resizeRelationships = page.locator('[data-catalog-related]');
-  await expect(resizeRelationships.locator('[name="catalog-related"]')).toHaveCount(1);
-  await resizeRelationships.locator('[name="catalog-related"]').click();
-  await expect(page.getByRole('group', { name: 'Used by' })).toContainText('Desktop application shell');
+  await expect(resizeRelationships.locator('wa-button[slot="trigger"]')).toHaveCount(1);
+  await resizeRelationships.locator('wa-button[slot="trigger"]').click();
+  await expect(resizeRelationships).toContainText('Desktop application shell');
   await page.keyboard.press('Escape');
 
   const themeButton = page.locator('[data-action="toggle-theme"]');

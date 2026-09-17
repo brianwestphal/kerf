@@ -1,10 +1,9 @@
 import type { SafeHtml } from 'kerfjs';
-import { ExternalLink, Moon, PanelLeftClose, PanelLeftOpen, Sun } from 'lucide';
+import { ExternalLink, Moon, PanelLeftClose, PanelLeftOpen, Sun, Waypoints } from 'lucide';
 
 import { ListHeader } from './list-header.js';
 import { ListItem } from './list-item.js';
 import { LucideIcon } from './lucide-icon.js';
-import { Select } from './select.js';
 import { Toolbar } from './toolbar.js';
 import { ToolbarControlGroup } from './toolbar-control-group.js';
 
@@ -16,11 +15,11 @@ export interface CatalogResource {
   detail?: string;
 }
 
-/** A related entry offered in the detail footer's "Related" selector. */
+/** A related entry offered in the detail footer's "Related entries" popup menu. */
 export interface CatalogRelated {
   id: string;
   name: string;
-  /** Group heading in the selector, e.g. "Uses" / "Used by". */
+  /** Group heading in the menu, e.g. "Uses" / "Used by". */
   group: string;
 }
 
@@ -94,9 +93,29 @@ function findEntry(sections: readonly CatalogSection[], id: string): CatalogEntr
 }
 
 /**
+ * Render the related entries as a `wa-dropdown` popup-menu body: a heading per
+ * `group` (first-seen order) followed by that group's entries, each a navigable
+ * item carrying the same `selectAction` the sidebar items use, so a chosen entry
+ * routes through the one `wireCatalog` select handler.
+ */
+function relatedMenuItems(related: readonly CatalogRelated[], selectAction: string): SafeHtml[] {
+  const groups: string[] = [];
+  for (const entry of related) if (!groups.includes(entry.group)) groups.push(entry.group);
+  const nodes: SafeHtml[] = [];
+  groups.forEach((group, index) => {
+    if (index > 0) nodes.push(<wa-divider></wa-divider>);
+    nodes.push(<small class="kui-catalog__related-heading">{group}</small>);
+    for (const entry of related) {
+      if (entry.group === group) nodes.push(<wa-dropdown-item data-action={selectAction} data-item-id={entry.id}>{entry.name}</wa-dropdown-item>);
+    }
+  });
+  return nodes;
+}
+
+/**
  * A reusable component-catalog shell: a collapsible category sidebar, a titled
  * detail stage that renders the active entry's preview, and a footer with
- * reference links and a related-entry selector. Built entirely from public
+ * reference links and a related-entry popup menu. Built entirely from public
  * `@kerfjs/ui` primitives. Controlled and stateless — the app owns the `active`,
  * `collapsed`, and `theme` signals and computes `content` from `active` in its own
  * render; wire the sidebar/collapse/theme actions with `wireCatalog`.
@@ -180,7 +199,7 @@ export function Catalog({
             ? <nav class="kui-catalog__resources" aria-label={`${name} resources`}><ToolbarControlGroup className="kui-catalog__resource-group" label={`${name} resources`}>{resources.map((resource) => <a class="kui-catalog__resource" href={resource.href} target="_blank" rel="noopener noreferrer" aria-label={`${name}: ${resource.label} (opens in new tab)`}><LucideIcon icon={ExternalLink} name="external-link" /><span>{resource.label}</span>{resource.detail ? <code>{resource.detail}</code> : <></>}</a>)}</ToolbarControlGroup></nav>
             : <></>}
           trailing={related.length > 0
-            ? <div class="kui-catalog__related" data-catalog-related><ToolbarControlGroup appearance="borderless" single className="kui-catalog__related-group" label="Related entries"><Select className="kui-catalog__related-select" name="catalog-related" value="" ariaLabel="Related entries" placeholderText="Related entries" fitMenu choices={related.map((entry) => ({ value: entry.id, label: entry.name, group: entry.group }))} /></ToolbarControlGroup></div>
+            ? <div class="kui-catalog__related" data-catalog-related><ToolbarControlGroup single className="kui-catalog__related-group" label="Related entries"><wa-dropdown class="kui-catalog__related-menu" placement="top-end" data-key={`kui-catalog-related-${active}`} data-morph-skip-children><wa-button slot="trigger" appearance="plain" with-caret aria-label="Related entries"><LucideIcon icon={Waypoints} name="waypoints" /></wa-button>{relatedMenuItems(related, selectAction)}</wa-dropdown></ToolbarControlGroup></div>
             : <></>}
         />
       </footer>

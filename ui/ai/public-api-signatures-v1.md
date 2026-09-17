@@ -698,11 +698,11 @@ interface CatalogResource {
     /** Optional monospace detail (e.g. a file path) shown after the label. */
     detail?: string;
 }
-/** A related entry offered in the detail footer's "Related" selector. */
+/** A related entry offered in the detail footer's "Related entries" popup menu. */
 interface CatalogRelated {
     id: string;
     name: string;
-    /** Group heading in the selector, e.g. "Uses" / "Used by". */
+    /** Group heading in the menu, e.g. "Uses" / "Used by". */
     group: string;
 }
 interface CatalogEntry {
@@ -765,7 +765,7 @@ interface CatalogProps {
 /**
  * A reusable component-catalog shell: a collapsible category sidebar, a titled
  * detail stage that renders the active entry's preview, and a footer with
- * reference links and a related-entry selector. Built entirely from public
+ * reference links and a related-entry popup menu. Built entirely from public
  * `@kerfjs/ui` primitives. Controlled and stateless — the app owns the `active`,
  * `collapsed`, and `theme` signals and computes `content` from `active` in its own
  * render; wire the sidebar/collapse/theme actions with `wireCatalog`.
@@ -831,7 +831,7 @@ interface WireCatalogOptions {
 }
 /**
  * Wire a {@link Catalog}'s interactions with one delegated listener set: sidebar
- * item selection (and the related-entry selector), the sidebar collapse toggle, and
+ * item selection (and the related-entry popup menu), the sidebar collapse toggle, and
  * the theme toggle. The app owns the `active`/`collapsed`/`theme` signals and updates
  * them in the callbacks; optionally mirror the active id into the URL via `urlParam`.
  * Returns a disposer.
