@@ -57,7 +57,7 @@ describe('Catalog', () => {
     expect(html).toContain('href="https://example.com/select.ts"');
     expect(html).toContain('data-catalog-related');
     expect(html).toContain('kui-catalog__related-menu');
-    expect(html).toContain('aria-label="Related entries"');
+    expect(html).toContain('kui-catalog__related-label">Component');
     expect(html).toContain('kui-catalog__related-heading">Used by');
     expect(html).toContain('kui-catalog__related-heading">Uses');
     expect(html).toContain('<wa-divider></wa-divider>');

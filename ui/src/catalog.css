@@ -405,6 +405,30 @@
   height: remify(16px) !important;
 }
 
+/* The related trigger carries a text label ("Component") beside the glyph, so let
+   it grow to its content instead of the single-group's fixed 48px icon-button
+   width (from toolbar-control-group.css). */
+.kui-catalog__related-group[data-single="true"]
+  > .kui-catalog__related-menu
+  > wa-button,
+.kui-catalog__related-group[data-single="true"]
+  > .kui-catalog__related-menu
+  > wa-button::part(base) {
+  width: auto;
+}
+
+/* Keep the glyph beside the text label (the toolbar group paints the slotted svg
+   `display: block`, which would otherwise drop the label onto a second line). */
+.kui-catalog__related-trigger {
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Text label beside the trigger glyph ("Component"). */
+.kui-catalog__related-label {
+  margin-inline-start: remify(6px);
+}
+
 /* Group heading inside the related-entries popup menu (e.g. "Uses" / "Used by"). */
 .kui-catalog__related-heading {
   display: block;
