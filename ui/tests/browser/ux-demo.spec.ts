@@ -64,7 +64,7 @@ test('omits the removed command-palette recipe and safely falls back from its st
     await page.goto('/?component=recipe-compact-toolbar');
     const recipes = page.locator('.kui-catalog__group').filter({ has: page.getByText('Recipes', { exact: true }) });
     const rows = recipes.locator('[data-component="list-item"]');
-    await expect(rows).toHaveCount(9);
+    await expect(rows).toHaveCount(10);
     await expect(rows).toHaveText([
       /Desktop application shell/,
       /Navigation sidebar/,
@@ -75,6 +75,7 @@ test('omits the removed command-palette recipe and safely falls back from its st
       /Compact toolbar choices and actions/,
       /Navigation stack/,
       /Loading inspector/,
+      /Collapsible sidebar/,
     ]);
     await expect(page.locator('[data-item-id="recipe-command-palette"]')).toHaveCount(0);
     await expect(page.locator('[data-recipe="recipe-command-palette"]')).toHaveCount(0);
@@ -981,7 +982,7 @@ test('keeps token-search focus and caret when Delete removes a controlled token'
   })).toBe(4);
   await page.keyboard.type('owner ');
   await expect(editor).toContainText('NOT owner is:active AND parser');
-  await expect(demo.locator('output')).toContainText('1 filters · NOT owner  AND parser');
+  await expect(demo.locator('output:not([data-demo-adoption-readout])')).toContainText('1 filters · NOT owner  AND parser');
   if (browserName === 'chromium') await demo.locator('.kui-catalog-example').first().screenshot({ path: 'test-results/token-search-field-delete-caret.png' });
 });
 
@@ -1021,7 +1022,7 @@ test('edits, removes, and clears controlled token search content', async ({ page
   await expect(editor.locator('[data-component="token-search-token"]')).toHaveCount(0);
   await editor.press('End');
   await editor.pressSequentially(' owner');
-  await expect(demo.locator('output')).toContainText('owner');
+  await expect(demo.locator('output:not([data-demo-adoption-readout])')).toContainText('owner');
 
   await demo.getByRole('button', { name: 'Clear search' }).first().click();
   await expect(editor).toHaveText('');
@@ -1092,6 +1093,23 @@ test('renders an interactive responsive find field inside a toolbar', async ({ p
 
   await trigger.click();
   await expect(group).toHaveAttribute('data-width-transition-seen', 'true');
+  // Wait for the expand WIDTH transition to settle before measuring geometry —
+  // `transitionrun` above only proves it started, so measuring now would catch the
+  // field mid-animation and read a moving trailing control.
+  await group.evaluate(
+    (element) =>
+      new Promise<void>((resolve) => {
+        const finish = (): void => resolve();
+        element.addEventListener(
+          'transitionend',
+          (event) => {
+            if ((event as TransitionEvent).propertyName === 'width') finish();
+          },
+          { once: true },
+        );
+        window.setTimeout(finish, 600);
+      }),
+  );
   await expect(editor).toBeVisible();
   await expect(editor).toBeFocused();
   await expect(toolbar.locator('.kui-toolbar__leading')).toBeVisible();

@@ -935,24 +935,38 @@ const stopTokenSearchSubmits = wireTokenSearchFields(app, {
   onSubmit: ({ id }) => {
     actionLog.value = id === 'toolbar-find' ? 'Find submitted' : 'Search submitted';
   },
-  onEdit: ({ id, editor }) => {
-    if (id !== 'adoption-search') return;
-    const value = readTokenSearchField(editor, adoptionTokens.value);
-    adoptionQuery.value = value.query;
-    adoptionReadout.value = `Editing: ${value.query ? `"${value.query}"` : 'empty'} · ${adoptionTokens.value.length} filters`;
-  },
-  keyboard: {
-    onRemoveToken: ({ id, value, direction }) => {
-      if (id === 'adoption-search') {
-        adoptionTokens.value = adoptionTokens.value.filter((token) => token.value !== value);
-        adoptionReadout.value = `Removed ${value} · ${adoptionTokens.value.length} filters`;
-      } else if (id === 'catalog-search') {
-        tokenSearchTokens.value = tokenSearchTokens.value.filter((token) => token.value !== value);
-      }
-      actionLog.value = `Removed ${value} (${direction === 'backward' ? 'Backspace' : 'Delete'})`;
-    },
-  },
   collapsible: { signals: { 'toolbar-find': toolbarFindOpen, 'collapsible-search': collapsibleSearchOpen, 'toolbar-group-search': toolbarGroupSearchOpen, 'adoption-search': adoptionOpen } },
+});
+// The opt-in chip keyboard + onEdit are demonstrated ONLY on the adoption-knobs
+// field, so wire a second helper scoped to that field's container (the app-wide
+// helper above stays keyboard-free, leaving the other token-search demos on their
+// browser-removal + caret-restore path). Collapse stays owned by the app-wide
+// helper; this scoped one only adds the keyboard + onEdit hooks.
+let stopAdoptionKeyboard: (() => void) | null = null;
+const stopAdoptionKeyboardEffect = effect(() => {
+  const id = selectedDemo.value;
+  window.requestAnimationFrame(() => {
+    stopAdoptionKeyboard?.();
+    stopAdoptionKeyboard = null;
+    if (id !== 'token-search-field') return;
+    const container = app.querySelector<HTMLElement>('.token-search-adoption');
+    if (!container) return;
+    stopAdoptionKeyboard = wireTokenSearchFields(container, {
+      collapsible: false,
+      onEdit: ({ editor }) => {
+        const value = readTokenSearchField(editor, adoptionTokens.value);
+        adoptionQuery.value = value.query;
+        adoptionReadout.value = `Editing: ${value.query ? `"${value.query}"` : 'empty'} · ${adoptionTokens.value.length} filters`;
+      },
+      keyboard: {
+        onRemoveToken: ({ value, direction }) => {
+          adoptionTokens.value = adoptionTokens.value.filter((token) => token.value !== value);
+          adoptionReadout.value = `Removed ${value} · ${adoptionTokens.value.length} filters`;
+          actionLog.value = `Removed ${value} (${direction === 'backward' ? 'Backspace' : 'Delete'})`;
+        },
+      },
+    });
+  });
 });
 const stopListItemDragOver = delegate(app, 'dragover', '[data-demo-drop-status="ready"]', (event, element) => {
   event.preventDefault();
@@ -1018,4 +1032,4 @@ const syncSystemTheme = (event: MediaQueryListEvent): void => {
 };
 systemDarkTheme.addEventListener('change', syncSystemTheme);
 
-window.addEventListener('pagehide', () => { stopActions(); stopCatalog(); stopResize(); stopSelect(); componentOverlay?.dispose(); stopOverlayEffect(); stopRecipeNav?.(); stopRecipeNavEffect(); stopRecipeWire?.(); stopRecipeWireEffect(); stopRecipeChanges(); stopRecipeInputs(); stopRecipeDialogs(); stopTokenSearch(); stopToolbarFind(); stopTokenSearchSubmits(); stopListItemDragOver(); stopListItemDrop(); stopListActionRowDoubleClick(); stopListActionRowContextMenu(); stopAnimationSelects(); stopAnimationRanges(); stopAnimationEvents.forEach((dispose) => dispose()); stopIntersectionObserver(); stopMutationObserver(); stopResizeObserver(); stopTabBars(); systemDarkTheme.removeEventListener('change', syncSystemTheme); }, { once: true });
+window.addEventListener('pagehide', () => { stopActions(); stopCatalog(); stopResize(); stopSelect(); componentOverlay?.dispose(); stopOverlayEffect(); stopRecipeNav?.(); stopRecipeNavEffect(); stopRecipeWire?.(); stopRecipeWireEffect(); stopRecipeChanges(); stopRecipeInputs(); stopRecipeDialogs(); stopTokenSearch(); stopToolbarFind(); stopTokenSearchSubmits(); stopAdoptionKeyboard?.(); stopAdoptionKeyboardEffect(); stopListItemDragOver(); stopListItemDrop(); stopListActionRowDoubleClick(); stopListActionRowContextMenu(); stopAnimationSelects(); stopAnimationRanges(); stopAnimationEvents.forEach((dispose) => dispose()); stopIntersectionObserver(); stopMutationObserver(); stopResizeObserver(); stopTabBars(); systemDarkTheme.removeEventListener('change', syncSystemTheme); }, { once: true });
