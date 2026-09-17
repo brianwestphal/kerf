@@ -46,16 +46,18 @@ export const createRecipe: RecipeFactory = (announce) => {
             <ValueTableRow label="Updated" value="2 hours ago" placeholder={p} />
           </ValueTable>
         </section>
-        <Select name="recipe-inspector-status" value="review" label="Status" placeholder={p} choices={[
-          { value: 'review', label: 'In review' },
-          { value: 'ready', label: 'Ready' },
-          { value: 'done', label: 'Done' },
-        ]} />
-        <SegmentedControl id="recipe-inspector-view" label="Inspector view" value="details" appearance="toolbar" shape="pill" size="small" placeholder={p} choices={[
-          { value: 'details', label: 'Details', content: icon(List, 'list') },
-          { value: 'activity', label: 'Activity', content: icon(Columns3, 'columns-3') },
-          { value: 'files', label: 'Files', content: icon(FileText, 'file-text') },
-        ]} />
+        <div class="recipe-inspector__controls">
+          <Select name="recipe-inspector-status" value="review" label="Status" placeholder={p} choices={[
+            { value: 'review', label: 'In review' },
+            { value: 'ready', label: 'Ready' },
+            { value: 'done', label: 'Done' },
+          ]} />
+          <SegmentedControl id="recipe-inspector-view" label="Inspector view" value="details" appearance="toolbar" shape="pill" size="small" placeholder={p} choices={[
+            { value: 'details', label: 'Details', content: icon(List, 'list') },
+            { value: 'activity', label: 'Activity', content: icon(Columns3, 'columns-3') },
+            { value: 'files', label: 'Files', content: icon(FileText, 'file-text') },
+          ]} />
+        </div>
         <section>
           <ListItem action="recipe-action" itemId="reassign" label="Reassign ticket" icon={icon(Inbox, 'inbox')} placeholder={p} />
           <ListItem action="recipe-action" itemId="watch" label="Watch for changes" placeholder={p} />

@@ -359,3 +359,15 @@
 .recipe-inspector {
   width: min(remify(560px), 100%);
 }
+
+/* The bare Select + SegmentedControl carry no content-item geometry, so inset
+   them to the shared inline margin to line up with the ValueTable / list / banner
+   content-items, and group the two related controls closer than the 24px
+   between-region content gap. */
+.recipe-inspector__controls {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  margin-inline: var(--kui-layout-inline-margin, remify(8px));
+  gap: var(--kui-space-s);
+}
