@@ -147,6 +147,13 @@ describe('CatalogExample', () => {
     expect(html).not.toContain('kui-catalog-example__note');
   });
 
+  it('omits the label ListHeader for a bare specimen', () => {
+    const html = asHtml(CatalogExample({ children: raw('<b data-specimen />') }));
+    expect(html).toContain('data-catalog-example');
+    expect(html).not.toContain('data-component="list-header"');
+    expect(html).toContain('<b data-specimen />');
+  });
+
   it('stacks examples under a labeled region', () => {
     const html = asHtml(CatalogExampleStack({ label: 'Variants', children: raw('<section/>') }));
     expect(html).toContain('data-catalog-example-stack');

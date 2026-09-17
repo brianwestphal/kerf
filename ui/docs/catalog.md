@@ -62,7 +62,8 @@ const buttonPreview = (
 );
 ```
 
-`align` lines a specimen's visible left edge up with its label text: `'glyph'`
+`label` is optional — omit it for a bare specimen with no `ListHeader`. `align`
+lines a specimen's visible left edge up with its label text: `'glyph'`
 (16px) for a bare glyph/text specimen, `'inline-control'` (8px) for a control that
 already carries ~8px of its own inline padding, and `'none'` (the default) for a
 content-item/composition that already owns its geometry. The inset is published as

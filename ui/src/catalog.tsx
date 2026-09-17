@@ -198,8 +198,8 @@ export function Catalog({
 export type CatalogExampleAlign = 'glyph' | 'inline-control' | 'none';
 
 export interface CatalogExampleProps {
-  /** The example's label, shown as a `ListHeader` above the specimen. */
-  label: string;
+  /** The example's label, shown as a `ListHeader` above the specimen. Omit for a bare specimen. */
+  label?: string;
   /** Optional explanatory note between the label and the specimen. */
   note?: SafeHtml | string;
   /** Alignment inset for the specimen — see {@link CatalogExampleAlign}. Default `'none'`. */
@@ -218,7 +218,7 @@ export interface CatalogExampleProps {
  */
 export function CatalogExample({ label, note, align = 'none', className = '', children }: CatalogExampleProps) {
   return <section class={`kui-catalog-example ${className}`.trim()} data-catalog-example data-align={align}>
-    <ListHeader label={label} />
+    {label !== undefined ? <ListHeader label={label} /> : <></>}
     {note !== undefined ? <p class="kui-catalog-example__note">{note}</p> : <></>}
     {children}
   </section>;

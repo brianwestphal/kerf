@@ -780,8 +780,8 @@ declare function Catalog({ brand, sections, active, content, collapsed, theme, h
  */
 type CatalogExampleAlign = 'glyph' | 'inline-control' | 'none';
 interface CatalogExampleProps {
-    /** The example's label, shown as a `ListHeader` above the specimen. */
-    label: string;
+    /** The example's label, shown as a `ListHeader` above the specimen. Omit for a bare specimen. */
+    label?: string;
     /** Optional explanatory note between the label and the specimen. */
     note?: SafeHtml | string;
     /** Alignment inset for the specimen — see {@link CatalogExampleAlign}. Default `'none'`. */

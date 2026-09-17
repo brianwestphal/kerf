@@ -35,10 +35,12 @@ describe('UX catalog sidebar shell', () => {
   });
 
   it('fully collapses the pane so its restore action can live in the detail toolbar', async () => {
-    const file = resolve(import.meta.dirname, '../../ux-demo/style.css');
+    // The shell is the shipped @kerfjs/ui/catalog component, so its collapse rule
+    // lives in catalog.css (the demo dogfoods it rather than re-declaring it).
+    const file = resolve(import.meta.dirname, '../../src/catalog.css');
     const root = postcss.parse(await readFile(file, 'utf8'), { from: file });
     const collapsedShell = root.nodes.find(
-      (node) => node.type === 'rule' && node.selector === '.catalog-shell[data-sidebar-collapsed="true"]',
+      (node) => node.type === 'rule' && node.selector === '.kui-catalog[data-sidebar-collapsed="true"]',
     );
 
     if (!collapsedShell || collapsedShell.type !== 'rule') throw new Error('Missing collapsed catalog shell rule');
