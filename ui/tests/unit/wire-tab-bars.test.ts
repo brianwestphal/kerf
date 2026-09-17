@@ -68,6 +68,62 @@ describe('TabBar wiring', () => {
     stop();
   });
 
+  function activationBar(id: string, activation?: 'automatic' | 'manual') {
+    const root = document.createElement('div');
+    root.innerHTML = String(TabBar({ id, label: id, activation, children: [
+      AppTab({ id: 'one', name: 'One', selected: true }),
+      AppTab({ id: 'two', name: 'Two' }),
+    ] }));
+    document.body.append(root);
+    roots.push(root);
+    return [...root.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
+  }
+
+  it('activates on arrow by default but only moves roving focus in manual mode', () => {
+    const autoTabs = activationBar('auto');
+    const stopAuto = wireTabBars(document.body, { onReorder: vi.fn() });
+    const autoClick = vi.spyOn(autoTabs[1]!, 'click');
+    autoTabs[0]!.focus();
+    autoTabs[0]!.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
+    expect(document.activeElement).toBe(autoTabs[1]); // focus moved
+    expect(autoClick).toHaveBeenCalledOnce(); // AND selected
+    stopAuto();
+
+    const manualTabs = activationBar('manual');
+    const stopManual = wireTabBars(document.body, { onReorder: vi.fn(), activation: 'manual' });
+    const manualClick = vi.spyOn(manualTabs[1]!, 'click');
+    manualTabs[0]!.focus();
+    manualTabs[0]!.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
+    expect(document.activeElement).toBe(manualTabs[1]); // focus moved
+    expect(manualClick).not.toHaveBeenCalled(); // but NOT selected
+    // Enter / Space activate natively on the tab <button>; an explicit click still selects.
+    manualTabs[1]!.click();
+    expect(manualClick).toHaveBeenCalledOnce();
+    stopManual();
+  });
+
+  it('lets a per-bar data-tab-activation attribute override the wireTabBars option', () => {
+    // Bar attribute forces manual even though the option is the default automatic.
+    const manualBar = activationBar('manual-attr', 'manual');
+    expect(manualBar[0]!.closest('[data-component="tab-bar"]')!.getAttribute('data-tab-activation')).toBe('manual');
+    const stopA = wireTabBars(document.body, { onReorder: vi.fn() });
+    const manualClick = vi.spyOn(manualBar[1]!, 'click');
+    manualBar[0]!.focus();
+    manualBar[0]!.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
+    expect(document.activeElement).toBe(manualBar[1]);
+    expect(manualClick).not.toHaveBeenCalled();
+    stopA();
+
+    // Bar attribute forces automatic even though the option is manual.
+    const autoBar = activationBar('auto-attr', 'automatic');
+    const stopB = wireTabBars(document.body, { onReorder: vi.fn(), activation: 'manual' });
+    const autoClick = vi.spyOn(autoBar[1]!, 'click');
+    autoBar[0]!.focus();
+    autoBar[0]!.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
+    expect(autoClick).toHaveBeenCalledOnce();
+    stopB();
+  });
+
   it('reports only same-bar pointer drops and clears transient markers', () => {
     const root = bar();
     const other = bar('other');

@@ -343,9 +343,16 @@ interface TabBarProps {
     leading?: SafeHtml;
     trailing?: SafeHtml;
     className?: string;
+    /**
+     * Keyboard activation mode for this strip, emitted as `data-tab-activation` for
+     * `wireTabBars` to read (overrides its `activation` option). `'automatic'` (default)
+     * selects on arrow / Home / End; `'manual'` moves roving focus only and the user
+     * selects with Enter / Space / click — use it when selecting a tab is a heavy action.
+     */
+    activation?: 'automatic' | 'manual';
 }
 /** Render a controlled tab strip. The application owns selection, order, and persistence. */
-declare function TabBar({ id, label, children, leading, trailing, className }: TabBarProps): SafeHtml;
+declare function TabBar({ id, label, children, leading, trailing, className, activation }: TabBarProps): SafeHtml;
 
 export { TabBar, type TabBarProps };
 ```
@@ -362,14 +369,27 @@ interface TabReorder {
     position: TabDropPosition;
     source: TabReorderSource;
 }
+type TabActivation = 'automatic' | 'manual';
 interface WireTabBarsOptions {
     onReorder: (change: TabReorder) => void;
+    /**
+     * How arrow / Home / End keys activate tabs (default `'automatic'`):
+     * - `'automatic'` moves roving focus **and** selects the focused tab (clicks it).
+     * - `'manual'` moves roving focus only; the user selects with Enter / Space / click
+     *   (the ARIA Tabs manual-activation pattern). Use this when activation is a heavy or
+     *   side-effecting action (e.g. a tab that loads a project) so arrowing through the
+     *   strip doesn't trigger it on every tab.
+     *
+     * A per-bar `data-tab-activation="manual" | "automatic"` attribute (see the `TabBar`
+     * `activation` prop) overrides this option for that strip.
+     */
+    activation?: TabActivation;
 }
 declare function reorderTabs<T>(items: readonly T[], getId: (item: T) => string, sourceId: string, targetId: string, position: TabDropPosition): T[];
 /** Wire reordering and keyboard navigation while leaving controlled state in the application. */
-declare function wireTabBars(root: HTMLElement | Document, { onReorder }: WireTabBarsOptions): () => void;
+declare function wireTabBars(root: HTMLElement | Document, { onReorder, activation }: WireTabBarsOptions): () => void;
 
-export { type TabDropPosition, type TabReorder, type TabReorderSource, type WireTabBarsOptions, reorderTabs, wireTabBars };
+export { type TabActivation, type TabDropPosition, type TabReorder, type TabReorderSource, type WireTabBarsOptions, reorderTabs, wireTabBars };
 ```
 
 ## `@kerfjs/ui/nav-stack`

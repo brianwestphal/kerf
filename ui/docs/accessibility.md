@@ -73,6 +73,15 @@ autoscroll at either horizontal edge. Edge autoscroll is direct manipulation,
 stops on drop/drag end/disposal, and does not change keyboard behavior. It
 returns a disposer.
 
+Arrow / Home / End follow the ARIA Tabs **automatic-activation** pattern by
+default: they move roving focus and select the focused tab. Pass
+`activation: 'manual'` (or set `data-tab-activation="manual"` on a strip via the
+`TabBar` `activation` prop, which overrides the option per bar) for
+**manual activation**: arrow keys move roving focus only and the user selects
+with Enter / Space (native on the tab button) or click. Use manual activation
+when selecting a tab is a heavy or side-effecting action — e.g. a tab that loads
+a project — so arrowing through the strip does not trigger it on every tab.
+
 The application owns the ordered tab array, selection, panels, close policy,
 routing, and persistence. On `onReorder`, synchronously render the reported
 order so the helper can restore focus to the moved tab. Pair tabs with

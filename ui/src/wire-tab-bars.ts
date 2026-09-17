@@ -9,8 +9,22 @@ export interface TabReorder {
   source: TabReorderSource;
 }
 
+export type TabActivation = 'automatic' | 'manual';
+
 export interface WireTabBarsOptions {
   onReorder: (change: TabReorder) => void;
+  /**
+   * How arrow / Home / End keys activate tabs (default `'automatic'`):
+   * - `'automatic'` moves roving focus **and** selects the focused tab (clicks it).
+   * - `'manual'` moves roving focus only; the user selects with Enter / Space / click
+   *   (the ARIA Tabs manual-activation pattern). Use this when activation is a heavy or
+   *   side-effecting action (e.g. a tab that loads a project) so arrowing through the
+   *   strip doesn't trigger it on every tab.
+   *
+   * A per-bar `data-tab-activation="manual" | "automatic"` attribute (see the `TabBar`
+   * `activation` prop) overrides this option for that strip.
+   */
+  activation?: TabActivation;
 }
 
 type TabRoot = HTMLElement;
@@ -60,7 +74,7 @@ function reveal(tab: HTMLElement | null | undefined): void {
 }
 
 /** Wire reordering and keyboard navigation while leaving controlled state in the application. */
-export function wireTabBars(root: HTMLElement | Document, { onReorder }: WireTabBarsOptions): () => void {
+export function wireTabBars(root: HTMLElement | Document, { onReorder, activation = 'automatic' }: WireTabBarsOptions): () => void {
   const ownerDocument = (root.nodeType === 9 ? root as Document : root.ownerDocument)!;
   const view = ownerDocument.defaultView!;
   let autoScroll: { strip: HTMLElement; velocity: number; frame: number | undefined; previousTime: number | undefined } | undefined;
@@ -225,8 +239,13 @@ export function wireTabBars(root: HTMLElement | Document, { onReorder }: WireTab
     else if (keyboardEvent.key === 'End') next = tabs.length - 1;
     if (next === undefined) return;
     keyboardEvent.preventDefault();
+    // A per-bar data-tab-activation attribute overrides the wireTabBars option.
+    const perBar = bar.dataset.tabActivation;
+    const mode: TabActivation = perBar === 'manual' || perBar === 'automatic' ? perBar : activation;
     tabs[next]?.focus();
-    tabs[next]?.click();
+    // Manual activation moves roving focus only; the user selects with Enter / Space
+    // (native on the tab <button>) or click. Automatic also selects the focused tab.
+    if (mode === 'automatic') tabs[next]?.click();
     reveal(tabs[next]);
   };
   const onFocusIn = (event: Event) => {
