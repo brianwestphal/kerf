@@ -2,10 +2,10 @@
 //
 // For each component + presentation combination we render the component's real
 // SafeHtml (with its production CSS + tokens and representative sample data) into
-// a standalone HTML page, capture it to a self-contained SVG with `domotion
-// capture --real-text` (a paintless authored <text> layer keeps the picture
-// selectable/searchable), and write one SVG per variant under
-// docs/design/templates/<component>/. A per-component library file
+// a standalone HTML page, capture it to an SVG with `domotion capture
+// --text-mode system-font` (text is emitted as authored <text> painted by the
+// viewer's system fonts — real, selectable, and small), and write one SVG per
+// variant under docs/design/templates/<component>/. A per-component library file
 // (docs/design/templates/<component>.svg) then embeds an inline COPY of each
 // variant (a positioned nested <svg>) — external <image href> / <use href>
 // references render blank in many SVG viewers/rasterizers, so inlining keeps the
@@ -117,7 +117,7 @@ async function buildComponent(domotion, name, spec) {
     const pagePath = resolve(dir, `${variant.id}.html`);
     const svgPath = resolve(dir, `${variant.id}.svg`);
     await writeFile(pagePath, page);
-    await execFileAsync(process.execPath, [domotion, 'capture', pagePath, '-o', svgPath, '--selector', spec.selector, '--width', String(spec.width), '--height', String(variant.height + 40), '--real-text', '--optimize'], { env: { ...process.env, DOMOTION_NO_OPEN: '1' } });
+    await execFileAsync(process.execPath, [domotion, 'capture', pagePath, '-o', svgPath, '--selector', spec.selector, '--width', String(spec.width), '--height', String(variant.height + 40), '--text-mode', 'system-font', '--optimize'], { env: { ...process.env, DOMOTION_NO_OPEN: '1' } });
     await rm(pagePath);
     const svg = await readFile(svgPath, 'utf8');
     const dims = /viewBox="0 0 (\d+(?:\.\d+)?) (\d+(?:\.\d+)?)"/.exec(svg);

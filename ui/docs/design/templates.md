@@ -23,10 +23,11 @@ docs/design/templates/
     …
 ```
 
-- Each **variant** file is a standalone SVG — embeds its own glyph data and
-  styles, scales crisply, and drops into an `<img>` anywhere. Captured with
-  `--real-text`, so a paintless authored `<text>` layer keeps the picture
-  selectable and searchable on top of the embedded-font glyphs.
+- Each **variant** file is a standalone SVG — scales crisply and drops into an
+  `<img>` anywhere. Captured with `--text-mode system-font`, so text is emitted as
+  authored `<text>` painted by the viewer's system fonts: real, selectable, and
+  small (no embedded font data). The kerf UI design font stack is system-based, so
+  the picture matches; a viewer without those fonts falls back to its own.
 - The **library** file (`<component>.svg`) lays the variants out with captions and
   embeds an inline **copy** of each variant as a positioned nested `<svg>`. It is
   fully self-contained and renders everywhere — a browser, an `<img>`, GitHub, or
@@ -67,7 +68,7 @@ starting point and:
    tokens and `layout.css`), and any of your own component CSS.
 3. Enumerate the presentation combinations in the per-component manifest.
 4. Capture each variant with `domotion capture <page.html> --selector <css>
-   --real-text -o <variant>.svg`, then write a library file that embeds an inline
+   --text-mode system-font -o <variant>.svg`, then write a library file that embeds an inline
    copy of each variant (namespacing each copy's ids/font-family names so they
    don't collide) rather than referencing them, so it renders everywhere.
 
