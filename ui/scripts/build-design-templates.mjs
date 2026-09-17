@@ -60,7 +60,10 @@ const pushButton = (label) => `<button type="button" class="dt-button">${label}<
 const COMPONENTS = {
   'panel-header': {
     // PanelHeader composes a Toolbar with a ToolbarText title.
-    css: ['foundation', 'layout', 'toolbar', 'toolbar-text', 'panel-header'],
+    // toolbar-control-group is required: PanelHeader's icon is a
+    // `.kui-toolbar-control-group` tile, and its size feeds the title/subtitle
+    // inset — without it the icon group collapses and the subtitle misaligns.
+    css: ['foundation', 'layout', 'toolbar', 'toolbar-control-group', 'toolbar-text', 'panel-header'],
     selector: '#frame',
     width: 720,
     frameWidth: 640,
