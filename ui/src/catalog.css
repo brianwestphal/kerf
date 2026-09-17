@@ -125,17 +125,17 @@
 }
 
 .kui-catalog__secondary-heading {
-  margin: 0;
+  /* Match the content inset the list items and the group's ListHeader self-apply
+     (8px inline margin), so the subsection heading, its items, and the "Web
+     Awesome" group heading all share one left edge instead of the heading sitting
+     further left and its items further right. */
+  margin: 0 remify(8px);
   padding: remify(1.6px) remify(8.8px);
   color: var(--kui-color-text-quiet);
   font-size: var(--kui-font-2xs);
   font-weight: 650;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-}
-
-.kui-catalog__secondary-group .kui-list-item {
-  padding-inline-start: remify(16px);
 }
 
 /* Labeled, aligned preview examples (CatalogExample / CatalogExampleStack). */
