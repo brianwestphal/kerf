@@ -27,6 +27,20 @@
   gap: 0;
 }
 
+/* `shape="rounded"` swaps the default pill radius for the design system's softer
+   rounded-rectangle radius on both the group and its items (custom properties
+   inherit to the item rules that read them). */
+.kui-toolbar-control-group[data-shape="rounded"] {
+  --kui-toolbar-group-radius: var(
+    --kui-layout-rounded-radius,
+    calc(1px + remify(11px))
+  );
+  --kui-toolbar-item-radius: var(
+    --kui-layout-rounded-radius,
+    calc(1px + remify(11px))
+  );
+}
+
 .kui-toolbar-control-group[data-tone="dark"] {
   --kui-toolbar-control-background: color-mix(
     in srgb,

@@ -233,6 +233,27 @@ test('shows a visible hover background on borderless toolbar-group buttons', asy
   await expect.poll(groupBackground).not.toBe('rgb(255, 255, 255)');
 });
 
+test('the ToolbarControlGroup demo shape toggle switches every group between pill and rounded', async ({ page }) => {
+  await page.goto('/?component=toolbar-control-group');
+  const demo = page.locator('.toolbar-control-group-demo');
+  const roundedGroups = demo.locator('.kui-toolbar-control-group[data-shape="rounded"]');
+  const sampleGroup = demo.locator('.kui-toolbar-control-group').filter({ has: page.locator('wa-button[aria-label="Pin view"]') }).first();
+
+  // Default: every group is pill (22px), none rounded.
+  await expect(sampleGroup).toHaveCSS('border-radius', '22px');
+  await expect(roundedGroups).toHaveCount(0);
+
+  // Rounded switches every example group (the toggle's own group stays pill).
+  await demo.getByRole('button', { name: 'Rounded' }).click();
+  await expect(sampleGroup).toHaveCSS('border-radius', '12px');
+  await expect(roundedGroups).toHaveCount(9);
+
+  // And back to pill.
+  await demo.getByRole('button', { name: 'Pill' }).click();
+  await expect(sampleGroup).toHaveCSS('border-radius', '22px');
+  await expect(roundedGroups).toHaveCount(0);
+});
+
 test('paints a selected wa-button control on ::part(base), not the outer host box', async ({ page }) => {
   await page.goto('/?component=toolbar-control-group');
   // Inject a data-single="false" group with a selected wa-button whose ::part(base)

@@ -71,6 +71,9 @@ describe('production UI primitives', () => {
     expect(asHtml(Toolbar({ leading: ToolbarText({ text: 'Small', size: 'small', className: 'mono' }) }))).toContain('data-has-center="false"');
     expect(asHtml(ToolbarText({ text: 'Default' }))).toContain('data-size="default"');
     expect(asHtml(ToolbarControlGroup({ children: icon }))).not.toContain('role="group"');
+    // Corner shape defaults to pill; `rounded` is opt-in.
+    expect(asHtml(ToolbarControlGroup({ children: icon }))).toContain('data-shape="pill"');
+    expect(asHtml(ToolbarControlGroup({ children: icon, shape: 'rounded' }))).toContain('data-shape="rounded"');
   });
 
   it('renders menu navigation, toggle, action, disabled, and multiline states', () => {

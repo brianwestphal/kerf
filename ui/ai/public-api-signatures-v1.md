@@ -81,8 +81,10 @@ interface ToolbarControlGroupProps {
     appearance?: 'contained' | 'borderless';
     tone?: 'default' | 'dark';
     buttonAppearance?: 'plain' | 'push';
+    /** Corner shape: fully round `pill` (default) or a softer `rounded` rectangle. */
+    shape?: 'pill' | 'rounded';
 }
-declare function ToolbarControlGroup({ children, label, className, expanded, single, appearance, tone, buttonAppearance }: ToolbarControlGroupProps): SafeHtml;
+declare function ToolbarControlGroup({ children, label, className, expanded, single, appearance, tone, buttonAppearance, shape }: ToolbarControlGroupProps): SafeHtml;
 
 export { ToolbarControlGroup, type ToolbarControlGroupProps };
 ```
