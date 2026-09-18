@@ -52,7 +52,7 @@
   );
   --_kui-state-banner-foreground: var(
     --kui-state-banner-foreground,
-    var(--kui-state-banner-info-foreground, var(--kui-color-brand-on-quiet))
+    var(--kui-state-banner-info-foreground, var(--kui-color-brand-on-fill))
   );
 }
 .kui-state-banner[data-tone="success"] {

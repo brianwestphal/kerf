@@ -178,6 +178,13 @@
     var(--kui-color-brand-on-quiet)
   );
   --kui-color-brand-on-loud: var(--wa-color-brand-on-loud, #fff);
+  /* Brand accent text placed directly ON a brand fill (quiet or normal), such as
+     the info StateBanner and Select's current option. Darker than brand-on-quiet
+     so it clears WCAG AA (>=4.5:1): brand-on-quiet (#1e6ef4) resolves to only
+     3.77:1 over brand-fill-normal (#d6ecff) and 4.15:1 over brand-fill-quiet
+     (#ebf6ff), while #1a5dcf (same hue) clears ~4.9:1 and ~5.2:1 there. The dark
+     value matches brand-on-quiet, which already passes over the dark fills. */
+  --kui-color-brand-on-fill: light-dark(#1a5dcf, #8acbff);
 
   --kui-color-success-fill-loud: var(--wa-color-success-fill-loud, #34c759);
   --kui-color-success-fill-quiet: var(

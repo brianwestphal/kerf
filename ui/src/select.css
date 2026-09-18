@@ -32,7 +32,9 @@
 }
 .kui-select wa-option {
   --wa-form-control-activated-color: var(--kui-color-brand-fill-normal);
-  --current-text-color: var(--kui-color-brand-on-quiet);
+  /* Current option text sits on the activated brand fill; use the darker on-fill
+     accent so it clears WCAG AA (brand-on-quiet was 3.77:1 over that fill). */
+  --current-text-color: var(--kui-color-brand-on-fill);
 }
 .kui-select wa-option::part(start) {
   align-self: center;

@@ -1572,6 +1572,55 @@ test('preserves Select option icons across Kerf rerenders and replaces selected 
   }
 });
 
+test('keeps the current Select option text above WCAG AA contrast', async ({ page }) => {
+  // The current (aria-selected) option keeps its brand accent over the activated
+  // brand fill, so the accent must clear 4.5:1 (brand-on-quiet #1e6ef4 was only
+  // 3.77:1 there; the darker on-fill blue #1a5dcf clears it). Resolve colors
+  // through a canvas so any serialization (rgb()/color(srgb …)) works.
+  await page.goto('/?component=select');
+  const select = page.locator('[data-demo="select"] [name="rendering-balance"]');
+  const openDropdown = () =>
+    Promise.all([
+      select.evaluate((element) => new Promise<void>((resolve) => element.addEventListener('wa-after-show', () => resolve(), { once: true }))),
+      select.click(),
+    ]);
+  const currentOptionContrast = () =>
+    select.locator('wa-option[aria-selected="true"]').first().evaluate((option) => {
+      const context = document.createElement('canvas').getContext('2d');
+      const luminance = (color: string): number => {
+        if (!context) return 0;
+        context.canvas.width = 1;
+        context.canvas.height = 1;
+        context.fillStyle = color;
+        context.fillRect(0, 0, 1, 1);
+        const channels = [...context.getImageData(0, 0, 1, 1).data.slice(0, 3)].map((channel) => {
+          const value = channel / 255;
+          return value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4;
+        });
+        return 0.2126 * (channels[0] ?? 0) + 0.7152 * (channels[1] ?? 0) + 0.0722 * (channels[2] ?? 0);
+      };
+      const base = option.shadowRoot?.querySelector('[part~="base"]') ?? option;
+      let backgroundHost: (Element & { host?: Element }) | null = base as Element;
+      let background = 'rgba(0, 0, 0, 0)';
+      while (backgroundHost) {
+        const candidate = window.getComputedStyle(backgroundHost as Element).backgroundColor;
+        if (candidate && !/rgba\(0, 0, 0, 0\)|transparent/.test(candidate)) {
+          background = candidate;
+          break;
+        }
+        backgroundHost = (backgroundHost.parentElement ?? (backgroundHost.getRootNode() as ShadowRoot | null)?.host) as Element | null;
+      }
+      const foreground = luminance(window.getComputedStyle(base as Element).color);
+      const back = luminance(background);
+      return (Math.max(foreground, back) + 0.05) / (Math.min(foreground, back) + 0.05);
+    });
+  await openDropdown();
+  // Light is the fix target (the 3.77:1 failure). Dark keeps the already-compliant
+  // #8acbff accent (brand-on-fill's dark value equals brand-on-quiet's), and the
+  // theme toggle dismisses + re-renders the listbox, so this asserts light only.
+  await expect.poll(currentOptionContrast, 'light current Select option contrast').toBeGreaterThanOrEqual(4.5);
+});
+
 test('animation specimen exposes settings, transport, lifecycle, and reduced-motion behavior', async ({ page, browserName }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/?component=wa-animation');
@@ -2823,12 +2872,40 @@ test('ships semantic banner palettes with scoped overrides', async ({ page, brow
     return { tone: node.getAttribute('data-tone'), color: style.color, background: style.backgroundColor, border: style.borderColor };
   }));
   expect(styles.slice(0, 5).map(({ color }) => color)).toEqual([
-    'rgb(29, 29, 31)', 'rgb(30, 110, 244)', 'rgb(0, 137, 50)', 'rgb(161, 106, 0)', 'rgb(194, 11, 32)',
+    'rgb(29, 29, 31)', 'rgb(26, 93, 207)', 'rgb(0, 137, 50)', 'rgb(161, 106, 0)', 'rgb(194, 11, 32)',
   ]);
   expect(new Set(styles.slice(0, 5).map(({ background }) => background)).size).toBe(5);
   expect(new Set(styles.slice(0, 5).map(({ border }) => border)).size).toBe(5);
   expect(styles[5]!.color).toBe('rgb(109, 63, 156)');
-  expect(styles[1]!.color).toBe('rgb(30, 110, 244)');
+  // The info tone's brand accent uses the darker on-fill blue so it clears WCAG
+  // AA over the brand-tinted banner fill (brand-on-quiet #1e6ef4 was only 4.15:1).
+  expect(styles[1]!.color).toBe('rgb(26, 93, 207)');
+  const infoContrast = () =>
+    banners.nth(1).evaluate((node) => {
+      const context = document.createElement('canvas').getContext('2d');
+      const luminance = (color: string): number => {
+        if (!context) return 0;
+        context.canvas.width = 1;
+        context.canvas.height = 1;
+        context.fillStyle = color;
+        context.fillRect(0, 0, 1, 1);
+        const channels = [...context.getImageData(0, 0, 1, 1).data.slice(0, 3)].map((channel) => {
+          const value = channel / 255;
+          return value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4;
+        });
+        return 0.2126 * (channels[0] ?? 0) + 0.7152 * (channels[1] ?? 0) + 0.0722 * (channels[2] ?? 0);
+      };
+      const styleMap = window.getComputedStyle(node);
+      const foreground = luminance(styleMap.color);
+      const background = luminance(styleMap.backgroundColor);
+      return (Math.max(foreground, background) + 0.05) / (Math.min(foreground, background) + 0.05);
+    });
+  await expect.poll(infoContrast, 'light info StateBanner contrast').toBeGreaterThanOrEqual(4.5);
+  await page.locator('[data-action="toggle-theme"]').click();
+  await expect(page.locator('html')).toHaveClass(/demo-dark/);
+  await expect.poll(infoContrast, 'dark info StateBanner contrast').toBeGreaterThanOrEqual(4.5);
+  await page.locator('[data-action="toggle-theme"]').click();
+  await expect(page.locator('html')).not.toHaveClass(/demo-dark/);
   expect(await labelIconOffsets()).toEqual(Array(6).fill(0));
   if (browserName === 'chromium') await page.screenshot({ path: 'test-results/state-banner-type-label-alignment-after.png', fullPage: true });
   await page.setViewportSize({ width: 390, height: 844 });
