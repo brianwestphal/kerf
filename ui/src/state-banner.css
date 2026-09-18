@@ -72,10 +72,7 @@
   );
   --_kui-state-banner-foreground: var(
     --kui-state-banner-foreground,
-    var(
-      --kui-state-banner-success-foreground,
-      var(--kui-color-success-on-quiet)
-    )
+    var(--kui-state-banner-success-foreground, var(--kui-color-success-on-fill))
   );
 }
 .kui-state-banner[data-tone="warning"] {
@@ -95,10 +92,7 @@
   );
   --_kui-state-banner-foreground: var(
     --kui-state-banner-foreground,
-    var(
-      --kui-state-banner-warning-foreground,
-      var(--kui-color-warning-on-quiet)
-    )
+    var(--kui-state-banner-warning-foreground, var(--kui-color-warning-on-fill))
   );
 }
 .kui-state-banner[data-tone="danger"] {

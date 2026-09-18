@@ -230,6 +230,10 @@
   --kui-color-success-on-quiet: var(--wa-color-success-on-quiet, #008932);
   --kui-color-success-on-normal: var(--wa-color-success-on-normal, #006d28);
   --kui-color-success-on-loud: var(--wa-color-success-on-loud, #fff);
+  /* Success text placed ON a success fill (e.g. the success StateBanner). Darker
+     than success-on-quiet so it clears WCAG AA (>=4.5:1) over success-fill-quiet
+     (#e3f7e8), where #008932 reached only 4.05:1. Dark matches success-on-quiet. */
+  --kui-color-success-on-fill: light-dark(#00792c, #63e685);
 
   --kui-color-warning-fill-loud: var(--wa-color-warning-fill-loud, #ffcc00);
   --kui-color-warning-fill-quiet: var(
@@ -275,6 +279,10 @@
   --kui-color-warning-on-quiet: var(--wa-color-warning-on-quiet, #a16a00);
   --kui-color-warning-on-normal: var(--wa-color-warning-on-normal, #5f3f00);
   --kui-color-warning-on-loud: var(--wa-color-warning-on-loud, #1d1d1f);
+  /* Warning text placed ON a warning fill (e.g. the warning StateBanner). Darker
+     than warning-on-quiet so it clears WCAG AA (>=4.5:1) over warning-fill-quiet
+     (#fffae8), where #a16a00 reached only 4.39:1. Dark matches warning-on-quiet. */
+  --kui-color-warning-on-fill: light-dark(#8f5e00, #ffd84a);
 
   --kui-color-danger-fill-loud: var(--wa-color-danger-fill-loud, #ff383c);
   --kui-color-danger-fill-quiet: var(

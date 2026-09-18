@@ -2872,16 +2872,17 @@ test('ships semantic banner palettes with scoped overrides', async ({ page, brow
     return { tone: node.getAttribute('data-tone'), color: style.color, background: style.backgroundColor, border: style.borderColor };
   }));
   expect(styles.slice(0, 5).map(({ color }) => color)).toEqual([
-    'rgb(29, 29, 31)', 'rgb(26, 93, 207)', 'rgb(0, 137, 50)', 'rgb(161, 106, 0)', 'rgb(194, 11, 32)',
+    'rgb(29, 29, 31)', 'rgb(26, 93, 207)', 'rgb(0, 121, 44)', 'rgb(143, 94, 0)', 'rgb(194, 11, 32)',
   ]);
   expect(new Set(styles.slice(0, 5).map(({ background }) => background)).size).toBe(5);
   expect(new Set(styles.slice(0, 5).map(({ border }) => border)).size).toBe(5);
   expect(styles[5]!.color).toBe('rgb(109, 63, 156)');
-  // The info tone's brand accent uses the darker on-fill blue so it clears WCAG
-  // AA over the brand-tinted banner fill (brand-on-quiet #1e6ef4 was only 4.15:1).
+  // The info/success/warning tones use darker on-fill accents so their text clears
+  // WCAG AA over the tinted banner fills (brand/success/warning-on-quiet resolved
+  // to 4.15/4.05/4.39:1 there). Assert every tone's text clears 4.5:1 in both themes.
   expect(styles[1]!.color).toBe('rgb(26, 93, 207)');
-  const infoContrast = () =>
-    banners.nth(1).evaluate((node) => {
+  const minToneContrast = () =>
+    banners.evaluateAll((nodes) => {
       const context = document.createElement('canvas').getContext('2d');
       const luminance = (color: string): number => {
         if (!context) return 0;
@@ -2895,15 +2896,17 @@ test('ships semantic banner palettes with scoped overrides', async ({ page, brow
         });
         return 0.2126 * (channels[0] ?? 0) + 0.7152 * (channels[1] ?? 0) + 0.0722 * (channels[2] ?? 0);
       };
-      const styleMap = window.getComputedStyle(node);
-      const foreground = luminance(styleMap.color);
-      const background = luminance(styleMap.backgroundColor);
-      return (Math.max(foreground, background) + 0.05) / (Math.min(foreground, background) + 0.05);
+      return Math.min(...nodes.map((node) => {
+        const styleMap = window.getComputedStyle(node);
+        const foreground = luminance(styleMap.color);
+        const background = luminance(styleMap.backgroundColor);
+        return (Math.max(foreground, background) + 0.05) / (Math.min(foreground, background) + 0.05);
+      }));
     });
-  await expect.poll(infoContrast, 'light info StateBanner contrast').toBeGreaterThanOrEqual(4.5);
+  await expect.poll(minToneContrast, 'light StateBanner tone contrast (min across tones)').toBeGreaterThanOrEqual(4.5);
   await page.locator('[data-action="toggle-theme"]').click();
   await expect(page.locator('html')).toHaveClass(/demo-dark/);
-  await expect.poll(infoContrast, 'dark info StateBanner contrast').toBeGreaterThanOrEqual(4.5);
+  await expect.poll(minToneContrast, 'dark StateBanner tone contrast (min across tones)').toBeGreaterThanOrEqual(4.5);
   await page.locator('[data-action="toggle-theme"]').click();
   await expect(page.locator('html')).not.toHaveClass(/demo-dark/);
   expect(await labelIconOffsets()).toEqual(Array(6).fill(0));
