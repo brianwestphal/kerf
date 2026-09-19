@@ -351,6 +351,15 @@ test('insets a self-bordered control and bare text so their edges line up in a c
   // Bare text carries the content-item geometry: 8px inline margin, 1px border, 8px padding.
   await expect(text).toHaveCSS('border-top-width', '1px');
   await expect(text).toHaveCSS('padding-left', '8px');
+
+  // horizontalOnly keeps the horizontal inset but drops the vertical box space.
+  const tight = page.locator('.kui-list-inset-text--horizontal').first();
+  await expect(tight).toBeVisible();
+  await expect(tight).toHaveCSS('padding-left', '8px');
+  await expect(tight).toHaveCSS('border-left-width', '1px');
+  await expect(tight).toHaveCSS('padding-top', '0px');
+  await expect(tight).toHaveCSS('border-top-width', '0px');
+  await expect(tight).toHaveCSS('margin-top', '0px');
 });
 
 test('renders non-composition demos on the grid with a bounds/margin overlay, and leaves composition demos alone', async ({ page, browserName }) => {

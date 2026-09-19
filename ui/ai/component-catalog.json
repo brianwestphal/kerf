@@ -1198,7 +1198,8 @@
       },
       "wiring": [],
       "publicClasses": [
-        "kui-list-inset-text"
+        "kui-list-inset-text",
+        "kui-list-inset-text--horizontal"
       ],
       "publicTokens": [],
       "links": {

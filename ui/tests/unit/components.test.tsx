@@ -202,6 +202,12 @@ describe('production UI primitives', () => {
     const rich = asHtml(ListInsetText({ children: <span>Rich</span>, className: 'note' }));
     expect(rich).toContain('class="kui-list-inset-text note"');
     expect(rich).toContain('<span>Rich</span>');
+
+    const horizontal = asHtml(ListInsetText({ children: 'Tight', horizontalOnly: true }));
+    expect(horizontal).toContain('class="kui-list-inset-text kui-list-inset-text--horizontal" data-component="list-inset-text"');
+
+    const horizontalExtra = asHtml(ListInsetText({ children: 'Tight', horizontalOnly: true, className: 'note' }));
+    expect(horizontalExtra).toContain('class="kui-list-inset-text kui-list-inset-text--horizontal note"');
   });
 
   it('filters widened menu extension objects before rendering them', () => {

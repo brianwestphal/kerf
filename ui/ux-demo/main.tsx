@@ -302,6 +302,12 @@ function ListInsetTextDemo() {
         <ListInsetText>Aligned plain text — its left edge lands at the same inset as the item above.</ListInsetText>
       </div>
     </CatalogExample>
+    <CatalogExample label="Horizontal-only inset" note={<>Pass <code>horizontalOnly</code> to keep the horizontal inset but drop the vertical margin, border, and padding — tight lines that still align with bordered items.</>} align="none">
+      <div class="list-inset-demo__pane kui-content">
+        <ListInsetText horizontalOnly>First tight line — aligned, no vertical box space.</ListInsetText>
+        <ListInsetText horizontalOnly>Second tight line, packed against the first.</ListInsetText>
+      </div>
+    </CatalogExample>
   </section>;
 }
 
