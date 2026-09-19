@@ -14,6 +14,47 @@
   align-items: center;
 }
 
+/* Single line, no ellipsis: hard-clip the overflow instead of showing …. */
+.kui-toolbar-text[data-ellipsis="false"] {
+  text-overflow: clip;
+}
+
+/* Wrap onto multiple lines. The box grows to fit and switches from the centered
+   single-line row to a top-aligned block with readable leading; a min-height keeps
+   a one-line label at the toolbar row height. */
+.kui-toolbar-text[data-wrap="true"] {
+  display: flex;
+  align-items: flex-start;
+  height: auto;
+  min-height: remify(40px);
+  white-space: normal;
+  line-height: 1.25;
+}
+
+.kui-toolbar-text[data-size="xlarge"][data-wrap="true"] {
+  min-height: remify(44px);
+}
+
+/* Wrap capped to N lines with an ellipsis at the cut. `-webkit-line-clamp` needs
+   the box display and emits the … itself; the unprefixed `line-clamp` follows for
+   engines that ship it. */
+.kui-toolbar-text[data-wrap="true"][data-max-lines] {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: var(--kui-toolbar-text-max-lines);
+  line-clamp: var(--kui-toolbar-text-max-lines);
+  overflow: hidden;
+}
+
+/* Wrap capped to N lines without an ellipsis: clip at a max-height instead of
+   line-clamp (which always ellipsizes). */
+.kui-toolbar-text[data-wrap="true"][data-max-lines][data-ellipsis="false"] {
+  display: block;
+  -webkit-line-clamp: none;
+  line-clamp: none;
+  max-height: calc(var(--kui-toolbar-text-max-lines) * 1.25em);
+}
+
 .kui-toolbar-text[data-size="xlarge"] {
   /* Matches the page/panel title: the same responsive clamp so a PanelHeader
      title reads at the page-title scale without a bespoke override. Height grows

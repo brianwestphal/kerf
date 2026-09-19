@@ -19,8 +19,48 @@ export interface ToolbarTextProps {
   headingLevel?: HeadingLevel;
   /** Render the text as an unanimated loading skeleton instead of its value. */
   placeholder?: boolean;
+  /**
+   * Wrap onto multiple lines when the text does not fit, instead of the default
+   * single line. Combine with `maxLines` to cap the number of lines. Default false.
+   */
+  wrap?: boolean;
+  /**
+   * Show a trailing ellipsis (…) where the text is truncated — on the single line
+   * (default), or at the `maxLines` boundary when wrapping. Set false to hard-clip
+   * instead. Default true.
+   */
+  ellipsis?: boolean;
+  /**
+   * Cap wrapped text to this many lines, truncating past it. Only takes effect with
+   * `wrap`; ignored on a single line. `null`/omitted wraps without a line cap. Default null.
+   */
+  maxLines?: number | null;
 }
 
-export function ToolbarText({ text, size = 'default', className = '', id, headingLevel, placeholder = false }: ToolbarTextProps) {
-  return <span class={`kui-toolbar-text ${className}`.trim()} data-component="toolbar-text" data-size={size} data-placeholder={placeholder ? 'true' : undefined} id={id} role={headingLevel ? 'heading' : undefined} aria-level={headingLevel ? String(headingLevel) : undefined} aria-busy={placeholder ? 'true' : undefined}>{placeholder ? <Skeleton width="8em" /> : text}</span>;
+export function ToolbarText({
+  text,
+  size = 'default',
+  className = '',
+  id,
+  headingLevel,
+  placeholder = false,
+  wrap = false,
+  ellipsis = true,
+  maxLines = null,
+}: ToolbarTextProps) {
+  const capped = wrap && maxLines != null && maxLines > 0;
+  return <span
+    class={`kui-toolbar-text ${className}`.trim()}
+    data-component="toolbar-text"
+    data-size={size}
+    data-wrap={wrap ? 'true' : undefined}
+    data-ellipsis={ellipsis ? undefined : 'false'}
+    data-max-lines={capped ? String(maxLines) : undefined}
+    style={capped ? `--kui-toolbar-text-max-lines:${maxLines}` : undefined}
+    data-placeholder={placeholder ? 'true' : undefined}
+    id={id}
+    role={headingLevel ? 'heading' : undefined}
+    aria-level={headingLevel ? String(headingLevel) : undefined}
+    aria-busy={placeholder ? 'true' : undefined}
+  >{placeholder ? <Skeleton width="8em" /> : text}</span>;
 }

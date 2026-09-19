@@ -508,6 +508,25 @@ describe('production UI primitives', () => {
     expect(heading).toContain('role="heading"');
     expect(heading).toContain('aria-level="2"');
 
+    // Overflow: default is single-line + ellipsis (no wrap/ellipsis/max-lines attrs).
+    const defaultOverflow = asHtml(ToolbarText({ text: 'Fits on one line or ellipsizes' }));
+    expect(defaultOverflow).not.toContain('data-wrap');
+    expect(defaultOverflow).not.toContain('data-ellipsis');
+    expect(defaultOverflow).not.toContain('data-max-lines');
+
+    // ellipsis: false emits the hard-clip hook; wrap: true emits the wrap hook.
+    expect(asHtml(ToolbarText({ text: 'Clip me', ellipsis: false }))).toContain('data-ellipsis="false"');
+    expect(asHtml(ToolbarText({ text: 'Wrap me', wrap: true }))).toContain('data-wrap="true"');
+
+    // maxLines only takes effect with wrap, and sets both the attribute and the CSS var.
+    const capped = asHtml(ToolbarText({ text: 'Cap me', wrap: true, maxLines: 2 }));
+    expect(capped).toContain('data-wrap="true"');
+    expect(capped).toContain('data-max-lines="2"');
+    expect(capped).toContain('--kui-toolbar-text-max-lines:2');
+    // maxLines without wrap is ignored (single line), and a non-positive value is dropped.
+    expect(asHtml(ToolbarText({ text: 'No wrap', maxLines: 3 }))).not.toContain('data-max-lines');
+    expect(asHtml(ToolbarText({ text: 'Zero', wrap: true, maxLines: 0 }))).not.toContain('data-max-lines');
+
     // PanelHeader forwards headingLevel to its title so a page keeps a heading landmark.
     const pageHost = document.createElement('div');
     pageHost.innerHTML = asHtml(PanelHeader({ title: 'Dashboard', titleId: 'page-title', headingLevel: 1 }));

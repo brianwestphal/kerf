@@ -61,8 +61,24 @@ interface ToolbarTextProps {
     headingLevel?: HeadingLevel;
     /** Render the text as an unanimated loading skeleton instead of its value. */
     placeholder?: boolean;
+    /**
+     * Wrap onto multiple lines when the text does not fit, instead of the default
+     * single line. Combine with `maxLines` to cap the number of lines. Default false.
+     */
+    wrap?: boolean;
+    /**
+     * Show a trailing ellipsis (…) where the text is truncated — on the single line
+     * (default), or at the `maxLines` boundary when wrapping. Set false to hard-clip
+     * instead. Default true.
+     */
+    ellipsis?: boolean;
+    /**
+     * Cap wrapped text to this many lines, truncating past it. Only takes effect with
+     * `wrap`; ignored on a single line. `null`/omitted wraps without a line cap. Default null.
+     */
+    maxLines?: number | null;
 }
-declare function ToolbarText({ text, size, className, id, headingLevel, placeholder }: ToolbarTextProps): kerfjs.SafeHtml;
+declare function ToolbarText({ text, size, className, id, headingLevel, placeholder, wrap, ellipsis, maxLines, }: ToolbarTextProps): kerfjs.SafeHtml;
 
 export { type HeadingLevel, ToolbarText, type ToolbarTextProps, type ToolbarTextSize };
 ```

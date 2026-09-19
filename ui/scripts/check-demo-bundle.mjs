@@ -6,9 +6,9 @@ const assetsDir = fileURLToPath(new URL('../dist-demo/assets/', import.meta.url)
 const limits = {
   largestJavaScriptGzip: 150_000,
   // Grows as demos are added: 260.59 kB (collapsible-sidebar recipe) → 261.13 kB
-  // (TokenSearchField adoption knobs) → 262.10 kB (FloatingToolbar demo). Keep only
-  // narrow headroom and preserve the split.
-  totalJavaScriptGzip: 263_000,
+  // (TokenSearchField adoption knobs) → 262.10 kB (FloatingToolbar demo) → 263.21 kB
+  // (ToolbarText overflow examples). Keep only narrow headroom and preserve the split.
+  totalJavaScriptGzip: 264_000,
 };
 
 const javascript = (await readdir(assetsDir)).filter((name) => name.endsWith('.js'));

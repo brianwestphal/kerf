@@ -254,6 +254,29 @@ test('the ToolbarControlGroup demo shape toggle switches every group between pil
   await expect(roundedGroups).toHaveCount(0);
 });
 
+test('ToolbarText overflow modes: single-line ellipsis, wrap, and capped line-clamp', async ({ page }) => {
+  await page.goto('/?component=toolbar-text');
+  const demos = page.locator('.toolbar-text-overflow-demo .kui-toolbar-text');
+  const ellipsis = demos.nth(0);
+  const wrap = demos.nth(1);
+  const capped = demos.nth(2);
+
+  // Default: one line, ellipsized (white-space nowrap + text-overflow ellipsis).
+  await expect(ellipsis).toHaveCSS('white-space', 'nowrap');
+  await expect(ellipsis).toHaveCSS('text-overflow', 'ellipsis');
+  const oneLine = await ellipsis.evaluate((el) => el.getBoundingClientRect().height);
+
+  // Wrap: multiple lines, so it is visibly taller than the single-line box.
+  await expect(wrap).toHaveCSS('white-space', 'normal');
+  const wrapped = await wrap.evaluate((el) => el.getBoundingClientRect().height);
+  expect(wrapped).toBeGreaterThan(oneLine);
+
+  // Capped: line-clamp to 2 and shorter than the uncapped wrap of the same text.
+  await expect(capped).toHaveCSS('-webkit-line-clamp', '2');
+  const cappedHeight = await capped.evaluate((el) => el.getBoundingClientRect().height);
+  expect(cappedHeight).toBeLessThan(wrapped);
+});
+
 test('the FloatingToolbar demo toggles a dark floating toolbar and auto-hides on leave', async ({ page }) => {
   await page.goto('/?component=floating-toolbar');
   const floating = page.locator('.kui-floating-toolbar');
