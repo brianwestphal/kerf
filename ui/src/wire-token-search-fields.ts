@@ -144,6 +144,35 @@ const TOKEN_SELECTOR = '[data-component="token-search-token"]';
 const TEXT_SELECTOR = '[data-token-search-text]';
 const stripZwsp = (text: string): string => text.replaceAll('​', '');
 
+/**
+ * A `contenteditable` host emptied by select-all + Delete (or Backspace) leaves a
+ * bogus `<br>` in every engine: it renders as a stray newline and `readTokenSearchField`
+ * reads it back as a space. Strip those line breaks after a delete, and when the field
+ * is otherwise empty (no chips, no visible text) restore the canonical empty text span
+ * and place the caret in it so typing resumes cleanly. Called only after the browser has
+ * applied the delete, so an ordinary partial delete is never touched.
+ */
+function normalizeEmptiedEditor(editor: HTMLElement): void {
+  const lineBreaks = editor.querySelectorAll('br');
+  if (lineBreaks.length === 0) return;
+  for (const lineBreak of lineBreaks) lineBreak.remove();
+  if (editor.querySelector(TOKEN_SELECTOR)) return;
+  if (stripZwsp(editor.textContent ?? '') !== '') return;
+  const doc = editor.ownerDocument;
+  const span = doc.createElement('span');
+  span.setAttribute('data-token-search-text', '');
+  span.setAttribute('data-empty', 'true');
+  editor.replaceChildren(span);
+  if (doc.activeElement !== editor) return;
+  // The editor is the focused, connected editing host, so a selection exists.
+  const selection = doc.getSelection()!;
+  const range = doc.createRange();
+  range.setStart(span, 0);
+  range.collapse(true);
+  selection.removeAllRanges();
+  selection.addRange(range);
+}
+
 /** The collapsed, in-editor caret range, or undefined when there is a selection or none. */
 function collapsedCaret(editor: HTMLElement): Range | undefined {
   const selection = editor.ownerDocument.getSelection();
@@ -301,6 +330,7 @@ export function wireTokenSearchFields(
   const onInput = (event: Event) => {
     const editor = editorFromEvent(root, event);
     if (!editor) return;
+    if ((event as InputEvent).inputType?.startsWith('delete')) normalizeEmptiedEditor(editor);
     if (onEdit) {
       const field = editor.closest<HTMLElement>('[data-component="token-search-field"]');
       const id = field?.dataset.tokenSearchId;

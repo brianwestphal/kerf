@@ -77,6 +77,94 @@ describe('wireTokenSearchFields', () => {
     stop();
   });
 
+  it('strips the bogus <br> a delete-to-empty leaves and restores the canonical empty text span', () => {
+    const root = document.createElement('div');
+    document.body.append(root);
+    root.innerHTML = '<div data-component="token-search-field" data-token-search-id="tickets" data-disabled="false"><div data-token-search-editor="tickets" contenteditable="true"><span data-token-search-text>hello</span></div></div>';
+    const editor = root.querySelector<HTMLElement>('[data-token-search-editor]')!;
+    const stop = wireTokenSearchFields(root, { onSubmit: vi.fn() });
+
+    // Simulate what a contenteditable host does on select-all + Delete: the text
+    // is gone and a bogus <br> is left behind.
+    editor.innerHTML = '<br>';
+    editor.focus();
+    editor.dispatchEvent(inputEvent('input', 'deleteContentBackward'));
+
+    expect(editor.querySelectorAll('br')).toHaveLength(0);
+    expect(editor.childNodes).toHaveLength(1);
+    const span = editor.firstElementChild!;
+    expect(span.matches('[data-token-search-text]')).toBe(true);
+    expect((editor.textContent ?? '').replaceAll('​', '')).toBe('');
+    // The caret is placed inside the restored span so typing resumes cleanly.
+    const selection = document.getSelection()!;
+    expect(span.contains(selection.anchorNode) || selection.anchorNode === span).toBe(true);
+    stop();
+  });
+
+  it('drops a stray <br> around surviving chips without wiping the field', () => {
+    const root = document.createElement('div');
+    document.body.append(root);
+    root.innerHTML = '<div data-component="token-search-field" data-token-search-id="tickets" data-disabled="false"><div data-token-search-editor="tickets" contenteditable="true"><span data-token-search-text>a</span><span data-component="token-search-token" data-token-value="tag:x" contenteditable="false">tag:x</span><br></div></div>';
+    const editor = root.querySelector<HTMLElement>('[data-token-search-editor]')!;
+    const stop = wireTokenSearchFields(root, { onSubmit: vi.fn() });
+
+    editor.dispatchEvent(inputEvent('input', 'deleteContentForward'));
+
+    expect(editor.querySelectorAll('br')).toHaveLength(0);
+    expect(editor.querySelectorAll('[data-component="token-search-token"]')).toHaveLength(1);
+    expect(editor.querySelector('[data-token-search-text]')!.textContent).toBe('a');
+    stop();
+  });
+
+  it('removes a stray <br> but keeps surviving text when the field is not empty', () => {
+    const root = document.createElement('div');
+    document.body.append(root);
+    root.innerHTML = '<div data-component="token-search-field" data-token-search-id="tickets" data-disabled="false"><div data-token-search-editor="tickets" contenteditable="true"><span data-token-search-text>hi</span><br></div></div>';
+    const editor = root.querySelector<HTMLElement>('[data-token-search-editor]')!;
+    editor.focus();
+    const stop = wireTokenSearchFields(root, { onSubmit: vi.fn() });
+
+    editor.dispatchEvent(inputEvent('input', 'deleteContentBackward'));
+
+    expect(editor.querySelectorAll('br')).toHaveLength(0);
+    // Non-empty text is preserved — no canonical-span rebuild.
+    expect(editor.querySelector('[data-token-search-text]')!.textContent).toBe('hi');
+    stop();
+  });
+
+  it('normalizes a delete-to-empty editor without moving the caret when it is not focused', () => {
+    const root = document.createElement('div');
+    document.body.append(root);
+    root.innerHTML = '<div data-component="token-search-field" data-token-search-id="tickets" data-disabled="false"><div data-token-search-editor="tickets" contenteditable="true"><br></div></div><button type="button">Elsewhere</button>';
+    const editor = root.querySelector<HTMLElement>('[data-token-search-editor]')!;
+    const elsewhere = root.querySelector('button')!;
+    elsewhere.focus();
+    const stop = wireTokenSearchFields(root, { onSubmit: vi.fn() });
+
+    editor.dispatchEvent(inputEvent('input', 'deleteContentForward'));
+
+    // The bogus <br> is stripped and the canonical span restored, but focus/caret
+    // stay with the other element.
+    expect(editor.querySelectorAll('br')).toHaveLength(0);
+    expect(editor.firstElementChild!.matches('[data-token-search-text]')).toBe(true);
+    expect(document.activeElement).toBe(elsewhere);
+    stop();
+  });
+
+  it('leaves a non-delete input untouched even if it carries a <br>', () => {
+    const root = document.createElement('div');
+    document.body.append(root);
+    root.innerHTML = '<div data-component="token-search-field" data-token-search-id="tickets" data-disabled="false"><div data-token-search-editor="tickets" contenteditable="true"><br></div></div>';
+    const editor = root.querySelector<HTMLElement>('[data-token-search-editor]')!;
+    const stop = wireTokenSearchFields(root, { onSubmit: vi.fn() });
+
+    editor.dispatchEvent(inputEvent('input', 'insertText'));
+
+    // Only delete inputs are normalized; other input types are left alone.
+    expect(editor.querySelectorAll('br')).toHaveLength(1);
+    stop();
+  });
+
   it('does not steal focus when deletion is not controlled or focus moves elsewhere', async () => {
     const root = document.createElement('div');
     document.body.append(root);

@@ -1072,6 +1072,40 @@ test('keeps token-search focus and caret when Delete removes a controlled token'
   if (browserName === 'chromium') await demo.locator('.kui-catalog-example').first().screenshot({ path: 'test-results/token-search-field-delete-caret.png' });
 });
 
+test('token-search select-all + Delete empties cleanly without a stray newline', async ({ page }) => {
+  await page.setViewportSize({ width: 1100, height: 760 });
+  await page.goto('/?component=token-search-field');
+  const demo = page.locator('[data-demo="token-search-field"]');
+  const editor = demo.getByRole('searchbox', { name: 'Search tickets' });
+  const selectAll = 'ControlOrMeta+A';
+
+  // Plain text: type fresh content, select all, Delete. A contenteditable host
+  // leaves a bogus <br> here in every engine (renders as a newline, reads back
+  // as a space); the wiring must strip it back to the canonical empty span.
+  await editor.click();
+  await page.keyboard.press(selectAll);
+  await page.keyboard.press('Delete');
+  await editor.type('hello world');
+  await page.keyboard.press(selectAll);
+  await page.keyboard.press('Delete');
+  await expect.poll(() => editor.evaluate((el) => el.querySelectorAll('br').length)).toBe(0);
+  await expect.poll(() => editor.evaluate((el) => (el.textContent ?? '').replaceAll('​', ''))).toBe('');
+  await expect(editor.locator('[data-token-search-text]')).toHaveCount(1);
+  // The caret survives: typing resumes in place with no leading newline/space.
+  await editor.type('x');
+  await expect.poll(() => editor.evaluate((el) => (el.textContent ?? '').replaceAll('​', ''))).toBe('x');
+
+  // Tokened: select-all + Delete also removes every chip and leaves no artifact.
+  await page.goto('/?component=token-search-field');
+  const editor2 = demo.getByRole('searchbox', { name: 'Search tickets' });
+  await editor2.click();
+  await page.keyboard.press(selectAll);
+  await page.keyboard.press('Delete');
+  await expect.poll(() => editor2.evaluate((el) => el.querySelectorAll('br').length)).toBe(0);
+  await expect(editor2.locator('[data-component="token-search-token"]')).toHaveCount(0);
+  await expect.poll(() => editor2.evaluate((el) => (el.textContent ?? '').replaceAll('​', ''))).toBe('');
+});
+
 test('edits, removes, and clears controlled token search content', async ({ page, browserName }) => {
   await page.setViewportSize({ width: 1100, height: 760 });
   await page.goto('/?component=token-search-field');
