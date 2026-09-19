@@ -19,7 +19,6 @@ test-results/
 .claude/settings.local.json
 .claude/worktrees
 # Retired HS1 runtime artifacts may remain locally after migration.
-/.hotsheet/
 /.hotsheet2/*
 !/.hotsheet2/settings.json
 /.glassbox/*
@@ -46,3 +45,5 @@ bench/results.local.json
 bench/results.local.md
 .hotsheet2/settings.local.json
 .hotsheet2/store
+/.hotsheet/*
+!/.hotsheet/settings.json
