@@ -336,9 +336,11 @@
     text-transform: uppercase;
   }
 
-  /* Checkbox and radio groups have no bordered field shell, so their option
-     regions need the content-item's 8px inline outer inset explicitly. */
-  :is(wa-checkbox-group, wa-radio-group)::part(form-control-input) {
+  /* Checkbox/radio groups and the color picker have no bordered field shell,
+     so their control regions need the content-item's 8px inline outer inset. */
+  :is(wa-checkbox-group, wa-color-picker, wa-radio-group)::part(
+    form-control-input
+  ) {
     margin-inline: var(--kui-layout-inline-margin, remify(8px));
   }
 }

@@ -1346,6 +1346,7 @@ test('themes representative free Web Awesome families with overridable semantic 
   const fieldInset = await page.evaluate(() => {
     const input = document.querySelector('wa-input') as HTMLElement;
     const checkboxGroup = document.querySelector('wa-checkbox-group') as HTMLElement;
+    const colorPicker = document.querySelector('wa-color-picker') as HTMLElement;
     const radioGroup = document.querySelector('wa-radio-group') as HTMLElement;
     // Resolve the geometry tokens to used pixels via a probe (they are authored as
     // rem-based calc()s, so reading the custom property returns the calc string).
@@ -1362,8 +1363,8 @@ test('themes representative free Web Awesome families with overridable semantic 
     probe.remove();
     const label = input.shadowRoot!.querySelector('[part~="form-control-label"]') as HTMLElement;
     const ls = window.getComputedStyle(label);
-    const groupInputMargin = (group: HTMLElement) => {
-      const inputPart = group.shadowRoot!.querySelector('[part~="form-control-input"]') as HTMLElement;
+    const controlInputMargin = (control: HTMLElement) => {
+      const inputPart = control.shadowRoot!.querySelector('[part~="form-control-input"]') as HTMLElement;
       const style = window.getComputedStyle(inputPart);
       return [style.marginInlineStart, style.marginInlineEnd];
     };
@@ -1375,8 +1376,9 @@ test('themes representative free Web Awesome families with overridable semantic 
       labelTransform: ls.textTransform,
       labelSize: ls.fontSize,
       labelWeight: ls.fontWeight,
-      checkboxGroupInputMargin: groupInputMargin(checkboxGroup),
-      radioGroupInputMargin: groupInputMargin(radioGroup),
+      checkboxGroupInputMargin: controlInputMargin(checkboxGroup),
+      colorPickerInputMargin: controlInputMargin(colorPicker),
+      radioGroupInputMargin: controlInputMargin(radioGroup),
     };
   });
   expect(fieldInset.padInline).toBe('8px');
@@ -1387,6 +1389,7 @@ test('themes representative free Web Awesome families with overridable semantic 
   expect(fieldInset.labelSize).toBe('12px');
   expect(fieldInset.labelWeight).toBe('650');
   expect(fieldInset.checkboxGroupInputMargin).toEqual(['8px', '8px']);
+  expect(fieldInset.colorPickerInputMargin).toEqual(['8px', '8px']);
   expect(fieldInset.radioGroupInputMargin).toEqual(['8px', '8px']);
 
   const nonFieldInsets = await page.evaluate(() => {

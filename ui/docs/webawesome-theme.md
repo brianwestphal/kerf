@@ -69,7 +69,9 @@ labels (Checkbox, Switch) keep their natural sentence case.
 Checkbox Group and Radio Group option regions receive the shared 8px inline
 outer inset through `::part(form-control-input)`. Unlike bordered fields, these
 groups have no shell of their own, so the explicit margin places their controls
-on the same content-item geometry without adding padding to each option.
+on the same content-item geometry without adding padding to each option. The
+Color Picker trigger receives the same 8px inline outer inset because it also
+has no bordered field shell.
 
 Non-field chrome follows two explicit, overridable inset tiers:
 
