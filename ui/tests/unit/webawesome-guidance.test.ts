@@ -49,9 +49,18 @@ describe('Web Awesome consumer guidance', () => {
     const guidance = readFileSync(resolve(import.meta.dirname, '../../docs/webawesome-theme.md'), 'utf8');
 
     expect(css).toContain('wa-known-date::part(field-label)');
-    expect(css).toMatch(/wa-input,[\s\S]*wa-known-date,[\s\S]*wa-number-input,[\s\S]*wa-select,[\s\S]*wa-textarea,[\s\S]*wa-time-input[\s\S]*::part\(hint\)/);
+    expect(css).toMatch(/wa-input,[\s\S]*wa-known-date,[\s\S]*wa-number-input,[\s\S]*wa-otp-input,[\s\S]*wa-select,[\s\S]*wa-textarea,[\s\S]*wa-time-input[\s\S]*::part\(hint\)/);
     expect(css).toContain('var(--wa-form-control-border-width) +');
     expect(guidance).toMatch(/Known Date's field captions and bordered text-like field hints use the same 9px\s+inline inset/);
+  });
+
+  it('styles OTP label and hint like bordered text-field secondary text', () => {
+    const css = readFileSync(resolve(import.meta.dirname, '../../src/webawesome.css'), 'utf8');
+    const guidance = readFileSync(resolve(import.meta.dirname, '../../docs/webawesome-theme.md'), 'utf8');
+
+    expect(css).toContain('wa-otp-input::part(label)');
+    expect(guidance).toMatch(/OTP Input\s+exposes `label` instead of `form-control-label`; the theme gives it the same\s+uppercase 12px\/650 treatment/);
+    expect(guidance).toMatch(/OTP Input's label and hint both use the 9px field-text inset/);
   });
 
   it('distinguishes supported ecosystem components from preferred Kerf patterns', () => {

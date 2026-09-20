@@ -63,14 +63,16 @@ in from the field edge. Each field's top label is inset by that same border +
 padding (9px) so it lines up with the value inside the field, and is styled
 exactly like a `ListHeader` label — uppercase, `--kui-font-xs`, weight 650, quiet
 foreground. This applies to every free field that exposes a top label
-(`::part(form-control-label)` plus the Slider's `::part(label)`); inline control
-labels (Checkbox, Switch) keep their natural sentence case.
+(`::part(form-control-label)` plus the Slider's `::part(label)`). OTP Input
+exposes `label` instead of `form-control-label`; the theme gives it the same
+uppercase 12px/650 treatment. Inline control labels (Checkbox, Switch) keep
+their natural sentence case.
 
 Known Date's field captions and bordered text-like field hints use the same 9px
 inline inset, keeping secondary text aligned with the value rather than the
-field's outer border. This covers Input, Known Date, Number Input, Select,
-Textarea, and Time Input hints; unbordered group hints retain their own natural
-geometry.
+field's outer border. This covers Input, Known Date, Number Input, OTP Input,
+Select, Textarea, and Time Input hints; unbordered group hints retain their own
+natural geometry. OTP Input's label and hint both use the 9px field-text inset.
 
 Checkbox Group and Radio Group option regions receive the shared 8px inline
 outer inset through `::part(form-control-input)`. Unlike bordered fields, these

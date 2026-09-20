@@ -1497,6 +1497,32 @@ test('aligns Known Date captions and bordered text-field hints with their values
   ]);
 });
 
+test('styles and aligns OTP label and hint like a bordered text field', async ({ page }) => {
+  await page.goto('/?component=wa-otp-input');
+  const otp = page.locator('wa-otp-input');
+  await expect(otp).toBeVisible();
+  const textStyles = await otp.evaluate((element) => {
+    const style = (part: string) => {
+      const target = element.shadowRoot!.querySelector(`[part~="${part}"]`) as HTMLElement;
+      const computed = window.getComputedStyle(target);
+      return {
+        padding: [computed.paddingInlineStart, computed.paddingInlineEnd],
+        transform: computed.textTransform,
+        size: computed.fontSize,
+        weight: computed.fontWeight,
+      };
+    };
+    return { label: style('label'), hint: style('hint') };
+  });
+  expect(textStyles.label).toEqual({
+    padding: ['9px', '9px'],
+    transform: 'uppercase',
+    size: '12px',
+    weight: '650',
+  });
+  expect(textStyles.hint.padding).toEqual(['9px', '9px']);
+});
+
 test('renders and operates representative focused Web Awesome specimens', async ({ page, browserName }) => {
   test.skip(browserName !== 'chromium', 'Screenshot review is captured once in Chromium.');
   await page.setViewportSize({ width: 1440, height: 900 });

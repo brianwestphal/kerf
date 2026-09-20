@@ -323,6 +323,7 @@
     wa-textarea,
     wa-time-input
   )::part(form-control-label),
+  wa-otp-input::part(label),
   wa-slider::part(label) {
     padding-inline: calc(
       var(--wa-form-control-border-width) +
@@ -351,6 +352,7 @@
     wa-input,
     wa-known-date,
     wa-number-input,
+    wa-otp-input,
     wa-select,
     wa-textarea,
     wa-time-input

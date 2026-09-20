@@ -48,7 +48,9 @@ maintain a central style list. Configure JSX with `"jsxImportSource": "kerfjs"`.
   outer inset because those groups have no bordered field shell. The Color
   Picker trigger receives the same inset for the same unbordered geometry.
   Known Date's Month/Day/Year captions and bordered text-like field hints align
-  with field values at the shared 9px border-plus-padding inset.
+  with field values at the shared 9px border-plus-padding inset. OTP Input's
+  label uses the same uppercase xs/650 treatment and its label and hint share
+  that 9px alignment.
 - **Trust the defaults.** Render a control at its natural size and color (a
   `LucideIcon` is 24px); if it looks wrong, fix the surrounding layout, not the
   control. Never force a component's width/height to size it — that leaves a halo
