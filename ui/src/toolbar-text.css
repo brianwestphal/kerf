@@ -9,50 +9,17 @@
   color: var(--kui-color-neutral-on-quiet);
   font-weight: 650;
   line-height: 1;
-  text-overflow: ellipsis;
-  white-space: nowrap;
   align-items: center;
 }
 
-/* Single line, no ellipsis: hard-clip the overflow instead of showing …. */
-.kui-toolbar-text[data-ellipsis="false"] {
-  text-overflow: clip;
-}
-
-/* Wrap onto multiple lines. The box grows to fit and switches from the centered
-   single-line row to a top-aligned block with readable leading; a min-height keeps
-   a one-line label at the toolbar row height. */
-.kui-toolbar-text[data-wrap="true"] {
-  display: flex;
-  align-items: flex-start;
-  height: auto;
-  min-height: remify(40px);
-  white-space: normal;
-  line-height: 1.25;
-}
-
-.kui-toolbar-text[data-size="xlarge"][data-wrap="true"] {
-  min-height: remify(44px);
-}
-
-/* Wrap capped to N lines with an ellipsis at the cut. `-webkit-line-clamp` needs
-   the box display and emits the … itself; the unprefixed `line-clamp` follows for
-   engines that ship it. */
-.kui-toolbar-text[data-wrap="true"][data-max-lines] {
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: var(--kui-toolbar-text-max-lines);
-  line-clamp: var(--kui-toolbar-text-max-lines);
+/* The text lives in a block child, not directly in the flex box, so
+   `text-overflow: ellipsis` actually applies (it is a no-op on a flex item). */
+.kui-toolbar-text__text {
+  min-width: 0;
+  max-width: 100%;
   overflow: hidden;
-}
-
-/* Wrap capped to N lines without an ellipsis: clip at a max-height instead of
-   line-clamp (which always ellipsizes). */
-.kui-toolbar-text[data-wrap="true"][data-max-lines][data-ellipsis="false"] {
-  display: block;
-  -webkit-line-clamp: none;
-  line-clamp: none;
-  max-height: calc(var(--kui-toolbar-text-max-lines) * 1.25em);
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .kui-toolbar-text[data-size="xlarge"] {
@@ -78,4 +45,48 @@
 .kui-toolbar-text[data-size="small"] {
   font-family: var(--kui-font-mono);
   font-size: var(--kui-font-xs);
+}
+
+/* Single line, no ellipsis: hard-clip the overflow instead of showing …. */
+.kui-toolbar-text[data-ellipsis="false"] .kui-toolbar-text__text {
+  text-overflow: clip;
+}
+
+/* Wrap onto multiple lines. The box grows to fit and switches from the centered
+   single-line row to a top-aligned block with readable leading; a min-height keeps
+   a one-line label at the toolbar row height. */
+.kui-toolbar-text[data-wrap="true"] {
+  align-items: flex-start;
+  height: auto;
+  min-height: remify(40px);
+}
+
+.kui-toolbar-text[data-size="xlarge"][data-wrap="true"] {
+  min-height: remify(44px);
+}
+
+.kui-toolbar-text[data-wrap="true"] .kui-toolbar-text__text {
+  white-space: normal;
+  line-height: 1.25;
+}
+
+/* Wrap capped to N lines with an ellipsis at the cut. `-webkit-line-clamp` needs
+   the box display and emits the … itself; the unprefixed `line-clamp` follows for
+   engines that ship it. */
+.kui-toolbar-text[data-wrap="true"][data-max-lines] .kui-toolbar-text__text {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: var(--kui-toolbar-text-max-lines);
+  line-clamp: var(--kui-toolbar-text-max-lines);
+  overflow: hidden;
+}
+
+/* Wrap capped to N lines without an ellipsis: clip at a max-height instead of
+   line-clamp (which always ellipsizes). */
+.kui-toolbar-text[data-wrap="true"][data-max-lines][data-ellipsis="false"]
+  .kui-toolbar-text__text {
+  display: block;
+  -webkit-line-clamp: none;
+  line-clamp: none;
+  max-height: calc(var(--kui-toolbar-text-max-lines) * 1.25em);
 }

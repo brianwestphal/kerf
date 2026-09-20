@@ -62,5 +62,5 @@ export function ToolbarText({
     role={headingLevel ? 'heading' : undefined}
     aria-level={headingLevel ? String(headingLevel) : undefined}
     aria-busy={placeholder ? 'true' : undefined}
-  >{placeholder ? <Skeleton width="8em" /> : text}</span>;
+  >{placeholder ? <Skeleton width="8em" /> : <span class="kui-toolbar-text__text">{text}</span>}</span>;
 }

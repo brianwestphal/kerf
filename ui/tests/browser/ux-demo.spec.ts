@@ -260,19 +260,25 @@ test('ToolbarText overflow modes: single-line ellipsis, wrap, and capped line-cl
   const ellipsis = demos.nth(0);
   const wrap = demos.nth(1);
   const capped = demos.nth(2);
+  // The truncation lives on the inner text element (text-overflow is a no-op on
+  // the flex box itself).
+  const ellipsisText = ellipsis.locator('.kui-toolbar-text__text');
+  const cappedText = capped.locator('.kui-toolbar-text__text');
 
-  // Default: one line, ellipsized (white-space nowrap + text-overflow ellipsis).
-  await expect(ellipsis).toHaveCSS('white-space', 'nowrap');
-  await expect(ellipsis).toHaveCSS('text-overflow', 'ellipsis');
+  // Default: one line, ellipsized (white-space nowrap + text-overflow ellipsis),
+  // and the rendered text is actually clipped (scrollWidth exceeds clientWidth).
+  await expect(ellipsisText).toHaveCSS('white-space', 'nowrap');
+  await expect(ellipsisText).toHaveCSS('text-overflow', 'ellipsis');
+  expect(await ellipsisText.evaluate((el) => el.scrollWidth - el.clientWidth)).toBeGreaterThan(1);
   const oneLine = await ellipsis.evaluate((el) => el.getBoundingClientRect().height);
 
   // Wrap: multiple lines, so it is visibly taller than the single-line box.
-  await expect(wrap).toHaveCSS('white-space', 'normal');
+  await expect(wrap.locator('.kui-toolbar-text__text')).toHaveCSS('white-space', 'normal');
   const wrapped = await wrap.evaluate((el) => el.getBoundingClientRect().height);
   expect(wrapped).toBeGreaterThan(oneLine);
 
   // Capped: line-clamp to 2 and shorter than the uncapped wrap of the same text.
-  await expect(capped).toHaveCSS('-webkit-line-clamp', '2');
+  await expect(cappedText).toHaveCSS('-webkit-line-clamp', '2');
   const cappedHeight = await capped.evaluate((el) => el.getBoundingClientRect().height);
   expect(cappedHeight).toBeLessThan(wrapped);
 });
