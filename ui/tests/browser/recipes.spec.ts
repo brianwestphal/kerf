@@ -11,10 +11,16 @@ async function openRecipe(page: Page, id: typeof recipeIds[number]) {
 }
 
 async function activateDialogAndWaitForShow(dialog: Locator, activate: () => Promise<void>) {
-  await Promise.all([
-    dialog.evaluate((element) => new Promise<void>((resolve) => element.addEventListener('wa-after-show', () => resolve(), { once: true }))),
-    activate(),
-  ]);
+  await dialog.evaluate((element) => {
+    const target = element as HTMLElement & { waitForAfterShow?: Promise<void> };
+    target.waitForAfterShow = new Promise<void>((resolve) => element.addEventListener('wa-after-show', () => resolve(), { once: true }));
+  });
+  await activate();
+  await dialog.evaluate(async (element) => {
+    const target = element as HTMLElement & { waitForAfterShow?: Promise<void> };
+    await target.waitForAfterShow;
+    delete target.waitForAfterShow;
+  });
   await expect(dialog).toHaveJSProperty('open', true);
 }
 
