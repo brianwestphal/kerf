@@ -170,7 +170,8 @@ Web Awesome component modules the app renders, and override public `--wa-*`
 values afterward when needed. The theme gives Checkbox Group and Radio Group
 option regions the shared 8px inline outer inset because those groups have no
 bordered field shell. The Color Picker trigger receives the same inset for the
-same unbordered geometry.
+same unbordered geometry. Known Date field captions and bordered text-like
+field hints align with their values at the 9px border-plus-padding inset.
 
 The default semantic ramps deliberately match Hot Sheet 2 and Web Awesome.
 Override `--kui-color-*` globally or component properties such as

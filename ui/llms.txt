@@ -47,6 +47,8 @@ maintain a central style list. Configure JSX with `"jsxImportSource": "kerfjs"`.
   Checkbox and Radio Group option regions also receive the shared 8px inline
   outer inset because those groups have no bordered field shell. The Color
   Picker trigger receives the same inset for the same unbordered geometry.
+  Known Date's Month/Day/Year captions and bordered text-like field hints align
+  with field values at the shared 9px border-plus-padding inset.
 - **Trust the defaults.** Render a control at its natural size and color (a
   `LucideIcon` is 24px); if it looks wrong, fix the surrounding layout, not the
   control. Never force a component's width/height to size it — that leaves a halo

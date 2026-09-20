@@ -111,7 +111,9 @@ entry registers no custom elements; importing individual Web Awesome component
 modules keeps their JavaScript tree-shakeable. Checkbox Group and Radio Group
 option regions use the shared 8px inline outer inset because those groups have
 no bordered field shell; the Color Picker trigger uses the same inset for the
-same unbordered geometry.
+same unbordered geometry. Known Date field captions and bordered text-like
+field hints align with their values at the shared 9px border-plus-padding
+inset.
 
 `Select` is a Web Awesome adapter. Rendering it is pure; custom-element
 registration happens only after `import '@kerfjs/ui/select/register'`. Web

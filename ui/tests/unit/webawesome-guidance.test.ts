@@ -44,6 +44,16 @@ describe('Web Awesome consumer guidance', () => {
     expect(guidance).toMatch(/Color Picker trigger receives the same 8px inline outer inset/);
   });
 
+  it('aligns Known Date captions and bordered text-field hints with field values', () => {
+    const css = readFileSync(resolve(import.meta.dirname, '../../src/webawesome.css'), 'utf8');
+    const guidance = readFileSync(resolve(import.meta.dirname, '../../docs/webawesome-theme.md'), 'utf8');
+
+    expect(css).toContain('wa-known-date::part(field-label)');
+    expect(css).toMatch(/wa-input,[\s\S]*wa-known-date,[\s\S]*wa-number-input,[\s\S]*wa-select,[\s\S]*wa-textarea,[\s\S]*wa-time-input[\s\S]*::part\(hint\)/);
+    expect(css).toContain('var(--wa-form-control-border-width) +');
+    expect(guidance).toMatch(/Known Date's field captions and bordered text-like field hints use the same 9px\s+inline inset/);
+  });
+
   it('distinguishes supported ecosystem components from preferred Kerf patterns', () => {
     const guidance = readFileSync(resolve(import.meta.dirname, '../../docs/webawesome-theme.md'), 'utf8');
 

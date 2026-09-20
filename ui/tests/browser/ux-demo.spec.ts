@@ -1464,6 +1464,39 @@ test('themes representative free Web Awesome families with overridable semantic 
   }
 });
 
+test('aligns Known Date captions and bordered text-field hints with their values', async ({ page }) => {
+  for (const [route, selector] of [
+    ['wa-input', 'wa-input'],
+    ['wa-known-date', 'wa-known-date'],
+    ['wa-number-input', 'wa-number-input'],
+    ['wa-select', 'wa-select'],
+    ['wa-textarea', 'wa-textarea'],
+  ] as const) {
+    await page.goto(`/?component=${route}`);
+    const control = page.locator(selector).first();
+    await expect(control).toBeVisible();
+    const hintPadding = await control.evaluate((element) => {
+      const hint = element.shadowRoot!.querySelector('[part~="hint"]') as HTMLElement;
+      const style = window.getComputedStyle(hint);
+      return [style.paddingInlineStart, style.paddingInlineEnd];
+    });
+    expect(hintPadding).toEqual(['9px', '9px']);
+  }
+
+  await page.goto('/?component=wa-known-date');
+  const fieldLabelPadding = await page.locator('wa-known-date').evaluate((element) =>
+    [...element.shadowRoot!.querySelectorAll<HTMLElement>('[part~="field-label"]')].map((label) => {
+      const style = window.getComputedStyle(label);
+      return [style.paddingInlineStart, style.paddingInlineEnd];
+    }),
+  );
+  expect(fieldLabelPadding).toEqual([
+    ['9px', '9px'],
+    ['9px', '9px'],
+    ['9px', '9px'],
+  ]);
+});
+
 test('renders and operates representative focused Web Awesome specimens', async ({ page, browserName }) => {
   test.skip(browserName !== 'chromium', 'Screenshot review is captured once in Chromium.');
   await page.setViewportSize({ width: 1440, height: 900 });

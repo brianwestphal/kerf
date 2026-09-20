@@ -343,6 +343,23 @@
   ) {
     margin-inline: var(--kui-layout-inline-margin, remify(8px));
   }
+
+  /* Secondary captions and hints align with the value inside bordered fields:
+     1px border + 8px field padding = a 9px logical inset. */
+  wa-known-date::part(field-label),
+  :is(
+    wa-input,
+    wa-known-date,
+    wa-number-input,
+    wa-select,
+    wa-textarea,
+    wa-time-input
+  )::part(hint) {
+    padding-inline: calc(
+      var(--wa-form-control-border-width) +
+        var(--wa-form-control-padding-inline)
+    );
+  }
 }
 
 @media (prefers-contrast: more) {

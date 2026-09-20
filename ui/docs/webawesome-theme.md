@@ -66,6 +66,12 @@ foreground. This applies to every free field that exposes a top label
 (`::part(form-control-label)` plus the Slider's `::part(label)`); inline control
 labels (Checkbox, Switch) keep their natural sentence case.
 
+Known Date's field captions and bordered text-like field hints use the same 9px
+inline inset, keeping secondary text aligned with the value rather than the
+field's outer border. This covers Input, Known Date, Number Input, Select,
+Textarea, and Time Input hints; unbordered group hints retain their own natural
+geometry.
+
 Checkbox Group and Radio Group option regions receive the shared 8px inline
 outer inset through `::part(form-control-input)`. Unlike bordered fields, these
 groups have no shell of their own, so the explicit margin places their controls
