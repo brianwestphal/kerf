@@ -950,6 +950,8 @@ interface CatalogEntry {
     id: string;
     name: string;
     description?: string;
+    /** Short metadata tags shown at the trailing edge of the sidebar row. */
+    tags?: readonly string[];
     resources?: readonly CatalogResource[];
     related?: readonly CatalogRelated[];
 }

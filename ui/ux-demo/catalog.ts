@@ -14,6 +14,7 @@ export interface CatalogEntry {
   kind: 'component' | 'composition' | 'recipe';
   source: 'kerf' | 'webawesome';
   description: string;
+  recommendation?: 'supported' | 'conditional' | 'exceptional' | 'underlying' | 'avoid';
   uses?: readonly string[];
   demoSource: string;
   componentSource?: string;
@@ -52,6 +53,11 @@ export const webAwesomeCatalogSections = webAwesomeCategories.map((category) => 
   category,
   entries: webAwesomeCatalog.filter((entry) => entry.category === category),
 }));
+
+/** Popup is the one conditional low-level primitive the overlap policy encourages when useful. */
+export function isDiscouragedWebAwesome(entry: CatalogEntry): boolean {
+  return entry.source === 'webawesome' && entry.recommendation !== 'supported' && entry.id !== 'wa-popup';
+}
 
 export function findCatalogEntry(id: string): CatalogEntry | undefined {
   return catalog.find((entry) => entry.id === id);

@@ -104,7 +104,28 @@
 }
 
 .kui-catalog__items .kui-list-item {
-  grid-template-columns: minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.kui-catalog__tags {
+  display: inline-flex;
+  min-width: 0;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--kui-space-2xs);
+}
+
+.kui-catalog__tag {
+  display: inline-flex;
+  padding: remify(2px) remify(6px);
+  border: 1px solid var(--kui-color-warning-border-quiet);
+  border-radius: 999px;
+  color: var(--kui-color-warning-text);
+  background: var(--kui-color-warning);
+  font-size: var(--kui-font-2xs);
+  font-weight: 650;
+  line-height: 1.2;
+  white-space: nowrap;
 }
 
 .kui-catalog__group--secondary {

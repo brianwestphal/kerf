@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Added reusable sidebar tags to `@kerfjs/ui` Catalog entries and marked the 15 Web Awesome components superseded by preferred Kerf patterns or reserved for exceptional cases as `Discouraged` in the UX catalog. The tag is deterministically projected from the canonical recommendation metadata; Popup remains an available conditional positioning primitive.
 - Aligned Web Awesome Accordion, Card, Details, Callout, and Include surfaces with Kerf content-item geometry: each complete surface now has an overridable 8px logical inline margin and 8px inner padding, Accordion keeps connected items under one group margin, and Card's header/body/footer share the full inset. Tab Panel intentionally retains the roomier 16px container inset.
 - Fixed `@kerfjs/ui` Web Awesome Slider geometry: its complete interactive region now receives the shared 8px logical inline outer inset without shifting the already-aligned label.
 - Styled `@kerfjs/ui` Web Awesome OTP Input like a bordered text field: its label now uses the shared uppercase xs/650 field-label treatment, and both label and hint align at the 9px border-plus-padding inset.

@@ -10,7 +10,7 @@ const sections: CatalogSection[] = [
   {
     category: 'Controls',
     entries: [
-      { id: 'button', name: 'Button', description: 'A pressable control.' },
+      { id: 'button', name: 'Button', description: 'A pressable control.', tags: ['Discouraged', 'Preview'] },
       {
         id: 'select',
         name: 'Select',
@@ -45,6 +45,8 @@ describe('Catalog', () => {
     expect(html).toContain('data-component="list-header"');
     expect(html).toContain('data-action="catalog-select" data-item-id="button"');
     expect(html).toContain('data-action="catalog-select" data-item-id="select"');
+    expect(html).toContain('kui-catalog__tag">Discouraged</span>');
+    expect(html).toContain('kui-catalog__tag">Preview</span>');
     // Active item marked selected
     expect(html).toContain('data-item-id="select" data-has-icon="false" data-multiline="true" aria-current="page"');
     // Detail header shows the active name + description

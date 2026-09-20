@@ -657,6 +657,7 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Action control with semantic variants, appearances, loading, and icon support.",
+    "recommendation": "supported",
     "uses": [
       "wa-icon",
       "wa-spinner"
@@ -671,6 +672,7 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Exceptional grouped actions; prefer Kerf SegmentedControl for exclusive choices.",
+    "recommendation": "conditional",
     "uses": [
       "wa-button"
     ],
@@ -684,6 +686,7 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Copies a supplied value and announces success or failure.",
+    "recommendation": "supported",
     "uses": [
       "wa-icon",
       "wa-tooltip"
@@ -698,6 +701,7 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Action-menu primitive; prefer Kerf Select when choosing a value.",
+    "recommendation": "conditional",
     "uses": [
       "wa-dropdown-item",
       "wa-popup"
@@ -712,6 +716,7 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Action-menu row; prefer Kerf Select options for value selection.",
+    "recommendation": "conditional",
     "uses": [
       "wa-icon"
     ],
@@ -725,6 +730,7 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Binary form control with checked, indeterminate, and disabled states.",
+    "recommendation": "supported",
     "uses": [
       "wa-icon"
     ],
@@ -738,6 +744,7 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Labels and validates a related set of checkboxes.",
+    "recommendation": "supported",
     "uses": [
       "wa-checkbox"
     ],
@@ -751,6 +758,7 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Color input with swatches, formats, opacity, and eyedropper support.",
+    "recommendation": "supported",
     "uses": [
       "wa-button",
       "wa-button-group",
@@ -767,6 +775,7 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Text input with labels, hints, clear controls, and semantic appearances.",
+    "recommendation": "supported",
     "uses": [
       "wa-icon"
     ],
@@ -780,6 +789,7 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Experimental segmented field for partially or fully known dates.",
+    "recommendation": "supported",
     "uses": [],
     "demoSource": "ui/ux-demo/webawesome-demos.tsx",
     "documentation": "ui/docs/webawesome-theme.md#coverage"
@@ -791,6 +801,7 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Numeric input with keyboard and stepper controls.",
+    "recommendation": "supported",
     "uses": [
       "wa-icon"
     ],
@@ -804,6 +815,7 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Underlying ecosystem option; prefer choices passed to Kerf Select.",
+    "recommendation": "underlying",
     "uses": [
       "wa-icon"
     ],
@@ -817,6 +829,7 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Experimental segmented one-time-password input.",
+    "recommendation": "supported",
     "uses": [],
     "demoSource": "ui/ux-demo/webawesome-demos.tsx",
     "documentation": "ui/docs/webawesome-theme.md#coverage"
@@ -828,6 +841,7 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Single-choice control used inside a radio group.",
+    "recommendation": "supported",
     "uses": [
       "wa-icon"
     ],
@@ -841,6 +855,7 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Labels and manages a mutually exclusive set of radios.",
+    "recommendation": "supported",
     "uses": [
       "wa-radio"
     ],
@@ -854,6 +869,7 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Interactive rating control with accessible labeling.",
+    "recommendation": "supported",
     "uses": [
       "wa-icon"
     ],
@@ -867,6 +883,7 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Underlying ecosystem field; prefer Kerf Select for app UI.",
+    "recommendation": "underlying",
     "uses": [
       "wa-icon",
       "wa-popup",
@@ -883,6 +900,7 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Range input with markers and value tooltip support.",
+    "recommendation": "supported",
     "uses": [
       "wa-tooltip"
     ],
@@ -896,6 +914,7 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Immediate on/off setting control.",
+    "recommendation": "supported",
     "uses": [],
     "demoSource": "ui/ux-demo/webawesome-demos.tsx",
     "documentation": "ui/docs/webawesome-theme.md#coverage"
@@ -907,6 +926,7 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Multiline text field with labels, hints, and resize behavior.",
+    "recommendation": "supported",
     "uses": [],
     "demoSource": "ui/ux-demo/webawesome-demos.tsx",
     "documentation": "ui/docs/webawesome-theme.md#coverage"
@@ -918,6 +938,7 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Experimental segmented time field with an optional picker.",
+    "recommendation": "supported",
     "uses": [
       "wa-icon",
       "wa-popup"
@@ -932,6 +953,7 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Coordinates one or more collapsible content sections.",
+    "recommendation": "supported",
     "uses": [
       "wa-accordion-item"
     ],
@@ -945,6 +967,7 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Experimental labeled disclosure section used by an accordion.",
+    "recommendation": "supported",
     "uses": [
       "wa-icon"
     ],
@@ -958,6 +981,7 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Groups related content and optional header, media, and footer slots.",
+    "recommendation": "supported",
     "uses": [],
     "demoSource": "ui/ux-demo/webawesome-demos.tsx",
     "documentation": "ui/docs/webawesome-theme.md#coverage"
@@ -969,6 +993,7 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Single disclosure panel for secondary information.",
+    "recommendation": "supported",
     "uses": [
       "wa-icon"
     ],
@@ -982,6 +1007,7 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Modal surface for focused tasks and confirmations.",
+    "recommendation": "supported",
     "uses": [
       "wa-button"
     ],
@@ -995,6 +1021,7 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Visual separator for related groups of content.",
+    "recommendation": "supported",
     "uses": [],
     "demoSource": "ui/ux-demo/webawesome-demos.tsx",
     "documentation": "ui/docs/webawesome-theme.md#coverage"
@@ -1006,6 +1033,7 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Edge-anchored modal surface for navigation or secondary tasks.",
+    "recommendation": "supported",
     "uses": [
       "wa-button"
     ],
@@ -1019,6 +1047,7 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Responsive application shell with navigation, banner, and main slots.",
+    "recommendation": "supported",
     "uses": [],
     "demoSource": "ui/ux-demo/webawesome-demos.tsx",
     "documentation": "ui/docs/webawesome-theme.md#coverage"
@@ -1030,6 +1059,7 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Overflow container with accessible scrolling affordances.",
+    "recommendation": "supported",
     "uses": [],
     "demoSource": "ui/ux-demo/webawesome-demos.tsx",
     "documentation": "ui/docs/webawesome-theme.md#coverage"
@@ -1041,6 +1071,7 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Alternative split API; prefer Kerf ResizableRegion for application panes.",
+    "recommendation": "conditional",
     "uses": [],
     "demoSource": "ui/ux-demo/webawesome-demos.tsx",
     "documentation": "ui/docs/webawesome-theme.md#coverage"
@@ -1052,6 +1083,7 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Ordered navigation trail for the current location.",
+    "recommendation": "supported",
     "uses": [
       "wa-icon",
       "wa-breadcrumb-item"
@@ -1066,6 +1098,7 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "One link or current-location item in a breadcrumb.",
+    "recommendation": "supported",
     "uses": [],
     "demoSource": "ui/ux-demo/webawesome-demos.tsx",
     "documentation": "ui/docs/webawesome-theme.md#coverage"
@@ -1077,6 +1110,7 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Experimental page navigation for a bounded result set.",
+    "recommendation": "supported",
     "uses": [
       "wa-icon"
     ],
@@ -1090,6 +1124,7 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Ecosystem tab label; prefer Kerf TabBar or SegmentedControl.",
+    "recommendation": "conditional",
     "uses": [],
     "demoSource": "ui/ux-demo/webawesome-demos.tsx",
     "documentation": "ui/docs/webawesome-theme.md#coverage"
@@ -1101,6 +1136,7 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Ecosystem tabs; prefer Kerf TabBar or SegmentedControl.",
+    "recommendation": "conditional",
     "uses": [
       "wa-button",
       "wa-tab",
@@ -1116,6 +1152,7 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Ecosystem tab panel; prefer app-owned panels with Kerf navigation.",
+    "recommendation": "conditional",
     "uses": [],
     "demoSource": "ui/ux-demo/webawesome-demos.tsx",
     "documentation": "ui/docs/webawesome-theme.md#coverage"
@@ -1127,6 +1164,7 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Specialized hierarchy; use only when the product requires tree behavior.",
+    "recommendation": "exceptional",
     "uses": [
       "wa-tree-item"
     ],
@@ -1140,6 +1178,7 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Specialized tree row; use only as part of a required tree.",
+    "recommendation": "exceptional",
     "uses": [
       "wa-checkbox",
       "wa-icon",
@@ -1155,6 +1194,7 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Compact status or count label with semantic variants.",
+    "recommendation": "supported",
     "uses": [],
     "demoSource": "ui/ux-demo/webawesome-demos.tsx",
     "documentation": "ui/docs/webawesome-theme.md#coverage"
@@ -1166,6 +1206,7 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Prominent contextual message with semantic variants.",
+    "recommendation": "supported",
     "uses": [],
     "demoSource": "ui/ux-demo/webawesome-demos.tsx",
     "documentation": "ui/docs/webawesome-theme.md#coverage"
@@ -1177,6 +1218,7 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Linear indicator for determinate or indeterminate progress.",
+    "recommendation": "supported",
     "uses": [],
     "demoSource": "ui/ux-demo/webawesome-demos.tsx",
     "documentation": "ui/docs/webawesome-theme.md#coverage"
@@ -1188,6 +1230,7 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Circular indicator for determinate or indeterminate progress.",
+    "recommendation": "supported",
     "uses": [],
     "demoSource": "ui/ux-demo/webawesome-demos.tsx",
     "documentation": "ui/docs/webawesome-theme.md#coverage"
@@ -1199,6 +1242,7 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Placeholder shape for content that is still loading.",
+    "recommendation": "supported",
     "uses": [],
     "demoSource": "ui/ux-demo/webawesome-demos.tsx",
     "documentation": "ui/docs/webawesome-theme.md#coverage"
@@ -1210,6 +1254,7 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Compact indeterminate activity indicator.",
+    "recommendation": "supported",
     "uses": [],
     "demoSource": "ui/ux-demo/webawesome-demos.tsx",
     "documentation": "ui/docs/webawesome-theme.md#coverage"
@@ -1221,6 +1266,7 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Compact categorization label with optional removal action.",
+    "recommendation": "supported",
     "uses": [
       "wa-button"
     ],
@@ -1234,6 +1280,7 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Placement-aware stack of transient notifications.",
+    "recommendation": "supported",
     "uses": [
       "wa-toast-item"
     ],
@@ -1247,6 +1294,7 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "One dismissible notification inside a toast stack.",
+    "recommendation": "supported",
     "uses": [
       "wa-icon",
       "wa-progress-ring"
@@ -1261,6 +1309,7 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Brief contextual label anchored to a control.",
+    "recommendation": "supported",
     "uses": [
       "wa-popup"
     ],
@@ -1274,6 +1323,7 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Specialized animated media; use only for a concrete product requirement.",
+    "recommendation": "exceptional",
     "uses": [
       "wa-icon"
     ],
@@ -1287,6 +1337,7 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Person or entity image with initials fallback.",
+    "recommendation": "supported",
     "uses": [
       "wa-icon"
     ],
@@ -1300,6 +1351,7 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Navigable horizontal or vertical collection of slides.",
+    "recommendation": "supported",
     "uses": [
       "wa-icon",
       "wa-carousel-item"
@@ -1314,6 +1366,7 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "One content slide inside a carousel.",
+    "recommendation": "supported",
     "uses": [],
     "demoSource": "ui/ux-demo/webawesome-demos.tsx",
     "documentation": "ui/docs/webawesome-theme.md#coverage"
@@ -1325,6 +1378,7 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Specialized before-and-after media; use only when specifically required.",
+    "recommendation": "exceptional",
     "uses": [
       "wa-icon"
     ],
@@ -1338,6 +1392,7 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Ecosystem icon renderer; use Kerf LucideIcon in application UI.",
+    "recommendation": "avoid",
     "uses": [],
     "demoSource": "ui/ux-demo/webawesome-demos.tsx",
     "documentation": "ui/docs/webawesome-theme.md#coverage"
@@ -1349,6 +1404,7 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Experimental renderer for trusted Markdown content.",
+    "recommendation": "supported",
     "uses": [],
     "demoSource": "ui/ux-demo/webawesome-demos.tsx",
     "documentation": "ui/docs/webawesome-theme.md#coverage"
@@ -1360,6 +1416,7 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Scannable QR representation of a supplied value.",
+    "recommendation": "supported",
     "uses": [],
     "demoSource": "ui/ux-demo/webawesome-demos.tsx",
     "documentation": "ui/docs/webawesome-theme.md#coverage"
@@ -1371,6 +1428,7 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Avoid for application UI; keep embedded-media behavior application-owned.",
+    "recommendation": "avoid",
     "uses": [
       "wa-icon"
     ],
@@ -1384,6 +1442,7 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Declarative Web Animations API wrapper with preset effects.",
+    "recommendation": "supported",
     "uses": [
       "select"
     ],
@@ -1397,6 +1456,7 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Locale-aware byte and bit value formatter.",
+    "recommendation": "supported",
     "uses": [],
     "demoSource": "ui/ux-demo/webawesome-demos.tsx",
     "documentation": "ui/docs/webawesome-theme.md#coverage"
@@ -1408,6 +1468,7 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Locale-aware date and time formatter.",
+    "recommendation": "supported",
     "uses": [],
     "demoSource": "ui/ux-demo/webawesome-demos.tsx",
     "documentation": "ui/docs/webawesome-theme.md#coverage"
@@ -1419,6 +1480,7 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Locale-aware number, currency, unit, and percentage formatter.",
+    "recommendation": "supported",
     "uses": [],
     "demoSource": "ui/ux-demo/webawesome-demos.tsx",
     "documentation": "ui/docs/webawesome-theme.md#coverage"
@@ -1430,6 +1492,7 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Loads and injects an external HTML fragment.",
+    "recommendation": "supported",
     "uses": [],
     "demoSource": "ui/ux-demo/webawesome-demos.tsx",
     "documentation": "ui/docs/webawesome-theme.md#coverage"
@@ -1441,6 +1504,7 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Declaratively emits visibility changes for slotted content.",
+    "recommendation": "supported",
     "uses": [],
     "demoSource": "ui/ux-demo/webawesome-demos.tsx",
     "documentation": "ui/docs/webawesome-theme.md#coverage"
@@ -1452,6 +1516,7 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Declaratively emits DOM mutation records for slotted content.",
+    "recommendation": "supported",
     "uses": [],
     "demoSource": "ui/ux-demo/webawesome-demos.tsx",
     "documentation": "ui/docs/webawesome-theme.md#coverage"
@@ -1463,6 +1528,7 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Anchored non-modal surface built on popup positioning.",
+    "recommendation": "supported",
     "uses": [
       "wa-popup"
     ],
@@ -1476,6 +1542,7 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Preferred low-level anchored positioning when Tooltip or Popover do not fit.",
+    "recommendation": "conditional",
     "uses": [],
     "demoSource": "ui/ux-demo/webawesome-demos.tsx",
     "documentation": "ui/docs/webawesome-theme.md#coverage"
@@ -1487,6 +1554,7 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Experimental helper that selects one slotted item at random.",
+    "recommendation": "supported",
     "uses": [],
     "demoSource": "ui/ux-demo/webawesome-demos.tsx",
     "documentation": "ui/docs/webawesome-theme.md#coverage"
@@ -1498,6 +1566,7 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Locale-aware human description of a date relative to now.",
+    "recommendation": "supported",
     "uses": [],
     "demoSource": "ui/ux-demo/webawesome-demos.tsx",
     "documentation": "ui/docs/webawesome-theme.md#coverage"
@@ -1509,6 +1578,7 @@ export const generatedWebAwesomeCatalog = [
     "kind": "component",
     "source": "webawesome",
     "description": "Declaratively emits size changes for slotted content.",
+    "recommendation": "supported",
     "uses": [],
     "demoSource": "ui/ux-demo/webawesome-demos.tsx",
     "documentation": "ui/docs/webawesome-theme.md#coverage"

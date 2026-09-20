@@ -167,7 +167,10 @@ forks the package anatomy and spacing contract.
 
 Web Awesome catalog coverage means supported and themed, not preferred. Import
 `@kerfjs/ui/webawesome` for Kerf JSX types, individual component modules for
-registration, and the CSS-only `@kerfjs/ui/webawesome.css` theme.
+registration, and the CSS-only `@kerfjs/ui/webawesome.css` theme. The UX catalog
+marks the superseded or exceptional choices below with a visible `Discouraged`
+tag; Popup remains untagged because low-level anchored positioning can be the
+right primitive.
 
 | Web Awesome choice | Kerf decision |
 | --- | --- |

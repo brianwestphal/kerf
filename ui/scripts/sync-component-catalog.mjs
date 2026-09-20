@@ -33,6 +33,7 @@ const project = (entry) => ({
   kind: entry.kind,
   source: entry.source,
   description: entry.purpose,
+  ...(entry.recommendation ? { recommendation: entry.recommendation } : {}),
   uses: entry.uses ?? [],
   demoSource: demoSource(entry),
   ...(componentSource(entry) ? { componentSource: componentSource(entry) } : {}),

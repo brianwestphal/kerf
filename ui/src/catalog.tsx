@@ -27,6 +27,8 @@ export interface CatalogEntry {
   id: string;
   name: string;
   description?: string;
+  /** Short metadata tags shown at the trailing edge of the sidebar row. */
+  tags?: readonly string[];
   resources?: readonly CatalogResource[];
   related?: readonly CatalogRelated[];
 }
@@ -90,6 +92,11 @@ function findEntry(sections: readonly CatalogSection[], id: string): CatalogEntr
     for (const entry of section.entries) if (entry.id === id) return entry;
   }
   return undefined;
+}
+
+function catalogEntryTags(tags: readonly string[] | undefined): SafeHtml | undefined {
+  if (!tags?.length) return undefined;
+  return <span class="kui-catalog__tags">{tags.map((tag) => <span class="kui-catalog__tag">{tag}</span>)}</span>;
 }
 
 /**
@@ -158,7 +165,7 @@ export function Catalog({
         {sections.map((section) => <section class="kui-catalog__group">
           <ListHeader label={section.category} />
           <div class="kui-catalog__items">
-            {section.entries.map((entry) => <ListItem action={selectAction} itemId={entry.id} label={entry.name} selected={active === entry.id} title={entry.description} multiline />)}
+            {section.entries.map((entry) => <ListItem action={selectAction} itemId={entry.id} label={entry.name} trailing={catalogEntryTags(entry.tags)} selected={active === entry.id} title={entry.description} multiline />)}
           </div>
         </section>)}
         {secondarySections ? <section class="kui-catalog__group kui-catalog__group--secondary">
@@ -168,7 +175,7 @@ export function Catalog({
               {secondarySections.sections.map((section) => <section class="kui-catalog__secondary-group">
                 <h3 class="kui-catalog__secondary-heading">{section.category}</h3>
                 <div class="kui-catalog__items">
-                  {section.entries.map((entry) => <ListItem action={selectAction} itemId={entry.id} label={entry.name} selected={active === entry.id} title={entry.description} multiline />)}
+                  {section.entries.map((entry) => <ListItem action={selectAction} itemId={entry.id} label={entry.name} trailing={catalogEntryTags(entry.tags)} selected={active === entry.id} title={entry.description} multiline />)}
                 </div>
               </section>)}
             </div>

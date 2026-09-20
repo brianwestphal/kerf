@@ -17,7 +17,7 @@ import { batch, delegate, delegateCapture, effect, mount, signal } from 'kerfjs'
 import { delegateActions } from 'kerfjs/actions';
 import { Contrast, StickyNote, ZapOff } from 'lucide';
 
-import { catalog, catalogEntriesUsing, type CatalogEntry, type CatalogId, catalogRepositoryHref, catalogSections, findCatalogEntry, isCatalogId, type KerfCatalogId, type WebAwesomeCatalogId, webAwesomeCatalogSections } from './catalog.js';
+import { catalog, catalogEntriesUsing, type CatalogEntry, type CatalogId, catalogRepositoryHref, catalogSections, findCatalogEntry, isCatalogId, isDiscouragedWebAwesome, type KerfCatalogId, type WebAwesomeCatalogId, webAwesomeCatalogSections } from './catalog.js';
 import { createComponentOverlay } from './component-overlay.js';
 import { applyDemoTheme, type DemoTheme, oppositeDemoTheme, preferredDemoTheme } from './demo-theme.js';
 import { demos } from './demos/registry.js';
@@ -128,7 +128,14 @@ function toCatalogRelated(entry: CatalogEntry): CatalogRelated[] {
 function toKuiSections(sections: readonly { category: string; entries: readonly CatalogEntry[] }[]): KuiCatalogSection[] {
   return sections.map((section) => ({
     category: section.category,
-    entries: section.entries.map((entry) => ({ id: entry.id, name: entry.name, description: entry.description, resources: toCatalogResources(entry), related: toCatalogRelated(entry) })),
+    entries: section.entries.map((entry) => ({
+      id: entry.id,
+      name: entry.name,
+      description: entry.description,
+      tags: isDiscouragedWebAwesome(entry) ? ['Discouraged'] : undefined,
+      resources: toCatalogResources(entry),
+      related: toCatalogRelated(entry),
+    })),
   }));
 }
 const kuiCatalogSections = toKuiSections(catalogSections);

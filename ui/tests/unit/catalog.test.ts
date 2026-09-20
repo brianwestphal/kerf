@@ -3,7 +3,7 @@ import { resolve } from 'node:path';
 
 import { describe, expect, it } from 'vitest';
 
-import { catalog, catalogCategories, catalogEntriesUsing, catalogRepositoryBlobUrl, catalogRepositoryHref, catalogSections, findCatalogEntry, isCatalogId, kerfCatalog, webAwesomeCatalog, webAwesomeCatalogSections, webAwesomeCategories } from '../../ux-demo/catalog.js';
+import { catalog, catalogCategories, catalogEntriesUsing, catalogRepositoryBlobUrl, catalogRepositoryHref, catalogSections, findCatalogEntry, isCatalogId, isDiscouragedWebAwesome, kerfCatalog, webAwesomeCatalog, webAwesomeCatalogSections, webAwesomeCategories } from '../../ux-demo/catalog.js';
 
 describe('UX catalog metadata', () => {
   it('projects the shipped machine-readable catalog without losing decision facts', async () => {
@@ -12,6 +12,7 @@ describe('UX catalog metadata', () => {
       package: string;
       entries: Array<{
         id: string;
+        recommendation?: string;
         publicExports?: string[];
         useWhen: string[];
         avoidWhen: string[];
@@ -33,6 +34,24 @@ describe('UX catalog metadata', () => {
     expect(artifact.entries.find(({ id }) => id === 'token-search-field')?.publicExports).toEqual(['TokenSearchField', 'readTokenSearchField', 'placeTokenSearchCaret', 'wireTokenSearchFields']);
     expect(artifact.entries.find(({ id }) => id === 'select')?.delivery.registrationImport).toBe('@kerfjs/ui/select/register');
     expect(artifact.entries.find(({ id }) => id === 'wa-button')?.delivery.registrationImport).toBe('@awesome.me/webawesome/dist/components/button/button.js');
+    expect(webAwesomeCatalog.filter(isDiscouragedWebAwesome).map(({ id }) => id)).toEqual([
+      'wa-button-group',
+      'wa-dropdown',
+      'wa-dropdown-item',
+      'wa-option',
+      'wa-select',
+      'wa-split-panel',
+      'wa-tab',
+      'wa-tab-group',
+      'wa-tab-panel',
+      'wa-tree',
+      'wa-tree-item',
+      'wa-animated-image',
+      'wa-comparison',
+      'wa-icon',
+      'wa-zoomable-frame',
+    ]);
+    expect(findCatalogEntry('wa-popup')?.recommendation).toBe('conditional');
   });
 
   it('keeps routes unique and dependency references valid', () => {
@@ -144,5 +163,6 @@ describe('UX catalog metadata', () => {
     expect(findCatalogEntry('wa-button-group')?.description).toContain('prefer Kerf SegmentedControl');
     expect(findCatalogEntry('wa-icon')?.description).toContain('use Kerf LucideIcon');
     expect(findCatalogEntry('wa-zoomable-frame')?.description).toContain('Avoid for application UI');
+    expect(webAwesomeCatalog.filter(isDiscouragedWebAwesome)).toHaveLength(15);
   });
 });

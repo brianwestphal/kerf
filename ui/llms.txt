@@ -145,6 +145,6 @@ declared side effects.
 - [accessibility.md](./docs/accessibility.md): keyboard and ARIA contracts per component.
 - [recipes.md](./docs/recipes.md): production compositions (app shell, list-detail dialog, composer form, …) as copyable references.
 - [app-layouts.md](./docs/app-layouts.md): choosing `NavStack`/`SplitView`/`Workbench`/`TabScaffold` by data + interaction + device, and dialog presentation.
-- [webawesome-theme.md](./docs/webawesome-theme.md): the optional Web Awesome theme; catalog coverage means themed-and-supported, not preferred (prefer the Kerf primitive when one exists).
+- [webawesome-theme.md](./docs/webawesome-theme.md): the optional Web Awesome theme; catalog coverage means themed-and-supported, not preferred (prefer the Kerf primitive when one exists). The UX sidebar visibly tags superseded and exceptional Web Awesome choices as `Discouraged`; Popup remains an available conditional positioning primitive.
 - [component-catalog.json](./ai/component-catalog.json) + [public-api-signatures-v1.md](./ai/public-api-signatures-v1.md) + [webawesome-jsx-signatures-v1.md](./ai/webawesome-jsx-signatures-v1.md): machine-readable facts and exact signatures.
 - [README.md](./README.md): package overview and the component subpath table.

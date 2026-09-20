@@ -211,7 +211,11 @@ entries name the local documentation as Kerf integration guidance. The typed
 projection derives these paths without adding a public runtime export.
 Decorative chrome, Web Awesome controls, and production components share
 semantic theme tokens. All 70 free Web Awesome 3.12 modules have focused routes
-under a distinct collapsible ecosystem section with category subgroups, while a
+under a distinct collapsible ecosystem section with category subgroups. The
+canonical recommendation metadata projects visible `Discouraged` sidebar tags
+onto the 15 superseded or exceptional choices while leaving Popup available as
+a conditional low-level primitive. Catalog entries expose reusable short tags
+for the same kind of decision metadata, while a
 dedicated gallery spans Web Awesome actions, forms, structure/navigation,
 feedback, media, and formatting. The catalog includes every ToolbarControlGroup
 variant, a responsive toolbar find composition, toolbar/rounded/pill

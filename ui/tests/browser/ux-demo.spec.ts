@@ -2008,6 +2008,27 @@ test('observer specimens expose visible, user-driven events', async ({ page, bro
   }
 });
 
+test('labels discouraged Web Awesome entries in the catalog sidebar', async ({ page, browserName }) => {
+  await page.setViewportSize({ width: 1100, height: 820 });
+  await page.goto('/?component=wa-button-group');
+
+  const secondary = page.locator('[data-catalog-secondary]');
+  await expect(secondary).toBeVisible();
+  const discouraged = secondary.locator('.kui-catalog__tag', { hasText: 'Discouraged' });
+  await expect(discouraged).toHaveCount(15);
+  await expect(page.locator('[data-item-id="wa-button-group"] .kui-catalog__tag')).toHaveText('Discouraged');
+  await expect(page.locator('[data-item-id="wa-popup"] .kui-catalog__tag')).toHaveCount(0);
+
+  const sidebar = page.locator('.kui-catalog__sidebar');
+  await page.locator('[data-item-id="wa-button-group"]').scrollIntoViewIfNeeded();
+  if (browserName === 'chromium') await sidebar.screenshot({ path: 'test-results/webawesome-discouraged-tags-wide.png' });
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.locator('[data-item-id="wa-button-group"]').scrollIntoViewIfNeeded();
+  await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
+  if (browserName === 'chromium') await sidebar.screenshot({ path: 'test-results/webawesome-discouraged-tags-narrow.png' });
+});
+
 test('catalog routes every production component family and supports its stateful controls', async ({ page, browserName }) => {
   test.setTimeout(90_000);
   await page.goto('/');
