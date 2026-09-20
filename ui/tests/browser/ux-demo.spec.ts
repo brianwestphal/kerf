@@ -472,7 +472,7 @@ test('aligns the layout demo action buttons with the card border above them', as
 
 test('links catalog details to their first-party source and existing guidance', async ({ page, browserName }) => {
   for (const [id, name, sourcePath, componentPath, documentationPath, guidanceLabel, templatePath] of [
-    ['toolbar', 'Toolbar', 'ui/ux-demo/main.tsx', 'ui/src/toolbar.tsx', 'ui/docs/component-selection.md', 'Guidance', 'ui/docs/design/templates/toolbar.svg'],
+    ['toolbar', 'Toolbar', 'ui/ux-demo/demos/toolbar.tsx', 'ui/src/toolbar.tsx', 'ui/docs/component-selection.md', 'Guidance', 'ui/docs/design/templates/toolbar.svg'],
     ['recipe-app-shell', 'Desktop application shell', 'ui/ux-demo/recipes/app-shell.tsx', undefined, 'ui/docs/recipes.md#desktop-application-shell', 'Guidance', undefined],
     ['wa-button', 'Button', 'ui/ux-demo/webawesome-demos.tsx', undefined, 'ui/docs/webawesome-theme.md#coverage', 'Integration guidance', undefined],
   ] as const) {

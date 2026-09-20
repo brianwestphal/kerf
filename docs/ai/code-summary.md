@@ -2,9 +2,12 @@
 
 A directory map + reverse index ("where do I look for X?") for Claude Code sessions and other AI assistants. Keep this in sync whenever a represented file, directory, entry point, export, command, route, or architectural fact changes.
 
-The optional `ui/ux-demo/recipes/` directory contains seven literal dynamic
-recipe chunks, a shared per-instance controller contract, and semantic
-container-responsive CSS. The composer recipe uses one visible form surface,
+The optional `ui/ux-demo/demos/` directory contains one focused renderer per
+first-party component or composition route plus a typed shared context and
+registry; `ui/ux-demo/main.tsx` retains the catalog shell, shared state, routing,
+and interaction wiring. The sibling `ui/ux-demo/recipes/` directory contains
+seven literal dynamic recipe chunks, a shared per-instance controller contract,
+and semantic container-responsive CSS. The composer recipe uses one visible form surface,
 PanelHeader title/summary hierarchy, shared 8px field/action gutters, and a
 conditional StateBanner as its only nested semantic surface. The copyable `mount-recipe.ts` adapter owns stable-root
 delegation, form/dialog forwarding, resize commits, and idempotent disposal.
@@ -16,8 +19,8 @@ canonical layout ownership for a recurring concept the package does not export.
 `ui/scripts/check-recipes.mjs` keeps those sources,
 canonical `ui/ai/component-catalog.json` facts, package imports, docs, and
 stable catalog routes synchronized.
-The same typed projection derives repository-relative paths for main, recipe,
-Web Awesome, and first-party component source, then pairs them with canonical
+The same typed projection derives repository-relative paths for focused demo,
+recipe, Web Awesome, and first-party component source, then pairs them with canonical
 guidance paths in visible, deploy-safe detail links.
 
 `ui/ai-regressions/` is the internal deterministic AI-choice regression

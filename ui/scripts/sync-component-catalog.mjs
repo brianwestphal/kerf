@@ -19,7 +19,7 @@ const designTemplate = (entry) =>
 const demoSource = (entry) => {
   if (entry.kind === 'recipe') return `ui/ux-demo/recipes/${entry.id.slice('recipe-'.length)}.tsx`;
   if (entry.source === 'webawesome') return 'ui/ux-demo/webawesome-demos.tsx';
-  return 'ui/ux-demo/main.tsx';
+  return `ui/ux-demo/demos/${entry.id}.tsx`;
 };
 
 const componentSource = (entry) => entry.source === 'kerf' && entry.kind === 'component'

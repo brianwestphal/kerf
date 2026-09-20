@@ -47,7 +47,7 @@ describe('UX catalog metadata', () => {
 
   it('projects deploy-safe source and guidance links for every catalog route', async () => {
     expect(findCatalogEntry('toolbar')).toMatchObject({
-      demoSource: 'ui/ux-demo/main.tsx',
+      demoSource: 'ui/ux-demo/demos/toolbar.tsx',
       componentSource: 'ui/src/toolbar.tsx',
       documentation: 'ui/docs/component-selection.md',
     });

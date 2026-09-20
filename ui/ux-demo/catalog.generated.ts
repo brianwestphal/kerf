@@ -8,7 +8,7 @@ export const generatedKerfCatalog = [
     "source": "kerf",
     "description": "Decorative and meaningfully labeled Lucide-compatible icons.",
     "uses": [],
-    "demoSource": "ui/ux-demo/main.tsx",
+    "demoSource": "ui/ux-demo/demos/lucide-icon.tsx",
     "componentSource": "ui/src/lucide-icon.tsx",
     "documentation": "ui/docs/component-selection.md"
   },
@@ -22,7 +22,7 @@ export const generatedKerfCatalog = [
     "uses": [
       "lucide-icon"
     ],
-    "demoSource": "ui/ux-demo/main.tsx",
+    "demoSource": "ui/ux-demo/demos/disclosure-arrow.tsx",
     "componentSource": "ui/src/disclosure-arrow.tsx",
     "documentation": "ui/docs/component-selection.md"
   },
@@ -105,7 +105,7 @@ export const generatedKerfCatalog = [
       "wa-relative-time",
       "wa-resize-observer"
     ],
-    "demoSource": "ui/ux-demo/main.tsx",
+    "demoSource": "ui/ux-demo/demos/webawesome-theme.tsx",
     "documentation": "ui/docs/component-selection.md"
   },
   {
@@ -116,7 +116,7 @@ export const generatedKerfCatalog = [
     "source": "kerf",
     "description": "Provide one reusable pane, toolbar, content stack, and content-item geometry across sidebars, main areas, and dialogs.",
     "uses": [],
-    "demoSource": "ui/ux-demo/main.tsx",
+    "demoSource": "ui/ux-demo/demos/layout.tsx",
     "documentation": "ui/docs/component-selection.md"
   },
   {
@@ -130,7 +130,7 @@ export const generatedKerfCatalog = [
       "toolbar-text",
       "toolbar-control-group"
     ],
-    "demoSource": "ui/ux-demo/main.tsx",
+    "demoSource": "ui/ux-demo/demos/toolbar.tsx",
     "componentSource": "ui/src/toolbar.tsx",
     "designTemplate": "ui/docs/design/templates/toolbar.svg",
     "documentation": "ui/docs/component-selection.md"
@@ -146,7 +146,7 @@ export const generatedKerfCatalog = [
       "lucide-icon",
       "segmented-control"
     ],
-    "demoSource": "ui/ux-demo/main.tsx",
+    "demoSource": "ui/ux-demo/demos/toolbar-control-group.tsx",
     "componentSource": "ui/src/toolbar-control-group.tsx",
     "designTemplate": "ui/docs/design/templates/toolbar-control-group.svg",
     "documentation": "ui/docs/component-selection.md"
@@ -159,7 +159,7 @@ export const generatedKerfCatalog = [
     "source": "kerf",
     "description": "A transparent, forced-dark toolbar that floats over its container's content.",
     "uses": [],
-    "demoSource": "ui/ux-demo/main.tsx",
+    "demoSource": "ui/ux-demo/demos/floating-toolbar.tsx",
     "componentSource": "ui/src/floating-toolbar.tsx",
     "documentation": "ui/docs/component-selection.md"
   },
@@ -171,7 +171,7 @@ export const generatedKerfCatalog = [
     "source": "kerf",
     "description": "Large, default, and compact toolbar identity text.",
     "uses": [],
-    "demoSource": "ui/ux-demo/main.tsx",
+    "demoSource": "ui/ux-demo/demos/toolbar-text.tsx",
     "componentSource": "ui/src/toolbar-text.tsx",
     "designTemplate": "ui/docs/design/templates/toolbar-text.svg",
     "documentation": "ui/docs/component-selection.md"
@@ -187,7 +187,7 @@ export const generatedKerfCatalog = [
       "panel-header",
       "value-table"
     ],
-    "demoSource": "ui/ux-demo/main.tsx",
+    "demoSource": "ui/ux-demo/demos/headers.tsx",
     "documentation": "ui/docs/component-selection.md"
   },
   {
@@ -203,7 +203,7 @@ export const generatedKerfCatalog = [
       "toolbar-control-group",
       "toolbar-text"
     ],
-    "demoSource": "ui/ux-demo/main.tsx",
+    "demoSource": "ui/ux-demo/demos/panel-header.tsx",
     "componentSource": "ui/src/panel-header.tsx",
     "designTemplate": "ui/docs/design/templates/panel-header.svg",
     "documentation": "ui/docs/component-selection.md"
@@ -218,7 +218,7 @@ export const generatedKerfCatalog = [
     "uses": [
       "lucide-icon"
     ],
-    "demoSource": "ui/ux-demo/main.tsx",
+    "demoSource": "ui/ux-demo/demos/value-table.tsx",
     "componentSource": "ui/src/value-table.tsx",
     "designTemplate": "ui/docs/design/templates/value-table.svg",
     "documentation": "ui/docs/component-selection.md"
@@ -235,7 +235,7 @@ export const generatedKerfCatalog = [
       "list-action-row",
       "list-item"
     ],
-    "demoSource": "ui/ux-demo/main.tsx",
+    "demoSource": "ui/ux-demo/demos/list.tsx",
     "documentation": "ui/docs/component-selection.md"
   },
   {
@@ -249,7 +249,7 @@ export const generatedKerfCatalog = [
       "lucide-icon",
       "disclosure-arrow"
     ],
-    "demoSource": "ui/ux-demo/main.tsx",
+    "demoSource": "ui/ux-demo/demos/list-header.tsx",
     "componentSource": "ui/src/list-header.tsx",
     "designTemplate": "ui/docs/design/templates/list-header.svg",
     "documentation": "ui/docs/component-selection.md"
@@ -264,7 +264,7 @@ export const generatedKerfCatalog = [
     "uses": [
       "lucide-icon"
     ],
-    "demoSource": "ui/ux-demo/main.tsx",
+    "demoSource": "ui/ux-demo/demos/list-action-row.tsx",
     "componentSource": "ui/src/list-action-row.tsx",
     "designTemplate": "ui/docs/design/templates/list-action-row.svg",
     "documentation": "ui/docs/component-selection.md"
@@ -279,7 +279,7 @@ export const generatedKerfCatalog = [
     "uses": [
       "lucide-icon"
     ],
-    "demoSource": "ui/ux-demo/main.tsx",
+    "demoSource": "ui/ux-demo/demos/list-item.tsx",
     "componentSource": "ui/src/list-item.tsx",
     "designTemplate": "ui/docs/design/templates/list-item.svg",
     "documentation": "ui/docs/component-selection.md"
@@ -292,7 +292,7 @@ export const generatedKerfCatalog = [
     "source": "kerf",
     "description": "Insets a self-bordered control into a pane/list content region.",
     "uses": [],
-    "demoSource": "ui/ux-demo/main.tsx",
+    "demoSource": "ui/ux-demo/demos/list-inset-control.tsx",
     "componentSource": "ui/src/list-inset-control.tsx",
     "documentation": "ui/docs/component-selection.md"
   },
@@ -304,7 +304,7 @@ export const generatedKerfCatalog = [
     "source": "kerf",
     "description": "Gives bare text the content-item geometry so it lines up with bordered items.",
     "uses": [],
-    "demoSource": "ui/ux-demo/main.tsx",
+    "demoSource": "ui/ux-demo/demos/list-inset-text.tsx",
     "componentSource": "ui/src/list-inset-text.tsx",
     "documentation": "ui/docs/component-selection.md"
   },
@@ -318,7 +318,7 @@ export const generatedKerfCatalog = [
     "uses": [
       "lucide-icon"
     ],
-    "demoSource": "ui/ux-demo/main.tsx",
+    "demoSource": "ui/ux-demo/demos/tabs.tsx",
     "componentSource": "ui/src/app-tab.tsx",
     "documentation": "ui/docs/component-selection.md"
   },
@@ -333,7 +333,7 @@ export const generatedKerfCatalog = [
       "tabs",
       "toolbar-control-group"
     ],
-    "demoSource": "ui/ux-demo/main.tsx",
+    "demoSource": "ui/ux-demo/demos/tab-bar.tsx",
     "componentSource": "ui/src/tab-bar.tsx",
     "designTemplate": "ui/docs/design/templates/tab-bar.svg",
     "documentation": "ui/docs/component-selection.md"
@@ -348,7 +348,7 @@ export const generatedKerfCatalog = [
     "uses": [
       "lucide-icon"
     ],
-    "demoSource": "ui/ux-demo/main.tsx",
+    "demoSource": "ui/ux-demo/demos/segmented-control.tsx",
     "componentSource": "ui/src/segmented-control.tsx",
     "designTemplate": "ui/docs/design/templates/segmented-control.svg",
     "documentation": "ui/docs/component-selection.md"
@@ -363,7 +363,7 @@ export const generatedKerfCatalog = [
     "uses": [
       "lucide-icon"
     ],
-    "demoSource": "ui/ux-demo/main.tsx",
+    "demoSource": "ui/ux-demo/demos/token-search-field.tsx",
     "componentSource": "ui/src/token-search-field.tsx",
     "designTemplate": "ui/docs/design/templates/token-search-field.svg",
     "documentation": "ui/docs/component-selection.md"
@@ -378,7 +378,7 @@ export const generatedKerfCatalog = [
     "uses": [
       "lucide-icon"
     ],
-    "demoSource": "ui/ux-demo/main.tsx",
+    "demoSource": "ui/ux-demo/demos/resize.tsx",
     "componentSource": "ui/src/resizable-region.tsx",
     "documentation": "ui/docs/component-selection.md"
   },
@@ -394,7 +394,7 @@ export const generatedKerfCatalog = [
       "wa-select",
       "wa-option"
     ],
-    "demoSource": "ui/ux-demo/main.tsx",
+    "demoSource": "ui/ux-demo/demos/select.tsx",
     "componentSource": "ui/src/select.tsx",
     "documentation": "ui/docs/component-selection.md"
   },
@@ -410,7 +410,7 @@ export const generatedKerfCatalog = [
       "empty-state",
       "loading-spinner"
     ],
-    "demoSource": "ui/ux-demo/main.tsx",
+    "demoSource": "ui/ux-demo/demos/feedback.tsx",
     "documentation": "ui/docs/component-selection.md"
   },
   {
@@ -423,7 +423,7 @@ export const generatedKerfCatalog = [
     "uses": [
       "lucide-icon"
     ],
-    "demoSource": "ui/ux-demo/main.tsx",
+    "demoSource": "ui/ux-demo/demos/state-banner.tsx",
     "componentSource": "ui/src/state-banner.tsx",
     "designTemplate": "ui/docs/design/templates/state-banner.svg",
     "documentation": "ui/docs/component-selection.md"
@@ -439,7 +439,7 @@ export const generatedKerfCatalog = [
       "lucide-icon",
       "loading-spinner"
     ],
-    "demoSource": "ui/ux-demo/main.tsx",
+    "demoSource": "ui/ux-demo/demos/empty-state.tsx",
     "componentSource": "ui/src/empty-state.tsx",
     "designTemplate": "ui/docs/design/templates/empty-state.svg",
     "documentation": "ui/docs/component-selection.md"
@@ -452,7 +452,7 @@ export const generatedKerfCatalog = [
     "source": "kerf",
     "description": "Meaningfully labeled or decorative progress.",
     "uses": [],
-    "demoSource": "ui/ux-demo/main.tsx",
+    "demoSource": "ui/ux-demo/demos/loading-spinner.tsx",
     "componentSource": "ui/src/loading-spinner.tsx",
     "documentation": "ui/docs/component-selection.md"
   },
@@ -464,7 +464,7 @@ export const generatedKerfCatalog = [
     "source": "kerf",
     "description": "A subtle, unanimated loading placeholder block for a not-yet-known value slot.",
     "uses": [],
-    "demoSource": "ui/ux-demo/main.tsx",
+    "demoSource": "ui/ux-demo/demos/skeleton.tsx",
     "componentSource": "ui/src/skeleton.tsx",
     "designTemplate": "ui/docs/design/templates/skeleton.svg",
     "documentation": "ui/docs/component-selection.md"
