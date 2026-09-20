@@ -684,6 +684,7 @@ test('aligns PanelHeader identity, actions, and subtitle across layout, theme, a
 
 test('sizes and rotates the first-class disclosure arrow while Select keeps its independent half scale', async ({ page, browserName }) => {
   await page.setViewportSize({ width: 1100, height: 760 });
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.goto('/?component=disclosure-arrow');
   const demo = page.locator('[data-demo="disclosure-arrow"]');
   const button = demo.locator('[data-action="toggle-disclosure"]');
@@ -728,7 +729,7 @@ test('sizes and rotates the first-class disclosure arrow while Select keeps its 
   await expect(customButton).toHaveAttribute('aria-expanded', 'false');
   if (browserName === 'chromium') await button.screenshot({ path: 'test-results/disclosure-arrow-open.png' });
 
-  await demo.evaluate((element) => {
+  await page.locator('html').evaluate((element) => {
     element.style.setProperty('--kui-disclosure-arrow-duration', '10s');
   });
   await customButton.click();
@@ -736,8 +737,10 @@ test('sizes and rotates the first-class disclosure arrow while Select keeps its 
   await expect(customButton).toHaveAccessibleName('Preview');
   await expect(customArrow).toHaveAttribute('data-open', 'true');
   await expect(customArrow).toHaveAttribute('data-direction', 'up');
-  const midpoint = await customArrow.evaluate(async (element) => {
-    await new Promise<void>((resolve) => window.requestAnimationFrame(() => resolve()));
+  await expect.poll(async () => customArrow.evaluate((element) => element.getAnimations().some((animation) => (
+    animation instanceof CSSTransition && animation.transitionProperty === 'transform'
+  ))), { message: 'Expected a transform transition' }).toBe(true);
+  const midpoint = await customArrow.evaluate((element) => {
     const transition = element.getAnimations().find((animation) => (
       animation instanceof CSSTransition && animation.transitionProperty === 'transform'
     ));
@@ -758,7 +761,7 @@ test('sizes and rotates the first-class disclosure arrow while Select keeps its 
   await customArrow.evaluate((element) => {
     element.getAnimations().forEach((animation) => animation.finish());
   });
-  await demo.evaluate((element) => element.style.removeProperty('--kui-disclosure-arrow-duration'));
+  await page.locator('html').evaluate((element) => element.style.removeProperty('--kui-disclosure-arrow-duration'));
   await expect.poll(async () => customArrow.evaluate((element) => window.getComputedStyle(element).transform)).toBe('matrix(0, -1, 1, 0, 0, 0)');
   await expect(button).toHaveAttribute('aria-expanded', 'true');
   await expect(page.locator('.catalog-log')).toHaveText('Custom disclosure opened');
