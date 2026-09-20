@@ -1375,6 +1375,57 @@ test('themes representative free Web Awesome families with overridable semantic 
   expect(fieldInset.labelSize).toBe('12px');
   expect(fieldInset.labelWeight).toBe('650');
 
+  const nonFieldInsets = await page.evaluate(() => {
+    const style = (selector: string, part?: string) => {
+      const host = document.querySelector(selector) as HTMLElement;
+      const target = part
+        ? host.shadowRoot!.querySelector(`[part~="${part}"]`) as HTMLElement
+        : host;
+      return window.getComputedStyle(target);
+    };
+    const cardHeader = style('wa-card', 'header');
+    const cardBody = style('wa-card', 'body');
+    const callout = style('wa-callout');
+    const detailsHeader = style('wa-details', 'header');
+    const accordionButton = style('wa-accordion-item', 'button');
+    const tab = style('wa-tab', 'tab');
+    const tabPanelHost = document.querySelector('wa-tab-panel[active]') as HTMLElement;
+    const tabPanel = window.getComputedStyle(tabPanelHost.shadowRoot!.querySelector('.tab-panel')!);
+    const treeItem = style('wa-tree-item[selected]', 'item');
+    const button = style('wa-button[variant="brand"]', 'button');
+    const badge = style('wa-badge');
+    const tag = style('wa-tag');
+    const dropdownItem = style('wa-dropdown-item');
+    return {
+      cardHeader: [cardHeader.paddingBlockStart, cardHeader.paddingInlineStart],
+      cardBody: cardBody.padding,
+      callout: callout.padding,
+      detailsHeader: detailsHeader.padding,
+      accordionButton: accordionButton.padding,
+      tab: tab.padding,
+      tabPanel: tabPanel.padding,
+      tree: [treeItem.marginInlineStart, treeItem.paddingInlineEnd],
+      button: button.paddingInlineStart,
+      badge: [badge.paddingBlockStart, badge.paddingInlineStart],
+      tag: tag.paddingInlineStart,
+      dropdownItem: dropdownItem.paddingInlineStart,
+    };
+  });
+  expect(nonFieldInsets).toEqual({
+    cardHeader: ['8px', '16px'],
+    cardBody: '16px',
+    callout: '16px',
+    detailsHeader: '16px',
+    accordionButton: '16px',
+    tab: '8px',
+    tabPanel: '16px 0px',
+    tree: ['8px', '8px'],
+    button: '8px',
+    badge: ['4.5px', '7.5px'],
+    tag: '8px',
+    dropdownItem: '8px',
+  });
+
   const primary = demo.locator('wa-button[variant="brand"]').first().locator('[part~="button"]');
   await expect(primary).toHaveCSS('background-color', 'rgb(0, 136, 255)');
   await page.locator('[data-action="toggle-theme"]').click();

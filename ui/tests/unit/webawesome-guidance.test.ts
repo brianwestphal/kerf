@@ -22,6 +22,18 @@ describe('Web Awesome consumer guidance', () => {
     expect(guidance).toContain('--arrow-size');
   });
 
+  it('records the audited non-field inset tiers and intentional exceptions', () => {
+    const guidance = readFileSync(resolve(import.meta.dirname, '../../docs/webawesome-theme.md'), 'utf8');
+
+    expect(guidance).toContain('--kui-wa-control-inset');
+    expect(guidance).toContain('--kui-wa-container-inset');
+    expect(guidance).toContain('Badge remains intentionally compact');
+    expect(guidance).toContain('Breadcrumb');
+    expect(guidance).toContain('bordered or filled');
+    expect(guidance).toContain('delegates item chrome');
+    expect(guidance).toContain("no `wa-menu-item`");
+  });
+
   it('distinguishes supported ecosystem components from preferred Kerf patterns', () => {
     const guidance = readFileSync(resolve(import.meta.dirname, '../../docs/webawesome-theme.md'), 'utf8');
 

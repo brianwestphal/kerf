@@ -197,6 +197,10 @@
     --kui-wa-carousel-dot-hit-size: 20px;
     --kui-wa-carousel-control-size: 28px;
     --kui-wa-carousel-icon-size: 16px;
+    /* Non-field chrome uses the same two-tier spacing contract as Kerf:
+       8px inside controls/items, 16px inside content containers. */
+    --kui-wa-control-inset: var(--kui-layout-item-padding, remify(8px));
+    --kui-wa-container-inset: var(--kui-space-m, remify(16px));
     --kui-disclosure-icon-scale: 0.5;
     --wa-shadow-s: 0 1px 3px rgb(0 0 0 / 0.14);
     --wa-shadow-m: 0 remify(5.6px) remify(16px) rgb(0 0 0 / 0.11);
@@ -259,6 +263,46 @@
   wa-details::part(icon),
   wa-breadcrumb-item::part(separator) {
     transform: scale(var(--kui-disclosure-icon-scale));
+  }
+
+  /* Content containers deliberately use the 16px homogeneous-group step, not
+     the denser 8px control inset. Card's WA default is 24px; Details and
+     Accordion already default to 16px, but setting the token makes the Kerf
+     decision explicit and keeps it stable across upstream theme changes. */
+  wa-card,
+  wa-details,
+  wa-accordion-item {
+    /* WA declares this custom property on :host inside each shadow root. The
+       important flag is required for a public host override to cross that
+       encapsulation boundary. */
+    --spacing: var(--kui-wa-container-inset) !important;
+  }
+
+  wa-callout {
+    padding: var(--kui-wa-container-inset) !important;
+  }
+
+  /* Interactive and item chrome follows the content-item 8px inset. */
+  wa-tab::part(tab) {
+    padding: var(--kui-wa-control-inset);
+  }
+
+  wa-tab-panel {
+    --padding: var(--kui-wa-container-inset) 0 !important;
+  }
+
+  wa-tree-item::part(item) {
+    margin-inline: var(--kui-layout-inline-margin, remify(8px));
+    padding-inline-end: var(--kui-wa-control-inset);
+    border-radius: var(--kui-layout-rounded-radius, calc(1px + remify(11px)));
+  }
+
+  wa-tag {
+    padding-inline: var(--kui-wa-control-inset) !important;
+  }
+
+  wa-dropdown-item {
+    padding-inline: var(--kui-wa-control-inset) !important;
   }
 
   wa-popover {

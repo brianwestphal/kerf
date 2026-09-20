@@ -66,6 +66,37 @@ foreground. This applies to every free field that exposes a top label
 (`::part(form-control-label)` plus the Slider's `::part(label)`); inline control
 labels (Checkbox, Switch) keep their natural sentence case.
 
+Non-field chrome follows two explicit, overridable inset tiers:
+
+- `--kui-wa-control-inset` defaults to the 8px content-item padding. It applies
+  to tabs, tree-item trailing content, tags, and dropdown items. Tree selection
+  also uses Kerf's 8px inline outer margin, so its background reads as an inset
+  list item instead of an edge-to-edge stripe. Buttons already consume the same
+  `--wa-form-control-padding-inline` 8px value at every size, so no extra part
+  override is needed.
+- `--kui-wa-container-inset` defaults to the 16px homogeneous-group step. Card
+  header/body/footer, Callout, Details, Accordion Item, and Tab Panel use this
+  roomier tier because they contain prose or groups rather than one control
+  label. This intentionally tightens Card's 24px default while retaining the
+  existing 16px Details, Accordion, and Callout geometry.
+
+Badge remains intentionally compact at Web Awesome's intrinsic `0.375em` block /
+`0.625em` inline padding (4.5px / 7.5px at its default 12px text size): it is a
+short status or count, not a content item. Breadcrumb has no bordered or filled
+container, and Scroller delegates item chrome to its slotted children, so both
+retain their upstream geometry. Web Awesome 3.12's free catalog has
+`wa-dropdown-item`, but no `wa-menu-item`; the theme therefore styles the
+supported dropdown item rather than carrying a dead selector.
+
+Override either tier for a product scope after importing the theme:
+
+```css
+.roomy-editor {
+  --kui-wa-control-inset: 0.75rem;
+  --kui-wa-container-inset: 1.5rem;
+}
+```
+
 Accordion, Details, Breadcrumb, and Kerf Select share
 `--kui-disclosure-icon-scale` (default `.5`) so disclosure and traversal
 chevrons keep the same visual weight. The Accordion and Details components
