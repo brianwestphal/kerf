@@ -1337,6 +1337,44 @@ test('themes representative free Web Awesome families with overridable semantic 
   expect(theme.brand).toBe('light-dark(#0088ff, #64d2ff)');
   expect(theme.border).toBe('light-dark(#d1d1d6, #48484a)');
 
+  // Form fields carry the kui content-item inset (1px border + 8px padding), and
+  // their top label is inset to align with the value (border + padding = 9px) and
+  // styled exactly like a ListHeader label (uppercase, xs, quiet, weight 650).
+  const fieldInset = await page.evaluate(() => {
+    const input = document.querySelector('wa-input') as HTMLElement;
+    // Resolve the geometry tokens to used pixels via a probe (they are authored as
+    // rem-based calc()s, so reading the custom property returns the calc string).
+    const probe = document.createElement('div');
+    probe.style.position = 'absolute';
+    input.parentElement!.appendChild(probe);
+    const resolve = (name: string) => {
+      probe.style.width = `var(${name})`;
+      return window.getComputedStyle(probe).width;
+    };
+    const padInline = resolve('--wa-form-control-padding-inline');
+    const padBlock = resolve('--wa-form-control-padding-block');
+    const borderWidth = resolve('--wa-form-control-border-width');
+    probe.remove();
+    const label = input.shadowRoot!.querySelector('[part~="form-control-label"]') as HTMLElement;
+    const ls = window.getComputedStyle(label);
+    return {
+      padInline,
+      padBlock,
+      borderWidth,
+      labelPad: ls.paddingInlineStart,
+      labelTransform: ls.textTransform,
+      labelSize: ls.fontSize,
+      labelWeight: ls.fontWeight,
+    };
+  });
+  expect(fieldInset.padInline).toBe('8px');
+  expect(fieldInset.padBlock).toBe('8px');
+  expect(fieldInset.borderWidth).toBe('1px');
+  expect(fieldInset.labelPad).toBe('9px');
+  expect(fieldInset.labelTransform).toBe('uppercase');
+  expect(fieldInset.labelSize).toBe('12px');
+  expect(fieldInset.labelWeight).toBe('650');
+
   const primary = demo.locator('wa-button[variant="brand"]').first().locator('[part~="button"]');
   await expect(primary).toHaveCSS('background-color', 'rgb(0, 136, 255)');
   await page.locator('[data-action="toggle-theme"]').click();

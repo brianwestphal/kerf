@@ -54,6 +54,18 @@ pointer targets. Override `--kui-wa-carousel-icon-size`,
 `--kui-wa-carousel-dot-hit-size` on a carousel or containing scope when a
 product needs different geometry.
 
+Form fields carry the same content-item inset as the Kerf primitives: a 1px
+border with 8px inside it (`--wa-form-control-border-width`,
+`--wa-form-control-padding-block`, and `--wa-form-control-padding-inline` are set
+to the `--kui-layout-item-border-width` / `--kui-layout-item-padding` values), so
+a single-line control lands at the standard ~40px height and the value sits 9px
+in from the field edge. Each field's top label is inset by that same border +
+padding (9px) so it lines up with the value inside the field, and is styled
+exactly like a `ListHeader` label — uppercase, `--kui-font-xs`, weight 650, quiet
+foreground. This applies to every free field that exposes a top label
+(`::part(form-control-label)` plus the Slider's `::part(label)`); inline control
+labels (Checkbox, Switch) keep their natural sentence case.
+
 Accordion, Details, Breadcrumb, and Kerf Select share
 `--kui-disclosure-icon-scale` (default `.5`) so disclosure and traversal
 chevrons keep the same visual weight. The Accordion and Details components

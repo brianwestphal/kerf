@@ -175,6 +175,19 @@
     --wa-form-control-border-color: var(--wa-color-neutral-border-normal);
     --wa-form-control-border-radius: var(--wa-border-radius-m);
     --wa-form-control-activated-color: var(--wa-color-brand-fill-loud);
+    /* Field inset: a 1px border with 8px inside it, the same content-item
+       geometry the Kerf primitives use (docs/layout.md). WA's defaults are a
+       larger 0.75em/1em pad; this brings every form field onto our 8px rhythm
+       (and a ~40px single-line control height). */
+    --wa-form-control-border-width: var(--kui-layout-item-border-width, 1px);
+    --wa-form-control-padding-block: var(
+      --kui-layout-item-padding,
+      remify(8px)
+    );
+    --wa-form-control-padding-inline: var(
+      --kui-layout-item-padding,
+      remify(8px)
+    );
     --wa-panel-border-radius: var(--wa-border-radius-l);
     --wa-tooltip-background-color: var(--wa-color-neutral-fill-loud);
     --wa-tooltip-content-color: var(--wa-color-neutral-on-loud);
@@ -250,6 +263,33 @@
 
   wa-popover {
     --arrow-size: var(--kui-wa-popover-arrow-size);
+  }
+
+  /* A form field's top label is inset by the field's own border + inline padding
+     (1px + 8px = 9px) so the label text lines up with the value inside the field,
+     and it is styled exactly like a ListHeader label: uppercase, xs, quiet. */
+  :is(
+    wa-checkbox-group,
+    wa-color-picker,
+    wa-input,
+    wa-known-date,
+    wa-number-input,
+    wa-radio-group,
+    wa-select,
+    wa-textarea,
+    wa-time-input
+  )::part(form-control-label),
+  wa-slider::part(label) {
+    padding-inline: calc(
+      var(--wa-form-control-border-width) +
+        var(--wa-form-control-padding-inline)
+    );
+    color: var(--kui-color-neutral-on-quiet, var(--wa-color-text-quiet));
+    font-size: var(--kui-font-xs, var(--wa-font-size-xs));
+    font-weight: 650;
+    letter-spacing: 0.04em;
+    line-height: var(--wa-line-height-condensed);
+    text-transform: uppercase;
   }
 }
 
