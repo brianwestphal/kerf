@@ -174,7 +174,9 @@ same unbordered geometry. Known Date field captions and bordered text-like
 field hints align with their values at the 9px border-plus-padding inset. OTP
 Input's label uses the same uppercase xs/650 treatment, and its label and hint
 both use that inset. Slider's complete interactive region uses the shared 8px
-logical inline outer inset without moving its label.
+logical inline outer inset without moving its label. Accordion, Card, Details,
+Callout, and Include use the shared 8px logical inline surface margin and 8px
+inner padding; Accordion owns the margin once for the connected group.
 
 The default semantic ramps deliberately match Hot Sheet 2 and Web Awesome.
 Override `--kui-color-*` globally or component properties such as

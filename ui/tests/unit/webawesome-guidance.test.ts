@@ -26,7 +26,10 @@ describe('Web Awesome consumer guidance', () => {
     const guidance = readFileSync(resolve(import.meta.dirname, '../../docs/webawesome-theme.md'), 'utf8');
 
     expect(guidance).toContain('--kui-wa-control-inset');
+    expect(guidance).toContain('--kui-wa-surface-inset');
+    expect(guidance).toContain('--kui-wa-surface-margin');
     expect(guidance).toContain('--kui-wa-container-inset');
+    expect(guidance).toContain('Accordion, Card, Details, Callout, and Include');
     expect(guidance).toContain('Badge remains intentionally compact');
     expect(guidance).toContain('Breadcrumb');
     expect(guidance).toContain('bordered or filled');

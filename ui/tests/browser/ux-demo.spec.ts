@@ -1405,6 +1405,9 @@ test('themes representative free Web Awesome families with overridable semantic 
     const callout = style('wa-callout');
     const detailsHeader = style('wa-details', 'header');
     const accordionButton = style('wa-accordion-item', 'button');
+    const accordion = style('wa-accordion');
+    const card = style('wa-card');
+    const details = style('wa-details');
     const tab = style('wa-tab', 'tab');
     const tabPanelHost = document.querySelector('wa-tab-panel[active]') as HTMLElement;
     const tabPanel = window.getComputedStyle(tabPanelHost.shadowRoot!.querySelector('.tab-panel')!);
@@ -1419,6 +1422,10 @@ test('themes representative free Web Awesome families with overridable semantic 
       callout: callout.padding,
       detailsHeader: detailsHeader.padding,
       accordionButton: accordionButton.padding,
+      surfaceMargins: [accordion, card, details, callout].map((computed) => [
+        computed.marginInlineStart,
+        computed.marginInlineEnd,
+      ]),
       tab: tab.padding,
       tabPanel: tabPanel.padding,
       tree: [treeItem.marginInlineStart, treeItem.paddingInlineEnd],
@@ -1429,11 +1436,12 @@ test('themes representative free Web Awesome families with overridable semantic 
     };
   });
   expect(nonFieldInsets).toEqual({
-    cardHeader: ['8px', '16px'],
-    cardBody: '16px',
-    callout: '16px',
-    detailsHeader: '16px',
-    accordionButton: '16px',
+    cardHeader: ['8px', '8px'],
+    cardBody: '8px',
+    callout: '8px',
+    detailsHeader: '8px',
+    accordionButton: '8px',
+    surfaceMargins: Array.from({ length: 4 }, () => ['8px', '8px']),
     tab: '8px',
     tabPanel: '16px 0px',
     tree: ['8px', '8px'],
@@ -1732,6 +1740,58 @@ test('carousel theme uses compact arrows and seven-pixel visible page dots', asy
     await page.setViewportSize({ width: 390, height: 844 });
     await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
     await page.screenshot({ path: 'test-results/webawesome-carousel-compact-narrow.png', fullPage: true });
+  }
+});
+
+test('content surfaces share an overridable 8px outer margin and inner padding', async ({ page, browserName }) => {
+  const specimens = [
+    { route: 'wa-accordion', host: 'wa-accordion', inner: 'wa-accordion-item', part: 'button' },
+    { route: 'wa-card', host: 'wa-card', inner: 'wa-card', part: 'header' },
+    { route: 'wa-details', host: 'wa-details', inner: 'wa-details', part: 'header' },
+    { route: 'wa-callout', host: 'wa-callout', inner: 'wa-callout', part: null },
+    { route: 'wa-include', host: 'wa-include', inner: 'wa-include', part: null },
+  ] as const;
+
+  for (const specimen of specimens) {
+    await page.setViewportSize({ width: 1100, height: 820 });
+    await page.goto(`/?component=${specimen.route}`);
+    const host = page.locator(specimen.host).first();
+    await expect(host).toBeVisible();
+    await expect.poll(() => host.evaluate((element) => window.getComputedStyle(element).marginInlineStart)).toBe('8px');
+    await expect.poll(() => host.evaluate((element) => window.getComputedStyle(element).marginInlineEnd)).toBe('8px');
+
+    const inset = await page.locator(specimen.inner).first().evaluate((element, part) => {
+      const target = part
+        ? element.shadowRoot!.querySelector(`[part~="${part}"]`) as HTMLElement
+        : element;
+      return window.getComputedStyle(target).paddingInlineStart;
+    }, specimen.part);
+    expect(inset).toBe('8px');
+
+    await page.locator('.wa-component-demo__specimen').evaluate((element) => {
+      const specimen = element as HTMLElement;
+      specimen.style.setProperty('--kui-wa-surface-margin', '12px');
+      specimen.style.setProperty('--kui-wa-surface-inset', '12px');
+    });
+    await expect.poll(() => host.evaluate((element) => window.getComputedStyle(element).marginInlineStart)).toBe('12px');
+    const overriddenInset = await page.locator(specimen.inner).first().evaluate((element, part) => {
+      const target = part
+        ? element.shadowRoot!.querySelector(`[part~="${part}"]`) as HTMLElement
+        : element;
+      return window.getComputedStyle(target).paddingInlineStart;
+    }, specimen.part);
+    expect(overriddenInset).toBe('12px');
+
+    await page.setViewportSize({ width: 390, height: 844 });
+    expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
+  }
+
+  await page.goto('/?component=wa-accordion');
+  if (browserName === 'chromium') {
+    await page.setViewportSize({ width: 1100, height: 820 });
+    await page.screenshot({ path: 'test-results/webawesome-surface-insets-wide.png', fullPage: true });
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.screenshot({ path: 'test-results/webawesome-surface-insets-narrow.png', fullPage: true });
   }
 });
 

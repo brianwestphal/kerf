@@ -197,9 +197,12 @@
     --kui-wa-carousel-dot-hit-size: 20px;
     --kui-wa-carousel-control-size: 28px;
     --kui-wa-carousel-icon-size: 16px;
-    /* Non-field chrome uses the same two-tier spacing contract as Kerf:
-       8px inside controls/items, 16px inside content containers. */
+    /* Non-field chrome uses Kerf's control, surface, and container spacing:
+       8px inside controls/surfaces, 8px around bordered surfaces, and 16px
+       inside the remaining content containers. */
     --kui-wa-control-inset: var(--kui-layout-item-padding, remify(8px));
+    --kui-wa-surface-inset: var(--kui-layout-item-padding, remify(8px));
+    --kui-wa-surface-margin: var(--kui-layout-inline-margin, remify(8px));
     --kui-wa-container-inset: var(--kui-space-m, remify(16px));
     --kui-disclosure-icon-scale: 0.5;
     --wa-shadow-s: 0 1px 3px rgb(0 0 0 / 0.14);
@@ -265,21 +268,34 @@
     transform: scale(var(--kui-disclosure-icon-scale));
   }
 
-  /* Content containers deliberately use the 16px homogeneous-group step, not
-     the denser 8px control inset. Card's WA default is 24px; Details and
-     Accordion already default to 16px, but setting the token makes the Kerf
-     decision explicit and keeps it stable across upstream theme changes. */
+  /* Bordered/fill surfaces follow the same 8px outer margin + 8px inner
+     padding contract as a Kerf content item. Accordion owns one outer margin
+     for the group; its items retain connected borders. */
+  :is(wa-accordion, wa-card, wa-details, wa-callout, wa-include) {
+    margin-inline: var(--kui-wa-surface-margin);
+  }
+
   wa-card,
   wa-details,
   wa-accordion-item {
     /* WA declares this custom property on :host inside each shadow root. The
        important flag is required for a public host override to cross that
        encapsulation boundary. */
-    --spacing: var(--kui-wa-container-inset) !important;
+    --spacing: var(--kui-wa-surface-inset) !important;
+  }
+
+  /* Card halves --spacing for its header block padding upstream, so pin the
+     public part to the same full surface inset as its body and footer. */
+  wa-card::part(header) {
+    padding: var(--kui-wa-surface-inset);
   }
 
   wa-callout {
-    padding: var(--kui-wa-container-inset) !important;
+    padding: var(--kui-wa-surface-inset) !important;
+  }
+
+  wa-include {
+    padding: var(--kui-wa-surface-inset);
   }
 
   /* Interactive and item chrome follows the content-item 8px inset. */

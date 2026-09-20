@@ -657,6 +657,12 @@ button {
   ) {
   width: min(remify(512px), 100%);
 }
+.wa-component-demo__specimen > :where(wa-accordion, wa-card) {
+  width: min(
+    remify(512px),
+    calc(100% - 2 * var(--kui-wa-surface-margin, remify(8px)))
+  );
+}
 .wa-demo-row {
   display: flex;
   min-width: 0;

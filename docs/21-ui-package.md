@@ -116,7 +116,9 @@ field hints align with their values at the shared 9px border-plus-padding
 inset. OTP Input's label uses the same uppercase xs/650 treatment as other
 field labels, and its label and hint both use that inset. Slider's complete
 interactive region uses the shared 8px logical inline outer inset without
-moving its label.
+moving its label. Accordion, Card, Details, Callout, and Include use the shared
+8px logical inline margin around their complete surface and 8px inner padding;
+Accordion keeps connected item borders by owning the margin at group level.
 
 `Select` is a Web Awesome adapter. Rendering it is pure; custom-element
 registration happens only after `import '@kerfjs/ui/select/register'`. Web

@@ -83,7 +83,8 @@ has no bordered field shell. Slider's complete interactive region receives the
 shared 8px logical inline outer inset through `::part(slider)`, keeping its
 track, markers, references, and hint together without moving the label.
 
-Non-field chrome follows two explicit, overridable inset tiers:
+Non-field chrome follows explicit, overridable control, surface, and container
+tiers:
 
 - `--kui-wa-control-inset` defaults to the 8px content-item padding. It applies
   to tabs, tree-item trailing content, tags, and dropdown items. Tree selection
@@ -91,11 +92,13 @@ Non-field chrome follows two explicit, overridable inset tiers:
   list item instead of an edge-to-edge stripe. Buttons already consume the same
   `--wa-form-control-padding-inline` 8px value at every size, so no extra part
   override is needed.
-- `--kui-wa-container-inset` defaults to the 16px homogeneous-group step. Card
-  header/body/footer, Callout, Details, Accordion Item, and Tab Panel use this
-  roomier tier because they contain prose or groups rather than one control
-  label. This intentionally tightens Card's 24px default while retaining the
-  existing 16px Details, Accordion, and Callout geometry.
+- `--kui-wa-surface-margin` and `--kui-wa-surface-inset` default to 8px.
+  Accordion, Card, Details, Callout, and Include use the margin around their
+  complete surface and the inset within it. Accordion applies the outer margin
+  once to the group rather than separating connected items; Card's header,
+  body, and footer all receive the full inset.
+- `--kui-wa-container-inset` defaults to the 16px homogeneous-group step. Tab
+  Panel retains this roomier tier for unframed panel content.
 
 Badge remains intentionally compact at Web Awesome's intrinsic `0.375em` block /
 `0.625em` inline padding (4.5px / 7.5px at its default 12px text size): it is a
@@ -105,11 +108,13 @@ retain their upstream geometry. Web Awesome 3.12's free catalog has
 `wa-dropdown-item`, but no `wa-menu-item`; the theme therefore styles the
 supported dropdown item rather than carrying a dead selector.
 
-Override either tier for a product scope after importing the theme:
+Override a tier for a product scope after importing the theme:
 
 ```css
 .roomy-editor {
   --kui-wa-control-inset: 0.75rem;
+  --kui-wa-surface-margin: 0.75rem;
+  --kui-wa-surface-inset: 0.75rem;
   --kui-wa-container-inset: 1.5rem;
 }
 ```
