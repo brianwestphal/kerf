@@ -7,8 +7,9 @@ const limits = {
   largestJavaScriptGzip: 150_000,
   // Grows as demos are added: 260.59 kB (collapsible-sidebar recipe) → 261.13 kB
   // (TokenSearchField adoption knobs) → 262.10 kB (FloatingToolbar demo) → 263.21 kB
-  // (ToolbarText overflow examples). Keep only narrow headroom and preserve the split.
-  totalJavaScriptGzip: 264_000,
+  // (ToolbarText overflow examples) → 264.00 kB (atomic-chip deletion hardening).
+  // Keep only narrow headroom and preserve the split.
+  totalJavaScriptGzip: 264_250,
 };
 
 const javascript = (await readdir(assetsDir)).filter((name) => name.endsWith('.js'));

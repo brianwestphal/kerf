@@ -330,8 +330,9 @@ after browser input to recover text plus token offsets, and
 Call `wireTokenSearchFields()` once at a stable root to make Enter submit through
 `onSubmit` without inserting a contenteditable line break and to preserve focus
 plus the text-relative caret when keyboard deletion of a chip causes controlled
-rendering to replace the editor. Text still wraps visually when it reaches the
-field edge.
+rendering to replace the editor. A select-all deletion is normalized to a truly
+empty editor even when the browser leaves an atomic chip or line break behind.
+Text still wraps visually when it reaches the field edge.
 Clear actions should empty the editor's `textContent` before clearing app state.
 The leading icon, first text line, clear action, and trailing slot share one
 fixed alignment row; when text wraps, those controls stay pinned to that first

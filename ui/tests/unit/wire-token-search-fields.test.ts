@@ -101,6 +101,34 @@ describe('wireTokenSearchFields', () => {
     stop();
   });
 
+  it('clears an atomic chip left behind by a select-all deletion', () => {
+    const root = document.createElement('div');
+    document.body.append(root);
+    root.innerHTML = '<div data-component="token-search-field" data-token-search-id="tickets" data-disabled="false"><div data-token-search-editor="tickets" contenteditable="true"><span data-token-search-text>before </span><span data-component="token-search-token" data-token-value="tag:x" contenteditable="false">tag:x</span><span data-token-search-text> after</span></div></div>';
+    const editor = root.querySelector<HTMLElement>('[data-token-search-editor]')!;
+    const onEdit = vi.fn();
+    const stop = wireTokenSearchFields(root, { onEdit });
+    const selection = document.getSelection()!;
+    const range = document.createRange();
+    range.selectNodeContents(editor);
+    selection.removeAllRanges();
+    selection.addRange(range);
+    editor.focus();
+
+    editor.dispatchEvent(inputEvent('beforeinput'));
+    // Some engines only remove part of a contenteditable selection containing
+    // contenteditable=false chips. Preserve that failure shape for regression.
+    editor.innerHTML = '<span data-component="token-search-token" data-token-value="tag:x" contenteditable="false">tag:x</span><br>';
+    editor.dispatchEvent(inputEvent('input'));
+
+    expect(editor.querySelectorAll('[data-component="token-search-token"]')).toHaveLength(0);
+    expect(editor.querySelectorAll('br')).toHaveLength(0);
+    expect(editor.firstElementChild!.matches('[data-token-search-text]')).toBe(true);
+    expect(editor.textContent).toBe('');
+    expect(onEdit).toHaveBeenCalledOnce();
+    stop();
+  });
+
   it('drops a stray <br> around surviving chips without wiping the field', () => {
     const root = document.createElement('div');
     document.body.append(root);

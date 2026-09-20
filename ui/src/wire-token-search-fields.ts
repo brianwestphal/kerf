@@ -108,6 +108,7 @@ interface PendingTokenDeletion {
   id: string;
   offset: number;
   tokenCount: number;
+  selectedAll: boolean;
 }
 
 function editorFromEvent(root: HTMLElement, event: Event): HTMLElement | undefined {
@@ -140,6 +141,18 @@ function editorIsEmpty(editor: HTMLElement): boolean {
   return value.query.length === 0 && value.tokens.length === 0;
 }
 
+/** Whether the active selection covers every child of the editing host. */
+function selectionCoversEditor(editor: HTMLElement): boolean {
+  // onBeforeInput calls this only after caretQueryOffset verified a live range.
+  const selected = editor.ownerDocument.getSelection()!.getRangeAt(0);
+  if (selected.collapsed || !editor.contains(selected.commonAncestorContainer)) return false;
+  const contents = editor.ownerDocument.createRange();
+  contents.selectNodeContents(editor);
+  const RangeCtor = editor.ownerDocument.defaultView!.Range;
+  return selected.compareBoundaryPoints(RangeCtor.START_TO_START, contents) <= 0
+    && selected.compareBoundaryPoints(RangeCtor.END_TO_END, contents) >= 0;
+}
+
 const TOKEN_SELECTOR = '[data-component="token-search-token"]';
 const TEXT_SELECTOR = '[data-token-search-text]';
 const stripZwsp = (text: string): string => text.replaceAll('​', '');
@@ -152,12 +165,12 @@ const stripZwsp = (text: string): string => text.replaceAll('​', '');
  * and place the caret in it so typing resumes cleanly. Called only after the browser has
  * applied the delete, so an ordinary partial delete is never touched.
  */
-function normalizeEmptiedEditor(editor: HTMLElement): void {
+function normalizeEmptiedEditor(editor: HTMLElement, selectedAll = false): void {
   const lineBreaks = editor.querySelectorAll('br');
-  if (lineBreaks.length === 0) return;
+  if (lineBreaks.length === 0 && !selectedAll) return;
   for (const lineBreak of lineBreaks) lineBreak.remove();
-  if (editor.querySelector(TOKEN_SELECTOR)) return;
-  if (stripZwsp(editor.textContent ?? '') !== '') return;
+  if (!selectedAll && editor.querySelector(TOKEN_SELECTOR)) return;
+  if (!selectedAll && stripZwsp(editor.textContent ?? '') !== '') return;
   const doc = editor.ownerDocument;
   const span = doc.createElement('span');
   span.setAttribute('data-token-search-text', '');
@@ -325,18 +338,19 @@ export function wireTokenSearchFields(
       id,
       offset,
       tokenCount: editor.querySelectorAll('[data-component="token-search-token"]').length,
+      selectedAll: selectionCoversEditor(editor),
     });
   };
   const onInput = (event: Event) => {
     const editor = editorFromEvent(root, event);
     if (!editor) return;
-    if ((event as InputEvent).inputType?.startsWith('delete')) normalizeEmptiedEditor(editor);
+    const deletion = pending.get(editor);
+    if ((event as InputEvent).inputType?.startsWith('delete')) normalizeEmptiedEditor(editor, deletion?.selectedAll);
     if (onEdit) {
       const field = editor.closest<HTMLElement>('[data-component="token-search-field"]');
       const id = field?.dataset.tokenSearchId;
       if (id && field?.dataset.disabled !== 'true') onEdit({ id, editor, event: event as InputEvent });
     }
-    const deletion = pending.get(editor);
     pending.delete(editor);
     if (!deletion || editor.querySelectorAll('[data-component="token-search-token"]').length >= deletion.tokenCount) return;
     editor.ownerDocument.defaultView!.requestAnimationFrame(() => {
