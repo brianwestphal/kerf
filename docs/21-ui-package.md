@@ -108,7 +108,9 @@ brand and status ramps, focus, form geometry, panels, tooltips, radii, and
 shadows. It styles every free component that consumes those contracts while
 remaining overridable through later or scoped `--wa-*` declarations. The CSS
 entry registers no custom elements; importing individual Web Awesome component
-modules keeps their JavaScript tree-shakeable.
+modules keeps their JavaScript tree-shakeable. Checkbox Group and Radio Group
+option regions use the shared 8px inline outer inset because those groups have
+no bordered field shell.
 
 `Select` is a Web Awesome adapter. Rendering it is pure; custom-element
 registration happens only after `import '@kerfjs/ui/select/register'`. Web

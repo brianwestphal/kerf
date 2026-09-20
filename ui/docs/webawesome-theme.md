@@ -66,6 +66,11 @@ foreground. This applies to every free field that exposes a top label
 (`::part(form-control-label)` plus the Slider's `::part(label)`); inline control
 labels (Checkbox, Switch) keep their natural sentence case.
 
+Checkbox Group and Radio Group option regions receive the shared 8px inline
+outer inset through `::part(form-control-input)`. Unlike bordered fields, these
+groups have no shell of their own, so the explicit margin places their controls
+on the same content-item geometry without adding padding to each option.
+
 Non-field chrome follows two explicit, overridable inset tiers:
 
 - `--kui-wa-control-inset` defaults to the 8px content-item padding. It applies

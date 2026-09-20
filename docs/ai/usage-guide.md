@@ -167,7 +167,9 @@ declaration boundary for all 70 catalog-supported `wa-*` elements. The CSS-only
 entry includes Web Awesome's base stylesheet and the Hot Sheet 2-aligned Kerf
 theme but registers no custom elements. Continue importing only the individual
 Web Awesome component modules the app renders, and override public `--wa-*`
-values afterward when needed.
+values afterward when needed. The theme gives Checkbox Group and Radio Group
+option regions the shared 8px inline outer inset because those groups have no
+bordered field shell.
 
 The default semantic ramps deliberately match Hot Sheet 2 and Web Awesome.
 Override `--kui-color-*` globally or component properties such as

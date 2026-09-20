@@ -44,6 +44,8 @@ maintain a central style list. Configure JSX with `"jsxImportSource": "kerfjs"`.
   `--kui-wa-control-inset` (8px controls/items) and
   `--kui-wa-container-inset` (16px prose/group containers). Override the tier at
   the narrowest useful scope instead of restyling individual shadow parts.
+  Checkbox and Radio Group option regions also receive the shared 8px inline
+  outer inset because those groups have no bordered field shell.
 - **Trust the defaults.** Render a control at its natural size and color (a
   `LucideIcon` is 24px); if it looks wrong, fix the surrounding layout, not the
   control. Never force a component's width/height to size it — that leaves a halo

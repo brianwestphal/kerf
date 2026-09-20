@@ -34,6 +34,15 @@ describe('Web Awesome consumer guidance', () => {
     expect(guidance).toContain("no `wa-menu-item`");
   });
 
+  it('keeps checkbox and radio option regions on the shared inline inset', () => {
+    const css = readFileSync(resolve(import.meta.dirname, '../../src/webawesome.css'), 'utf8');
+    const guidance = readFileSync(resolve(import.meta.dirname, '../../docs/webawesome-theme.md'), 'utf8');
+
+    expect(css).toContain(':is(wa-checkbox-group, wa-radio-group)::part(form-control-input)');
+    expect(css).toContain('margin-inline: var(--kui-layout-inline-margin, remify(8px))');
+    expect(guidance).toMatch(/Checkbox Group and Radio Group option regions receive the shared 8px inline\s+outer inset/);
+  });
+
   it('distinguishes supported ecosystem components from preferred Kerf patterns', () => {
     const guidance = readFileSync(resolve(import.meta.dirname, '../../docs/webawesome-theme.md'), 'utf8');
 
