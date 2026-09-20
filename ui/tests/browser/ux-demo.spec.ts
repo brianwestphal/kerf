@@ -1523,6 +1523,24 @@ test('styles and aligns OTP label and hint like a bordered text field', async ({
   expect(textStyles.hint.padding).toEqual(['9px', '9px']);
 });
 
+test('insets the complete Slider region with a scalable, overridable logical margin', async ({ page }) => {
+  await page.goto('/?component=wa-slider');
+  const slider = page.locator('wa-slider');
+  await expect(slider).toBeVisible();
+  const margins = () => slider.evaluate((element) => {
+    const region = element.shadowRoot!.querySelector('[part~="slider"]') as HTMLElement;
+    const style = window.getComputedStyle(region);
+    return [style.marginInlineStart, style.marginInlineEnd];
+  });
+  await expect.poll(margins).toEqual(['8px', '8px']);
+
+  await page.locator('html').evaluate((element) => { element.style.fontSize = '200%'; });
+  await expect.poll(margins).toEqual(['16px', '16px']);
+
+  await slider.evaluate((element) => { element.style.setProperty('--kui-layout-inline-margin', '12px'); });
+  await expect.poll(margins).toEqual(['12px', '12px']);
+});
+
 test('renders and operates representative focused Web Awesome specimens', async ({ page, browserName }) => {
   test.skip(browserName !== 'chromium', 'Screenshot review is captured once in Chromium.');
   await page.setViewportSize({ width: 1440, height: 900 });

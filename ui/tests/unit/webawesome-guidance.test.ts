@@ -44,6 +44,14 @@ describe('Web Awesome consumer guidance', () => {
     expect(guidance).toMatch(/Color Picker trigger receives the same 8px inline outer inset/);
   });
 
+  it('keeps the complete Slider region on the shared logical inline inset', () => {
+    const css = readFileSync(resolve(import.meta.dirname, '../../src/webawesome.css'), 'utf8');
+    const guidance = readFileSync(resolve(import.meta.dirname, '../../docs/webawesome-theme.md'), 'utf8');
+
+    expect(css).toContain('wa-slider::part(slider)');
+    expect(guidance).toMatch(/Slider's complete interactive region receives the\s+shared 8px logical inline outer inset/);
+  });
+
   it('aligns Known Date captions and bordered text-field hints with field values', () => {
     const css = readFileSync(resolve(import.meta.dirname, '../../src/webawesome.css'), 'utf8');
     const guidance = readFileSync(resolve(import.meta.dirname, '../../docs/webawesome-theme.md'), 'utf8');

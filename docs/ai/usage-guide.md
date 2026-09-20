@@ -173,7 +173,8 @@ bordered field shell. The Color Picker trigger receives the same inset for the
 same unbordered geometry. Known Date field captions and bordered text-like
 field hints align with their values at the 9px border-plus-padding inset. OTP
 Input's label uses the same uppercase xs/650 treatment, and its label and hint
-both use that inset.
+both use that inset. Slider's complete interactive region uses the shared 8px
+logical inline outer inset without moving its label.
 
 The default semantic ramps deliberately match Hot Sheet 2 and Web Awesome.
 Override `--kui-color-*` globally or component properties such as

@@ -345,6 +345,10 @@
     margin-inline: var(--kui-layout-inline-margin, remify(8px));
   }
 
+  wa-slider::part(slider) {
+    margin-inline: var(--kui-layout-inline-margin, remify(8px));
+  }
+
   /* Secondary captions and hints align with the value inside bordered fields:
      1px border + 8px field padding = a 9px logical inset. */
   wa-known-date::part(field-label),

@@ -79,7 +79,9 @@ outer inset through `::part(form-control-input)`. Unlike bordered fields, these
 groups have no shell of their own, so the explicit margin places their controls
 on the same content-item geometry without adding padding to each option. The
 Color Picker trigger receives the same 8px inline outer inset because it also
-has no bordered field shell.
+has no bordered field shell. Slider's complete interactive region receives the
+shared 8px logical inline outer inset through `::part(slider)`, keeping its
+track, markers, references, and hint together without moving the label.
 
 Non-field chrome follows two explicit, overridable inset tiers:
 

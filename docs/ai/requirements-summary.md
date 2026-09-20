@@ -217,6 +217,8 @@ Picker trigger uses the same inset for the same unbordered geometry. Known Date
 field captions and bordered text-like field hints align with values at the 9px
 border-plus-padding inset. OTP Input's label uses the same uppercase xs/650
 treatment as other field labels, and its label and hint both use that inset.
+Slider's complete interactive region uses the shared 8px logical inline outer
+inset without moving its label.
 
 StateBanner tone labels are catalog-only specimen chrome and derive the shared
 8px margin + 1px border + 8px padding inset, aligning their text with each

@@ -114,7 +114,9 @@ no bordered field shell; the Color Picker trigger uses the same inset for the
 same unbordered geometry. Known Date field captions and bordered text-like
 field hints align with their values at the shared 9px border-plus-padding
 inset. OTP Input's label uses the same uppercase xs/650 treatment as other
-field labels, and its label and hint both use that inset.
+field labels, and its label and hint both use that inset. Slider's complete
+interactive region uses the shared 8px logical inline outer inset without
+moving its label.
 
 `Select` is a Web Awesome adapter. Rendering it is pure; custom-element
 registration happens only after `import '@kerfjs/ui/select/register'`. Web

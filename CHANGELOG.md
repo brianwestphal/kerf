@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Fixed `@kerfjs/ui` Web Awesome Slider geometry: its complete interactive region now receives the shared 8px logical inline outer inset without shifting the already-aligned label.
 - Styled `@kerfjs/ui` Web Awesome OTP Input like a bordered text field: its label now uses the shared uppercase xs/650 field-label treatment, and both label and hint align at the 9px border-plus-padding inset.
 - Aligned `@kerfjs/ui` Web Awesome Known Date's Month/Day/Year captions and bordered text-like field hints with their values using the shared 9px border-plus-padding inline inset.
 - Fixed `@kerfjs/ui` Web Awesome Color Picker geometry: its unbordered trigger now receives the shared 8px inline outer inset, aligning it with Kerf content-item spacing.
