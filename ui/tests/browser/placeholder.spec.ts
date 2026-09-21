@@ -6,6 +6,13 @@ test('renders the Skeleton primitive demo', async ({ page, browserName }) => {
 
   const demo = page.locator('[data-demo="skeleton"]');
   await expect(demo).toBeVisible();
+  await expect(demo).toHaveAttribute('data-catalog-example-stack', '');
+
+  const composition = demo.locator(
+    '[data-catalog-example][data-catalog-geometry-overlay-skip]',
+  );
+  await expect(composition).toHaveCount(1);
+  await expect(composition).toHaveAttribute('data-align', 'none');
 
   // Primitive blocks render and are decorative by default.
   const blocks = demo.locator('.demo-skeleton-blocks .kui-skeleton');

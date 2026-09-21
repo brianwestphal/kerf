@@ -1,4 +1,4 @@
-import { CatalogExample } from '@kerfjs/ui/catalog';
+import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { SegmentedControl } from '@kerfjs/ui/segmented-control';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
 import { Bell, Columns3, Folder, List, Settings } from 'lucide';
@@ -12,10 +12,10 @@ import {
 
 export function SegmentedControlDemo() {
   return (
-    <section
-      class="segmented-control-demo kui-catalog-example-stack"
-      data-demo="segmented-control"
-      aria-label="SegmentedControl variants"
+    <CatalogExampleStack
+      label="SegmentedControl variants"
+      className="segmented-control-demo"
+      rootAttributes={{ 'data-demo': 'segmented-control' }}
     >
       <CatalogExample
         label="Toolbar"
@@ -143,6 +143,6 @@ export function SegmentedControlDemo() {
           placeholder
         />
       </CatalogExample>
-    </section>
+    </CatalogExampleStack>
   );
 }

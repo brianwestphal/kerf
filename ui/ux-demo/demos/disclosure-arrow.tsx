@@ -1,4 +1,4 @@
-import { CatalogExample } from '@kerfjs/ui/catalog';
+import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { DisclosureArrow } from '@kerfjs/ui/disclosure-arrow';
 import { ArrowRight } from 'lucide';
 
@@ -6,7 +6,7 @@ import { customDisclosureOpen, disclosureOpen, icon } from './state.js';
 
 export function DisclosureArrowDemo() {
   return (
-    <div class="kui-catalog-example-stack" data-demo="disclosure-arrow">
+    <CatalogExampleStack rootAttributes={{ 'data-demo': 'disclosure-arrow' }}>
       <CatalogExample
         label="Default"
         note={<>Closed points right, open points down. Toggle to animate.</>}
@@ -42,6 +42,6 @@ export function DisclosureArrowDemo() {
           <span>Preview</span>
         </button>
       </CatalogExample>
-    </div>
+    </CatalogExampleStack>
   );
 }

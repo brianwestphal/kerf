@@ -1,5 +1,5 @@
 import { AppTab } from '@kerfjs/ui/app-tab';
-import { CatalogExample } from '@kerfjs/ui/catalog';
+import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { TabBar } from '@kerfjs/ui/tab-bar';
 import { PanelLeft, X } from 'lucide';
 
@@ -15,7 +15,10 @@ export function TabsDemo() {
     role: 'menuitem',
   };
   return (
-    <div class="demo-tabs kui-catalog-example-stack" data-demo="tabs">
+    <CatalogExampleStack
+      className="demo-tabs"
+      rootAttributes={{ 'data-demo': 'tabs' }}
+    >
       <CatalogExample align="none">
         <TabBar id="focused-app-tabs" label="Open documents">
           {(['library', 'guidelines', 'catalog'] as const).map((id) => (
@@ -44,6 +47,6 @@ export function TabsDemo() {
           ))}
         </TabBar>
       </CatalogExample>
-    </div>
+    </CatalogExampleStack>
   );
 }

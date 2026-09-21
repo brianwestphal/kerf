@@ -81,12 +81,13 @@ mount(root, () => (
 Components return Kerf `SafeHtml`. They do not own application state or attach transient listeners. Actions are stable `data-action` hooks; the application wires them once with `delegate()` or `delegateActions()` and retains the disposer.
 
 `ListItem.rootAttributes`, `ListHeader.rootAttributes`,
-`ListActionRow.rootAttributes`, and `AppTab.rootAttributes` carry typed
+`ListActionRow.rootAttributes`, `AppTab.rootAttributes`,
+`CatalogExample.rootAttributes`, and `CatalogExampleStack.rootAttributes` carry typed
 application `data-*` metadata without
 teaching the package domain fields. `ListHeader.triggerAttributes` and
 `ListActionRow.trailingActionAttributes` additionally support native popover
 target and relationship attributes. Roles and component-owned action, selection,
-disclosure, naming, disabled, and icon semantics remain protected props; an
+disclosure, naming, disabled, icon, and catalog-structure semantics remain protected props; an
 isolated `role="menuitem"` is not an extension shortcut.
 The slots are also filtered at runtime, so structurally widened objects and
 JavaScript callers cannot bypass those protections with case-variant names.

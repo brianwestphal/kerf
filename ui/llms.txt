@@ -138,7 +138,10 @@ shell, `@kerfjs/ui/collapsible-panel` (`CollapsiblePanel`, `CollapsiblePanelTogg
   (collapsible category sidebar + preview stage + resources footer, with an opt-in
   transparent-bound and margin geometry overlay plus focus-preserving active-row
   reveal for long desktop sidebars) from your own
-  entries; controlled/stateless like the layouts. `@kerfjs/ui/webawesome` is a
+  entries; controlled/stateless like the layouts. Compose previews with
+  `CatalogExample` / `CatalogExampleStack`, and pass authoring `data-*` metadata
+  through their filtered `rootAttributes` instead of copying private
+  `kui-catalog-*` structure. `@kerfjs/ui/webawesome` is a
   type-only boundary for `wa-*` JSX; `@kerfjs/ui/select/register` and the CSS are the
   declared side effects.
 

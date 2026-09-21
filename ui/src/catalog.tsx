@@ -8,6 +8,7 @@ import {
   Waypoints,
 } from 'lucide';
 
+import { filterDataAttributes } from './extension-attributes.js';
 import { ListHeader } from './list-header.js';
 import { ListItem } from './list-item.js';
 import { LucideIcon } from './lucide-icon.js';
@@ -474,6 +475,28 @@ export function Catalog({
  */
 export type CatalogExampleAlign = 'glyph' | 'inline-control' | 'none';
 
+const catalogExampleProtectedAttributes = new Set([
+  'data-catalog-example',
+  'data-catalog-example-stack',
+  'data-align',
+]);
+
+type CatalogExampleRootAttributes = Readonly<
+  Record<`data-${string}`, string | undefined> & {
+    'data-catalog-example'?: never;
+    'data-catalog-example-stack'?: never;
+    'data-align'?: never;
+  }
+>;
+
+type CatalogExampleStackRootAttributes = Readonly<
+  Record<`data-${string}`, string | undefined> & {
+    'data-catalog-example'?: never;
+    'data-catalog-example-stack'?: never;
+    'data-align'?: never;
+  }
+>;
+
 export interface CatalogExampleProps {
   /** The example's label, shown as a `ListHeader` above the specimen. Omit for a bare specimen. */
   label?: string;
@@ -481,6 +504,8 @@ export interface CatalogExampleProps {
   note?: SafeHtml | string;
   /** Alignment inset for the specimen — see {@link CatalogExampleAlign}. Default `'none'`. */
   align?: CatalogExampleAlign;
+  /** Safe authoring `data-*` metadata for the rendered section. Helper-owned structural attributes remain protected. */
+  rootAttributes?: CatalogExampleRootAttributes;
   className?: string;
   children?: SafeHtml | readonly SafeHtml[];
 }
@@ -497,11 +522,17 @@ export function CatalogExample({
   label,
   note,
   align = 'none',
+  rootAttributes = {},
   className = '',
   children,
 }: CatalogExampleProps) {
+  const safeRootAttributes = filterDataAttributes(
+    rootAttributes,
+    catalogExampleProtectedAttributes,
+  );
   return (
     <section
+      {...safeRootAttributes}
       class={`kui-catalog-example ${className}`.trim()}
       data-catalog-example
       data-align={align}
@@ -520,6 +551,8 @@ export function CatalogExample({
 export interface CatalogExampleStackProps {
   /** Accessible label for the stack region. */
   label?: string;
+  /** Safe authoring `data-*` metadata for the rendered stack. Helper-owned structural attributes remain protected. */
+  rootAttributes?: CatalogExampleStackRootAttributes;
   className?: string;
   children?: SafeHtml | readonly SafeHtml[];
 }
@@ -527,11 +560,17 @@ export interface CatalogExampleStackProps {
 /** A vertically-stacked group of {@link CatalogExample}s with the catalog's example rhythm. */
 export function CatalogExampleStack({
   label,
+  rootAttributes = {},
   className = '',
   children,
 }: CatalogExampleStackProps) {
+  const safeRootAttributes = filterDataAttributes(
+    rootAttributes,
+    catalogExampleProtectedAttributes,
+  );
   return (
     <div
+      {...safeRootAttributes}
       class={`kui-catalog-example-stack ${className}`.trim()}
       data-catalog-example-stack
       aria-label={label}

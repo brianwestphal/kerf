@@ -1,9 +1,9 @@
-import { CatalogExample } from '@kerfjs/ui/catalog';
+import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { LoadingSpinner } from '@kerfjs/ui/loading-spinner';
 
 export function LoadingSpinnerDemo() {
   return (
-    <div class="kui-catalog-example-stack" data-demo="loading-spinner">
+    <CatalogExampleStack rootAttributes={{ 'data-demo': 'loading-spinner' }}>
       <CatalogExample
         label="Meaningful"
         note={<>Exposes its supplied label to assistive technology.</>}
@@ -18,6 +18,6 @@ export function LoadingSpinnerDemo() {
       >
         <LoadingSpinner />
       </CatalogExample>
-    </div>
+    </CatalogExampleStack>
   );
 }

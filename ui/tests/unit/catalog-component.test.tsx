@@ -298,6 +298,87 @@ describe('CatalogExample', () => {
     expect(html).toContain('aria-label="Variants"');
     expect(html).toContain('<section/>');
   });
+
+  it('places safe authoring metadata on the intended example roots', () => {
+    const example = asHtml(
+      CatalogExample({
+        rootAttributes: {
+          'data-demo': 'button',
+          'data-catalog-geometry-overlay-skip': '',
+        },
+        children: raw('<button/>'),
+      }),
+    );
+    expect(example).toContain(
+      '<section data-demo="button" data-catalog-geometry-overlay-skip="" class="kui-catalog-example" data-catalog-example data-align="none">',
+    );
+
+    const stack = asHtml(
+      CatalogExampleStack({
+        rootAttributes: { 'data-demo': 'buttons' },
+        children: raw('<section/>'),
+      }),
+    );
+    expect(stack).toContain(
+      '<div data-demo="buttons" class="kui-catalog-example-stack" data-catalog-example-stack>',
+    );
+  });
+
+  it('filters structurally widened attributes and preserves helper-owned semantics', () => {
+    const exampleAttributes = {
+      'data-demo': 'safe',
+      'DATA-ALIGN': 'glyph',
+      'Data-Catalog-Example': 'unsafe',
+      'Data-Catalog-Example-Stack': 'unsafe',
+      role: 'presentation',
+    } as Record<string, string>;
+    const example = asHtml(
+      CatalogExample({
+        align: 'inline-control',
+        rootAttributes: exampleAttributes,
+        children: raw('<button/>'),
+      }),
+    );
+    expect(example).toContain('data-demo="safe"');
+    expect(example).toContain('data-catalog-example');
+    expect(example).toContain('data-align="inline-control"');
+    expect(example).not.toContain('unsafe');
+    expect(example).not.toContain('role="presentation"');
+    expect(example.match(/data-align=/g)).toHaveLength(1);
+
+    const stackAttributes = {
+      'data-demo': 'safe-stack',
+      'Data-Catalog-Example-Stack': 'unsafe',
+      'Data-Catalog-Example': 'unsafe',
+      'Data-Align': 'glyph',
+      class: 'unsafe-class',
+    } as Record<string, string>;
+    const stack = asHtml(
+      CatalogExampleStack({
+        rootAttributes: stackAttributes,
+        children: raw('<section/>'),
+      }),
+    );
+    expect(stack).toContain('data-demo="safe-stack"');
+    expect(stack).toContain('data-catalog-example-stack');
+    expect(stack).not.toContain('unsafe');
+    expect(stack.match(/data-catalog-example-stack/g)).toHaveLength(1);
+  });
+
+  it('rejects protected structural metadata at the typed boundary', () => {
+    CatalogExample({
+      // @ts-expect-error CatalogExample owns its structural marker.
+      rootAttributes: { 'data-catalog-example': 'unsafe' },
+    });
+    CatalogExample({
+      // @ts-expect-error CatalogExample owns its alignment marker.
+      rootAttributes: { 'data-align': 'glyph' },
+    });
+    CatalogExampleStack({
+      // @ts-expect-error CatalogExampleStack owns its structural marker.
+      rootAttributes: { 'data-catalog-example-stack': 'unsafe' },
+    });
+  });
 });
 
 describe('wireCatalog', () => {

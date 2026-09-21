@@ -1,4 +1,4 @@
-import { CatalogExample } from '@kerfjs/ui/catalog';
+import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { PanelHeader } from '@kerfjs/ui/panel-header';
 import { Wrench } from 'lucide';
 
@@ -6,7 +6,7 @@ import { button, icon } from './state.js';
 
 export function PanelHeaderDemo() {
   return (
-    <div class="kui-catalog-example-stack" data-demo="panel-header">
+    <CatalogExampleStack rootAttributes={{ 'data-demo': 'panel-header' }}>
       <CatalogExample
         label="Page title (h1 heading)"
         note={
@@ -64,6 +64,6 @@ export function PanelHeaderDemo() {
           placeholder
         />
       </CatalogExample>
-    </div>
+    </CatalogExampleStack>
   );
 }

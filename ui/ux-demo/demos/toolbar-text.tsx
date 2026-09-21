@@ -1,4 +1,4 @@
-import { CatalogExample } from '@kerfjs/ui/catalog';
+import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
 
 const overflowLabel =
@@ -6,7 +6,7 @@ const overflowLabel =
 
 export function ToolbarTextDemo() {
   return (
-    <div class="kui-catalog-example-stack" data-demo="toolbar-text">
+    <CatalogExampleStack rootAttributes={{ 'data-demo': 'toolbar-text' }}>
       <CatalogExample label="Extra large" align="inline-control">
         <ToolbarText text="Workspace settings" size="xlarge" />
       </CatalogExample>
@@ -63,6 +63,6 @@ export function ToolbarTextDemo() {
           <ToolbarText text={overflowLabel} size="large" wrap maxLines={2} />
         </div>
       </CatalogExample>
-    </div>
+    </CatalogExampleStack>
   );
 }

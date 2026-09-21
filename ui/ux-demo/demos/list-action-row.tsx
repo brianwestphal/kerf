@@ -1,4 +1,4 @@
-import { CatalogExample } from '@kerfjs/ui/catalog';
+import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { ListActionRow } from '@kerfjs/ui/list-action-row';
 import { Folder, MoreHorizontal } from 'lucide';
 
@@ -6,9 +6,9 @@ import { icon, menuActionCurrent, menuActionPressed } from './state.js';
 
 export function ListActionRowDemo() {
   return (
-    <div
-      class="demo-list-demo kui-catalog-example-stack"
-      data-demo="list-action-row"
+    <CatalogExampleStack
+      className="demo-list-demo"
+      rootAttributes={{ 'data-demo': 'list-action-row' }}
     >
       <CatalogExample align="none">
         <ListActionRow
@@ -97,6 +97,6 @@ export function ListActionRowDemo() {
           Open details
         </button>
       </div>
-    </div>
+    </CatalogExampleStack>
   );
 }

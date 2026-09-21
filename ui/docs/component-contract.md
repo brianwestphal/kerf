@@ -55,7 +55,8 @@ claim Kerf delivery paths for them.
 - Consumers style through `--kui-*` semantic tokens and public component classes. Foundation tokens provide opinionated neutral, brand/info, success, warning, and danger fill/border/foreground roles. Stateful components expose local override variables; prefer an equivalent prop or token before writing a selector.
 
 `ListItem.rootAttributes`, `ListActionRow.rootAttributes`,
-`ListHeader.rootAttributes`, and `AppTab.rootAttributes` accept
+`ListHeader.rootAttributes`, `AppTab.rootAttributes`,
+`CatalogExample.rootAttributes`, and `CatalogExampleStack.rootAttributes` accept
 application-owned `data-*` metadata without
 adding product fields to the shared API. A `ListActionRow` trailing action uses
 `trailingActionAttributes`, and a `ListHeader` action/disclosure uses
@@ -64,7 +65,7 @@ the corresponding `aria-controls`/`aria-haspopup` relationship. These slots do
 not accept roles or component-owned action, selection, disclosure, accessible
 name, disabled, or icon fields. Extension objects are filtered at runtime,
 including case-insensitive rejection of protected `data-*` names, and the
-component writes its protected attributes after the accepted metadata. Typed,
+component or helper writes its protected attributes after the accepted metadata. Typed,
 structurally widened, and JavaScript callers therefore cannot replace its
 contract.
 

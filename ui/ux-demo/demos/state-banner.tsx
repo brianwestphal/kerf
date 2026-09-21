@@ -1,4 +1,4 @@
-import { CatalogExample } from '@kerfjs/ui/catalog';
+import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { StateBanner } from '@kerfjs/ui/state-banner';
 import { Check, CircleHelp } from 'lucide';
 
@@ -13,26 +13,28 @@ export function StateBannerDemo() {
     { tone: 'danger', title: 'Authentication required' },
   ] as const;
   return (
-    <div
-      class="demo-state-banner-grid kui-catalog-example-stack"
-      data-demo="state-banner"
+    <CatalogExampleStack
+      className="demo-state-banner-grid"
+      rootAttributes={{ 'data-demo': 'state-banner' }}
     >
-      {specimens.map(({ tone, title }) => (
-        <CatalogExample label={tone} align="none">
-          <StateBanner
-            tone={tone}
-            urgency={tone === 'danger' ? 'alert' : 'status'}
-            title={title}
-            detail="Semantic defaults remain overridable."
-            icon={
-              tone === 'danger'
-                ? icon(CircleHelp, 'circle-help')
-                : icon(Check, 'check')
-            }
-            action={button('Act', `log-${tone}`)}
-          />
-        </CatalogExample>
-      ))}
+      <>
+        {specimens.map(({ tone, title }) => (
+          <CatalogExample label={tone} align="none">
+            <StateBanner
+              tone={tone}
+              urgency={tone === 'danger' ? 'alert' : 'status'}
+              title={title}
+              detail="Semantic defaults remain overridable."
+              icon={
+                tone === 'danger'
+                  ? icon(CircleHelp, 'circle-help')
+                  : icon(Check, 'check')
+              }
+              action={button('Act', `log-${tone}`)}
+            />
+          </CatalogExample>
+        ))}
+      </>
       <CatalogExample label="Scoped override" align="none">
         <StateBanner
           className="demo-state-banner--override"
@@ -45,6 +47,6 @@ export function StateBannerDemo() {
       <CatalogExample label="Placeholder" align="none">
         <StateBanner tone="neutral" title="" detail="" placeholder />
       </CatalogExample>
-    </div>
+    </CatalogExampleStack>
   );
 }

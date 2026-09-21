@@ -1,4 +1,4 @@
-import { CatalogExample } from '@kerfjs/ui/catalog';
+import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { Select } from '@kerfjs/ui/select';
 import { Bell, SlidersHorizontal, Wrench } from 'lucide';
@@ -7,9 +7,9 @@ import { selectedChoice } from './state.js';
 
 export function SelectDemo() {
   return (
-    <div
-      class="demo-control-stack kui-catalog-example-stack"
-      data-demo="select"
+    <CatalogExampleStack
+      className="demo-control-stack"
+      rootAttributes={{ 'data-demo': 'select' }}
     >
       <CatalogExample label="Rendering balance" align="inline-control">
         <Select
@@ -78,6 +78,6 @@ export function SelectDemo() {
           placeholder
         />
       </CatalogExample>
-    </div>
+    </CatalogExampleStack>
   );
 }

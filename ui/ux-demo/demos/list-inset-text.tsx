@@ -1,4 +1,4 @@
-import { CatalogExample } from '@kerfjs/ui/catalog';
+import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { ListInsetText } from '@kerfjs/ui/list-inset-text';
 import { StateBanner } from '@kerfjs/ui/state-banner';
 import { Check } from 'lucide';
@@ -7,10 +7,10 @@ import { icon } from './state.js';
 
 export function ListInsetTextDemo() {
   return (
-    <section
-      class="list-inset-demo kui-catalog-example-stack"
-      data-demo="list-inset-text"
-      aria-label="ListInsetText demo"
+    <CatalogExampleStack
+      label="ListInsetText demo"
+      className="list-inset-demo"
+      rootAttributes={{ 'data-demo': 'list-inset-text' }}
     >
       <CatalogExample
         label="Inset bare text"
@@ -56,6 +56,6 @@ export function ListInsetTextDemo() {
           </ListInsetText>
         </div>
       </CatalogExample>
-    </section>
+    </CatalogExampleStack>
   );
 }

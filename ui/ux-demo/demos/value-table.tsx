@@ -1,4 +1,4 @@
-import { CatalogExample } from '@kerfjs/ui/catalog';
+import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { ValueTable, ValueTableRow } from '@kerfjs/ui/value-table';
 import { Wrench } from 'lucide';
 
@@ -6,9 +6,9 @@ import { icon } from './state.js';
 
 export function ValueTableDemo() {
   return (
-    <div
-      class="demo-value-table kui-catalog-example-stack"
-      data-demo="value-table"
+    <CatalogExampleStack
+      className="demo-value-table"
+      rootAttributes={{ 'data-demo': 'value-table' }}
     >
       <CatalogExample label="Populated" align="none">
         <ValueTable label="Package metadata">
@@ -42,6 +42,6 @@ export function ValueTableDemo() {
           <ValueTableRow label="Styles" value="" placeholder />
         </ValueTable>
       </CatalogExample>
-    </div>
+    </CatalogExampleStack>
   );
 }

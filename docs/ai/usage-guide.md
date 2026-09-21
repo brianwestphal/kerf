@@ -82,6 +82,10 @@ popover target/action and `aria-controls`/`aria-haspopup` relationships. Do not 
 roles or override the component's action, selection, disclosure, accessible
 name, disabled, or icon contract; a complete ARIA menu remains application
 widget work.
+Catalog previews similarly use public `CatalogExample` and
+`CatalogExampleStack` helpers. Put authoring `data-*` metadata in their
+`rootAttributes`; never copy private `kui-catalog-*` structure or override the
+helpers' protected catalog/alignment markers.
 For counted navigation sections, pass `ListHeader` both a non-negative safe-
 integer `count` and the localized full spoken `countLabel`, for example
 `count={3} countLabel="3 notes"`. Do not concatenate the number into `label` or

@@ -1,4 +1,4 @@
-import { CatalogExample } from '@kerfjs/ui/catalog';
+import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { Bell } from 'lucide';
 
@@ -8,7 +8,7 @@ export function LucideIconDemo() {
   // Both render the same glyph — LucideIcon's two modes differ in semantics, not
   // appearance — so the labels/notes carry the distinction.
   return (
-    <div class="kui-catalog-example-stack" data-demo="lucide-icon">
+    <CatalogExampleStack rootAttributes={{ 'data-demo': 'lucide-icon' }}>
       <CatalogExample
         label="Decorative"
         note={
@@ -34,6 +34,6 @@ export function LucideIconDemo() {
           label="Notifications ready"
         />
       </CatalogExample>
-    </div>
+    </CatalogExampleStack>
   );
 }

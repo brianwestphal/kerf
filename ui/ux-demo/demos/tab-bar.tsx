@@ -1,5 +1,5 @@
 import { AppTab } from '@kerfjs/ui/app-tab';
-import { CatalogExample } from '@kerfjs/ui/catalog';
+import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { TabBar } from '@kerfjs/ui/tab-bar';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
 import { PanelLeft, Plus } from 'lucide';
@@ -8,9 +8,9 @@ import { icon, tabBarActive, tabBarTabs } from './state.js';
 
 export function TabBarDemo() {
   return (
-    <div
-      class="demo-tab-bar-frame kui-catalog-example-stack"
-      data-demo="tab-bar"
+    <CatalogExampleStack
+      className="demo-tab-bar-frame"
+      rootAttributes={{ 'data-demo': 'tab-bar' }}
     >
       <CatalogExample align="none">
         <TabBar
@@ -58,6 +58,6 @@ export function TabBarDemo() {
           </strong>
         </p>
       </CatalogExample>
-    </div>
+    </CatalogExampleStack>
   );
 }

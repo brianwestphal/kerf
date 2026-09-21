@@ -50,14 +50,20 @@ stay consistent:
 import { CatalogExample, CatalogExampleStack } from "@kerfjs/ui/catalog";
 
 const buttonPreview = (
-  <CatalogExampleStack label="Button variants">
+  <CatalogExampleStack
+    label="Button variants"
+    rootAttributes={{ "data-demo": "button" }}
+  >
     <CatalogExample label="Icon" note="A bare glyph." align="glyph">
       <LucideIcon icon={Plus} name="plus" />
     </CatalogExample>
     <CatalogExample label="Control" align="inline-control">
       <SegmentedControl id="view" label="View" value="list" choices={choices} />
     </CatalogExample>
-    <CatalogExample label="In composition">
+    <CatalogExample
+      label="In composition"
+      rootAttributes={{ "data-catalog-geometry-overlay-skip": "" }}
+    >
       <ValueTable label="Metadata">{rows}</ValueTable>
     </CatalogExample>
   </CatalogExampleStack>
@@ -71,6 +77,14 @@ already carries ~8px of its own inline padding, and `'none'` (the default) for a
 content-item/composition that already owns its geometry. The inset is published as
 the `--kui-catalog-example-align` custom property so a debug overlay can exclude it
 from a specimen's measured margin.
+
+Use `rootAttributes` on either helper for authoring metadata such as `data-demo`
+or `data-catalog-geometry-overlay-skip`; the metadata lands on that helper's
+rendered root. The slot accepts only `data-*` strings. Structural
+`data-catalog-example`, `data-catalog-example-stack`, and `data-align` semantics
+remain helper-owned and are rejected case-insensitively at runtime, including
+from structurally widened or JavaScript objects. Do not copy the helpers'
+private `kui-catalog-*` classes into preview markup.
 
 ## Geometry inspection
 
@@ -95,8 +109,9 @@ opt-in layer across rerenders, theme changes, resizes, and scrolling, and retain
 its disposer alongside `wireCatalog`'s. `CatalogExample` labels and notes are
 excluded; its `align` inset is also subtracted so alignment scaffolding is not
 reported as intrinsic component margin. Put
-`data-catalog-geometry-overlay-skip` on a preview subtree that is intentionally
-explanatory chrome rather than a specimen.
+`rootAttributes={{ "data-catalog-geometry-overlay-skip": "" }}` on a
+`CatalogExample` or `CatalogExampleStack` that is intentionally explanatory
+chrome rather than a specimen.
 
 Use the overlay together with machine-readable geometry ownership metadata; the
 overlay verifies what is rendered, while metadata tells people and AI tools

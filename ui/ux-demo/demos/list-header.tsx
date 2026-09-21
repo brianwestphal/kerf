@@ -1,4 +1,4 @@
-import { CatalogExample } from '@kerfjs/ui/catalog';
+import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { ListHeader } from '@kerfjs/ui/list-header';
 import { Plus } from 'lucide';
 
@@ -6,9 +6,9 @@ import { icon } from './state.js';
 
 export function ListHeaderDemo() {
   return (
-    <div
-      class="demo-list-demo kui-catalog-example-stack"
-      data-demo="list-header"
+    <CatalogExampleStack
+      className="demo-list-demo"
+      rootAttributes={{ 'data-demo': 'list-header' }}
     >
       <CatalogExample align="none">
         <ListHeader
@@ -61,6 +61,6 @@ export function ListHeaderDemo() {
       >
         Application-owned popover content.
       </div>
-    </div>
+    </CatalogExampleStack>
   );
 }

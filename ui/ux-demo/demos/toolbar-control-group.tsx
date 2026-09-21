@@ -1,4 +1,4 @@
-import { CatalogExample } from '@kerfjs/ui/catalog';
+import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { SegmentedControl } from '@kerfjs/ui/segmented-control';
 import { TokenSearchField } from '@kerfjs/ui/token-search-field';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
@@ -26,10 +26,10 @@ import {
 export function ToolbarControlGroupDemo() {
   const shape = toolbarGroupShape.value;
   return (
-    <section
-      class="toolbar-control-group-demo kui-catalog-example-stack"
-      data-demo="toolbar-control-group"
-      aria-label="ToolbarControlGroup demo"
+    <CatalogExampleStack
+      label="ToolbarControlGroup demo"
+      className="toolbar-control-group-demo"
+      rootAttributes={{ 'data-demo': 'toolbar-control-group' }}
     >
       <CatalogExample
         label="Shape"
@@ -216,6 +216,6 @@ export function ToolbarControlGroupDemo() {
           </ToolbarControlGroup>
         </div>
       </CatalogExample>
-    </section>
+    </CatalogExampleStack>
   );
 }

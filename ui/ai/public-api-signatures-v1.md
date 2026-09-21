@@ -1029,6 +1029,16 @@ declare function Catalog({ brand, sections, active, content, collapsed, theme, h
  * - `'none'` — a content-item / composition that owns its geometry and already aligns; no inset (default).
  */
 type CatalogExampleAlign = 'glyph' | 'inline-control' | 'none';
+type CatalogExampleRootAttributes = Readonly<Record<`data-${string}`, string | undefined> & {
+    'data-catalog-example'?: never;
+    'data-catalog-example-stack'?: never;
+    'data-align'?: never;
+}>;
+type CatalogExampleStackRootAttributes = Readonly<Record<`data-${string}`, string | undefined> & {
+    'data-catalog-example'?: never;
+    'data-catalog-example-stack'?: never;
+    'data-align'?: never;
+}>;
 interface CatalogExampleProps {
     /** The example's label, shown as a `ListHeader` above the specimen. Omit for a bare specimen. */
     label?: string;
@@ -1036,6 +1046,8 @@ interface CatalogExampleProps {
     note?: SafeHtml | string;
     /** Alignment inset for the specimen — see {@link CatalogExampleAlign}. Default `'none'`. */
     align?: CatalogExampleAlign;
+    /** Safe authoring `data-*` metadata for the rendered section. Helper-owned structural attributes remain protected. */
+    rootAttributes?: CatalogExampleRootAttributes;
     className?: string;
     children?: SafeHtml | readonly SafeHtml[];
 }
@@ -1047,15 +1059,17 @@ interface CatalogExampleProps {
  * `--kui-catalog-example-align` custom property so a debug overlay can exclude it
  * from a specimen's measured margin.
  */
-declare function CatalogExample({ label, note, align, className, children, }: CatalogExampleProps): SafeHtml;
+declare function CatalogExample({ label, note, align, rootAttributes, className, children, }: CatalogExampleProps): SafeHtml;
 interface CatalogExampleStackProps {
     /** Accessible label for the stack region. */
     label?: string;
+    /** Safe authoring `data-*` metadata for the rendered stack. Helper-owned structural attributes remain protected. */
+    rootAttributes?: CatalogExampleStackRootAttributes;
     className?: string;
     children?: SafeHtml | readonly SafeHtml[];
 }
 /** A vertically-stacked group of {@link CatalogExample}s with the catalog's example rhythm. */
-declare function CatalogExampleStack({ label, className, children, }: CatalogExampleStackProps): SafeHtml;
+declare function CatalogExampleStack({ label, rootAttributes, className, children, }: CatalogExampleStackProps): SafeHtml;
 
 export { Catalog, type CatalogBrand, type CatalogEntry, CatalogExample, type CatalogExampleAlign, type CatalogExampleProps, CatalogExampleStack, type CatalogExampleStackProps, type CatalogProps, type CatalogRelated, type CatalogResource, type CatalogSecondaryGroup, type CatalogSection };
 ```

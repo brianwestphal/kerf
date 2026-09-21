@@ -1,4 +1,4 @@
-import { CatalogExample } from '@kerfjs/ui/catalog';
+import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { TokenSearchField } from '@kerfjs/ui/token-search-field';
 
 import {
@@ -14,10 +14,10 @@ import {
 
 export function TokenSearchFieldDemo() {
   return (
-    <section
-      class="token-search-demo kui-catalog-example-stack"
-      data-demo="token-search-field"
-      aria-label="TokenSearchField states"
+    <CatalogExampleStack
+      label="TokenSearchField states"
+      className="token-search-demo"
+      rootAttributes={{ 'data-demo': 'token-search-field' }}
     >
       <CatalogExample
         label="Structured ticket search"
@@ -137,6 +137,6 @@ export function TokenSearchFieldDemo() {
           </output>
         </div>
       </CatalogExample>
-    </section>
+    </CatalogExampleStack>
   );
 }

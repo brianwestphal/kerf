@@ -1,4 +1,4 @@
-import { CatalogExample } from '@kerfjs/ui/catalog';
+import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { FloatingToolbar } from '@kerfjs/ui/floating-toolbar';
 import { Toolbar } from '@kerfjs/ui/toolbar';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
@@ -10,10 +10,10 @@ import { floatingToolbarOpen, icon } from './state.js';
 export function FloatingToolbarDemo() {
   const open = floatingToolbarOpen.value;
   return (
-    <section
-      class="floating-toolbar-demo kui-catalog-example-stack"
-      data-demo="floating-toolbar"
-      aria-label="FloatingToolbar demo"
+    <CatalogExampleStack
+      label="FloatingToolbar demo"
+      className="floating-toolbar-demo"
+      rootAttributes={{ 'data-demo': 'floating-toolbar' }}
     >
       <CatalogExample
         label="Floating over content"
@@ -76,6 +76,6 @@ export function FloatingToolbarDemo() {
           )}
         </div>
       </CatalogExample>
-    </section>
+    </CatalogExampleStack>
   );
 }
