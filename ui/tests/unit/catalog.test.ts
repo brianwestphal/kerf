@@ -20,6 +20,49 @@ import {
 } from '../../ux-demo/catalog.js';
 
 describe('UX catalog metadata', () => {
+  it('keeps the consumer extension example on the shared geometry contract', async () => {
+    const [catalogSchema, extensionSchema, extensionExample] =
+      await Promise.all(
+        [
+          '../../ai/component-catalog.schema.json',
+          '../../ai/component-catalog-extension.schema.json',
+          '../../docs/examples/component-catalog-extension.json',
+        ].map(async (path) =>
+          JSON.parse(
+            await readFile(resolve(import.meta.dirname, path), 'utf8'),
+          ),
+        ),
+      );
+
+    expect(extensionSchema.$defs.geometry).toEqual(
+      catalogSchema.$defs.geometry,
+    );
+    expect(extensionSchema.$defs.geometryOwner).toEqual(
+      catalogSchema.$defs.geometryOwner,
+    );
+    expect(extensionExample).toMatchObject({
+      schemaVersion: 1,
+      package: '@acme/ui',
+    });
+    expect(extensionExample.entries).toHaveLength(2);
+    expect(extensionExample.entries).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          id: 'acme-filter-chip',
+          geometry: { margin: 'none', border: 'self', padding: 'self' },
+        }),
+        expect.objectContaining({
+          id: 'acme-inspector',
+          geometry: expect.objectContaining({
+            margin: 'parent',
+            border: 'child',
+            padding: 'child',
+          }),
+        }),
+      ]),
+    );
+  });
+
   it('projects the shipped machine-readable catalog without losing decision facts', async () => {
     const artifact = JSON.parse(
       await readFile(

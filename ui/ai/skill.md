@@ -1,7 +1,7 @@
 ---
 name: kerf-ui
 description: Build interfaces with kerfjs and the @kerfjs/ui production component package. Use whenever code imports @kerfjs/ui or a task asks for Kerf UI components.
-kerf-ui-skill-version: 1.34.0
+kerf-ui-skill-version: 1.35.0
 ---
 
 # Building with @kerfjs/ui
@@ -15,9 +15,18 @@ return values, and supported import paths; do not infer them from examples.
 Read `../docs/webawesome-theme.md` when using Web Awesome components or changing
 shared theme tokens.
 
+Before choosing or aligning components, look for a consumer-owned catalog that
+conforms to `./component-catalog-extension.schema.json`. Treat its entries as a
+second, package-qualified input beside `./component-catalog.json`: search both,
+preserve their source identity, and use the shared `geometry` vocabulary across
+their composition boundary. When a consuming project has reusable visual
+components but no extension, generate and maintain one from
+`../docs/examples/component-catalog-extension.json`; do not infer their geometry
+from rendered appearance alone.
+
 Choose from the need, not from visual resemblance:
 
-1. Search the Kerf catalog and preferred Web Awesome subset.
+1. Search the consumer extension first, then the Kerf catalog and preferred Web Awesome subset.
 2. Reuse a primitive when purpose, anatomy, state, and interaction match.
 3. Compose primitives for recurring layout. Prefer public props and tokens; use only cataloged `publicClasses` when composition-specific CSS needs a selector.
 4. Add a thin application adapter for copy, domain mapping, actions, routing, persistence, permissions, and transport.

@@ -170,7 +170,21 @@ delivery and side effects, companion wiring, application-owned policy,
 variants, accessibility obligations, public CSS hooks, routes, and current
 documentation/recipe links. The adjacent
 [`component-catalog.schema.json`](./ai/component-catalog.schema.json) describes
-the versioned format.
+the versioned format. Every visual entry also declares who owns its margin,
+border, and padding, so a generator can fit it into Kerf's alignment model
+without guessing from a screenshot or private CSS.
+
+Applications and downstream design systems should publish the same facts for
+their own components. Start from the reusable
+[`component-catalog-extension.schema.json`](./ai/component-catalog-extension.schema.json)
+and the checked
+[`component-catalog-extension.json`](./docs/examples/component-catalog-extension.json)
+example. Give each app-owned component or composition a stable id, selection
+guidance, public hooks, and explicit geometry ownership; then concatenate its
+`entries` with Kerf's shipped `entries` in the AI context. Keep package/source
+identity alongside each input when ids could collide. This makes a combined
+tool reason about both sides of a composition using one vocabulary without
+pretending app-local components are `@kerfjs/ui` exports.
 
 For code generation, pair catalog selection guidance with the checked-in
 [`public-api-signatures-v1.md`](./ai/public-api-signatures-v1.md) declaration

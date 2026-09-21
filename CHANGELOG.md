@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Added a reusable consumer component-catalog extension schema and checked app-component example. Downstream packages can now publish the same selection facts and margin/border/padding ownership vocabulary as Kerf, and the README, component contract, Catalog guide, `llms.txt`, and AI skill explain how to combine package-qualified app entries with Kerf's shipped catalog for alignment decisions.
 - Added an opt-in geometry inspector to the exported `@kerfjs/ui/catalog` tool. `geometryOverlay` plus `wireCatalogGeometryOverlay` now marks transparent component bounds with a dashed outline and positive intrinsic margins with devtools-style bands, excludes example labels/alignment scaffolding, stays synchronized across preview changes, and replaces the Kerf UX demo's private implementation.
 - Added machine-readable margin, border, and padding ownership to every visual entry in the `@kerfjs/ui` component catalog. The additive schema distinguishes self-, parent-, child-, conditional-, and unowned geometry, and enforces complete metadata plus explanatory notes for conditional cases.
 - Refreshed the standalone reactivity demo lockfile to Vite 6.4.3, PostCSS 8.5.28, and nanoid 3.3.19, clearing its development-toolchain audit advisories.

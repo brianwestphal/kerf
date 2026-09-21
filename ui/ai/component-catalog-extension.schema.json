@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/brianwestphal/kerf/main/ui/ai/component-catalog-extension.schema.json",
+  "title": "Kerf UI consumer component catalog extension",
+  "type": "object",
+  "required": ["schemaVersion", "package", "description", "entries"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "schemaVersion": { "const": 1 },
+    "package": { "type": "string", "minLength": 1 },
+    "description": { "type": "string", "minLength": 1 },
+    "entries": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/entry" }
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "entry": {
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "kind",
+        "purpose",
+        "useWhen",
+        "avoidWhen",
+        "geometry"
+      ],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "name": { "type": "string", "minLength": 1 },
+        "kind": { "enum": ["component", "composition"] },
+        "purpose": { "type": "string", "minLength": 1 },
+        "useWhen": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1
+        },
+        "avoidWhen": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1
+        },
+        "publicClasses": {
+          "type": "array",
+          "items": { "type": "string" },
+          "uniqueItems": true
+        },
+        "publicTokens": {
+          "type": "array",
+          "items": { "type": "string" },
+          "uniqueItems": true
+        },
+        "geometry": { "$ref": "#/$defs/geometry" },
+        "documentation": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    },
+    "geometry": {
+      "type": "object",
+      "required": ["margin", "border", "padding"],
+      "properties": {
+        "margin": { "$ref": "#/$defs/geometryOwner" },
+        "border": { "$ref": "#/$defs/geometryOwner" },
+        "padding": { "$ref": "#/$defs/geometryOwner" },
+        "notes": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "minItems": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "geometryOwner": {
+      "enum": ["self", "parent", "child", "none", "conditional"]
+    }
+  }
+}

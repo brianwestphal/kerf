@@ -15,6 +15,8 @@ const [
   selectionGuide,
   readme,
   llms,
+  extensionSchemaSource,
+  extensionExampleSource,
 ] = await Promise.all([
   readFile(resolve(root, 'ai/component-catalog.json'), 'utf8'),
   readFile(resolve(root, 'ai/component-catalog.schema.json'), 'utf8'),
@@ -31,28 +33,41 @@ const [
   readFile(resolve(root, 'docs/component-selection.md'), 'utf8'),
   readFile(resolve(root, 'README.md'), 'utf8'),
   readFile(resolve(root, 'llms.txt'), 'utf8'),
+  readFile(resolve(root, 'ai/component-catalog-extension.schema.json'), 'utf8'),
+  readFile(
+    resolve(root, 'docs/examples/component-catalog-extension.json'),
+    'utf8',
+  ),
 ]);
 const artifact = JSON.parse(artifactSource);
 const schema = JSON.parse(schemaSource);
 const packageJson = JSON.parse(packageSource);
 const manifest = JSON.parse(manifestSource);
+const extensionSchema = JSON.parse(extensionSchemaSource);
+const extensionExample = JSON.parse(extensionExampleSource);
 const failures = [];
 
 function fail(message) {
   failures.push(message);
 }
 
-function schemaAt(reference) {
+function schemaAt(activeSchema, reference) {
   if (!reference.startsWith('#/'))
     throw new Error(`Unsupported schema reference ${reference}`);
   return reference
     .slice(2)
     .split('/')
-    .reduce((value, key) => value[key], schema);
+    .reduce((value, key) => value[key], activeSchema);
 }
 
-function validateSchema(value, rule, path = '$') {
-  if (rule.$ref) return validateSchema(value, schemaAt(rule.$ref), path);
+function validateSchema(value, rule, path = '$', activeSchema = schema) {
+  if (rule.$ref)
+    return validateSchema(
+      value,
+      schemaAt(activeSchema, rule.$ref),
+      path,
+      activeSchema,
+    );
   if ('const' in rule && value !== rule.const)
     fail(`${path} must equal ${JSON.stringify(rule.const)}`);
   if (rule.enum && !rule.enum.includes(value))
@@ -66,7 +81,12 @@ function validateSchema(value, rule, path = '$') {
       if (!(key in value)) fail(`${path} is missing required property ${key}`);
     for (const [key, child] of Object.entries(value)) {
       if (key in (rule.properties ?? {}))
-        validateSchema(child, rule.properties[key], `${path}.${key}`);
+        validateSchema(
+          child,
+          rule.properties[key],
+          `${path}.${key}`,
+          activeSchema,
+        );
       else if (rule.additionalProperties === false)
         fail(`${path} has unknown property ${key}`);
     }
@@ -84,7 +104,7 @@ function validateSchema(value, rule, path = '$') {
       fail(`${path} must contain unique items`);
     if (rule.items)
       value.forEach((item, index) =>
-        validateSchema(item, rule.items, `${path}[${index}]`),
+        validateSchema(item, rule.items, `${path}[${index}]`, activeSchema),
       );
   } else if (rule.type && typeof value !== rule.type) {
     fail(`${path} must be a ${rule.type}`);
@@ -98,6 +118,33 @@ function validateSchema(value, rule, path = '$') {
 }
 
 validateSchema(artifact, schema);
+validateSchema(
+  extensionExample,
+  extensionSchema,
+  '$extension',
+  extensionSchema,
+);
+
+if (
+  JSON.stringify(extensionSchema.$defs.geometry) !==
+    JSON.stringify(schema.$defs.geometry) ||
+  JSON.stringify(extensionSchema.$defs.geometryOwner) !==
+    JSON.stringify(schema.$defs.geometryOwner)
+)
+  fail('consumer extension geometry contract must match the shipped catalog');
+if (
+  extensionExample.entries.some(
+    ({ geometry }) =>
+      Object.values(geometry).includes('conditional') &&
+      !geometry.notes?.length,
+  )
+)
+  fail('consumer extension conditional geometry requires explanatory notes');
+if (
+  new Set(extensionExample.entries.map(({ id }) => id)).size !==
+  extensionExample.entries.length
+)
+  fail('consumer extension example ids must be unique');
 
 if (
   artifact.schemaVersion !== 1 ||
@@ -118,6 +165,12 @@ if (
   )
 )
   fail('llms.txt must link the shipped machine-readable catalog');
+if (
+  !llms.includes(
+    '[Consumer catalog extension schema](./ai/component-catalog-extension.schema.json)',
+  )
+)
+  fail('llms.txt must link the consumer catalog extension schema');
 
 const entries = artifact.entries ?? [];
 const ids = entries.map((entry) => entry.id);

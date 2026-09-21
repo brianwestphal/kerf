@@ -38,6 +38,16 @@ than merely asking whether a CSS declaration appears on the host element.
 Recipes are exempt because they arrange entries whose individual ownership is
 already cataloged.
 
+Downstream packages and applications should publish the same contract for their
+reusable visual components. Use
+[`component-catalog-extension.schema.json`](../ai/component-catalog-extension.schema.json)
+and copy the structure of the checked
+[`component-catalog-extension.json`](./examples/component-catalog-extension.json)
+example. Keep app and Kerf entries as package-qualified inputs, then let people
+or AI tools search their combined entries and compare `geometry` before adding
+wrappers or insets. Do not add app-owned entries to Kerf's canonical catalog or
+claim Kerf delivery paths for them.
+
 - Components own semantic markup, stable anatomy, documented variants, ARIA projection, and package CSS hooks.
 - Applications own signals/stores, product copy, domain-state mapping, persistence, routing, permissions, and transport.
 - Actions are `data-action` strings. Wire them at a stable root with `delegate()` or `delegateActions()` and retain the disposer.

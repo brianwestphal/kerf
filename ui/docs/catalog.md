@@ -101,7 +101,11 @@ explanatory chrome rather than a specimen.
 Use the overlay together with machine-readable geometry ownership metadata; the
 overlay verifies what is rendered, while metadata tells people and AI tools
 whether the component, its parent, or its children are responsible for margin,
-border, and padding.
+border, and padding. Catalogs for downstream components should conform to the
+[`component-catalog-extension.schema.json`](../ai/component-catalog-extension.schema.json)
+contract and can start from the checked
+[`component-catalog-extension.json`](./examples/component-catalog-extension.json)
+example; provide those entries beside Kerf's shipped catalog to AI tools.
 
 ## Complete example
 

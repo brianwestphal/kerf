@@ -22,9 +22,12 @@ maintain a central style list. Configure JSX with `"jsxImportSource": "kerfjs"`.
    [public-api-signatures-v1.md](./ai/public-api-signatures-v1.md) (real prop names,
    callback shapes, disposer return types).
 3. **For exhaustive, structured facts** (ids, exports, variants, `publicClasses`,
-   relationships, side effects) load the
+   relationships, side effects, and geometry ownership) load the
    [Machine-readable component catalog](./ai/component-catalog.json) — the
-   canonical checked-in source; its schema is alongside it.
+   canonical checked-in source; its schema is alongside it. Also load the
+   consuming application's catalog extension when present; generate one from the
+   [Consumer catalog extension schema](./ai/component-catalog-extension.schema.json)
+   when app-owned components must participate in selection or alignment.
 4. **Apply the rules below and in** [skill.md](./ai/skill.md).
 
 ## Core rules (do the right thing)
@@ -148,5 +151,5 @@ shell, `@kerfjs/ui/collapsible-panel` (`CollapsiblePanel`, `CollapsiblePanelTogg
 - [recipes.md](./docs/recipes.md): production compositions (app shell, list-detail dialog, composer form, …) as copyable references.
 - [app-layouts.md](./docs/app-layouts.md): choosing `NavStack`/`SplitView`/`Workbench`/`TabScaffold` by data + interaction + device, and dialog presentation.
 - [webawesome-theme.md](./docs/webawesome-theme.md): the optional Web Awesome theme; catalog coverage means themed-and-supported, not preferred (prefer the Kerf primitive when one exists). The UX sidebar visibly tags superseded and exceptional Web Awesome choices as `Discouraged`; Popup remains an available conditional positioning primitive.
-- [component-catalog.json](./ai/component-catalog.json) + [public-api-signatures-v1.md](./ai/public-api-signatures-v1.md) + [webawesome-jsx-signatures-v1.md](./ai/webawesome-jsx-signatures-v1.md): machine-readable facts and exact signatures.
+- [component-catalog.json](./ai/component-catalog.json) + [component-catalog-extension.schema.json](./ai/component-catalog-extension.schema.json) + [public-api-signatures-v1.md](./ai/public-api-signatures-v1.md) + [webawesome-jsx-signatures-v1.md](./ai/webawesome-jsx-signatures-v1.md): machine-readable facts, a reusable app-component extension contract, and exact signatures.
 - [README.md](./README.md): package overview and the component subpath table.

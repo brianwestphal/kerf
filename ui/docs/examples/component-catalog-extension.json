@@ -1,0 +1,45 @@
+{
+  "$schema": "../../ai/component-catalog-extension.schema.json",
+  "schemaVersion": 1,
+  "package": "@acme/ui",
+  "description": "Application-owned components composed with Kerf UI.",
+  "entries": [
+    {
+      "id": "acme-filter-chip",
+      "name": "FilterChip",
+      "kind": "component",
+      "purpose": "A removable application filter displayed inside a token-search workflow.",
+      "useWhen": [
+        "A saved application filter needs a compact visible label and remove action."
+      ],
+      "avoidWhen": [
+        "The value belongs to TokenSearchField's own controlled token collection."
+      ],
+      "publicClasses": ["acme-filter-chip"],
+      "publicTokens": ["--acme-filter-chip-accent"],
+      "geometry": {
+        "margin": "none",
+        "border": "self",
+        "padding": "self"
+      },
+      "documentation": "docs/filter-chip.md"
+    },
+    {
+      "id": "acme-inspector",
+      "name": "Inspector",
+      "kind": "composition",
+      "purpose": "An application inspector composed from Kerf panel, content, and value primitives.",
+      "useWhen": ["A selected record needs a titled fact-and-action region."],
+      "avoidWhen": ["A ValueTable alone expresses the complete interaction."],
+      "geometry": {
+        "margin": "parent",
+        "border": "child",
+        "padding": "child",
+        "notes": [
+          "The embedding pane positions the inspector; PanelHeader, ValueTable, and action groups retain their own geometry."
+        ]
+      },
+      "documentation": "docs/inspector.md"
+    }
+  ]
+}
