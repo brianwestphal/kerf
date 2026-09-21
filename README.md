@@ -59,8 +59,9 @@ npx kerfjs setup                 # inspect a value-level plan
 npx kerfjs setup --write --yes   # apply it
 ```
 
-The command detects core versus `@kerfjs/ui`, supports explicit monorepo
-package selection, and never adds UI to a core-only project. See
+The command detects core versus `@kerfjs/ui`, supports deterministic npm,
+pnpm, and Yarn workspace selection plus manager-correct offline installs, and
+never adds UI to a core-only project. See
 [`docs/24-ai-first-setup.md`](./docs/24-ai-first-setup.md).
 
 ```jsonc

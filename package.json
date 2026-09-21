@@ -174,7 +174,9 @@
     "check:audit": "npm audit --omit=dev --audit-level=high"
   },
   "dependencies": {
-    "@preact/signals-core": "^1.14.1"
+    "@preact/signals-core": "^1.14.1",
+    "minimatch": "^9.0.5",
+    "yaml": "^2.8.1"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

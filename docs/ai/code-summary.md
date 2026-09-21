@@ -18,16 +18,24 @@ The published `setup/` entry (`kerfjs/setup` and the `kerfjs setup` bin)
 contains the pure AI-first project planner, bounded/redacted plan formatter,
 transactional applier, CLI, declarations, and versioned state schema. It
 detects core/UI source or dependency use, selects one workspace package,
-performs state-backed three-way structural merges (including the focused
-`setup/jsonc.mjs` parser/editor that preserves tsconfig comments, trailing
-commas, and line endings), and wires the shipped guidance plus
-TypeScript/ESLint/catalog/doctor feedback without generating an application.
+evaluates ordered globstar/brace/negated npm/Yarn and pnpm workspace patterns
+with containment and ambiguity checks, performs state-backed three-way
+structural merges (including the focused `setup/jsonc.mjs` parser/editor that
+preserves tsconfig comments, trailing commas, and line endings), and wires the
+shipped guidance plus TypeScript/ESLint/catalog/doctor feedback without
+generating an application. Package-manager execution distinguishes npm, pnpm,
+Yarn Classic, and Yarn Berry; Berry offline mode explicitly disables network.
 `tests/unit/setup.test.ts` covers detection, merges, conflict choices,
 state-backed upgrades, JSONC preservation and malformed-container decisions,
 safety/rollback transitions, redaction, and adversarial inputs.
 `tests/integration/setup-downstream.test.ts` packs the shipped packages and
 proves the CLI through minimal-core and selected-UI-monorepo consumer flows,
-including a commented/trailing-comma tsconfig that still builds and lints.
+including a commented/trailing-comma tsconfig that still builds and lints plus
+one shared real packed local-tarball hit/missing-artifact rollback flow for npm,
+pnpm, Yarn Classic, and Yarn Berry. Each manager case runs only when its exact
+pinned binary/version is detected; otherwise its non-empty test is skipped with
+the detected reason. These fixtures prove no-network local-artifact behavior,
+not a registry-cache implementation.
 The application-local `ui/docs/examples/command-palette-adapter.tsx` demonstrates
 canonical layout ownership for a recurring concept the package does not export.
 `ui/scripts/check-recipes.mjs` keeps those sources,

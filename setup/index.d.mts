@@ -16,6 +16,7 @@ export interface KerfSetupPlan {
   packageName: string;
   packageManager: 'npm' | 'pnpm' | 'yarn';
   packageManagerVersion?: string;
+  packageManagerVariant?: 'classic' | 'berry';
   mode: 'core' | 'ui';
   setupVersion: string;
   actions: SetupAction[];

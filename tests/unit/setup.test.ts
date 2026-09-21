@@ -440,6 +440,162 @@ describe('AI-first setup planner', () => {
     ).toBe(false);
   });
 
+  it('applies ordered globstar, brace, and negated workspace patterns deterministically', async () => {
+    const manifest = {
+      name: 'workspace',
+      private: true,
+      workspaces: [
+        'packages/**',
+        '!packages/**',
+        'packages/deep/{a,excluded}',
+        '!**/{fixtures,__tests__}/**',
+        '!packages/**/excluded',
+        'apps/{b,a}',
+        'packages/deep/a',
+      ],
+    };
+    const root = await fixture(manifest, {
+      'pnpm-workspace.yaml':
+        "packages:\n  - 'extras/**'\n  - '!extras/private/**'\n",
+      'packages/deep/a/package.json': JSON.stringify({
+        name: '@acme/deep-a',
+        dependencies: { kerfjs: '4.4.1' },
+      }),
+      'packages/deep/excluded/package.json': JSON.stringify({
+        name: '@acme/excluded',
+        dependencies: { kerfjs: '4.4.1' },
+      }),
+      'apps/a/package.json': JSON.stringify({
+        name: '@acme/app-a',
+        dependencies: { kerfjs: '4.4.1' },
+      }),
+      'apps/b/package.json': JSON.stringify({
+        name: '@acme/app-b',
+        dependencies: { kerfjs: '4.4.1' },
+      }),
+      'extras/public/tool/package.json': JSON.stringify({
+        name: '@acme/tool',
+        dependencies: { kerfjs: '4.4.1' },
+      }),
+      'extras/private/secret/package.json': JSON.stringify({
+        name: '@acme/secret',
+        dependencies: { kerfjs: '4.4.1' },
+      }),
+    });
+    await expect(planKerfSetup({ root, version: '4.4.1' })).rejects.toThrow(
+      '(@acme/app-a, @acme/app-b, @acme/tool, @acme/deep-a)',
+    );
+    const plan = await planKerfSetup({
+      root,
+      package: '@acme/deep-a',
+      version: '4.4.1',
+    });
+    expect(plan.packageRoot).toBe(join(root, 'packages/deep/a'));
+    const rootPlan = await planKerfSetup({
+      root,
+      package: 'workspace',
+      mode: 'core',
+      version: '4.4.1',
+    });
+    expect(
+      JSON.parse(
+        rootPlan.actions.find(({ path }) => path === 'package.json')!.after,
+      ).workspaces,
+    ).toEqual(manifest.workspaces);
+  });
+
+  it('rejects unsafe expanded patterns, invalid pnpm YAML, and duplicate names', async () => {
+    for (const pattern of [
+      '{packages/*,../outside}',
+      '!../outside',
+      '/absolute/*',
+      'C:/absolute/*',
+      'packages\\*',
+      'packages/\0escape',
+    ]) {
+      const unsafe = await fixture({
+        name: 'workspace',
+        workspaces: [pattern],
+      });
+      await expect(
+        planKerfSetup({ root: unsafe, mode: 'core', version: '4.4.1' }),
+      ).rejects.toThrow('Unsafe workspace pattern');
+    }
+
+    const malformed = await fixture(
+      { name: 'workspace' },
+      { 'pnpm-workspace.yaml': 'packages: [unterminated\n' },
+    );
+    await expect(
+      planKerfSetup({ root: malformed, mode: 'core', version: '4.4.1' }),
+    ).rejects.toThrow('pnpm-workspace.yaml is invalid');
+
+    const malformedManifestDeclaration = await fixture({
+      name: 'workspace',
+      workspaces: { packages: 'packages/**' },
+    });
+    await expect(
+      planKerfSetup({
+        root: malformedManifestDeclaration,
+        mode: 'core',
+        version: '4.4.1',
+      }),
+    ).rejects.toThrow('package.json workspaces must be an array');
+
+    const malformedManifest = await fixture(
+      { name: 'workspace', workspaces: ['packages/**'] },
+      { 'packages/broken/package.json': '{ invalid' },
+    );
+    await expect(
+      planKerfSetup({
+        root: malformedManifest,
+        mode: 'core',
+        version: '4.4.1',
+      }),
+    ).rejects.toThrow();
+
+    const duplicate = await fixture(
+      { name: 'workspace', workspaces: ['packages/**'] },
+      {
+        'packages/a/package.json': JSON.stringify({ name: '@acme/duplicate' }),
+        'packages/deep/b/package.json': JSON.stringify({
+          name: '@acme/duplicate',
+        }),
+      },
+    );
+    await expect(
+      planKerfSetup({
+        root: duplicate,
+        package: '@acme/duplicate',
+        mode: 'core',
+        version: '4.4.1',
+      }),
+    ).rejects.toThrow(
+      'Workspace package name @acme/duplicate is ambiguous (packages/a, packages/deep/b)',
+    );
+    expect(
+      (
+        await planKerfSetup({
+          root: duplicate,
+          package: 'packages/deep/b',
+          mode: 'core',
+          version: '4.4.1',
+        })
+      ).packageRoot,
+    ).toBe(join(duplicate, 'packages/deep/b'));
+  });
+
+  it('accepts workspace globs with no matches', async () => {
+    const root = await fixture({
+      name: 'core-app',
+      workspaces: ['packages/**'],
+      dependencies: { kerfjs: '4.4.1' },
+    });
+    expect((await planKerfSetup({ root, version: '4.4.1' })).packageRoot).toBe(
+      root,
+    );
+  });
+
   it('reports an installed/running version mismatch without rewriting', async () => {
     const root = await fixture({
       name: 'core-app',
@@ -729,7 +885,7 @@ describe('AI-first setup planner', () => {
       dependencies: { kerfjs: '4.4.1' },
     });
     const workspace = await fixture(
-      { name: 'workspace', workspaces: ['packages/escape'] },
+      { name: 'workspace', workspaces: ['packages/**'] },
       { 'packages/placeholder': '' },
     );
     await rm(join(workspace, 'packages/placeholder'));
@@ -737,6 +893,24 @@ describe('AI-first setup planner', () => {
     await expect(
       planKerfSetup({ root: workspace, version: '4.4.1' }),
     ).rejects.toThrow('symlink escapes');
+
+    const aliased = await fixture(
+      { name: 'workspace', workspaces: ['packages/**'] },
+      {
+        'packages/real/package.json': JSON.stringify({
+          name: '@acme/real',
+          dependencies: { kerfjs: '4.4.1' },
+        }),
+      },
+    );
+    await symlink(
+      join(aliased, 'packages/real'),
+      join(aliased, 'packages/alias'),
+      'dir',
+    );
+    await expect(
+      planKerfSetup({ root: aliased, version: '4.4.1' }),
+    ).rejects.toThrow('resolve to the same directory');
   });
 
   it('requires the exact ESLint preset and emits valid CommonJS on explicit replacement', async () => {
@@ -848,16 +1022,24 @@ describe('AI-first setup planner', () => {
     await writeFile(outsidePath, 'outside catalog\n');
     await writeFile(outputPath, 'original catalog\n');
     const plan = await planKerfSetup({ root, version: '4.4.1' });
-    const calls: { command: string; args: string[]; cwd: string }[] = [];
+    const calls: {
+      command: string;
+      args: string[];
+      cwd: string;
+      env?: Record<string, string | undefined>;
+    }[] = [];
     await expect(
       applyKerfSetup(plan, {
         offline: true,
         runner: async (
           command: string,
           args: string[],
-          options: { cwd: string },
+          options: {
+            cwd: string;
+            env?: Record<string, string | undefined>;
+          },
         ) => {
-          calls.push({ command, args, cwd: options.cwd });
+          calls.push({ command, args, ...options });
           if (args.includes('catalog:generate')) {
             await rm(outputPath);
             await symlink(outsidePath, outputPath);
@@ -871,6 +1053,7 @@ describe('AI-first setup planner', () => {
       command: 'yarn',
       args: ['install', '--immutable-cache'],
       cwd: root,
+      env: expect.objectContaining({ YARN_ENABLE_NETWORK: '0' }),
     });
     expect(calls[1]).toMatchObject({
       command: 'yarn',
@@ -938,6 +1121,196 @@ describe('AI-first setup planner', () => {
     await expect(planKerfSetup({ root, version: '4.4.1' })).rejects.toThrow(
       'Invalid persisted resolution',
     );
+  });
+
+  it('distinguishes Yarn Classic and Berry and rejects ambiguous evidence', async () => {
+    const classic = await fixture(
+      { name: 'classic', dependencies: { kerfjs: '4.4.1' } },
+      { 'yarn.lock': '# yarn lockfile v1\n' },
+    );
+    expect(
+      (await planKerfSetup({ root: classic, version: '4.4.1' }))
+        .packageManagerVariant,
+    ).toBe('classic');
+
+    const berry = await fixture(
+      { name: 'berry', dependencies: { kerfjs: '4.4.1' } },
+      { 'yarn.lock': '__metadata:\n  version: 8\n' },
+    );
+    expect(
+      (await planKerfSetup({ root: berry, version: '4.4.1' }))
+        .packageManagerVariant,
+    ).toBe('berry');
+
+    const ambiguous = await fixture(
+      { name: 'ambiguous', dependencies: { kerfjs: '4.4.1' } },
+      { 'yarn.lock': 'left-pad@1.0.0:\n  version "1.0.0"\n' },
+    );
+    await expect(
+      planKerfSetup({ root: ambiguous, version: '4.4.1' }),
+    ).rejects.toThrow('Cannot distinguish Yarn Classic from Berry');
+
+    const nonNumeric = await fixture({
+      name: 'ambiguous',
+      packageManager: 'yarn@berry',
+      dependencies: { kerfjs: '4.4.1' },
+    });
+    await expect(
+      planKerfSetup({ root: nonNumeric, version: '4.4.1' }),
+    ).rejects.toThrow('numeric yarn packageManager version');
+  });
+
+  it('uses truthful offline commands and rolls back misses for every manager variant', async () => {
+    const cases = [
+      {
+        label: 'npm',
+        packageManager: 'npm@10.9.0',
+        command: 'npm',
+        args: ['install', '--offline'],
+      },
+      {
+        label: 'pnpm',
+        packageManager: 'pnpm@9.12.0',
+        command: 'pnpm',
+        args: ['install', '--offline'],
+      },
+      {
+        label: 'Yarn Classic',
+        packageManager: 'yarn@1.22.22',
+        command: 'yarn',
+        args: ['install', '--offline'],
+      },
+      {
+        label: 'Yarn Berry',
+        packageManager: 'yarn@4.6.0',
+        command: 'yarn',
+        args: ['install', '--immutable-cache'],
+        network: '0',
+      },
+    ];
+    for (const item of cases) {
+      const hit = await fixture({
+        name: `hit-${item.label}`,
+        packageManager: item.packageManager,
+        dependencies: { kerfjs: '4.4.1' },
+      });
+      const calls: unknown[][] = [];
+      await applyKerfSetup(
+        await planKerfSetup({ root: hit, version: '4.4.1' }),
+        {
+          offline: true,
+          runner: async (...args: unknown[]) => {
+            calls.push(args);
+            return { stdout: '', stderr: '' };
+          },
+        },
+      );
+      expect(calls[0]).toEqual([
+        item.command,
+        item.args,
+        item.network
+          ? {
+              cwd: hit,
+              env: expect.objectContaining({
+                YARN_ENABLE_NETWORK: item.network,
+              }),
+            }
+          : { cwd: hit },
+      ]);
+      expect(
+        await readFile(join(hit, '.kerf-ai-setup.json'), 'utf8'),
+      ).toContain(`"packageManager": "${item.command}"`);
+
+      const miss = await fixture(
+        {
+          name: `miss-${item.label}`,
+          packageManager: item.packageManager,
+          dependencies: { kerfjs: '4.4.1' },
+        },
+        { 'package-lock.json': `${item.label}-lock\n` },
+      );
+      const originalManifest = await readFile(
+        join(miss, 'package.json'),
+        'utf8',
+      );
+      await expect(
+        applyKerfSetup(await planKerfSetup({ root: miss, version: '4.4.1' }), {
+          offline: true,
+          runner: async () => {
+            await writeFile(join(miss, 'package-lock.json'), 'damaged\n');
+            throw new Error(`${item.label} offline miss`);
+          },
+        }),
+      ).rejects.toThrow(`${item.label} offline miss`);
+      expect(await readFile(join(miss, 'package.json'), 'utf8')).toBe(
+        originalManifest,
+      );
+      expect(await readFile(join(miss, 'package-lock.json'), 'utf8')).toBe(
+        `${item.label}-lock\n`,
+      );
+      expect(await readdir(miss)).not.toContain('.kerf-ai-setup.lock');
+      expect(
+        (await readdir(miss)).some((name) => name.includes('.kerf-setup-')),
+      ).toBe(false);
+      await expect(
+        readFile(join(miss, '.kerf-ai-setup.json')),
+      ).rejects.toThrow();
+    }
+  });
+
+  it('uses valid workspace commands for Yarn Classic and Berry', async () => {
+    for (const item of [
+      {
+        version: '1.22.22',
+        expectedArgs: ['install', '--focus', '--offline'],
+        packageCwd: true,
+      },
+      {
+        version: '4.6.0',
+        expectedArgs: ['install', '--immutable-cache'],
+        packageCwd: false,
+      },
+    ]) {
+      const root = await fixture(
+        {
+          name: 'workspace',
+          private: true,
+          packageManager: `yarn@${item.version}`,
+          workspaces: ['packages/**'],
+        },
+        {
+          'packages/app/package.json': JSON.stringify({
+            name: '@acme/app',
+            dependencies: { kerfjs: '4.4.1' },
+          }),
+        },
+      );
+      const calls: unknown[][] = [];
+      await applyKerfSetup(
+        await planKerfSetup({
+          root,
+          package: '@acme/app',
+          version: '4.4.1',
+        }),
+        {
+          offline: true,
+          runner: async (...args: unknown[]) => {
+            calls.push(args);
+            return { stdout: '', stderr: '' };
+          },
+        },
+      );
+      expect(calls[0]).toEqual([
+        'yarn',
+        item.expectedArgs,
+        item.packageCwd
+          ? { cwd: join(root, 'packages/app') }
+          : {
+              cwd: root,
+              env: expect.objectContaining({ YARN_ENABLE_NETWORK: '0' }),
+            },
+      ]);
+    }
   });
 
   it('targets the selected package with the workspace package manager', async () => {

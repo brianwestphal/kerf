@@ -18,6 +18,9 @@ import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 import { promisify } from 'node:util';
 
+import { braceExpand, minimatch } from 'minimatch';
+import { parse as parseYaml } from 'yaml';
+
 import {
   applyJsoncEdits,
   jsoncInsertProperties,
@@ -76,6 +79,15 @@ async function readJson(path) {
   return JSON.parse(source);
 }
 
+async function readWorkspaceManifest(path) {
+  try {
+    return JSON.parse(await readFile(path, 'utf8'));
+  } catch (error) {
+    if (error?.code === 'ENOENT') return null;
+    throw error;
+  }
+}
+
 function validateSetupState(state) {
   if (!state || typeof state !== 'object' || Array.isArray(state))
     throw new Error('.kerf-ai-setup.json must be an object.');
@@ -87,7 +99,11 @@ function validateSetupState(state) {
     typeof state.setupVersion !== 'string' ||
     !['npm', 'pnpm', 'yarn'].includes(state.packageManager) ||
     (state.packageManagerVersion !== undefined &&
-      typeof state.packageManagerVersion !== 'string')
+      typeof state.packageManagerVersion !== 'string') ||
+    (state.packageManagerVariant !== undefined &&
+      !['classic', 'berry'].includes(state.packageManagerVariant)) ||
+    (state.packageManagerVariant !== undefined &&
+      state.packageManager !== 'yarn')
   )
     throw new Error(
       '.kerf-ai-setup.json has invalid version or package-manager metadata.',
@@ -145,66 +161,157 @@ function allowsVersion(range, version) {
   return true;
 }
 
+function validatedWorkspacePattern(pattern) {
+  if (typeof pattern !== 'string' || pattern !== pattern.trim() || !pattern)
+    throw new Error(`Unsafe workspace pattern ${String(pattern)}.`);
+  const negated = pattern.startsWith('!');
+  const body = negated ? pattern.slice(1) : pattern;
+  if (
+    !body ||
+    body.startsWith('!') ||
+    isAbsolute(body) ||
+    /^[A-Za-z]:/.test(body) ||
+    body.startsWith('//') ||
+    body.includes('\\') ||
+    body.includes('\0')
+  )
+    throw new Error(`Unsafe workspace pattern ${pattern}.`);
+  let expansions;
+  try {
+    expansions = braceExpand(body);
+    // Compile as well as expand so malformed extglobs/classes fail here.
+    minimatch('', body, { nonegate: true });
+  } catch {
+    throw new Error(`Invalid workspace pattern ${pattern}.`);
+  }
+  if (
+    !expansions.length ||
+    expansions.some(
+      (expanded) =>
+        isAbsolute(expanded) ||
+        expanded.split('/').some((segment) => segment === '..'),
+    )
+  )
+    throw new Error(`Unsafe workspace pattern ${pattern}.`);
+  return { body, negated };
+}
+
+async function pnpmWorkspacePatterns(root) {
+  const source = await readText(resolve(root, 'pnpm-workspace.yaml'));
+  if (source === null) return [];
+  let document;
+  try {
+    document = parseYaml(source);
+  } catch (error) {
+    throw new Error(`pnpm-workspace.yaml is invalid: ${error.message}`, {
+      cause: error,
+    });
+  }
+  if (
+    !document ||
+    typeof document !== 'object' ||
+    !Array.isArray(document.packages) ||
+    document.packages.some((pattern) => typeof pattern !== 'string')
+  )
+    throw new Error(
+      'pnpm-workspace.yaml packages must be an array of strings.',
+    );
+  return [...document.packages];
+}
+
 async function workspacePackages(root) {
   const rootManifest = await readJson(resolve(root, 'package.json'));
   if (!rootManifest) throw new Error(`${root} has no package.json.`);
-  const packages = [{ directory: root, manifest: rootManifest }];
-  const patterns = Array.isArray(rootManifest.workspaces)
-    ? rootManifest.workspaces
-    : (rootManifest.workspaces?.packages ?? []);
-  const pnpmWorkspace = await readText(resolve(root, 'pnpm-workspace.yaml'));
-  for (const match of pnpmWorkspace?.matchAll(
-    /^\s*-\s*['"]?([^'"#]+)['"]?\s*$/gm,
-  ) ?? [])
-    if (!patterns.includes(match[1].trim())) patterns.push(match[1].trim());
-  for (const pattern of patterns) {
-    if (typeof pattern !== 'string') continue;
-    if (
-      isAbsolute(pattern) ||
-      pattern.split(/[\\/]/).includes('..') ||
-      pattern.startsWith('!')
-    )
-      throw new Error(`Unsafe workspace pattern ${pattern}.`);
-    if (pattern.includes('**') || /[{}]/.test(pattern))
+  let manifestPatterns = [];
+  if (rootManifest.workspaces !== undefined) {
+    const declaredPatterns = Array.isArray(rootManifest.workspaces)
+      ? rootManifest.workspaces
+      : rootManifest.workspaces?.packages;
+    if (!Array.isArray(declaredPatterns))
       throw new Error(
-        `Unsupported workspace pattern ${pattern}; use explicit or single-* paths.`,
+        'package.json workspaces must be an array or an object with a packages array.',
       );
-    const star = pattern.indexOf('*');
-    if (star < 0) {
-      const directory = resolve(root, pattern);
-      if (!contained(root, directory))
-        throw new Error(`Workspace package escapes the workspace: ${pattern}.`);
-      const manifest = await readJson(resolve(directory, 'package.json'));
-      if (manifest) {
-        const actual = await realpath(directory);
-        if (!contained(await realpath(root), actual))
+    manifestPatterns = [...declaredPatterns];
+  }
+  const patterns = [
+    ...manifestPatterns,
+    ...(await pnpmWorkspacePatterns(root)),
+  ].map(validatedWorkspacePattern);
+  const positivePatterns = patterns.filter(({ negated }) => !negated);
+  const rootReal = await realpath(root);
+  const candidates = new Map();
+  const ignored = new Set([
+    '.git',
+    '.hg',
+    '.pnpm-store',
+    '.svn',
+    '.yarn',
+    'node_modules',
+  ]);
+  const visit = async (directory, relativeDirectory = '') => {
+    const entries = (await readdir(directory, { withFileTypes: true })).sort(
+      (left, right) => left.name.localeCompare(right.name),
+    );
+    for (const entry of entries) {
+      if (ignored.has(entry.name)) continue;
+      const childRelative = relativeDirectory
+        ? `${relativeDirectory}/${entry.name}`
+        : entry.name;
+      if (
+        !positivePatterns.some(({ body }) =>
+          minimatch(childRelative, body, { nonegate: true, partial: true }),
+        )
+      )
+        continue;
+      const child = resolve(directory, entry.name);
+      if (entry.isSymbolicLink()) {
+        const actual = await realpath(child);
+        if (!contained(rootReal, actual))
           throw new Error(
-            `Workspace package symlink escapes the workspace: ${pattern}.`,
+            `Workspace package symlink escapes the workspace: ${childRelative}.`,
           );
-        packages.push({ directory, manifest });
+        const manifest = await readWorkspaceManifest(
+          resolve(child, 'package.json'),
+        );
+        if (manifest)
+          candidates.set(childRelative, { directory: child, manifest });
+        continue;
       }
-      continue;
+      if (!entry.isDirectory()) continue;
+      const manifest = await readWorkspaceManifest(
+        resolve(child, 'package.json'),
+      );
+      if (manifest)
+        candidates.set(childRelative, { directory: child, manifest });
+      await visit(child, childRelative);
     }
-    const prefix = pattern.slice(0, star);
-    const suffix = pattern.slice(star + 1);
-    const parent = resolve(root, prefix);
-    try {
-      for (const entry of await readdir(parent, { withFileTypes: true })) {
-        if (!entry.isDirectory()) continue;
-        const directory = resolve(parent, entry.name, suffix);
-        const manifest = await readJson(resolve(directory, 'package.json'));
-        if (manifest) {
-          const actual = await realpath(directory);
-          if (!contained(await realpath(root), actual))
-            throw new Error(
-              `Workspace package symlink escapes the workspace: ${pattern}.`,
-            );
-          packages.push({ directory, manifest });
-        }
+  };
+  if (positivePatterns.length) await visit(root);
+  const selected = new Map();
+  for (const { body, negated } of patterns)
+    for (const [path, candidate] of [...candidates].sort(([left], [right]) =>
+      left.localeCompare(right),
+    ))
+      if (minimatch(path, body, { nonegate: true })) {
+        if (negated) selected.delete(path);
+        else selected.set(path, candidate);
       }
-    } catch {
-      // Empty workspace globs are valid.
-    }
+  const packages = [
+    { directory: root, manifest: rootManifest },
+    ...[...selected]
+      .sort(([left], [right]) => left.localeCompare(right))
+      .map(([, candidate]) => candidate),
+  ];
+  const actualDirectories = new Map([[rootReal, '.']]);
+  for (const { directory } of packages) {
+    if (directory === root) continue;
+    const actual = await realpath(directory);
+    const previous = actualDirectories.get(actual);
+    if (previous)
+      throw new Error(
+        `Workspace package aliases ${previous} and ${portable(root, directory)} resolve to the same directory.`,
+      );
+    actualDirectories.set(actual, portable(root, directory));
   }
   return packages;
 }
@@ -250,10 +357,17 @@ async function selectPackage(root, selector, requestedMode) {
   const packages = await workspacePackages(root);
   if (selector) {
     const direct = resolve(root, selector);
-    const selected = packages.find(
-      ({ directory, manifest }) =>
-        directory === direct || manifest.name === selector,
+    const pathMatch = packages.find(({ directory }) => directory === direct);
+    const nameMatches = packages.filter(
+      ({ manifest }) => manifest.name === selector,
     );
+    if (!pathMatch && nameMatches.length > 1)
+      throw new Error(
+        `Workspace package name ${selector} is ambiguous (${nameMatches
+          .map(({ directory }) => portable(root, directory))
+          .join(', ')}); select a relative package path.`,
+      );
+    const selected = pathMatch ?? nameMatches[0];
     if (!selected)
       throw new Error(`Workspace package ${selector} was not found.`);
     return selected;
@@ -396,9 +510,39 @@ function metadataTemplate() {
 async function packageManagerInfo(root) {
   const manifest = await readJson(resolve(root, 'package.json'));
   const declared = manifest?.packageManager?.match(/^(npm|pnpm|yarn)@(.+)$/);
-  if (declared) return { name: declared[1], version: declared[2] };
+  if (manifest?.packageManager && !declared)
+    throw new Error(
+      `Unsupported packageManager ${manifest.packageManager}; expected npm@<version>, pnpm@<version>, or yarn@<numeric-version>.`,
+    );
+  if (declared) {
+    if (declared[1] !== 'yarn')
+      return { name: declared[1], version: declared[2] };
+    const major = Number(declared[2].match(/^\d+/)?.[0]);
+    if (!Number.isInteger(major))
+      throw new Error(
+        'Cannot distinguish Yarn Classic from Berry; declare a numeric yarn packageManager version.',
+      );
+    return {
+      name: 'yarn',
+      version: declared[2],
+      variant: major === 1 ? 'classic' : 'berry',
+    };
+  }
   if (await exists(resolve(root, 'pnpm-lock.yaml'))) return { name: 'pnpm' };
-  if (await exists(resolve(root, 'yarn.lock'))) return { name: 'yarn' };
+  const yarnLock = await readText(resolve(root, 'yarn.lock'));
+  const berryConfig = await exists(resolve(root, '.yarnrc.yml'));
+  const classicConfig = await exists(resolve(root, '.yarnrc'));
+  if (yarnLock !== null || berryConfig || classicConfig) {
+    const berryLock = /^__metadata:\s*$/m.test(yarnLock ?? '');
+    const classicLock = /^# yarn lockfile v1\s*$/m.test(yarnLock ?? '');
+    if ((berryConfig || berryLock) && !(classicConfig || classicLock))
+      return { name: 'yarn', variant: 'berry' };
+    if ((classicConfig || classicLock) && !(berryConfig || berryLock))
+      return { name: 'yarn', variant: 'classic' };
+    throw new Error(
+      'Cannot distinguish Yarn Classic from Berry; declare packageManager as yarn@<version>.',
+    );
+  }
   return { name: 'npm' };
 }
 
@@ -904,6 +1048,7 @@ export async function planKerfSetup({
     setupVersion,
     packageManager: manager.name,
     ...(manager.version ? { packageManagerVersion: manager.version } : {}),
+    ...(manager.variant ? { packageManagerVariant: manager.variant } : {}),
     packages: {
       ...(priorState.packages ??
         (priorState.packagePath
@@ -938,6 +1083,7 @@ export async function planKerfSetup({
     packageName: nextManifest.name ?? packageKey,
     packageManager: state.packageManager,
     packageManagerVersion: manager.version,
+    packageManagerVariant: manager.variant,
     mode,
     setupVersion,
     actions,
@@ -1131,28 +1277,34 @@ export async function applyKerfSetup(
       written.push(action);
     }
     if (install) {
-      const yarnMajor = Number(plan.packageManagerVersion?.split('.')[0]);
-      const offlineArgs =
-        offline && plan.packageManager === 'yarn' && yarnMajor >= 2
+      if (plan.packageManager === 'yarn' && !plan.packageManagerVariant)
+        throw new Error(
+          'Cannot install with Yarn until Classic or Berry is identified.',
+        );
+      const berry = plan.packageManagerVariant === 'berry';
+      const offlineArgs = offline
+        ? berry
           ? ['--immutable-cache']
-          : offline
-            ? ['--offline']
-            : [];
+          : ['--offline']
+        : [];
       const workspace = plan.packageRoot !== plan.root;
       let args;
       let installCwd = plan.root;
-      if (!workspace) args = ['install', ...offlineArgs];
+      if (!workspace || berry) args = ['install', ...offlineArgs];
       else if (plan.packageManager === 'npm')
         args = ['install', '--workspace', plan.packageName, ...offlineArgs];
       else if (plan.packageManager === 'pnpm')
         args = ['--filter', plan.packageName, 'install', ...offlineArgs];
-      else if (yarnMajor >= 2)
-        args = ['workspaces', 'focus', plan.packageName, ...offlineArgs];
       else {
         args = ['install', '--focus', ...offlineArgs];
         installCwd = plan.packageRoot;
       }
-      await runner(plan.packageManager, args, { cwd: installCwd });
+      await runner(plan.packageManager, args, {
+        cwd: installCwd,
+        ...(offline && berry
+          ? { env: { ...process.env, YARN_ENABLE_NETWORK: '0' } }
+          : {}),
+      });
       if (plan.mode === 'ui') {
         for (const path of plan.generatedPaths ?? [])
           await validateGeneratedPath(path);

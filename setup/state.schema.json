@@ -9,6 +9,7 @@
     "setupVersion": { "type": "string", "minLength": 1 },
     "packageManager": { "enum": ["npm", "pnpm", "yarn"] },
     "packageManagerVersion": { "type": "string", "minLength": 1 },
+    "packageManagerVariant": { "enum": ["classic", "berry"] },
     "packages": {
       "type": "object",
       "minProperties": 1,
@@ -45,5 +46,11 @@
       }
     }
   },
-  "additionalProperties": false
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": { "required": ["packageManagerVariant"] },
+      "then": { "properties": { "packageManager": { "const": "yarn" } } }
+    }
+  ]
 }

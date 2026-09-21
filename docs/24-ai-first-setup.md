@@ -24,6 +24,10 @@ npx kerfjs setup --write --yes
 The planner detects `kerfjs` and `@kerfjs/ui` from package declarations or
 source imports. Multiple candidates require `--package <name-or-path>`; no
 detected usage requires `--core` or `--ui`. Core setup never adds UI.
+Workspace discovery evaluates npm/Yarn and `pnpm-workspace.yaml` patterns in
+declaration order, including `**`, braces, exclusions, and later re-inclusions.
+Results are deduplicated and sorted, symlink/path escapes are rejected, and a
+duplicate package name must be selected by its unambiguous relative path.
 
 Authored values are not silently overwritten. Every conflict has a stable id
 and requires an explicit, repeatable choice:
@@ -59,6 +63,11 @@ atomic renames. Stale plans, symlink escapes, and paths outside the workspace
 are rejected. Failed installation restores planned files, lockfiles, and
 generated catalog output. `--offline` forbids registry access; `--no-install`
 writes configuration when dependencies are provisioned separately.
+npm and pnpm use their native offline mode. Yarn Classic uses its offline
+workspace install, while Yarn Berry disables network access and requires an
+unchanged project cache. When a Yarn lock/configuration cannot identify Classic
+versus Berry, setup fails with guidance to declare `packageManager` as a numeric
+`yarn@<version>` instead of guessing.
 
 ## 24.3 Installed surfaces
 
