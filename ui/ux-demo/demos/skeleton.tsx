@@ -26,7 +26,7 @@ export function SkeletonDemo() {
       <section
         class="kui-catalog-example"
         data-align="none"
-        data-demo-overlay-skip
+        data-catalog-geometry-overlay-skip
       >
         <ListHeader label="In composition" />
         <p class="kui-catalog-example__note">

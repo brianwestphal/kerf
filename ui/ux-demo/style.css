@@ -1226,29 +1226,6 @@ button {
   padding: 0;
 }
 
-/* Debug overlay: a gray dashed outline at each transparent component's outer
-   bound, and semi-transparent orange bands over any non-zero default margin
-   (the convention Chrome/Safari devtools use for margins). */
-.demo-overlay {
-  position: absolute;
-  z-index: 3;
-  pointer-events: none;
-  inset: 0;
-}
-.demo-overlay__bound,
-.demo-overlay__margin {
-  position: absolute;
-  top: 0;
-  left: 0;
-  box-sizing: border-box;
-}
-.demo-overlay__bound {
-  border: 1px dashed color-mix(in srgb, var(--kui-color-text) 40%, transparent);
-}
-.demo-overlay__margin {
-  background: color-mix(in srgb, #f6a94c 55%, transparent);
-}
-
 /* The labeled-example layout, note alignment, and the glyph/inline-control
    alignment insets now live in the shipped `.kui-catalog-example*` CSS
    (@kerfjs/ui/catalog.css). The demos adopt `CatalogExample` /

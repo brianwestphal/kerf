@@ -647,12 +647,12 @@ test('renders non-composition demos on the grid with a bounds/margin overlay, an
       wrapper.evaluate((el) => window.getComputedStyle(el).backgroundColor),
     )
     .toBe('rgba(0, 0, 0, 0)');
-  const overlay = page.locator('[data-demo-overlay]');
+  const overlay = page.locator('[data-catalog-geometry-overlay]');
   await expect
-    .poll(() => overlay.locator('.demo-overlay__bound').count())
+    .poll(() => overlay.locator('.kui-catalog__geometry-bound').count())
     .toBeGreaterThan(0);
   await expect
-    .poll(() => overlay.locator('.demo-overlay__margin').count())
+    .poll(() => overlay.locator('.kui-catalog__geometry-margin').count())
     .toBeGreaterThan(0);
   if (browserName === 'chromium')
     await canvas.screenshot({
@@ -667,10 +667,10 @@ test('renders non-composition demos on the grid with a bounds/margin overlay, an
   await page.goto('/?component=lucide-icon');
   await expect(stageInner).toHaveAttribute('data-demo-mode', 'component');
   await expect
-    .poll(() => overlay.locator('.demo-overlay__bound').count())
+    .poll(() => overlay.locator('.kui-catalog__geometry-bound').count())
     .toBe(2);
   await expect
-    .poll(() => overlay.locator('.demo-overlay__margin').count())
+    .poll(() => overlay.locator('.kui-catalog__geometry-margin').count())
     .toBe(0);
 
   // A composition demo keeps its layout and gets no overlay.
@@ -678,7 +678,9 @@ test('renders non-composition demos on the grid with a bounds/margin overlay, an
   await expect(stageInner).toHaveAttribute('data-demo-mode', 'composition');
   await expect
     .poll(() =>
-      overlay.locator('.demo-overlay__bound, .demo-overlay__margin').count(),
+      overlay
+        .locator('.kui-catalog__geometry-bound, .kui-catalog__geometry-margin')
+        .count(),
     )
     .toBe(0);
 });

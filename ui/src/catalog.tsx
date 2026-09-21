@@ -86,6 +86,13 @@ export interface CatalogProps {
   sidebarFooter?: SafeHtml;
   /** Status line content shown at the start of the detail footer. */
   status?: SafeHtml;
+  /**
+   * Whether to highlight transparent specimens' outer bounds and non-zero
+   * margins. Pass a boolean (rather than omitting the prop) when the active
+   * entry can switch between component and composition previews;
+   * `wireCatalogGeometryOverlay` keeps the overlay synchronized.
+   */
+  geometryOverlay?: boolean;
   selectAction?: string;
   toggleSidebarAction?: string;
   toggleThemeAction?: string;
@@ -165,6 +172,7 @@ export function Catalog({
   secondarySections,
   sidebarFooter,
   status,
+  geometryOverlay,
   selectAction = 'catalog-select',
   toggleSidebarAction = 'catalog-toggle-sidebar',
   toggleThemeAction = 'catalog-toggle-theme',
@@ -186,6 +194,9 @@ export function Catalog({
       class={`kui-catalog ${className}`.trim()}
       data-component="catalog"
       data-sidebar-collapsed={String(collapsed)}
+      data-geometry-overlay={
+        geometryOverlay === undefined ? undefined : String(geometryOverlay)
+      }
     >
       <aside
         class="kui-catalog__sidebar kui-pane"
@@ -365,7 +376,19 @@ export function Catalog({
           class="kui-catalog__stage kui-pane__content"
           aria-label={`${name} preview`}
         >
-          <div class="kui-catalog__canvas">{content}</div>
+          <div class="kui-catalog__canvas">
+            {content}
+            {geometryOverlay !== undefined ? (
+              <div
+                class="kui-catalog__geometry-overlay"
+                data-catalog-geometry-overlay
+                data-morph-skip-children
+                aria-hidden="true"
+              />
+            ) : (
+              <></>
+            )}
+          </div>
         </section>
         <footer class="kui-catalog__footer kui-pane__footer">
           {status ? <div class="kui-catalog__status">{status}</div> : <></>}

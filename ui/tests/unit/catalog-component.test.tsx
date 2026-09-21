@@ -7,7 +7,10 @@ import {
   CatalogExampleStack,
   type CatalogSection,
 } from '../../src/catalog.js';
-import { wireCatalog } from '../../src/wire-catalog.js';
+import {
+  wireCatalog,
+  wireCatalogGeometryOverlay,
+} from '../../src/wire-catalog.js';
 
 const asHtml = (value: unknown) => String(value);
 
@@ -170,6 +173,22 @@ describe('Catalog', () => {
     expect(html).toContain('kui-catalog__status"><output>Ready');
   });
 
+  it('renders controlled geometry-overlay hooks without changing the preview', () => {
+    const html = asHtml(
+      Catalog({
+        brand: { title: 'X' },
+        sections,
+        active: 'button',
+        content: raw('<button data-component="button">Save</button>'),
+        geometryOverlay: false,
+      }),
+    );
+    expect(html).toContain('data-geometry-overlay="false"');
+    expect(html).toContain('data-catalog-geometry-overlay');
+    expect(html).toContain('data-morph-skip-children');
+    expect(html).toContain('data-component="button">Save</button>');
+  });
+
   it('renders a collapsible secondary (ecosystem) section group', () => {
     const secondarySections = {
       label: 'Ecosystem',
@@ -283,6 +302,7 @@ describe('CatalogExample', () => {
 describe('wireCatalog', () => {
   afterEach(() => {
     document.body.replaceChildren();
+    vi.unstubAllGlobals();
   });
 
   function mountShell(html: string): HTMLElement {
@@ -412,5 +432,80 @@ describe('wireCatalog', () => {
       .querySelector<HTMLElement>('[data-item-id="select"]')!
       .dispatchEvent(new MouseEvent('click', { bubbles: true }));
     expect(onSelect).not.toHaveBeenCalled();
+  });
+
+  it('draws transparent bounds and intrinsic margins, reacts to disable, and disposes cleanly', async () => {
+    class TestResizeObserver {
+      observe(): void {}
+      disconnect(): void {}
+    }
+    vi.stubGlobal('ResizeObserver', TestResizeObserver);
+    const root = mountShell(
+      asHtml(
+        Catalog({
+          brand: { title: 'X' },
+          sections,
+          active: 'button',
+          content: raw(
+            '<section class="kui-catalog-example"><header class="kui-list-header">Example</header><p class="kui-catalog-example__note">Note</p><button data-component="example" style="--kui-catalog-example-align: 1rem; direction: rtl; margin-right: 20px; background: transparent">Example</button></section><section class="kui-catalog-example"><header class="kui-list-header">Header specimen</header></section><section class="kui-catalog-example" data-catalog-geometry-overlay-skip><button data-component="skipped">Skipped</button></section><div data-component="outer" style="margin: 4px; background: transparent"><span data-component="inner">Inner</span></div><div data-component="opaque" style="margin: 0; background: rgb(1, 2, 3)">Opaque</div>',
+          ),
+          geometryOverlay: true,
+        }),
+      ),
+    );
+    const canvas = root.querySelector<HTMLElement>('.kui-catalog__canvas')!;
+    vi.spyOn(canvas, 'getBoundingClientRect').mockReturnValue(
+      DOMRect.fromRect({ x: 10, y: 20, width: 300, height: 200 }),
+    );
+    for (const specimen of canvas.querySelectorAll<HTMLElement>(
+      '[data-component]',
+    ))
+      vi.spyOn(specimen, 'getBoundingClientRect').mockReturnValue(
+        DOMRect.fromRect({ x: 30, y: 50, width: 80, height: 40 }),
+      );
+
+    const stop = wireCatalogGeometryOverlay(root);
+    const layer = root.querySelector<HTMLElement>(
+      '[data-catalog-geometry-overlay]',
+    )!;
+    expect(layer.querySelectorAll('.kui-catalog__geometry-bound')).toHaveLength(
+      2,
+    );
+    expect(
+      layer.querySelectorAll('.kui-catalog__geometry-margin'),
+    ).toHaveLength(5);
+
+    root
+      .querySelector<HTMLElement>('[data-component="catalog"]')!
+      .setAttribute('data-geometry-overlay', 'false');
+    window.dispatchEvent(new Event('resize'));
+    await vi.waitFor(() => expect(layer.children).toHaveLength(0));
+
+    root
+      .querySelector<HTMLElement>('[data-component="catalog"]')!
+      .setAttribute('data-geometry-overlay', 'true');
+    window.dispatchEvent(new Event('resize'));
+    await vi.waitFor(() =>
+      expect(
+        layer.querySelectorAll('.kui-catalog__geometry-bound'),
+      ).toHaveLength(2),
+    );
+
+    window.dispatchEvent(new Event('resize'));
+    stop();
+    expect(layer.children).toHaveLength(0);
+
+    const catalog = root.querySelector<HTMLElement>(
+      '[data-component="catalog"]',
+    )!;
+    const stopFromCatalog = wireCatalogGeometryOverlay(catalog);
+    stopFromCatalog();
+    expect(layer.children).toHaveLength(0);
+  });
+
+  it('is a no-op when the Catalog did not opt into a geometry layer', () => {
+    const root = mountShell('<div>plain content</div>');
+    const stop = wireCatalogGeometryOverlay(root);
+    expect(stop()).toBeUndefined();
   });
 });

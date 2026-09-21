@@ -325,6 +325,32 @@
   place-items: center;
 }
 
+/* Optional devtools-style geometry overlay. `wireCatalogGeometryOverlay` draws
+   a quiet dashed outer bound for transparent specimens and orange bands for
+   non-zero margins. */
+.kui-catalog__geometry-overlay {
+  position: absolute;
+  z-index: 3;
+  pointer-events: none;
+  inset: 0;
+}
+
+.kui-catalog__geometry-bound,
+.kui-catalog__geometry-margin {
+  position: absolute;
+  top: 0;
+  left: 0;
+  box-sizing: border-box;
+}
+
+.kui-catalog__geometry-bound {
+  border: 1px dashed color-mix(in srgb, var(--kui-color-text) 40%, transparent);
+}
+
+.kui-catalog__geometry-margin {
+  background: color-mix(in srgb, #f6a94c 55%, transparent);
+}
+
 .kui-catalog__footer {
   --kui-toolbar-gap: remify(4px);
   --kui-toolbar-group-size: remify(32px);

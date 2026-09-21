@@ -17,6 +17,186 @@ export interface WireCatalogOptions {
   toggleSecondaryAction?: string;
 }
 
+function pixels(value: string): number {
+  const number = Number.parseFloat(value);
+  if (!Number.isFinite(number)) return 0;
+  return value.trim().endsWith('rem') ? number * 16 : number;
+}
+
+function isTransparent(color: string): boolean {
+  const normalized = color.replace(/\s+/g, '');
+  return (
+    normalized === 'transparent' || /(?:,|\/)0(?:\.0+)?\)$/.test(normalized)
+  );
+}
+
+function isExampleLabel(element: Element): boolean {
+  const parent = element.parentElement;
+  if (
+    !element.classList.contains('kui-list-header') ||
+    !parent?.classList.contains('kui-catalog-example') ||
+    element !== parent.firstElementChild
+  )
+    return false;
+  for (
+    let sibling = element.nextElementSibling;
+    sibling;
+    sibling = sibling.nextElementSibling
+  )
+    if (!sibling.classList.contains('kui-catalog-example__note')) return true;
+  return false;
+}
+
+function geometrySpecimens(canvas: HTMLElement): Element[] {
+  const result: Element[] = [];
+  for (const example of canvas.querySelectorAll<HTMLElement>(
+    '.kui-catalog-example',
+  )) {
+    if (example.closest('[data-catalog-geometry-overlay-skip]')) continue;
+    for (const child of example.children) {
+      if (
+        child.matches('[data-catalog-geometry-overlay]') ||
+        child.classList.contains('kui-catalog-example__note') ||
+        isExampleLabel(child)
+      )
+        continue;
+      result.push(child);
+    }
+  }
+  for (const element of canvas.querySelectorAll<HTMLElement>(
+    '[data-component]',
+  )) {
+    if (
+      element.closest('[data-catalog-geometry-overlay]') ||
+      element.closest('[data-catalog-geometry-overlay-skip]') ||
+      element.closest('.kui-catalog-example')
+    )
+      continue;
+    const parent =
+      element.parentElement?.closest<HTMLElement>('[data-component]');
+    if (parent && canvas.contains(parent)) continue;
+    result.push(element);
+  }
+  return result;
+}
+
+function geometryBox(
+  document: Document,
+  className: string,
+  left: number,
+  top: number,
+  width: number,
+  height: number,
+): HTMLElement {
+  const element = document.createElement('div');
+  element.className = className;
+  element.style.transform = `translate(${left}px, ${top}px)`;
+  element.style.width = `${Math.max(0, width)}px`;
+  element.style.height = `${Math.max(0, height)}px`;
+  return element;
+}
+
+/**
+ * Keep a Catalog's opt-in geometry overlay synchronized with its preview.
+ * Transparent specimens receive a dashed outer bound and positive margins use
+ * devtools-style orange bands. Returns a disposer.
+ */
+export function wireCatalogGeometryOverlay(root: HTMLElement): () => void {
+  const catalog = root.matches('[data-component="catalog"]')
+    ? root
+    : root.querySelector<HTMLElement>('[data-component="catalog"]');
+  const canvas = catalog?.querySelector<HTMLElement>('.kui-catalog__canvas');
+  const layer = catalog?.querySelector<HTMLElement>(
+    '[data-catalog-geometry-overlay]',
+  );
+  const view = root.ownerDocument.defaultView;
+  if (!catalog || !canvas || !layer || !view) return () => {};
+
+  let frame = 0;
+  const render = (): void => {
+    frame = 0;
+    layer.replaceChildren();
+    if (catalog.dataset.geometryOverlay !== 'true') return;
+    const base = canvas.getBoundingClientRect();
+    for (const element of geometrySpecimens(canvas)) {
+      const rect = element.getBoundingClientRect();
+      const style = view.getComputedStyle(element);
+      const align = pixels(
+        style.getPropertyValue('--kui-catalog-example-align'),
+      );
+      const top = pixels(style.marginTop);
+      const right = Math.max(
+        0,
+        pixels(style.marginRight) - (style.direction === 'rtl' ? align : 0),
+      );
+      const bottom = pixels(style.marginBottom);
+      const left = Math.max(
+        0,
+        pixels(style.marginLeft) - (style.direction === 'rtl' ? 0 : align),
+      );
+      const x = rect.left - base.left + canvas.scrollLeft;
+      const y = rect.top - base.top + canvas.scrollTop;
+      if (isTransparent(style.backgroundColor))
+        layer.append(
+          geometryBox(
+            root.ownerDocument,
+            'kui-catalog__geometry-bound',
+            x,
+            y,
+            rect.width,
+            rect.height,
+          ),
+        );
+      const margins = [
+        [top, x - left, y - top, rect.width + left + right, top],
+        [bottom, x - left, y + rect.height, rect.width + left + right, bottom],
+        [left, x - left, y, left, rect.height],
+        [right, x + rect.width, y, right, rect.height],
+      ];
+      for (const [size, marginX, marginY, width, height] of margins) {
+        if (size <= 0) continue;
+        layer.append(
+          geometryBox(
+            root.ownerDocument,
+            'kui-catalog__geometry-margin',
+            marginX,
+            marginY,
+            width,
+            height,
+          ),
+        );
+      }
+    }
+  };
+  const schedule = (): void => {
+    if (!frame) frame = view.requestAnimationFrame(render);
+  };
+  const resizeObserver = new view.ResizeObserver(schedule);
+  resizeObserver.observe(canvas);
+  const mutationObserver = new view.MutationObserver((records) => {
+    if (
+      records.some(
+        ({ target }) => target !== layer && !layer.contains(target as Node),
+      )
+    )
+      schedule();
+  });
+  mutationObserver.observe(catalog, {
+    attributes: true,
+    childList: true,
+    subtree: true,
+  });
+  view.addEventListener('resize', schedule);
+  render();
+  return () => {
+    if (frame) view.cancelAnimationFrame(frame);
+    resizeObserver.disconnect();
+    mutationObserver.disconnect();
+    view.removeEventListener('resize', schedule);
+    layer.replaceChildren();
+  };
+}
+
 /**
  * Wire a {@link Catalog}'s interactions with one delegated listener set: sidebar
  * item selection (and the related-entry popup menu), the sidebar collapse toggle, and

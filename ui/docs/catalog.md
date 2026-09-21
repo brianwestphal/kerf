@@ -72,12 +72,46 @@ content-item/composition that already owns its geometry. The inset is published 
 the `--kui-catalog-example-align` custom property so a debug overlay can exclude it
 from a specimen's measured margin.
 
+## Geometry inspection
+
+Pass `geometryOverlay` to `Catalog` when individual component previews should
+show otherwise-invisible geometry. The controlled boolean draws a dashed outer
+bound around specimens with transparent backgrounds and devtools-style orange
+bands over positive margins. Keep the prop present while switching entries so
+`wireCatalog` can reuse one overlay layer; set it to `true` for focused component
+previews and `false` for full compositions whose child geometry should remain
+unmarked.
+
+```tsx
+<Catalog
+  {...props}
+  geometryOverlay={activeEntry.kind === "component"}
+  content={renderers[active.value]()}
+/>
+```
+
+Call `wireCatalogGeometryOverlay(root)` after the first render to synchronize the
+opt-in layer across rerenders, theme changes, resizes, and scrolling, and retain
+its disposer alongside `wireCatalog`'s. `CatalogExample` labels and notes are
+excluded; its `align` inset is also subtracted so alignment scaffolding is not
+reported as intrinsic component margin. Put
+`data-catalog-geometry-overlay-skip` on a preview subtree that is intentionally
+explanatory chrome rather than a specimen.
+
+Use the overlay together with machine-readable geometry ownership metadata; the
+overlay verifies what is rendered, while metadata tells people and AI tools
+whether the component, its parent, or its children are responsible for margin,
+border, and padding.
+
 ## Complete example
 
 ```tsx
 import { mount, signal } from "kerfjs";
 import { Catalog, type CatalogSection } from "@kerfjs/ui/catalog";
-import { wireCatalog } from "@kerfjs/ui/wire-catalog";
+import {
+  wireCatalog,
+  wireCatalogGeometryOverlay,
+} from "@kerfjs/ui/wire-catalog";
 import "@kerfjs/ui/styles.css"; // or import each primitive's CSS + @kerfjs/ui/catalog.css
 
 // 1. Describe your components once.
@@ -137,6 +171,7 @@ mount(app, () => (
     content={renderers[active.value]?.() ?? <></>}
     collapsed={collapsed.value}
     theme={theme.value}
+    geometryOverlay={true}
   />
 ));
 
@@ -153,6 +188,7 @@ wireCatalog(app, {
   },
   urlParam: "c", // mirror the active id into ?c=<id>
 });
+wireCatalogGeometryOverlay(app);
 ```
 
 ## Ownership boundary

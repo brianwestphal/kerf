@@ -13,7 +13,10 @@ import {
 import { LoadingSpinner } from '@kerfjs/ui/loading-spinner';
 import { readTokenSearchField } from '@kerfjs/ui/token-search-field';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
-import { wireCatalog } from '@kerfjs/ui/wire-catalog';
+import {
+  wireCatalog,
+  wireCatalogGeometryOverlay,
+} from '@kerfjs/ui/wire-catalog';
 import { wireNavStack } from '@kerfjs/ui/wire-nav-stack';
 import { wireResizableRegions } from '@kerfjs/ui/wire-resizable-regions';
 import { reorderTabs, wireTabBars } from '@kerfjs/ui/wire-tab-bars';
@@ -43,7 +46,6 @@ import {
   type WebAwesomeCatalogId,
   webAwesomeCatalogSections,
 } from './catalog.js';
-import { createComponentOverlay } from './component-overlay.js';
 import {
   applyDemoTheme,
   type DemoTheme,
@@ -380,6 +382,9 @@ mount(app, () => {
           <span>{statusLabel}</span>
         </>
       }
+      geometryOverlay={
+        selected.source === 'kerf' && selected.kind === 'component'
+      }
       content={
         <div
           class="demo-stage-inner"
@@ -393,12 +398,6 @@ mount(app, () => {
           )}
         >
           <Stage />
-          <div
-            class="demo-overlay"
-            data-demo-overlay
-            data-morph-skip-children
-            aria-hidden="true"
-          />
         </div>
       }
     />
@@ -832,6 +831,7 @@ const stopCatalog = wireCatalog(app, {
   toggleThemeAction: 'toggle-theme',
   toggleSecondaryAction: 'toggle-webawesome-catalog',
 });
+const stopGeometryOverlay = wireCatalogGeometryOverlay(app);
 const stopResize = wireResizableRegions(app, {
   onCommit: ({ id, size }) => {
     if (id.startsWith('recipe-') && isRecipeId(selectedDemo.value))
@@ -850,23 +850,6 @@ const stopSelect = delegate(app, 'change', 'wa-select', (_event, element) => {
 // Wire the active recipe's NavStack (slide animation + back control). The
 // nav-stack element persists across pushes/pops, so we only re-wire when the
 // selected recipe (or its freshly-loaded controller) changes.
-const overlayCanvas = app.querySelector<HTMLElement>('.kui-catalog__canvas');
-const overlayLayer = app.querySelector<HTMLElement>('[data-demo-overlay]');
-const componentOverlay =
-  overlayCanvas && overlayLayer
-    ? createComponentOverlay(overlayCanvas, overlayLayer)
-    : null;
-const stopOverlayEffect = effect(() => {
-  void recipeRevision.value;
-  void effectiveTheme.value;
-  const id = selectedDemo.value;
-  window.requestAnimationFrame(() => {
-    const entry = findCatalogEntry(id);
-    componentOverlay?.update(
-      entry?.source === 'kerf' && entry.kind === 'component',
-    );
-  });
-});
 let stopRecipeNav: (() => void) | null = null;
 const stopRecipeNavEffect = effect(() => {
   void recipeRevision.value;
@@ -1168,10 +1151,9 @@ window.addEventListener(
   () => {
     stopActions();
     stopCatalog();
+    stopGeometryOverlay();
     stopResize();
     stopSelect();
-    componentOverlay?.dispose();
-    stopOverlayEffect();
     stopRecipeNav?.();
     stopRecipeNavEffect();
     stopRecipeWire?.();

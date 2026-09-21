@@ -5,7 +5,11 @@ import { icon, regionSize } from './state.js';
 
 export function ResizeDemo() {
   return (
-    <div class="demo-resize-shell" data-demo="resize" data-demo-overlay-skip>
+    <div
+      class="demo-resize-shell"
+      data-demo="resize"
+      data-catalog-geometry-overlay-skip
+    >
       <ResizableRegion
         id="catalog-panel"
         label="Catalog panel"

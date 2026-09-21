@@ -998,6 +998,13 @@ interface CatalogProps {
     sidebarFooter?: SafeHtml;
     /** Status line content shown at the start of the detail footer. */
     status?: SafeHtml;
+    /**
+     * Whether to highlight transparent specimens' outer bounds and non-zero
+     * margins. Pass a boolean (rather than omitting the prop) when the active
+     * entry can switch between component and composition previews;
+     * `wireCatalogGeometryOverlay` keeps the overlay synchronized.
+     */
+    geometryOverlay?: boolean;
     selectAction?: string;
     toggleSidebarAction?: string;
     toggleThemeAction?: string;
@@ -1013,7 +1020,7 @@ interface CatalogProps {
  * `collapsed`, and `theme` signals and computes `content` from `active` in its own
  * render; wire the sidebar/collapse/theme actions with `wireCatalog`.
  */
-declare function Catalog({ brand, sections, active, content, collapsed, theme, headerActions, secondarySections, sidebarFooter, status, selectAction, toggleSidebarAction, toggleThemeAction, toggleSecondaryAction, className, }: CatalogProps): SafeHtml;
+declare function Catalog({ brand, sections, active, content, collapsed, theme, headerActions, secondarySections, sidebarFooter, status, geometryOverlay, selectAction, toggleSidebarAction, toggleThemeAction, toggleSecondaryAction, className, }: CatalogProps): SafeHtml;
 /**
  * How a {@link CatalogExample}'s content aligns its visible left edge with the
  * example's `ListHeader` label (which sits 16px in — 8px title + 8px label):
@@ -1073,6 +1080,12 @@ interface WireCatalogOptions {
     toggleSecondaryAction?: string;
 }
 /**
+ * Keep a Catalog's opt-in geometry overlay synchronized with its preview.
+ * Transparent specimens receive a dashed outer bound and positive margins use
+ * devtools-style orange bands. Returns a disposer.
+ */
+declare function wireCatalogGeometryOverlay(root: HTMLElement): () => void;
+/**
  * Wire a {@link Catalog}'s interactions with one delegated listener set: sidebar
  * item selection (and the related-entry popup menu), the sidebar collapse toggle, and
  * the theme toggle. The app owns the `active`/`collapsed`/`theme` signals and updates
@@ -1081,7 +1094,7 @@ interface WireCatalogOptions {
  */
 declare function wireCatalog(root: HTMLElement, { onSelect, onToggleSidebar, onToggleTheme, onToggleSecondary, urlParam, selectAction, toggleSidebarAction, toggleThemeAction, toggleSecondaryAction, }: WireCatalogOptions): () => void;
 
-export { type WireCatalogOptions, wireCatalog };
+export { type WireCatalogOptions, wireCatalog, wireCatalogGeometryOverlay };
 ```
 
 ## `@kerfjs/ui/segmented-control`
