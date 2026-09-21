@@ -12,7 +12,15 @@ const settings = uiSettings();
 tester.run('ui-public-boundaries', boundaries, {
   valid: [
     { code: '<div class="kui-toolbar" />;', settings },
+    {
+      code: '<div class="kui-workbench kui-workbench__rail kui-workbench__rail--left kui-workbench__rail--right kui-workbench__center kui-workbench__main kui-workbench__drawer kui-workbench__panel-content" />;',
+      settings,
+    },
     { code: "const css = 'color: var(--kui-color-border)';", settings },
+    {
+      code: "const css = 'width: var(--kui-workbench-rail-width); height: var(--kui-workbench-drawer-height)';",
+      settings,
+    },
     {
       code: '<div class="kui-private" />;',
       filename: `${process.cwd()}/legacy/view.tsx`,

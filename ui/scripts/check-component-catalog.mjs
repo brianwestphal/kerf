@@ -342,7 +342,9 @@ for (const statement of sourceFile.statements) {
     if (!element.isTypeOnly) runtimeExports.push(element.name.text);
   }
 }
-const catalogExports = entries.flatMap((entry) => entry.publicExports ?? []);
+const catalogExports = entries
+  .filter((entry) => !entry.delivery.moduleImport)
+  .flatMap((entry) => entry.publicExports ?? []);
 for (const name of runtimeExports) {
   if (!catalogExports.includes(name))
     fail(`public runtime export ${name} is absent from catalog metadata`);
@@ -355,6 +357,54 @@ for (const name of catalogExports) {
 }
 if (new Set(catalogExports).size !== catalogExports.length)
   fail('public exports must be owned by exactly one catalog entry');
+
+for (const entry of entries.filter(({ delivery }) => delivery.moduleImport)) {
+  const specifier = entry.delivery.moduleImport;
+  const subpath = packageSubpath(specifier);
+  const target = packageJson.exports[subpath];
+  if (!target || typeof target !== 'object' || !target.import)
+    fail(`${entry.id} has stale module import ${specifier}`);
+  const sourcePath = resolve(
+    root,
+    'src',
+    `${specifier.slice('@kerfjs/ui/'.length)}.tsx`,
+  );
+  let source;
+  try {
+    source = await readFile(sourcePath, 'utf8');
+  } catch {
+    fail(
+      `${entry.id} module import has no source src/${specifier.slice('@kerfjs/ui/'.length)}.tsx`,
+    );
+    continue;
+  }
+  const moduleFile = ts.createSourceFile(
+    sourcePath,
+    source,
+    ts.ScriptTarget.Latest,
+    true,
+    ts.ScriptKind.TSX,
+  );
+  const namedExports = new Set(
+    moduleFile.statements.flatMap((statement) => {
+      if (
+        (ts.isFunctionDeclaration(statement) ||
+          ts.isClassDeclaration(statement) ||
+          ts.isInterfaceDeclaration(statement) ||
+          ts.isTypeAliasDeclaration(statement)) &&
+        statement.modifiers?.some(
+          ({ kind }) => kind === ts.SyntaxKind.ExportKeyword,
+        ) &&
+        statement.name
+      )
+        return [statement.name.text];
+      return [];
+    }),
+  );
+  for (const name of entry.publicExports ?? [])
+    if (!namedExports.has(name))
+      fail(`${entry.id} names stale module export ${name} from ${specifier}`);
+}
 
 const browserImports = Object.entries(packageJson.exports)
   .filter(
@@ -437,6 +487,7 @@ for (const contract of compileTimeContracts.contracts) {
 }
 for (const entry of entries) {
   for (const key of [
+    'moduleImport',
     'browserImport',
     'manualCssImport',
     'registrationImport',
@@ -579,6 +630,33 @@ for (const entry of entries.filter(
   for (const token of entry.publicTokens ?? []) {
     if (!css.includes(token))
       fail(`${entry.id} names missing public token ${token}`);
+  }
+  if (entry.delivery.moduleImport) {
+    const shippedClasses = [
+      ...new Set(
+        [...css.matchAll(/\.(kui-[a-z0-9_-]+)/g)].map((match) => match[1]),
+      ),
+    ];
+    const shippedTokens = [
+      ...new Set(
+        [...css.matchAll(new RegExp(`--kui-${entry.id}-[a-z0-9-]+`, 'g'))].map(
+          (match) => match[0],
+        ),
+      ),
+    ];
+    if (
+      JSON.stringify(entry.publicClasses ?? []) !==
+      JSON.stringify(shippedClasses)
+    )
+      fail(
+        `${entry.id} publicClasses must exactly match the classes shipped by ${cssImport}`,
+      );
+    if (
+      JSON.stringify(entry.publicTokens ?? []) !== JSON.stringify(shippedTokens)
+    )
+      fail(
+        `${entry.id} publicTokens must exactly match the tokens shipped by ${cssImport}`,
+      );
   }
 }
 

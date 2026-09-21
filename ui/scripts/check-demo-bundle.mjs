@@ -11,9 +11,10 @@ const limits = {
   // (TokenSearchField adoption knobs) → 262.10 kB (FloatingToolbar demo) → 263.21 kB
   // (ToolbarText overflow examples) → 264.00 kB (atomic-chip deletion hardening)
   // → 265.24 kB (Pane + SunkenPanel focused demos and catalog metadata v2)
-  // → 265.78 kB (public foundation-token catalog route and metadata).
+  // → 265.78 kB (public foundation-token catalog route and metadata)
+  // → 266.53 kB (Workbench focused route and catalog contract).
   // Keep only narrow headroom and preserve the split.
-  totalJavaScriptGzip: 266_000,
+  totalJavaScriptGzip: 267_000,
 };
 
 const javascript = (await readdir(assetsDir)).filter((name) =>

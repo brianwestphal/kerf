@@ -49,6 +49,19 @@ Each `WorkbenchPanel` takes `content`, an optional `collapsed`, an optional
 `--kui-workbench-rail-width` 280px, `--kui-workbench-drawer-height` 220px), and
 an optional `label`.
 
+## Public styling boundary
+
+Import `@kerfjs/ui/workbench.css` after the component subpath. Applications may
+set `--kui-workbench-rail-width` and `--kui-workbench-drawer-height` on a
+Workbench instance. The supported composition classes are `.kui-workbench`,
+`.kui-workbench__rail`, `.kui-workbench__rail--left`,
+`.kui-workbench__rail--right`, `.kui-workbench__center`,
+`.kui-workbench__main`, `.kui-workbench__drawer`, and
+`.kui-workbench__panel-content`; these exact hooks are cataloged for tools that
+must classify public application selectors. Prefer the component props and two
+size tokens before selecting internal anatomy, and do not target its data
+attributes or descendant tags as styling contracts.
+
 ## How the collapse animates
 
 Collapsing snaps the panel's flex track to zero in a single reflow (so the work

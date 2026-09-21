@@ -77,6 +77,7 @@ describe('UX catalog metadata', () => {
         kind: 'component' | 'composition' | 'recipe';
         recommendation?: string;
         publicExports?: string[];
+        publicClasses?: string[];
         publicTokens?: string[];
         useWhen: string[];
         avoidWhen: string[];
@@ -86,7 +87,11 @@ describe('UX catalog metadata', () => {
           padding: string;
           notes?: string[];
         };
-        delivery: { registrationImport?: string };
+        delivery: {
+          moduleImport?: string;
+          manualCssImport?: string;
+          registrationImport?: string;
+        };
         links: { catalogRoute: string; documentation: string; recipe: string };
       }>;
     };
@@ -96,7 +101,7 @@ describe('UX catalog metadata', () => {
     expect(artifact.entries.map(({ id }) => id)).toEqual(
       catalog.map(({ id }) => id),
     );
-    expect(artifact.entries).toHaveLength(111);
+    expect(artifact.entries).toHaveLength(112);
     expect(findCatalogEntry('recipe-command-palette')).toBeUndefined();
     expect(isCatalogId('recipe-command-palette')).toBe(false);
     const foundationSource = await readFile(
@@ -113,6 +118,32 @@ describe('UX catalog metadata', () => {
     expect(
       artifact.entries.find(({ id }) => id === 'foundation')?.publicTokens,
     ).toEqual(foundationTokens);
+    const workbench = artifact.entries.find(({ id }) => id === 'workbench');
+    const workbenchCss = await readFile(
+      resolve(import.meta.dirname, '../../src/workbench.css'),
+      'utf8',
+    );
+    expect(workbench).toMatchObject({
+      publicExports: ['Workbench', 'WorkbenchPanel', 'WorkbenchProps'],
+      delivery: {
+        moduleImport: '@kerfjs/ui/workbench',
+        manualCssImport: '@kerfjs/ui/workbench.css',
+      },
+      publicClasses: [
+        ...new Set(
+          [...workbenchCss.matchAll(/\.(kui-[a-z0-9_-]+)/g)].map(
+            (match) => match[1],
+          ),
+        ),
+      ],
+      publicTokens: [
+        ...new Set(
+          [...workbenchCss.matchAll(/--kui-workbench-[a-z0-9-]+/g)].map(
+            (match) => match[0],
+          ),
+        ),
+      ],
+    });
     expect(
       artifact.entries.every(
         (entry) => entry.useWhen.length > 0 && entry.avoidWhen.length > 0,
@@ -313,6 +344,7 @@ describe('UX catalog metadata', () => {
       'LucideIcon',
       'DisclosureArrow',
       'Pane',
+      'Workbench',
       'SunkenPanel',
       'Toolbar',
       'ToolbarControlGroup',

@@ -556,6 +556,89 @@
       }
     },
     {
+      "id": "workbench",
+      "name": "Workbench",
+      "category": "Structure",
+      "kind": "component",
+      "source": "kerf",
+      "description": "A desktop-class multi-panel workspace with independently collapsible left and right rails and a bottom drawer around one central work area.",
+      "uses": [],
+      "purpose": "Arrange a complex tool or editor as a stable central work area with optional peripheral rails and a bottom drawer.",
+      "publicExports": [
+        "Workbench",
+        "WorkbenchPanel",
+        "WorkbenchProps"
+      ],
+      "useWhen": [
+        "A desktop-class tool needs a central work area plus independently collapsible navigator, inspector, or console regions."
+      ],
+      "avoidWhen": [
+        "Do not shrink the full multi-panel shell onto compact devices; present peripheral content through NavStack or overlay drawers instead.",
+        "Do not use Workbench for one standalone collapsible rail or drawer; use CollapsiblePanel."
+      ],
+      "alternatives": [
+        {
+          "id": "pane",
+          "relationship": "composes-with",
+          "when": "Use Pane inside Workbench regions when fixed header/footer chrome must surround one scroll owner."
+        }
+      ],
+      "appOwns": [
+        "panel presence and content",
+        "collapsed state",
+        "panel sizes",
+        "responsive replacement below desktop",
+        "collapse controls and focus policy"
+      ],
+      "variants": [
+        "main only",
+        "left rail",
+        "right rail",
+        "bottom drawer",
+        "all panels",
+        "independently collapsed panels"
+      ],
+      "accessibility": [
+        "Give the Workbench and each meaningful rail or drawer an accessible label.",
+        "Keep collapse controls outside the disappearing region and move focus when a controlled rerender replaces a collapse control with its restore control."
+      ],
+      "geometry": {
+        "margin": "none",
+        "border": "self",
+        "padding": "child",
+        "notes": [
+          "Workbench owns the rail and drawer separators; each region's content owns its internal padding and scroll behavior."
+        ]
+      },
+      "delivery": {
+        "moduleImport": "@kerfjs/ui/workbench",
+        "manualCssImport": "@kerfjs/ui/workbench.css",
+        "sideEffects": [
+          "manual-css"
+        ]
+      },
+      "wiring": [],
+      "publicClasses": [
+        "kui-workbench",
+        "kui-workbench__rail",
+        "kui-workbench__rail--left",
+        "kui-workbench__rail--right",
+        "kui-workbench__center",
+        "kui-workbench__main",
+        "kui-workbench__drawer",
+        "kui-workbench__panel-content"
+      ],
+      "publicTokens": [
+        "--kui-workbench-rail-width",
+        "--kui-workbench-drawer-height"
+      ],
+      "links": {
+        "catalogRoute": "?component=workbench",
+        "documentation": "docs/workbench.md",
+        "recipe": "docs/workbench.md#state-lives-in-the-app"
+      }
+    },
+    {
       "id": "sunken-panel",
       "name": "SunkenPanel",
       "category": "Structure",

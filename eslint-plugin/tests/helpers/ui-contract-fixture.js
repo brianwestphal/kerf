@@ -54,6 +54,24 @@ export const catalog = {
     component('select', 'Select', {
       wiring: { required: true, helpers: ['@kerfjs/ui/select/register'] },
     }),
+    component('workbench', 'Workbench', {
+      boundaries: {
+        publicClasses: [
+          'kui-workbench',
+          'kui-workbench__rail',
+          'kui-workbench__rail--left',
+          'kui-workbench__rail--right',
+          'kui-workbench__center',
+          'kui-workbench__main',
+          'kui-workbench__drawer',
+          'kui-workbench__panel-content',
+        ],
+        publicTokens: [
+          '--kui-workbench-rail-width',
+          '--kui-workbench-drawer-height',
+        ],
+      },
+    }),
   ],
 };
 
@@ -66,7 +84,10 @@ export const selectionCatalog = {
       entry.id === 'token-search-field'
         ? [entry.name, 'wireTokenSearchFields']
         : [entry.name],
-    delivery: { browserImport: `@kerfjs/ui/${entry.id}` },
+    delivery:
+      entry.id === 'workbench'
+        ? { moduleImport: '@kerfjs/ui/workbench' }
+        : { browserImport: `@kerfjs/ui/${entry.id}` },
     wiring:
       entry.id === 'token-search-field'
         ? [

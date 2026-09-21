@@ -30,7 +30,7 @@ const demoSource = (entry) => {
 
 const componentSource = (entry) =>
   entry.source === 'kerf' && entry.kind === 'component'
-    ? `ui/src/${entry.delivery.browserImport.slice('@kerfjs/ui/'.length)}.tsx`
+    ? `ui/src/${(entry.delivery.browserImport ?? entry.delivery.moduleImport).slice('@kerfjs/ui/'.length)}.tsx`
     : undefined;
 
 const project = (entry) => ({

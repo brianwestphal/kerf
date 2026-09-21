@@ -146,6 +146,13 @@ as a `New` marker.
 | `PanelHeader`                                                       | `@kerfjs/ui/panel-header`               | `@kerfjs/ui/panel-header.css`          |
 | `ValueTable`, `ValueTableRow`                                       | `@kerfjs/ui/value-table`                | `@kerfjs/ui/value-table.css`           |
 
+Opt-in application layouts keep JavaScript and CSS explicit. For the
+desktop-class multi-panel shell, import `Workbench` from
+`@kerfjs/ui/workbench` and load `@kerfjs/ui/workbench.css`; its supported
+classes and size tokens are cataloged under the `workbench` entry. See
+[`docs/workbench.md`](./docs/workbench.md) for panel ownership and responsive
+replacement guidance.
+
 `PanelHeader` is a plain `Toolbar` used as a panel, dialog, or page heading: an
 optional icon control group (given a brand fill with a matching border), the
 title as extra-large `ToolbarText`, the app's trailing action controls, and an

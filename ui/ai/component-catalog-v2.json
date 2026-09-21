@@ -434,6 +434,78 @@
       }
     },
     {
+      "key": "@kerfjs/ui:workbench",
+      "package": "@kerfjs/ui",
+      "id": "workbench",
+      "name": "Workbench",
+      "kind": "component",
+      "source": "kerf",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [
+        {
+          "id": "panel presence and content",
+          "owner": "application",
+          "required": false
+        },
+        { "id": "collapsed state", "owner": "application", "required": false },
+        { "id": "panel sizes", "owner": "application", "required": false },
+        {
+          "id": "responsive replacement below desktop",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "collapse controls and focus policy",
+          "owner": "application",
+          "required": false
+        }
+      ],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["structure"],
+        "geometry": {
+          "margin": "none",
+          "border": "self",
+          "padding": "child",
+          "notes": [
+            "Workbench owns the rail and drawer separators; each region's content owns its internal padding and scroll behavior."
+          ]
+        }
+      },
+      "accessibility": {
+        "obligations": [
+          "Give the Workbench and each meaningful rail or drawer an accessible label.",
+          "Keep collapse controls outside the disappearing region and move focus when a controlled rerender replaces a collapse control with its restore control."
+        ]
+      },
+      "boundaries": {
+        "rootClass": "kui-workbench",
+        "publicClasses": [
+          "kui-workbench",
+          "kui-workbench__rail",
+          "kui-workbench__rail--left",
+          "kui-workbench__rail--right",
+          "kui-workbench__center",
+          "kui-workbench__main",
+          "kui-workbench__drawer",
+          "kui-workbench__panel-content"
+        ],
+        "publicTokens": [
+          "--kui-workbench-rail-width",
+          "--kui-workbench-drawer-height"
+        ]
+      },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
       "key": "@kerfjs/ui:sunken-panel",
       "package": "@kerfjs/ui",
       "id": "sunken-panel",

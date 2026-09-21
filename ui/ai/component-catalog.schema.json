@@ -76,6 +76,7 @@
       "type": "object",
       "required": ["sideEffects"],
       "properties": {
+        "moduleImport": { "type": "string" },
         "browserImport": { "type": "string" },
         "manualCssImport": { "type": "string" },
         "registrationImport": { "type": "string" },

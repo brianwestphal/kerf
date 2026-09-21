@@ -143,6 +143,18 @@ export const generatedKerfCatalog = [
     "documentation": "ui/docs/component-selection.md"
   },
   {
+    "id": "workbench",
+    "name": "Workbench",
+    "category": "Structure",
+    "kind": "component",
+    "source": "kerf",
+    "description": "Arrange a complex tool or editor as a stable central work area with optional peripheral rails and a bottom drawer.",
+    "uses": [],
+    "demoSource": "ui/ux-demo/demos/workbench.tsx",
+    "componentSource": "ui/src/workbench.tsx",
+    "documentation": "ui/docs/workbench.md"
+  },
+  {
     "id": "sunken-panel",
     "name": "SunkenPanel",
     "category": "Structure",

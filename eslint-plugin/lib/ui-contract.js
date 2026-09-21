@@ -132,6 +132,8 @@ export function loadUiContract(context) {
       const key = `${selection.package}:${entry.id}`;
       if (entry.delivery?.browserImport)
         imports.set(entry.delivery.browserImport, key);
+      if (entry.delivery?.moduleImport)
+        imports.set(entry.delivery.moduleImport, key);
       for (const name of entry.publicExports ?? []) {
         exports.set(name, key);
         addHelperSource(name, selection.package);

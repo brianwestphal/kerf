@@ -31,6 +31,7 @@ import { ToolbarControlGroupDemo } from './toolbar-control-group.js';
 import { ToolbarTextDemo } from './toolbar-text.js';
 import { ValueTableDemo } from './value-table.js';
 import { WebAwesomeThemeDemo } from './webawesome-theme.js';
+import { WorkbenchDemo } from './workbench.js';
 
 export const demos = {
   'lucide-icon': LucideIconDemo,
@@ -55,6 +56,7 @@ export const demos = {
   headers: HeadersDemo,
   'panel-header': PanelHeaderDemo,
   pane: PaneDemo,
+  workbench: WorkbenchDemo,
   'value-table': ValueTableDemo,
   resize: ResizeDemo,
   select: SelectDemo,
