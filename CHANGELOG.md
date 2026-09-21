@@ -56,6 +56,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   the editor boundary—or whose cloned Linux range omits an atomic chip entirely.
   Full logical text-and-token selection is recognized from its value, while an
   explicit Ctrl/Cmd+A intent survives only until the next delete and is
+  consumed by that delete even when the browser omits `beforeinput`, and is
   invalidated by selection-moving keys, pointer input, blur, or another edit.
   A browser can no longer preserve a controlled chip merely because its range
   shape differs.

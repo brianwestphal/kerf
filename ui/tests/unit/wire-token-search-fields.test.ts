@@ -242,9 +242,8 @@ describe('wireTokenSearchFields', () => {
         bubbles: true,
       }),
     );
-    // Preserve Linux CI's failure shape: the live range does not describe the
-    // whole value, and the native deletion leaves the atomic chip behind.
-    editor.dispatchEvent(inputEvent('beforeinput'));
+    // Preserve Linux CI's failure shape: no usable beforeinput reaches the
+    // helper, and the native deletion leaves the atomic chip behind.
     editor.innerHTML =
       '<span data-component="token-search-token" data-token-value="tag:x" contenteditable="false">tag:x</span>';
     editor.dispatchEvent(inputEvent('input'));

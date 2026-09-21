@@ -418,9 +418,11 @@ export function wireTokenSearchFields(
     const editor = editorFromEvent(root, event);
     if (!editor) return;
     const deletion = pending.get(editor);
+    const selectedAll =
+      deletion?.selectedAll ?? selectAllIntents.delete(editor);
     selectAllIntents.delete(editor);
     if ((event as InputEvent).inputType?.startsWith('delete'))
-      normalizeEmptiedEditor(editor, deletion?.selectedAll);
+      normalizeEmptiedEditor(editor, selectedAll);
     if (onEdit) {
       const field = editor.closest<HTMLElement>(
         '[data-component="token-search-field"]',
