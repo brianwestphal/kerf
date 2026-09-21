@@ -124,6 +124,14 @@ const ids = entries.map((entry) => entry.id);
 const idSet = new Set(ids);
 if (idSet.size !== ids.length) fail('entry ids must be unique');
 
+const geometryOwners = new Set([
+  'self',
+  'parent',
+  'child',
+  'none',
+  'conditional',
+]);
+
 for (const entry of entries) {
   for (const field of ['id', 'name', 'source', 'kind', 'category', 'purpose']) {
     if (typeof entry[field] !== 'string' || !entry[field])
@@ -135,6 +143,18 @@ for (const entry of entries) {
     fail(`${entry.id} is missing avoidWhen guidance`);
   if (!entry.delivery || !Array.isArray(entry.delivery.sideEffects))
     fail(`${entry.id} is missing delivery side-effect metadata`);
+  if (entry.kind !== 'recipe') {
+    if (!entry.geometry) fail(`${entry.id} is missing geometry ownership`);
+    for (const dimension of ['margin', 'border', 'padding']) {
+      if (!geometryOwners.has(entry.geometry?.[dimension]))
+        fail(`${entry.id} has invalid ${dimension} geometry ownership`);
+    }
+    if (
+      Object.values(entry.geometry ?? {}).includes('conditional') &&
+      !entry.geometry?.notes?.length
+    )
+      fail(`${entry.id} uses conditional geometry without explanatory notes`);
+  }
   if (
     !entry.links?.catalogRoute ||
     !entry.links?.documentation ||
@@ -353,6 +373,6 @@ if (failures.length > 0) {
   process.exitCode = 1;
 } else {
   console.log(
-    `[check-component-catalog] OK — ${entries.length} entries, ${runtimeExports.length} public values, ${browserImports.length} browser subpaths, and ${manifestTags.length} Web Awesome elements/declarations are synchronized.`,
+    `[check-component-catalog] OK — ${entries.length} entries (${entries.filter(({ kind }) => kind !== 'recipe').length} with geometry ownership), ${runtimeExports.length} public values, ${browserImports.length} browser subpaths, and ${manifestTags.length} Web Awesome elements/declarations are synchronized.`,
   );
 }

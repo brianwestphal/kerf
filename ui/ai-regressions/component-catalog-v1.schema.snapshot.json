@@ -40,25 +40,10 @@
         "accessibility": { "type": "array", "items": { "type": "string" } },
         "publicClasses": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
         "publicTokens": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
-        "geometry": { "$ref": "#/$defs/geometry" },
         "delivery": { "$ref": "#/$defs/delivery" },
         "links": { "$ref": "#/$defs/links" }
       },
       "additionalProperties": false
-    },
-    "geometry": {
-      "type": "object",
-      "required": ["margin", "border", "padding"],
-      "properties": {
-        "margin": { "$ref": "#/$defs/geometryOwner" },
-        "border": { "$ref": "#/$defs/geometryOwner" },
-        "padding": { "$ref": "#/$defs/geometryOwner" },
-        "notes": { "type": "array", "items": { "type": "string", "minLength": 1 }, "minItems": 1 }
-      },
-      "additionalProperties": false
-    },
-    "geometryOwner": {
-      "enum": ["self", "parent", "child", "none", "conditional"]
     },
     "alternative": {
       "type": "object",

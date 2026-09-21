@@ -21,6 +21,7 @@ ui/ai/component-catalog.schema.json
 ui/ai/public-api-signatures-v1.md
 ui/ai/webawesome-jsx-signatures-v1.md
 ui/ai-regressions/conditions*.json
+ui/ai-regressions/component-catalog-v1.schema.snapshot.json
 ui/ai-regressions/contexts/*.snapshot.json
 ui/ai-regressions/corpus*.json
 ui/ai-regressions/results/

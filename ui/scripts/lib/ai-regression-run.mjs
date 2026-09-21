@@ -115,6 +115,11 @@ export async function buildAiRegressionRun(root, options) {
         options.catalogText !== undefined
       )
         return Promise.resolve(options.catalogText);
+      if (
+        path === 'ai/component-catalog.schema.json' &&
+        options.catalogSchemaText !== undefined
+      )
+        return Promise.resolve(options.catalogSchemaText);
       return read(root, path);
     }),
   );

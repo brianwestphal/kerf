@@ -31,10 +31,17 @@ describe('UX catalog metadata', () => {
       package: string;
       entries: Array<{
         id: string;
+        kind: 'component' | 'composition' | 'recipe';
         recommendation?: string;
         publicExports?: string[];
         useWhen: string[];
         avoidWhen: string[];
+        geometry?: {
+          margin: string;
+          border: string;
+          padding: string;
+          notes?: string[];
+        };
         delivery: { registrationImport?: string };
         links: { catalogRoute: string; documentation: string; recipe: string };
       }>;
@@ -53,6 +60,35 @@ describe('UX catalog metadata', () => {
         (entry) => entry.useWhen.length > 0 && entry.avoidWhen.length > 0,
       ),
     ).toBe(true);
+    expect(
+      artifact.entries
+        .filter((entry) => entry.kind !== 'recipe')
+        .every(
+          (entry) =>
+            entry.geometry?.margin &&
+            entry.geometry.border &&
+            entry.geometry.padding,
+        ),
+    ).toBe(true);
+    expect(
+      artifact.entries
+        .filter((entry) => entry.kind === 'recipe')
+        .every((entry) => entry.geometry === undefined),
+    ).toBe(true);
+    expect(
+      artifact.entries.find((entry) => entry.id === 'wa-button')?.geometry,
+    ).toEqual({
+      margin: 'none',
+      border: 'self',
+      padding: 'self',
+    });
+    expect(
+      artifact.entries.find((entry) => entry.id === 'value-table')?.geometry,
+    ).toEqual({
+      margin: 'self',
+      border: 'self',
+      padding: 'self',
+    });
     expect(
       artifact.entries.every(
         (entry) =>

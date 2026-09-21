@@ -27,6 +27,14 @@ const currentCatalog = await readFile(
   resolve(root, 'ai/component-catalog.json'),
   'utf8',
 );
+const currentCatalogSchema = await readFile(
+  resolve(root, 'ai/component-catalog.schema.json'),
+  'utf8',
+);
+const frozenCatalogSchema = await readFile(
+  resolve(root, 'ai-regressions/component-catalog-v1.schema.snapshot.json'),
+  'utf8',
+);
 const currentCorpus = await readFile(
   resolve(root, 'ai-regressions/corpus.json'),
   'utf8',
@@ -64,6 +72,10 @@ const catalogsByDigest = new Map([
   [digest(currentCatalog), currentCatalog],
   [digest(frozenCatalog), frozenCatalog],
 ]);
+const catalogSchemasByDigest = new Map([
+  [digest(currentCatalogSchema), currentCatalogSchema],
+  [digest(frozenCatalogSchema), frozenCatalogSchema],
+]);
 const corporaByDigest = new Map([
   [digest(currentCorpus), currentCorpus],
   [digest(legacyCorpus), legacyCorpus],
@@ -85,6 +97,13 @@ for (const runPath of runPaths) {
   if (!corpusText)
     throw new Error(
       `${relative(root, runPath)} references an unavailable corpus snapshot ${recorded.harness.corpusSha256}`,
+    );
+  const catalogSchemaText = catalogSchemasByDigest.get(
+    recorded.harness.catalogSchemaSha256,
+  );
+  if (!catalogSchemaText)
+    throw new Error(
+      `${relative(root, runPath)} references an unavailable catalog schema snapshot ${recorded.harness.catalogSchemaSha256}`,
     );
   const publicApiSignaturesText =
     recorded.schemaVersion === 2
@@ -108,6 +127,7 @@ for (const runPath of runPaths) {
     conditionSessions: recorded.executor.conditionSessions,
     baseRevision: recorded.harness.baseRevision,
     catalogText,
+    catalogSchemaText,
     corpusText,
     publicApiSignaturesText,
     legacyPublicBoundary:

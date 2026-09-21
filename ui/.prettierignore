@@ -9,6 +9,7 @@ ai/component-catalog.schema.json
 ai/public-api-signatures-v1.md
 ai/webawesome-jsx-signatures-v1.md
 ai-regressions/conditions*.json
+ai-regressions/component-catalog-v1.schema.snapshot.json
 ai-regressions/contexts/*.snapshot.json
 ai-regressions/corpus*.json
 ai-regressions/results/

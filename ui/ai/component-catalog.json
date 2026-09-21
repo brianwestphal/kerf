@@ -39,6 +39,11 @@
       "accessibility": [
         "Decorative icons are aria-hidden; meaningful icons require a label."
       ],
+      "geometry": {
+        "margin": "none",
+        "border": "none",
+        "padding": "none"
+      },
       "delivery": {
         "browserImport": "@kerfjs/ui/lucide-icon",
         "manualCssImport": "@kerfjs/ui/lucide-icon.css",
@@ -90,6 +95,11 @@
       "accessibility": [
         "The arrow is decorative; expose expanded state through aria-expanded on its owning control and keep that control's accessible name stable."
       ],
+      "geometry": {
+        "margin": "none",
+        "border": "none",
+        "padding": "none"
+      },
       "delivery": {
         "browserImport": "@kerfjs/ui/disclosure-arrow",
         "manualCssImport": "@kerfjs/ui/disclosure-arrow.css",
@@ -211,6 +221,11 @@
       "accessibility": [
         "Preserve Web Awesome semantics and Kerf focus/contrast tokens."
       ],
+      "geometry": {
+        "margin": "child",
+        "border": "child",
+        "padding": "child"
+      },
       "delivery": {
         "manualCssImport": "@kerfjs/ui/webawesome.css",
         "sideEffects": [
@@ -270,6 +285,11 @@
         "Keep reading and focus order coherent when controls wrap or panes relocate, and preserve one scroll owner per pane.",
         "When collapse replaces one control with its counterpart in another toolbar, move focus to the newly rendered restore or collapse control."
       ],
+      "geometry": {
+        "margin": "child",
+        "border": "child",
+        "padding": "child"
+      },
       "delivery": {
         "manualCssImport": "@kerfjs/ui/layout.css",
         "sideEffects": [
@@ -345,6 +365,14 @@
       "accessibility": [
         "Supply a label when the toolbar needs an accessible name."
       ],
+      "geometry": {
+        "margin": "none",
+        "border": "conditional",
+        "padding": "self",
+        "notes": [
+          "Padding belongs to the toolbar; the optional divider variant also owns its border."
+        ]
+      },
       "delivery": {
         "browserImport": "@kerfjs/ui/toolbar",
         "manualCssImport": "@kerfjs/ui/toolbar.css",
@@ -416,6 +444,11 @@
       "accessibility": [
         "Name the group when its relationship is not evident from context."
       ],
+      "geometry": {
+        "margin": "none",
+        "border": "self",
+        "padding": "self"
+      },
       "delivery": {
         "browserImport": "@kerfjs/ui/toolbar-control-group",
         "manualCssImport": "@kerfjs/ui/toolbar-control-group.css",
@@ -496,6 +529,11 @@
       "accessibility": [
         "Give the toolbar an accessible name (label is required — it exposes role=\"toolbar\")."
       ],
+      "geometry": {
+        "margin": "none",
+        "border": "child",
+        "padding": "child"
+      },
       "delivery": {
         "browserImport": "@kerfjs/ui/floating-toolbar",
         "manualCssImport": "@kerfjs/ui/floating-toolbar.css",
@@ -555,6 +593,11 @@
       "accessibility": [
         "Plain text is not a heading; pass headingLevel to expose role=heading + aria-level for a page/section title."
       ],
+      "geometry": {
+        "margin": "none",
+        "border": "none",
+        "padding": "none"
+      },
       "delivery": {
         "browserImport": "@kerfjs/ui/toolbar-text",
         "manualCssImport": "@kerfjs/ui/toolbar-text.css",
@@ -621,6 +664,11 @@
       "accessibility": [
         "Preserve heading and description relationships for the containing surface."
       ],
+      "geometry": {
+        "margin": "child",
+        "border": "child",
+        "padding": "child"
+      },
       "delivery": {
         "sideEffects": [
           "css"
@@ -688,6 +736,11 @@
         "Pass the trailing actions as a labeled ToolbarControlGroup when the group needs an accessible name.",
         "For a page/view title pass headingLevel (usually 1) so the title exposes role=heading + aria-level as a heading landmark; omit it for a dialog title, which is referenced via aria-labelledby to titleId."
       ],
+      "geometry": {
+        "margin": "none",
+        "border": "child",
+        "padding": "child"
+      },
       "delivery": {
         "browserImport": "@kerfjs/ui/panel-header",
         "manualCssImport": "@kerfjs/ui/panel-header.css",
@@ -750,6 +803,11 @@
       "accessibility": [
         "Name ValueTable with its label; ValueTableRow supplies dt/dd semantics, and row icons stay decorative unless meaning requires an accessible label."
       ],
+      "geometry": {
+        "margin": "self",
+        "border": "self",
+        "padding": "self"
+      },
       "delivery": {
         "browserImport": "@kerfjs/ui/value-table",
         "manualCssImport": "@kerfjs/ui/value-table.css",
@@ -822,6 +880,11 @@
         "Use native links for link navigation, retain ListItem button semantics for actions, and keep standalone header and toolbar actions at least 44px square.",
         "A ListHeader disclosure controls real content, keeps a stable accessible name and aria-expanded state, and uses the production DisclosureArrow visual."
       ],
+      "geometry": {
+        "margin": "child",
+        "border": "child",
+        "padding": "child"
+      },
       "delivery": {
         "manualCssImport": "@kerfjs/ui/layout.css",
         "sideEffects": [
@@ -895,6 +958,11 @@
         "A valid count is hidden as duplicate visual text and its required localized countLabel joins the owned heading or disclosure-button accessible name; zero remains visible.",
         "The application controls and updates disclosure state and the revealed content; the default DisclosureArrow mirrors expanded while the button name stays stable. triggerAttributes can describe the controlled relationship but cannot replace the owned accessible name or expanded state."
       ],
+      "geometry": {
+        "margin": "self",
+        "border": "self",
+        "padding": "self"
+      },
       "delivery": {
         "browserImport": "@kerfjs/ui/list-header",
         "manualCssImport": "@kerfjs/ui/list-header.css",
@@ -985,6 +1053,11 @@
         "The noninteractive root contains two sibling native buttons in primary-then-trailing focus order; each button has its own action, item identity, accessible name, and disabled state.",
         "Selection semantics are exposed only by the primary button; label, icon, and trailingActionIcon are dormant SafeHtml and must not contain interactive descendants; never place an interactive descendant in ListItem.trailing."
       ],
+      "geometry": {
+        "margin": "self",
+        "border": "self",
+        "padding": "self"
+      },
       "delivery": {
         "browserImport": "@kerfjs/ui/list-action-row",
         "manualCssImport": "@kerfjs/ui/list-action-row.css",
@@ -1074,6 +1147,11 @@
       "accessibility": [
         "Uses native button activation; selected maps to aria-current and pressed to aria-pressed; rootAttributes cannot add role=menuitem or replace owned ARIA; trailing is dormant content and must not contain controls."
       ],
+      "geometry": {
+        "margin": "self",
+        "border": "self",
+        "padding": "self"
+      },
       "delivery": {
         "browserImport": "@kerfjs/ui/list-item",
         "manualCssImport": "@kerfjs/ui/list-item.css",
@@ -1139,6 +1217,11 @@
       "accessibility": [
         "A layout wrapper only; it adds no role or name — the wrapped control keeps its own."
       ],
+      "geometry": {
+        "margin": "self",
+        "border": "child",
+        "padding": "child"
+      },
       "delivery": {
         "browserImport": "@kerfjs/ui/list-inset-control",
         "manualCssImport": "@kerfjs/ui/list-inset-control.css",
@@ -1189,6 +1272,11 @@
       "accessibility": [
         "A layout wrapper only; it adds no role or name."
       ],
+      "geometry": {
+        "margin": "self",
+        "border": "self",
+        "padding": "self"
+      },
       "delivery": {
         "browserImport": "@kerfjs/ui/list-inset-text",
         "manualCssImport": "@kerfjs/ui/list-inset-text.css",
@@ -1255,6 +1343,11 @@
         "Keep closeIcon decorative and free of interactive descendants; the owning close button supplies its accessible name and interaction.",
         "Use rootAttributes only for application data-* metadata; component-owned identity, state, action, and role semantics are protected at runtime."
       ],
+      "geometry": {
+        "margin": "none",
+        "border": "self",
+        "padding": "self"
+      },
       "delivery": {
         "browserImport": "@kerfjs/ui/app-tab",
         "manualCssImport": "@kerfjs/ui/app-tab.css",
@@ -1350,6 +1443,11 @@
       "accessibility": [
         "Keep exactly one selected tab at tabindex 0 and preserve the wiring keyboard model."
       ],
+      "geometry": {
+        "margin": "none",
+        "border": "self",
+        "padding": "self"
+      },
       "delivery": {
         "browserImport": "@kerfjs/ui/tab-bar",
         "manualCssImport": "@kerfjs/ui/tab-bar.css",
@@ -1438,6 +1536,11 @@
       "accessibility": [
         "Keep choice labels meaningful and every enabled native button in sequential Tab order."
       ],
+      "geometry": {
+        "margin": "none",
+        "border": "self",
+        "padding": "self"
+      },
       "delivery": {
         "browserImport": "@kerfjs/ui/segmented-control",
         "manualCssImport": "@kerfjs/ui/segmented-control.css",
@@ -1533,6 +1636,11 @@
         "Wire Enter to submit without inserting a contenteditable line break and preserve focus plus the text-relative caret across controlled keyboard chip deletion; visual wrapping remains available.",
         "In collapsible mode, wireTokenSearchFields manages this by default: activating the trigger reveals the searchbox and moves focus into it, Escape on an empty field collapses and returns focus to the trigger, and focus leaving an empty field collapses it; each behavior is individually opt-out."
       ],
+      "geometry": {
+        "margin": "none",
+        "border": "self",
+        "padding": "self"
+      },
       "delivery": {
         "browserImport": "@kerfjs/ui/token-search-field",
         "manualCssImport": "@kerfjs/ui/token-search-field.css",
@@ -1644,6 +1752,14 @@
         "Preserve separator naming, value ARIA, and keyboard behavior.",
         "Keep handleIcon decorative and free of interactive descendants; the separator owns focus, naming, and pointer/keyboard interaction."
       ],
+      "geometry": {
+        "margin": "none",
+        "border": "conditional",
+        "padding": "conditional",
+        "notes": [
+          "The region delegates visible separator geometry and hit-area padding to its orientation-specific handle."
+        ]
+      },
       "delivery": {
         "browserImport": "@kerfjs/ui/resizable-region",
         "manualCssImport": "@kerfjs/ui/resizable-region.css",
@@ -1744,6 +1860,11 @@
       "accessibility": [
         "Verify the live value, standard events, focus, and rendered output."
       ],
+      "geometry": {
+        "margin": "none",
+        "border": "self",
+        "padding": "self"
+      },
       "delivery": {
         "browserImport": "@kerfjs/ui/select",
         "manualCssImport": "@kerfjs/ui/select.css",
@@ -1829,6 +1950,11 @@
       "accessibility": [
         "Choose polite status versus assertive alert deliberately."
       ],
+      "geometry": {
+        "margin": "child",
+        "border": "child",
+        "padding": "child"
+      },
       "delivery": {
         "sideEffects": [
           "css"
@@ -1896,6 +2022,11 @@
       "accessibility": [
         "Use alert urgency only for an attention-requiring failure."
       ],
+      "geometry": {
+        "margin": "self",
+        "border": "self",
+        "padding": "self"
+      },
       "delivery": {
         "browserImport": "@kerfjs/ui/state-banner",
         "manualCssImport": "@kerfjs/ui/state-banner.css",
@@ -2003,6 +2134,11 @@
       "accessibility": [
         "Busy state uses aria-busy; the illustration never supplies the only label."
       ],
+      "geometry": {
+        "margin": "self",
+        "border": "self",
+        "padding": "self"
+      },
       "delivery": {
         "browserImport": "@kerfjs/ui/empty-state",
         "manualCssImport": "@kerfjs/ui/empty-state.css",
@@ -2075,6 +2211,11 @@
       "accessibility": [
         "Labeled spinners use role img; decorative spinners are hidden and stop for reduced motion."
       ],
+      "geometry": {
+        "margin": "none",
+        "border": "none",
+        "padding": "none"
+      },
       "delivery": {
         "browserImport": "@kerfjs/ui/loading-spinner",
         "manualCssImport": "@kerfjs/ui/loading-spinner.css",
@@ -2132,6 +2273,11 @@
       "accessibility": [
         "Decorative by default (aria-hidden); pass label to announce it as an image. A component in placeholder mode marks itself aria-busy and disables its own controls."
       ],
+      "geometry": {
+        "margin": "none",
+        "border": "none",
+        "padding": "none"
+      },
       "delivery": {
         "browserImport": "@kerfjs/ui/skeleton",
         "manualCssImport": "@kerfjs/ui/skeleton.css",
@@ -2174,6 +2320,11 @@
       ],
       "recommendation": "supported",
       "alternatives": [],
+      "geometry": {
+        "margin": "none",
+        "border": "self",
+        "padding": "self"
+      },
       "delivery": {
         "registrationImport": "@awesome.me/webawesome/dist/components/button/button.js",
         "themeCssImport": "@kerfjs/ui/webawesome.css",
@@ -2212,6 +2363,11 @@
           "relationship": "prefer-kerf"
         }
       ],
+      "geometry": {
+        "margin": "none",
+        "border": "child",
+        "padding": "child"
+      },
       "delivery": {
         "registrationImport": "@awesome.me/webawesome/dist/components/button-group/button-group.js",
         "themeCssImport": "@kerfjs/ui/webawesome.css",
@@ -2246,6 +2402,11 @@
       ],
       "recommendation": "supported",
       "alternatives": [],
+      "geometry": {
+        "margin": "none",
+        "border": "self",
+        "padding": "self"
+      },
       "delivery": {
         "registrationImport": "@awesome.me/webawesome/dist/components/copy-button/copy-button.js",
         "themeCssImport": "@kerfjs/ui/webawesome.css",
@@ -2285,6 +2446,11 @@
           "relationship": "prefer-kerf"
         }
       ],
+      "geometry": {
+        "margin": "none",
+        "border": "child",
+        "padding": "child"
+      },
       "delivery": {
         "registrationImport": "@awesome.me/webawesome/dist/components/dropdown/dropdown.js",
         "themeCssImport": "@kerfjs/ui/webawesome.css",
@@ -2323,6 +2489,11 @@
           "relationship": "prefer-kerf"
         }
       ],
+      "geometry": {
+        "margin": "none",
+        "border": "self",
+        "padding": "self"
+      },
       "delivery": {
         "registrationImport": "@awesome.me/webawesome/dist/components/dropdown-item/dropdown-item.js",
         "themeCssImport": "@kerfjs/ui/webawesome.css",
@@ -2356,6 +2527,11 @@
       ],
       "recommendation": "supported",
       "alternatives": [],
+      "geometry": {
+        "margin": "none",
+        "border": "self",
+        "padding": "self"
+      },
       "delivery": {
         "registrationImport": "@awesome.me/webawesome/dist/components/checkbox/checkbox.js",
         "themeCssImport": "@kerfjs/ui/webawesome.css",
@@ -2389,6 +2565,11 @@
       ],
       "recommendation": "supported",
       "alternatives": [],
+      "geometry": {
+        "margin": "self",
+        "border": "child",
+        "padding": "child"
+      },
       "delivery": {
         "registrationImport": "@awesome.me/webawesome/dist/components/checkbox-group/checkbox-group.js",
         "themeCssImport": "@kerfjs/ui/webawesome.css",
@@ -2425,6 +2606,11 @@
       ],
       "recommendation": "supported",
       "alternatives": [],
+      "geometry": {
+        "margin": "none",
+        "border": "self",
+        "padding": "self"
+      },
       "delivery": {
         "registrationImport": "@awesome.me/webawesome/dist/components/color-picker/color-picker.js",
         "themeCssImport": "@kerfjs/ui/webawesome.css",
@@ -2463,6 +2649,11 @@
           "relationship": "prefer-kerf"
         }
       ],
+      "geometry": {
+        "margin": "none",
+        "border": "self",
+        "padding": "self"
+      },
       "delivery": {
         "registrationImport": "@awesome.me/webawesome/dist/components/input/input.js",
         "themeCssImport": "@kerfjs/ui/webawesome.css",
@@ -2494,6 +2685,11 @@
       ],
       "recommendation": "supported",
       "alternatives": [],
+      "geometry": {
+        "margin": "none",
+        "border": "self",
+        "padding": "self"
+      },
       "delivery": {
         "registrationImport": "@awesome.me/webawesome/dist/components/known-date/known-date.js",
         "themeCssImport": "@kerfjs/ui/webawesome.css",
@@ -2527,6 +2723,11 @@
       ],
       "recommendation": "supported",
       "alternatives": [],
+      "geometry": {
+        "margin": "none",
+        "border": "self",
+        "padding": "self"
+      },
       "delivery": {
         "registrationImport": "@awesome.me/webawesome/dist/components/number-input/number-input.js",
         "themeCssImport": "@kerfjs/ui/webawesome.css",
@@ -2565,6 +2766,11 @@
           "relationship": "prefer-kerf"
         }
       ],
+      "geometry": {
+        "margin": "none",
+        "border": "self",
+        "padding": "self"
+      },
       "delivery": {
         "registrationImport": "@awesome.me/webawesome/dist/components/option/option.js",
         "themeCssImport": "@kerfjs/ui/webawesome.css",
@@ -2596,6 +2802,11 @@
       ],
       "recommendation": "supported",
       "alternatives": [],
+      "geometry": {
+        "margin": "none",
+        "border": "self",
+        "padding": "self"
+      },
       "delivery": {
         "registrationImport": "@awesome.me/webawesome/dist/components/otp-input/otp-input.js",
         "themeCssImport": "@kerfjs/ui/webawesome.css",
@@ -2629,6 +2840,11 @@
       ],
       "recommendation": "supported",
       "alternatives": [],
+      "geometry": {
+        "margin": "none",
+        "border": "self",
+        "padding": "self"
+      },
       "delivery": {
         "registrationImport": "@awesome.me/webawesome/dist/components/radio/radio.js",
         "themeCssImport": "@kerfjs/ui/webawesome.css",
@@ -2662,6 +2878,11 @@
       ],
       "recommendation": "supported",
       "alternatives": [],
+      "geometry": {
+        "margin": "self",
+        "border": "child",
+        "padding": "child"
+      },
       "delivery": {
         "registrationImport": "@awesome.me/webawesome/dist/components/radio-group/radio-group.js",
         "themeCssImport": "@kerfjs/ui/webawesome.css",
@@ -2695,6 +2916,11 @@
       ],
       "recommendation": "supported",
       "alternatives": [],
+      "geometry": {
+        "margin": "none",
+        "border": "none",
+        "padding": "none"
+      },
       "delivery": {
         "registrationImport": "@awesome.me/webawesome/dist/components/rating/rating.js",
         "themeCssImport": "@kerfjs/ui/webawesome.css",
@@ -2736,6 +2962,11 @@
           "relationship": "prefer-kerf"
         }
       ],
+      "geometry": {
+        "margin": "none",
+        "border": "self",
+        "padding": "self"
+      },
       "delivery": {
         "registrationImport": "@awesome.me/webawesome/dist/components/select/select.js",
         "themeCssImport": "@kerfjs/ui/webawesome.css",
@@ -2769,6 +3000,11 @@
       ],
       "recommendation": "supported",
       "alternatives": [],
+      "geometry": {
+        "margin": "self",
+        "border": "none",
+        "padding": "child"
+      },
       "delivery": {
         "registrationImport": "@awesome.me/webawesome/dist/components/slider/slider.js",
         "themeCssImport": "@kerfjs/ui/webawesome.css",
@@ -2800,6 +3036,11 @@
       ],
       "recommendation": "supported",
       "alternatives": [],
+      "geometry": {
+        "margin": "none",
+        "border": "self",
+        "padding": "self"
+      },
       "delivery": {
         "registrationImport": "@awesome.me/webawesome/dist/components/switch/switch.js",
         "themeCssImport": "@kerfjs/ui/webawesome.css",
@@ -2831,6 +3072,11 @@
       ],
       "recommendation": "supported",
       "alternatives": [],
+      "geometry": {
+        "margin": "none",
+        "border": "self",
+        "padding": "self"
+      },
       "delivery": {
         "registrationImport": "@awesome.me/webawesome/dist/components/textarea/textarea.js",
         "themeCssImport": "@kerfjs/ui/webawesome.css",
@@ -2865,6 +3111,11 @@
       ],
       "recommendation": "supported",
       "alternatives": [],
+      "geometry": {
+        "margin": "none",
+        "border": "self",
+        "padding": "self"
+      },
       "delivery": {
         "registrationImport": "@awesome.me/webawesome/dist/components/time-input/time-input.js",
         "themeCssImport": "@kerfjs/ui/webawesome.css",
@@ -2898,6 +3149,11 @@
       ],
       "recommendation": "supported",
       "alternatives": [],
+      "geometry": {
+        "margin": "self",
+        "border": "self",
+        "padding": "self"
+      },
       "delivery": {
         "registrationImport": "@awesome.me/webawesome/dist/components/accordion/accordion.js",
         "themeCssImport": "@kerfjs/ui/webawesome.css",
@@ -2931,6 +3187,11 @@
       ],
       "recommendation": "supported",
       "alternatives": [],
+      "geometry": {
+        "margin": "none",
+        "border": "self",
+        "padding": "self"
+      },
       "delivery": {
         "registrationImport": "@awesome.me/webawesome/dist/components/accordion-item/accordion-item.js",
         "themeCssImport": "@kerfjs/ui/webawesome.css",
@@ -2962,6 +3223,11 @@
       ],
       "recommendation": "supported",
       "alternatives": [],
+      "geometry": {
+        "margin": "self",
+        "border": "self",
+        "padding": "self"
+      },
       "delivery": {
         "registrationImport": "@awesome.me/webawesome/dist/components/card/card.js",
         "themeCssImport": "@kerfjs/ui/webawesome.css",
@@ -2995,6 +3261,11 @@
       ],
       "recommendation": "supported",
       "alternatives": [],
+      "geometry": {
+        "margin": "self",
+        "border": "self",
+        "padding": "self"
+      },
       "delivery": {
         "registrationImport": "@awesome.me/webawesome/dist/components/details/details.js",
         "themeCssImport": "@kerfjs/ui/webawesome.css",
@@ -3028,6 +3299,11 @@
       ],
       "recommendation": "supported",
       "alternatives": [],
+      "geometry": {
+        "margin": "none",
+        "border": "child",
+        "padding": "child"
+      },
       "delivery": {
         "registrationImport": "@awesome.me/webawesome/dist/components/dialog/dialog.js",
         "themeCssImport": "@kerfjs/ui/webawesome.css",
@@ -3059,6 +3335,11 @@
       ],
       "recommendation": "supported",
       "alternatives": [],
+      "geometry": {
+        "margin": "parent",
+        "border": "self",
+        "padding": "none"
+      },
       "delivery": {
         "registrationImport": "@awesome.me/webawesome/dist/components/divider/divider.js",
         "themeCssImport": "@kerfjs/ui/webawesome.css",
@@ -3092,6 +3373,11 @@
       ],
       "recommendation": "supported",
       "alternatives": [],
+      "geometry": {
+        "margin": "none",
+        "border": "child",
+        "padding": "child"
+      },
       "delivery": {
         "registrationImport": "@awesome.me/webawesome/dist/components/drawer/drawer.js",
         "themeCssImport": "@kerfjs/ui/webawesome.css",
@@ -3123,6 +3409,11 @@
       ],
       "recommendation": "supported",
       "alternatives": [],
+      "geometry": {
+        "margin": "none",
+        "border": "child",
+        "padding": "child"
+      },
       "delivery": {
         "registrationImport": "@awesome.me/webawesome/dist/components/page/page.js",
         "themeCssImport": "@kerfjs/ui/webawesome.css",
@@ -3154,6 +3445,11 @@
       ],
       "recommendation": "supported",
       "alternatives": [],
+      "geometry": {
+        "margin": "none",
+        "border": "child",
+        "padding": "child"
+      },
       "delivery": {
         "registrationImport": "@awesome.me/webawesome/dist/components/scroller/scroller.js",
         "themeCssImport": "@kerfjs/ui/webawesome.css",
@@ -3190,6 +3486,11 @@
           "relationship": "prefer-kerf"
         }
       ],
+      "geometry": {
+        "margin": "none",
+        "border": "child",
+        "padding": "child"
+      },
       "delivery": {
         "registrationImport": "@awesome.me/webawesome/dist/components/split-panel/split-panel.js",
         "themeCssImport": "@kerfjs/ui/webawesome.css",
@@ -3224,6 +3525,11 @@
       ],
       "recommendation": "supported",
       "alternatives": [],
+      "geometry": {
+        "margin": "none",
+        "border": "child",
+        "padding": "child"
+      },
       "delivery": {
         "registrationImport": "@awesome.me/webawesome/dist/components/breadcrumb/breadcrumb.js",
         "themeCssImport": "@kerfjs/ui/webawesome.css",
@@ -3255,6 +3561,11 @@
       ],
       "recommendation": "supported",
       "alternatives": [],
+      "geometry": {
+        "margin": "none",
+        "border": "none",
+        "padding": "none"
+      },
       "delivery": {
         "registrationImport": "@awesome.me/webawesome/dist/components/breadcrumb-item/breadcrumb-item.js",
         "themeCssImport": "@kerfjs/ui/webawesome.css",
@@ -3288,6 +3599,11 @@
       ],
       "recommendation": "supported",
       "alternatives": [],
+      "geometry": {
+        "margin": "none",
+        "border": "child",
+        "padding": "child"
+      },
       "delivery": {
         "registrationImport": "@awesome.me/webawesome/dist/components/pagination/pagination.js",
         "themeCssImport": "@kerfjs/ui/webawesome.css",
@@ -3328,6 +3644,11 @@
           "relationship": "prefer-kerf"
         }
       ],
+      "geometry": {
+        "margin": "none",
+        "border": "self",
+        "padding": "self"
+      },
       "delivery": {
         "registrationImport": "@awesome.me/webawesome/dist/components/tab/tab.js",
         "themeCssImport": "@kerfjs/ui/webawesome.css",
@@ -3372,6 +3693,11 @@
           "relationship": "prefer-kerf"
         }
       ],
+      "geometry": {
+        "margin": "none",
+        "border": "child",
+        "padding": "child"
+      },
       "delivery": {
         "registrationImport": "@awesome.me/webawesome/dist/components/tab-group/tab-group.js",
         "themeCssImport": "@kerfjs/ui/webawesome.css",
@@ -3408,6 +3734,14 @@
           "relationship": "prefer-kerf"
         }
       ],
+      "geometry": {
+        "margin": "none",
+        "border": "none",
+        "padding": "conditional",
+        "notes": [
+          "Container-mode tab panels own the themed container inset; uncontained panels do not."
+        ]
+      },
       "delivery": {
         "registrationImport": "@awesome.me/webawesome/dist/components/tab-panel/tab-panel.js",
         "themeCssImport": "@kerfjs/ui/webawesome.css",
@@ -3441,6 +3775,11 @@
       ],
       "recommendation": "exceptional",
       "alternatives": [],
+      "geometry": {
+        "margin": "none",
+        "border": "child",
+        "padding": "child"
+      },
       "delivery": {
         "registrationImport": "@awesome.me/webawesome/dist/components/tree/tree.js",
         "themeCssImport": "@kerfjs/ui/webawesome.css",
@@ -3476,6 +3815,11 @@
       ],
       "recommendation": "exceptional",
       "alternatives": [],
+      "geometry": {
+        "margin": "none",
+        "border": "self",
+        "padding": "self"
+      },
       "delivery": {
         "registrationImport": "@awesome.me/webawesome/dist/components/tree-item/tree-item.js",
         "themeCssImport": "@kerfjs/ui/webawesome.css",
@@ -3507,6 +3851,11 @@
       ],
       "recommendation": "supported",
       "alternatives": [],
+      "geometry": {
+        "margin": "none",
+        "border": "self",
+        "padding": "self"
+      },
       "delivery": {
         "registrationImport": "@awesome.me/webawesome/dist/components/badge/badge.js",
         "themeCssImport": "@kerfjs/ui/webawesome.css",
@@ -3543,6 +3892,11 @@
           "relationship": "prefer-kerf"
         }
       ],
+      "geometry": {
+        "margin": "self",
+        "border": "self",
+        "padding": "self"
+      },
       "delivery": {
         "registrationImport": "@awesome.me/webawesome/dist/components/callout/callout.js",
         "themeCssImport": "@kerfjs/ui/webawesome.css",
@@ -3574,6 +3928,11 @@
       ],
       "recommendation": "supported",
       "alternatives": [],
+      "geometry": {
+        "margin": "none",
+        "border": "self",
+        "padding": "self"
+      },
       "delivery": {
         "registrationImport": "@awesome.me/webawesome/dist/components/progress-bar/progress-bar.js",
         "themeCssImport": "@kerfjs/ui/webawesome.css",
@@ -3605,6 +3964,11 @@
       ],
       "recommendation": "supported",
       "alternatives": [],
+      "geometry": {
+        "margin": "none",
+        "border": "self",
+        "padding": "self"
+      },
       "delivery": {
         "registrationImport": "@awesome.me/webawesome/dist/components/progress-ring/progress-ring.js",
         "themeCssImport": "@kerfjs/ui/webawesome.css",
@@ -3636,6 +4000,11 @@
       ],
       "recommendation": "supported",
       "alternatives": [],
+      "geometry": {
+        "margin": "none",
+        "border": "none",
+        "padding": "none"
+      },
       "delivery": {
         "registrationImport": "@awesome.me/webawesome/dist/components/skeleton/skeleton.js",
         "themeCssImport": "@kerfjs/ui/webawesome.css",
@@ -3672,6 +4041,11 @@
           "relationship": "prefer-kerf"
         }
       ],
+      "geometry": {
+        "margin": "none",
+        "border": "none",
+        "padding": "none"
+      },
       "delivery": {
         "registrationImport": "@awesome.me/webawesome/dist/components/spinner/spinner.js",
         "themeCssImport": "@kerfjs/ui/webawesome.css",
@@ -3710,6 +4084,11 @@
           "relationship": "prefer-kerf"
         }
       ],
+      "geometry": {
+        "margin": "none",
+        "border": "self",
+        "padding": "self"
+      },
       "delivery": {
         "registrationImport": "@awesome.me/webawesome/dist/components/tag/tag.js",
         "themeCssImport": "@kerfjs/ui/webawesome.css",
@@ -3752,6 +4131,11 @@
           "relationship": "prefer-kerf"
         }
       ],
+      "geometry": {
+        "margin": "none",
+        "border": "child",
+        "padding": "child"
+      },
       "delivery": {
         "registrationImport": "@awesome.me/webawesome/dist/components/toast/toast.js",
         "themeCssImport": "@kerfjs/ui/webawesome.css",
@@ -3795,6 +4179,11 @@
           "relationship": "prefer-kerf"
         }
       ],
+      "geometry": {
+        "margin": "none",
+        "border": "self",
+        "padding": "self"
+      },
       "delivery": {
         "registrationImport": "@awesome.me/webawesome/dist/components/toast-item/toast-item.js",
         "themeCssImport": "@kerfjs/ui/webawesome.css",
@@ -3828,6 +4217,11 @@
       ],
       "recommendation": "supported",
       "alternatives": [],
+      "geometry": {
+        "margin": "none",
+        "border": "self",
+        "padding": "self"
+      },
       "delivery": {
         "registrationImport": "@awesome.me/webawesome/dist/components/tooltip/tooltip.js",
         "themeCssImport": "@kerfjs/ui/webawesome.css",
@@ -3861,6 +4255,11 @@
       ],
       "recommendation": "exceptional",
       "alternatives": [],
+      "geometry": {
+        "margin": "none",
+        "border": "self",
+        "padding": "none"
+      },
       "delivery": {
         "registrationImport": "@awesome.me/webawesome/dist/components/animated-image/animated-image.js",
         "themeCssImport": "@kerfjs/ui/webawesome.css",
@@ -3894,6 +4293,11 @@
       ],
       "recommendation": "supported",
       "alternatives": [],
+      "geometry": {
+        "margin": "none",
+        "border": "self",
+        "padding": "none"
+      },
       "delivery": {
         "registrationImport": "@awesome.me/webawesome/dist/components/avatar/avatar.js",
         "themeCssImport": "@kerfjs/ui/webawesome.css",
@@ -3928,6 +4332,11 @@
       ],
       "recommendation": "supported",
       "alternatives": [],
+      "geometry": {
+        "margin": "none",
+        "border": "self",
+        "padding": "child"
+      },
       "delivery": {
         "registrationImport": "@awesome.me/webawesome/dist/components/carousel/carousel.js",
         "themeCssImport": "@kerfjs/ui/webawesome.css",
@@ -3959,6 +4368,11 @@
       ],
       "recommendation": "supported",
       "alternatives": [],
+      "geometry": {
+        "margin": "none",
+        "border": "none",
+        "padding": "none"
+      },
       "delivery": {
         "registrationImport": "@awesome.me/webawesome/dist/components/carousel-item/carousel-item.js",
         "themeCssImport": "@kerfjs/ui/webawesome.css",
@@ -3992,6 +4406,11 @@
       ],
       "recommendation": "exceptional",
       "alternatives": [],
+      "geometry": {
+        "margin": "none",
+        "border": "self",
+        "padding": "child"
+      },
       "delivery": {
         "registrationImport": "@awesome.me/webawesome/dist/components/comparison/comparison.js",
         "themeCssImport": "@kerfjs/ui/webawesome.css",
@@ -4028,6 +4447,11 @@
           "relationship": "prefer-kerf"
         }
       ],
+      "geometry": {
+        "margin": "none",
+        "border": "none",
+        "padding": "none"
+      },
       "delivery": {
         "registrationImport": "@awesome.me/webawesome/dist/components/icon/icon.js",
         "themeCssImport": "@kerfjs/ui/webawesome.css",
@@ -4059,6 +4483,11 @@
       ],
       "recommendation": "supported",
       "alternatives": [],
+      "geometry": {
+        "margin": "none",
+        "border": "child",
+        "padding": "child"
+      },
       "delivery": {
         "registrationImport": "@awesome.me/webawesome/dist/components/markdown/markdown.js",
         "themeCssImport": "@kerfjs/ui/webawesome.css",
@@ -4090,6 +4519,11 @@
       ],
       "recommendation": "supported",
       "alternatives": [],
+      "geometry": {
+        "margin": "none",
+        "border": "self",
+        "padding": "self"
+      },
       "delivery": {
         "registrationImport": "@awesome.me/webawesome/dist/components/qr-code/qr-code.js",
         "themeCssImport": "@kerfjs/ui/webawesome.css",
@@ -4123,6 +4557,11 @@
       ],
       "recommendation": "avoid",
       "alternatives": [],
+      "geometry": {
+        "margin": "none",
+        "border": "self",
+        "padding": "child"
+      },
       "delivery": {
         "registrationImport": "@awesome.me/webawesome/dist/components/zoomable-frame/zoomable-frame.js",
         "themeCssImport": "@kerfjs/ui/webawesome.css",
@@ -4156,6 +4595,11 @@
       ],
       "recommendation": "supported",
       "alternatives": [],
+      "geometry": {
+        "margin": "none",
+        "border": "child",
+        "padding": "child"
+      },
       "delivery": {
         "registrationImport": "@awesome.me/webawesome/dist/components/animation/animation.js",
         "themeCssImport": "@kerfjs/ui/webawesome.css",
@@ -4187,6 +4631,11 @@
       ],
       "recommendation": "supported",
       "alternatives": [],
+      "geometry": {
+        "margin": "none",
+        "border": "none",
+        "padding": "none"
+      },
       "delivery": {
         "registrationImport": "@awesome.me/webawesome/dist/components/format-bytes/format-bytes.js",
         "themeCssImport": "@kerfjs/ui/webawesome.css",
@@ -4218,6 +4667,11 @@
       ],
       "recommendation": "supported",
       "alternatives": [],
+      "geometry": {
+        "margin": "none",
+        "border": "none",
+        "padding": "none"
+      },
       "delivery": {
         "registrationImport": "@awesome.me/webawesome/dist/components/format-date/format-date.js",
         "themeCssImport": "@kerfjs/ui/webawesome.css",
@@ -4249,6 +4703,11 @@
       ],
       "recommendation": "supported",
       "alternatives": [],
+      "geometry": {
+        "margin": "none",
+        "border": "none",
+        "padding": "none"
+      },
       "delivery": {
         "registrationImport": "@awesome.me/webawesome/dist/components/format-number/format-number.js",
         "themeCssImport": "@kerfjs/ui/webawesome.css",
@@ -4280,6 +4739,11 @@
       ],
       "recommendation": "supported",
       "alternatives": [],
+      "geometry": {
+        "margin": "self",
+        "border": "self",
+        "padding": "self"
+      },
       "delivery": {
         "registrationImport": "@awesome.me/webawesome/dist/components/include/include.js",
         "themeCssImport": "@kerfjs/ui/webawesome.css",
@@ -4311,6 +4775,11 @@
       ],
       "recommendation": "supported",
       "alternatives": [],
+      "geometry": {
+        "margin": "none",
+        "border": "none",
+        "padding": "none"
+      },
       "delivery": {
         "registrationImport": "@awesome.me/webawesome/dist/components/intersection-observer/intersection-observer.js",
         "themeCssImport": "@kerfjs/ui/webawesome.css",
@@ -4342,6 +4811,11 @@
       ],
       "recommendation": "supported",
       "alternatives": [],
+      "geometry": {
+        "margin": "none",
+        "border": "none",
+        "padding": "none"
+      },
       "delivery": {
         "registrationImport": "@awesome.me/webawesome/dist/components/mutation-observer/mutation-observer.js",
         "themeCssImport": "@kerfjs/ui/webawesome.css",
@@ -4375,6 +4849,11 @@
       ],
       "recommendation": "supported",
       "alternatives": [],
+      "geometry": {
+        "margin": "none",
+        "border": "self",
+        "padding": "self"
+      },
       "delivery": {
         "registrationImport": "@awesome.me/webawesome/dist/components/popover/popover.js",
         "themeCssImport": "@kerfjs/ui/webawesome.css",
@@ -4406,6 +4885,11 @@
       ],
       "recommendation": "conditional",
       "alternatives": [],
+      "geometry": {
+        "margin": "none",
+        "border": "child",
+        "padding": "child"
+      },
       "delivery": {
         "registrationImport": "@awesome.me/webawesome/dist/components/popup/popup.js",
         "themeCssImport": "@kerfjs/ui/webawesome.css",
@@ -4437,6 +4921,11 @@
       ],
       "recommendation": "supported",
       "alternatives": [],
+      "geometry": {
+        "margin": "none",
+        "border": "child",
+        "padding": "child"
+      },
       "delivery": {
         "registrationImport": "@awesome.me/webawesome/dist/components/random-content/random-content.js",
         "themeCssImport": "@kerfjs/ui/webawesome.css",
@@ -4468,6 +4957,11 @@
       ],
       "recommendation": "supported",
       "alternatives": [],
+      "geometry": {
+        "margin": "none",
+        "border": "none",
+        "padding": "none"
+      },
       "delivery": {
         "registrationImport": "@awesome.me/webawesome/dist/components/relative-time/relative-time.js",
         "themeCssImport": "@kerfjs/ui/webawesome.css",
@@ -4499,6 +4993,11 @@
       ],
       "recommendation": "supported",
       "alternatives": [],
+      "geometry": {
+        "margin": "none",
+        "border": "none",
+        "padding": "none"
+      },
       "delivery": {
         "registrationImport": "@awesome.me/webawesome/dist/components/resize-observer/resize-observer.js",
         "themeCssImport": "@kerfjs/ui/webawesome.css",

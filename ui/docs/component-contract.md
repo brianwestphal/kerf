@@ -20,6 +20,24 @@ remains authored rather than generated.
 
 ## Ownership boundaries
 
+### Geometry ownership metadata
+
+The canonical [`component-catalog.json`](../ai/component-catalog.json) records
+the margin, border, and padding owner for every component and composition under
+`geometry`. Read it before adding a wrapper or local spacing rule:
+
+- `self` means the entry's public visual contract supplies that geometry.
+- `parent` means the embedding layout must supply it.
+- `child` means composed descendants supply it; the entry's outer shell does not.
+- `none` means that dimension is intentionally absent from the standard contract.
+- `conditional` means a variant, part, or configuration changes ownership; the
+  accompanying `notes` explain the boundary.
+
+The values describe public ownership, including themed shadow parts, rather
+than merely asking whether a CSS declaration appears on the host element.
+Recipes are exempt because they arrange entries whose individual ownership is
+already cataloged.
+
 - Components own semantic markup, stable anatomy, documented variants, ARIA projection, and package CSS hooks.
 - Applications own signals/stores, product copy, domain-state mapping, persistence, routing, permissions, and transport.
 - Actions are `data-action` strings. Wire them at a stable root with `delegate()` or `delegateActions()` and retain the disposer.

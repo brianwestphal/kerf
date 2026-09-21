@@ -43,7 +43,7 @@ form, list-state lifecycle, or mixed-control toolbar, start from the runnable
 reference in [`docs/recipes.md`](../docs/recipes.md). Preserve its production
 primitives and semantic ownership; replace application state, policy, and copy.
 
-The concise human decision matrix is in [`component-selection.md`](../docs/component-selection.md). For exhaustive tool retrieval, load [`component-catalog.json`](./component-catalog.json), the canonical metadata for every public component/helper, composition, and supported Web Awesome entry. Use its linked current recipes instead of inferring behavior from CSS.
+The concise human decision matrix is in [`component-selection.md`](../docs/component-selection.md). For exhaustive tool retrieval, load [`component-catalog.json`](./component-catalog.json), the canonical metadata for every public component/helper, composition, and supported Web Awesome entry. Its `geometry` object identifies who owns margin, border, and padding; use that contract to avoid double-insetting or wrapping an already complete surface. Use its linked current recipes instead of inferring behavior from CSS.
 
 Hard rules:
 
