@@ -3,11 +3,13 @@
 // For each component + presentation combination we render the component's real
 // SafeHtml (with its production CSS + tokens and representative sample data) into
 // a standalone HTML page, capture it to an SVG with `domotion capture
-// --text-mode system-font` (text is emitted as authored <text> painted by the
-// viewer's system fonts — real, selectable, and small). Each variant is captured
-// in BOTH themes — light and dark (`--color-scheme`, which foundation.css's
-// light-dark() tokens respond to) — as docs/design/templates/<component>/<variant>.svg
-// and <variant>-dark.svg. Two per-component library files (<component>.svg light,
+// --text-mode system-font --flatten-nested-svg` (text is emitted as authored
+// <text> painted by the viewer's system fonts — real, selectable, and small;
+// inline SVG icons are flattened for Sketch compatibility). Each variant is
+// captured in BOTH themes — light and dark (`--color-scheme`, which
+// foundation.css's light-dark() tokens respond to) — as
+// docs/design/templates/<component>/<variant>.svg and <variant>-dark.svg. Two
+// per-component library files (<component>.svg light,
 // <component>-dark.svg dark) then embed an inline COPY of each variant (a positioned
 // nested <svg>) — external <image href> / <use href> references render blank in many
 // SVG viewers/rasterizers, so inlining keeps each library self-contained everywhere;
@@ -813,6 +815,7 @@ async function buildComponent(domotion, name, spec) {
           theme.id,
           '--text-mode',
           'system-font',
+          '--flatten-nested-svg',
           '--optimize',
         ],
         { env: { ...process.env, DOMOTION_NO_OPEN: '1' } },

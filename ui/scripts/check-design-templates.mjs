@@ -12,7 +12,7 @@
 // Imports the manifest from build-design-templates.mjs, which is guarded so the
 // import does not launch domotion.
 
-import { existsSync, readdirSync, statSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -23,6 +23,7 @@ const outRoot = resolve(root, 'docs/design/templates');
 const rel = (p) => p.slice(root.length + 1);
 
 const missing = [];
+const nestedSvg = [];
 const expected = new Set();
 
 for (const [name, spec] of Object.entries(COMPONENTS)) {
@@ -34,6 +35,8 @@ for (const [name, spec] of Object.entries(COMPONENTS)) {
       const svg = resolve(outRoot, name, `${variant.id}${theme.suffix}.svg`);
       expected.add(svg);
       if (!existsSync(svg)) missing.push(rel(svg));
+      else if ((readFileSync(svg, 'utf8').match(/<svg\b/g) ?? []).length > 1)
+        nestedSvg.push(rel(svg));
     }
   }
 }
@@ -56,7 +59,7 @@ if (existsSync(outRoot)) {
   }
 }
 
-if (missing.length || stray.length) {
+if (missing.length || stray.length || nestedSvg.length) {
   if (missing.length) {
     console.error(
       `[check-design-templates] ${missing.length} expected template file(s) missing:`,
@@ -68,6 +71,15 @@ if (missing.length || stray.length) {
       `[check-design-templates] ${stray.length} committed file(s) not accounted for by the manifest:`,
     );
     for (const s of stray) console.error(`  - ${s}`);
+  }
+  if (nestedSvg.length) {
+    console.error(
+      `[check-design-templates] ${nestedSvg.length} variant template(s) contain nested SVG elements:`,
+    );
+    for (const svg of nestedSvg) console.error(`  - ${svg}`);
+    console.error(
+      'Generate captures with `domotion capture --flatten-nested-svg` so tools such as Sketch can load them reliably.',
+    );
   }
   console.error(
     'Run `npm run design-templates:build` (needs domotion-svg) and commit the result.',

@@ -67,6 +67,9 @@ npm run design-templates:build
 This renders each component's real `SafeHtml` (with its CSS subpaths + `foundation.css`
 tokens and representative sample data) into a standalone page and captures it with
 [`domotion-svg`](https://github.com/brianwestphal/domotion)'s `domotion capture`.
+The capture command uses `--flatten-nested-svg`, which converts safely flattenable
+inline SVGs (including component icons) to groups so design tools such as Sketch do
+not have to interpret nested `<svg>` elements.
 `domotion` must be reachable: it resolves `DOMOTION_BIN`, then a local
 `node_modules/.bin/domotion`, then a sibling `../domotion` checkout.
 
@@ -79,7 +82,9 @@ component can render with or without an icon, include both.
 `npm run check:design-templates` (part of `npm run check`) is an offline gate
 that verifies every component + variant in the manifest has its committed output —
 a light and dark SVG per variant plus the two per-component library files — and
-that no stray template files linger for a removed component. It does **not**
+that no stray template files linger for a removed component. It also rejects a
+variant capture that still contains nested `<svg>` elements, guarding the Sketch
+compatibility contract. It does **not**
 re-render (that needs domotion + a browser), so it catches a manifest entry whose
 templates were never generated or a half-regenerated set.
 
@@ -109,7 +114,7 @@ starting point and:
    tokens and `layout.css`), and any of your own component CSS.
 3. Enumerate the presentation combinations in the per-component manifest.
 4. Capture each variant with `domotion capture <page.html> --selector <css>
---text-mode system-font -o <variant>.svg`, once per theme with
+--text-mode system-font --flatten-nested-svg -o <variant>.svg`, once per theme with
    `--color-scheme light` / `--color-scheme dark` (if your components theme with
    `light-dark()`), then write a light and a dark library file that each embed an
    inline copy of every variant (namespacing each copy's ids/font-family names so
