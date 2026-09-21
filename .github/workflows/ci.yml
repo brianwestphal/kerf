@@ -156,9 +156,33 @@ jobs:
       - run: npm run build
       - run: npm run check
       - run: npm run test:e2e
-      # KF-MCM28T: re-render every design template in the browser and fail on
-      # visual drift (a component changed but its template was not regenerated) —
-      # the heavy check the offline `npm run check` cannot do.
+
+  # KF-MCM28T / KF-V4C43T: re-render every design template in the browser and
+  # fail on visual drift (a component changed but its template was not
+  # regenerated). Keep this exact-render comparison on macOS: the committed
+  # system-font SVGs use macOS font metrics, so comparing Linux renders makes
+  # every template appear to drift even when its component is unchanged.
+  design-templates:
+    runs-on: macos-latest
+    defaults:
+      run:
+        working-directory: ui
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '${{ env.NODE_VERSION }}'
+          cache: npm
+          cache-dependency-path: ui/package-lock.json
+      - name: Install kerfjs build dependencies
+        working-directory: .
+        run: npm ci
+      - name: Build the local kerfjs peer
+        working-directory: .
+        run: npm run build
+      - run: npm ci
+      - run: npx playwright install chromium
+      - run: npm run build
       - run: npm run check:design-templates:drift
 
   # KF-118: browser tests run on every push/PR alongside the unit suites.

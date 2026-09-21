@@ -84,12 +84,15 @@ re-render (that needs domotion + a browser), so it catches a manifest entry whos
 templates were never generated or a half-regenerated set.
 
 Deeper **visual drift** — a component changed but its template was not regenerated —
-is caught by `npm run check:design-templates:drift`, a CI-only gate (it runs in the
-browser-capable `ui` job, **not** in the offline `npm run check`). It regenerates
-every template into a throwaway directory and fails if any regenerated SVG differs
-from the committed one, after normalizing the bits that legitimately vary between
-runs (XML comments and the auto-minted element ids / font names). If it fails, run
-`npm run design-templates:build` and commit the updated SVGs.
+is caught by `npm run check:design-templates:drift`, a CI-only gate (it runs in a
+dedicated macOS browser job, **not** in the offline `npm run check`). The committed
+templates use system-font text, whose layout metrics differ by operating system, so
+macOS is the canonical exact-render environment for both generation and comparison.
+The gate regenerates every template into a throwaway directory and fails if any
+regenerated SVG differs from the committed one, after normalizing the bits that
+legitimately vary between runs (XML comments and the auto-minted element ids / font
+names). If it fails, run `npm run design-templates:build` on macOS and commit the
+updated SVGs.
 
 ## Templating your own components
 
