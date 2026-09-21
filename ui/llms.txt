@@ -28,7 +28,10 @@ maintain a central style list. Configure JSX with `"jsxImportSource": "kerfjs"`.
    consuming application's catalog extension when present; generate one from the
    [Consumer catalog extension schema](./ai/component-catalog-extension.schema.json)
    when app-owned components must participate in selection or alignment.
-4. **Apply the rules below and in** [skill.md](./ai/skill.md).
+4. **When authoring a component gallery**, load
+   [catalog-authoring.json](./ai/catalog-authoring.json), then follow its
+   authoritative [Catalog demo authoring contract](./docs/catalog.md#catalog-demo-authoring-contract).
+5. **Apply the rules below and in** [skill.md](./ai/skill.md).
 
 ## Core rules (do the right thing)
 
@@ -138,10 +141,10 @@ shell, `@kerfjs/ui/collapsible-panel` (`CollapsiblePanel`, `CollapsiblePanelTogg
   (collapsible category sidebar + preview stage + resources footer, with an opt-in
   transparent-bound and margin geometry overlay plus focus-preserving active-row
   reveal for long desktop sidebars) from your own
-  entries; controlled/stateless like the layouts. Compose previews with
-  `CatalogExample` / `CatalogExampleStack`, and pass authoring `data-*` metadata
-  through their filtered `rootAttributes` instead of copying private
-  `kui-catalog-*` structure. `@kerfjs/ui/webawesome` is a
+  entries; controlled/stateless like the layouts. For any Catalog demo, follow
+  the [authoritative authoring contract](./docs/catalog.md#catalog-demo-authoring-contract)
+  rather than inferring structure from the shell or private CSS.
+  `@kerfjs/ui/webawesome` is a
   type-only boundary for `wa-*` JSX; `@kerfjs/ui/select/register` and the CSS are the
   declared side effects.
 
@@ -155,5 +158,5 @@ shell, `@kerfjs/ui/collapsible-panel` (`CollapsiblePanel`, `CollapsiblePanelTogg
 - [recipes.md](./docs/recipes.md): production compositions (app shell, list-detail dialog, composer form, …) as copyable references.
 - [app-layouts.md](./docs/app-layouts.md): choosing `NavStack`/`SplitView`/`Workbench`/`TabScaffold` by data + interaction + device, and dialog presentation.
 - [webawesome-theme.md](./docs/webawesome-theme.md): the optional Web Awesome theme; catalog coverage means themed-and-supported, not preferred (prefer the Kerf primitive when one exists). The UX sidebar visibly tags superseded and exceptional Web Awesome choices as `Discouraged`; Popup remains an available conditional positioning primitive.
-- [component-catalog.json](./ai/component-catalog.json) + [component-catalog-extension.schema.json](./ai/component-catalog-extension.schema.json) + [public-api-signatures-v1.md](./ai/public-api-signatures-v1.md) + [webawesome-jsx-signatures-v1.md](./ai/webawesome-jsx-signatures-v1.md): machine-readable facts, a reusable app-component extension contract, and exact signatures.
+- [component-catalog.json](./ai/component-catalog.json) + [component-catalog-extension.schema.json](./ai/component-catalog-extension.schema.json) + [catalog-authoring.json](./ai/catalog-authoring.json) + [public-api-signatures-v1.md](./ai/public-api-signatures-v1.md) + [webawesome-jsx-signatures-v1.md](./ai/webawesome-jsx-signatures-v1.md): machine-readable selection facts, a reusable app-component extension contract, Catalog authoring discovery, and exact signatures.
 - [README.md](./README.md): package overview and the component subpath table.

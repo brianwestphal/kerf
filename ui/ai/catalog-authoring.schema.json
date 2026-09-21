@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/brianwestphal/kerf/main/ui/ai/catalog-authoring.schema.json",
+  "title": "Kerf UI Catalog authoring discovery",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "package",
+    "scope",
+    "authoritativeGuide",
+    "apiSignatures",
+    "imports",
+    "helpers",
+    "metadata"
+  ],
+  "properties": {
+    "$schema": { "type": "string" },
+    "schemaVersion": { "const": 1 },
+    "package": { "const": "@kerfjs/ui" },
+    "scope": { "const": "catalog-demo-authoring" },
+    "authoritativeGuide": { "type": "string", "minLength": 1 },
+    "apiSignatures": { "type": "string", "minLength": 1 },
+    "imports": {
+      "type": "object",
+      "required": ["layout", "wiring"],
+      "properties": {
+        "layout": { "const": "@kerfjs/ui/catalog" },
+        "wiring": { "const": "@kerfjs/ui/wire-catalog" }
+      },
+      "additionalProperties": false
+    },
+    "helpers": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "Catalog",
+          "CatalogExample",
+          "CatalogExampleStack",
+          "wireCatalog",
+          "wireCatalogGeometryOverlay",
+          "revealCatalogEntry"
+        ]
+      },
+      "minItems": 6,
+      "uniqueItems": true
+    },
+    "metadata": {
+      "type": "object",
+      "required": ["slot", "demo", "geometryOverlaySkip"],
+      "properties": {
+        "slot": { "const": "rootAttributes" },
+        "demo": { "const": "data-demo" },
+        "geometryOverlaySkip": {
+          "const": "data-catalog-geometry-overlay-skip"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

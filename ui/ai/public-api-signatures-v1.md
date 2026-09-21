@@ -1074,6 +1074,44 @@ declare function CatalogExampleStack({ label, rootAttributes, className, childre
 export { Catalog, type CatalogBrand, type CatalogEntry, CatalogExample, type CatalogExampleAlign, type CatalogExampleProps, CatalogExampleStack, type CatalogExampleStackProps, type CatalogProps, type CatalogRelated, type CatalogResource, type CatalogSecondaryGroup, type CatalogSection };
 ```
 
+## `@kerfjs/ui/catalog-resources`
+
+```ts
+import { CatalogResource } from './catalog.js';
+import 'kerfjs';
+
+/**
+ * Standard resource labels for a Kerf catalog detail footer. Keep these labels
+ * stable across catalogs so people and AI-generated integrations see the same
+ * choices in the same vocabulary.
+ */
+type CatalogResourceKind = 'demoSource' | 'componentSource' | 'designTemplate' | 'guidance' | 'integrationGuidance';
+interface CatalogResourceTarget {
+    href: string;
+    /** Optional monospace detail, normally the repository-relative source path. */
+    detail?: string;
+}
+interface CatalogResourcesInput {
+    /** Required source for the runnable demonstration. */
+    demoSource: CatalogResourceTarget;
+    /** Source for the production component; omit for recipes and integrations. */
+    componentSource?: CatalogResourceTarget;
+    /** Optional design-tool template associated with the component. */
+    designTemplate?: CatalogResourceTarget;
+    /** Required UI or integration guidance. */
+    guidance: CatalogResourceTarget;
+    /** Use `integrationGuidance` when the component implementation is upstream. */
+    guidanceKind?: 'guidance' | 'integrationGuidance';
+}
+/**
+ * Build the standard catalog resource group in its canonical order: demo,
+ * component, optional design template, then guidance.
+ */
+declare function catalogResources(input: CatalogResourcesInput): CatalogResource[];
+
+export { type CatalogResourceKind, type CatalogResourceTarget, type CatalogResourcesInput, catalogResources };
+```
+
 ## `@kerfjs/ui/wire-catalog`
 
 ```ts

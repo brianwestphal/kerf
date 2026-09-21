@@ -15,6 +15,13 @@ title/summary hierarchy, shared 8px field/action gutters, and 24px major rhythm;
 a conditional `StateBanner` is its only nested semantic surface. Its controlled Reset clears
 both upgraded Web Awesome live value properties and rendered value attributes,
 then announces `Draft reset`.
+Catalog demo authoring has one shipped authority at
+`ui/docs/catalog.md#catalog-demo-authoring-contract`: focused component versus
+composition modes, public group/row nesting, deterministic specimen selection,
+conditional geometry inspection, skip behavior, and metadata ownership. The
+versioned `ui/ai/catalog-authoring.json` companion makes that contract and its
+exact API context discoverable without adding authoring rules to the per-entry
+component inventory.
 The UI package also has an internal deterministic AI-regression foundation,
 including frozen versioned contexts, generated public declaration signatures,
 and an opt-in non-executing TypeScript compile-evidence sidecar.

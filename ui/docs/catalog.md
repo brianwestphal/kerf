@@ -40,11 +40,46 @@ Per-entry `resources` render as "open in new tab" links in the footer, and
 around a `wa-dropdown` (grouped by each entry's `group`), so register its elements
 with `@kerfjs/ui/select/register` when you use it.
 
-## Preview examples
+## Catalog demo authoring contract
 
-Compose each entry's `content` from `CatalogExample` (and `CatalogExampleStack`)
-instead of hand-rolled example markup, so labels, notes, and left-edge alignment
-stay consistent:
+This section is the single authoritative contract for tools and people that
+author Catalog previews. The machine-readable discovery entry is
+[`catalog-authoring.json`](../ai/catalog-authoring.json); exact props remain in
+[`public-api-signatures-v1.md`](../ai/public-api-signatures-v1.md#kerfjsuicatalog).
+The component catalog deliberately does not duplicate these rules: it describes
+which component to choose, while this contract describes how to present the
+chosen component.
+
+### Choose the demo mode
+
+Classify every entry before rendering it:
+
+| Entry kind            | Preview purpose                                                         | Geometry overlay                                                                    |
+| --------------------- | ----------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| Focused component     | Show one public component, its meaningful variants, and adverse states. | `true`; the overlay inspects each selected specimen.                                |
+| Composition or recipe | Show several components cooperating as one product surface.             | `false`; child geometry remains unmarked so the composition can be read as a whole. |
+
+Keep `geometryOverlay` present and compute it from the active entry. Do not make
+it a permanent catalog-wide `true`, and do not give individual specimens their
+own overlay implementation.
+
+### Required structure
+
+- `Catalog` is the one shell. The app owns active-entry state and passes one
+  active preview through `content`.
+- `CatalogExampleStack` is the group for one preview's rows. Put route/test
+  metadata such as `data-demo` on its rendered root through `rootAttributes`.
+- `CatalogExample` is one row: optional generated `ListHeader` label, optional
+  generated note, then one specimen or one intentionally coupled specimen
+  cluster. Use one row per variant/state; do not hand-author the helper's private
+  classes.
+- The specimen is an immediate child of `CatalogExample`. A focused component
+  row should place the component root there, without a decorative card or
+  spacing wrapper. A composition row may place the composition root there.
+
+Use `align="glyph"` for a bare glyph/text specimen, `align="inline-control"`
+for a control whose own inline padding contributes about 8px, and `align="none"`
+(the default) for a content item or composition that owns its geometry.
 
 ```tsx
 import { CatalogExample, CatalogExampleStack } from "@kerfjs/ui/catalog";
@@ -61,22 +96,24 @@ const buttonPreview = (
       <SegmentedControl id="view" label="View" value="list" choices={choices} />
     </CatalogExample>
     <CatalogExample
-      label="In composition"
+      label="Authoring note"
+      note="Explanatory chrome is not a specimen."
       rootAttributes={{ "data-catalog-geometry-overlay-skip": "" }}
     >
-      <ValueTable label="Metadata">{rows}</ValueTable>
+      <p>Use the public helper contract.</p>
     </CatalogExample>
   </CatalogExampleStack>
 );
 ```
 
-`label` is optional — omit it for a bare specimen with no `ListHeader`. `align`
-lines a specimen's visible left edge up with its label text: `'glyph'`
-(16px) for a bare glyph/text specimen, `'inline-control'` (8px) for a control that
-already carries ~8px of its own inline padding, and `'none'` (the default) for a
-content-item/composition that already owns its geometry. The inset is published as
-the `--kui-catalog-example-align` custom property so a debug overlay can exclude it
-from a specimen's measured margin.
+The overlay selects every immediate child of a `CatalogExample` except the
+helper-generated label and note. It does not recursively promote a nested child
+to be the specimen. Outside an example row, it selects only top-level
+`[data-component]` roots in the canvas and ignores nested component descendants.
+These rules keep a row's label/group scaffolding out of the measurement and make
+the authored nesting determine exactly what is inspected.
+
+### Metadata ownership
 
 Use `rootAttributes` on either helper for authoring metadata such as `data-demo`
 or `data-catalog-geometry-overlay-skip`; the metadata lands on that helper's
@@ -86,15 +123,27 @@ remain helper-owned and are rejected case-insensitively at runtime, including
 from structurally widened or JavaScript objects. Do not copy the helpers'
 private `kui-catalog-*` classes into preview markup.
 
-## Geometry inspection
+The app owns entry ids, `kind`, routing, sources, relationships, and test hooks.
+The helpers own their structural markers, label/note anatomy, alignment marker,
+and private classes. Component metadata such as margin/border/padding ownership
+lives in `component-catalog.json`; do not infer or overwrite it from overlay
+pixels.
 
-Pass `geometryOverlay` to `Catalog` when individual component previews should
-show otherwise-invisible geometry. The controlled boolean draws a dashed outer
-bound around specimens with transparent backgrounds and devtools-style orange
-bands over positive margins. Keep the prop present while switching entries so
-`wireCatalog` can reuse one overlay layer; set it to `true` for focused component
-previews and `false` for full compositions whose child geometry should remain
-unmarked.
+### Geometry overlay and legend
+
+Pass the conditional `geometryOverlay` boolean to `Catalog`, then call
+`wireCatalogGeometryOverlay(root)` once after the first render and retain its
+disposer alongside `wireCatalog`'s.
+
+| Overlay mark            | Meaning                                                                                              | It is not                                                                              |
+| ----------------------- | ---------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| Orange translucent band | A positive computed margin on the selected specimen, after subtracting the helper's alignment inset. | Padding, gap, or empty content. Zero and negative margins are not drawn.               |
+| Quiet dashed outline    | The border-box outer bound of a selected specimen whose computed background is transparent.          | A real CSS border, focus ring, padding edge, or proof that the specimen owns its size. |
+
+The overlay does not visualize padding, borders, gaps, negative/zero margins,
+scroll overflow, hit targets, nested descendants, or geometry ownership. Inspect
+computed styles and the machine-readable `geometry` metadata for those facts.
+Opaque specimens do not receive the transparent-bound outline.
 
 ```tsx
 <Catalog
@@ -104,14 +153,12 @@ unmarked.
 />
 ```
 
-Call `wireCatalogGeometryOverlay(root)` after the first render to synchronize the
-opt-in layer across rerenders, theme changes, resizes, and scrolling, and retain
-its disposer alongside `wireCatalog`'s. `CatalogExample` labels and notes are
-excluded; its `align` inset is also subtracted so alignment scaffolding is not
-reported as intrinsic component margin. Put
-`rootAttributes={{ "data-catalog-geometry-overlay-skip": "" }}` on a
-`CatalogExample` or `CatalogExampleStack` that is intentionally explanatory
-chrome rather than a specimen.
+Put `rootAttributes={{ "data-catalog-geometry-overlay-skip": "" }}` on a
+`CatalogExample` or `CatalogExampleStack` only when that whole subtree is
+explanatory chrome rather than a specimen. The marker excludes the marked root
+and every descendant from selection; it does not merely hide one band. It is
+normally unnecessary in a composition because the active entry already sets the
+global overlay to `false`.
 
 Use the overlay together with machine-readable geometry ownership metadata; the
 overlay verifies what is rendered, while metadata tells people and AI tools
@@ -139,8 +186,13 @@ sizes. For an initial deep link that did not come through `wireCatalog`, call
 ## Complete example
 
 ```tsx
-import { mount, signal } from "kerfjs";
-import { Catalog, type CatalogSection } from "@kerfjs/ui/catalog";
+import { mount, signal, type SafeHtml } from "kerfjs";
+import {
+  Catalog,
+  CatalogExample,
+  CatalogExampleStack,
+  type CatalogSection,
+} from "@kerfjs/ui/catalog";
 import {
   revealCatalogEntry,
   wireCatalog,
@@ -148,45 +200,63 @@ import {
 } from "@kerfjs/ui/wire-catalog";
 import "@kerfjs/ui/styles.css"; // or import each primitive's CSS + @kerfjs/ui/catalog.css
 
-// 1. Describe your components once.
-const sections: CatalogSection[] = [
+type DemoKind = "component" | "composition";
+type DemoEntry = CatalogSection["entries"][number] & { kind: DemoKind };
+
+// 1. Describe selection and overlay mode once.
+const entries: DemoEntry[] = [
   {
-    category: "Controls",
-    entries: [
-      {
-        id: "button",
-        name: "Button",
-        description: "A pressable control.",
-        resources: [
-          {
-            label: "Source",
-            href: "/src/button.tsx",
-            detail: "src/button.tsx",
-          },
-        ],
-      },
-      {
-        id: "field",
-        name: "Field",
-        description: "A labeled input.",
-        tags: ["Discouraged"],
-        related: [{ id: "button", name: "Button", group: "Used with" }],
-      },
+    id: "button",
+    name: "Button",
+    kind: "component",
+    description: "A pressable control.",
+    resources: [
+      { label: "Source", href: "/src/button.tsx", detail: "src/button.tsx" },
     ],
   },
   {
-    category: "Feedback",
-    entries: [
-      { id: "toast", name: "Toast", description: "A transient message." },
-    ],
+    id: "profile-form",
+    name: "Profile form",
+    kind: "composition",
+    description: "A labeled field and save action working together.",
+  },
+];
+const sections: CatalogSection[] = [
+  {
+    category: "Examples",
+    entries: entries.map(({ kind: _kind, ...entry }) => entry),
   },
 ];
 
-// 2. One preview render per entry id.
-const renderers: Record<string, () => ReturnType<typeof Button>> = {
-  button: () => <Button label="Save" />,
-  field: () => <Field label="Name" />,
-  toast: () => <Toast>Saved</Toast>,
+// 2. Every preview uses one public group and public example rows.
+const renderers: Record<string, () => SafeHtml> = {
+  button: () => (
+    <CatalogExampleStack
+      label="Button states"
+      rootAttributes={{ "data-demo": "button" }}
+    >
+      <CatalogExample label="Default" align="inline-control">
+        <Button label="Save" />
+      </CatalogExample>
+      <CatalogExample
+        label="Authoring note"
+        note="This explanatory row is deliberately excluded from inspection."
+        rootAttributes={{ "data-catalog-geometry-overlay-skip": "" }}
+      >
+        <p>The application owns product copy and actions.</p>
+      </CatalogExample>
+    </CatalogExampleStack>
+  ),
+  "profile-form": () => (
+    <CatalogExampleStack
+      label="Profile form composition"
+      rootAttributes={{ "data-demo": "profile-form" }}
+    >
+      <CatalogExample label="Complete composition">
+        <ProfileForm />
+      </CatalogExample>
+    </CatalogExampleStack>
+  ),
 };
 
 // 3. App-owned state (domain: which entry; transient: collapsed; global: theme).
@@ -195,6 +265,7 @@ const initial =
 const active = signal(initial);
 const collapsed = signal(false);
 const theme = signal<"light" | "dark">("light");
+const activeEntry = () => entries.find(({ id }) => id === active.value) ?? entries[0];
 
 const app = document.getElementById("app")!;
 mount(app, () => (
@@ -205,7 +276,7 @@ mount(app, () => (
     content={renderers[active.value]?.() ?? <></>}
     collapsed={collapsed.value}
     theme={theme.value}
-    geometryOverlay={true}
+    geometryOverlay={activeEntry().kind === "component"}
   />
 ));
 

@@ -543,6 +543,13 @@ disposer-returning wiring.
 `CatalogExample.rootAttributes` and `CatalogExampleStack.rootAttributes` use the
 same runtime filter for catalog-authoring `data-*` metadata while protecting
 their structure and alignment markers.
+`ui/docs/catalog.md#catalog-demo-authoring-contract` is the single authoring
+authority; the separately versioned `ui/ai/catalog-authoring.json` discovery
+artifact points AI tools to it because `component-catalog.json` remains an
+entry-selection and geometry-ownership inventory.
+`@kerfjs/ui/catalog-resources` exports the typed `catalogResources()` builder,
+which standardizes resource kinds, visible labels, and footer order across the
+Kerf catalog and downstream catalogs without importing the catalog shell.
 `PanelHeader` source-imports `Toolbar` and `ToolbarControlGroup`, so its styled
 browser subpath includes those reachable styles. It keeps a borderless
 icon/title identity group and an automatic action group on the first row, with

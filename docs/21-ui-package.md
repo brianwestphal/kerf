@@ -145,6 +145,12 @@ instead of retaining stale content.
 | Loading placeholder     | a component's `placeholder` prop                                                             | Value-bearing components (`Select`, `ListHeader`, `ListItem`, `ValueTableRow`, `PanelHeader`, `SegmentedControl`, `StateBanner`, `AppTab`, `ToolbarText`, `ListActionRow`) render their real chrome with value slots as `Skeleton` blocks and interactivity disabled, so a parent composes a faithful loading view (e.g. an inspector) without hand-rebuilding markup          |
 | Component catalog shell | `Catalog`, `CatalogExample`, `CatalogExampleStack` + `wireCatalog` (`@kerfjs/ui/catalog`)    | An opt-in, subpath-only whole-screen shell — collapsible category sidebar + titled preview stage + resources footer + related-entry selector — with public preview-layout helpers whose safe `rootAttributes` carry authoring `data-*` metadata; controlled/stateless (the app owns `active`/`collapsed`/`theme` and computes the preview `content`). See `ui/docs/catalog.md` |
 
+Catalog demos follow the single
+[`ui/docs/catalog.md` authoring contract](../ui/docs/catalog.md#catalog-demo-authoring-contract).
+The published `ui/ai/catalog-authoring.json` companion artifact lets AI tools
+discover that contract, its exact API signatures, imports, helpers, and metadata
+slot without mixing authoring rules into the per-entry component catalog.
+
 ## 21.4 Accessibility contract
 
 - All interactive elements retain visible `:focus-visible` treatment and usable

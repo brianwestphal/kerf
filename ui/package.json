@@ -116,6 +116,10 @@
       "types": "./dist/catalog.d.ts",
       "import": "./dist/catalog.js"
     },
+    "./catalog-resources": {
+      "types": "./dist/catalog-resources.d.ts",
+      "import": "./dist/catalog-resources.js"
+    },
     "./wire-catalog": {
       "types": "./dist/wire-catalog.d.ts",
       "import": "./dist/wire-catalog.js"

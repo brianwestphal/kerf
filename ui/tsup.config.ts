@@ -18,6 +18,7 @@ const entries = [
   'device-class',
   'app-tab',
   'catalog',
+  'catalog-resources',
   'wire-catalog',
   'tab-bar',
   'wire-tab-bars',
@@ -46,7 +47,7 @@ const entries = [
 export default defineConfig({
   entry: entries.map(
     (entry) =>
-      `src/${entry}.${entry === 'index' || entry === 'select-register' || entry === 'webawesome' || entry === 'device-class' || entry.startsWith('wire-') ? 'ts' : 'tsx'}`,
+      `src/${entry}.${entry === 'index' || entry === 'select-register' || entry === 'webawesome' || entry === 'device-class' || entry === 'catalog-resources' || entry.startsWith('wire-') ? 'ts' : 'tsx'}`,
   ),
   format: ['esm'],
   outDir: 'dist',

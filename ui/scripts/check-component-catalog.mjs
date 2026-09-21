@@ -17,6 +17,8 @@ const [
   llms,
   extensionSchemaSource,
   extensionExampleSource,
+  catalogAuthoringSource,
+  catalogAuthoringSchemaSource,
 ] = await Promise.all([
   readFile(resolve(root, 'ai/component-catalog.json'), 'utf8'),
   readFile(resolve(root, 'ai/component-catalog.schema.json'), 'utf8'),
@@ -38,6 +40,8 @@ const [
     resolve(root, 'docs/examples/component-catalog-extension.json'),
     'utf8',
   ),
+  readFile(resolve(root, 'ai/catalog-authoring.json'), 'utf8'),
+  readFile(resolve(root, 'ai/catalog-authoring.schema.json'), 'utf8'),
 ]);
 const artifact = JSON.parse(artifactSource);
 const schema = JSON.parse(schemaSource);
@@ -45,6 +49,8 @@ const packageJson = JSON.parse(packageSource);
 const manifest = JSON.parse(manifestSource);
 const extensionSchema = JSON.parse(extensionSchemaSource);
 const extensionExample = JSON.parse(extensionExampleSource);
+const catalogAuthoring = JSON.parse(catalogAuthoringSource);
+const catalogAuthoringSchema = JSON.parse(catalogAuthoringSchemaSource);
 const failures = [];
 
 function fail(message) {
@@ -124,6 +130,12 @@ validateSchema(
   '$extension',
   extensionSchema,
 );
+validateSchema(
+  catalogAuthoring,
+  catalogAuthoringSchema,
+  '$catalogAuthoring',
+  catalogAuthoringSchema,
+);
 
 if (
   JSON.stringify(extensionSchema.$defs.geometry) !==
@@ -159,6 +171,8 @@ if (packageJson.exports['./ai/*'] !== './ai/*')
   fail(
     'package must export the shipped ai/component-catalog.json artifact and schema',
   );
+if (!readme.includes('[`catalog-authoring.json`](./ai/catalog-authoring.json)'))
+  fail('README must link the Catalog authoring discovery artifact');
 if (
   !llms.includes(
     '[Machine-readable component catalog](./ai/component-catalog.json)',
@@ -379,26 +393,41 @@ function githubSlug(heading) {
     .replace(/\s+/g, '-')
     .replace(/-+/g, '-');
 }
-for (const entry of entries) {
-  for (const key of ['documentation', 'recipe']) {
-    const [path, fragment] = entry.links[key].split('#');
-    const targetPath = resolve(root, path);
-    let target;
-    try {
-      target = await readFile(targetPath, 'utf8');
-    } catch {
-      fail(`${entry.id} has broken ${key} link ${entry.links[key]}`);
-      continue;
-    }
-    if (fragment && ['.md', '.txt'].includes(extname(targetPath))) {
-      const headings = [...target.matchAll(/^#{1,6}\s+(.+)$/gm)].map((match) =>
-        githubSlug(match[1]),
-      );
-      if (!headings.includes(fragment))
-        fail(`${entry.id} has broken ${key} heading ${entry.links[key]}`);
-    }
+
+async function validateDocumentLink(owner, key, link) {
+  const [path, fragment] = link.split('#');
+  const targetPath = resolve(root, path);
+  let target;
+  try {
+    target = await readFile(targetPath, 'utf8');
+  } catch {
+    fail(`${owner} has broken ${key} link ${link}`);
+    return;
+  }
+  if (fragment && ['.md', '.txt'].includes(extname(targetPath))) {
+    const headings = [...target.matchAll(/^#{1,6}\s+(.+)$/gm)].map((match) =>
+      githubSlug(match[1]),
+    );
+    if (!headings.includes(fragment))
+      fail(`${owner} has broken ${key} heading ${link}`);
   }
 }
+
+for (const entry of entries) {
+  for (const key of ['documentation', 'recipe']) {
+    await validateDocumentLink(entry.id, key, entry.links[key]);
+  }
+}
+await validateDocumentLink(
+  'Catalog authoring discovery',
+  'authoritativeGuide',
+  catalogAuthoring.authoritativeGuide,
+);
+await validateDocumentLink(
+  'Catalog authoring discovery',
+  'apiSignatures',
+  catalogAuthoring.apiSignatures,
+);
 
 for (const entry of entries.filter(
   (candidate) => candidate.source === 'kerf',

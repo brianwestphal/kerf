@@ -18,6 +18,15 @@ package delivery paths, Web Awesome's installed manifest, AI guidance, and
 documentation links. Nuanced prose in this contract and the selection guide
 remains authored rather than generated.
 
+Catalog detail footers use one standard resource vocabulary and order. Build
+them with `catalogResources()` from `@kerfjs/ui/catalog-resources`: `Demo source`
+first, optional `Component source` and `Design template`, then `Guidance`.
+Third-party entries use the typed `integrationGuidance` kind, which renders
+`Integration guidance`, and omit `Component source` when the implementation is
+not owned by the catalog's project. Prefer these semantic kinds over local labels
+such as “View source” or “Read UI guidance”; the helper makes that convention a
+compile-time choice while still returning ordinary `CatalogResource[]` values.
+
 ## Ownership boundaries
 
 ### Geometry ownership metadata

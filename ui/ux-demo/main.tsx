@@ -7,9 +7,9 @@ import './style.css';
 import {
   Catalog,
   type CatalogRelated,
-  type CatalogResource,
   type CatalogSection as KuiCatalogSection,
 } from '@kerfjs/ui/catalog';
+import { catalogResources } from '@kerfjs/ui/catalog-resources';
 import { LoadingSpinner } from '@kerfjs/ui/loading-spinner';
 import { readTokenSearchField } from '@kerfjs/ui/token-search-field';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
@@ -208,32 +208,35 @@ function Stage() {
 
 // Project the ux-demo's rich catalog entries onto the shipped Catalog's shapes so
 // the reusable shell renders the sidebar, resources footer, and related selector.
-function toCatalogResources(entry: CatalogEntry): CatalogResource[] {
-  const resources: CatalogResource[] = [
-    {
-      label: 'Demo source',
+function toCatalogResources(entry: CatalogEntry) {
+  return catalogResources({
+    demoSource: {
       href: catalogRepositoryHref(entry.demoSource),
       detail: entry.demoSource,
     },
-  ];
-  if (entry.componentSource)
-    resources.push({
-      label: 'Component source',
-      href: catalogRepositoryHref(entry.componentSource),
-      detail: entry.componentSource,
-    });
-  if (entry.designTemplate)
-    resources.push({
-      label: 'Design template',
-      href: catalogRepositoryHref(entry.designTemplate),
-      detail: entry.designTemplate,
-    });
-  resources.push({
-    label: entry.source === 'webawesome' ? 'Integration guidance' : 'Guidance',
-    href: catalogRepositoryHref(entry.documentation),
-    detail: entry.documentation,
+    ...(entry.componentSource
+      ? {
+          componentSource: {
+            href: catalogRepositoryHref(entry.componentSource),
+            detail: entry.componentSource,
+          },
+        }
+      : {}),
+    ...(entry.designTemplate
+      ? {
+          designTemplate: {
+            href: catalogRepositoryHref(entry.designTemplate),
+            detail: entry.designTemplate,
+          },
+        }
+      : {}),
+    guidance: {
+      href: catalogRepositoryHref(entry.documentation),
+      detail: entry.documentation,
+    },
+    guidanceKind:
+      entry.source === 'webawesome' ? 'integrationGuidance' : 'guidance',
   });
-  return resources;
 }
 function toCatalogRelated(entry: CatalogEntry): CatalogRelated[] {
   const uses = (entry.uses ?? [])

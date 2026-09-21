@@ -1,0 +1,25 @@
+{
+  "$schema": "./catalog-authoring.schema.json",
+  "schemaVersion": 1,
+  "package": "@kerfjs/ui",
+  "scope": "catalog-demo-authoring",
+  "authoritativeGuide": "docs/catalog.md#catalog-demo-authoring-contract",
+  "apiSignatures": "ai/public-api-signatures-v1.md#kerfjsuicatalog",
+  "imports": {
+    "layout": "@kerfjs/ui/catalog",
+    "wiring": "@kerfjs/ui/wire-catalog"
+  },
+  "helpers": [
+    "Catalog",
+    "CatalogExample",
+    "CatalogExampleStack",
+    "wireCatalog",
+    "wireCatalogGeometryOverlay",
+    "revealCatalogEntry"
+  ],
+  "metadata": {
+    "slot": "rootAttributes",
+    "demo": "data-demo",
+    "geometryOverlaySkip": "data-catalog-geometry-overlay-skip"
+  }
+}

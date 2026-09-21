@@ -4,6 +4,13 @@ Accessible, composable UI primitives for [kerf](https://github.com/brianwestphal
 
 Start interface work with the [need-first component selection matrix](./docs/component-selection.md). It distinguishes direct reuse, composition, thin application adapters, and genuinely custom semantics, with imports, required wiring, application ownership, alternatives, and recipes for every public primitive.
 
+When authoring a component gallery, follow the single
+[Catalog demo authoring contract](./docs/catalog.md#catalog-demo-authoring-contract)
+for focused-versus-composition modes, helper nesting, specimen selection,
+geometry inspection, and metadata ownership. AI tools can discover that
+contract and its public imports through the shipped
+[`catalog-authoring.json`](./ai/catalog-authoring.json) artifact.
+
 For connective application patterns, use the seven [production composition
 recipes](./docs/recipes.md). Each has a stable catalog route, runnable state,
 public-subpath source, semantic layout ownership, and explicit application
@@ -174,6 +181,13 @@ documentation/recipe links. The adjacent
 the versioned format. Every visual entry also declares who owns its margin,
 border, and padding, so a generator can fit it into Kerf's alignment model
 without guessing from a screenshot or private CSS.
+
+Catalog demo authoring is deliberately separate from the entry inventory. Load
+[`catalog-authoring.json`](./ai/catalog-authoring.json) to discover the
+authoritative [Catalog demo authoring contract](./docs/catalog.md#catalog-demo-authoring-contract),
+the exact API-signature context, public imports/helpers, and sanctioned metadata
+slot. Keeping this as a companion artifact prevents per-entry selection facts
+from duplicating presentation rules.
 
 Applications and downstream design systems should publish the same facts for
 their own components. Start from the reusable

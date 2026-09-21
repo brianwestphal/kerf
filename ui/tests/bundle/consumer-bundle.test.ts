@@ -328,6 +328,18 @@ describe('consumer bundle boundaries', () => {
     expect(output(result, '.js')).not.toContain('customElements.define');
   });
 
+  it('ships the standard catalog resource vocabulary without the catalog shell', async () => {
+    const result = await bundle(
+      "import { catalogResources } from '@kerfjs/ui/catalog-resources'; console.log(catalogResources({ demoSource: { href: '/demo' }, guidance: { href: '/guide' } }));",
+    );
+    const inputs = Object.keys(result.metafile!.inputs).join('\n');
+    const js = output(result, '.js');
+    expect(inputs).toContain('dist/catalog-resources.js');
+    expect(inputs).not.toContain('dist/catalog.js');
+    expect(js).toContain('Demo source');
+    expect(js).toContain('Guidance');
+  });
+
   it('keeps the manual layout CSS subpath self-sufficient', async () => {
     const result = await bundle("import '@kerfjs/ui/layout.css';");
     const inputs = Object.keys(result.metafile!.inputs).join('\n');
@@ -382,6 +394,10 @@ describe('consumer bundle boundaries', () => {
     expect(pkg.exports['./tab-bar']).toBeDefined();
     expect(pkg.exports['./segmented-control']).toBeDefined();
     expect(pkg.exports['./token-search-field']).toBeDefined();
+    expect(pkg.exports['./catalog-resources']).toMatchObject({
+      types: './dist/catalog-resources.d.ts',
+      import: './dist/catalog-resources.js',
+    });
     expect(pkg.exports['./wire-tab-bars']).toBeDefined();
     // device-class is signals-only: no browser CSS entry, no stylesheet subpath.
     expect(pkg.exports['./device-class']).toMatchObject({
