@@ -301,6 +301,7 @@
     "analyzer",
     "doctor",
     "evaluator",
+    "traversal-exclusions.mjs",
     "docs",
     "ux-demo/recipes",
     "llms.txt",

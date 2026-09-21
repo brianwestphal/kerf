@@ -45,6 +45,14 @@ function expectOrderedRunSteps(
 }
 
 describe('package metadata', () => {
+  it('ships shared runtime helpers imported by the analyzer and doctor', () => {
+    const packageJson = JSON.parse(
+      readFileSync(resolve(import.meta.dirname, '../../package.json'), 'utf8'),
+    ) as { files: string[] };
+
+    expect(packageJson.files).toContain('traversal-exclusions.mjs');
+  });
+
   it('points the homepage at the published component-package documentation', () => {
     const packageJson = JSON.parse(
       readFileSync(resolve(import.meta.dirname, '../../package.json'), 'utf8'),
