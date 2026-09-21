@@ -159,18 +159,25 @@ function editorIsEmpty(editor: HTMLElement): boolean {
   return value.query.length === 0 && value.tokens.length === 0;
 }
 
-/** Whether the active selection covers every child of the editing host. */
+/** Whether the active selection covers all logical text and tokens in the editor. */
 function selectionCoversEditor(editor: HTMLElement): boolean {
   // onBeforeInput calls this only after caretQueryOffset verified a live range.
   const selected = editor.ownerDocument.getSelection()!.getRangeAt(0);
   if (selected.collapsed || !editor.contains(selected.commonAncestorContainer))
     return false;
-  const contents = editor.ownerDocument.createRange();
-  contents.selectNodeContents(editor);
-  const RangeCtor = editor.ownerDocument.defaultView!.Range;
+  // Browser select-all ranges are not structurally identical across platforms:
+  // some use editor child offsets while others start/end inside the first/last
+  // text nodes. Compare the selected logical value instead of DOM boundaries.
+  const selectedHost = editor.ownerDocument.createElement('div');
+  selectedHost.append(selected.cloneContents());
+  const fullValue = readTokenSearchField(editor);
+  const selectedValue = readTokenSearchField(selectedHost);
   return (
-    selected.compareBoundaryPoints(RangeCtor.START_TO_START, contents) <= 0 &&
-    selected.compareBoundaryPoints(RangeCtor.END_TO_END, contents) >= 0
+    selectedValue.query === fullValue.query &&
+    selectedValue.tokens.length === fullValue.tokens.length &&
+    selectedValue.tokens.every(
+      (token, index) => token.value === fullValue.tokens[index]?.value,
+    )
   );
 }
 

@@ -186,6 +186,41 @@ describe('wireTokenSearchFields', () => {
     stop();
   });
 
+  it('recognizes full logical selection when range endpoints are inside text spans', () => {
+    const root = document.createElement('div');
+    document.body.append(root);
+    root.innerHTML =
+      '<div data-component="token-search-field" data-token-search-id="tickets" data-disabled="false"><div data-token-search-editor="tickets" contenteditable="true"><span data-token-search-text>before </span><span data-component="token-search-token" data-token-value="tag:x" contenteditable="false">tag:x</span><span data-token-search-text> after</span></div></div>';
+    const editor = root.querySelector<HTMLElement>(
+      '[data-token-search-editor]',
+    )!;
+    const textSpans = editor.querySelectorAll('[data-token-search-text]');
+    const firstText = textSpans[0]!.firstChild!;
+    const lastText = textSpans[1]!.firstChild!;
+    const selection = document.getSelection()!;
+    const range = document.createRange();
+    range.setStart(firstText, 0);
+    range.setEnd(lastText, lastText.textContent!.length);
+    selection.removeAllRanges();
+    selection.addRange(range);
+    editor.focus();
+    const stop = wireTokenSearchFields(root);
+
+    editor.dispatchEvent(inputEvent('beforeinput'));
+    editor.innerHTML =
+      '<span data-component="token-search-token" data-token-value="tag:x" contenteditable="false">tag:x</span>';
+    editor.dispatchEvent(inputEvent('input'));
+
+    expect(
+      editor.querySelectorAll('[data-component="token-search-token"]'),
+    ).toHaveLength(0);
+    expect(editor.firstElementChild!.matches('[data-token-search-text]')).toBe(
+      true,
+    );
+    expect(editor.textContent).toBe('');
+    stop();
+  });
+
   it('drops a stray <br> around surviving chips without wiping the field', () => {
     const root = document.createElement('div');
     document.body.append(root);
